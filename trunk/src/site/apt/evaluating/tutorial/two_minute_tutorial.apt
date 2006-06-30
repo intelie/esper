@@ -1,0 +1,107 @@
+Two Minute Tutorial
+~~~~~~~~~~~~~~
+
+  Esper offers two principal methods of event processing:
+  
+  [[1]] Event stream analysis
+
+  [[2]] Event pattern matching
+    
+  []
+  
+      
+* Event Stream Analysis
+	
+	EQL statements are used to derive and aggregate information from one or more streams of events, to join or merge event streams,
+	and to feed results from one event stream to subsequent statements.  
+	
+	EQL is similar to SQL in it's use of the <select> clause and the <where> clause. However EQL statements instead of tables use event streams
+	and a concept called <views>. Similar to tables in an SQL statement, views define the data available for querying and filtering. 
+	Views can represent windows over a stream of events. Views can also sort events, derive statistics from event properties, 
+	group events or handle unique event property values.
+	
+	This is a sample EQL statement that computes the average price for the last 30 seconds of stock tick events:
+	
+----------------------------------------
+  select avg(price) from StockTickEvent.win:time(30) 
+----------------------------------------	
+
+	A sample EQL that returns the average price per symbol for the last 100 stock ticks.
+		
+----------------------------------------
+  select symbol, avg(price) as averagePrice
+    from StockTickEvent.win:length(100)
+group by symbol
+----------------------------------------	
+	
+	This example joins 2 event streams. The first event stream consists of fraud warning events for which we keep the last 30 minutes (1800 seconds). 
+	The second stream is withdrawal events for which we consider the last 30 seconds. The streams are joined on account number.
+
+----------------------------------------
+  select fraud.accountNumber as accntNum, fraud.warning as warn, withdraw.amount as amount,
+         MAX(fraud.timestamp, withdraw.timestamp) as timestamp, 'withdrawlFraud' as desc
+    from FraudWarningEvent.win:time(1800) as fraud,
+         WithdrawalEvent.win:time(30) as withdraw
+   where fraud.accountNumber = withdraw.accountNumber
+----------------------------------------	
+
+* Event Pattern Matching
+
+	Event patterns match when an event or multiple events occur that match the pattern's definition. Patterns can also be temporal (time-based).
+	Pattern matching is implemented via state machines. 
+
+	Pattern expressions can consist of filter expressions combined with pattern operators. Expressions can contain further nested
+	pattern expressions by including the nested expression(s) in round brackets.
+
+	There are 5 types of operators:
+	
+	[[1]] Operators that control pattern finder creation and termination: <every>
+	
+	[[2]] Logical operators: <and, or, not>
+	
+	[[3]] Temporal operators that operate on event order: < -\> (followed-by) >
+	
+	[[4]] Guards are where-conditions that filter out events and cause termination of the pattern finder, such as <timer:within>
+	
+	[[5]] Observers observe time events as well as other events, such as <timer:interval, timer:at>
+	
+	[]
+	
+	
+	A sample pattern that alerts on each IBM stock tick with a price greater then 80 and within the next 60 seconds:
+	
+----------------------------------------
+  every StockTickEvent(symbol="IBM", price>80) where timer:within(60)
+----------------------------------------	
+
+	A sample pattern that alerts every 5 minutes past the hour:
+	
+----------------------------------------
+  every timer:at(5, *, *, *, *)
+----------------------------------------	
+
+	A sample pattern that alerts when event A occurs, followed by either event B or event C:
+	
+----------------------------------------
+  A -> ( B or C )
+----------------------------------------	
+
+	An event pattern where a property of a following event must match a property from the first event: 
+ 
+----------------------------------------
+  every a=EventX -> every b=EventY(objectID=a.objectID)
+----------------------------------------
+
+* Event Representation in Java
+
+  Events are represented as JavaBean instances. Esper can interrogate any plain-old Java object representing an event as long as the object exposes the required getter methods
+  following the JavaBean conventions.
+  
+  Esper can also query object graphs consisting of arrays, mapped or nested event properties, or any combination. The following are examples of valid 
+  event properties for EQL and pattern statements:
+  
+----------------------------------------
+  OrderEvent.item[1].description				
+  RFIDEvent.attribute('shelfcode')
+----------------------------------------  
+

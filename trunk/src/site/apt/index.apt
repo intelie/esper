@@ -1,0 +1,103 @@
+About Esper
+
+	Esper is a 100% Java component for CEP and ESP applications. 
+
+	Esper enables rapid development of applications that process large volumes of incoming messages or events. Esper filters 
+	and analyzes events in various ways, and responds to conditions of interest in real-time.
+	
+
+Technology Introduction
+
+	Complex Event Processing, or CEP, is technology to process events and discover complex patterns among multiple streams of event data.
+	ESP stands for Event Stream Processing and deals with the task of processing multiple streams of event data with the goal of identifying the meaningful events within those streams,
+	and deriving meaningful information from them.
+		
+
+	The Esper engine has been developed to address the requirements of applications that analyze and react to events. Some typical examples of applications are:
+	
+	* Business process management and automation (process monitoring, BAM, reporting exceptions) 
+	
+	* Finance (algorithmic trading, fraud detection, risk management) 
+	
+	* Network and application monitoring (intrusion detection, SLA monitoring) 
+	
+	* Sensor network applications (RFID reading, scheduling and control of frabrication lines, air traffic) 
+	
+	[]
+
+
+Features
+	
+	* Event Pattern Matching
+
+		* Logical and temporal event correlation
+
+		* Crontab-like timer <'at'> operator
+
+		* Lifecyle of pattern can be controlled by timer and via operators
+
+		* Pattern-matched events provided to listeners
+
+		[]
+	
+	* Event Stream Processing
+
+		* Time-based, interval-based and lenght-based event windows
+
+		* Grouping, aggregation, sorting, filtering
+
+		* Tailored SQL-like query language using <select>, <from>, <where>, <group-by> and <having> clauses
+
+		* Inner-Join of two or more event streams, outer joins
+
+		* Dynamically generated indexes
+
+		[]
+        
+	* Supports both listener (push) and consumer (pull) model 
+	
+	* Supports event-type inheritance and polymorphism as provided by the Java language
+	
+	* Event properties can be simple, indexed, mapped or nested
+	
+	* Supports externally-supplied time as well as Java system time
+	
+	* Supports multiple independent Esper engines per JavaVM. Each engine instance itself is NOT multithread-safe, 
+	  requiring workload structuring per engine if necessary (also see FAQ on multithread-safety).
+	  
+	* Pluggable architecture for event pattern and event stream analysis functions
+	  
+	[]		
+
+
+Typical Uses
+
+	What these applications have in common is the requirement to process events (or messages) in real-time or near real-time. 
+	This is sometimes referred to as complex event processing (CEP) and event stream analysis. 
+
+	Key considerations for these types of applications are the complexity of the logic required, throughput and latency. 
+
+	* Complex computations - applications that detect patterns among events (event correlation), filter events, aggregate time or length windows of events, join event streams, trigger based on absence of events etc.
+
+	* High throughput - applications that process large volumes of messages (between 1,000 to 100k messages per second) 
+	
+	* Low latency - applications that react in real-time to conditions that occur (from a few milliseconds to a few seconds) 
+		
+	[]
+
+
+Known Limitations
+
+	* Esper requires a Java Virtual Machine version 5.0 runtime, or above. 
+	
+	* Esper will not work with JavaVM versions 1.4.2 or below.
+	
+	* A Esper engine instance itself is NOT multithread-safe, i.e. 2 or more threads sending events to the
+	  same engine instance is not supported. However multiple engine instances with a maximum of one thread 
+	  per engine instance is supported.
+	
+
+Summary
+
+	Esper was designed to make it easier to build CEP and ESP applications. Esper is open-source software available
+	under the Apache LPGL license.

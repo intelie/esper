@@ -1,0 +1,65 @@
+Esper Changelog
+===================
+
+Changes in version 0.9.1
+------------------------------------
+
+* (EQL) Bug fix for statements that contain only aggregation functions in the select clause such as 
+"select sum(volume) from StockTick". The engine was incorrectly posting an event per event posted 
+by the stream's window, rather then a single aggregate event.
+* (EQL) Bug fix for group-by without output rate limiting. This problem occured using a group-by clause
+without output rate limit and resulted in multiple events posted that include prior groups for each event posted 
+by the window.
+* (EQL) New example 'Transaction 3-event challenge' which shows EQL in use for detecting missing events and
+computing latency totals overall and grouped. Added scripts for compiling and executing the example.
+
+Changes in version 0.9.0
+------------------------------------
+
+* (EQL) Now supporting outer joins for an unlimited number of event streams
+* (EQL) Support for output rate limiting based on number of events and time-based, and choice of last or all events
+* (EQL) Renamed view "std:last" to "std:lastevent"
+* (EQL) New reserved keywords: last, events, output, seconds, minutes
+
+Changes in version 0.8.5
+------------------------------------
+
+* (EQL) Added support for the group-by clause and the having-clause
+* (EQL) Added support for aggregation functions in the select and having-clauses; The list of aggregation functions is: 
+max, min, sum, avg, count, median, stddev, avedev; The "distinct" keyword is also supported for each; The "count(*)" syntax is supported.
+* (EQL) Group-by view has been renamed from "std:group" to "std:groupby" since group is a reserved keyword
+* (EQL) The univariate statistics view "stat:uni" changed the name of derived event properties to "stddev" and "stddevpa" from formerly 
+"stdev" and "stdevpa" to stay consistent with the aggregate functions of the same name
+
+
+Changes in version 0.8.0
+------------------------------------
+
+* (EQL and Event Pattern) Event inheritance and interface implementation support; Added support for interfaces, 
+abstract classes, superclasses. E.g. select * from IMyEvent  (where IMyEvent) is an interface or superclass, and event classes that 
+implement this interface or extend the superclass match the criteria.
+* (EQL and Event Pattern) Added support for simple, mapped, indexed, nested and any combination of these anywhere where
+and event property name is expected. E.g. subordinate[3].address(home).city
+* (EQL and Event Pattern) Refined exception texts to better indicate syntax errors or messages in validating pattern and EQL statements
+during statement creation. Added EPStatementSyntaxException and EPStatementException.
+
+
+Changes in version 0.7.5
+------------------------------------
+
+* (API) A configuration can now optionally be supplied to an engine instance via the Configuration parameter to EPServiceProviderManager.
+This enabled event patterns and EQL to use short event names not requiring making the fully-qualified Java class name optional
+* (EQL) Outer joins: left, right and full join on 2 streams
+* (EQL) IS NULL, = NULL, IS NOT NULL, <> and != now supported in where clause
+* (EQL) New built-in function MAX(a, b,...), MIN(a, b,...)
+* (Event Pattern) Use of results in filters, such as "every A=X -> every B=X(objectID=A.objectID)"
+* (Event Pattern) improved removal of permanently false patterns (e.g. B arrives in 'A and not B')
+* (EQL and Event Pattern) Removed requirement that event names have () postfix, e.g. 'every A=X' equivalent to 'every A=X()'
+* (Documentation) new section on builtin functions
+* (Examples) Sample ATM added to show simple join
+
+
+version 0.7.0
+-------------
+Initial alpha version
+

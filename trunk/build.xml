@@ -1,0 +1,71 @@
+<project name="esper" default="" basedir=".">
+
+	<!-- Name of project and version, used to create filenames -->
+	<property name="Name" value="Esper"/>
+	<property name="name" value="esper"/>
+	<property name="version" value="0.9.1"/>
+	<property name="patchlevel" value=""/>
+    <property name="fullversion" value="${version}${patchlevel}"/>
+    <property name="fullname" value="${name}-${fullversion}"/>
+
+	<property name="dist.dir" value=".."/>
+	<property name="lib.dir" value="lib"/>
+	<property name="src.dir" value="src/main/java"/>
+	<property name="generated.src" value="target/generated-sources/antlr"/>
+	<property name="doc.dir" value="doc"/>
+	<property name="doc.api.dir" value="${doc.dir}/api"/>
+	<property name="dist.api.dir" value="doc/javadoc/api"/>
+
+	<path id="lib.class.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="source_zip" description="Zip up dev artifacts">
+		<echo message="Building a zip of the development artifacts" />
+		<zip zipfile="${dist.dir}/${fullname}-dev-artifacts.zip" basedir="." excludes="target/**, eg/target/**, lib/**, doc/javadoc/**, doc/build/**, doc/reference/support/**,doc/reference/build/**, esper*.jar" />
+	</target>
+	
+	<target name="touch_all" description="Update timestamp all artifacts">
+		<touch>
+			<fileset dir="src">
+				<include name="**/*.java"/>
+			</fileset>
+		</touch>
+	</target>
+
+	<target name="dist_zip" description="Zip up distribution" depends="touch_all">
+		<echo message="Building a zip for distribution" />
+		<zip zipfile="${dist.dir}/${fullname}.zip">
+			<zipfileset prefix="${name}-${version}" dir="." excludes="${dist.jar.name}, target/site/**, target/*classes*/**, target/*reports*/**, eg/target/**, intellij/**, doc/reference/support/**"/>
+		</zip>
+	</target>
+
+	<target name="javadoc" description="Generate JavaDoc - Maven Plug-in not working yet">
+			<javadoc
+			classpathref="lib.class.path"
+			destdir="${dist.api.dir}"
+			use="true"
+			protected="true"
+			version="true"
+			windowtitle="${Name} API Documentation"
+			Overview="${doc.api.dir}/package.html"
+			stylesheetfile="${doc.api.dir}/jdstyle.css"
+			doctitle="${Name} API Documentation">
+
+			<packageset dir="${generated.src}" defaultexcludes="yes">
+				<include name="net/esper/**"/>
+			</packageset>
+			<packageset dir="${src.dir}" defaultexcludes="yes">
+				<include name="net/esper/**"/>
+			</packageset>
+
+			<group title="Core API"
+				packages="net.esper.client,net.esper.client.time,net.esper.event"/>
+						
+		</javadoc>
+		<copy file="${doc.api.dir}/package.html" todir="${dist.api.dir}"/>
+	</target>
+	
+</project>

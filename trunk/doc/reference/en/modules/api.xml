@@ -1,0 +1,313 @@
+<chapter id="api">
+    <title>API Reference</title>
+
+    <sect1 id="api-reference-intro">
+        <title>API Overview</title>
+
+        <para>
+			Esper has 2 primary interfaces that this section outlines: The administrative interface and the runtime interface.
+        </para>
+
+        <para>
+			Use Esper's administrative interface to create event patterns and EQL statements as discussed in <xref linkend="event-pattern-intro"/> and <xref linkend="eql-intro"/>. 
+        </para>
+        
+        <para>
+			Use Esper's runtime interface to send events into the engine, emit events and get statistics for an engine instance.
+        </para>
+        
+		<para>
+			The JavaDoc documentation is also a great source for API information.
+        </para>
+
+    </sect1>
+    
+    <sect1 id="api-engine-instances">
+        <title>Engine Instances</title>
+
+        <para>
+			Each instance of an Esper engine is completely independent of other engine instances and has its own administrative and runtime interface.
+        </para>
+
+        <para>
+			An instance of the Esper engine is obtained via static methods on the <literal>EPServiceProviderManager</literal> class.
+			The <literal>getDefaultProvider</literal> method and the <literal>getProvider(String URI)</literal> methods return an instance of the Esper engine.
+			The latter can be used to obtain multiple instances of the engine for different URI values. The <literal>EPServiceProviderManager</literal>
+			determines if the URI matches all prior URI values and returns the same engine instance for the same URI value. If the URI has not been seen before, a new Engine instance 
+			is created.
+        </para>
+
+        <para>
+			The code snipped below gets the default instance Esper engine. Subsequent calls to get the default engine instance return the same instance.
+        </para>
+		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();]]></programlisting>
+
+        <para>
+			This code snippet gets an Esper engine for URI <literal>RFIDProcessor1</literal>. Subsequent calls to get an engine with the same URI return the same instance.
+        </para>
+		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getProvider("RFIDProcessor1");]]></programlisting>
+      
+        <para>
+			An existing Esper engine instance can be reset via the <literal>initialize</literal> method on the <literal>EPServiceProvider</literal> instance. This stops and removes all statements in the Engine.
+        </para>
+    </sect1>
+
+    <sect1 id="api-administrative">
+        <title>The Administrative Interface</title>
+
+        <para>
+			Create event patterns or EQL statements via the administrative interface <literal>EPAdministrator</literal>.
+        </para>
+
+        <para>
+			This code snippet gets an Esper engine then creates an event pattern and an EQL statement.
+        </para>
+		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+EPAdministrator admin = epService.getEPAdministrator();
+EPStatement 10secRecurTrigger = admin.createPattern("every timer:at(*, *, *, *, *, */10)");
+EPStatement weightedAvgView = admin.createEQL(
+    "select * from MarketDataBean(symbol='IBM').win:time(60).stat:weighted_avg('price', 'volume')");
+]]></programlisting>
+
+        <para>
+			The <literal>createPattern</literal> and <literal>createEQL</literal> methods return <literal>EPStatement</literal> instances. Statements are automatically started and active when created. A statement can also be stopped and started again via the <literal>stop</literal> and <literal>start</literal> methods shown in the code snippet below.
+        </para>
+		<programlisting><![CDATA[weightedAvgView.stop();
+weightedAvgView.start();
+]]></programlisting>
+		
+        <para>
+			We can subscribe to updates posted by a statement via the <literal>addListener</literal> and <literal>removeListener</literal> methods the <literal>EPStatement</literal>  statement. We need to provide an implementation of the <literal>UpdateListener</literal> interface to the statement.
+        </para>
+		<programlisting><![CDATA[UpdateListener myListener = new MyUpdateListener();	// MyUpdateListener implements UpdateListener
+weightedAvgView.addListener(myListener);
+]]></programlisting>
+
+		<para>			
+			EQL statements and event patterns publish old data and new data to registered <literal>UpdateListener</literal> listeners. 
+			Old data published by views constists of the events representing the prior values of derived data held by the statement.
+			New data published by views is the events representing the new values of derived data held by the statement.
+		</para>
+		
+        <para>
+			Subscribing to events posted by a statement is following a push model. The engine pushes data to listeners when events are received that cause data to change or patterns to match. Alternatively, statements can also serve up data in a pull model via the <literal>iterator</literal> method. This can come in handy if we are not interested in all new updates, but only want to perform a frequent poll for the latest data. For example, an event pattern that fires every 5 seconds could be used to pull data from an EQL statement. The code snippet below demonstrates some pull code.			
+        </para>
+		<programlisting><![CDATA[Iterator<EventBean> eventIter = weightedAvgView.iterator();
+for (EventBean event : eventIter) {
+   // .. do something ..
+}
+]]></programlisting>
+
+        <para>
+			This is a second example:
+        </para>
+		<programlisting><![CDATA[double averagePrice = (Double) eqlStatement.iterator().next().get("average");]]></programlisting>
+    </sect1>
+
+    <sect1 id="api-runtime">
+        <title>The Runtime Interface</title>
+
+        <para>
+			The <literal>EPRuntime</literal> interface is used to send events for processing into an Esper engine, and to emit Events from an engine instance to the outside world.
+        </para>
+        
+        <para>
+			The below code snippet shows how to send events to the engine.
+        </para>
+		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+EPRuntime runtime = epService.getEPRuntime();
+
+// Send an example event containing stock market data
+runtime.sendEvent(new MarketDataBean('IBM', 75.0));		
+]]></programlisting>
+
+        <para>
+			Another important method in the runtime interface is the <literal>route</literal> method. This method is designed for use by <literal>UpdateListener</literal> implementations that
+			need to send events into an engine instance.
+        </para>
+
+        <para>
+			The <literal>emit</literal> and <literal>addEmittedListener</literal> methods can be used to emit events from a runtime to a registered set of one or more emitted event listeners. 
+			Events are emitted on an event channel identified by a name. Listeners are implementations of the <literal>EmittedListener</literal> interface. Listeners can specify a channel to 
+			listen to and thus only receive events posted to that channel. Listeners can also supply no channel name and thus receive emitted events posted on any channel. Channels are
+			uniquely identified by a string channel name.
+        </para>
+    </sect1>
+
+    <sect1 id="api-event-class-reqs">
+        <title>Event Class Requirements</title>
+
+        <para>
+			An event is an immutable record of a past occurence of an action or state change. An event can have a set of event properties that supply information about the event. An event also has an event class.
+        </para>
+
+        <para>
+			In Esper, events are object instances that expose event properties through JavaBean-style getter methods. Events classes or interfaces do not have to be fully compliant to the JavaBean specification; however for the Esper engine to obtain event properties, the required JavaBean getter methods must be present.
+        </para>
+
+        <para>
+			Esper supports JavaBean-style event classes that extend a superclass or implement one or more interfaces. Also, Esper event pattern and EQL statements can refer to Java interface classes and abstract classes. 
+        </para>
+
+        <para>
+			Classes that represent events should be made immutable. As events are recordings of a state change or action that occured in the past, the relevant event properties should not be changable. However this is not a hard requirement and the Esper engine accepts events that are mutable as well.
+        </para>
+
+        <sect2 id="event-properties">
+           <title>Event Property Types</title>
+           
+			<para>
+				The set of possible property types supported by a JavaBean and by Esper can be broken into below categories -- some of which are supported by the standard JavaBeans specification, and some of which are uniquely supported by Esper:
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						<emphasis>Simple</emphasis> properties have a single value that may be retrieved. The underlying property type might be a Java language primitive (such as int, a simple object (such as a java.lang.String), or a more complex object whose class is defined either by the Java language, by the application, or by a class library included with the application. 				
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis>Indexed</emphasis> - An indexed property stores an ordered collection of objects (all of the same type) that can be individually accessed by an integer-valued, non-negative index (or subscript). Alternatively, the entire set of values may be retrieved using an array. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis>Mapped</emphasis> - As an extension to standard JavaBeans APIs, Esper considers any property that accepts a String-valued key a mapped property. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis>Nested</emphasis> - A nested property is a property that lives within another Java object which itself is a property of an event. 
+					</para>
+				</listitem>
+			</itemizedlist>
+
+		
+		<para>
+			Assume there is an EmployeeEvent event class as shown below. The mapped and indexed properties in this example return Java objects but could also return Java language primitive types (such as int or String). The Address object and Employee objects can themselves have properties that are nested within them, such as a streetName in the Address object or a name of the employee in the Employee object.
+		</para>
+<programlisting><![CDATA[public class EmployeeEvent {
+	public String getFirstName();
+	public Address getAddress(String type);
+	public Employee getSubordinate(int index);
+	public Employee[] getAllSubordinates();
+}
+]]></programlisting>
+
+		<para>
+			<emphasis>Simple</emphasis> event properties require a getter-method that returns the property value. In this example, the <literal>getFirstName</literal> getter method returns the <literal>firstName</literal> event property of type String.
+		</para>
+
+		<para>
+			<emphasis>Indexed</emphasis> event properties require either one of the following getter-methods. A method that takes an integer-type key value and returns the property value, such as the <literal>getSubordinate</literal> method. Or a method that returns an array-type such as the <literal>getSubordinates</literal> getter method, which returns an array of Employee. In an EQL or event pattern statement, indexed properties are accessed via the <literal>property[index]</literal> syntax.
+		</para>
+
+		<para>
+			<emphasis>Mapped</emphasis> event properties require a getter-method that takes a String-typed key value and returns the property value, such as the <literal>getAddress</literal> method. In an EQL or event pattern statement, mapped properties are accessed via the <literal>property('key')</literal> syntax.
+		</para>
+
+		<para>
+			<emphasis>Nested</emphasis> event properties require a getter-method that returns the nesting object. The <literal>getAddress</literal> and <literal>getSubordinate</literal> methods are mapped and indexed properties that return a nesting object. In an EQL or event pattern statement, nested properties are accessed via the <literal>property.nestedProperty</literal> syntax.
+		</para>
+
+		<para>
+			All event pattern and EQL statements allow the use of indexed, mapped and nested properties (or a combination of these) anywhere where one or more event property names are expected. The below example shows different combinations of indexed, mapped and nested properties in filters of event pattern expressions.
+		</para>
+
+<programlisting><![CDATA[every EmployeeEvent(firstName='myName')
+every EmployeeEvent(address('home').streetName='Park Avenue')
+every EmployeeEvent(subordinate[0].name='anotherName')
+every EmployeeEvent(allSubordinates[1].name='thatName')
+every EmployeeEvent(subordinate[0].address('home').streetName='Water Street')
+]]></programlisting>
+
+		<para>
+			Similarly, the syntax can be used in EQL statements in all places where an event property name is expected, such as in select lists, where-clauses or join criteria.
+		</para>
+
+<programlisting><![CDATA[select firstName, address('work'), subordinate[0].name, subordinate[1].name
+from EmployeeEvent
+where address('work').streetName = 'Park Ave'
+]]></programlisting>
+		</sect2>
+
+    </sect1>
+
+    <sect1 id="api-controlling-time">
+        <title>Time-Keeping Events</title>
+
+        <para>
+			Special events are provided that can be used to control the time-keeping of an engine instance. There are two models for an engine to keep track of time.
+			Internal clocking is when the engine instance relies on the <literal>java.util.Timer</literal> class for time tick events. External clocking can be used to supply time ticks to the engine. The latter is useful for testing time-based event sequences or for synchronizing the engine with an external time source.
+        </para>
+
+        <para>
+			By default, the Esper engine uses internal time ticks. This behavior can be changed by sending a timer control event to the engine as shown below.
+        </para>
+
+		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+EPRuntime runtime = epService.getEPRuntime();
+// switch to external clocking
+runtime.sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+
+// send a time tick
+long timeInMillis = System.currentTimeMillis();	// Or get the time somewhere else
+runtime.sendEvent(new CurrentTimeEvent(timeInMillis));
+]]></programlisting>
+    </sect1>
+
+    <sect1 id="api-events-received">
+        <title>Events Received from the Engine</title>
+
+        <para>
+			The Esper engine posts events to registered <literal>UpdateListener</literal> instances ('push' method for receiving events). For many statements events can also be pulled from statements via the <literal>iterator</literal> method. Both pull and push supply <literal>EventBean</literal> instances representing the events generated by the engine or events supplied to the engine. Each <literal>EventBean</literal> instance represents an event, with each event being either an artificial event, composite event or an event supplied to the engine via its runtime interface.
+        </para>
+			
+        <para>
+			The <literal>getEventType</literal> method supplies an event's event type information represented by an <literal>EventType</literal> instance. The <literal>EventType</literal> supplies event property names and types as well as information about the underlying object to the event.
+        </para>
+
+        <para>
+			The engine may generate artificial events that contain information derived from event streams. A typical example for artificial events is the events posted for a statement to calculate univariate statistics on an event property. The below example shows such a statement and queries the generated events for an average value.
+        </para>
+		<programlisting><![CDATA[// Derive univariate statistics on price for the last 100 market data events
+String viewExpr = "select * from MarketDataBean(symbol='IBM').win:length(100).stat:uni('price')";
+EPStatement priceStatsView = epService.getEPAdministrator().createEQL(viewExpr);
+priceStatsView.addListener(testListener);
+]]></programlisting>
+		<programlisting><![CDATA[// Example listener code
+public class MyUpdateListener implements UpdateListener
+{
+    public void update(EventBean[] newData, EventBean[] oldData)
+    {
+		// Interrogate events
+		System.out.println("new average price=" + newData[0].get("average");
+	}
+}
+]]></programlisting>
+
+        <para>
+			Composite events are events that aggregate one or more other events. Composite events are typically created by the engine for statements that join two event streams, and for event patterns in which the causal events are retained and reported in a composite event. The example below shows such an event pattern.
+        </para>
+
+		<programlisting><![CDATA[// Look for a pattern where AEvent follows BEvent
+String pattern = "a=AEvent -> b=BEvent";
+EPStatement stmt = epService.getEPAdministrator().createPattern(pattern);
+stmt.addListener(testListener);
+]]></programlisting>
+		<programlisting><![CDATA[// Example listener code
+public class MyUpdateListener implements UpdateListener
+{
+    public void update(EventBean[] newData, EventBean[] oldData)
+    {
+		System.out.println("a event=" + newData[0].get("a").getUnderlying());
+		System.out.println("b event=" + newData[0].get("b").getUnderlying());
+	}
+}
+]]></programlisting>
+
+    </sect1>
+
+</chapter>
+

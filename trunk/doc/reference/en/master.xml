@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+                      "../support/docbook-dtd/docbookx.dtd" [
+	<!ENTITY technology_overview SYSTEM "modules/technology_overview.xml">
+	<!ENTITY configuration SYSTEM "modules/configuration.xml">
+	<!ENTITY architecture SYSTEM "modules/architecture.xml">
+	<!ENTITY api SYSTEM "modules/api.xml">
+	<!ENTITY examples SYSTEM "modules/examples.xml">
+	<!ENTITY event_pattern SYSTEM "modules/event_pattern.xml">
+	<!ENTITY EQL SYSTEM "modules/eql.xml">
+	<!ENTITY adapters SYSTEM "modules/adapters.xml">
+	<!ENTITY indicators SYSTEM "modules/indicators.xml">
+	<!ENTITY references SYSTEM "modules/references.xml">
+]>
+<book lang="en">
+	<bookinfo>
+		<title>Esper - Java Event Stream Processor </title>
+		<subtitle>Esper Reference Documentation</subtitle>
+		<releaseinfo>0.9.1</releaseinfo>
+	</bookinfo>
+	<toc/>
+	<preface id="preface" revision="1">
+		<title>Preface</title>
+		<para>
+			Analyzing and reacting to information in real-time oftentimes requires the development of custom applications.
+			Typically these applications must obtain the data to analyze, filter data, derive information and then indicate 
+			this information through some form of presentation or communication. Data may arrive with high frequency
+			requiring high throughput processing. And applications may need to be flexible and react to changes in requirements 
+			while the data is processed. Esper is an event stream processor that aims to enable a short development cycle from inception to production 
+			for these types of applications.
+        </para>
+		<para>
+			Esper is a 100% Java component that can be embedded in Java applications. It allows push and pull of data via its subscription and pull API. Esper can be extended by building custom views, functions, windows etc.
+		</para>
+			
+		<orderedlist>
+			<listitem>
+				<para>
+                    Read <xref linkend="technology_overview_intro_cep"/> if you are new to CEP and ESP (complex event processing, event stream processing)
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Read <xref linkend="event-pattern-intro"/> for an overview over event patterns
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Read <xref linkend="eql-intro"/> for an introduction to event stream processing via EQL
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Then glance over the examples <xref linkend="examples-overview"/>
+                </para>
+			</listitem>
+		</orderedlist>
+	</preface>
+
+    &technology_overview;
+
+    &architecture;
+
+    &configuration;
+
+    &api;
+
+    &event_pattern;
+
+    &EQL;
+
+    &adapters;
+
+    &indicators;
+
+    &examples;
+    
+    &references;
+</book>
