@@ -1,0 +1,425 @@
+<chapter id="examples">
+    <title>Examples</title>
+    
+    <sect1 id="examples-overview">
+        <title>Examples Overview</title>
+
+		<para>
+			This chapters outlines the examples that come with Esper in the <literal>eg/src</literal> folder of the distribution. The code for examples can be found in the <literal>net.esper.example</literal> packages.
+		</para>
+    	
+		<para>
+			In order to compile and run the samples please follow the below instructions:
+		</para>
+
+		<orderedlist>
+			<listitem>
+				<para>
+                    Make sure Java 1.5 or greater is installed and the JAVA_HOME environment variable is set.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Open a console window and change directory to esper/eg/etc.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Run "setenv.bat" (Windows) or "setenv.sh" (Unix) to verify your environment settings.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Run "compile.bat" (Windows) or "compile.sh" (Unix) to compile the examples.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Now you are ready to run the examples. Some examples require mandatory parameters. Further information to running
+                    each example can be found in "readme.txt".
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Modify the logger logging level in the "log4j.xml" configuration file 
+                    changing DEBUG to INFO on a class or package level to reduce the volume of text output. 
+                </para>
+			</listitem>
+		</orderedlist>
+
+		<para>
+			JUnit tests exist for the example code. The JUnit test source code for the examples can be found in the <literal>eg/test</literal> folder. To build and run the example JUnit tests, use the Maven 2 goal <literal>test</literal>. The JUnit test source code can also be helpful in understanding the example and in the use of Esper APIs.
+		</para>
+		
+    </sect1>
+
+    <sect1 id="examples-transaction-3-event-challenge">
+        <title>Transaction 3-Event Challenge</title>
+
+		<para>
+			The classes for this example live in package <literal>net.esper.example.transaction</literal>. 
+			Run "run_txnsim.bat" (Windows) or "run_txnsim.sh" (Unix) to start the transaction simulator. 
+			Please see the readme file in the same folder for build instructions and command line parameters.
+		</para>
+
+        <sect2 id="examples-txn3event-1" >
+			<title>The Events</title>
+
+			<para>
+	The use case involves tracking three components of a transaction. It‘s important that we use at least three components, since some engines have different performance or coding for only two events per transaction. Each component comes to the engine as an event with the following fields:
+			</para>
+	
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Transaction ID
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Time stamp
+					</para>
+				</listitem>
+			</itemizedlist>
+	
+			<para>
+				In addition, we have the following extra fields:
+			</para>
+	
+			<para>
+				In event A:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Customer ID
+					</para>
+				</listitem>
+			</itemizedlist>
+	
+			<para>
+				In event C:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Supplier ID (the ID of the supplier that the order was filled through)
+					</para>
+				</listitem>
+			</itemizedlist>
+		</sect2>
+
+        <sect2 id="examples-txn3event-2" >
+			<title>Combined event</title>
+
+			<para>
+					We need to take in events A, B and C and produce a single, combined event with the following fields:
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Transaction ID
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Customer ID
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Time stamp from event A
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Time stamp from event B
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Time stamp from event C
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+What we‘re doing here is matching the transaction IDs on each event, to form an aggregate event. If all these events were in a relational database, this could be done as a simple SQL join… except that with 10,000 events per second, you will need some serious database hardware to do it.
+			</para>
+		</sect2>
+		
+        <sect2 id="examples-txn3event-3">
+			<title>Real time summary data</title>
+
+			<para>
+Further, we need to produce the following:
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Min,Max,Average total latency from the events (difference in time between A and C) over the past 30 minutes.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Min,Max,Average latency grouped by (a) customer ID and (b) supplier ID. In other words, metrics on the the latency of the orders coming from each customer and going to each supplier.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Min,Max,Average latency between events A/B (time stamp of B minus A) and B/C (time stamp of C minus B).
+					</para>
+				</listitem>
+			</itemizedlist>
+		</sect2>
+		
+        <sect2 id="examples-txn3event-4">
+			<title>Find problems</title>
+
+			<para>
+We need to detect a transaction that did not make it through all three events. In other words, a transaction with events A or B, but not C. Note that, in this case, what we care about is event C. The lack of events A or B could indicate a failure in the event transport and should be ignored. Although the lack of an event C could also be a transport failure, it merits looking into.
+			</para>			
+		</sect2>
+		
+        <sect2 id="examples-txn3event-5">
+			<title>Event generator</title>
+		
+			<para>
+To make testing easier, standard and to demonstrate how the example works, the example is including an event generator. The generator generates events for a given number of transactions, using the following rules:
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						One in 5,000 transactions will skip event A
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						One in 1,000 transactions will skip event B
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						One in 10,000 transactions will skip event C.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Transaction identifiers are randomly generated
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Customer and supplier identifiers are randomly chosen from two lists
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The time stamp on each event is based on the system time. Between events A and B as well as B and C, between 0 and 999 is added to the time. So, we have an expected time difference of around 500 milliseconds between each event
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Events are randomly shuffled as described below
+					</para>
+				</listitem>
+				</itemizedlist>
+	
+				<para>
+	To make things harder, we don‘t want transaction events coming in order. This code ensures that they come completely out of order. To do this, we fill in a bucket with events and, when the bucket is full, we shuffle it. The buckets are sized so that some transactions‘ events will be split between buckets. So, you have a fairly randomized flow of events, representing the worst case from a big, distributed infrastructure.
+				</para>
+	
+				<para>
+	The generator lets you change the size of the bucket (small, medium, large, larger, largerer). The larger the bucket size, the more events potentially come in between two events in a given transaction and so, the more the performance characteristics like buffers, hashes/indexes and other structures are put to the test as the bucket size increases.
+				</para>
+			</sect2>
+    </sect1>
+
+    <sect1 id="examples-stockticker">
+        <title>StockTicker</title>
+
+		<para>
+			 The StockTicker example comes from the stock trading domain. The example creates event patterns to filter stock tick events based on price and symbol. 
+			 When a stock tick event is encountered that falls outside the lower or upper price limit, the example simply displays that stock tick event.
+			 The price range itself is dynamically created and changed. This is accomplished by an event patterns that searches for another event class, the price limit event.			 			 
+		</para>
+    	
+		<para>
+			The classes <literal>net.esper.example.stockticker.event.StockTick</literal> and <literal>PriceLimit</literal> represent our events. The event patterns are created by the class <literal>net.esper.example.stockticker.monitor.StockTickerMonitor</literal>. 
+		</para>
+
+		<para>
+			Summary:
+		</para>
+
+        <itemizedlist spacing="compact">
+			<listitem>
+				<para>
+                    Good example to learn the API and get started with event patterns
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Dynamically creates and removes event patterns based on price limit events received
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Simple, highly-performant filter expressions for event properties in the stock tick event such as symbol and price
+                </para>
+			</listitem>
+		</itemizedlist>
+    </sect1>
+
+    <sect1 id="examples-matchmaker">
+        <title>MatchMaker</title>
+
+		<para>
+			 In the MatchMaker example every mobile user has an X and Y location, a set of properties (gender, hair color, age range) and a set of preferences (one for each property) to match. The task of the event patterns created by this example is to detect mobile users that are within proximity given a certain range, and for which the properties match preferences.
+		</para>
+		
+		<para>
+			The event class representing mobile users is <literal>net.esper.example.matchmaker.event.MobileUserBean</literal>. The <literal>net.esper.example.matchmaker.monitor.MatchMakingMonitor</literal> class contains the patterns for detecing matches.
+		</para>
+    	
+		<para>
+			Summary:
+		</para>
+
+        <itemizedlist spacing="compact">
+			<listitem>
+				<para>
+                    Dynamically creates and removes event patterns based on mobile user events received
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Uses range matching for X and Y properties of mobile user events
+                </para>
+			</listitem>
+		</itemizedlist>
+
+    </sect1>
+    
+	<sect1 id="examples-qossla" revision="2">
+        <title>QualityOfService</title>
+            
+        <para>
+            This example develops some code for measuring quality-of-service levels such as for a service-level agreement (SLA).
+            A SLA is a contract between 2 parties that defines service constraints such as maximum latency for service operations or error rates.
+        </para>
+            
+        <para>                      
+            The example measures and monitors operation latency and error counts per customer and operation. When 
+            one of our operations oversteps these constraints, we want to be alerted right away. Additionally, we would like to have some monitoring in
+            place that checks the health of our service and provides some information on how the operations are used.
+        </para>
+
+        <para>                      
+            Some of the constraints we need to check are:
+         </para>
+            
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					That the latency (time to finish) of some of the operations is always less then X seconds.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					That the latency average is always less then Y seconds over Z operation invocations. 
+				</para>
+			</listitem>
+		</itemizedlist>
+		
+		<para>
+			The <literal>net.esper.example.qos_sla.events.OperationMeasurement</literal> event class with its latency and status properties is the main event used for the SLA analysis. The other event <literal>LatencyLimit</literal> serves to set latency limits on the fly.
+		</para>
+
+		<para>
+			The <literal>net.esper.example.qos_sla.monitor.AverageLatencyMonitor</literal> creates an EQL statement that computes latency statistics per customer and operation for the
+			last 100 events. The <literal>DynaLatencySpikeMonitor</literal> uses an event pattern to listen to spikes in latency with dynamically set limits. The <literal>ErrorRateMonitor</literal> uses the timer <literal>'at'</literal> operator in an event pattern that wakes up periodically and polls the error rate within the last 10 minutes. The <literal>ServiceHealthMonitor</literal> simply alerts when 3 errors occur, and the <literal>SpikeAndErrorMonitor</literal> alerts when a fixed latency is overstepped or an error status is reported.
+		</para>
+
+		<para>
+			Summary:
+		</para>
+
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+                    This example combines event patterns with EQL statements for event stream analysis.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Shows the use of the timer <literal>'at'</literal> operator and followed-by operator <literal>-&gt;</literal> in event patterns
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Outlines basic EQL statements
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Shows how to pull data out of EQL statements rather then subscribing to events a statement publishes
+                </para>
+			</listitem>
+		</itemizedlist>
+    </sect1>
+    
+	<sect1 id="examples-linearroad" revision="2">
+        <title>LinearRoad</title>
+        
+        <para>
+			The Linear Road example is a very incomplete implementation of the Stream Data Management Benchmark [3] by Standford University. 
+        </para>
+
+        <para>
+			Linear Road simulates a toll system for the motor vehicle expressways of a large metropolitan area. The main event in this example is a car location report which the class
+			<literal>net.esper.example.linearroad.CarLocEvent</literal> represents. Currently the event stream joins are performed by JUnit test classes in the <literal>eg/test</literal> folder. See the <literal>net.esper.example.linearroad.TestAccidentNotify</literal> and the <literal>TestCarSegmentCount</literal> classes. Please consider this a work in progress.
+        </para>
+        
+		<para>
+			Summary:
+		</para>
+
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+                    Shows more complex joins between event streams.
+                </para>
+			</listitem>
+		</itemizedlist>        
+    </sect1>
+    
+	<sect1 id="examples-stocktick-rsi" revision="2">
+        <title>StockTick RSI</title>
+        
+        <para>
+			The RSI gives you the trend for a stock and for more complete explanation, you can visit the link: http://www.stockcharts.com/education/IndicatorAnalysis/indic_RSI.html.
+		</para>
+		
+        <para>
+			After a definite number of stock events, or accumulation period, the first RSI is computed. Then for each subsequent stock event, the RSI calculations use the previous period’s Average Gain and Loss to determine the “smoothed RSI”.
+        </para>
+
+		<para>
+			Summary:
+		</para>
+
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+                    Uses a simple event pattern with a filter which feeds a listener that computes the RSI, which publishes events containing the computed RSI.
+                </para>
+			</listitem>
+		</itemizedlist>        
+    </sect1>
+
+</chapter>
+

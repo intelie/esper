@@ -1,0 +1,153 @@
+Change History
+~~~~~~~~~~~~~~
+
+	This section lists the changes between Esper releases. The changes introduced in each release are split into the following categories.
+
+	* <<API changes>>: Any changes to the API that may impact existing users.
+	
+	* <<Major changes>>: Major new features.
+
+	* <<Minor changes>>: Smaller changes and bug fixes.
+	
+	[]
+
+
+Version 0.9.1 (Beta bug fix release)
+
+	Released June 10, 2006
+		
+* API changes
+
+	* None
+
+* Major changes
+
+    * None
+	
+* Minor changes	
+
+	* New EQL example 'Transaction 3-event challenge' which shows EQL in use for detecting missing events and
+computing latency totals overall and grouped. Added scripts for compiling and executing the example.
+	
+	* Bug fix in EQL for statements that contain only aggregation functions in the select clause such as 
+"select sum(volume) from StockTick". The engine was incorrectly posting an event per event posted 
+by the stream's window, rather then a single aggregate event.
+
+	* Bug fix in EQL group-statements by without output rate limiting. This problem occured using a group-by clause
+without output rate limit and resulted in multiple events posted that include prior groups for each event posted 
+by the window.
+
+
+Version 0.9.0 (Beta Release)
+
+	Released June 4, 2006
+		
+* API changes
+
+	* None
+
+* Major changes
+
+    * Support for output rate limiting based on number of events and time-based, and choice of last or all events
+
+    * Support for outer joins for an unlimited number of event streams (was limited to 2 streams)
+
+    * Renamed view "std:last" to "std:lastevent"
+	
+* Minor changes	
+	
+    * New example computing RSI (a financial indicator) using a simple pattern listener
+
+    * New reserved keywords: last, events, output, seconds, minutes
+
+
+Version 0.8.5 (Beta Release)
+
+	Released April 22, 2006
+		
+* API changes
+
+	* None
+
+* Major changes
+
+	* Group-by view has been renamed from "std:group" to "std:groupby" since group is a reserved keyword
+
+	* Support for the "group by" and "having" clauses
+
+	* Support for aggregation functions: max, min, sum, avg, count, median, stddev, avedev; including distinct and count(*)
+	
+* Minor changes	
+	
+	* The univariate statistics view "stat:uni" changed the name of derived event properties to "stddev" and "stddevpa" from formerly 
+"stdev" and "stdevpa" to stay consistent with the aggregate functions of the same name
+
+
+Version 0.8.0 (Beta Release)
+
+	Released March. 24, 2006.
+		
+* API changes
+
+	* Renamed method on Configuration for configuring event type alias
+
+* Major changes
+
+	* Support for event inheritance and interface implementation, polymorphism, superclasses
+
+	* Support for simple, mapped, indexed, nested and combinations of event properties
+
+	* Refined exception texts to better indicate problem reasons
+	
+* Minor changes
+	
+	* Documentation enhancements
+	
+	* Configuration XML file schema changes: renamed 'event' tag to 'event-type' and replaced 'name' with 'alias'
+
+
+Version 0.7.5 (Alpha Release)
+
+	Released Feb. 21, 2006.
+		
+* API changes
+
+	* Added optional Configuration parameter to EPServiceProviderManager to control engine configuration
+
+* Major changes
+
+	* EQL supports outer joins: left, right and full join on 2 streams
+	
+	* EQL supports IS NULL, = NULL, IS NOT NULL, <> and !=
+	
+	* EQL allows new built-in function MAX(a, b,...) and MIN(a, b,...)
+	
+	* Event Pattern use of results in filters, such as "every a=EventX -> every b=EventY(objectID=a.objectID)"
+	
+	* EQL and Event Pattern: Removed requirement that event names have () postfix, e.g. 'every a=X' is now equivalent to 'every a=X()'
+	
+* Minor changes
+
+	* Event Patterns - improved removal of permanently false patterns (e.g. B arrives in 'A and not B')
+	
+	* Documentation enhancements
+	
+	* Added ATM sample to show simple join
+	
+
+Version 0.7.0 (Alpha Release)
+
+	Released Jan. 16, 2006.
+		
+* API changes
+
+	* None
+
+* Major changes
+
+	* None
+
+* Minor changes
+
+	* None
+	

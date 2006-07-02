@@ -1,0 +1,88 @@
+<chapter id="configuration" revision="1">
+
+    <title>Configuration</title>
+    
+    <para>
+        Esper engine configuration is entirely optional. Esper has a very small number of configuration parameters that can be used to simplify event 
+        pattern and EQL statements, and to tune the engine behavior to specific requirements. The Esper engine works out-of-the-box without configuration.
+    </para>
+
+    <sect1 id="configuration-programmatic" revision="1">
+        <title>Programmatic configuration</title>
+
+        <para>
+            An instance of <literal>net.esper.client.Configuration</literal> represents all configuration parameters. The <literal>Configuration</literal> is used to build an (immutable) <literal>EPServiceProvider</literal>, which provides the administrative and runtime interfaces for an Esper engine instance. 
+        </para>
+
+        <para>
+            You may obtain a <literal>Configuration</literal> instance by instantiating it directly and adding or setting values on it. The <literal>Configuration</literal> instance is then passed to <literal>EPServiceProviderManager</literal> to obtain a configured Esper engine.
+        </para>
+
+		<programlisting><![CDATA[Configuration configuration = new Configuration();
+configuration.addEventTypeAlias("PriceLimit", PriceLimit.class.getName());
+configuration.addEventTypeAlias("StockTick", StockTick.class.getName());
+
+EPServiceProvider epService = EPServiceProviderManager.getProvider("MyEngine", configuration);
+]]></programlisting>
+
+        <para>
+			Note that <literal>Configuration</literal> is meant only as an initialization-time object. The Esper engine represented by an <literal>EPServiceProvider</literal> is immutable and does not retain any association back to the <literal>Configuration</literal>.
+        </para>
+        
+    </sect1>
+
+	<sect1 id="configuration-via-xml" revision="1">
+        <title>Configuration via XML file</title>
+
+        <para>
+			An alternative approach to configuration is to specify a configuration in an XML file. 
+        </para>
+
+        <para>
+			The default name for the XML configuration file is <literal>esper.cfg.xml</literal>. Esper reads this file from the root of the <literal>CLASSPATH</literal> as an application resource via the <literal>configure</literal> method.
+        </para>
+		<programlisting><![CDATA[Configuration configuration = new Configuration();		
+configuration.configure();
+]]></programlisting>
+
+        <para>
+			The <literal>Configuration</literal> class can read the XML configuration file from other sources as well. The <literal>configure</literal> method accepts <literal>URL, File and String</literal> filename parameters.
+        </para>
+		<programlisting><![CDATA[Configuration configuration = new Configuration();		
+configuration.configure("myengine.esper.cfg.xml");
+]]></programlisting>
+    </sect1>
+
+	<sect1 id="configuration-xml" revision="1">
+        <title>XML Configuration file</title>
+
+        <para>
+			Here is an example configuration file. The schema for the configuration file can be found in the <literal>etc</literal> folder and is named <literal>esper-configuration-1-0</literal>.		</para>
+		<programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<esper-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xsi:noNamespaceSchemaLocation="esper-configuration-1-0.xsd">
+	<event-type alias="StockTick" class="net.esper.example.stockticker.event.StockTick"/>
+	<event-type alias="PriceLimit" class="net.esper.example.stockticker.event.PriceLimit"/>
+</esper-configuration>		
+]]></programlisting>
+
+    </sect1>
+
+	<sect1 id="configuration-items" revision="1">
+        <title>Configuration items</title>
+
+		<sect2 id="config-event-name" revision="1">
+			<title>Event type alias to Java class mapping</title>
+			
+			<para>
+				This configuration item can be set to allow event pattern statements and EQL statements to use an event type alias rather then the fully qualified Java class name. Interfaces and abstract classes are also supported as event types.
+			</para>
+			
+			<programlisting><![CDATA[every StockTick(symbol='IBM')"
+// via configuration equivalent to
+every net.esper.example.stockticker.event.StockTick(symbol='IBM')]]></programlisting>
+		</sect2>
+			
+    </sect1>
+</chapter>
+

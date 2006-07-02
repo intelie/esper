@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<faqs id="General FAQ">
+
+  <part id="technical">
+  	<title>Technical</title>
+    <faq id="deployment-dependencies">
+      <question>What additional components does Esper require to run?</question>
+      <answer>
+        <p>
+          Please see the feature list for this information. And the "lib" folder in the source distribution contains a readme file
+          that describes the dependencies.
+        </p>
+      </answer>
+    </faq>    
+    <faq id="performance">
+      <question>It claims to be fast...how does it do that? Has this claim been tested?</question>
+      <answer>
+        <p>
+          Esper uses the open-source CGLIB byte-code generation library to generate accessors to event properties at
+          statement compile time. These accessors are cached and are almost as fast as compiled property access.
+          This has been tested as part of the performance-asserting unit tests that are part of the source code.
+          However, a more thorough performance evaluation has yet to be performed. There is also currently no
+          standard performance test for CEP/ESP engines out there.
+        </p>
+      </answer>
+    </faq>    
+    <faq id="multithread-safety">
+      <question>Can I run it with multiple threads? What, if anything, is multithread-safe?</question>
+      <answer>
+        <p>
+          Esper supports multiple independent Esper engines per JavaVM. Each engine instance itself is NOT multithread-safe.
+          Therefore only a single thread should sendEvent() for any particular EPRuntime instance. However there is a 
+          scenario which is thread-safe that is strictly limited to pure filtering of events via event pattern statement.
+          In this scenario, the event pattern statement can only consist of a simple filter and no other other operators.
+          Also, new patterns cannot be created and patterns cannot be removed while multiple threads
+          are used to send events in for filtering.
+        </p>
+      </answer>
+    </faq>    
+    <faq id="tested on OS">
+      <question>What operating systems has it been tested on?</question>
+      <answer>
+        <p>
+          At this time the engine has only been tested on Windows XP using JDK 1.5 update 6.
+        </p>
+      </answer>
+    </faq>    
+  </part>
+
+  <part id="ESP and CEP">
+  	<title>ESP and CEP</title>
+    <faq id="windows">
+      <question>Could you explain the concept of windows for a database programmer?</question>
+      <answer>
+        <p>One could perhaps think of a table with a timestamp column containing the time when the row was inserted. We could create a view that sorts by timestamp descending and selects all rows between the current timestamp and say up to 1 minute prior to now. Every time we fire a query against this view, the view returns the recent rows added in the last 1 minute. The rows returned are the contents of a 1 minute time window. Every time the query is fired we get a new window. Older rows would seem to leave the window while new rows would seem to enter the window.
+		</p>
+      </answer>  
+    </faq>
+    <faq id="execution model">
+      <question>What is the difference between Esper and an in-memory database?</question>
+      <answer>
+        <p>The Esper engine works a bit like a database turned upside-down. Instead of storing the data and running queries
+			against stored data, the Esper engine allows applications to store queries and run the data through. Response
+			from the Esper engine is real-time when conditions occur that match queries. The execution model is thus continuous
+			rather then only when a query is submitted.
+		</p>
+      </answer>  
+    </faq>
+  </part>
+
+
+  <part id="general">
+  	<title>General</title>
+    <faq id="background">
+      <question>What is the history? Where did it start and come from?</question>
+      <answer>
+        <p>
+          On a project in 2004 the project lead had been asked to evaluate different rules engines for use in an application 
+          for monitoring a trading system. The rules engines proved cumbersome and slow. There was no budget for a CEP product, thus
+          a custom application to solve the monitoring problem was developed.          
+          The project lead's interest in CEP and ESP technologies lead to further independent research into the product space followed 
+          by prototypes build for not particular organization or purpose. The prototypes evolved and the Esper project started. Esper is not
+          sponsored by any particlar organization.
+        </p>
+      </answer>
+    </faq>
+    <faq id="audience">
+      <question>What is the intended audience and what is their interface?</question>
+      <answer>
+        <p>
+          Esper doesn't have a GUI and access is via API only, currently. 
+          The intended audience is developers of CEP or ESP applications.
+        </p>
+      </answer>
+    </faq>
+     <faq id="philosophy">
+      <question>What is the concept or philosophy behind the design?</question>
+      <answer>
+        <p>
+          Esper was developed using test-driven development and excellent automated test coverage.
+          Esper's design evolved by refactoring with courage towards higher design quality. 
+          Favorite patterns are dependency injection/inversion of control, 
+          GOF patterns, Immutable, Specification.
+        </p>
+      </answer>
+    </faq>
+  </part>
+
+
+</faqs>

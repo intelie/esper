@@ -1,0 +1,77 @@
+News
+
+* June 10, 2006  -  Esper 0.9.1 Beta
+
+    * Beta bug fix release
+		
+    * Moving to the {{{http://www.codehaus.org/}Codehaus}} open-source repository
+	
+    * New cool example 'Transaction 3-event challenge' which shows EQL in use for detecting missing events and
+computing latency totals overall and grouped. Added scripts for compiling and executing the example.
+
+    * Bug fix for statements that contain only aggregation functions in the select clause that incorrectly posted 
+      too many events
+    
+    * Bug fix for group-by without output rate limiting that incorrectly posted events for past groups
+	
+	[]
+
+* June 4, 2006  -  Esper 0.9.0 Beta
+
+    * Third beta release
+		
+    * Planning to move to the {{{http://www.codehaus.org/}Codehaus}} open-source repository
+	
+    * Added support for output rate limiting based on number of events and time-based, and choice of last or all events
+
+    * Now supporting outer joins for an unlimited number of event streams (was limited to 2 streams)
+	
+	[]
+
+* April 22, 2006  -  Esper 0.8.5 Beta
+
+    * Second beta release
+		
+    * Added support for group-by and having
+	
+    * Added support for aggregation functions max, min, sum, avg, count, median, stddev, avedev;
+	  The "distinct" keyword is also supported for each; The "count(*)" syntax is supported.
+	  
+    * New developers onboarded
+	
+	[]
+
+* March 23, 2006  -  Esper 0.8.0 Beta
+
+	* Event inheritance and interface implementation support; Added support for interfaces, 
+abstract classes, superclasses. E.g. select * from IMyEvent  --- where IMyEvent is an interface or superclass, and event classes that 
+implement this interface or extend the superclass match the criteria. Polymorphism of event properties is now also supported.
+
+	* Support for simple, mapped, indexed, nested and any combination of these anywhere where
+and event property name is expected. E.g. subordinate[3].address(home).city
+
+	* Refined exception texts to better indicate reason
+	
+	* Improved documentation
+	
+	[]
+
+* Feb. 21, 2006 Esper 0.7.5 Alpha
+
+	* Second Alpha release
+	
+	* Outer joins and IS NULL support in EQL
+	
+	* Patterns: Use of results in filters, such as "every a=EventX -> every b=EventY(objectID=a.objectID)"
+	
+	* See history for more detail
+		
+	[]
+
+* Jan. 16, 2006 Esper 0.7.0 Alpha released
+
+	* Provides early-access to upcoming beta release, for evaluation only
+	
+	* Full-featured and supported as by current feature list and documentation
+	
+	[]
