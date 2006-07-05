@@ -125,6 +125,6 @@ public class SupportExprNodeFactory
     private static void validate(ExprNode topNode) throws Exception
     {
         StreamTypeService streamTypeService = new SupportStreamTypeSvc3Stream();
-        topNode.validateDescendents(streamTypeService);
+        topNode.getValidatedSubtree(streamTypeService);
     }
 }
