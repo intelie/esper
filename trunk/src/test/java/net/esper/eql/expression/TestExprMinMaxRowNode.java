@@ -109,7 +109,7 @@ public class TestExprMinMaxRowNode extends TestCase
         {
             nodeMin.addChildNode(new SupportExprNode(new Float(floatValue)));
         }
-        nodeMin.validateDescendents(null);
+        nodeMin.getValidatedSubtree(null);
     }
 
     private ExprMinMaxRowNode makeNode(Object valueOne, Class typeOne,
