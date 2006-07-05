@@ -1,6 +1,8 @@
 package net.esper.eql.expression;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,19 +39,41 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
     }
 
     /**
-     * Executes validate on filter tree node descendants.
+     * Validates the expression node subtree that has this
+     * node as root. Some of the nodes of the tree, including the 
+     * root, might be replaced in the process.
      * @param streamTypeService - serves stream type information
+     * @param staticMethodResolver - used to obtain static methods
      * @throws ExprValidationException when the validation fails
+     * @return the root node of the validated subtree, possibly 
+     *         different than the root node of the unvalidated subtree 
      */
-    public void validateDescendents(StreamTypeService streamTypeService) throws ExprValidationException
+    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService) throws ExprValidationException
     {
-        // Depth-first validation ensures that child nodes ascertain their types and initialize their
-        // stream number and property getters and such.
-        for (ExprNode childNode : childNodes)
+        ExprNode result = this;
+    	
+    	for (int i = 0; i < childNodes.size(); i++)
         {
-            childNode.validateDescendents(streamTypeService);
+            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService));
         }
-        validate(streamTypeService);
+        
+    	try
+    	{
+    		validate(streamTypeService);
+    	}
+    	catch(ExprValidationException e)
+    	{
+    		if(this instanceof ExprIdentNode)
+    		{
+    			result = resolveIdentAsStaticMethod(streamTypeService, e);
+    		}
+    		else
+    		{
+    			throw e;
+    		}
+    	}
+    	
+    	return result;
     }
 
     /**
@@ -132,6 +156,54 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
             }
         }
         return true;
+    }
+    
+    // Assumes that this is an ExprIdentNode
+    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, ExprValidationException propertyException)
+    throws ExprValidationException
+    {
+    	// Reconstruct the original string
+    	ExprIdentNode identNode = (ExprIdentNode) this;
+    	StringBuffer name = new StringBuffer(identNode.getUnresolvedPropertyName());
+    	if(identNode.getStreamOrPropertyName() != null)
+    	{
+    		name.insert(0, identNode.getStreamOrPropertyName() + ".");
+    	}
+    	
+    	// Parse the string to see if it looks like a method invocation
+    	// (Ident nodes can only have a single string value in parentheses)
+    	String classNameRegEx = "((\\w+\\.)*\\w+)";
+    	String methodNameRegEx = "(\\w+)";
+    	String argsRegEx = "\\s*\\(\\s*[\'\"]\\s*(\\w+)\\s*[\'\"]\\s*\\)\\s*";			
+    	String methodInvocationRegEx = classNameRegEx + "\\." + methodNameRegEx + argsRegEx;
+
+    	Pattern pattern = Pattern.compile(methodInvocationRegEx);
+    	Matcher matcher = pattern.matcher(name);
+    	if(!matcher.matches())
+    	{
+    		// This property name doesn't look like a method invocation
+    		throw propertyException;
+    	}
+
+    	// Create a new static method node and add the method 
+    	// argument as a child node
+    	String className = matcher.group(1);
+    	String methodName = matcher.group(3);
+    	String argString = matcher.group(4);
+    	ExprNode result = new ExprStaticMethodNode(className, methodName);
+    	result.addChildNode(new ExprConstantNode(argString));
+    	
+    	// Validate
+    	try
+    	{
+    		result.validate(streamTypeService);	
+    	}
+    	catch(ExprValidationException e)
+    	{
+    		throw new ExprValidationException("Failed to resolve " + name + " as either an event property or as a static method invocation");
+    	}
+    	
+    	return result;
     }
 
     private static final Log log = LogFactory.getLog(ExprNode.class);
