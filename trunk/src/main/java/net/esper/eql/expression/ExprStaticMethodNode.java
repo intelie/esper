@@ -2,7 +2,6 @@ package net.esper.eql.expression;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 
 import net.esper.event.EventBean;
@@ -12,29 +11,29 @@ import net.esper.event.EventBean;
  */
 public class ExprStaticMethodNode extends ExprNode 
 {
-	private final Method staticMethod;
+	private final String className;
+	private final String methodName;
+	private Class[] paramTypes;
+	private Method staticMethod;
+	
 	/**
 	 * Ctor.
-	 * @param staticMethod - the static method that will be invoked when this node is evaluated
-	 */
-	public ExprStaticMethodNode(Method staticMethod)
+	 * @param className - the declaring class for the method that this node will invoke
+	 * @param methodName - the name of the method that this node will invoke
+	 */	
+	public ExprStaticMethodNode(String className, String methodName)
 	{
-		if(staticMethod == null)
+		if(className == null)
 		{
-			throw new NullPointerException();
+			throw new NullPointerException("Class name is null");
 		}
-		
-		int modifiers = staticMethod.getModifiers();
-		if(!Modifier.isPublic(modifiers))
+		if(methodName == null)
 		{
-			throw new IllegalArgumentException("The method invoked by ExprStaticMethodNode must be public");
+			throw new NullPointerException("Method name is null");
 		}
-		if(!Modifier.isStatic(modifiers))
-		{
-			throw new IllegalArgumentException("The method invoked by ExprStaticMethodNode must be static");
-		}
-		
-		this.staticMethod = staticMethod;
+	
+		this.className = className;
+		this.methodName = methodName;
 	}
 	
 	/**
@@ -45,9 +44,46 @@ public class ExprStaticMethodNode extends ExprNode
 		return staticMethod;
 	}
 	
+	/**
+	 * @return the class that declared the static method
+	 */
+	public String getClassName() {
+		return className;
+	}
+
+	/**
+	 * @return the name of the method
+	 */
+	
+	public String getMethodName() {
+		return methodName;
+	}
+
+	/**
+	 * @return the types of the child nodes of this node
+	 */
+	public Class[] getParamTypes() {
+		return paramTypes;
+	}
+
 	public String toExpressionString() 
 	{
-		return staticMethod.toString();
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(className);
+		buffer.append(".");
+		buffer.append(methodName);
+
+		buffer.append("(");		
+		String appendString = "";
+		for(ExprNode child : getChildNodes())
+		{
+			buffer.append(appendString);
+			buffer.append(child.toExpressionString());
+			appendString = ", ";
+		}
+		buffer.append(")");
+		
+		return buffer.toString();
 	}
 
 	public boolean equalsNode(ExprNode node) 
@@ -56,37 +92,46 @@ public class ExprStaticMethodNode extends ExprNode
 		{
 			return false;
 		}
-		
-		Method otherMethod = ((ExprStaticMethodNode) node).staticMethod;
-		return staticMethod.equals(otherMethod);
+
+		if(staticMethod == null)
+		{
+			throw new IllegalStateException("ExprStaticMethodNode has not been validated");
+		}
+		else
+		{
+			ExprStaticMethodNode otherNode = (ExprStaticMethodNode) node;
+			return staticMethod.equals(otherNode.staticMethod);
+		}
 	}
 
 	public void validate(StreamTypeService streamTypeService) throws ExprValidationException 
 	{
-		Class[] parameters = staticMethod.getParameterTypes();
+		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();
-		
-		// Check that the number of parameters is the same 
-		// as the number of child nodes
-		if(parameters.length != childNodes.size())
-		{
-			throw new ExprValidationException("Incorrent number of parameters to the static method " + staticMethod);
-		}
-
-		// Check that the parameters can be assigned to 
-		// from the child nodes
+		paramTypes = new Class[childNodes.size()];
 		int count = 0;
 		for(ExprNode childNode : childNodes)
 		{
-			if(!StaticMethodResolver.isValidTypeConversion(parameters[count++], childNode.getType()))
-			{
-				throw new ExprValidationException("Incorrent parameter type for the static method " + staticMethod);
-			}
+			paramTypes[count++] = childNode.getType();	
+		}
+		
+		// Try to resolve the method
+		try
+		{
+			staticMethod = StaticMethodResolver.resolveMethod(className, methodName, paramTypes);
+		}
+		catch(Exception e)
+		{
+			throw new ExprValidationException(e.getMessage());
 		}
 	}
 
 	public Class getType() throws ExprValidationException 
 	{
+		if(staticMethod == null)
+		{
+			throw new IllegalStateException("ExprStaticMethodNode has not been validated");
+		}
 		return staticMethod.getReturnType();
 	}
 
