@@ -42,9 +42,9 @@ public class ResultSetProcessorFactory
      * @param selectionList - represents select clause and thus the expression nodes listed in the select, or empty if wildcard
      * @param groupByNodes - represents the expressions to group-by events based on event properties, or empty if no group-by was specified
      * @param optionalHavingNode - represents the having-clause boolean filter criteria
-     * @param typeService - for information about the streams in the from clause
      * @param outputLimitSpec - indicates whether to output all or only the last event
      * @param orderByList - represent the expressions in the order-by clause
+     * @param typeService - for information about the streams in the from clause
      * @return result set processor instance
      * @throws ExprValidationException
      */
@@ -70,6 +70,37 @@ public class ResultSetProcessorFactory
         // order-by clause with the full expression
         expandAliases(selectionList, orderByList);
 
+        // Validate selection expressions, if any (could be wildcard i.e. empty list)
+        for (int i = 0; i < selectionList.size(); i++)
+        {
+        	SelectExprElement element = selectionList.get(i);
+        	String asName = element.getAsName();
+        	ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService);
+        	SelectExprElement validatedElement = new SelectExprElement(validatedExpression, asName);
+            selectionList.set(i, validatedElement);
+        }
+
+        // Validate group-by expressions, if any (could be empty list for no group-by)
+        for (int i = 0; i < groupByNodes.size(); i++)
+        {
+            groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService));
+        }
+
+        // Validate having clause, if present
+        if (optionalHavingNode != null)
+        {
+            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService);
+        }
+
+        // Validate order-by expressions, if any (could be empty list for no order-by)
+        for (int i = 0; i < orderByList.size(); i++)
+        {	
+        	ExprNode orderByNode = orderByList.get(i).getFirst();
+        	Boolean isDescending = orderByList.get(i).getSecond();
+        	Pair<ExprNode, Boolean> validatedPair = new Pair<ExprNode, Boolean>(orderByNode.getValidatedSubtree(typeService), isDescending);
+        	orderByList.set(i, validatedPair);
+        }
+
         // Get the select expression nodes
         List<ExprNode> selectNodes = new ArrayList<ExprNode>();
         for(SelectExprElement element : selectionList)
@@ -83,31 +114,7 @@ public class ResultSetProcessorFactory
         {
         	orderByNodes.add(element.getFirst());
         }
-
-        // Validate selection expressions, if any (could be wildcard i.e. empty list)
-        for (SelectExprElement element : selectionList)
-        {
-            element.getSelectExpression().validateDescendents(typeService);
-        }
-
-        // Validate group-by expressions, if any (could be empty list for no group-by)
-        for (ExprNode groupByExprNode : groupByNodes)
-        {
-            groupByExprNode.validateDescendents(typeService);
-        }
-
-        // Validate having clause, if present
-        if (optionalHavingNode != null)
-        {
-            optionalHavingNode.validateDescendents(typeService);
-        }
-
-        // Validate order-by expressions, if any (could be empty list for no order-by)
-        for (ExprNode orderByNode : orderByNodes)
-        {
-            orderByNode.validateDescendents(typeService);
-        }
-
+        
         // Determine aggregate functions used in select, if any
         List<ExprAggregateNode> selectAggregateExprNodes = new LinkedList<ExprAggregateNode>();
         for (SelectExprElement element : selectionList)
