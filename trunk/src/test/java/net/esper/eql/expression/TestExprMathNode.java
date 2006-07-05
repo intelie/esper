@@ -66,7 +66,7 @@ public class TestExprMathNode extends TestCase
     {
         arithNode.addChildNode(new SupportExprNode(new Integer(10)));
         arithNode.addChildNode(new SupportExprNode(new Double(1.5)));
-        arithNode.validateDescendents(null);
+        arithNode.getValidatedSubtree(null);
         assertEquals(11.5d, arithNode.evaluate(null));
 
         arithNode = makeNode(null, Integer.class, 5d, Double.class);
