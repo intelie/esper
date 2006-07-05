@@ -201,7 +201,7 @@ public class EPEQLStmtStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                optionalFilterNode.validateDescendents(typeService);
+                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService);
 
                 // Make sure there is no aggregation in the where clause
                 List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
@@ -226,12 +226,12 @@ public class EPEQLStmtStartMethod
             // Validate the outer join clause using an artificial equals-node on top.
             // Thus types are checked via equals.
             // Sets stream ids used for validated nodes.
-            ExprEqualsNode equalsNode = new ExprEqualsNode(false);
+            ExprNode equalsNode = new ExprEqualsNode(false);
             equalsNode.addChildNode(outerJoinDesc.getLeftNode());
             equalsNode.addChildNode(outerJoinDesc.getRightNode());
             try
             {
-                equalsNode.validateDescendents(typeService);
+                equalsNode = equalsNode.getValidatedSubtree(typeService);
             }
             catch (ExprValidationException ex)
             {
