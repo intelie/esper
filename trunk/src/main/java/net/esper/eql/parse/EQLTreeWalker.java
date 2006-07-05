@@ -7,6 +7,7 @@ import net.esper.eql.expression.*;
 import net.esper.type.*;
 import net.esper.collection.Pair;
 import net.esper.event.EventAdapterService;
+import antlr.ASTFactory;
 import antlr.collections.AST;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -201,6 +202,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case AVEDEV:
                 leaveAggregate(node);
                 break;
+            case LIB_FUNCTION:
+            	leaveLibFunction(node);
+            	break;
             case LEFT_OUTERJOIN_EXPR:
             case RIGHT_OUTERJOIN_EXPR:
             case FULL_OUTERJOIN_EXPR:
@@ -254,7 +258,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         while (childNode != null);
     }
 
-    protected void end() throws ASTWalkException
+	protected void end() throws ASTWalkException
     {
         if (astNodeMap.size() > 1)
         {
@@ -361,6 +365,24 @@ public class EQLTreeWalker extends EQLBaseWalker
         astNodeMap.put(node, identNode);
     }
 
+    private void leaveLibFunction(AST node) 
+    {
+    	log.debug(".leaveLibFunction");
+    	
+    	if(node.getNumberOfChildren() < 2)
+    	{
+    		throw new IllegalArgumentException("Illegal method invocation");
+    	}
+    	
+    	AST itor = node.getFirstChild();
+    	String className = itor.getText();
+
+    	itor = itor.getNextSibling();
+    	String methodName = itor.getText();
+    	
+    	astNodeMap.put(node, new ExprStaticMethodNode(className, methodName));
+	}
+    
     private void leaveJoinEqualsExpr(AST node)
     {
         log.debug(".leaveJoinEqualsExpr");
