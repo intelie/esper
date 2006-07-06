@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import net.esper.event.EventBean;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
 
 /**
  * Represents an invocation of a static library method in the expression tree.
@@ -14,7 +16,7 @@ public class ExprStaticMethodNode extends ExprNode
 	private final String className;
 	private final String methodName;
 	private Class[] paramTypes;
-	private Method staticMethod;
+	private FastMethod staticMethod;
 	
 	/**
 	 * Ctor.
@@ -41,7 +43,7 @@ public class ExprStaticMethodNode extends ExprNode
 	 */
 	public Method getStaticMethod() 
 	{
-		return staticMethod;
+		return staticMethod.getJavaMethod();
 	}
 	
 	/**
@@ -118,7 +120,9 @@ public class ExprStaticMethodNode extends ExprNode
 		// Try to resolve the method
 		try
 		{
-			staticMethod = StaticMethodResolver.resolveMethod(className, methodName, paramTypes);
+			Method method = StaticMethodResolver.resolveMethod(className, methodName, paramTypes);
+			FastClass declaringClass = FastClass.create(method.getDeclaringClass());
+			staticMethod = declaringClass.getMethod(method);
 		}
 		catch(Exception e)
 		{
@@ -149,20 +153,13 @@ public class ExprStaticMethodNode extends ExprNode
 		// The method is static so the object it is invoked on
 		// can be null
 		Object obj = null;
-		try {
+		try 
+		{
 			return staticMethod.invoke(obj, args);
-			
-		// The possible exceptions are temporarily
-		// stifled
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (InvocationTargetException e) {
+		} 
+		// The possible exceptions are temporarily stifled
+		catch (InvocationTargetException e) 
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
