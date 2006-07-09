@@ -400,7 +400,7 @@ public class TestEQLTreeWalker extends TestCase
         EQLTreeWalker walker = parseAndWalk(expression);
         ExprNode exprNode = walker.getFilterRootNode().getChildNodes().get(0);
         ExprBitWiseNode bitWiseNode = (ExprBitWiseNode) (exprNode);
-        bitWiseNode.getValidatedSubtree(null);
+        bitWiseNode.getValidatedSubtree(null, null);
         return bitWiseNode.evaluate(null);
     }
 
@@ -456,7 +456,7 @@ public class TestEQLTreeWalker extends TestCase
 
         EQLTreeWalker walker = parseAndWalk(expression);
         ExprNode mathNode = (walker.getFilterRootNode().getChildNodes().get(0));
-        mathNode.getValidatedSubtree(null);
+        mathNode.getValidatedSubtree(null, null);
         return mathNode.evaluate(null);
     }
 
@@ -466,7 +466,7 @@ public class TestEQLTreeWalker extends TestCase
 
         EQLTreeWalker walker = parseAndWalk(expression);
         ExprNode filterExprNode = walker.getFilterRootNode();
-        filterExprNode.getValidatedSubtree(null);
+        filterExprNode.getValidatedSubtree(null, null);
         return filterExprNode.evaluate(null);
     }
 
