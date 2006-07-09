@@ -43,29 +43,30 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
      * node as root. Some of the nodes of the tree, including the 
      * root, might be replaced in the process.
      * @param streamTypeService - serves stream type information
+     * @param autoImportService - for resolving class names in library method invocations
      * @param staticMethodResolver - used to obtain static methods
      * @throws ExprValidationException when the validation fails
      * @return the root node of the validated subtree, possibly 
      *         different than the root node of the unvalidated subtree 
      */
-    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService) throws ExprValidationException
+    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         ExprNode result = this;
     	
     	for (int i = 0; i < childNodes.size(); i++)
         {
-            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService));
+            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, autoImportService));
         }
         
     	try
     	{
-    		validate(streamTypeService);
+    		validate(streamTypeService, autoImportService);
     	}
     	catch(ExprValidationException e)
     	{
     		if(this instanceof ExprIdentNode)
     		{
-    			result = resolveIdentAsStaticMethod(streamTypeService, e);
+    			result = resolveIdentAsStaticMethod(streamTypeService, autoImportService, e);
     		}
     		else
     		{
@@ -159,7 +160,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
     }
     
     // Assumes that this is an ExprIdentNode
-    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, ExprValidationException propertyException)
+    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, AutoImportService autoImportService, ExprValidationException propertyException)
     throws ExprValidationException
     {
     	// Reconstruct the original string
@@ -196,7 +197,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
     	// Validate
     	try
     	{
-    		result.validate(streamTypeService);	
+    		result.validate(streamTypeService, autoImportService);	
     	}
     	catch(ExprValidationException e)
     	{
