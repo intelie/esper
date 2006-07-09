@@ -121,6 +121,9 @@ public class EPEQLStmtStartMethod
         // Construct type information per stream
         StreamTypeService typeService = new StreamTypeServiceImpl(streamTypes, streamNames);
 
+        // Get the service for resolving class names 
+        AutoImportService autoImportService = services.getAutoImportService();
+        
         // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
         // May return null if we don't need to post-process results posted by views or joins.
         ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(selectionList,
@@ -130,10 +133,11 @@ public class EPEQLStmtStartMethod
                 optionalOutputLimitSpec,
                 orderByNodes,
                 typeService,
-                services.getEventAdapterService());
+                services.getEventAdapterService(),
+                autoImportService);
 
         // Validate where-clause filter tree and outer join clause
-        validateNodes(typeService);
+        validateNodes(typeService, autoImportService);
 
         // For just 1 event stream without joins, handle the one-table process separatly.
         if (streams.size() == 1)
@@ -194,14 +198,14 @@ public class EPEQLStmtStartMethod
         return streamNames;
     }
 
-    private void validateNodes(StreamTypeService typeService)
+    private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService)
     {
         if (optionalFilterNode != null)
         {
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService);
+                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, autoImportService);
 
                 // Make sure there is no aggregation in the where clause
                 List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
@@ -231,7 +235,7 @@ public class EPEQLStmtStartMethod
             equalsNode.addChildNode(outerJoinDesc.getRightNode());
             try
             {
-                equalsNode = equalsNode.getValidatedSubtree(typeService);
+                equalsNode = equalsNode.getValidatedSubtree(typeService, autoImportService);
             }
             catch (ExprValidationException ex)
             {
