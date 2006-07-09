@@ -6,8 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,10 +21,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * An instance of <tt>Configuration</tt> allows the application
@@ -47,9 +49,22 @@ public class Configuration {
      * Map of event name and fully-qualified Java class name.
      */
 	protected Map<String, String> eventClasses;
+	
+	/**
+	 * The java-style class and package name imports that
+	 * will be used to resolve partial class names.
+	 */
+	protected List<String> imports;
 
+	/**
+	 * True until the user calls addAutoImport()
+	 */
+	private boolean isUsingDefaultImports = true;
+	
     /**
-     * Constructs an empty configuration.
+     * Constructs an empty configuration. The auto import values
+     * are set by default to java.lang, java.math, java.text and
+     * java.util.
      */
     public Configuration()
     {
@@ -65,6 +80,20 @@ public class Configuration {
     {
         eventClasses.put(eventTypeAlias, javaEventClass);
     }
+    
+    /**
+     * Add an import (a class or package). Adding will suppress the use of the default imports.
+     * @param autoImport - the import to add
+     */
+    public void addImport(String autoImport)
+    {
+		if(isUsingDefaultImports)
+		{
+			isUsingDefaultImports = false;
+			imports.clear();
+		}
+    	imports.add(autoImport);
+    }
 
     /**
      * Returns the mapping of event type alias to event types.
@@ -74,6 +103,15 @@ public class Configuration {
     {
         return eventClasses;
     }
+    
+    /**
+     * Returns the class and package imports.
+     * @return imported names
+     */
+	public List<String> getImports() 
+	{
+		return imports;
+	}
 
 	/**
 	 * Use the configuration specified in an application
@@ -235,6 +273,14 @@ public class Configuration {
             String clazz = nodes.item(i).getAttributes().getNamedItem("class").getTextContent();
             eventClasses.put(name, clazz);
         }
+        
+        NodeList importNodes = root.getElementsByTagName("auto-import");
+        for (int i = 0; i < importNodes.getLength(); i++)
+        {
+            String name = importNodes.item(i).getAttributes().getNamedItem("import-name").getTextContent();
+            addImport(name);
+        }
+        
 		return this;
 	}
 
@@ -271,6 +317,20 @@ public class Configuration {
     protected void reset()
     {
         eventClasses = new HashMap<String, String>();
+        imports = new ArrayList<String>();
+        addDefaultImports();
+        isUsingDefaultImports = true;
+    }
+    
+    /**
+     * Use these imports until the user specifies something else
+     */
+    private void addDefaultImports()
+    {
+    	imports.add("java.lang.*");
+    	imports.add("java.math.*");
+    	imports.add("java.text.*");
+    	imports.add("java.util.*");
     }
 }
 
