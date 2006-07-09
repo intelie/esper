@@ -18,17 +18,17 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
     public void testGetType() throws Exception
     {
         sumNode.addChildNode(new SupportExprNode(Integer.class));
-        sumNode.validate(null);
+        sumNode.validate(null, null);
         assertEquals(Integer.class, sumNode.getType());
 
         sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(Float.class));
-        sumNode.validate(null);
+        sumNode.validate(null, null);
         assertEquals(Float.class, sumNode.getType());
 
         sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(Short.class));
-        sumNode.validate(null);
+        sumNode.validate(null, null);
         assertEquals(Integer.class, sumNode.getType());
     }
 
@@ -50,7 +50,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
         // Must have exactly 1 subnodes
         try
         {
-            sumNode.validate(null);
+            sumNode.validate(null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -63,7 +63,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
         sumNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            sumNode.validate(null);
+            sumNode.validate(null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -91,7 +91,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
     {
         ExprSumNode sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(value, type));
-        sumNode.validate(null);
+        sumNode.validate(null, null);
         return sumNode;
     }
 }

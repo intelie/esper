@@ -24,13 +24,13 @@ public class TestExprOrNode extends TestCase
         // test success
         orNode.addChildNode(new SupportExprNode(Boolean.class));
         orNode.addChildNode(new SupportExprNode(Boolean.class));
-        orNode.validate(null);
+        orNode.validate(null, null);
 
         // test failure, type mismatch
         orNode.addChildNode(new SupportExprNode(String.class));
         try
         {
-            orNode.validate(null);
+            orNode.validate(null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -43,7 +43,7 @@ public class TestExprOrNode extends TestCase
         orNode.addChildNode(new SupportExprNode(Boolean.class));
         try
         {
-            orNode.validate(null);
+            orNode.validate(null, null);
             fail();
         }
         catch (ExprValidationException ex)

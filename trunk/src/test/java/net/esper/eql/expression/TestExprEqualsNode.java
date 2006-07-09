@@ -35,11 +35,11 @@ public class TestExprEqualsNode extends TestCase
         // Test success
         equalsNodes[0].addChildNode(new SupportExprNode(String.class));
         equalsNodes[0].addChildNode(new SupportExprNode(String.class));
-        equalsNodes[0].validate(null);
+        equalsNodes[0].validate(null, null);
 
-        equalsNodes[1].validate(null);
-        equalsNodes[2].validate(null);
-        equalsNodes[3].validate(null);
+        equalsNodes[1].validate(null, null);
+        equalsNodes[2].validate(null, null);
+        equalsNodes[3].validate(null, null);
 
         equalsNodes[0].getChildNodes().clear();
         equalsNodes[0].addChildNode(new SupportExprNode(String.class));
@@ -47,7 +47,7 @@ public class TestExprEqualsNode extends TestCase
         // Test too few nodes under this node
         try
         {
-            equalsNodes[0].validate(null);
+            equalsNodes[0].validate(null, null);
             fail();
         }
         catch (IllegalStateException ex)
@@ -59,7 +59,7 @@ public class TestExprEqualsNode extends TestCase
         equalsNodes[0].addChildNode(new SupportExprNode(Boolean.class));
         try
         {
-            equalsNodes[0].validate(null);
+            equalsNodes[0].validate(null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -89,14 +89,14 @@ public class TestExprEqualsNode extends TestCase
         assertTrue((Boolean)equalsNodes[0].evaluate(null));
 
         // try a long and int
-        equalsNodes[1].validate(null);
+        equalsNodes[1].validate(null, null);
         assertTrue((Boolean)equalsNodes[1].evaluate(null));
 
         // try a double and int
-        equalsNodes[2].validate(null);
+        equalsNodes[2].validate(null, null);
         assertTrue((Boolean)equalsNodes[2].evaluate(null));
 
-        equalsNodes[3].validate(null);
+        equalsNodes[3].validate(null, null);
         assertTrue((Boolean)equalsNodes[3].evaluate(null));
     }
 

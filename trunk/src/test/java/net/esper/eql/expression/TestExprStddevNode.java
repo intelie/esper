@@ -58,7 +58,7 @@ public class TestExprStddevNode extends TestExprAggregateNodeAdapter
     {
         ExprStddevNode stddevNode = new ExprStddevNode(false);
         stddevNode.addChildNode(new SupportExprNode(value, type));
-        stddevNode.validate(null);
+        stddevNode.validate(null, null);
         return stddevNode;
     }
 }

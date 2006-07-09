@@ -20,16 +20,16 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
     public void testGetType() throws Exception
     {
         maxNode.addChildNode(new SupportExprNode(Integer.class));
-        maxNode.validate(null);
+        maxNode.validate(null, null);
         assertEquals(Integer.class, maxNode.getType());
 
         minNode.addChildNode(new SupportExprNode(Float.class));
-        minNode.validate(null);
+        minNode.validate(null, null);
         assertEquals(Float.class, minNode.getType());
 
         maxNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MAX);
         maxNode.addChildNode(new SupportExprNode(Short.class));
-        maxNode.validate(null);
+        maxNode.validate(null, null);
         assertEquals(Short.class, maxNode.getType());
     }
 
@@ -51,7 +51,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
         // Must have exactly 1 subnodes
         try
         {
-            minNode.validate(null);
+            minNode.validate(null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -64,7 +64,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
         minNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            minNode.validate(null);
+            minNode.validate(null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -90,7 +90,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
     {
         ExprMinMaxAggrNode minMaxNode = new ExprMinMaxAggrNode(false, minMaxType);
         minMaxNode.addChildNode(new SupportExprNode(value, type));
-        minMaxNode.validate(null);
+        minMaxNode.validate(null, null);
         return minMaxNode;
     }
 }

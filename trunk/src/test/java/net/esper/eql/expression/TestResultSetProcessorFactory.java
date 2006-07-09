@@ -34,7 +34,7 @@ public class TestResultSetProcessorFactory extends TestCase
     {
         // single stream, empty group-by and wildcard select, no having clause, no need for any output processing
         List<SelectExprElement> wildcardSelect = new LinkedList<SelectExprElement>();
-        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService);
+        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
         assertNull(processor);
     }
 
@@ -42,17 +42,17 @@ public class TestResultSetProcessorFactory extends TestCase
     {
         // empty group-by and no event properties aggregated in select clause (wildcard), no having clause
         List<SelectExprElement> wildcardSelect = new LinkedList<SelectExprElement>();
-        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService);
+        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
         assertTrue(processor instanceof ResultSetProcessorSimple);
 
         // empty group-by with select clause elements
         List<SelectExprElement> selectList = SupportSelectExprFactory.makeNoAggregateSelectList();
-        processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService);
+        processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
         assertTrue(processor instanceof ResultSetProcessorSimple);
 
         // non-empty group-by and wildcard select, group by ignored
         groupByList.add(SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0"));
-        processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService);
+        processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
         assertTrue(processor instanceof ResultSetProcessorSimple);
     }
 
@@ -61,12 +61,12 @@ public class TestResultSetProcessorFactory extends TestCase
         // empty group-by but aggragating event properties in select clause (output per event), no having clause
         // and one or more properties in the select clause is not aggregated
         List<SelectExprElement> selectList = SupportSelectExprFactory.makeAggregateMixed();
-        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService);
+        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
         assertTrue(processor instanceof ResultSetProcessorAggregateAll);
 
         // test a case where a property is both aggregated and non-aggregated: select volume, sum(volume)
         selectList = SupportSelectExprFactory.makeAggregatePlusNoAggregate();
-        processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService);
+        processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
         assertTrue(processor instanceof ResultSetProcessorAggregateAll);
     }
 
@@ -75,7 +75,7 @@ public class TestResultSetProcessorFactory extends TestCase
         // empty group-by but aggragating event properties in select clause (output per event), no having clause
         // and all properties in the select clause are aggregated
         List<SelectExprElement> selectList = SupportSelectExprFactory.makeAggregateSelectListWithProps();
-        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService);
+        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
         assertTrue(processor instanceof ResultSetProcessorRowForAll);
     }
 
@@ -85,7 +85,7 @@ public class TestResultSetProcessorFactory extends TestCase
         // no having clause
         List<SelectExprElement> selectList = SupportSelectExprFactory.makeAggregateMixed();
         groupByList.add(SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0"));
-        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService);
+        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
         assertTrue(processor instanceof ResultSetProcessorRowPerGroup);
     }
 
@@ -100,7 +100,7 @@ public class TestResultSetProcessorFactory extends TestCase
 
         groupByList.add(SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0"));
 
-        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService);
+        ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
 
         assertTrue(processor instanceof ResultSetProcessorAggregateGrouped);
     }
@@ -110,7 +110,7 @@ public class TestResultSetProcessorFactory extends TestCase
         // invalid select clause
         try
         {
-            ResultSetProcessorFactory.getProcessor(SupportSelectExprFactory.makeInvalidSelectList(), null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService);
+            ResultSetProcessorFactory.getProcessor(SupportSelectExprFactory.makeInvalidSelectList(), null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -122,7 +122,7 @@ public class TestResultSetProcessorFactory extends TestCase
         groupByList.add(new ExprIdentNode("xxxx", "s0"));
         try
         {
-            ResultSetProcessorFactory.getProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService);
+            ResultSetProcessorFactory.getProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -139,7 +139,7 @@ public class TestResultSetProcessorFactory extends TestCase
 
         try
         {
-            ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService);
+            ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
             fail();
         }
         catch (ExprValidationException ex)
