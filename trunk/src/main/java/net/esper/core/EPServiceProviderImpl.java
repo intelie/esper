@@ -1,6 +1,8 @@
 package net.esper.core;
 
 import net.esper.client.*;
+import net.esper.eql.expression.AutoImportService;
+import net.esper.eql.expression.AutoImportServiceImpl;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventAdapterServiceImpl;
@@ -17,6 +19,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
     private EPAdministratorImpl admin;
 
     private final EventAdapterService eventAdapterService;
+    private final AutoImportService autoImportService;
 
     /**
      * Constructor - initializes services.
@@ -40,7 +43,16 @@ public class EPServiceProviderImpl implements EPServiceProvider
                 throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
             }
         }
-
+        
+        try
+        {
+        	autoImportService = new AutoImportServiceImpl(configuration.getImports().toArray(new String[0]));
+        }
+        catch (IllegalArgumentException ex)
+        {
+        	throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
+        }
+        
         initialize();
     }
 
@@ -71,7 +83,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
         }
 
         // New services
-        services = new EPServicesContext(eventAdapterService);
+        services = new EPServicesContext(eventAdapterService, autoImportService);
 
         // New runtime
         runtime = new EPRuntimeImpl(services);
