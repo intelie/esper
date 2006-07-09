@@ -1,20 +1,21 @@
 package net.esper.core;
 
-import net.esper.schedule.SchedulingService;
-import net.esper.schedule.SchedulingServiceProvider;
-import net.esper.filter.FilterService;
-import net.esper.filter.FilterServiceProvider;
-import net.esper.timer.TimerService;
-import net.esper.timer.TimerServiceProvider;
-import net.esper.emit.EmitService;
-import net.esper.emit.EmitServiceProvider;
 import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.DispatchServiceProvider;
+import net.esper.emit.EmitService;
+import net.esper.emit.EmitServiceProvider;
+import net.esper.eql.expression.AutoImportService;
+import net.esper.event.EventAdapterService;
+import net.esper.filter.FilterService;
+import net.esper.filter.FilterServiceProvider;
+import net.esper.schedule.SchedulingService;
+import net.esper.schedule.SchedulingServiceProvider;
+import net.esper.timer.TimerService;
+import net.esper.timer.TimerServiceProvider;
 import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
 import net.esper.view.stream.StreamReuseService;
 import net.esper.view.stream.StreamReuseServiceProvider;
-import net.esper.event.EventAdapterService;
 
 /**
  * Convenience class to instantiate implementations for all services.
@@ -29,6 +30,7 @@ public final class EPServicesContext
     private final ViewService viewService;
     private final StreamReuseService streamReuseService;
     private final EventAdapterService eventAdapterService;
+    private final AutoImportService autoImportService;
 
     // Must be set
     private InternalEventRouter internalEventRouter;
@@ -36,8 +38,9 @@ public final class EPServicesContext
     /**
      * Constructor - sets up new set of services.
      * @param eventAdapterService service to resolve event types
+     * @param autoImportService service to resolve partial class names
      */
-    public EPServicesContext(EventAdapterService eventAdapterService)
+    public EPServicesContext(EventAdapterService eventAdapterService, AutoImportService autoImportService)
     {
         this.filterService = FilterServiceProvider.newService();
         this.timerService = TimerServiceProvider.newService();
@@ -47,6 +50,7 @@ public final class EPServicesContext
         this.viewService = ViewServiceProvider.newService();
         this.streamReuseService = StreamReuseServiceProvider.newService();
         this.eventAdapterService = eventAdapterService;
+        this.autoImportService = autoImportService;
     }
 
     public InternalEventRouter getInternalEventRouter()
@@ -129,6 +133,15 @@ public final class EPServicesContext
     public EventAdapterService getEventAdapterService()
     {
         return eventAdapterService;
+    }
+    
+    /**
+     * Returns the import and class name resolution service
+     * @return import service
+     */
+    public AutoImportService getAutoImportService()
+    {
+    	return autoImportService;
     }
 
 }
