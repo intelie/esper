@@ -106,7 +106,7 @@ public class ExprStaticMethodNode extends ExprNode
 		}
 	}
 
-	public void validate(StreamTypeService streamTypeService) throws ExprValidationException 
+	public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException 
 	{
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();
@@ -120,7 +120,7 @@ public class ExprStaticMethodNode extends ExprNode
 		// Try to resolve the method
 		try
 		{
-			Method method = StaticMethodResolver.resolveMethod(className, methodName, paramTypes);
+			Method method = StaticMethodResolver.resolveMethod(className, methodName, paramTypes, autoImportService);
 			FastClass declaringClass = FastClass.create(method.getDeclaringClass());
 			staticMethod = declaringClass.getMethod(method);
 		}
