@@ -1,46 +1,16 @@
 package net.esper.eql.expression;
 
 import java.lang.reflect.Method;
-import java.util.LinkedList;
 
 import junit.framework.TestCase;
 
 public class TestStaticMethodResolver extends TestCase 
 {
-	public void testResolveClass() throws Exception
-	{
-		String className = "java.lang.Math";
-		Class expected = Math.class;
-		assertEquals(expected, StaticMethodResolver.resolveClass(className));
-		
-		className = "Math";
-		assertEquals(expected, StaticMethodResolver.resolveClass(className));
-		
-		className = "Integer";
-		expected = Integer.class;
-		assertEquals(expected, StaticMethodResolver.resolveClass(className));
-		
-		expected = LinkedList.class;
-		className = "java.util.LinkedList";
-		assertEquals(expected, StaticMethodResolver.resolveClass(className));
-		
-		expected = Math.class;
-		className = "java.lang.Math";
-		assertEquals(expected, StaticMethodResolver.resolveClass(className));
-	}
+	private AutoImportService autoImportService;
 	
-	public void testResolveClassNotFound() throws Exception
+	public void setUp()
 	{
-		String className = "LinkedList";
-		try
-		{
-			StaticMethodResolver.resolveClass(className);
-			fail();
-		}
-		catch(ClassNotFoundException e)
-		{
-			// expected
-		}
+		autoImportService = new AutoImportServiceImpl(new String[] {"java.lang.*"});
 	}
 	
 	public void testResolveMethod() throws Exception
@@ -49,18 +19,33 @@ public class TestStaticMethodResolver extends TestCase
 		String methodName = "max";
 		Class[] args = new Class[] { int.class, int.class };
 		Method expected = Math.class.getMethod(methodName, args);
-		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args));
+		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService));
 		
 		args = new Class[] { long.class, long.class };
 		expected = Math.class.getMethod(methodName, args);
 		args = new Class[] { int.class, long.class };
-		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args));
+		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService));
+		
+		args = new Class[] { int.class, int.class };
+		expected = Math.class.getMethod(methodName, args);
+		args = new Class[] { Integer.class, Integer.class };
+		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService));
+		
+		args = new Class[] { long.class, long.class };
+		expected = Math.class.getMethod(methodName, args);
+		args = new Class[] { Integer.class, Long.class };
+		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService));
+		
+		args = new Class[] { float.class, float.class };
+		expected = Math.class.getMethod(methodName, args);
+		args = new Class[] { Integer.class, Float.class };
+		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService));
 		
 		className = "System";
 		methodName = "currentTimeMillis";
 		args = new Class[0];
 		expected = System.class.getMethod(methodName, args);
-		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args));
+		assertEquals(expected, StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService));
 	}
 	
 	public void testResolveMethodNotFound() throws Exception
@@ -70,7 +55,7 @@ public class TestStaticMethodResolver extends TestCase
 		Class[] args = null;
 		try
 		{
-			StaticMethodResolver.resolveMethod(className, methodName, args);
+			StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService);
 			fail();
 		}
 		catch(NoSuchMethodException e)
@@ -84,7 +69,7 @@ public class TestStaticMethodResolver extends TestCase
 		args = new Class[] { int.class, int.class };
 		try
 		{
-			StaticMethodResolver.resolveMethod(className, methodName, args);
+			StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService);
 			fail();
 		}
 		catch(NoSuchMethodException e)
@@ -97,7 +82,7 @@ public class TestStaticMethodResolver extends TestCase
 		args = new Class[] { boolean.class, boolean.class };
 		try
 		{
-			StaticMethodResolver.resolveMethod(className, methodName, args);
+			StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService);
 			fail();
 		}
 		catch(NoSuchMethodException e)
@@ -110,7 +95,7 @@ public class TestStaticMethodResolver extends TestCase
 		args = new Class[] { int.class, int.class, boolean.class };
 		try
 		{
-			StaticMethodResolver.resolveMethod(className, methodName, args);
+			StaticMethodResolver.resolveMethod(className, methodName, args, autoImportService);
 			fail();
 		}
 		catch(NoSuchMethodException e)
