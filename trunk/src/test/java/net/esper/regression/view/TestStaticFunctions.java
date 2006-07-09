@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import net.esper.client.Configuration;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.client.EPStatementException;
+import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.eql.SupportStaticMethod;
@@ -20,9 +22,7 @@ public class TestStaticFunctions extends TestCase
 	 private EPServiceProvider epService;
 	private String stream;
 	private String statementText;
-
 	private EPStatement statement;
-
 	private SupportUpdateListener listener;
 	
 	protected void setUp()
@@ -30,6 +30,30 @@ public class TestStaticFunctions extends TestCase
 	    epService = EPServiceProviderManager.getDefaultProvider();
 	    epService.initialize();
 	    stream = " from " + SupportMarketDataBean.class.getName() +".win:length(5) ";
+	}
+	
+	public void testAutoImports()
+	{
+		Configuration configuration = new Configuration();
+		configuration.addImport("mull");
+		epService = EPServiceProviderManager.getProvider("1", configuration);
+		
+		statementText = "select Integer.toBinaryString(7) " + stream;
+		try
+		{
+			createStatementAndGetProperty("Integer.toBinaryString(7)");
+			fail();
+		}
+		catch(EPStatementException e)
+		{
+			// expected
+		}
+		
+		configuration.addImport("java.lang.*");
+		epService = EPServiceProviderManager.getProvider("2", configuration);
+		
+		Object result = createStatementAndGetProperty("Integer.toBinaryString(7)");
+		assertEquals(Integer.toBinaryString(7), result);
 	}
 	
 	public void testNoParameters()
