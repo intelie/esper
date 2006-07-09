@@ -2,11 +2,8 @@ package net.esper.eql.expression;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,17 +24,13 @@ import org.apache.commons.logging.LogFactory;
  */
 public class StaticMethodResolver 
 {
-	private static final List<String> imports = new ArrayList<String>();
+	private static final Log log = LogFactory.getLog(StaticMethodResolver.class);
+	
 	private static final Map<Class, Set<Class>> wideningConversions = new HashMap<Class, Set<Class>>();
 	private static final Map<Class, Set<Class>> wrappingConversions = new HashMap<Class, Set<Class>>();
 	
-	 private static final Log log = LogFactory.getLog(StaticMethodResolver.class);
-	 
 	static 
 	{
-		// Initialize the imports
-		imports.add("java.lang");
-		
 		// Initialize the map of wrapper conversions
 		Set<Class> booleanWrappers = new HashSet<Class>();
 		booleanWrappers.add(boolean.class);
@@ -117,16 +110,18 @@ public class StaticMethodResolver
 	 * @param className - the name of the class that declared this method
 	 * @param methodName - the name of the method
 	 * @param paramTypes - the parameter types for the method
+	 * @param autoImportService - for resolving the class name
 	 * @return - the Method object for this method
 	 * @throws ClassNotFoundException
 	 * @throws NoSuchMethodException
 	 */
-	public static Method resolveMethod(String className, String methodName, Class[] paramTypes)
+	public static Method resolveMethod(String className, String methodName, Class[] paramTypes, AutoImportService autoImportService)
 	throws ClassNotFoundException, NoSuchMethodException
 	{
 		log.debug(".resolve method className==" + className + ", methodName==" + methodName);
+
 		// Get the declaring class
-		Class declaringClass = resolveClass(className);
+		Class declaringClass = autoImportService.resolveClass(className);
 		
 		// Get all the methods for this class
 		Method[] methods = declaringClass.getMethods();
@@ -205,43 +200,6 @@ public class StaticMethodResolver
 		}
 	}
 	
-	/**
-	 * Gets the Class object for the class name. If the class 
-	 * name is incomplete, searches java.lang
-	 * @param className - the name of the class to resolve
-	 * @return - the Class object for this class
-	 * @throws ClassNotFoundException
-	 */
-	protected static Class resolveClass(String className) 
-	throws ClassNotFoundException
-	{
-		Class result = null;
-		
-		// Attempt to resolve the class without adding a 
-		// package prefix
-		try
-		{
-			result = Class.forName(className);
-			return result;
-		}
-		catch(ClassNotFoundException e){}
-		
-		// Try all the package prefixes in the classpath
-		for(String prefix : imports)
-		{
-			String prefixedClassName = prefix + "." + className;
-			try
-			{
-				result = Class.forName(prefixedClassName);
-				return result;
-			}
-			catch(ClassNotFoundException e){}
-		}
-		
-		// No prefix worked, the class isn't resolved
-		throw new ClassNotFoundException("Unknown class " + className);
-	}
-
 	private static boolean isWideningConversion(Class declarationType, Class invocationType)
 	{
 		if(wideningConversions.containsKey(declarationType))
