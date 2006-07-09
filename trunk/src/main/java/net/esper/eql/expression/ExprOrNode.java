@@ -9,7 +9,7 @@ import net.esper.eql.expression.ExprNode;
  */
 public class ExprOrNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean
         for (ExprNode child : this.getChildNodes())

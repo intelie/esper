@@ -8,7 +8,7 @@ import net.esper.event.EventBean;
  */
 public class ExprAndNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean
         for (ExprNode child : this.getChildNodes())

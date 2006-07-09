@@ -16,7 +16,7 @@ public class ExprStddevNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         super.validateSingleNumericChild(streamTypeService);
         computer = new DoubleStddev();

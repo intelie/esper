@@ -31,7 +31,7 @@ public class ExprEqualsNode extends ExprNode
         return isNotEquals;
     }
 
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         // Must have 2 child nodes
         if (this.getChildNodes().size() != 2)

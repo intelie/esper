@@ -16,7 +16,7 @@ public class ExprCountNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         // Empty child node list signals count(*)
         if (this.getChildNodes().size() == 0)

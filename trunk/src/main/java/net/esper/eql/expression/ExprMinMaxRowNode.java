@@ -21,7 +21,7 @@ public class ExprMinMaxRowNode extends ExprNode
         this.minMaxTypeEnum = minMaxTypeEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {

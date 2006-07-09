@@ -45,6 +45,7 @@ public class ResultSetProcessorFactory
      * @param outputLimitSpec - indicates whether to output all or only the last event
      * @param orderByList - represent the expressions in the order-by clause
      * @param typeService - for information about the streams in the from clause
+     * @param autoImportService TODO
      * @return result set processor instance
      * @throws ExprValidationException
      */
@@ -55,7 +56,8 @@ public class ResultSetProcessorFactory
                                                	  OutputLimitSpec outputLimitSpec,
                                                	  List<Pair<ExprNode, Boolean>> orderByList,
                                                   StreamTypeService typeService,
-                                                  EventAdapterService eventAdapterService)
+                                                  EventAdapterService eventAdapterService, 
+                                                  AutoImportService autoImportService)
             throws ExprValidationException
     {
         if (log.isDebugEnabled())
@@ -75,7 +77,7 @@ public class ResultSetProcessorFactory
         {
         	SelectExprElement element = selectionList.get(i);
         	String asName = element.getAsName();
-        	ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService);
+        	ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService, autoImportService);
         	SelectExprElement validatedElement = new SelectExprElement(validatedExpression, asName);
             selectionList.set(i, validatedElement);
         }
@@ -83,13 +85,13 @@ public class ResultSetProcessorFactory
         // Validate group-by expressions, if any (could be empty list for no group-by)
         for (int i = 0; i < groupByNodes.size(); i++)
         {
-            groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService));
+            groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService, autoImportService));
         }
 
         // Validate having clause, if present
         if (optionalHavingNode != null)
         {
-            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService);
+            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, autoImportService);
         }
 
         // Validate order-by expressions, if any (could be empty list for no order-by)
@@ -97,7 +99,7 @@ public class ResultSetProcessorFactory
         {	
         	ExprNode orderByNode = orderByList.get(i).getFirst();
         	Boolean isDescending = orderByList.get(i).getSecond();
-        	Pair<ExprNode, Boolean> validatedPair = new Pair<ExprNode, Boolean>(orderByNode.getValidatedSubtree(typeService), isDescending);
+        	Pair<ExprNode, Boolean> validatedPair = new Pair<ExprNode, Boolean>(orderByNode.getValidatedSubtree(typeService, autoImportService), isDescending);
         	orderByList.set(i, validatedPair);
         }
 

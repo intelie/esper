@@ -18,7 +18,7 @@ public class ExprConstantNode extends ExprNode
         this.value = value;
     }
 
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
     }
 
