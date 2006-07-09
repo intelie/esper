@@ -10,8 +10,8 @@ public class SupportOuterJoinDescFactory
         ExprIdentNode identNodeOne = new ExprIdentNode(propOne, streamOne);
         ExprIdentNode identNodeTwo = new ExprIdentNode(propTwo, streamTwo);
 
-        identNodeOne.validate(new SupportStreamTypeSvc3Stream());
-        identNodeTwo.validate(new SupportStreamTypeSvc3Stream());
+        identNodeOne.validate(new SupportStreamTypeSvc3Stream(), null);
+        identNodeTwo.validate(new SupportStreamTypeSvc3Stream(), null);
         OuterJoinDesc desc = new OuterJoinDesc(type, identNodeOne, identNodeTwo);
 
         return desc;

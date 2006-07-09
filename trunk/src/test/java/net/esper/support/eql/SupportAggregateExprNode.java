@@ -37,7 +37,7 @@ public class SupportAggregateExprNode extends ExprAggregateNode
         this.type = type;
     }
 
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         // Keep a count for if and when this was validated
         validateCount++;

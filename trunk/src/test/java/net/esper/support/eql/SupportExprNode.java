@@ -1,5 +1,6 @@
 package net.esper.support.eql;
 
+import net.esper.eql.expression.AutoImportService;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.expression.StreamTypeService;
@@ -36,7 +37,7 @@ public class SupportExprNode extends ExprNode
         this.type = type;
     }
 
-    public void validate(StreamTypeService streamTypeService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         // Keep a count for if and when this was validated
         validateCount++;
