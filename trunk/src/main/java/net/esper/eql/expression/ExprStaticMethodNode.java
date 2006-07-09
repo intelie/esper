@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import net.esper.client.EPException;
 import net.esper.event.EventBean;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -157,12 +158,9 @@ public class ExprStaticMethodNode extends ExprNode
 		{
 			return staticMethod.invoke(obj, args);
 		} 
-		// The possible exceptions are temporarily stifled
 		catch (InvocationTargetException e) 
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new EPException(e);
 		}
 	}
 }
