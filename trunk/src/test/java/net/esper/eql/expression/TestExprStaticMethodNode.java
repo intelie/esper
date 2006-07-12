@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 import net.esper.support.eql.SupportStreamTypeSvc1Stream;
+import net.esper.util.StaticMethodResolver;
 
 public class TestExprStaticMethodNode extends TestCase 
 {
