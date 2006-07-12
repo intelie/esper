@@ -34,20 +34,6 @@ public class AutoImportServiceImpl implements AutoImportService
 		}
 	}
 
-	public String[] getImports()
-	{
-		return imports.toArray(new String[0]);
-	}
-	
-	public void setImports(String[] imports)
-	{
-		this.imports.clear();
-		for(String importName : imports)
-		{
-			addImport(importName);
-		}
-	}
-	
 	public Class resolveClass(String className) 
 	throws ClassNotFoundException
 	{
@@ -85,6 +71,11 @@ public class AutoImportServiceImpl implements AutoImportService
 
 		// No import worked, the class isn't resolved
 		throw new ClassNotFoundException("Unknown class " + className);
+	}
+	
+	protected String[] getImports()
+	{
+		return imports.toArray(new String[0]);
 	}
 	
 	protected void addImport(String importName)
