@@ -5,10 +5,11 @@ import net.esper.client.EPException;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatementException;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportBean_N;
 import net.esper.eql.parse.ASTFilterSpecValidationException;
 import net.esper.eql.parse.EPStatementSyntaxException;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportBean_N;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -71,6 +72,14 @@ public class TestInvalidView extends TestCase
         exceptionText = getStatementExceptionView("select 2 as m, 2 as m from " + EVENT_ALLTYPES + ".win:length(1)");
         assertEquals("Error starting view: Property alias name 'm' appears more then once in select clause [select 2 as m, 2 as m from net.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
 
+        // class in method invocation not found
+        exceptionText = getStatementExceptionView("select unknownClass.method() from " + EVENT_NUM + ".win:length(10)");
+        assertEquals("Error starting view: Unknown class unknownClass [select unknownClass.method() from net.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        
+        // method not found
+        exceptionText = getStatementExceptionView("select Math.unknownMethod() from " + EVENT_NUM + ".win:length(10)");
+        assertEquals("Error starting view: Unknown method Math.unknownMethod() [select Math.unknownMethod() from net.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        
         // invalid property in group-by
         exceptionText = getStatementExceptionView("select intPrimitive from " + EVENT_ALLTYPES + ".win:length(1) group by xxx");
         assertEquals("Error starting view: Property named 'xxx' is not valid in any stream [select intPrimitive from net.esper.support.bean.SupportBean.win:length(1) group by xxx]", exceptionText);
