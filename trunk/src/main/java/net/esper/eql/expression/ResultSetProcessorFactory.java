@@ -45,7 +45,7 @@ public class ResultSetProcessorFactory
      * @param outputLimitSpec - indicates whether to output all or only the last event
      * @param orderByList - represent the expressions in the order-by clause
      * @param typeService - for information about the streams in the from clause
-     * @param autoImportService TODO
+     * @param autoImportService - for resolving class names
      * @return result set processor instance
      * @throws ExprValidationException
      */
