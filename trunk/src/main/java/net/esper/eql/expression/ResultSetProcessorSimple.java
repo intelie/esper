@@ -169,7 +169,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * Applies the select-clause to the given events returning the selected events. The number of events stays the
      * same, i.e. this method does not filter it just transforms the result set.
      * @param exprProcessor - processes each input event and returns output event
-     * @param orderByProcessor TODO
+     * @param orderByProcessor - for sorting output events according to the order-by clause
      * @param events - input events
      * @return output events, one for each input event
      */
