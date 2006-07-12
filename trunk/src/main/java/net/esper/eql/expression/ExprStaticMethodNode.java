@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.esper.client.EPException;
 import net.esper.event.EventBean;
+import net.esper.util.StaticMethodResolver;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
