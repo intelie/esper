@@ -5,14 +5,14 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import net.esper.client.Configuration;
+import net.esper.client.EPException;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.client.EPStatementException;
-import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.support.eql.SupportStaticMethod;
+import net.esper.support.eql.SupportStaticMethodLib;
 import net.esper.support.util.SupportUpdateListener;
 
 import com.sun.org.apache.bcel.internal.util.ClassLoader;
@@ -30,6 +30,21 @@ public class TestStaticFunctions extends TestCase
 	    epService = EPServiceProviderManager.getDefaultProvider();
 	    epService.initialize();
 	    stream = " from " + SupportMarketDataBean.class.getName() +".win:length(5) ";
+	}
+	
+	public void testRuntimeException()
+	{
+		String className = SupportStaticMethodLib.class.getName();
+		statementText = "select price, " + className + ".throwException() " + stream;
+		try
+		{
+			createStatementAndGetProperty("price");
+			fail();
+		}
+		catch(EPException e)
+		{
+			// Expected
+		}
 	}
 	
 	public void testAutoImports()
@@ -112,7 +127,7 @@ public class TestStaticFunctions extends TestCase
 	
 	public void testUserDefined()
 	{
-		String className = SupportStaticMethod.class.getName();
+		String className = SupportStaticMethodLib.class.getName();
 		statementText = "select " + className + ".staticMethod(2)" + stream;
 		assertEquals(2, createStatementAndGetProperty(className + ".staticMethod(2)"));
 	}
