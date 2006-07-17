@@ -1,0 +1,15 @@
+<chapter id="tutorial">
+
+    <title>Tutorial</title>
+
+    <sect1 id="tutorial-title" revision="1">
+        <title>Tutorial</title>
+        
+        <para>
+			The tutorial section has been placed on the web site at <literal>http://esper.codehause.org</literal>.
+        </para>
+        
+    </sect1>
+
+</chapter>
+

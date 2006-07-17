@@ -1,0 +1,624 @@
+<chapter id="event_patterns">
+    <title>Event Pattern Reference</title>
+    
+    <sect1 id="event-pattern-intro">
+        <title>Event Pattern Overview</title>
+
+        <para>
+			Event patterns match when an event or multiple events occur that match the pattern's definition. Patterns can also be time-based.
+         </para>
+
+        <para>
+			Pattern expressions can consist of filter expressions combined with pattern operators. Expressions can contain further nested
+			pattern expressions by including the nested expression(s) in <literal>()</literal> round brackets.
+         </para>
+         
+        <para>
+			There are 5 types of operators:
+         </para>
+
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Operators that control pattern finder creation and termination: <literal>every</literal>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Logical operators: <literal>and</literal>, <literal>or</literal>, <literal>not</literal>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Temporal operators that operate on event order: <literal>-&gt;</literal> (followed-by)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Guards are where-conditions that filter out events and cause termination of the pattern finder. Examples are <literal>timer:within</literal>.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Observers observe time events as well as other events. Examples are <literal>timer:interval</literal> and <literal>timer:at</literal>.
+				</para>
+			</listitem>
+		</orderedlist>
+    </sect1>
+
+    <sect1 id="pattern-how-to-use">
+        <title>How to use Patterns</title>
+        
+        <sect2 id="pattern-howto-syntax">
+           <title>Pattern Syntax</title>
+           
+			<para>
+				The <literal>createPattern</literal> method on the <literal>EPAdministrator</literal> administrative interface creates pattern statements 
+				for the given pattern expression string.
+			</para>
+			
+			<para>
+				This is an example pattern expression that matches on every <literal>ServiceMeasurement</literal> events in which the
+				value of the <literal>latency</literal> event property is over 20 seconds, and on every<literal>ServiceMeasurement</literal> events in which the
+				<literal>success</literal> property is false. Either one or the other condition must be true for this pattern to match.
+			</para>
+			<programlisting><![CDATA[every (spike=ServiceMeasurement(latency>20000) or error=ServiceMeasurement(success=false))]]></programlisting>
+			
+			<para>
+				The Java code to create this trigger is below.
+			</para>
+
+			<programlisting><![CDATA[EPAdministrator admin = EPServiceProviderManager.getDefaultProvider().getEPAdministrator();
+
+String eventName = ServiceMeasurement.class.getName();
+
+EPStatement myTrigger = admin.createPattern(
+  "every (spike=" + eventName + "(latency>20000) or error=" + eventName + "(success=false))");
+]]></programlisting>
+
+			<para>
+				The pattern expression starts with an <literal>every</literal> operator to indicate that the pattern should fire for every matching events and not just the first
+				matching event. Within the <literal>every</literal> operator in round brackets is a nested pattern expression using the <literal>or</literal> operator. 
+				The left hand of the <literal>or</literal> operator is a filter expression that filters for events with a high latency value. The right hand of the operator 
+				contains a filter expression that filters for events with error status. Filter expressions are explained in <xref linkend="pattern-filter"/>.
+			</para>
+						
+		</sect2>
+		
+        <sect2 id="patterns-howto-subscribe" >
+           <title>Subscribing to Pattern Events</title>
+           
+			<para>			
+				When a pattern fires it publishes one or more events to any listeners to the pattern statement. 
+				The listener interface is the <literal>net.esper.client.UpdateListener</literal> interface.
+			</para>
+			
+			<para>            
+				The example below shows an anonymous implementation of the <literal>net.esper.client.UpdateListener</literal> interface.
+				We add the anonymous listener implementation to the <literal>myPattern</literal> statement created earlier. 
+				The listener code simply extracts the underlying event class.
+			</para>
+			<programlisting><![CDATA[myPattern.addListener(new UpdateListener()
+{
+	public void update(EventBean[] newEvents, EventBean[] oldEvents)
+	{
+		ServiceMeasurement spike = (ServiceMeasurement) newEvents[0].get("spike");
+		ServiceMeasurement error = (ServiceMeasurement) newEvents[0].get("error");
+		... // either spike or error can be null, depending on which occured
+		... // add more logic here
+	}
+});
+]]></programlisting>
+
+			<para>            
+				Listeners receive an array of <literal>EventBean</literal> instances in the <literal>newEvents</literal> parameter.
+				There is one <literal>EventBean</literal> instance passed to the listener for each combination of events that matches
+				the pattern expression. At least one <literal>EventBean</literal> instance is always passed to the listener.
+			</para>
+				
+			<para>
+				The properties of each <literal>EventBean</literal> instance contain the underlying events that caused the
+				pattern to fire, if events have been named in the filter expression via the <literal>name=eventType</literal> syntax.
+				The property name is thus the name supplied in the pattern expression, while the property type is the type of the underlying class, 
+				in this example <literal>ServiceMeasurement</literal>.
+			</para>
+
+		</sect2>
+		
+        <sect2 id="pattern-howto-pull-data" >
+           <title>Pulling Data from Patterns</title>
+           
+			<para>
+				Data can also be pulled from pattern statements via the <literal>iterator()</literal> method. 
+				If the pattern had fired at least once, then the iterator returns the last event for which it fired.
+				The <literal>hasNext()</literal> method can be used to determine if the pattern had fired.				 				
+			</para>
+
+			<programlisting><![CDATA[if (myPattern.iterator().hasNext())
+{
+	ServiceMeasurement event = (ServiceMeasurement) view.iterator().next().get("alert");
+    ... // some more code here to process the event
+}
+else
+{
+    ... // no matching events at this time
+}]]></programlisting>
+
+		</sect2>                
+    </sect1>
+
+    <sect1 id="pattern-filter">
+        <title>Filter Expressions</title>
+
+        <para>
+            This chapter outines how to filter events based on their properties.
+        </para>
+
+        <para>
+            The simplest form of filter is a filter for events of a given type without any conditions on the event property values. This filter matches any event of that type regardless of the event's properties. The example below is such a filter. Note that this event pattern would stop firing as soon as the first RfidEvent is encountered.
+         </para>
+         <programlisting><![CDATA[com.mypackage.myevents.RfidEvent]]></programlisting>
+
+		 <para>
+			 To make the event pattern fire for every RfidEvent and not just the first event, use the <literal>every</literal> keyword.
+		 </para>
+         <programlisting><![CDATA[every com.mypackage.myevents.RfidEvent]]></programlisting>
+		 
+		 <para>
+			 The example above specifies the fully-qualified Java class name as the event type. Via configuration, the event pattern above can be simplified by using the alias
+			 that has been defined for the event type. Interfaces and abstract classes are also supported as event types.
+		 </para>
+         <programlisting><![CDATA[every RfidEvent]]></programlisting>
+         
+		 <para>
+			 Interfaces and superclasses are also supported as event types. In the below example <literal>IRfidReadable</literal> is an interface class.
+		 </para>
+         <programlisting><![CDATA[every org.myorg.rfid.IRfidReadable]]></programlisting>
+
+        <para>
+            The filtering criteria to filter for events with certain event property values are placed within parenthesis after the event type name.
+         </para>
+         <programlisting><![CDATA[mypackage.RfidEvent(category="Perishable")]]></programlisting>
+         
+        <para>
+            The supported filter operators are
+        </para>
+
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>
+                    equals <literal>=</literal>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    comparison operators <literal>&lt; , &gt; , &gt;=, &lt;=</literal>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    ranges use the keyword <literal>in </literal> and round <literal>(...)</literal> or square brackets <literal>[]</literal>
+                </para>
+            </listitem>
+        </itemizedlist>
+        
+        <para>
+			Ranges come in the following 4 varieties. The use of round <literal>()</literal> 
+			or square <literal>[]</literal> bracket dictates whether an endpoint is included or excluded.
+         </para>
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>
+                    Open ranges that contain neither endpoint <literal>(low:high)</literal>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Closed ranges that contain both endpoints <literal>[low:high]</literal>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Half-open ranges that contain the low endpoint but not the high endpoint <literal>[low:high)</literal>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Half-closed ranges that contain the high endpoint but not the low endpoint <literal>(low:high]</literal>
+                </para>
+            </listitem>
+        </itemizedlist>
+        
+        <para>
+            Filter criteria are listed in a comma-separated format. In the example below we look for <literal>RfidEvent</literal> events with
+            a <literal>grade</literal> property between 1 and 2 (endpoints included), a <literal>price</literal> less then 1, and a category of "Perishable".
+         </para>
+         <programlisting><![CDATA[mypackage.RfidEvent(category="Perishable", price<1.00, grade in [1:2])]]></programlisting>
+         
+        <para>
+            Filter criteria can also refer to events machting prior named events in the same expression. Below pattern is an example in which the pattern
+            matches once for every RfidEvent that is preceded by an RfidEvent with the same item id.
+         </para>
+         <programlisting><![CDATA[every A=mypackage.RfidEvent -> B=mypackage.RfidEvent(itemId=A.itemId)]]></programlisting>
+        <para>
+            The syntax shown above allows filter criteria to reference prior results by specifying the event name and event property. This syntax can be used with all filter operators.
+         </para>
+
+        <para>
+            Some limitations of filters are:
+        </para>        
+        <itemizedlist spacing="compact">
+            <listitem>
+                <para>
+                    Range and comparison operators require the event property to be of a numeric type. 
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Null values in filter criteria are currently not allowed.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Filter criteria can list the same event property only once. 
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                    Events that have null values for event properties listed in the filter criteria do not match the criteria.
+                </para>
+            </listitem>
+        </itemizedlist>
+   </sect1>
+
+    <sect1 id="pattern-operators">
+        <title>Pattern Operators</title>
+
+        <sect2 id="pattern-logical-every" >
+           <title>Every</title>
+    
+            <para>				
+				The <literal>every</literal> operator indicates that the pattern expression should restart when the pattern matches.
+				Without the <literal>every</literal> operator the pattern expressions matcher stops when the pattern matches once.
+            </para>
+				
+            <para>
+				Thus the <literal>every</literal> operator works like a factory for the pattern expression contained within. When the pattern expression within it 
+				fires and thus quits checking for events, the <literal>every</literal> causes the start of a new pattern matcher listening for more occurances of the same
+				event or set of events.
+            </para>				
+
+            <para>
+				Every time a pattern expression within an <literal>every</literal> operator turns true a new active pattern matcher is started looking 
+				for more event(s) or timing conditions that match the pattern expression. If the <literal>every</literal> operator is not specified for an expression, 
+				the expression stops after the first match was found.
+            </para>
+            
+            <para>
+				This pattern fires when encountering event A and then stops looking.
+            </para>
+			<programlisting><![CDATA[A]]></programlisting>
+
+            <para>
+				This pattern keeps firing when encountering event A, and doesn't stop looking.
+            </para>
+			<programlisting><![CDATA[every A]]></programlisting>
+			
+            <para>
+				Let's consider an example event sequence as follows.
+            </para>
+
+            <para>
+				A<subscript>1</subscript>   
+				B<subscript>1</subscript>   
+				C<subscript>1</subscript>   
+				B<subscript>2</subscript>   
+				A<subscript>2</subscript>   
+				D<subscript>1</subscript>   
+				A<subscript>3</subscript>   
+				B<subscript>3</subscript>   
+				E<subscript>1</subscript>   
+				A<subscript>4</subscript>   
+				F<subscript>1</subscript>   
+				B<subscript>4</subscript>   
+            </para>
+
+			<table frame="topbot" id="pattern-every-samples" revision="2">
+				<title>'Every' operator examples</title>
+				<tgroup cols="2">
+					<colspec colwidth="1*"/>
+					<colspec colwidth="2.5*"/>
+					<thead>
+						<row>
+							<entry>Example</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><programlisting><![CDATA[every ( A -> B )]]></programlisting></entry>
+							<entry>
+								<para>
+									Detect event A followed by event B. 
+									At the time when B occurs the pattern matches, then the pattern matcher restarts and looks for event A again.
+								</para>
+								<orderedlist spacing="compact">
+									<listitem>
+										<para>
+											Matches on B<subscript>1</subscript> for combination {A<subscript>1</subscript>, B<subscript>1</subscript>}
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>3</subscript> for combination {A<subscript>2</subscript>, B<subscript>3</subscript>}
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>4</subscript> for combination {A<subscript>4</subscript>, B<subscript>4</subscript>}
+										</para>
+									</listitem>
+								</orderedlist>
+							</entry>
+						</row>
+						<row>					
+							<entry><programlisting><![CDATA[every A -> B]]></programlisting></entry>
+							<entry>
+								<para>
+									The pattern fires for every event A followed by an event B.
+								</para>
+								<orderedlist spacing="compact">
+									<listitem>
+										<para>
+											Matches on B<subscript>1</subscript> for combination {A<subscript>1</subscript>, B<subscript>1</subscript>}
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>3</subscript> for combination {A<subscript>2</subscript>, B<subscript>3</subscript>}
+											and {A<subscript>3</subscript>, B<subscript>3</subscript>}
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>4</subscript> for combination {A<subscript>4</subscript>, B<subscript>4</subscript>}
+										</para>
+									</listitem>
+								</orderedlist>
+							</entry>
+						</row>
+						<row>
+							<entry><programlisting><![CDATA[A -> every B]]></programlisting></entry>
+							<entry>
+								<para>
+									The pattern fires for an event A followed by every event B.
+								</para>
+								<orderedlist spacing="compact">
+									<listitem>
+										<para>
+											Matches on B<subscript>1</subscript> for combination {A<subscript>1</subscript>, B<subscript>1</subscript>}.
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>2</subscript> for combination {A<subscript>1</subscript>, B<subscript>2</subscript>}.
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>3</subscript> for combination {A<subscript>1</subscript>, B<subscript>3</subscript>}
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>4</subscript> for combination {A<subscript>1</subscript>, B<subscript>4</subscript>}
+										</para>
+									</listitem>
+								</orderedlist>
+							</entry>
+						</row>
+						<row>
+							<entry><programlisting><![CDATA[every A -> every B]]></programlisting></entry>
+							<entry>
+								<para>
+									The pattern fires for every event A followed by every event B.
+								</para>
+								<orderedlist spacing="compact">
+									<listitem>
+										<para>
+											Matches on B<subscript>1</subscript> for combination {A<subscript>1</subscript>, B<subscript>1</subscript>}.
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>2</subscript> for combination {A<subscript>1</subscript>, B<subscript>2</subscript>}.
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>3</subscript> for combination {A<subscript>1</subscript>, B<subscript>3</subscript>}
+											and {A<subscript>2</subscript>, B<subscript>3</subscript>} and {A<subscript>3</subscript>, B<subscript>3</subscript>}
+										</para>
+									</listitem>
+									<listitem>
+										<para>
+											Matches on B<subscript>4</subscript> for combination {A<subscript>1</subscript>, B<subscript>4</subscript>}
+											and {A<subscript>2</subscript>, B<subscript>4</subscript>} and {A<subscript>3</subscript>, B<subscript>4</subscript>}
+											and {A<subscript>4</subscript>, B<subscript>4</subscript>}
+										</para>
+									</listitem>
+								</orderedlist>
+							</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+
+            <para>
+				The examples show that it is possible that a pattern fires for multiple combinations of events that match a pattern expression.
+				Each combination is posted as an <literal>EventBean</literal> instance to the <literal>update</literal> method in the <literal>UpdateListener</literal> implementation.
+            </para>
+        </sect2>
+
+        <sect2 id="pattern-logical-and" >
+           <title>And</title>
+    
+            <para>
+				Similar to the Java &amp;&amp; operator the <literal>and</literal> operator requires both nested pattern expressions to turn 
+				true before the whole expression turns true (a join pattern).
+            </para>
+            
+            <para>
+				Pattern matches when both event A and event B are found.
+            </para>
+			<programlisting><![CDATA[A and B]]></programlisting>
+
+            <para>
+				Pattern matches on any sequence A followed by B and C followed by D, or C followed by D and A followed by B
+            </para>
+			<programlisting><![CDATA[(A -> B) and (C -> D)]]></programlisting>
+            
+        </sect2>
+
+        <sect2 id="pattern-logical-or" >
+           <title>Or</title>
+    
+            <para>
+				Similar to the Java “||” operator the <literal>or</literal> operator requires either one of the expressions 
+				to turn true before the whole expression turns true.
+            </para>
+            
+           <para>
+			   Look for either event A or event B. As always, A and B can itself be nested expressions as well.
+            </para>
+			<programlisting><![CDATA[A or B]]></programlisting>
+
+            <para>
+				Detect all stock ticks that are either above or below a threshold.
+            </para>
+			<programlisting><![CDATA[every (StockTick(symbol='IBM', price < 100) or StockTick(symbol='IBM', price > 105)]]></programlisting>
+            
+        </sect2>
+
+        <sect2 id="pattern-logical-not" >
+           <title>Not</title>
+    
+            <para>
+				The <literal>not</literal> operator negates the truth value of an expression. Pattern expressions prefixed with <literal>not</literal> are automatically 
+				defaulted to true.
+            </para>
+            
+           <para>
+				This pattern matches only when an event A is encountered followed by event B but only if no event C was encountered before event B.          
+            </para>
+			<programlisting><![CDATA[( A -> B ) and not C]]></programlisting>
+			            
+        </sect2>
+
+        <sect2 id="pattern-temporal-followed-by" >
+           <title>Followed-by</title>
+    
+            <para>
+				The followed by <literal>-&gt;</literal> operator specifies that first the left hand expression must turn true and only 
+				then is the right hand expression evaluated for matching events.
+            </para>
+            
+            <para>
+				Look for event A and if encountered, look for event B. As always, A and B can itself be nested event pattern expressions.
+            </para>
+			<programlisting><![CDATA[A -> B]]></programlisting>
+
+            <para>
+				This is a pattern that fires when 2 status events indicating an error occur one after the other.
+            </para>
+			<programlisting><![CDATA[StatusEvent(status='ERROR') -> StatusEvent(status='ERROR')]]></programlisting>
+
+        </sect2>
+                    
+    </sect1>
+
+    <sect1 id="pattern-guards">
+        <title>Guards</title>        
+
+        <sect2 id="pattern-timer-within" >
+           <title>timer:within</title>
+           
+            <para>
+				The <literal>timer:within</literal> guard acts like a stopwatch. 
+				If the associated pattern expression does not turn true within the specified time period it is stopped and permanently false.
+            </para>
+            
+            <para>
+				This pattern fires for all A events that arrive within 5 seconds.
+            </para>
+			<programlisting><![CDATA[every A where timer:within (5000)]]></programlisting>
+            
+            <para>
+				This pattern matches for any A or B events in the next 5 seconds.
+            </para>
+			<programlisting><![CDATA[( A or B ) where timer:within (5000)]]></programlisting>
+
+            <para>
+				This pattern matches for any 2 errors that happen 10 seconds within each other.
+            </para>
+			<programlisting><![CDATA[every (StatusEvent(status='ERROR') -> StatusEvent(status='ERROR') where timer:within (10000))]]></programlisting>
+
+        </sect2>
+   </sect1>
+   
+    <sect1 id="pattern-observers">
+        <title>Pattern Observers</title>
+
+        <sect2 id="pattern-timer-interval" >
+           <title>timer:interval</title>
+               
+            <para>
+				The <literal>timer:interval</literal> observer takes a wait time in milliseconds and waits for the defined time before the 
+				truth value of the observer turns true.
+            </para>
+
+            <para>
+				After event A arrived wait 10 seconds then indicate that the pattern matches.
+            </para>
+			<programlisting><![CDATA[A -> timer:interval(10000) ]]></programlisting>
+
+            <para>
+				The pattern below fires every 20 seconds.
+            </para>
+			<programlisting><![CDATA[every timer:interval(20000)]]></programlisting>
+        </sect2>
+
+        <sect2 id="pattern-timer-at" >
+           <title>timer:at</title>
+
+            <para>
+				The <literal>timer:at</literal> observer is similar in function to the Unix “crontab” command. At a specified time the 
+				expression turns true. The <literal>at</literal> operator can also be made to pattern match at regular intervals by using an <literal>every</literal> operator 
+				in front of the <literal>timer:at</literal> operator. 
+            </para>
+				
+            <para>
+				The syntax is: <literal>timer:at (minutes, hours, days of month, months, days of week [, seconds]).</literal>
+            </para>
+				
+            <para>
+				The value for seconds is optional. Each element allows wildcard <literal>*</literal> values. Ranges can be specified 
+				by means of lower bounds then a colon ‘:’ then the upper bound. The division operator <literal>*/x</literal> can be used to 
+				specify that every x<subscript>th</subscript> value is valid. Combinations of these operators can be used by placing these into square brackets([]).
+            </para>
+            
+            <para>
+				This expression pattern matches every 5 minutes past the hour.
+            </para>
+			<programlisting><![CDATA[every timer:at(5, *, *, *, *)]]></programlisting>
+
+            <para>
+				The below at operator pattern matches every 15 minutes from 8am to 5pm on even numbered days of the month as well as on the 
+				first day of the month.
+            </para>
+			<programlisting><![CDATA[timer:at (*/15, 8:17, [*/2, 1], *, *)]]></programlisting>
+           
+        </sect2>
+   </sect1>
+   
+</chapter>

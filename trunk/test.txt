@@ -1,0 +1,4 @@
+test of mailing list
+another test
+yet another test - allowing anonymous@mail.codehaus.org now
+and now test with me subscribed.
