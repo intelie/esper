@@ -31,6 +31,12 @@ tokens
 	AVEDEV="avedev";
 	COUNT="count";
 	SELECT="select";
+	CASE="case";
+   	CASE2;
+	ELSE="else";
+	WHEN="when";
+	THEN="then";
+	END="end";
 	FROM="from";
 	OUTER="outer";
 	JOIN="join";
@@ -56,7 +62,7 @@ tokens
 	DESC="desc";
 	RSTREAM="rstream";
 	ISTREAM="istream";
-   	
+
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
    	NUMERIC_PARAM_FREQUENCY;   	
@@ -147,7 +153,7 @@ constant
 //----------------------------------------------------------------------------
 eqlExpression 
 	:	(INSERT! insertIntoExpr)?
-		SELECT! selectionListExpr 
+		SELECT! selectionListExpr
 		FROM! streamExpression
 		(regularJoin | outerJoinList)
 		(WHERE! whereClause)?
@@ -200,7 +206,7 @@ selectionListExpr
 	|	selectionListElement (COMMA! selectionListElement)*
 		{ #selectionListExpr = #([SELECTION_EXPR,"selectionListExpr"], #selectionListExpr); }
 	;
-		
+
 selectionListElement
 	:	expression (AS! IDENT)?
 		{ #selectionListElement = #([SELECTION_ELEMENT_EXPR,"selectionListElement"], #selectionListElement); }
@@ -308,8 +314,26 @@ unaryExpression
 	| constant
 	| LPAREN! expression RPAREN!
 	| builtinFunc
+	| caseExpression
 	;
-	
+
+caseExpression
+	: CASE^ (whenClause)+ (elseClause)? END!
+	| CASE^ { #CASE.setType(CASE2); } unaryExpression (altWhenClause)+ (elseClause)? END!
+	;
+
+whenClause
+	: (WHEN^ expression THEN! unaryExpression)
+	;
+
+altWhenClause
+	: (WHEN^ unaryExpression THEN! unaryExpression)
+	;
+
+elseClause
+	: (ELSE^ unaryExpression)
+	;
+
 builtinFunc
 	: (MAX^ | MIN^) LPAREN! (ALL! | DISTINCT)? expression (COMMA! expression (COMMA! expression)* )? RPAREN!
 	| SUM^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
@@ -568,7 +592,6 @@ BAND			:	'&'		;
 BAND_ASSIGN		:	"&="	;
 LAND			:	"&&"	;
 SEMI			:	';'		;
-
 
 // Whitespace -- ignored
 WS	:	(	' '

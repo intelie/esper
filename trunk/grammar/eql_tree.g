@@ -151,9 +151,15 @@ arithmeticExpr
 	|	#(STAR valueExpr valueExpr)
 	|	#(BAND valueExpr valueExpr)	
 	|	#(BOR valueExpr valueExpr)	
-	|	#(BXOR valueExpr valueExpr)		
+	|	#(BXOR valueExpr valueExpr)
+	|   caseExpr
 	;
-	
+
+caseExpr
+	: #(CASE (#(WHEN evalExprChoice valueExpr))+ (#(ELSE valueExpr))?)
+	| #(CASE2 valueExpr (#(WHEN valueExpr valueExpr))+ (#(ELSE valueExpr))?)
+	;
+
 //----------------------------------------------------------------------------
 // pattern expression
 //----------------------------------------------------------------------------
