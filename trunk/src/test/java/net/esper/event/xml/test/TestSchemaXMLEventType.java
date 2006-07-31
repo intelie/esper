@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -16,7 +14,6 @@ import net.esper.event.TypedEventPropertyGetter;
 import net.esper.event.xml.XPathPropertyGetter;
 import net.esper.event.xml.schema.SchemaXMLEventType;
 import net.esper.event.xml.schema.XPathNamespaceContext;
-import net.esper.event.xml.simple.SimpleXMLEventType;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -30,41 +27,36 @@ import junit.framework.TestCase;
 
 public class TestSchemaXMLEventType extends TestCase {
 
-	private Document simpleDoc;
-	private SchemaXMLEventType eventType;
-	private EventBean event;
+    private EventBean event;
 	
-	
-	@Override
 	protected void setUp() throws Exception {
-		super.setUp();
-		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        // parse document
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
-		simpleDoc = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream("simpleWithSchema.xml"));
-		eventType = new SchemaXMLEventType();
-		
+		Document simpleDoc = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream("simpleWithSchema.xml"));
+
+        XPathNamespaceContext ctx = new XPathNamespaceContext();
+        ctx.setDefaultNamespace("http://esper.sourceforge.net/samples/schemas/simpleSchema");
+        ctx.addPrefix("ss","http://esper.sourceforge.net/samples/schemas/simpleSchema");
+
 		XPathFactory factory = XPathFactory.newInstance();
-		  
-		XPathNamespaceContext ctx = new XPathNamespaceContext();
-		ctx.setDefaultNamespace("http://esper.sourceforge.net/samples/schemas/simpleSchema");
-		ctx.addPrefix("ss","http://esper.sourceforge.net/samples/schemas/simpleSchema");
-		XPath xPath =factory.newXPath();
+		XPath xPath = factory.newXPath();
 		xPath.setNamespaceContext(ctx);
-		XPathExpression expression = xPath.compile("count(/ss:simpleEvent/ss:nested3/ss:nested4)");
+
+        XPathExpression expression = xPath.compile("count(/ss:simpleEvent/ss:nested3/ss:nested4)");
 		Map<String,TypedEventPropertyGetter> custom = new HashMap<String,TypedEventPropertyGetter>();
 		custom.put("customProp",new XPathPropertyGetter("customProp",expression,XPathConstants.NUMBER));
+
+        // Construct event type from schema
+        SchemaXMLEventType eventType = new SchemaXMLEventType();
 		eventType.setExplicitProperties(custom);
 		eventType.setXPathFactory(factory);
 		eventType.setEventName("simpleEvent");
 		
 		/// Get DOM Implementation using DOM Registry
-		System.setProperty(DOMImplementationRegistry.PROPERTY,
-				DOMXSImplementationSourceImpl.class.getName());
-		
+		System.setProperty(DOMImplementationRegistry.PROPERTY, DOMXSImplementationSourceImpl.class.getName());
 		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-
 		XSImplementation impl =(XSImplementation) registry.getDOMImplementation("XS-Loader");
-
 		XSLoader schemaLoader = impl.createXSLoader(null);
 		String uri = ClassLoader.getSystemResource("simpleSchema.xsd").toURI().toString();
 		XSModel schema = schemaLoader.loadURI(uri);

@@ -52,8 +52,6 @@ public class TestConfiguration extends TestCase
         assertConfig(config, true);
     }
     
-    
-
     private void assertConfig(Configuration config, boolean isUsingDefaultImports)
     {
         assertEquals(1, config.getEventTypeAliases().size());

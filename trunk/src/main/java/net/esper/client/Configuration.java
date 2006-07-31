@@ -49,7 +49,12 @@ public class Configuration {
      * Map of event name and fully-qualified Java class name.
      */
 	protected Map<String, String> eventClasses;
-	
+
+    /**
+     * Map of event name and fully-qualified Java class name.
+     */
+	protected Map<String, XMLDOMEventTypeDesc> eventTypesDOM;
+
 	/**
 	 * The java-style class and package name imports that
 	 * will be used to resolve partial class names.
@@ -60,7 +65,7 @@ public class Configuration {
 	 * True until the user calls addAutoImport().
 	 */
 	private boolean isUsingDefaultImports = true;
-	
+
     /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
@@ -80,7 +85,17 @@ public class Configuration {
     {
         eventClasses.put(eventTypeAlias, javaEventClass);
     }
-    
+
+    /**
+     * Add an alias for an event type.
+     * @param eventTypeAlias is the alias for the event type
+     * @param xmlDOMEventTypeDesc descriptor containing property and mapping information for XML-DOM events
+     */
+    public void addEventTypeAlias(String eventTypeAlias, XMLDOMEventTypeDesc xmlDOMEventTypeDesc)
+    {
+        eventTypesDOM.put(eventTypeAlias, xmlDOMEventTypeDesc);
+    }
+
     /**
      * Add an import (a class or package). Adding will suppress the use of the default imports.
      * @param autoImport - the import to add
@@ -103,12 +118,12 @@ public class Configuration {
     {
         return eventClasses;
     }
-    
+
     /**
      * Returns the class and package imports.
      * @return imported names
      */
-	public List<String> getImports() 
+	public List<String> getImports()
 	{
 		return imports;
 	}
@@ -273,14 +288,14 @@ public class Configuration {
             String clazz = nodes.item(i).getAttributes().getNamedItem("class").getTextContent();
             eventClasses.put(name, clazz);
         }
-        
+
         NodeList importNodes = root.getElementsByTagName("auto-import");
         for (int i = 0; i < importNodes.getLength(); i++)
         {
             String name = importNodes.item(i).getAttributes().getNamedItem("import-name").getTextContent();
             addImport(name);
         }
-        
+
 		return this;
 	}
 
@@ -317,11 +332,12 @@ public class Configuration {
     protected void reset()
     {
         eventClasses = new HashMap<String, String>();
+        eventTypesDOM = new HashMap<String, XMLDOMEventTypeDesc>();
         imports = new ArrayList<String>();
         addDefaultImports();
         isUsingDefaultImports = true;
     }
-    
+
     /**
      * Use these imports until the user specifies something else.
      */

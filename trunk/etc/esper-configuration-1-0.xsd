@@ -4,23 +4,39 @@
 <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="esper-configuration">
 		<xs:complexType>
-			<xs:sequence maxOccurs="unbounded">
-				<xs:element ref="event-type"/>
-			</xs:sequence>
-			<xs:sequence maxOccurs="unbounded">
-				<xs:element ref="auto-import"/>
+			<xs:sequence>
+				<xs:element ref="event-type" maxOccurs="unbounded" minOccurs="0"/>
+				<xs:element ref="auto-import" maxOccurs="unbounded" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="event-type">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="xmldom-type" maxOccurs="1" minOccurs="0"/>
+			</xs:sequence>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
-			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="class" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="xmldom-type">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="xmldom-property" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="schema-uri" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="xmldom-property">
+		<xs:complexType>
+			<xs:attribute name="property-name" type="xs:string" use="required"/>
+			<xs:attribute name="xpath" type="xs:string" use="required"/>
+			<xs:attribute name="type" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="auto-import">
-		<xs:simpleType>
+		<xs:complexType>
 			<xs:attribute name="import-name" type="xs:string" use="required"/>
-		</xs:simpleType>
+		</xs:complexType>
 	</xs:element>
 </xs:schema>

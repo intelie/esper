@@ -117,7 +117,7 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes {
 		        while (child != null);
 	
 	        }
-	       // System.out.println("XPath: " + xPath);
+	        System.out.println("XPath: " + xPath);
 	        XPath path =xPathFactory.newXPath();
 	        path.setNamespaceContext(ctx);
 	        XPathExpression expr =path.compile(xPath);

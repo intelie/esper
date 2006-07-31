@@ -18,25 +18,21 @@ import org.w3c.dom.Document;
 import junit.framework.TestCase;
 
 public class TestSimpleXMLEventType extends TestCase {
+
+    private EventBean event;
 	
-	private Document simpleDoc;
-	private SimpleXMLEventType eventType;
-	private EventBean event;
-	
-	
-	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
-		simpleDoc = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream("simple.xml"));
-		
-		eventType = new SimpleXMLEventType();
-		
+		Document simpleDoc = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream("simple.xml"));
+
 		XPathFactory factory = XPathFactory.newInstance();
 		XPathExpression expression = factory.newXPath().compile("count(/simpleEvent/nested3/nested4)");  
 		Map<String,TypedEventPropertyGetter> custom = new HashMap<String,TypedEventPropertyGetter>();
 		custom.put("customProp",new XPathPropertyGetter("customProp",expression,XPathConstants.NUMBER));
+
+        SimpleXMLEventType eventType = new SimpleXMLEventType();
 		eventType.setExplicitProperties(custom);
 		eventType.setXPathFactory(factory);
 		eventType.setEventName("simpleEvent"); 

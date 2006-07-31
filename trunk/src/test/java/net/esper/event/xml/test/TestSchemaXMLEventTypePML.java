@@ -68,11 +68,8 @@ public class TestSchemaXMLEventTypePML extends TestCase {
 		InputSource source = new InputSource(ClassLoader.getSystemResourceAsStream("sensor1.xml"));
 		System.out.println(expression.evaluate(source));
 		/// Get DOM Implementation using DOM Registry
-		System.setProperty(DOMImplementationRegistry.PROPERTY,
-				DOMXSImplementationSourceImpl.class.getName());
-		
-		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-
+        DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+        registry.addSource(new DOMXSImplementationSourceImpl());		
 		XSImplementation impl =(XSImplementation) registry.getDOMImplementation("XS-Loader");
 
 		XSLoader schemaLoader = impl.createXSLoader(null);
