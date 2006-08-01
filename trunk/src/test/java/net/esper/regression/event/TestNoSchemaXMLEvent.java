@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.Configuration;
-import net.esper.client.XMLDOMEventTypeDesc;
+import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,8 +35,8 @@ public class TestNoSchemaXMLEvent extends TestCase
         updateListener = new SupportUpdateListener();
 
         Configuration configuration = new Configuration();
-        XMLDOMEventTypeDesc xmlDOMEventTypeDesc = new XMLDOMEventTypeDesc();
-        xmlDOMEventTypeDesc.setNodeName("my-noschema-xml-event");
+        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootNodeName("my-noschema-xml-event");
         xmlDOMEventTypeDesc.addProperty("element1", "/myevent/element1", XPathConstants.STRING);
         xmlDOMEventTypeDesc.addProperty("countElement21", "count(/myevent/element2/element21)", XPathConstants.NUMBER);
         configuration.addEventTypeAlias("TestXMLType", xmlDOMEventTypeDesc);

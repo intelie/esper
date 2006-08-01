@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.Configuration;
-import net.esper.client.XMLDOMEventTypeDesc;
+import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.support.util.SupportUpdateListener;
 
 import javax.xml.xpath.XPathConstants;
@@ -13,7 +13,6 @@ import java.io.StringReader;
 
 import org.xml.sax.InputSource;
 import org.w3c.dom.Document;
-import org.w3c.dom.ls.LSInput;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,7 +37,7 @@ public class TestSchemaXMLEvent extends TestCase
 
         Configuration configuration = new Configuration();
         String schemaUri = ClassLoader.getSystemResource("simpleSchema.xsd").toURI().toString();
-        XMLDOMEventTypeDesc eventTypeMeta = new XMLDOMEventTypeDesc();
+        ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
         eventTypeMeta.addProperty("countElement21", "count(/myevent/element2/element21)", XPathConstants.NUMBER);
         eventTypeMeta.setSchemaURI(schemaUri);
         configuration.addEventTypeAlias("TestXMLType", eventTypeMeta);

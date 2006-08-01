@@ -6,10 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,9 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 /**
@@ -53,7 +48,7 @@ public class Configuration {
     /**
      * Map of event name and fully-qualified Java class name.
      */
-	protected Map<String, XMLDOMEventTypeDesc> eventTypesDOM;
+	protected Map<String, ConfigurationEventTypeXMLDOM> eventTypesXMLDOM;
 
 	/**
 	 * The java-style class and package name imports that
@@ -91,9 +86,9 @@ public class Configuration {
      * @param eventTypeAlias is the alias for the event type
      * @param xmlDOMEventTypeDesc descriptor containing property and mapping information for XML-DOM events
      */
-    public void addEventTypeAlias(String eventTypeAlias, XMLDOMEventTypeDesc xmlDOMEventTypeDesc)
+    public void addEventTypeAlias(String eventTypeAlias, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
     {
-        eventTypesDOM.put(eventTypeAlias, xmlDOMEventTypeDesc);
+        eventTypesXMLDOM.put(eventTypeAlias, xmlDOMEventTypeDesc);
     }
 
     /**
@@ -111,12 +106,21 @@ public class Configuration {
     }
 
     /**
-     * Returns the mapping of event type alias to event types.
-     * @return event type aliases
+     * Returns the mapping of event type alias to Java class name.
+     * @return event type aliases for Java class names
      */
     public Map<String, String> getEventTypeAliases()
     {
         return eventClasses;
+    }
+
+    /**
+     * Returns the mapping of event type alias to XML DOM event type information
+     * @return event type aliases for XML DOC
+     */
+    public Map<String, ConfigurationEventTypeXMLDOM> getEventTypesXMLDOM()
+    {
+        return eventTypesXMLDOM;
     }
 
     /**
@@ -225,8 +229,9 @@ public class Configuration {
 	public Configuration configure(Document document) throws EPException
     {
 		log.debug( "configuring from XML document" );
-		return doConfigure(document);
-	}
+		ConfigurationParser.doConfigure(this, document);
+        return this;
+    }
 
     /**
      * Use the configuration specified in the given input stream.
@@ -269,35 +274,9 @@ public class Configuration {
             }
         }
 
-        return doConfigure(document);
+        ConfigurationParser.doConfigure(this,document);
+        return this;
     }
-
-    /**
-     * Parse the W3C DOM document.
-     * @param doc to parse
-     * @return configuration
-     * @throws EPException
-     */
-	protected Configuration doConfigure(Document doc) throws EPException
-    {
-        Element root = doc.getDocumentElement();
-        NodeList nodes = root.getElementsByTagName("event-type");
-        for (int i = 0; i < nodes.getLength(); i++)
-        {
-            String name = nodes.item(i).getAttributes().getNamedItem("alias").getTextContent();
-            String clazz = nodes.item(i).getAttributes().getNamedItem("class").getTextContent();
-            eventClasses.put(name, clazz);
-        }
-
-        NodeList importNodes = root.getElementsByTagName("auto-import");
-        for (int i = 0; i < importNodes.getLength(); i++)
-        {
-            String name = importNodes.item(i).getAttributes().getNamedItem("import-name").getTextContent();
-            addImport(name);
-        }
-
-		return this;
-	}
 
     /**
      * Returns an input stream from an application resource in the classpath.
@@ -332,7 +311,7 @@ public class Configuration {
     protected void reset()
     {
         eventClasses = new HashMap<String, String>();
-        eventTypesDOM = new HashMap<String, XMLDOMEventTypeDesc>();
+        eventTypesXMLDOM = new HashMap<String, ConfigurationEventTypeXMLDOM>();
         imports = new ArrayList<String>();
         addDefaultImports();
         isUsingDefaultImports = true;

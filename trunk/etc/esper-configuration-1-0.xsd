@@ -22,16 +22,17 @@
 	<xs:element name="xmldom-type">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="xmldom-property" maxOccurs="unbounded"/>
+				<xs:element ref="xmldom-xpath-property" maxOccurs="unbounded"/>
 			</xs:sequence>
+			<xs:attribute name="root-node-name" type="xs:string" use="required"/>
 			<xs:attribute name="schema-uri" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="xmldom-property">
+	<xs:element name="xmldom-xpath-property">
 		<xs:complexType>
 			<xs:attribute name="property-name" type="xs:string" use="required"/>
 			<xs:attribute name="xpath" type="xs:string" use="required"/>
-			<xs:attribute name="type" type="xs:string" use="required"/>
+			<xs:attribute name="type" type="xpath-qname-constant" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="auto-import">
@@ -39,4 +40,11 @@
 			<xs:attribute name="import-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="xpath-qname-constant">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NUMBER" />
+			<xs:enumeration value="STRING" />
+			<xs:enumeration value="BOOLEAN" />
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

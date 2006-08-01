@@ -4,20 +4,20 @@ import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.HashMap;
 
-public class XMLDOMEventTypeDesc
+public class ConfigurationEventTypeXMLDOM
 {
-    private String nodeName;
+    private String rootNodeName;
     private String optSchemaURI;
     private Map<String, PropertyDesc> properties;
 
-    public XMLDOMEventTypeDesc()
+    public ConfigurationEventTypeXMLDOM()
     {
         properties = new HashMap<String, PropertyDesc>();
     }
 
-    public void setNodeName(String nodeName)
+    public void setRootNodeName(String rootNodeName)
     {
-        this.nodeName = nodeName;
+        this.rootNodeName = rootNodeName;
     }
 
     public void setSchemaURI(String schemaURI)
@@ -25,9 +25,9 @@ public class XMLDOMEventTypeDesc
         this.optSchemaURI = schemaURI;
     }
 
-    public String getNodeName()
+    public String getRootNodeName()
     {
-        return nodeName;
+        return rootNodeName;
     }
 
     public String getOptSchemaURI()
