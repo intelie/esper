@@ -6,13 +6,11 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import net.esper.event.EventBean;
-import net.esper.event.TypedEventPropertyGetter;
 
 import net.esper.event.PropertyAccessException;
+import net.esper.event.TypedEventPropertyGetter;
 
 import org.w3c.dom.Node;
-
-
 
 /**
  * Getter for properties of DOM xml events.
@@ -26,7 +24,7 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 	String property;
 	QName resultType;
 	
-	public XPathPropertyGetter(String propertyName, XPathExpression xPathExpression, QName resultType) throws XPathExpressionException {
+	public XPathPropertyGetter(String propertyName, XPathExpression xPathExpression, QName resultType) {
 		this.expression = xPathExpression;
 		this.property = propertyName;
 		this.resultType = resultType;
@@ -56,8 +54,5 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 			return String.class;
 		
 		return String.class; //TODO
-		}
-		
-		
-
+	}
 }

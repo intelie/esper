@@ -1,4 +1,4 @@
-package net.esper.event.xml.test;
+package net.esper.event.xml2;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +12,9 @@ import javax.xml.xpath.XPathFactory;
 import net.esper.event.EventBean;
 import net.esper.event.TypedEventPropertyGetter;
 import net.esper.event.xml.XPathPropertyGetter;
-import net.esper.event.xml.schema.SchemaXMLEventType;
-import net.esper.event.xml.schema.XPathNamespaceContext;
+import net.esper.event.xml.SchemaXMLEventType;
+import net.esper.event.xml.XPathNamespaceContext;
+import net.esper.client.ConfigurationEventTypeXMLDOM;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -43,16 +44,11 @@ public class TestSchemaXMLEventType extends TestCase {
 		XPath xPath = factory.newXPath();
 		xPath.setNamespaceContext(ctx);
 
+        // List explicit properties
         XPathExpression expression = xPath.compile("count(/ss:simpleEvent/ss:nested3/ss:nested4)");
-		Map<String,TypedEventPropertyGetter> custom = new HashMap<String,TypedEventPropertyGetter>();
-		custom.put("customProp",new XPathPropertyGetter("customProp",expression,XPathConstants.NUMBER));
+		Map<String,TypedEventPropertyGetter> explicitProperties = new HashMap<String,TypedEventPropertyGetter>();
+		explicitProperties.put("customProp",new XPathPropertyGetter("customProp",expression,XPathConstants.NUMBER));
 
-        // Construct event type from schema
-        SchemaXMLEventType eventType = new SchemaXMLEventType();
-		eventType.setExplicitProperties(custom);
-		eventType.setXPathFactory(factory);
-		eventType.setEventName("simpleEvent");
-		
 		/// Get DOM Implementation using DOM Registry
 		System.setProperty(DOMImplementationRegistry.PROPERTY, DOMXSImplementationSourceImpl.class.getName());
 		DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
@@ -60,8 +56,13 @@ public class TestSchemaXMLEventType extends TestCase {
 		XSLoader schemaLoader = impl.createXSLoader(null);
 		String uri = ClassLoader.getSystemResource("simpleSchema.xsd").toURI().toString();
 		XSModel schema = schemaLoader.loadURI(uri);
-		eventType.setXsModel(schema);
-		
+
+        ConfigurationEventTypeXMLDOM config = new ConfigurationEventTypeXMLDOM();
+        config.setSchemaURI(null);
+        config.setRootNodeName("simpleEvent");
+        config.addProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
+        SchemaXMLEventType eventType = new SchemaXMLEventType(config);
+
 		event = eventType.newEvent(simpleDoc);
 	}
 

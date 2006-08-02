@@ -11,8 +11,6 @@ import org.w3c.dom.Node;
  * EventBean wrapper for XML documents. 
  * Currently only instances of org.w3c.dom.Node can be used
  * 
- *  
- * 
  * @author pablo
  *
  */
@@ -20,11 +18,8 @@ public class XMLEventBean implements EventBean {
 
 	private EventType eventType;
 	private Node event;
-	    
-	
 
 	public XMLEventBean(Node event, EventType type) {
-		super();
 		this.event = event;
 		eventType = type;
 	}

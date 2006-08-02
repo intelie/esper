@@ -1,8 +1,6 @@
-package net.esper.event.xml.simple;
+package net.esper.event.xml;
 
 import java.io.StringReader;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;

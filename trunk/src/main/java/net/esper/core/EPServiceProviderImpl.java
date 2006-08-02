@@ -4,7 +4,6 @@ import net.esper.client.*;
 import net.esper.eql.expression.AutoImportService;
 import net.esper.eql.expression.AutoImportServiceImpl;
 import net.esper.event.EventAdapterException;
-import net.esper.event.EventAdapterService;
 import net.esper.event.EventAdapterServiceImpl;
 
 import java.util.Map;
@@ -18,7 +17,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
     private EPRuntimeImpl runtime;
     private EPAdministratorImpl admin;
 
-    private final EventAdapterService eventAdapterService;
+    private final EventAdapterServiceImpl eventAdapterService;
     private final AutoImportService autoImportService;
 
     /**
@@ -34,6 +33,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
         Map<String, String> javaClassAliases = configuration.getEventTypeAliases();
         for (Map.Entry<String, String> entry : javaClassAliases.entrySet())
         {
+            // Add Java class alias
             try
             {
                 eventAdapterService.addBeanType(entry.getKey(), entry.getValue());
@@ -44,6 +44,22 @@ public class EPServiceProviderImpl implements EPServiceProvider
             }
         }
         
+        // Add from the configuration the XML DOM aliases and type def
+        Map<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = configuration.getEventTypesXMLDOM();
+        for (Map.Entry<String, ConfigurationEventTypeXMLDOM> entry : xmlDOMAliases.entrySet())
+        {
+            // Add Java class alias
+            try
+            {
+                eventAdapterService.addXMLDOMType(entry.getKey(), entry.getValue());
+            }
+            catch (EventAdapterException ex)
+            {
+                throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
+            }
+        }
+
+        // Add auto-imports
         try
         {
         	autoImportService = new AutoImportServiceImpl(configuration.getImports().toArray(new String[0]));

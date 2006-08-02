@@ -42,19 +42,26 @@ public class ConfigurationEventTypeXMLDOM
 
     public void addProperty(String name, String xpath, QName type)
     {
-        PropertyDesc desc = new PropertyDesc(xpath, type);
+        PropertyDesc desc = new PropertyDesc(name, xpath, type);
         properties.put(name, desc);
     }
 
     public class PropertyDesc
     {
+        private String name;
         private String xpath;
         private QName type;
 
-        public PropertyDesc(String xpath, QName type)
+        public PropertyDesc(String name, String xpath, QName type)
         {
+            this.name = name;
             this.xpath = xpath;
             this.type = type;
+        }
+
+        public String getName()
+        {
+            return name;
         }
 
         public String getXpath()

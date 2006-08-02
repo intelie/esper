@@ -1,14 +1,9 @@
-package net.esper.event.xml.test;
+package net.esper.event.xml2;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -17,9 +12,9 @@ import javax.xml.xpath.XPathFactory;
 import net.esper.event.EventBean;
 import net.esper.event.TypedEventPropertyGetter;
 import net.esper.event.xml.XPathPropertyGetter;
-import net.esper.event.xml.schema.SchemaXMLEventType;
-import net.esper.event.xml.schema.XPathNamespaceContext;
-import net.esper.event.xml.simple.SimpleXMLEventType;
+import net.esper.event.xml.SchemaXMLEventType;
+import net.esper.event.xml.XPathNamespaceContext;
+import net.esper.client.ConfigurationEventTypeXMLDOM;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -34,22 +29,15 @@ import junit.framework.TestCase;
 
 public class TestSchemaXMLEventTypePML extends TestCase {
 
-	private Document simpleDoc;
-	private SchemaXMLEventType eventType;
-	private EventBean event;
+    private EventBean event;
 	
-	
-	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		builderFactory.setNamespaceAware(true);
-		simpleDoc = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream("sensor1.xml"));
-		eventType = new SchemaXMLEventType();
-		
-		
+		Document simpleDoc = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream("sensor1.xml"));
+
 		XPathFactory factory = XPathFactory.newInstance();
-		 
 			
 		XPathNamespaceContext ctx = new XPathNamespaceContext();
 		ctx.addPrefix("pmlcore","urn:autoid:specification:interchange:PMLCore:xml:schema:1");
@@ -58,13 +46,9 @@ public class TestSchemaXMLEventTypePML extends TestCase {
 		xPath.setNamespaceContext(ctx);
 		XPathExpression expression = xPath.compile("count(/pmlcore:Sensor/pmlcore:Observation/pmlcore:Tag)");
 
-		Map<String,TypedEventPropertyGetter> custom = new HashMap<String,TypedEventPropertyGetter>();
-		custom.put("customProp",new XPathPropertyGetter("customProp",expression,XPathConstants.NUMBER));
-		eventType.setExplicitProperties(custom);
-		eventType.setXPathFactory(factory);
-		eventType.setEventName("Sensor");
-		eventType.setNamespace("urn:autoid:specification:interchange:PMLCore:xml:schema:1");
-		
+		Map<String,TypedEventPropertyGetter> explicitProperties = new HashMap<String, TypedEventPropertyGetter>();
+		explicitProperties.put("customProp",new XPathPropertyGetter("customProp",expression,XPathConstants.NUMBER));
+
 		InputSource source = new InputSource(ClassLoader.getSystemResourceAsStream("sensor1.xml"));
 		System.out.println(expression.evaluate(source));
 		/// Get DOM Implementation using DOM Registry
@@ -75,8 +59,14 @@ public class TestSchemaXMLEventTypePML extends TestCase {
 		XSLoader schemaLoader = impl.createXSLoader(null);
 		String uri = ClassLoader.getSystemResource("PmlCore.xsd").toURI().toString();
 		XSModel schema = schemaLoader.loadURI(uri);
-		eventType.setXsModel(schema);
-		
+
+        ConfigurationEventTypeXMLDOM config = new ConfigurationEventTypeXMLDOM();
+        config.setSchemaURI(null);
+        config.setRootNodeName("simpleEvent");
+        config.addProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
+        SchemaXMLEventType eventType = new SchemaXMLEventType(config);
+        //explicitProperties, factory, schema, "Sensor", "urn:autoid:specification:interchange:PMLCore:xml:schema:1");
+
 		event = eventType.newEvent(simpleDoc);
 	}
 

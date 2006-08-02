@@ -50,16 +50,32 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             log.debug(".sendEvent Processing event " + event);
         }
 
-        // Process event and dispatch results
-        processEvent(event);
-        dispatch();
+        // Process event
+        processBeanEvent(event);
 
-        // Work off the event queue if any events accumulated in there via a route()
-        while ( (event = threadWorkQueue.next()) != null)
+        // Dispatch results, work off thread queue
+        postProcessEvent();
+    }
+
+    public void sendEvent(org.w3c.dom.Document document) throws EPException
+    {
+        if (document == null)
         {
-            processEvent(event);
-            dispatch();
+            log.fatal(".sendEvent Null object supplied");
+            return;
         }
+
+        if (log.isDebugEnabled())
+        {
+            log.debug(".sendEvent Processing DOM node event " + document);
+        }
+
+        // Get it wrapped up, process event
+        EventBean eventBean = services.getEventAdapterService().adapterForDOM(document);
+        processWrappedEvent(eventBean);
+
+        // Dispatch results, work off thread queue
+        postProcessEvent();
     }
 
     public int getNumEventsReceived()
@@ -114,7 +130,21 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         sendEvent(currentTimeEvent);
     }
 
-    private void processEvent(Object event)
+    private void postProcessEvent() throws EPException
+    {
+        // Dispatch internal work items and results
+        dispatch();
+
+        // Work off the event queue if any events accumulated in there via a route()
+        Object event;
+        while ( (event = threadWorkQueue.next()) != null)
+        {
+            processBeanEvent(event);
+            dispatch();
+        }
+    }
+
+    private void processBeanEvent(Object event)
     {
         if (event instanceof TimerEvent)
         {
@@ -122,7 +152,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
         else
         {
-            processRegularEvent(event);
+            processUnwrappedEvent(event);
         }
     }
 
@@ -174,23 +204,28 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         dispatch();
     }
 
-    private void processRegularEvent(Object event)
+    private void processUnwrappedEvent(Object event)
     {
         EventBean eventBean = null;
 
-        // All events are processed by the filter service
-        timerRWLock.readLock().lock();
+        if (event instanceof EventBean)
+        {
+            eventBean = (EventBean) event;
+        }
+        else
+        {
+            eventBean = services.getEventAdapterService().adapterForBean(event);
+        }
 
+        processWrappedEvent(eventBean);
+    }
+
+    private void processWrappedEvent(EventBean eventBean)
+    {
+        // All events are processed by the filter service
         try
         {
-            if (event instanceof EventBean)
-            {
-                eventBean = (EventBean) event;
-            }
-            else
-            {
-                eventBean = services.getEventAdapterService().adapterForBean(event);
-            }
+            timerRWLock.readLock().lock();
 
             services.getFilterService().evaluate(eventBean);
         }

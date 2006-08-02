@@ -1,4 +1,4 @@
-package net.esper.event.xml.schema;
+package net.esper.event.xml;
 
 import java.io.StringReader;
 
@@ -14,7 +14,6 @@ import com.sun.org.apache.xerces.internal.xs.XSAttributeUse;
 import com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition;
 import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
 import com.sun.org.apache.xerces.internal.xs.XSModel;
-import com.sun.org.apache.xerces.internal.xs.XSNamespaceItemList;
 import com.sun.org.apache.xerces.internal.xs.XSObject;
 import com.sun.org.apache.xerces.internal.xs.XSParticle;
 import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
@@ -26,6 +25,7 @@ import net.esper.eql.generated.EqlTokenTypes;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.PropertyAccessException;
 import net.esper.event.xml.XPathPropertyGetter;
+import net.esper.event.xml.SchemaUtil;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
 import antlr.RecognitionException;

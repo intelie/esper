@@ -1,7 +1,14 @@
 package net.esper.event;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.util.Map;
 import java.util.HashMap;
+
+import net.esper.client.ConfigurationEventTypeXMLDOM;
+import net.esper.event.xml.SimpleXMLEventType;
+import net.esper.event.xml.XMLEventBean;
 
 /**
  * Implementation for resolving event name to event type.
@@ -10,6 +17,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 {
     private Map<String, EventType> eventTypes;
     private BeanEventAdapter beanEventAdapter;
+    private Map<String, EventType> rootNodeTypes;
 
     /**
      * Ctor.
@@ -17,6 +25,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public EventAdapterServiceImpl()
     {
         eventTypes = new HashMap<String, EventType>();
+        rootNodeTypes = new HashMap<String, EventType>();
         beanEventAdapter = new BeanEventAdapter();
     }
 
@@ -146,7 +155,33 @@ public class EventAdapterServiceImpl implements EventAdapterService
             types.put(fieldNames[i], fieldTypes[i]);
         }
 
-        EventType eventType = createAnonymousMapType(types);
-        return eventType;
+        return createAnonymousMapType(types);
+    }
+
+    public EventBean adapterForDOM(Document document)
+    {
+        Element rootElement = document.getDocumentElement();
+        String rootNodeName = rootElement.getNodeName();
+
+        EventType eventType = rootNodeTypes.get(rootNodeName);
+        if (eventType == null)
+        {
+            throw new EventAdapterException("DOM event root node '" + rootNodeName +
+                    "' has not been configured");
+        }
+
+        EventBean event = new XMLEventBean(document, eventType);
+
+        return event;
+    }
+
+    public void addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    {
+        if (configurationEventTypeXMLDOM.getOptSchemaURI() == null)
+        {
+            EventType type = new SimpleXMLEventType(configurationEventTypeXMLDOM);
+            eventTypes.put(eventTypeAlias, type);
+            rootNodeTypes.put(configurationEventTypeXMLDOM.getRootNodeName(), type);
+        }
     }
 }

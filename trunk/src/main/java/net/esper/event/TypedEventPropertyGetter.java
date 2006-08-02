@@ -1,7 +1,5 @@
 package net.esper.event;
 
-import net.esper.event.EventPropertyGetter;
-
 /**
  * 
  * @author pablo

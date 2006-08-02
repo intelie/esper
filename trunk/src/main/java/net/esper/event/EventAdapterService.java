@@ -1,5 +1,7 @@
 package net.esper.event;
 
+import org.w3c.dom.Document;
+
 import java.util.Map;
 
 /**
@@ -115,4 +117,6 @@ public interface EventAdapterService
      * @return new event type
      */
     public EventType createAddToEventType(EventType originalType, String[] fieldNames, Class[] fieldTypes);
+
+    public EventBean adapterForDOM(Document document);
 }

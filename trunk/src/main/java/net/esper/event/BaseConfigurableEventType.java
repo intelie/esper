@@ -6,37 +6,26 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * EventType than can be supplied with a preconfigured list of 
- * properties getters.
- * 
+ * EventType than can be supplied with a preconfigured list of properties getters.
  * 
  * @author pablo
- *
  */
 public abstract class BaseConfigurableEventType implements EventType {
 	
+    private Class underlyngType;
 	private Map<String,TypedEventPropertyGetter> explicitProperties;
-	private Class underlyngType;
 
-	/**
-	 * 
-	 * 	@param explicitProperties getters for preconfigured properties
-	 */
-	public void setExplicitProperties(
-			Map<String, TypedEventPropertyGetter> explicitProperties) {
-		this.explicitProperties = explicitProperties;
-	}
+    protected BaseConfigurableEventType(Class underlyngType)
+    {
+        this.underlyngType = underlyngType;
+    }
 
-	/**
-	 * 
-	 * @param underlyngType class of Events that this type can manage
-	 */
-	public void setUnderlyngType(Class underlyngType) {
-		this.underlyngType = underlyngType;
-	}
+    public void setExplicitProperties(Map<String, TypedEventPropertyGetter> explicitProperties)
+    {
+        this.explicitProperties = explicitProperties;
+    }
 
-	
-	public Class getPropertyType(String property) {
+    public Class getPropertyType(String property) {
 		TypedEventPropertyGetter getter = explicitProperties.get(property);
 		if (getter != null)
 			return getter.getResultClass();
@@ -83,10 +72,4 @@ public abstract class BaseConfigurableEventType implements EventType {
 	 * @return property type
 	 */
 	protected abstract Class doResolvePropertyType(String property);
-	
-	
-	
-
-	
-
 }

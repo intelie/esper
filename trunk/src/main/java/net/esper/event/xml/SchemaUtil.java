@@ -1,4 +1,4 @@
-package net.esper.event.xml.schema;
+package net.esper.event.xml;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;

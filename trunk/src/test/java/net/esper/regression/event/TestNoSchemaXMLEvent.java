@@ -1,11 +1,9 @@
 package net.esper.regression.event;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.Configuration;
-import net.esper.client.ConfigurationEventTypeXMLDOM;
+import net.esper.client.*;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
@@ -17,6 +15,7 @@ import java.io.StringReader;
 
 public class TestNoSchemaXMLEvent extends TestCase
 {
+    private EPServiceProvider epService;
     private SupportUpdateListener updateListener;
 
     private static String XML =
@@ -30,29 +29,36 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     public void setUp()
     {
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        Configuration configuration = new Configuration();
+        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootNodeName("myevent");
+        xmlDOMEventTypeDesc.addProperty("xpathElement1", "/myevent/element1", XPathConstants.STRING);
+        xmlDOMEventTypeDesc.addProperty("xpathCountE21", "count(/myevent/element2/element21)", XPathConstants.NUMBER);
+        configuration.addEventTypeAlias("TestXMLType", xmlDOMEventTypeDesc);
+
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
         updateListener = new SupportUpdateListener();
 
-        Configuration configuration = new Configuration();
-        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
-        xmlDOMEventTypeDesc.setRootNodeName("my-noschema-xml-event");
-        xmlDOMEventTypeDesc.addProperty("element1", "/myevent/element1", XPathConstants.STRING);
-        xmlDOMEventTypeDesc.addProperty("countElement21", "count(/myevent/element2/element21)", XPathConstants.NUMBER);
-        configuration.addEventTypeAlias("TestXMLType", xmlDOMEventTypeDesc);
+        String stmt = "select element1, xpathElement1, xpathCountE21 from TestXMLType.win:length(100)";
 
-        // for schemas: xmlDOMEventTypeDesc.setSchemaURI("uri");
-
-        //String stmt = "select element1 from TestXMLType.win:length(100)";
-
-        //EPStatement joinView = epService.getEPAdministrator().createEQL(stmt);
-        //joinView.addListener(updateListener);
+        EPStatement joinView = epService.getEPAdministrator().createEQL(stmt);
+        joinView.addListener(updateListener);
     }
 
     public void testSimpleXML() throws Exception
     {
         sendEvent("test");
+        assertData("test", 2);
+    }
+
+    private void assertData(String element1, double count)
+    {
         assertNotNull(updateListener.getLastNewData());
+        EventBean event = updateListener.getLastNewData()[0];
+        assertEquals(element1, event.get("element1"));
+        assertEquals(element1, event.get("xpathElement1"));
+        assertEquals(count, event.get("xpathCountE21"));
     }
 
     private void sendEvent(String value) throws Exception
@@ -66,7 +72,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         builderFactory.setNamespaceAware(true);
         Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);
 
-        //epService.getEPRuntime().sendEvent(simpleDoc, "TestXMLType");
+        epService.getEPRuntime().sendEvent(simpleDoc);
     }
 
     private static final Log log = LogFactory.getLog(TestNoSchemaXMLEvent.class);

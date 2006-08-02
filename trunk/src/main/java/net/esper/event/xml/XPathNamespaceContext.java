@@ -1,4 +1,4 @@
-package net.esper.event.xml.schema;
+package net.esper.event.xml;
 
 import java.util.HashMap;
 import java.util.Iterator;

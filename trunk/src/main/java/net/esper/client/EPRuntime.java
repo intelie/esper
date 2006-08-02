@@ -17,6 +17,16 @@ public interface EPRuntime
     public void sendEvent(Object object) throws EPException;
 
     /**
+     * Send an event represented by a DOM document node to the event stream processing runtime.
+     *
+     * Use the route method for events internally within the runtime.
+     *
+     * @param document is the DOM document node as an event
+     * @throws EPException is thrown when the processing of the event lead to an error
+     */
+    public void sendEvent(org.w3c.dom.Document document) throws EPException;
+
+    /**
      * Number of events received over the lifetime of the event stream processing runtime.
      * @return number of events received
      */
