@@ -105,23 +105,28 @@ class ConfigurationParser {
 
     private static void handleXMLDOM(String aliasName, Configuration configuration, Element xmldomElement)
     {
-        String rootNodeName = xmldomElement.getAttributes().getNamedItem("root-node-name").getTextContent();
-        String schemaURI = null;
-        Node schemaURINode = xmldomElement.getAttributes().getNamedItem("schema-uri");
-        if (schemaURINode != null)
-        {
-            schemaURI = schemaURINode.getTextContent();
-        }
+        String rootElementName = xmldomElement.getAttributes().getNamedItem("root-element-name").getTextContent();
+        String rootElementNamespace = getOptionalAttribute(xmldomElement, "root-element-namespace");
+        String schemaURI = getOptionalAttribute(xmldomElement, "schema-uri");
+        String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
 
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
-        xmlDOMEventTypeDesc.setRootNodeName(rootNodeName);
+        xmlDOMEventTypeDesc.setRootElementName(rootElementName);
         xmlDOMEventTypeDesc.setSchemaURI(schemaURI);
+        xmlDOMEventTypeDesc.setRootElementNamespace(rootElementNamespace);
+        xmlDOMEventTypeDesc.setDefaultNamespace(defaultNamespace);
         configuration.addEventTypeAlias(aliasName, xmlDOMEventTypeDesc);
 
         ElementIterator propertyNodeIterator = new ElementIterator(xmldomElement.getChildNodes());
         while (propertyNodeIterator.hasNext())
         {
             Element propertyElement = propertyNodeIterator.next();
+            if (propertyElement.getNodeName().equals("xmldom-namespace-prefix"))
+            {
+                String prefix = propertyElement.getAttributes().getNamedItem("prefix").getTextContent();
+                String namespace = propertyElement.getAttributes().getNamedItem("namespace").getTextContent();
+                xmlDOMEventTypeDesc.addNamespacePefix(prefix, namespace);
+            }
             if (propertyElement.getNodeName().equals("xmldom-xpath-property"))
             {
                 String propertyName = propertyElement.getAttributes().getNamedItem("property-name").getTextContent();
@@ -258,6 +263,16 @@ class ConfigurationParser {
         }
 
         return qnames.toString();
+    }
+
+    private static String getOptionalAttribute(Node node, String key)
+    {
+        Node valueNode = node.getAttributes().getNamedItem(key);
+        if (valueNode != null)
+        {
+            return valueNode.getTextContent();
+        }
+        return null;
     }
 
     private static class ElementIterator implements Iterator

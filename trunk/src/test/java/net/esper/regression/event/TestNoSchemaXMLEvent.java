@@ -31,7 +31,7 @@ public class TestNoSchemaXMLEvent extends TestCase
     {
         Configuration configuration = new Configuration();
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
-        xmlDOMEventTypeDesc.setRootNodeName("myevent");
+        xmlDOMEventTypeDesc.setRootElementName("myevent");
         xmlDOMEventTypeDesc.addProperty("xpathElement1", "/myevent/element1", XPathConstants.STRING);
         xmlDOMEventTypeDesc.addProperty("xpathCountE21", "count(/myevent/element2/element21)", XPathConstants.NUMBER);
         configuration.addEventTypeAlias("TestXMLType", xmlDOMEventTypeDesc);
@@ -40,7 +40,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         epService.initialize();
         updateListener = new SupportUpdateListener();
 
-        String stmt = "select element1, xpathElement1, xpathCountE21 from TestXMLType.win:length(100)";
+        String stmt = "select element1, xpathElement1, xpathCountE21, NotAProp from TestXMLType.win:length(100)";
 
         EPStatement joinView = epService.getEPAdministrator().createEQL(stmt);
         joinView.addListener(updateListener);
@@ -59,6 +59,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals(element1, event.get("element1"));
         assertEquals(element1, event.get("xpathElement1"));
         assertEquals(count, event.get("xpathCountE21"));
+        assertNull(event.get("NotAProp"));
     }
 
     private void sendEvent(String value) throws Exception

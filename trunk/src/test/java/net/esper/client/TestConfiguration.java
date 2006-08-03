@@ -62,9 +62,19 @@ public class TestConfiguration extends TestCase
         assertEquals(2, config.getEventTypesXMLDOM().size());
 
         ConfigurationEventTypeXMLDOM noSchemaDesc = config.getEventTypesXMLDOM().get("MyNoSchemaXMLEventAlias");
-        assertEquals("MyNoSchemaEvent", noSchemaDesc.getRootNodeName());
+        assertEquals("MyNoSchemaEvent", noSchemaDesc.getRootElementName());
         assertEquals("/myevent/element1", noSchemaDesc.getProperties().get("element1").getXpath());
         assertEquals(XPathConstants.NUMBER, noSchemaDesc.getProperties().get("element1").getType());
+
+        ConfigurationEventTypeXMLDOM schemaDesc = config.getEventTypesXMLDOM().get("MySchemaXMLEventAlias");
+        assertEquals("MySchemaEvent", schemaDesc.getRootElementName());
+        assertEquals("MySchemaXMLEvent.xsd", schemaDesc.getSchemaURI());
+        assertEquals("http://esper.codehaus.net/samples/schemas/simpleSchema", schemaDesc.getRootElementNamespace());
+        assertEquals("default-name-space", schemaDesc.getDefaultNamespace());
+        assertEquals("/myevent/element1", schemaDesc.getProperties().get("element1").getXpath());
+        assertEquals(XPathConstants.NUMBER, schemaDesc.getProperties().get("element1").getType());
+        assertEquals(1, schemaDesc.getNamespacePrefixes().size());
+        assertEquals("http://esper.codehaus.net/samples/schemas/simpleSchema", schemaDesc.getNamespacePrefixes().get("ss"));
     }
 
     private void assertDefaultConfig()

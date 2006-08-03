@@ -13,6 +13,15 @@
     <orderEntry type="library" name="jesp_runtime" level="project" />
     <orderEntry type="library" name="jesp_test" level="project" />
     <orderEntry type="module" module-name="esper" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../etc" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
 </module>

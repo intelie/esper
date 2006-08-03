@@ -1,4 +1,4 @@
-package net.esper.event.xml2;
+package net.esper.event.xml;
 
 import junit.framework.TestCase;
 import org.xml.sax.InputSource;

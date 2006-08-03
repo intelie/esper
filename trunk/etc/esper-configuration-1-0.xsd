@@ -5,15 +5,15 @@
 	<xs:element name="esper-configuration">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="event-type" maxOccurs="unbounded" minOccurs="0"/>
-				<xs:element ref="auto-import" maxOccurs="unbounded" minOccurs="0"/>
+				<xs:element ref="event-type" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="auto-import" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="event-type">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="xmldom-type" maxOccurs="1" minOccurs="0"/>
+				<xs:element ref="xmldom-type" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
 			<xs:attribute name="class" type="xs:string" use="optional"/>
@@ -22,10 +22,19 @@
 	<xs:element name="xmldom-type">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="xmldom-xpath-property" maxOccurs="unbounded"/>
+				<xs:element ref="xmldom-namespace-prefix" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="xmldom-xpath-property" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="root-node-name" type="xs:string" use="required"/>
+			<xs:attribute name="root-element-name" type="xs:string" use="required"/>
+			<xs:attribute name="root-element-namespace" type="xs:string" use="optional"/>
+			<xs:attribute name="default-namespace" type="xs:string" use="optional"/>
 			<xs:attribute name="schema-uri" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="xmldom-namespace-prefix">
+		<xs:complexType>
+			<xs:attribute name="prefix" type="xs:string" use="required"/>
+			<xs:attribute name="namespace" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="xmldom-xpath-property">
@@ -42,9 +51,9 @@
 	</xs:element>
 	<xs:simpleType name="xpath-qname-constant">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="NUMBER" />
-			<xs:enumeration value="STRING" />
-			<xs:enumeration value="BOOLEAN" />
+			<xs:enumeration value="NUMBER"/>
+			<xs:enumeration value="STRING"/>
+			<xs:enumeration value="BOOLEAN"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

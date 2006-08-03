@@ -9,6 +9,7 @@ import java.util.HashMap;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.event.xml.SimpleXMLEventType;
 import net.esper.event.xml.XMLEventBean;
+import net.esper.event.xml.SchemaXMLEventType;
 
 /**
  * Implementation for resolving event name to event type.
@@ -177,11 +178,17 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     public void addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
-        if (configurationEventTypeXMLDOM.getOptSchemaURI() == null)
+        if (configurationEventTypeXMLDOM.getSchemaURI() == null)
         {
             EventType type = new SimpleXMLEventType(configurationEventTypeXMLDOM);
             eventTypes.put(eventTypeAlias, type);
-            rootNodeTypes.put(configurationEventTypeXMLDOM.getRootNodeName(), type);
+            rootNodeTypes.put(configurationEventTypeXMLDOM.getRootElementName(), type);
+        }
+        else
+        {
+            EventType type = new SchemaXMLEventType(configurationEventTypeXMLDOM);
+            eventTypes.put(eventTypeAlias, type);
+            rootNodeTypes.put(configurationEventTypeXMLDOM.getRootElementName(), type);
         }
     }
 }

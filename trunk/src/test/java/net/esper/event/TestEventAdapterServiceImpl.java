@@ -136,7 +136,7 @@ public class TestEventAdapterServiceImpl extends TestCase
     public void testAdapterForDOM() throws Exception
     {
         ConfigurationEventTypeXMLDOM config = new ConfigurationEventTypeXMLDOM();
-        config.setRootNodeName("simpleEvent");
+        config.setRootElementName("simpleEvent");
         config.addProperty("nested1", "/simpleEvent/nested1", XPathConstants.STRING);
         adapterService.addXMLDOMType("MyEvent", config);
         

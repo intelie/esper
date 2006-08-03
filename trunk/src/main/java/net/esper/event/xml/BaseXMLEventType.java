@@ -87,10 +87,6 @@ public class BaseXMLEventType extends BaseConfigurableEventType {
         return null;
     }
 
-    public EventBean newEvent(Object event) {
-        return new XMLEventBean((Node)event,this);
-    }
-
     protected String[] doListPropertyNames() {
         return EMPTY_STRING_ARRAY;
     }

@@ -26,7 +26,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
 
     public SimpleXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
-        super(configurationEventTypeXMLDOM.getRootNodeName());
+        super(configurationEventTypeXMLDOM.getRootElementName());
         super.setExplicitProperties(configurationEventTypeXMLDOM.getProperties().values());
     }
 

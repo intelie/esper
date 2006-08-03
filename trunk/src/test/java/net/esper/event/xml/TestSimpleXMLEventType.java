@@ -1,4 +1,4 @@
-package net.esper.event.xml2;
+package net.esper.event.xml;
 
 import java.io.StringReader;
 
@@ -50,11 +50,11 @@ public class TestSimpleXMLEventType extends TestCase {
 		Document simpleDoc = builderFactory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
 
         ConfigurationEventTypeXMLDOM config = new ConfigurationEventTypeXMLDOM();
-        config.setRootNodeName("simpleEvent");
+        config.setRootElementName("simpleEvent");
         config.addProperty("customProp", "count(/simpleEvent/nested3/nested4)", XPathConstants.NUMBER);
 
         SimpleXMLEventType eventType = new SimpleXMLEventType(config);
-		event = eventType.newEvent(simpleDoc);
+		event = new XMLEventBean(simpleDoc, eventType);
 	}
 
 	public void testSimpleProperies() {

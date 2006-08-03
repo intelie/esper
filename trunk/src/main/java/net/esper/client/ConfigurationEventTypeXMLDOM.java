@@ -6,33 +6,65 @@ import java.util.HashMap;
 
 public class ConfigurationEventTypeXMLDOM
 {
-    private String rootNodeName;
-    private String optSchemaURI;
+    private String rootElementName;
+
+    // Root element namespace.
+    // Used to find root element in schema. Useful and required in the case where the root element exists in
+    // multiple namespaces.
+    private String rootElementNamespace;
+
+    // Default name space.
+    // For XPath expression evaluation.
+    private String defaultNamespace;
+    
+    private String schemaURI;
     private Map<String, PropertyDesc> properties;
+    private Map<String, String> namespacePrefixes;
 
     public ConfigurationEventTypeXMLDOM()
     {
         properties = new HashMap<String, PropertyDesc>();
+        namespacePrefixes = new HashMap<String, String>();
     }
 
-    public void setRootNodeName(String rootNodeName)
+    public void setRootElementName(String rootElementName)
     {
-        this.rootNodeName = rootNodeName;
+        this.rootElementName = rootElementName;
     }
 
     public void setSchemaURI(String schemaURI)
     {
-        this.optSchemaURI = schemaURI;
+        this.schemaURI = schemaURI;
     }
 
-    public String getRootNodeName()
+    public String getRootElementNamespace()
     {
-        return rootNodeName;
+        return rootElementNamespace;
     }
 
-    public String getOptSchemaURI()
+    public void setRootElementNamespace(String rootElementNamespace)
     {
-        return optSchemaURI;
+        this.rootElementNamespace = rootElementNamespace;
+    }
+
+    public String getDefaultNamespace()
+    {
+        return defaultNamespace;
+    }
+
+    public void setDefaultNamespace(String defaultNamespace)
+    {
+        this.defaultNamespace = defaultNamespace;
+    }
+
+    public String getRootElementName()
+    {
+        return rootElementName;
+    }
+
+    public String getSchemaURI()
+    {
+        return schemaURI;
     }
 
     public Map<String, PropertyDesc> getProperties()
@@ -40,10 +72,20 @@ public class ConfigurationEventTypeXMLDOM
         return properties;
     }
 
+    public Map<String, String> getNamespacePrefixes()
+    {
+        return namespacePrefixes;
+    }
+
     public void addProperty(String name, String xpath, QName type)
     {
         PropertyDesc desc = new PropertyDesc(name, xpath, type);
         properties.put(name, desc);
+    }
+
+    public void addNamespacePefix(String prefix, String namespace)
+    {
+        namespacePrefixes.put(prefix, namespace);
     }
 
     public class PropertyDesc
