@@ -3,14 +3,15 @@ package net.esper.regression.event;
 import junit.framework.TestCase;
 import net.esper.client.*;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.event.EventBean;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
-import java.net.URL;
 
 import org.xml.sax.InputSource;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -51,19 +52,20 @@ public class TestSchemaXMLEvent extends TestCase
 
     public void setUp() throws Exception
     {
-        Configuration configuration = new Configuration();
-        ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
-        String schemaUri = ClassLoader.getSystemResource(CLASSLOADER_SCHEMA_URI).toURI().toString();
-        eventTypeMeta.setSchemaURI(schemaUri);
-        eventTypeMeta.addProperty("countElement21", "count(/myevent/element2/element21)", XPathConstants.NUMBER);
-        configuration.addEventTypeAlias("TestXMLType", eventTypeMeta);
-
-        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig());
         epService.initialize();
         updateListener = new SupportUpdateListener();
 
-
-        String stmt = "select element1 from TestXMLType.win:length(100)";
+        String stmt =
+                "select nested1 as nodeProp," +
+                        "prop4 as nested1Prop," +
+                        "nested1.prop2 as nested2Prop," +
+                        "nested3.nested4('a').prop5[1] as complexProp," +
+                        "nested1.nested2.prop3[2] as indexedProp," +
+                        "customProp," +
+                        "prop4.attr2 as attrOneProp," +
+                        "nested3.nested4[2].id as attrTwoProp" +
+                " from TestXMLSchemaType.win:length(100)";
 
         EPStatement joinView = epService.getEPAdministrator().createEQL(stmt);
         joinView.addListener(updateListener);
@@ -72,16 +74,57 @@ public class TestSchemaXMLEvent extends TestCase
     public void testSimpleXML() throws Exception
     {
         sendEvent("test");
+        assertData();
+    }
+
+    public void testInvalid()
+    {
+        try
+        {
+            epService.getEPAdministrator().createEQL("select element1 from TestXMLSchemaType.win:length(100)");
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error starting view: Failed to locate property 'element1' in schema [select element1 from TestXMLSchemaType.win:length(100)]", ex.getMessage());
+        }
+    }
+
+    private void assertData()
+    {
         assertNotNull(updateListener.getLastNewData());
+        EventBean event = updateListener.getLastNewData()[0];
+
+        assertTrue(event.get("nodeProp") instanceof Node);
+        assertEquals("SAMPLE_V6", event.get("nested1Prop"));
+        assertEquals(true, event.get("nested2Prop"));
+        assertEquals("SAMPLE_V7", event.get("complexProp"));
+        assertEquals(4.0, event.get("indexedProp"));
+        assertEquals(3.0, event.get("customProp"));
+        assertEquals(true, event.get("attrOneProp"));
+        assertEquals("b", event.get("attrTwoProp"));
+    }
+
+    private Configuration getConfig()
+    {
+        Configuration configuration = new Configuration();
+        ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
+        eventTypeMeta.setRootElementName("simpleEvent");
+        String schemaUri = ClassLoader.getSystemResource(CLASSLOADER_SCHEMA_URI).toString();
+        eventTypeMeta.setSchemaURL(schemaUri);
+        eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
+        eventTypeMeta.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
+        configuration.addEventTypeAlias("TestXMLSchemaType", eventTypeMeta);
+
+        return configuration;
     }
 
     private void sendEvent(String value) throws Exception
     {
         String xml = TestSchemaXMLEvent.XML.replaceAll("VAL1", value);
-        TestSchemaXMLEvent.log.debug(".sendEvent value=" + value);
+        log.debug(".sendEvent value=" + value);
 
-        StringReader reader = new StringReader(xml);
-        InputSource source = new InputSource(reader);
+        InputSource source = new InputSource(new StringReader(xml));
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
         Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);

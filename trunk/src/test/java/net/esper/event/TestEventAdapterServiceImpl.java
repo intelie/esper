@@ -1,9 +1,5 @@
 package net.esper.event;
 
-import net.esper.event.EventType;
-import net.esper.event.EventBean;
-import net.esper.event.EventAdapterException;
-import net.esper.event.EventAdapterServiceImpl;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
@@ -15,6 +11,7 @@ import java.io.StringReader;
 
 import org.xml.sax.InputSource;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
@@ -133,25 +130,45 @@ public class TestEventAdapterServiceImpl extends TestCase
         assertEquals(Integer.class, newEventType.getPropertyType("test"));
     }
 
+    public void testAddXMLDOMType() throws Exception
+    {
+        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig());
+        EventType eventType = adapterService.getEventType("XMLDOMTypeOne");
+        assertEquals(Node.class, eventType.getUnderlyingType());
+
+        try
+        {
+            adapterService.addXMLDOMType("a", new ConfigurationEventTypeXMLDOM());
+            fail();
+        }
+        catch (EventAdapterException ex)
+        {
+            // expected
+        }
+    }
+
     public void testAdapterForDOM() throws Exception
     {
-        ConfigurationEventTypeXMLDOM config = new ConfigurationEventTypeXMLDOM();
-        config.setRootElementName("simpleEvent");
-        config.addProperty("nested1", "/simpleEvent/nested1", XPathConstants.STRING);
-        adapterService.addXMLDOMType("MyEvent", config);
-        
+        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig());
+
         String xml =
                 "<simpleEvent>\n" +
                 "  <nested1>value</nested1>\n" +
                 "</simpleEvent>";
 
-        StringReader reader = new StringReader(xml);
-        InputSource source = new InputSource(reader);
+        InputSource source = new InputSource(new StringReader(xml));
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        builderFactory.setNamespaceAware(true);
         Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);
 
         EventBean bean = adapterService.adapterForDOM(simpleDoc);
         assertEquals("value", bean.get("nested1"));
+    }
+
+    private static ConfigurationEventTypeXMLDOM getXMLDOMConfig()
+    {
+        ConfigurationEventTypeXMLDOM config = new ConfigurationEventTypeXMLDOM();
+        config.setRootElementName("simpleEvent");
+        config.addXPathProperty("nested1", "/simpleEvent/nested1", XPathConstants.STRING);
+        return config;
     }
 }

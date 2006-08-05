@@ -21,13 +21,17 @@ import java.util.*;
  *
  * @author pablo
  */
-public class BaseXMLEventType extends BaseConfigurableEventType {
+public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private final XPathFactory xPathFactory;
     private final String rootElementName;
     private XPathNamespaceContext namespaceContext;
 
+    /**
+     * Ctor.
+     * @param rootElementName is the name of the root element
+     */
     public BaseXMLEventType(String rootElementName)
     {
         super(Node.class);
@@ -35,17 +39,29 @@ public class BaseXMLEventType extends BaseConfigurableEventType {
         xPathFactory = XPathFactory.newInstance();
     }
 
+    /**
+     * Returns the name of the root element.
+     * @return root element name
+     */
     protected String getRootElementName()
     {
         return rootElementName;
     }
 
+    /**
+     * Sets the namespace context for use in XPath expression resolution.
+     * @param namespaceContext for XPath expressions
+     */
     protected void setNamespaceContext(XPathNamespaceContext namespaceContext)
     {
         this.namespaceContext = namespaceContext;
     }
 
-    protected void setExplicitProperties(Collection<ConfigurationEventTypeXMLDOM.PropertyDesc> explicitProperties)
+    /**
+     * Set the preconfigured event properties resolved by XPath expression.
+     * @param explicitProperties are preconfigured event properties
+     */
+    protected void setExplicitProperties(Collection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitProperties)
     {
         // Convert explicit properties to XPath expressions
         Map<String, TypedEventPropertyGetter> getters = new HashMap<String, TypedEventPropertyGetter>();
@@ -53,7 +69,7 @@ public class BaseXMLEventType extends BaseConfigurableEventType {
         String xpathExpression = null;
         try {
 
-            for (ConfigurationEventTypeXMLDOM.PropertyDesc property : explicitProperties)
+            for (ConfigurationEventTypeXMLDOM.XPathPropertyDesc property : explicitProperties)
             {
                 XPath xPath = xPathFactory.newXPath();
                 if (namespaceContext != null)
@@ -68,12 +84,16 @@ public class BaseXMLEventType extends BaseConfigurableEventType {
         }
         catch (XPathExpressionException ex)
         {
-            throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + "'");
+            throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + "'", ex);
         }
 
         setExplicitProperties(getters);
     }
 
+    /**
+     * Returns the XPath factory used.
+     * @return XPath factory
+     */
     protected XPathFactory getXPathFactory() {
         return xPathFactory;
     }
@@ -89,13 +109,5 @@ public class BaseXMLEventType extends BaseConfigurableEventType {
 
     protected String[] doListPropertyNames() {
         return EMPTY_STRING_ARRAY;
-    }
-
-    protected EventPropertyGetter doResolvePropertyGetter(String property) {
-        return null;
-    }
-
-    protected Class doResolvePropertyType(String property) {
-        return null;
     }
 }

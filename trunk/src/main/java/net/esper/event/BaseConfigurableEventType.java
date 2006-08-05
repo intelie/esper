@@ -6,8 +6,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * EventType than can be supplied with a preconfigured list of properties getters.
- * 
+ * EventType than can be supplied with a preconfigured list of properties getters (aka. explicit properties).
  * @author pablo
  */
 public abstract class BaseConfigurableEventType implements EventType {
@@ -15,12 +14,20 @@ public abstract class BaseConfigurableEventType implements EventType {
     private Class underlyngType;
 	private Map<String,TypedEventPropertyGetter> explicitProperties;
 
+    /**
+     * Ctor.
+     * @param underlyngType is the underlying type returned by the event type
+     */
     protected BaseConfigurableEventType(Class underlyngType)
     {
         this.underlyngType = underlyngType;
     }
 
-    public void setExplicitProperties(Map<String, TypedEventPropertyGetter> explicitProperties)
+    /**
+     * Sets explicit properties using a map of event property name and getter instance for each property.
+     * @param explicitProperties is the preconfigured properties not implicit in the event type
+     */
+    protected void setExplicitProperties(Map<String, TypedEventPropertyGetter> explicitProperties)
     {
         this.explicitProperties = explicitProperties;
     }
@@ -56,20 +63,23 @@ public abstract class BaseConfigurableEventType implements EventType {
 	}
 	
 	/**
-	 * subclasses must implement this 
+	 * Subclasses must implement this to supply a list of valid property names.
 	 * @return list of properties
 	 */
 	protected abstract String[] doListPropertyNames();
 	
 	/**
-	 * subclasses must implement this 
-	 * @return getter
+	 * Subclasses must implement this and supply a getter to a given property.
+     * @param property is the property name
+	 * @return getter for property
 	 */
 	protected abstract EventPropertyGetter doResolvePropertyGetter(String property);
 	
 	/**
-	 * subclasses must implement this 
+	 * Subclasses must implement this and return a type for a property.
+     * @param property is the property name
 	 * @return property type
 	 */
 	protected abstract Class doResolvePropertyType(String property);
 }
+

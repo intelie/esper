@@ -13,35 +13,35 @@
 	<xs:element name="event-type">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="xmldom-type" minOccurs="0"/>
+				<xs:element ref="xml-dom" minOccurs="0"/>
 			</xs:sequence>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
 			<xs:attribute name="class" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="xmldom-type">
+	<xs:element name="xml-dom">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="xmldom-namespace-prefix" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="xmldom-xpath-property" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="namespace-prefix" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="xpath-property" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="root-element-name" type="xs:string" use="required"/>
 			<xs:attribute name="root-element-namespace" type="xs:string" use="optional"/>
 			<xs:attribute name="default-namespace" type="xs:string" use="optional"/>
-			<xs:attribute name="schema-uri" type="xs:string" use="optional"/>
+			<xs:attribute name="schema-url" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="xmldom-namespace-prefix">
+	<xs:element name="namespace-prefix">
 		<xs:complexType>
 			<xs:attribute name="prefix" type="xs:string" use="required"/>
 			<xs:attribute name="namespace" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="xmldom-xpath-property">
+	<xs:element name="xpath-property">
 		<xs:complexType>
 			<xs:attribute name="property-name" type="xs:string" use="required"/>
 			<xs:attribute name="xpath" type="xs:string" use="required"/>
-			<xs:attribute name="type" type="xpath-qname-constant" use="required"/>
+			<xs:attribute name="type" type="xpath-type" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="auto-import">
@@ -49,11 +49,11 @@
 			<xs:attribute name="import-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:simpleType name="xpath-qname-constant">
+	<xs:simpleType name="xpath-type">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="NUMBER"/>
-			<xs:enumeration value="STRING"/>
-			<xs:enumeration value="BOOLEAN"/>
+			<xs:enumeration value="number"/>
+			<xs:enumeration value="string"/>
+			<xs:enumeration value="boolean"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

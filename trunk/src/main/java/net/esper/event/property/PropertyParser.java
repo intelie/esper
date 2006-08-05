@@ -6,7 +6,6 @@ import net.esper.eql.generated.EqlTokenTypes;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
 import net.esper.event.PropertyAccessException;
-import net.esper.event.EventAdapterService;
 import net.esper.event.BeanEventAdapter;
 
 import java.io.StringReader;

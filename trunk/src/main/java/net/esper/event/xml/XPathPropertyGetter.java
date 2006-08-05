@@ -15,16 +15,20 @@ import org.w3c.dom.Node;
 /**
  * Getter for properties of DOM xml events.
  * 
- * 
  * @author pablo
- *
  */
 public class XPathPropertyGetter implements TypedEventPropertyGetter {
 	XPathExpression expression;
 	String property;
 	QName resultType;
-	
-	public XPathPropertyGetter(String propertyName, XPathExpression xPathExpression, QName resultType) {
+
+    /**
+     * Ctor.
+     * @param propertyName is the name of the event property for which this getter gets values
+     * @param xPathExpression is a compile XPath expression
+     * @param resultType is the resulting type
+     */
+    public XPathPropertyGetter(String propertyName, XPathExpression xPathExpression, QName resultType) {
 		this.expression = xPathExpression;
 		this.property = propertyName;
 		this.resultType = resultType;
@@ -35,14 +39,12 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 		if (!(und instanceof Node))
 			throw new PropertyAccessException("XPathPropertyGetter only usable on org.w3c.dom.Node underlyns events");
 		try {
-			return expression.evaluate(und,resultType);
-		} catch (XPathExpressionException e) {
+            Object result = expression.evaluate(und,resultType);
+            return result;
+		}
+        catch (XPathExpressionException e) {
 			throw new PropertyAccessException("Error getting property " + property,e);
 		}
-	}
-
-	public QName getResultType() {
-		return resultType;
 	}
 
 	public Class getResultClass() {
@@ -53,6 +55,6 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 		if (resultType == XPathConstants.STRING)
 			return String.class;
 		
-		return String.class; //TODO
+		return String.class;
 	}
 }

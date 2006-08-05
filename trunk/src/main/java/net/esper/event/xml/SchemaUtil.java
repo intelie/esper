@@ -18,13 +18,16 @@ import com.sun.org.apache.xerces.internal.xs.XSParticle;
 import net.esper.client.EPException;
 
 /**
- * Utility class for XSObjects 
- * 
+ * Utility class for querying schema information via Xerces implementation classes.
  * @author pablo
- *
  */
 public class SchemaUtil {
 
+    /**
+     * Returns the XPathConstants type for a given Xerces type definition.
+     * @param definition
+     * @return XPathConstants type
+     */
     public static QName simpleTypeToQName(XSSimpleTypeDecl definition)
     {
         switch (definition.getPrimitiveKind())
@@ -42,6 +45,13 @@ public class SchemaUtil {
         }
     }
 
+    /**
+     * Returns the root element for a given schema given a root element name and namespace.
+     * @param schema is the schema to interrogate
+     * @param namespace is the namespace of the root element
+     * @param elementName is the name of the root element
+     * @return declaration of root element
+     */
     public static XSElementDeclaration findRootElement(XSModel schema, String namespace, String elementName)
     {
         XSNamedMap elements;

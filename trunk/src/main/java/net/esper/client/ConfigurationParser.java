@@ -17,7 +17,7 @@ class ConfigurationParser {
 
     /**
      * Use the configuration specified in the given input stream.
-     *
+     * @param configuration is the configuration object to populate
      * @param stream	   Inputstream to be read from
      * @param resourceName The name to use in warning/error messages
      * @throws net.esper.client.EPException
@@ -60,6 +60,7 @@ class ConfigurationParser {
 
     /**
      * Parse the W3C DOM document.
+     * @param configuration is the configuration object to populate
      * @param doc to parse
      * @throws net.esper.client.EPException
      */
@@ -96,7 +97,7 @@ class ConfigurationParser {
         while (eventTypeNodeIterator.hasNext())
         {
             Element eventTypeElement = eventTypeNodeIterator.next();
-            if (eventTypeElement.getNodeName().equals("xmldom-type"))
+            if (eventTypeElement.getNodeName().equals("xml-dom"))
             {
                 handleXMLDOM(aliasName, configuration, eventTypeElement);
             }
@@ -107,12 +108,12 @@ class ConfigurationParser {
     {
         String rootElementName = xmldomElement.getAttributes().getNamedItem("root-element-name").getTextContent();
         String rootElementNamespace = getOptionalAttribute(xmldomElement, "root-element-namespace");
-        String schemaURI = getOptionalAttribute(xmldomElement, "schema-uri");
+        String schemaURL = getOptionalAttribute(xmldomElement, "schema-url");
         String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
 
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName(rootElementName);
-        xmlDOMEventTypeDesc.setSchemaURI(schemaURI);
+        xmlDOMEventTypeDesc.setSchemaURL(schemaURL);
         xmlDOMEventTypeDesc.setRootElementNamespace(rootElementNamespace);
         xmlDOMEventTypeDesc.setDefaultNamespace(defaultNamespace);
         configuration.addEventTypeAlias(aliasName, xmlDOMEventTypeDesc);
@@ -121,27 +122,27 @@ class ConfigurationParser {
         while (propertyNodeIterator.hasNext())
         {
             Element propertyElement = propertyNodeIterator.next();
-            if (propertyElement.getNodeName().equals("xmldom-namespace-prefix"))
+            if (propertyElement.getNodeName().equals("namespace-prefix"))
             {
                 String prefix = propertyElement.getAttributes().getNamedItem("prefix").getTextContent();
                 String namespace = propertyElement.getAttributes().getNamedItem("namespace").getTextContent();
-                xmlDOMEventTypeDesc.addNamespacePefix(prefix, namespace);
+                xmlDOMEventTypeDesc.addNamespacePrefix(prefix, namespace);
             }
-            if (propertyElement.getNodeName().equals("xmldom-xpath-property"))
+            if (propertyElement.getNodeName().equals("xpath-property"))
             {
                 String propertyName = propertyElement.getAttributes().getNamedItem("property-name").getTextContent();
                 String xPath = propertyElement.getAttributes().getNamedItem("xpath").getTextContent();
                 String propertyType = propertyElement.getAttributes().getNamedItem("type").getTextContent();
                 QName xpathConstantType = null;
-                if (propertyType.equals("NUMBER"))
+                if (propertyType.toUpperCase().equals("NUMBER"))
                 {
                     xpathConstantType = XPathConstants.NUMBER;
                 }
-                else if (propertyType.equals("STRING"))
+                else if (propertyType.toUpperCase().equals("STRING"))
                 {
                     xpathConstantType = XPathConstants.STRING;
                 }
-                else if (propertyType.equals("BOOLEAN"))
+                else if (propertyType.toUpperCase().equals("BOOLEAN"))
                 {
                     xpathConstantType = XPathConstants.BOOLEAN;
                 }
@@ -150,7 +151,7 @@ class ConfigurationParser {
                     throw new IllegalArgumentException("Invalid xpath property type for property '" +
                         propertyName + "' and type '" + propertyType + "'");
                 }
-                xmlDOMEventTypeDesc.addProperty(propertyName, xPath, xpathConstantType);
+                xmlDOMEventTypeDesc.addXPathProperty(propertyName, xPath, xpathConstantType);
             }
         }
     }

@@ -6,8 +6,12 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathExpression;
 
 import net.esper.event.EventPropertyGetter;
+import net.esper.event.TypedEventPropertyGetter;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.EPException;
+
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Optimistic try to resolve the property string into an appropiate xPath,
@@ -24,10 +28,17 @@ import net.esper.client.EPException;
  */
 public class SimpleXMLEventType extends BaseXMLEventType {
 
+    private Map<String, TypedEventPropertyGetter> propertyGetterCache;
+
+    /**
+     * Ctor.
+     * @param configurationEventTypeXMLDOM configures the event type
+     */
     public SimpleXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
         super(configurationEventTypeXMLDOM.getRootElementName());
-        super.setExplicitProperties(configurationEventTypeXMLDOM.getProperties().values());
+        super.setExplicitProperties(configurationEventTypeXMLDOM.getXPathProperties().values());
+        propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
     }
 
     protected Class doResolvePropertyType(String property) {
@@ -35,6 +46,11 @@ public class SimpleXMLEventType extends BaseXMLEventType {
     }
 
     protected EventPropertyGetter doResolvePropertyGetter(String property) {
+        TypedEventPropertyGetter getter = propertyGetterCache.get(property);
+        if (getter != null) {
+            return getter;
+        }
+
         XPathExpression xPathExpression = null;
         try
         {
@@ -44,6 +60,9 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         {
             throw new EPException("Error constructing XPath expression from property name '" + property + "'", e);
         }
-        return new XPathPropertyGetter(property, xPathExpression, XPathConstants.STRING);
+
+        getter = new XPathPropertyGetter(property, xPathExpression, XPathConstants.STRING);
+        propertyGetterCache.put(property, getter);
+        return getter;
     }
 }

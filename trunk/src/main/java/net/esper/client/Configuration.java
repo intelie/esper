@@ -115,8 +115,8 @@ public class Configuration {
     }
 
     /**
-     * Returns the mapping of event type alias to XML DOM event type information
-     * @return event type aliases for XML DOC
+     * Returns the mapping of event type alias to XML DOM event type information.
+     * @return event type aliases mapping to XML DOM configs
      */
     public Map<String, ConfigurationEventTypeXMLDOM> getEventTypesXMLDOM()
     {

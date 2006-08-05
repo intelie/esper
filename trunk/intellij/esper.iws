@@ -159,7 +159,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../src/test/java/net/esper/regression/event/TestNoSchemaXMLEvent.java" line="61" class="net.esper.regression.event.TestNoSchemaXMLEvent" package="net.esper.regression.event">
+      <breakpoint url="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/XPathPropertyGetter.java" line="42" class="net.esper.event.xml.XPathPropertyGetter" package="net.esper.event.xml">
         <option name="ENABLED" value="true" />
         <option name="SUSPEND_POLICY" value="SuspendAll" />
         <option name="LOG_ENABLED" value="false" />
@@ -172,7 +172,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../src/main/java/net/esper/event/EventAdapterServiceImpl.java" line="180" class="net.esper.event.EventAdapterServiceImpl" package="net.esper.event">
+      <breakpoint url="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLPropertyParser.java" line="45" class="net.esper.event.xml.SchemaXMLPropertyParser" package="net.esper.event.xml">
         <option name="ENABLED" value="true" />
         <option name="SUSPEND_POLICY" value="SuspendAll" />
         <option name="LOG_ENABLED" value="false" />
@@ -185,7 +185,20 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLPropertyParser.java" line="74" class="net.esper.event.xml.SchemaXMLPropertyParser" package="net.esper.event.xml">
+      <breakpoint url="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLPropertyParser.java" line="83" class="net.esper.event.xml.SchemaXMLPropertyParser" package="net.esper.event.xml">
+        <option name="ENABLED" value="true" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLPropertyParser.java" line="170" class="net.esper.event.xml.SchemaXMLPropertyParser" package="net.esper.event.xml">
         <option name="ENABLED" value="true" />
         <option name="SUSPEND_POLICY" value="SuspendAll" />
         <option name="LOG_ENABLED" value="false" />
@@ -253,95 +266,91 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TestSchemaXMLEventType.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/test/java/net/esper/event/xml/TestSchemaXMLEventType.java">
+      <file leaf-file-name="TestAutoIdSimMain.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../eg/src/test/java/net/esper/example/autoid/TestAutoIdSimMain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="36" selection-start="456" selection-end="484" vertical-scroll-proportion="0.3838384">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestSimpleXMLEventType.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/test/java/net/esper/event/xml/TestSimpleXMLEventType.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="33" selection-start="2112" selection-end="2129" vertical-scroll-proportion="0.37298638">
+            <state line="9" column="0" selection-start="218" selection-end="218" vertical-scroll-proportion="0.31546393">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ConfigurationEventTypeXMLDOM.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/ConfigurationEventTypeXMLDOM.java">
+      <file leaf-file-name="AutoIdSimMain.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../eg/src/main/java/net/esper/example/autoid/AutoIdSimMain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="4" selection-start="4" selection-end="4" vertical-scroll-proportion="0.0">
+            <state line="42" column="25" selection-start="1298" selection-end="1298" vertical-scroll-proportion="1.2574468">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestConfiguration.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../src/test/java/net/esper/client/TestConfiguration.java">
+      <file leaf-file-name="DispatchServiceImpl.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/dispatch/DispatchServiceImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="47" selection-start="2428" selection-end="2428" vertical-scroll-proportion="0.5113636">
+            <state line="13" column="25" selection-start="372" selection-end="372" vertical-scroll-proportion="0.32553193">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ConfigurationParser.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/ConfigurationParser.java">
+      <file leaf-file-name="ThreadWorkQueue.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/collection/ThreadWorkQueue.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="117" column="48" selection-start="4418" selection-end="4418" vertical-scroll-proportion="0.28661618">
+            <state line="10" column="25" selection-start="248" selection-end="248" vertical-scroll-proportion="0.33195877">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SchemaXMLEventType.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLEventType.java">
+      <file leaf-file-name="EPAdministrator.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPAdministrator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="62" column="65" selection-start="1961" selection-end="1961" vertical-scroll-proportion="0.1969697">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BaseXMLEventType.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/BaseXMLEventType.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="88" column="0" selection-start="2730" selection-end="2730" vertical-scroll-proportion="0.6401515">
+            <state line="5" column="17" selection-start="175" selection-end="175" vertical-scroll-proportion="0.18085106">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SchemaUtil.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaUtil.java">
+      <file leaf-file-name="EPServiceProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPServiceProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="48" column="0" selection-start="1785" selection-end="1785" vertical-scroll-proportion="0.354798">
+            <state line="6" column="17" selection-start="137" selection-end="137" vertical-scroll-proportion="0.21030928">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Configuration.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/Configuration.java">
+      <file leaf-file-name="EPRuntime.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPRuntime.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="13" selection-start="1155" selection-end="1155" vertical-scroll-proportion="0.34076828">
+            <state line="6" column="17" selection-start="111" selection-end="111" vertical-scroll-proportion="0.21030928">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SchemaXMLPropertyParser.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLPropertyParser.java">
+      <file leaf-file-name="EPListenable.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPListenable.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="0" selection-start="2686" selection-end="2686" vertical-scroll-proportion="0.9444444">
+            <state line="5" column="17" selection-start="101" selection-end="101" vertical-scroll-proportion="0.17525773">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EPIterable.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPIterable.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="27" selection-start="186" selection-end="196" vertical-scroll-proportion="0.24536082">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestFeedSimMain.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../eg/src/test/java/net/esper/example/marketdatafeed/TestFeedSimMain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="5" selection-start="106" selection-end="255" vertical-scroll-proportion="0.35051546">
               <folding />
             </state>
           </provider>
@@ -364,7 +373,7 @@
     <option name="SPLITTER_PROPORTION" value="0.5" />
     <option name="GROUP_BY_SEVERITY" value="false" />
     <option name="ANALYZE_TEST_SOURCES" value="true" />
-    <option name="SCOPE_TYPE" value="3" />
+    <option name="SCOPE_TYPE" value="4" />
     <option name="CUSTOM_SCOPE_NAME" value="Project Files" />
     <profile name="JavaDocOnly" />
   </component>
@@ -388,14 +397,8 @@
         <option name="myItemId" value="esper.ipr" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
       </PATH_ELEMENT>
-    </PATH>
-    <PATH>
       <PATH_ELEMENT>
-        <option name="myItemId" value="esper.ipr" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper_test" />
+        <option name="myItemId" value="examples_test" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
       </PATH_ELEMENT>
     </PATH>
@@ -405,7 +408,67 @@
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
-        <option name="myItemId" value="esper_test" />
+        <option name="myItemId" value="examples_test" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="net.esper.example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="esper.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="examples_test" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="net.esper.example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="marketdatafeed" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="esper.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="examples_test" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="net.esper.example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="autoid" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="esper.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="examples" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="esper.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="examples" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
@@ -419,65 +482,7 @@
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
-        <option name="myItemId" value="esper_test" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="net.esper" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="regression" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-    </PATH>
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper.ipr" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper_test" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="net.esper" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="regression" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="event" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-    </PATH>
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper.ipr" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper_test" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="net.esper" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="event" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-    </PATH>
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper.ipr" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper_test" />
+        <option name="myItemId" value="examples" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
@@ -485,11 +490,7 @@
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
-        <option name="myItemId" value="event" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="xml" />
+        <option name="myItemId" value="example" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
       </PATH_ELEMENT>
     </PATH>
@@ -499,7 +500,7 @@
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
-        <option name="myItemId" value="esper_test" />
+        <option name="myItemId" value="examples" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
@@ -507,8 +508,18 @@
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
-        <option name="myItemId" value="client" />
+        <option name="myItemId" value="example" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="autoid" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="esper.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
       </PATH_ELEMENT>
     </PATH>
     <PATH>
@@ -549,29 +560,7 @@
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
-        <option name="myItemId" value="event" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-    </PATH>
-    <PATH>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper.ipr" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="esper" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="net.esper" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="event" />
-        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-      </PATH_ELEMENT>
-      <PATH_ELEMENT>
-        <option name="myItemId" value="xml" />
+        <option name="myItemId" value="eql" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
       </PATH_ELEMENT>
     </PATH>
@@ -678,13 +667,14 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="net.esper.example.marketdatafeed" />
+      <recent name="net.esper.example.autoid" />
       <recent name="net.esper.client" />
       <recent name="net.esper.regression.event" />
-      <recent name="net.esper.example.marketdatafeed" />
       <recent name="net.esper.eql.expression" />
-      <recent name="net.esper.support.pattern" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="net.esper.example.autoid" />
       <recent name="net.esper.event.xml" />
       <recent name="net.esper.event" />
       <recent name="net.esper.event.xml2" />
@@ -693,12 +683,12 @@
   <component name="RestoreUpdateTree" />
   <component name="RunManager">
     <activeType name="JUnit" />
-    <tempConfiguration selected="true" default="false" name="TestConfiguration" type="JUnit" factoryName="JUnit">
+    <tempConfiguration selected="false" default="false" name="TestNoSchemaXMLEvent" type="JUnit" factoryName="JUnit">
       <module name="esper_test" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="net.esper.client" />
-      <option name="MAIN_CLASS_NAME" value="net.esper.client.TestConfiguration" />
+      <option name="PACKAGE_NAME" value="net.esper.regression.event" />
+      <option name="MAIN_CLASS_NAME" value="net.esper.regression.event.TestNoSchemaXMLEvent" />
       <option name="METHOD_NAME" value="" />
       <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" value="-Dlog4j.configuration=..\..\etc\log4j.xml -DENABLE_AST_DUMP" />
@@ -717,18 +707,6 @@
       <option name="SHMEM_ADDRESS" value="javadebug" />
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
-    </configuration>
-    <configuration selected="false" default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
     </configuration>
     <configuration selected="false" default="true" type="JUnit" factoryName="JUnit">
       <module name="esper_test" />
@@ -755,6 +733,18 @@
       <option name="ALTERNATIVE_JRE_PATH" />
       <module name="" />
     </configuration>
+    <configuration selected="false" default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+    </configuration>
     <configuration selected="false" default="false" name="Test3StreamOuterJoinVarA" type="JUnit" factoryName="JUnit">
       <module name="esper_test" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -770,16 +760,16 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="2331" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
-    <configuration selected="false" default="false" name="net.esper" type="JUnit" factoryName="JUnit">
+    <configuration selected="true" default="false" name="net.esper" type="JUnit" factoryName="JUnit">
       <module name="jesp" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -794,14 +784,14 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="1039" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="false" default="false" name="net.esper.regression" type="JUnit" factoryName="JUnit">
       <module name="examples" />
@@ -836,14 +826,14 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="2141" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="false" default="false" name="TestTwoStreamQueryPlanBuilder.testAnalyze" type="JUnit" factoryName="JUnit">
       <module name="esper_test" />
@@ -860,14 +850,14 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="4520" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="false" default="false" name="TestPerf5StreamJoin.testPerfAllProps" type="JUnit" factoryName="JUnit">
       <module name="esper_test" />
@@ -902,14 +892,14 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="1037" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="false" default="false" name="all event" type="JUnit" factoryName="JUnit">
       <module name="esper" />
@@ -926,14 +916,14 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="1743" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="false" default="false" name="all net.esper.eql.join.rep" type="JUnit" factoryName="JUnit">
       <module name="examples" />
@@ -986,14 +976,14 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="2142" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="false" default="false" name="TestTicksFalloffStatement.testFlow" type="JUnit" factoryName="JUnit">
       <module name="examples_test" />
@@ -1010,14 +1000,14 @@
       <option name="TEST_SEARCH_SCOPE">
         <value defaultName="wholeProject" />
       </option>
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="3778" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="true" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="false" default="false" name="" type="JUnit" factoryName="JUnit">
       <module name="esper_test" />
@@ -1043,14 +1033,14 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
       <module name="examples" />
-      <RunnerSettings RunnerId="Run" />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="1358" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="false" />
       </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Run" />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
     </configuration>
     <configuration selected="true" default="false" name="FeedSimMain" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="net.esper.example.marketdatafeed.FeedSimMain" />
@@ -1112,8 +1102,8 @@
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32954547" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.29068047" order="0" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3806818" order="1" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.3106509" order="0" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.3806818" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.2928994" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32613635" order="12" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
@@ -1199,104 +1189,109 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/XMLEventBean.java">
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLPropertyParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="0" selection-start="677" selection-end="677" vertical-scroll-proportion="0.5580808">
+        <state line="183" column="39" selection-start="7758" selection-end="7758" vertical-scroll-proportion="0.3661616">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/core/EPAdministratorImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="130" column="0" selection-start="4397" selection-end="4397" vertical-scroll-proportion="0.037777778">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/BaseConfigurableEventType.java">
+    <entry file="file://$PROJECT_DIR$/../src/test/java/net/esper/regression/event/TestNoSchemaXMLEvent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="0" selection-start="1156" selection-end="1156" vertical-scroll-proportion="0.19950433">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/jdk1.5.0/src.zip!/javax/xml/parsers/DocumentBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="0" selection-start="3550" selection-end="3550" vertical-scroll-proportion="0.071969695">
+        <state line="44" column="57" selection-start="2062" selection-end="2081" vertical-scroll-proportion="0.037777778">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../src/test/java/net/esper/regression/event/TestSchemaXMLEvent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="0" selection-start="2631" selection-end="2631" vertical-scroll-proportion="0.45454547">
+        <state line="51" column="0" selection-start="1973" selection-end="1973" vertical-scroll-proportion="0.037777778">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/BaseXMLEventType.java">
+    <entry file="file://$PROJECT_DIR$/../eg/src/test/java/net/esper/example/marketdatafeed/TestTicksFalloffStatement.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="88" column="0" selection-start="2730" selection-end="2730" vertical-scroll-proportion="0.6401515">
+        <state line="11" column="13" selection-start="407" selection-end="407" vertical-scroll-proportion="0.03655914">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/test/java/net/esper/event/xml/TestSimpleXMLEventType.java">
+    <entry file="file://$PROJECT_DIR$/../eg/src/test/java/net/esper/example/autoid/TestAutoIdSimMain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="33" selection-start="2112" selection-end="2129" vertical-scroll-proportion="0.37298638">
+        <state line="9" column="0" selection-start="218" selection-end="218" vertical-scroll-proportion="0.31546393">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLPropertyParser.java">
+    <entry file="file://$PROJECT_DIR$/../eg/src/test/java/net/esper/example/marketdatafeed/TestFeedSimMain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="0" selection-start="2686" selection-end="2686" vertical-scroll-proportion="0.9444444">
+        <state line="10" column="5" selection-start="106" selection-end="255" vertical-scroll-proportion="0.35051546">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/test/java/net/esper/event/xml/TestSchemaXMLEventType.java">
+    <entry file="file://$PROJECT_DIR$/../eg/src/main/java/net/esper/example/autoid/AutoIdSimMain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="36" selection-start="456" selection-end="484" vertical-scroll-proportion="0.3838384">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaXMLEventType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="65" selection-start="1961" selection-end="1961" vertical-scroll-proportion="0.1969697">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/event/xml/SchemaUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="0" selection-start="1785" selection-end="1785" vertical-scroll-proportion="0.354798">
+        <state line="42" column="25" selection-start="1298" selection-end="1298" vertical-scroll-proportion="1.2574468">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/Configuration.java">
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/dispatch/DispatchServiceImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="13" selection-start="1155" selection-end="1155" vertical-scroll-proportion="0.34076828">
+        <state line="13" column="25" selection-start="372" selection-end="372" vertical-scroll-proportion="0.32553193">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/ConfigurationEventTypeXMLDOM.java">
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPIterable.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="4" selection-start="4" selection-end="4" vertical-scroll-proportion="0.0">
+        <state line="10" column="27" selection-start="186" selection-end="196" vertical-scroll-proportion="0.24536082">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/ConfigurationParser.java">
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/collection/ThreadWorkQueue.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="117" column="48" selection-start="4418" selection-end="4418" vertical-scroll-proportion="0.28661618">
+        <state line="10" column="25" selection-start="248" selection-end="248" vertical-scroll-proportion="0.33195877">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../src/test/java/net/esper/client/TestConfiguration.java">
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPAdministrator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="47" selection-start="2428" selection-end="2428" vertical-scroll-proportion="0.5113636">
+        <state line="5" column="17" selection-start="175" selection-end="175" vertical-scroll-proportion="0.18085106">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPServiceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="17" selection-start="137" selection-end="137" vertical-scroll-proportion="0.21030928">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPRuntime.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="17" selection-start="111" selection-end="111" vertical-scroll-proportion="0.21030928">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../src/main/java/net/esper/client/EPListenable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="17" selection-start="101" selection-end="101" vertical-scroll-proportion="0.17525773">
           <folding />
         </state>
       </provider>

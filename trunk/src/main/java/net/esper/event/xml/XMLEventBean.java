@@ -19,7 +19,12 @@ public class XMLEventBean implements EventBean {
 	private EventType eventType;
 	private Node event;
 
-	public XMLEventBean(Node event, EventType type) {
+    /**
+     * Ctor.
+     * @param event is the node with event property information
+     * @param type is the event type for this event wrapper
+     */
+    public XMLEventBean(Node event, EventType type) {
 		this.event = event;
 		eventType = type;
 	}

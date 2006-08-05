@@ -14,8 +14,10 @@ import net.esper.client.EPException;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import java.util.Map;
+import java.util.HashMap;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * EventType for xml events that have a Schema.
@@ -23,8 +25,6 @@ import java.net.URL;
  * All property types resolved via the declared xsd types.
  * Can access attributes.
  * Validates the property string at construction time. 
- * 
- * 
  * @author pablo
  *
  */
@@ -36,15 +36,22 @@ public class SchemaXMLEventType extends BaseXMLEventType {
     // namespace of the root Element
     private String namespace;
 
+    private Map<String, TypedEventPropertyGetter> propertyGetterCache;
+
+    /**
+     * Ctor.
+     * @param configurationEventTypeXMLDOM - configuration for type
+     */
     public SchemaXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
         super(configurationEventTypeXMLDOM.getRootElementName());
+        propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
 
         // Load schema
-        String schemaURI = configurationEventTypeXMLDOM.getSchemaURI();
+        String schemaURL = configurationEventTypeXMLDOM.getSchemaURL();
         try
         {
-            readSchema(schemaURI);
+            readSchema(schemaURL);
         }
         catch (EPException ex)
         {
@@ -52,7 +59,7 @@ public class SchemaXMLEventType extends BaseXMLEventType {
         }
         catch (Exception ex)
         {
-            throw new EPException("Failed to read schema '" + schemaURI + "'", ex);
+            throw new EPException("Failed to read schema '" + schemaURL + "'", ex);
         }
 
         // Set up namespace context
@@ -69,17 +76,21 @@ public class SchemaXMLEventType extends BaseXMLEventType {
         super.setNamespaceContext(ctx);
 
         // Finally add XPath properties as that may depend on the namespace
-        super.setExplicitProperties(configurationEventTypeXMLDOM.getProperties().values());
+        super.setExplicitProperties(configurationEventTypeXMLDOM.getXPathProperties().values());
     }
 
-    private void readSchema(String schemaURI) throws IllegalAccessException, InstantiationException, ClassNotFoundException,
+    private void readSchema(String schemaURL) throws IllegalAccessException, InstantiationException, ClassNotFoundException,
             EPException, URISyntaxException
     {
-        // Locate via Classloader
-        URL url = ClassLoader.getSystemResource(schemaURI);
-        if (url == null)
+        URL url = null;
+
+        try
         {
-            throw new EPException("Failed to locate schema using ClassLoader.getSystemResource for URI '" + schemaURI + "'");
+            url = new URL(schemaURL);
+        }
+        catch (MalformedURLException ex)
+        {
+            throw new EPException("Malformed URL encountered for schema URL '" + schemaURL + "'", ex);
         }
         String uri = url.toURI().toString();
 
@@ -92,21 +103,34 @@ public class SchemaXMLEventType extends BaseXMLEventType {
 
         if (xsModel == null)
         {
-            throw new EPException("Failed to read schema via URI '" + schemaURI + "'");
+            throw new EPException("Failed to read schema via URL '" + schemaURL + "'");
         }
     }
 
     protected Class doResolvePropertyType(String property) {
-        TypedEventPropertyGetter getter = (TypedEventPropertyGetter) doResolvePropertyGetter(property);
-        if (getter != null)
+        TypedEventPropertyGetter getter = propertyGetterCache.get(property);
+        if (getter != null){
             return getter.getResultClass();
+        }
+
+        getter = (TypedEventPropertyGetter) doResolvePropertyGetter(property);
+        if (getter != null) {
+            return getter.getResultClass();
+        }
         return null;
     }
 
     protected EventPropertyGetter doResolvePropertyGetter(String property) {
+        TypedEventPropertyGetter getter = propertyGetterCache.get(property);
+        if (getter != null) {
+            return getter;
+        }
+
         try
         {
-            return SchemaXMLPropertyParser.parse(property,getXPathFactory(),getRootElementName(),namespace,xsModel);
+            getter = SchemaXMLPropertyParser.parse(property,getXPathFactory(),getRootElementName(),namespace,xsModel);
+            propertyGetterCache.put(property, getter);
+            return getter;
         }
         catch (XPathExpressionException e) {
             throw new EPException("Error constructing XPath expression from property name '" + property + "'", e);

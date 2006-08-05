@@ -18,7 +18,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 {
     private Map<String, EventType> eventTypes;
     private BeanEventAdapter beanEventAdapter;
-    private Map<String, EventType> rootNodeTypes;
+    private Map<String, EventType> xmldomRootElementNames;
 
     /**
      * Ctor.
@@ -26,7 +26,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public EventAdapterServiceImpl()
     {
         eventTypes = new HashMap<String, EventType>();
-        rootNodeTypes = new HashMap<String, EventType>();
+        xmldomRootElementNames = new HashMap<String, EventType>();
         beanEventAdapter = new BeanEventAdapter();
     }
 
@@ -162,33 +162,41 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public EventBean adapterForDOM(Document document)
     {
         Element rootElement = document.getDocumentElement();
-        String rootNodeName = rootElement.getNodeName();
+        String rootElementName = rootElement.getNodeName();
 
-        EventType eventType = rootNodeTypes.get(rootNodeName);
+        EventType eventType = xmldomRootElementNames.get(rootElementName);
         if (eventType == null)
         {
-            throw new EventAdapterException("DOM event root node '" + rootNodeName +
+            throw new EventAdapterException("DOM event root element name '" + rootElementName +
                     "' has not been configured");
         }
 
-        EventBean event = new XMLEventBean(document, eventType);
-
-        return event;
+        return new XMLEventBean(document, eventType);
     }
 
+    /**
+     * Add a configured XML DOM event type.
+     * @param eventTypeAlias is the alias name of the event type
+     * @param configurationEventTypeXMLDOM configures the event type schema and namespace and XPath
+     * property information.
+     */
     public void addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
-        if (configurationEventTypeXMLDOM.getSchemaURI() == null)
+        if (configurationEventTypeXMLDOM.getRootElementName() == null)
         {
-            EventType type = new SimpleXMLEventType(configurationEventTypeXMLDOM);
-            eventTypes.put(eventTypeAlias, type);
-            rootNodeTypes.put(configurationEventTypeXMLDOM.getRootElementName(), type);
+            throw new EventAdapterException("Required root element name has not been supplied");
+        }
+        EventType type = null;
+        if (configurationEventTypeXMLDOM.getSchemaURL() == null)
+        {
+            type = new SimpleXMLEventType(configurationEventTypeXMLDOM);
         }
         else
         {
-            EventType type = new SchemaXMLEventType(configurationEventTypeXMLDOM);
-            eventTypes.put(eventTypeAlias, type);
-            rootNodeTypes.put(configurationEventTypeXMLDOM.getRootElementName(), type);
+            type = new SchemaXMLEventType(configurationEventTypeXMLDOM);
         }
+
+        eventTypes.put(eventTypeAlias, type);
+        xmldomRootElementNames.put(configurationEventTypeXMLDOM.getRootElementName(), type);
     }
 }

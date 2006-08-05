@@ -118,5 +118,10 @@ public interface EventAdapterService
      */
     public EventType createAddToEventType(EventType originalType, String[] fieldNames, Class[] fieldTypes);
 
+    /**
+     * Returns an adapter for the XML DOM document that exposes it's data as event properties for use in statements.
+     * @param document is the node to wrap
+     * @return event wrapper for document
+     */
     public EventBean adapterForDOM(Document document);
 }

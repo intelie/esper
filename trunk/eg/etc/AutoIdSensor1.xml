@@ -5,7 +5,7 @@
   xmlns:autoid="http://www.autoidcenter.org/2003/xml" 
   xmlns:pmluid="urn:autoid:specification:universal:Identifier:xml:schema:1" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="urn:autoid:specification:interchange:PMLCore:xml:schema:1 PmlCore.xsd">
+  xsi:schemaLocation="urn:autoid:specification:interchange:PMLCore:xml:schema:1 AutoIdPmlCore.xsd">
 	<pmluid:ID>urn:epc:1:4.16.36</pmluid:ID>
 	<pmlcore:Observation>
 		<pmluid:ID>00000001</pmluid:ID>
