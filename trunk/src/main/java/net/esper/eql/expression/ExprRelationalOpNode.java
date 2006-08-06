@@ -68,7 +68,7 @@ public class ExprRelationalOpNode extends ExprNode
         {
             return false;
         }
-        
+
         return computer.compare(valueLeft, valueRight);
     }
 

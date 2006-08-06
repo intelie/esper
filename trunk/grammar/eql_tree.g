@@ -26,7 +26,6 @@ tokens
 // NOTE: The real implementations are in the subclass.
 {
 	private static Log log = LogFactory.getLog(EQLBaseWalker.class);
-
 	protected void leaveNode(AST node) throws SemanticException {}
 	protected void end() throws SemanticException {}
 }
@@ -59,9 +58,22 @@ selectionListExpr
 	;
 	
 selectionListElement
-	:	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
+	:	#(s:SELECTION_ELEMENT_EXPR caseExpr (IDENT)? { leaveNode(#s); } )
 	;
-		
+
+//	:	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
+//	|	#(s2:SELECTION_ELEMENT_EXPR caseExpr (IDENT)? { leaveNode(#s2); } )		
+
+caseExpr
+	: #(cs:CASE (#(wh:WHEN evalExprChoice valueExpr {leaveNode(#wh); }))+ (#(el:ELSE valueExpr {leaveNode(#el);}))?  {leaveNode(#cs); })
+	| #(cs2:CASE2 valueExpr (#(WHEN valueExpr valueExpr))+ (#(ELSE valueExpr))? {leaveNode(#cs2); })
+	| valueExpr
+	;
+
+whenExpr
+   : #(wh:WHEN evalExprChoice (#(th:THEN valueExpr { leaveNode(#th); })) {leaveNode(#wh); })
+   ;
+
 outerJoin
 	:	outerJoinIdent
 	;
@@ -133,6 +145,7 @@ valueExpr
 	|	f:builtinFunc { leaveNode(#f); }
 	;
 
+
 builtinFunc
 	: 	#(MAX (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )
 	| 	#(MIN (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )
@@ -152,12 +165,6 @@ arithmeticExpr
 	|	#(BAND valueExpr valueExpr)	
 	|	#(BOR valueExpr valueExpr)	
 	|	#(BXOR valueExpr valueExpr)
-	|   caseExpr
-	;
-
-caseExpr
-	: #(CASE (#(WHEN evalExprChoice valueExpr))+ (#(ELSE valueExpr))?)
-	| #(CASE2 valueExpr (#(WHEN valueExpr valueExpr))+ (#(ELSE valueExpr))?)
 	;
 
 //----------------------------------------------------------------------------

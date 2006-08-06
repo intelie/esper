@@ -225,6 +225,15 @@ public class EQLTreeWalker extends EQLBaseWalker
             case INSERTINTO_EXPR:
             	leaveInsertInto(node);
             	break;
+            case CASE:
+                leaveCaseNode(node);
+                break;
+            case WHEN:
+                leaveWhenNode(node);
+                break;
+            case ELSE:
+                leaveElseNode(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + "'");
@@ -556,6 +565,47 @@ public class EQLTreeWalker extends EQLBaseWalker
 
 	    ExprBitWiseNode bwNode = new ExprBitWiseNode(bitWiseOpEnum);
 	    astNodeMap.put(node, bwNode);       
+    }
+
+    private void leaveCaseNode(AST node_)
+    {
+        log.debug(".leaveCaseNode");
+        if (astNodeMap.size() == 0)
+        {
+            throw new ASTWalkException("Unexpected AST tree contains zero child element for case node");
+        }
+        AST childNode = node_.getFirstChild();
+        if ((astNodeMap.size() == 1) && (childNode.getType() != WHEN))
+        {
+            throw new ASTWalkException("Unexpected AST tree contains only else node for case node");
+        }
+        List<ExprNode> exprNodeList = new ArrayList<ExprNode>();
+        do {
+            ExprNode thisEvalNode = astNodeMap.get(childNode);
+            exprNodeList.add(thisEvalNode);
+            // Next child node
+            if (childNode != null)
+            {
+                childNode = childNode.getNextSibling();
+            }
+        }
+        while (childNode != null);
+        ExprCaseNode caseNode = new ExprCaseNode(false, exprNodeList);
+        astNodeMap.put(node_, caseNode);
+    }
+
+    private void leaveWhenNode(AST node_)
+    {
+        log.debug(".leaveWhenNode");
+        ExprWhenNode whenNode = new ExprWhenNode();
+        astNodeMap.put(node_, whenNode);
+    }
+
+    private void leaveElseNode(AST node_)
+    {
+        log.debug(".leaveElseNode");
+        ExprElseNode elseNode = new ExprElseNode();
+        astNodeMap.put(node_, elseNode);
     }
 
     private void leaveWhereClause()

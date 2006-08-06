@@ -26,7 +26,7 @@
    	-->
 
    <logger name="net.esper">
-      <level value="WARN"/>
+      <level value="DEBUG"/>
    </logger>
 
    <root>
