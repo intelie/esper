@@ -98,11 +98,11 @@ public class TestSchemaXMLEvent extends TestCase
         assertTrue(event.get("nodeProp") instanceof Node);
         assertEquals("SAMPLE_V6", event.get("nested1Prop"));
         assertEquals(true, event.get("nested2Prop"));
-        assertEquals("SAMPLE_V7", event.get("complexProp"));
-        assertEquals(4.0, event.get("indexedProp"));
+        assertEquals("SAMPLE_V8", event.get("complexProp"));
+        assertEquals(5.0, event.get("indexedProp"));
         assertEquals(3.0, event.get("customProp"));
         assertEquals(true, event.get("attrOneProp"));
-        assertEquals("b", event.get("attrTwoProp"));
+        assertEquals("c", event.get("attrTwoProp"));
     }
 
     private Configuration getConfig()
@@ -111,7 +111,7 @@ public class TestSchemaXMLEvent extends TestCase
         ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
         eventTypeMeta.setRootElementName("simpleEvent");
         String schemaUri = ClassLoader.getSystemResource(CLASSLOADER_SCHEMA_URI).toString();
-        eventTypeMeta.setSchemaURL(schemaUri);
+        eventTypeMeta.setSchemaResource(schemaUri);
         eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
         eventTypeMeta.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
         configuration.addEventTypeAlias("TestXMLSchemaType", eventTypeMeta);

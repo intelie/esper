@@ -6,7 +6,7 @@ public class TestAutoIdSimMain extends TestCase
 {
     public void testRun() throws Exception
     {
-        AutoIdSimMain main = new AutoIdSimMain();
+        AutoIdSimMain main = new AutoIdSimMain(10);
         main.run();
     }
 }

@@ -28,7 +28,7 @@
 			<xs:attribute name="root-element-name" type="xs:string" use="required"/>
 			<xs:attribute name="root-element-namespace" type="xs:string" use="optional"/>
 			<xs:attribute name="default-namespace" type="xs:string" use="optional"/>
-			<xs:attribute name="schema-url" type="xs:string" use="optional"/>
+			<xs:attribute name="schema-resource" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="namespace-prefix">

@@ -15,6 +15,7 @@
 	<property name="doc.dir" value="doc"/>
 	<property name="doc.api.dir" value="${doc.dir}/api"/>
 	<property name="dist.api.dir" value="doc/javadoc/api"/>
+	<property name="javadoc_link" value="http://java.sun.com/j2se/1.5.0/docs/api"/>
 
 	<property name="dist_excludes" value="$target/site/**, target/*classes*/**, target/*reports*/**, eg/target/**, intellij/**, doc/reference/support/**"/>
 
@@ -68,7 +69,8 @@
 			windowtitle="${Name} API Documentation"
 			Overview="${doc.api.dir}/package.html"
 			stylesheetfile="${doc.api.dir}/jdstyle.css"
-			doctitle="${Name} API Documentation">
+			doctitle="${Name} API Documentation"
+			link="${javadoc_link}">
 
 			<packageset dir="${generated.src}" defaultexcludes="yes">
 				<include name="net/esper/**"/>

@@ -17,10 +17,11 @@ import java.util.HashMap;
  * For XPath expressions that must refer to namespace prefixes those prefixes and their
  * namespace name must be supplied to the engine. A default namespace can be supplied as well.
  * <p>
- * By supplying a schema URL the engine can interrogate the schema, allowing the engine to
+ * By supplying a schema resource the engine can interrogate the schema, allowing the engine to
  * verify event properties and return event properties in the type defined by the schema.
- * When a schema URL is supplied, the optional root element namespace defines the namespace in case the
+ * When a schema resource is supplied, the optional root element namespace defines the namespace in case the
  * root element name occurs in multiple namespaces.
+ * <p>
  */
 public class ConfigurationEventTypeXMLDOM
 {
@@ -35,7 +36,7 @@ public class ConfigurationEventTypeXMLDOM
     // For XPath expression evaluation.
     private String defaultNamespace;
     
-    private String schemaURL;
+    private String schemaResource;
     private Map<String, XPathPropertyDesc> xPathProperties;
     private Map<String, String> namespacePrefixes;
 
@@ -103,21 +104,21 @@ public class ConfigurationEventTypeXMLDOM
     }
 
     /**
-     * Returns the schema URL.
-     * @return schema URL
+     * Returns the schema resource.
+     * @return schema resource
      */
-    public String getSchemaURL()
+    public String getSchemaResource()
     {
-        return schemaURL;
+        return schemaResource;
     }
 
     /**
-     * Sets the schema URL.
-     * @param schemaURL is the schema URL
+     * Sets the schema resource.
+     * @param schemaResource is the schema resource
      */
-    public void setSchemaURL(String schemaURL)
+    public void setSchemaResource(String schemaResource)
     {
-        this.schemaURL = schemaURL;
+        this.schemaResource = schemaResource;
     }
 
     /**

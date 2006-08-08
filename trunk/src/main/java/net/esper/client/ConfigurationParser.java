@@ -108,12 +108,12 @@ class ConfigurationParser {
     {
         String rootElementName = xmldomElement.getAttributes().getNamedItem("root-element-name").getTextContent();
         String rootElementNamespace = getOptionalAttribute(xmldomElement, "root-element-namespace");
-        String schemaURL = getOptionalAttribute(xmldomElement, "schema-url");
+        String schemaResource = getOptionalAttribute(xmldomElement, "schema-resource");
         String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
 
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName(rootElementName);
-        xmlDOMEventTypeDesc.setSchemaURL(schemaURL);
+        xmlDOMEventTypeDesc.setSchemaResource(schemaResource);
         xmlDOMEventTypeDesc.setRootElementNamespace(rootElementNamespace);
         xmlDOMEventTypeDesc.setDefaultNamespace(defaultNamespace);
         configuration.addEventTypeAlias(aliasName, xmlDOMEventTypeDesc);

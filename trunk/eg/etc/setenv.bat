@@ -14,7 +14,7 @@ if not exist "%JAVA_HOME%\bin\java.exe" (
 
 set LIB=..\..\lib
 
-if not exist ..\..\esper-1.0.0.jar goto badenv
+if not exist ..\..\esper-1.0.0.jar goto badenv_esperlib
 if not exist %LIB%\cglib-full-2.0.2.jar goto badenv
 if not exist %LIB%\commons-beanutils-1.7.0.jar goto badenv
 if not exist %LIB%\commons-logging-1.0.3.jar goto badenv
@@ -35,5 +35,10 @@ goto EOF
 :badenv
 echo.
 echo Error: required libraries not found in %LIB% directory
+goto EOF
+
+:badenv_esperlib
+echo.
+echo Error: esper.jar not found in ..\..\ 
 
 :EOF

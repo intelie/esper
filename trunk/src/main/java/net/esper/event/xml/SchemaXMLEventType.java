@@ -11,6 +11,7 @@ import net.esper.event.EventPropertyGetter;
 import net.esper.event.TypedEventPropertyGetter;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.EPException;
+import net.esper.util.ResourceLoader;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import java.util.Map;
@@ -48,10 +49,10 @@ public class SchemaXMLEventType extends BaseXMLEventType {
         propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
 
         // Load schema
-        String schemaURL = configurationEventTypeXMLDOM.getSchemaURL();
+        String schemaResource = configurationEventTypeXMLDOM.getSchemaResource();
         try
         {
-            readSchema(schemaURL);
+            readSchema(schemaResource);
         }
         catch (EPException ex)
         {
@@ -59,7 +60,7 @@ public class SchemaXMLEventType extends BaseXMLEventType {
         }
         catch (Exception ex)
         {
-            throw new EPException("Failed to read schema '" + schemaURL + "'", ex);
+            throw new EPException("Failed to read schema '" + schemaResource + "'", ex);
         }
 
         // Set up namespace context
@@ -79,19 +80,10 @@ public class SchemaXMLEventType extends BaseXMLEventType {
         super.setExplicitProperties(configurationEventTypeXMLDOM.getXPathProperties().values());
     }
 
-    private void readSchema(String schemaURL) throws IllegalAccessException, InstantiationException, ClassNotFoundException,
+    private void readSchema(String schemaResource) throws IllegalAccessException, InstantiationException, ClassNotFoundException,
             EPException, URISyntaxException
     {
-        URL url = null;
-
-        try
-        {
-            url = new URL(schemaURL);
-        }
-        catch (MalformedURLException ex)
-        {
-            throw new EPException("Malformed URL encountered for schema URL '" + schemaURL + "'", ex);
-        }
+        URL url = ResourceLoader.resolveClassPathOrURLResource("schema", schemaResource);
         String uri = url.toURI().toString();
 
         // Uses Xerxes internal classes
@@ -103,7 +95,7 @@ public class SchemaXMLEventType extends BaseXMLEventType {
 
         if (xsModel == null)
         {
-            throw new EPException("Failed to read schema via URL '" + schemaURL + "'");
+            throw new EPException("Failed to read schema via URL '" + schemaResource + "'");
         }
     }
 

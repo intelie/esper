@@ -4,14 +4,16 @@ import net.esper.client.EPStatement;
 import net.esper.client.EPAdministrator;
 import net.esper.client.UpdateListener;
 
-public class RFIDCountStatement
+public class RFIDTagsPerSensorStmt
 {
     private EPStatement statement;
 
-    public RFIDCountStatement(EPAdministrator admin)
+    public RFIDTagsPerSensorStmt(EPAdministrator admin)
     {
-        String stmt = "insert into TicksPerSecond " +
-                      "select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1) group by feed";
+        String stmt = "select ID as sensorId, sum(countTags) as numTagsPerSensor " +
+                      "from AutoIdRFIDExample.win:time(60) " +
+                      "where Observation[0].Command = 'READ_PALLET_TAGS_ONLY' " +
+                      "group by ID";
 
         statement = admin.createEQL(stmt);
     }

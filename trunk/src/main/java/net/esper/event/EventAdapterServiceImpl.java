@@ -162,7 +162,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public EventBean adapterForDOM(Document document)
     {
         Element rootElement = document.getDocumentElement();
-        String rootElementName = rootElement.getNodeName();
+        String rootElementName = rootElement.getLocalName();
+        if (rootElementName == null)
+        {
+            rootElementName = rootElement.getNodeName();
+        }
 
         EventType eventType = xmldomRootElementNames.get(rootElementName);
         if (eventType == null)
@@ -187,7 +191,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             throw new EventAdapterException("Required root element name has not been supplied");
         }
         EventType type = null;
-        if (configurationEventTypeXMLDOM.getSchemaURL() == null)
+        if (configurationEventTypeXMLDOM.getSchemaResource() == null)
         {
             type = new SimpleXMLEventType(configurationEventTypeXMLDOM);
         }
