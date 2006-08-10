@@ -57,7 +57,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         postProcessEvent();
     }
 
-    public void sendEvent(org.w3c.dom.Document document) throws EPException
+    public void sendEvent(org.w3c.dom.Node document) throws EPException
     {
         if (document == null)
         {

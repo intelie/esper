@@ -1,7 +1,7 @@
 package net.esper.event;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -159,13 +159,18 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return createAnonymousMapType(types);
     }
 
-    public EventBean adapterForDOM(Document document)
+    public EventBean adapterForDOM(Node node)
     {
-        Element rootElement = document.getDocumentElement();
-        String rootElementName = rootElement.getLocalName();
+        String rootElementName = null;
+        Node namedNode = null;
+        if (node instanceof Document)
+        {
+            namedNode = ((Document) node).getDocumentElement();
+        }
+        rootElementName = namedNode.getLocalName();
         if (rootElementName == null)
         {
-            rootElementName = rootElement.getNodeName();
+            rootElementName = namedNode.getNodeName();
         }
 
         EventType eventType = xmldomRootElementNames.get(rootElementName);
@@ -175,7 +180,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     "' has not been configured");
         }
 
-        return new XMLEventBean(document, eventType);
+        return new XMLEventBean(node, eventType);
     }
 
     /**

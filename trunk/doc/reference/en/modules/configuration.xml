@@ -128,6 +128,135 @@ select java.lang.Math.max(priceOne, priceTwo)</programlisting>
 			</itemizedlist>
 
 		</sect2>
+
+		<sect2 id="config-xml-dom" revision="1">
+			<title>XML Events represented by <literal>org.w3c.dom.Node</literal></title>
+			
+			<para>
+				Via this configuration item the Esper engine can natively process <literal>org.w3c.dom.Node</literal> instances, i.e. XML document object model (DOM) nodes.
+				Please see the <xref linkend="api"/> section for details on how to send <literal>Node</literal> events to the engine.
+			</para>
+			
+			<para>
+				Esper allows configuring XPath expressions as event properties. You can specify arbitrary XPath functions or expressions and provide a property name by which their result values will be available for use in expressions. 
+			</para>
+				
+			<para>
+				For XML documents that follow an XML schema, Esper can load and interogate your schema and validate event property names and types against the schema information. 
+			</para>
+
+			<para>
+				Nested, mapped and indexed event properties are also supported in expressions against <literal>org.w3c.dom.Node</literal> events. Thus XML trees can conveniently be
+				interrogated using the existing event property syntax for querying JavaBean objects, JavaBean object graphs or <literal>java.util.Map</literal> events.
+			</para>
+
+			<para>
+				In the simplest form, the Esper engine only requires a configuration entry containing the root element name and the event type alias in order to process <literal>org.w3c.dom.Node</literal> events:
+			</para>
+			<programlisting><![CDATA[<event-type alias="MyXMLNodeEvent">
+  <xml-dom root-element-name="myevent" />
+</event-type>]]></programlisting>
+			
+			<para>
+				 You can also use the configuration API to configure XML event types, as the short example below demonstrates. 
+				 In fact, all configuration options available through XML configuration can 
+				 also be provided via setter methods on the <literal>ConfigurationEventTypeXMLDOM</literal> class.
+			</para>
+
+			<programlisting><![CDATA[Configuration configuration = new Configuration();
+ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+desc.setRootElementName("myevent");
+configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
+
+			<para>
+				 The next example presents all relevant configuration options in a sample configuration entry.
+			</para>
+
+			<programlisting><![CDATA[<event-type alias="AutoIdRFIDEvent">
+  <xml-dom root-element-name="Sensor" schema-resource="data/AutoIdPmlCore.xsd" 
+                default-namespace="urn:autoid:specification:interchange:PMLCore:xml:schema:1">
+    <namespace-prefix prefix="pmluid" 
+                namespace="urn:autoid:specification:universal:Identifier:xml:schema:1"/>
+    <xpath-property property-name="countTags" 
+                xpath="count(/Sensor/Observation/Tag)" type="number"/>
+  </xml-dom>
+</event-type>]]></programlisting>
+
+			<para>
+				 The example above describes an event property named <literal>countTags</literal> whose value is computed by an XPath expression. The namespace prefixes
+				 and default namespace are for use with XPath expressions and must also be made known to the engine in order for the engine to compile XPath expressions. 
+				 Via the <literal>schema-resource</literal> attribute we instruct the engine to load a schema file.
+			</para>
+
+			<sect3 id="config-xml-dom-schema" revision="1">
+				<title>Schema Resource</title>
+				<para>
+					 The <literal>schema-resource</literal> attribute takes a schema resource URL or classpath-relative filename. 
+					 The engine attempts to resolve the schema resource as an URL. If the schema resource name is not a valid URL, the engine attempts to resolve the resource from classpath via the <literal>ClassLoader.getResource</literal> method using the thread context class loader, followed by the Configuration class classloader.
+				</para>
+
+				<para>
+					 By configuring a schema file for the engine to load, the engine performs these additional services:
+				</para>
+				
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							Validates the event properties in a statement, ensuring the event property name matches an attribute or element in the XML
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Determines the type of the event property allowing event properties to be used in type-sensitive expressions such as expressions involving artithmatic (Note: XPath properties are also typed)
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Matches event property names to either element names or attributes
+						</para>
+					</listitem>
+				</itemizedlist>
+
+				<para>
+					 If no schema resource is specified, all event properties are unvalidated and their type defaults to <literal>java.lang.String</literal>.
+				</para>
+
+		  </sect3>
+
+			<sect3 id="config-xml-dom-xpathprop" revision="1">
+				<title>XPath Property</title>
+				<para>
+					 The <literal>xpath-property</literal> sub-element adds event properties to the event type that are computed via an XPath expression.
+					 In order for the XPath expression to compile, be sure to specify the <literal>default-namespace</literal> attribute and use the 
+					 <literal>namespace-prefix</literal> to declare namespace prefixes.
+				</para>
+					 
+				<para>
+					 XPath expression properties are strongly typed. The <literal>type</literal> attribute allows the following values:
+				</para>
+
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							number (Note: resolves to a <literal>double</literal>)
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							string
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							boolean
+						</para>
+					</listitem>
+				</itemizedlist>
+				
+		  </sect3>
+		  
+		</sect2>
+		
     </sect1>
 </chapter>
 

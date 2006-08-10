@@ -1,6 +1,6 @@
 package net.esper.event;
 
-import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import java.util.Map;
 
@@ -120,8 +120,8 @@ public interface EventAdapterService
 
     /**
      * Returns an adapter for the XML DOM document that exposes it's data as event properties for use in statements.
-     * @param document is the node to wrap
+     * @param node is the node to wrap
      * @return event wrapper for document
      */
-    public EventBean adapterForDOM(Document document);
+    public EventBean adapterForDOM(Node node);
 }
