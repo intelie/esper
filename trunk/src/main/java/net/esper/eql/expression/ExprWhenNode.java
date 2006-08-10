@@ -129,12 +129,26 @@ public class ExprWhenNode extends ExprNode
 
     public ExprNode getLogExprNode()
     {
+        _logExprNode = getChildNodes().get(0);
         return _logExprNode;
+    }
+
+    public void setLogExprNode(ExprNode node_)
+    {
+        getChildNodes().set(0,node_);
+        _logExprNode=node_;
     }
 
     public ExprNode getValExprNode()
     {
+        _valExprNode = getChildNodes().get(1);                
         return _valExprNode;
+    }
+
+    public void setValExprNode(ExprNode node_)
+    {
+        getChildNodes().set(1,node_);
+        _valExprNode=node_;
     }
 
     private static final Log log = LogFactory.getLog(ExprWhenNode.class);

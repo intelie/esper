@@ -52,15 +52,17 @@ public class ExprCaseNode extends ExprNode
         }
         ExprNode[] t1 = _exprNodeList.toArray(new ExprNode[0]);
         ExprNode[] t2 = otherExprNodeList.toArray(new ExprNode[0]);
-        boolean notEquals = true;
-        for (int i=0; i<t1.length; i++)
+        boolean nodeEquals = true;
+        int i =0;
+        do
         {
-            if (t1[i].equalsNode(t2[i]))
+            if (!(t1[i].equalsNode(t2[i])))
             {
-                notEquals = false;
+                nodeEquals  = false;
             }
-        }
-        if (notEquals)
+        }  while((nodeEquals) && (++i<t1.length));
+
+        if (!nodeEquals)
         {
             return false;
         }
@@ -70,6 +72,11 @@ public class ExprCaseNode extends ExprNode
 
    public void validate(StreamTypeService streamTypeService_) throws ExprValidationException
     {
+        if (_exprNodeList == null)
+        {
+            throw new ExprValidationException("The Case node requires at least one child expression");
+        }
+
         if (_exprNodeList.size() == 0)
         {
             throw new ExprValidationException("The Case node requires at least one child expression");
@@ -160,5 +167,37 @@ public class ExprCaseNode extends ExprNode
      {
          return _exprNodeList;
      }
+
+    public ExprNode getExprNodeList(int ndx_)
+    {
+        if (_exprNodeList == null)
+        {
+            return null;
+        }
+        if (ndx_ > (_exprNodeList.size()) )
+        {
+            return null;
+        }
+        return (ExprNode) _exprNodeList.get(ndx_);
+    }
+
+    public boolean setExprNodeList(int ndx_, ExprNode node_)
+    {
+        if (_exprNodeList == null)
+        {
+            return false;
+        }
+        if (ndx_ > (_exprNodeList.size()) )
+        {
+            return false;
+        }
+       _exprNodeList.set(ndx_, node_);
+        return true;
+    }
+
+    public void clearExprNodeList()
+    {
+        _exprNodeList.clear();
+    }
 }
 

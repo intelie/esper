@@ -15,12 +15,9 @@ import org.apache.commons.logging.LogFactory;
 public class TestExprCaseNode extends TestCase
 {
     private ExprCaseNode _caseNode;
-    private List<ExprNode> _listExprNode;
-
     public void setUp()
     {
            //_caseNode = new ExprCaseNode(false);
-        _listExprNode = new ArrayList<ExprNode>();
     }
 
     public void testGetType()  throws Exception
@@ -33,49 +30,58 @@ public class TestExprCaseNode extends TestCase
         // case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
         // Build case node, logical nodes don't return any values:
         // case Node type is null
-        buildCaseNode(false,0);
+        _caseNode=buildCaseNode(false,0);
         assertEquals(null, _caseNode.getType());
         // first when is true, case node type is the first when node type
-        _listExprNode.clear();
-        buildCaseNode(true, 1);
-        ExprWhenNode whenNode = (ExprWhenNode) _listExprNode.get(0);
+        _caseNode.clearExprNodeList();
+        _caseNode=buildCaseNode(true, 1);
+        ExprWhenNode whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(0));
         assertEquals(whenNode.getValExprNode().getType(), _caseNode.getType());
-        _listExprNode.clear();
+        _caseNode.clearExprNodeList();
         // Second when is true, case node type is the type of the second when node
-        buildCaseNode(true, 2);
-        whenNode = (ExprWhenNode) _listExprNode.get(1);
+        _caseNode=buildCaseNode(true, 2);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
         assertEquals(whenNode.getValExprNode().getType(), _caseNode.getType());
-        _listExprNode.clear();
+        _caseNode.clearExprNodeList();
         // Third test: we enable both when nodes: case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) end
-        buildCaseNode(true, 3);
-        whenNode = (ExprWhenNode) _listExprNode.get(0);
+        _caseNode=buildCaseNode(true, 3);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(0));
         assertEquals(whenNode.getValExprNode().getType(), _caseNode.getType());
-        _listExprNode.clear();
-        // Enabling the whole expression: case when (2.5>1) then count(5) when (3>2) then (25 + 130.5) end
+        _caseNode.clearExprNodeList();
+        // Enabling the whole expression: case when (2.5>1) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
         // the case node type is still the first value node expression type
-        buildCaseNode(true, 7);
-        whenNode = (ExprWhenNode) _listExprNode.get(0);
+        _caseNode=buildCaseNode(true, 7);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(0));
         assertEquals(whenNode.getValExprNode().getType(), _caseNode.getType());
-        _listExprNode.clear();
-        // Building expression:  case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) end
-        buildCaseNode(true, 6);
-        whenNode = (ExprWhenNode) _listExprNode.get(1);
+        _caseNode.clearExprNodeList();
+        // Building expression:  case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
+        _caseNode=buildCaseNode(true, 6);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
         assertEquals(whenNode.getValExprNode().getType(), _caseNode.getType());
-        _listExprNode.clear();
-        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) end
-        buildCaseNode(true, 4);
-        ExprElseNode elseNode = (ExprElseNode) _listExprNode.get(2);
+        _caseNode.clearExprNodeList();
+        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3*3) end
+        _caseNode=buildCaseNode(true, 4);
+        ExprElseNode elseNode = (ExprElseNode) (_caseNode.getExprNodeList(2));
         assertEquals(elseNode.getType(), _caseNode.getType());
-        _listExprNode.clear();
+        _caseNode.clearExprNodeList();
     }
 
     public void testValidate() throws Exception
     {
         // No subnodes: Exception is thrown.
-        _listExprNode.clear();
         try
         {
-            _caseNode = new ExprCaseNode(false, _listExprNode);
+            _caseNode = new ExprCaseNode(false, null);
+            _caseNode.validate(null);
+            fail();
+        }
+        catch (ExprValidationException ex)
+        {
+            // Expected
+        }
+        try
+        {
+            _caseNode = new ExprCaseNode(false, new ArrayList<ExprNode>());
             _caseNode.validate(null);
             fail();
         }
@@ -90,8 +96,9 @@ public class TestExprCaseNode extends TestCase
         arithNode.validateDescendents(null);
         try
         {
-            _listExprNode.add(arithNode);
-            _caseNode = new ExprCaseNode(false, _listExprNode);
+            List<ExprNode> listExprNodes = new ArrayList<ExprNode>();
+            listExprNodes.add(arithNode);
+            _caseNode = new ExprCaseNode(false, listExprNodes);
             _caseNode.validate(null);
             fail();
         }
@@ -99,14 +106,14 @@ public class TestExprCaseNode extends TestCase
         {
             // Expected
         }
-        _listExprNode.clear();
         // Else node is not enough, it has to be paired with at least one when node.
         ExprElseNode elseNode = new ExprElseNode();
         elseNode.addChildNode(arithNode);
         try
         {
-            _listExprNode.add(elseNode);
-            _caseNode = new ExprCaseNode(false, _listExprNode);
+            List<ExprNode> listExprNodes = new ArrayList<ExprNode>();
+            listExprNodes.add(elseNode);
+            _caseNode = new ExprCaseNode(false, listExprNodes);
             _caseNode.validate(null);
             fail();
         }
@@ -114,15 +121,14 @@ public class TestExprCaseNode extends TestCase
         {
             // Expected
         }
-        _listExprNode.clear();
         // expression: case when (2.5>1) then count(5) when (3>2) then (25 + 130.5) end
         // The validation should be successful for every node traversed.
-        buildCaseNode(false, 7);
+        _caseNode=buildCaseNode(false, 7);
         _caseNode.validate(null);
-        _listExprNode.clear();
-        buildCaseNode(true, 7);
+        _caseNode.clearExprNodeList();
+        _caseNode=buildCaseNode(true, 7);
         _caseNode.validate(null);
-        _listExprNode.clear();
+        _caseNode.clearExprNodeList();
     }
 
     public void testEvaluate() throws Exception
@@ -134,51 +140,103 @@ public class TestExprCaseNode extends TestCase
         // case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
         // Build case node, logical nodes don't return any values:
         // case Node type is null
-        buildCaseNode(false,0);
+        _caseNode=buildCaseNode(false,0);
         assertEquals(null, _caseNode.evaluate(null));
         // first when is true, case node type is the first when node type
-        _listExprNode.clear();
-        buildCaseNode(true, 1);
-        ExprWhenNode whenNode = (ExprWhenNode) _listExprNode.get(0);
+        _caseNode.clearExprNodeList();
+        _caseNode=buildCaseNode(true, 1);
+        ExprWhenNode whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(0));
         assertEquals(whenNode.evaluate(null), _caseNode.evaluate(null));
-        _listExprNode.clear();
+        _caseNode.clearExprNodeList();
         // Second when is true, case node type is the type of the second when node
-        buildCaseNode(true, 2);
-        whenNode = (ExprWhenNode) _listExprNode.get(1);
+        _caseNode=buildCaseNode(true, 2);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
         assertEquals(whenNode.evaluate(null), _caseNode.evaluate(null));
-        _listExprNode.clear();
+        _caseNode.clearExprNodeList();
         // Third test: we enable both when nodes: case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) end
-        buildCaseNode(true, 3);
-        whenNode = (ExprWhenNode) _listExprNode.get(0);
+        _caseNode=buildCaseNode(true, 3);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(0));
         assertEquals(whenNode.evaluate(null), _caseNode.evaluate(null));
-        _listExprNode.clear();
-        // Enabling the whole expression: case when (2.5>1) then count(5) when (3>2) then (25 + 130.5) end
+        _caseNode.clearExprNodeList();
+        // Enabling the whole expression: case when (2.5>1) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
         // the case node type is still the first value node expression type
-        buildCaseNode(true, 7);
-        whenNode = (ExprWhenNode) _listExprNode.get(0);
+        _caseNode=buildCaseNode(true, 7);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(0));
         assertEquals(whenNode.evaluate(null), _caseNode.evaluate(null));
-        _listExprNode.clear();
-        // Building expression:  case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) end
-        buildCaseNode(true, 6);
-        whenNode = (ExprWhenNode) _listExprNode.get(1);
+        _caseNode.clearExprNodeList();
+        // Building expression:  case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
+        _caseNode=buildCaseNode(true, 6);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
         assertEquals(whenNode.evaluate(null), _caseNode.evaluate(null));
-        _listExprNode.clear();
-        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) end
-        buildCaseNode(true, 4);
-        ExprElseNode elseNode = (ExprElseNode) _listExprNode.get(2);
+        _caseNode.clearExprNodeList();
+        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3*3) end
+        _caseNode=buildCaseNode(true, 4);
+        ExprElseNode elseNode = (ExprElseNode) (_caseNode.getExprNodeList(2));
         assertEquals(elseNode.evaluate(null), _caseNode.evaluate(null));
-        _listExprNode.clear();
+        _caseNode.clearExprNodeList();
     }
 
     public void testEquals()  throws Exception
     {
+        // Template expression is:
+        // case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
 
+        // Building expression:
+        // case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) end
+        ExprCaseNode otherCaseNode;
+        _caseNode=buildCaseNode(false,0);
+        otherCaseNode=buildCaseNode(false,0);
+        assertTrue(_caseNode.equalsNode(otherCaseNode));
+        _caseNode.clearExprNodeList();
+        otherCaseNode.clearExprNodeList();
+        // case when (2.5>2) then count(5) when (Long>Integer) then (25 + 130.5) end
+        _caseNode=buildCaseNode(true, 1);
+        // compare to
+        // case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) end
+        // Test successful as only the operand of the Relational Operator is used
+        // for the comparison.
+        otherCaseNode=buildCaseNode(false,0);
+        assertTrue(_caseNode.equalsNode(otherCaseNode));
+        _caseNode.clearExprNodeList();
+        otherCaseNode.clearExprNodeList();
+        // case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) end
+        _caseNode=buildCaseNode(true, 2);
+        otherCaseNode=buildCaseNode(true,2);
+        assertTrue(_caseNode.equalsNode(otherCaseNode));
+        // We change the value expression for the second when node regarding
+        // the second case node.
+        ExprMathNode arithNode = new ExprMathNode(ArithTypeEnum.ADD);
+        ExprWhenNode whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
+        whenNode.setValExprNode(arithNode);
+        _caseNode.setExprNodeList(1, whenNode);
+        // The test is yet successful, the ExprMathNode nodes are equals
+        // when only their operators are the same.
+        assertTrue(_caseNode.equalsNode(otherCaseNode));
+        // This test shows it.
+        arithNode = new ExprMathNode(ArithTypeEnum.DIVIDE);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
+        whenNode.setValExprNode(arithNode);
+        _caseNode.setExprNodeList(1, whenNode);        
+        assertFalse(_caseNode.equalsNode(otherCaseNode));
+        //Testign equalNode on the else node.
+        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3&3) end
+        otherCaseNode.clearExprNodeList();
+        _caseNode.clearExprNodeList();
+        _caseNode=buildCaseNode(true, 4);
+        otherCaseNode=buildCaseNode(true, 4);
+        assertTrue(otherCaseNode.equalsNode(_caseNode));
+        // Changing only the else node for the other case node.
+        arithNode = new ExprMathNode(ArithTypeEnum.DIVIDE);
+        ExprElseNode elseNode = (ExprElseNode) (otherCaseNode.getExprNodeList(2));
+        elseNode.getChildNodes().set(0,arithNode);
+        otherCaseNode.setExprNodeList(2, elseNode);
+        assertFalse(otherCaseNode.equalsNode(_caseNode));
     }
 
     public void testToExpressionString() throws Exception
     {
         // Build: case when 2.5>2 then count(5) when 3>2 then (25+130.5) else (3*3) end
-        buildCaseNode(true, 7);
+        _caseNode=buildCaseNode(true, 7);
         log.debug(_caseNode.toExpressionString());
         assertEquals(" case when 2.5>2 then count(5) when 3>2 then (25+130.5) else (3*3) end", _caseNode.toExpressionString());
     }
@@ -204,8 +262,9 @@ public class TestExprCaseNode extends TestCase
         return node_;
     }
 
-    private void buildCaseNode(boolean withValue_, int whenIndex_) throws Exception
+    private ExprCaseNode buildCaseNode(boolean withValue_, int whenIndex_) throws Exception
     {
+        List<ExprNode> listExprNode = new ArrayList<ExprNode>();;
         ExprWhenNode[] whenNodes = new ExprWhenNode[2];
         ExprRelationalOpNode opNode = new ExprRelationalOpNode(RelationalOpEnum.GT);
         if ((withValue_) && ((whenIndex_ & 1)==1))
@@ -228,7 +287,7 @@ public class TestExprCaseNode extends TestCase
         whenNodes[0].addChildNode(opNode);
         whenNodes[0].addChildNode(countNode);
         log.debug(whenNodes[0].getType().getName());
-        _listExprNode.add(whenNodes[0]);
+        listExprNode.add(whenNodes[0]);
         opNode = new ExprRelationalOpNode(RelationalOpEnum.GT);
         if ((withValue_) && ((whenIndex_ & 2)==2))
         {
@@ -248,7 +307,7 @@ public class TestExprCaseNode extends TestCase
         whenNodes[1].addChildNode(opNode);
         whenNodes[1].addChildNode(arithNode);
         log.debug(whenNodes[1].getType().getName());
-        _listExprNode.add(whenNodes[1]);
+        listExprNode.add(whenNodes[1]);
         if ((whenIndex_ & 4)==4)
         {
             ExprElseNode elseNode = new ExprElseNode();
@@ -257,9 +316,10 @@ public class TestExprCaseNode extends TestCase
             arithNode.addChildNode(new SupportExprNode(new Integer(3)));
             arithNode.validateDescendents(null);
             elseNode.addChildNode(arithNode);
-            _listExprNode.add(elseNode);
+            listExprNode.add(elseNode);
         }
-        _caseNode = new ExprCaseNode(false, _listExprNode);
+        ExprCaseNode node = new ExprCaseNode(false, listExprNode);
+        return (node);
     }
 
      private static final Log log = LogFactory.getLog(TestExprCaseNode.class);
