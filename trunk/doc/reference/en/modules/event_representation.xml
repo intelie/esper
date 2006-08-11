@@ -1,0 +1,278 @@
+<chapter id="event_representation">
+    <title>Event Representation</title>
+
+    <sect1 id="eventrep_intro">
+        <title>Event Representations</title>
+
+        <para>
+			An event is an immutable record of a past occurrence of an action or state change. An event can have a set of event properties that supply information about the event. An event also has an underlying Java event type.
+        </para>
+
+        <para>
+			In Esper, an event can be represented by any of the following underlying Java event types:
+        </para>
+        
+		<table frame="topbot">
+			<title>Java Underlying Event Types</title>
+			<tgroup cols="2">
+				<colspec colwidth="1.5*"/>
+				<colspec colwidth="2*"/>
+				<thead>
+					<row>
+						<entry>Java Class</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry><literal>java.lang.Object</literal></entry>
+						<entry>Any Java POJO (plain-old java object) with getter methods following JavaBean conventions</entry>
+					</row>
+					<row>
+						<entry><literal>java.util.Map</literal></entry>
+						<entry>Map events are key-values pairs</entry>
+					</row>
+					<row>
+						<entry><literal>org.w3c.dom.Node</literal></entry>
+						<entry>XML document object model</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+	</sect1>      
+
+	<sect1 id="eventrep-properties">
+	   <title>Event Properties</title>
+           
+		<para>
+			Esper expressions can include simple as well as indexed, mapped and nested event properties. The syntax is used to query deep JavaBean objects graphs or XML structures. The table below outlines the different types of properties and their syntax in an event expression.
+		</para>
+
+		<table frame="topbot">
+			<title>Types of Event Properties</title>
+			<tgroup cols="4">
+				<colspec colwidth="1*"/>
+				<colspec colwidth="2.5*"/>
+				<colspec colwidth="1.5*"/>
+				<colspec colwidth="1.5*"/>
+				<thead>
+					<row>
+						<entry>Type</entry>
+						<entry>Description</entry>
+						<entry>Syntax</entry>
+						<entry>Example</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>Simple</entry>
+						<entry>A property that has a single value that may be retrieved.</entry>
+						<entry><synopsis>name</synopsis></entry>
+						<entry><synopsis>sensorId</synopsis></entry>
+					</row>
+					<row>
+						<entry>Indexed</entry>
+						<entry>An indexed property stores an ordered collection of objects (all of the same type) that can be individually accessed by an integer-valued, non-negative index (or subscript).</entry>
+						<entry><synopsis>name[<emphasis>index</emphasis>]</synopsis></entry>
+						<entry><synopsis>sensor[0]</synopsis></entry>
+					</row>
+					<row>
+						<entry>Mapped</entry>
+						<entry>A mapped property stores a keyed collection of objects (all of the same type).</entry>
+						<entry><synopsis>name('<emphasis>key</emphasis>')</synopsis></entry>
+						<entry><synopsis>sensor('light')</synopsis></entry>
+					</row>
+					<row>
+						<entry>Nested</entry>
+						<entry>A nested property is a property that lives within another property of an event.</entry>
+						<entry><synopsis>name.nestedname</synopsis></entry>
+						<entry><synopsis>sensor.value</synopsis></entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table> 
+
+		<para>
+			Combinations are also possible. For example, a valid combination could be <literal>person.address('home').street[0]</literal>.
+		</para>
+	</sect1>
+		
+	<sect1 id="eventrep-javabean">
+	   <title>Plain Java Object Events</title>
+
+		<para>
+			Plain Java object events are object instances that expose event properties through JavaBean-style getter methods. Events classes or interfaces do not have to be fully compliant to the JavaBean specification; however for the Esper engine to obtain event properties, the required JavaBean getter methods must be present.
+		</para>
+
+		<para>
+			Esper supports JavaBean-style event classes that extend a superclass or implement one or more interfaces. Also, Esper event pattern and EQL statements can refer to Java interface classes and abstract classes. 
+		</para>
+
+		<para>
+			Classes that represent events should be made immutable. As events are recordings of a state change or action that occurred in the past, the relevant event properties should not be changeable. However this is not a hard requirement and the Esper engine accepts events that are mutable as well.
+		</para>
+
+		<para>
+			Please see <xref linkend="configuration"/> on options for naming event types represented by Java object event classes.
+		</para>
+
+        <sect2 id="event-properties">
+           <title>Java Object Event Properties </title>
+           
+			<para>
+				As outlined earlier, the different property types are supported by the standard JavaBeans specification, and some of which are uniquely supported by Esper:
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						<emphasis>Simple</emphasis> properties have a single value that may be retrieved. The underlying property type might be a Java language primitive (such as int, a simple object (such as a java.lang.String), or a more complex object whose class is defined either by the Java language, by the application, or by a class library included with the application.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis>Indexed</emphasis> - An indexed property stores an ordered collection of objects (all of the same type) that can be individually accessed by an integer-valued, non-negative index (or subscript). Alternatively, the entire set of values may be retrieved using an array. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis>Mapped</emphasis> - As an extension to standard JavaBeans APIs, Esper considers any property that accepts a String-valued key a mapped property. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis>Nested</emphasis> - A nested property is a property that lives within another Java object which itself is a property of an event. 
+					</para>
+				</listitem>
+			</itemizedlist>
+		
+			<para>
+				Assume there is an EmployeeEvent event class as shown below. The mapped and indexed properties in this example return Java objects but could also return Java language primitive types (such as int or String). The Address object and Employee objects can themselves have properties that are nested within them, such as a streetName in the Address object or a name of the employee in the Employee object.
+			</para>
+<programlisting><![CDATA[public class EmployeeEvent {
+	public String getFirstName();
+	public Address getAddress(String type);
+	public Employee getSubordinate(int index);
+	public Employee[] getAllSubordinates();
+}
+]]></programlisting>
+
+			<para>
+				<emphasis>Simple</emphasis> event properties require a getter-method that returns the property value. In this example, the <literal>getFirstName</literal> getter method returns the <literal>firstName</literal> event property of type String.
+			</para>
+	
+			<para>
+				<emphasis>Indexed</emphasis> event properties require either one of the following getter-methods. A method that takes an integer-type key value and returns the property value, such as the <literal>getSubordinate</literal> method. Or a method that returns an array-type such as the <literal>getSubordinates</literal> getter method, which returns an array of Employee. In an EQL or event pattern statement, indexed properties are accessed via the <literal>property[index]</literal> syntax.
+			</para>
+	
+			<para>
+				<emphasis>Mapped</emphasis> event properties require a getter-method that takes a String-typed key value and returns the property value, such as the <literal>getAddress</literal> method. In an EQL or event pattern statement, mapped properties are accessed via the <literal>property('key')</literal> syntax.
+			</para>
+	
+			<para>
+				<emphasis>Nested</emphasis> event properties require a getter-method that returns the nesting object. The <literal>getAddress</literal> and <literal>getSubordinate</literal> methods are mapped and indexed properties that return a nesting object. In an EQL or event pattern statement, nested properties are accessed via the <literal>property.nestedProperty</literal> syntax.
+			</para>
+
+			<para>
+				All event pattern and EQL statements allow the use of indexed, mapped and nested properties (or a combination of these) anywhere where one or more event property names are expected. The below example shows different combinations of indexed, mapped and nested properties in filters of event pattern expressions.
+			</para>
+
+<programlisting><![CDATA[every EmployeeEvent(firstName='myName')
+every EmployeeEvent(address('home').streetName='Park Avenue')
+every EmployeeEvent(subordinate[0].name='anotherName')
+every EmployeeEvent(allSubordinates[1].name='thatName')
+every EmployeeEvent(subordinate[0].address('home').streetName='Water Street')
+]]></programlisting>
+
+			<para>
+				Similarly, the syntax can be used in EQL statements in all places where an event property name is expected, such as in select lists, where-clauses or join criteria.
+			</para>
+
+<programlisting><![CDATA[select firstName, address('work'), subordinate[0].name, subordinate[1].name
+from EmployeeEvent
+where address('work').streetName = 'Park Ave'
+]]></programlisting>
+		</sect2>
+		
+    </sect1>
+    
+	<sect1 id="eventrep-xml-dom">
+	   <title>XML <literal>org.w3c.dom.Node</literal> Events</title>
+	   
+		<para>
+			Events can also be represented as <literal>org.w3c.dom.Node</literal> instances and send into the engine via the <literal>sendEvent</literal> method on <literal>EPRuntime</literal>. Please note that configuration is required for allowing the engine to map the event type alias to <literal>Node</literal> element names. See <xref linkend="configuration"/>.
+		</para>
+		
+		<para>
+			Esper allows configuring XPath expressions as event properties. You can specify arbitrary XPath functions or expressions and provide a property name by which their result values will be available for use in expressions. For XML documents that follow an XML schema, Esper can load and interrogate your schema and validate event property names and types against the schema information. 
+		</para>
+			
+		<para>
+			Nested, mapped and indexed event properties are also supported in expressions against <literal>org.w3c.dom.Node</literal> events. Thus XML trees can conveniently be
+			interrogated using the existing event property syntax for querying JavaBean objects, JavaBean object graphs or <literal>java.util.Map</literal> events.
+		</para>
+
+		<para>
+			Let's look at how a sample XML document could be queried, given the sample XML below.
+		</para>
+		
+<programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<Sensor>
+	<ID>urn:epc:1:4.16.36<ID>
+	<Observation Command="READ_PALLET_TAGS_ONLY">
+		<ID>00000001<ID>
+		<Tag>
+			<ID>urn:epc:1:2.24.400<ID>
+		</Tag>
+		<Tag>
+			<ID>urn:epc:1:2.24.401<ID>
+		</Tag>
+	</Observation>
+</Sensor>]]></programlisting>
+
+		<para>
+			To configure the engine for processing Sensor documents, simply configure a <literal>SensorEvent</literal> event type alias for the <literal>Sensor</literal> element name via Configuration. Now the document can be queried as below.
+		</para>
+<programlisting><![CDATA[select ID, Observation.ID, Observation.Command, Observation.Tag[0], countTags
+from SensorEvent.win:time(30)]]></programlisting>
+
+		<para>
+			The equivalent XPath expressions to each of the properties are listed below.
+		</para>
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					The equivalent XPath expression to <literal>Observeration.ID</literal> is <literal>/Sensor/Observation/ID</literal>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The equivalent XPath expression to <literal>Observeration.Command</literal> is <literal>/Sensor/Observation/@Command</literal>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The equivalent XPath expression to <literal>Observeration.Tag[0]</literal> is <literal>/Sensor/Observation/Tag[position() = 1]</literal>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The equivalent XPath expression to <literal>countTags</literal> is <literal>count(/Sensor/Observation/Tag)</literal> for returning a count of tag elements. This assumes the <literal>countTags</literal> property has been configured as an XPath property.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			By specifying an event property such below:
+		</para>			
+		<programlisting><![CDATA[nestedElement.mappedElement('key').indexedElement[1]]]></programlisting>
+
+		<para>
+			The equivalent XPath expression is as follows:
+		</para>
+		<programlisting><![CDATA[/simpleEvent/nestedElement/mappedElement[@id='key']/indexedElement[position() = 2]]]></programlisting>
+
+	</sect1>
+
+</chapter>
+

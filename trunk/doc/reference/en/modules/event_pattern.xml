@@ -104,7 +104,7 @@ EPStatement myTrigger = admin.createPattern(
   {
     ServiceMeasurement spike = (ServiceMeasurement) newEvents[0].get("spike");
     ServiceMeasurement error = (ServiceMeasurement) newEvents[0].get("error");
-    ... // either spike or error can be null, depending on which occured
+    ... // either spike or error can be null, depending on which occurred
     ... // add more logic here
   }
 });

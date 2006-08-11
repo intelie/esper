@@ -134,7 +134,7 @@ select java.lang.Math.max(priceOne, priceTwo)</programlisting>
 			
 			<para>
 				Via this configuration item the Esper engine can natively process <literal>org.w3c.dom.Node</literal> instances, i.e. XML document object model (DOM) nodes.
-				Please see the <xref linkend="api"/> section for details on how to send <literal>Node</literal> events to the engine.
+				Please see the <xref linkend="event_representation"/> section for details on how to use <literal>Node</literal> events with the engine.
 			</para>
 			
 			<para>
@@ -142,7 +142,7 @@ select java.lang.Math.max(priceOne, priceTwo)</programlisting>
 			</para>
 				
 			<para>
-				For XML documents that follow an XML schema, Esper can load and interogate your schema and validate event property names and types against the schema information. 
+				For XML documents that follow an XML schema, Esper can load and interrogate your schema and validate event property names and types against the schema information. 
 			</para>
 
 			<para>
@@ -174,25 +174,31 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 
 			<programlisting><![CDATA[<event-type alias="AutoIdRFIDEvent">
   <xml-dom root-element-name="Sensor" schema-resource="data/AutoIdPmlCore.xsd" 
-                default-namespace="urn:autoid:specification:interchange:PMLCore:xml:schema:1">
+       default-namespace="urn:autoid:specification:interchange:PMLCore:xml:schema:1">
     <namespace-prefix prefix="pmluid" 
-                namespace="urn:autoid:specification:universal:Identifier:xml:schema:1"/>
+       namespace="urn:autoid:specification:universal:Identifier:xml:schema:1"/>
     <xpath-property property-name="countTags" 
-                xpath="count(/Sensor/Observation/Tag)" type="number"/>
+       xpath="count(/Sensor/Observation/Tag)" type="number"/>
   </xml-dom>
 </event-type>]]></programlisting>
 
 			<para>
-				 The example above describes an event property named <literal>countTags</literal> whose value is computed by an XPath expression. The namespace prefixes
+				 This example configures an event property named <literal>countTags</literal> whose value is computed by an XPath expression. The namespace prefixes
 				 and default namespace are for use with XPath expressions and must also be made known to the engine in order for the engine to compile XPath expressions. 
 				 Via the <literal>schema-resource</literal> attribute we instruct the engine to load a schema file.
 			</para>
+			
+			<para>
+				 Here is an example EQL statement using the configured event type named <literal>AutoIdRFIDEvent</literal>.
+			</para>
+
+			<programlisting><![CDATA[select ID, countTags from AutoIdRFIDEvent.win:time(30)]]></programlisting>
 
 			<sect3 id="config-xml-dom-schema" revision="1">
 				<title>Schema Resource</title>
 				<para>
 					 The <literal>schema-resource</literal> attribute takes a schema resource URL or classpath-relative filename. 
-					 The engine attempts to resolve the schema resource as an URL. If the schema resource name is not a valid URL, the engine attempts to resolve the resource from classpath via the <literal>ClassLoader.getResource</literal> method using the thread context class loader, followed by the Configuration class classloader.
+					 The engine attempts to resolve the schema resource as an URL. If the schema resource name is not a valid URL, the engine attempts to resolve the resource from classpath via the <literal>ClassLoader.getResource</literal> method using the thread context class loader. If the name could not be resolved, the engine uses the Configuration class classloader.
 				</para>
 
 				<para>
@@ -207,7 +213,7 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 					</listitem>
 					<listitem>
 						<para>
-							Determines the type of the event property allowing event properties to be used in type-sensitive expressions such as expressions involving artithmatic (Note: XPath properties are also typed)
+							Determines the type of the event property allowing event properties to be used in type-sensitive expressions such as expressions involving arithmatic (Note: XPath properties are also typed)
 						</para>
 					</listitem>
 					<listitem>
@@ -218,7 +224,8 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 				</itemizedlist>
 
 				<para>
-					 If no schema resource is specified, all event properties are unvalidated and their type defaults to <literal>java.lang.String</literal>.
+					 If no schema resource is specified, none of the event properties specified in statements are validated at statement creation time and their type defaults to <literal>java.lang.String</literal>. Also, attributes are not supported
+					 if no schema resource is specified and must thus be declared via XPath expression.
 				</para>
 
 		  </sect3>
@@ -226,13 +233,14 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 			<sect3 id="config-xml-dom-xpathprop" revision="1">
 				<title>XPath Property</title>
 				<para>
-					 The <literal>xpath-property</literal> sub-element adds event properties to the event type that are computed via an XPath expression.
+					 The <literal>xpath-property</literal> element adds event properties to the event type that are computed via an XPath expression.
 					 In order for the XPath expression to compile, be sure to specify the <literal>default-namespace</literal> attribute and use the 
 					 <literal>namespace-prefix</literal> to declare namespace prefixes.
 				</para>
 					 
 				<para>
-					 XPath expression properties are strongly typed. The <literal>type</literal> attribute allows the following values:
+					 XPath expression properties are strongly typed. The <literal>type</literal> attribute allows the following values. These values correspond to those declared by 
+					 <literal>javax.xml.xpath.XPathConstants</literal>.
 				</para>
 
 				<itemizedlist spacing="compact">

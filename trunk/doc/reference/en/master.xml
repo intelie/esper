@@ -5,6 +5,7 @@
 	<!ENTITY configuration SYSTEM "modules/configuration.xml">
 	<!ENTITY architecture SYSTEM "modules/architecture.xml">
 	<!ENTITY api SYSTEM "modules/api.xml">
+	<!ENTITY event_representation SYSTEM "modules/event_representation.xml">
 	<!ENTITY examples SYSTEM "modules/examples.xml">
 	<!ENTITY event_pattern SYSTEM "modules/event_pattern.xml">
 	<!ENTITY EQL SYSTEM "modules/eql.xml">
@@ -68,6 +69,8 @@
     &configuration;
 
     &api;
+
+    &event_representation;
 
     &event_pattern;
 

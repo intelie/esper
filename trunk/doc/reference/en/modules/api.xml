@@ -147,106 +147,6 @@ runtime.sendEvent(new MarketDataBean('IBM', 75.0));
         </para>
     </sect1>
 
-    <sect1 id="api-event-class-reqs">
-        <title>Event Class Requirements</title>
-
-        <para>
-			An event is an immutable record of a past occurence of an action or state change. An event can have a set of event properties that supply information about the event. An event also has an event class.
-        </para>
-
-        <para>
-			In Esper, events are object instances that expose event properties through JavaBean-style getter methods. Events classes or interfaces do not have to be fully compliant to the JavaBean specification; however for the Esper engine to obtain event properties, the required JavaBean getter methods must be present.
-        </para>
-
-        <para>
-			Esper supports JavaBean-style event classes that extend a superclass or implement one or more interfaces. Also, Esper event pattern and EQL statements can refer to Java interface classes and abstract classes. 
-        </para>
-
-        <para>
-			Classes that represent events should be made immutable. As events are recordings of a state change or action that occured in the past, the relevant event properties should not be changable. However this is not a hard requirement and the Esper engine accepts events that are mutable as well.
-        </para>
-
-        <sect2 id="event-properties">
-           <title>Event Property Types</title>
-           
-			<para>
-				The set of possible property types supported by a JavaBean and by Esper can be broken into below categories -- some of which are supported by the standard JavaBeans specification, and some of which are uniquely supported by Esper:
-			</para>
-
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						<emphasis>Simple</emphasis> properties have a single value that may be retrieved. The underlying property type might be a Java language primitive (such as int, a simple object (such as a java.lang.String), or a more complex object whose class is defined either by the Java language, by the application, or by a class library included with the application. 				
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis>Indexed</emphasis> - An indexed property stores an ordered collection of objects (all of the same type) that can be individually accessed by an integer-valued, non-negative index (or subscript). Alternatively, the entire set of values may be retrieved using an array. 
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis>Mapped</emphasis> - As an extension to standard JavaBeans APIs, Esper considers any property that accepts a String-valued key a mapped property. 
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<emphasis>Nested</emphasis> - A nested property is a property that lives within another Java object which itself is a property of an event. 
-					</para>
-				</listitem>
-			</itemizedlist>
-
-		
-		<para>
-			Assume there is an EmployeeEvent event class as shown below. The mapped and indexed properties in this example return Java objects but could also return Java language primitive types (such as int or String). The Address object and Employee objects can themselves have properties that are nested within them, such as a streetName in the Address object or a name of the employee in the Employee object.
-		</para>
-<programlisting><![CDATA[public class EmployeeEvent {
-	public String getFirstName();
-	public Address getAddress(String type);
-	public Employee getSubordinate(int index);
-	public Employee[] getAllSubordinates();
-}
-]]></programlisting>
-
-		<para>
-			<emphasis>Simple</emphasis> event properties require a getter-method that returns the property value. In this example, the <literal>getFirstName</literal> getter method returns the <literal>firstName</literal> event property of type String.
-		</para>
-
-		<para>
-			<emphasis>Indexed</emphasis> event properties require either one of the following getter-methods. A method that takes an integer-type key value and returns the property value, such as the <literal>getSubordinate</literal> method. Or a method that returns an array-type such as the <literal>getSubordinates</literal> getter method, which returns an array of Employee. In an EQL or event pattern statement, indexed properties are accessed via the <literal>property[index]</literal> syntax.
-		</para>
-
-		<para>
-			<emphasis>Mapped</emphasis> event properties require a getter-method that takes a String-typed key value and returns the property value, such as the <literal>getAddress</literal> method. In an EQL or event pattern statement, mapped properties are accessed via the <literal>property('key')</literal> syntax.
-		</para>
-
-		<para>
-			<emphasis>Nested</emphasis> event properties require a getter-method that returns the nesting object. The <literal>getAddress</literal> and <literal>getSubordinate</literal> methods are mapped and indexed properties that return a nesting object. In an EQL or event pattern statement, nested properties are accessed via the <literal>property.nestedProperty</literal> syntax.
-		</para>
-
-		<para>
-			All event pattern and EQL statements allow the use of indexed, mapped and nested properties (or a combination of these) anywhere where one or more event property names are expected. The below example shows different combinations of indexed, mapped and nested properties in filters of event pattern expressions.
-		</para>
-
-<programlisting><![CDATA[every EmployeeEvent(firstName='myName')
-every EmployeeEvent(address('home').streetName='Park Avenue')
-every EmployeeEvent(subordinate[0].name='anotherName')
-every EmployeeEvent(allSubordinates[1].name='thatName')
-every EmployeeEvent(subordinate[0].address('home').streetName='Water Street')
-]]></programlisting>
-
-		<para>
-			Similarly, the syntax can be used in EQL statements in all places where an event property name is expected, such as in select lists, where-clauses or join criteria.
-		</para>
-
-<programlisting><![CDATA[select firstName, address('work'), subordinate[0].name, subordinate[1].name
-from EmployeeEvent
-where address('work').streetName = 'Park Ave'
-]]></programlisting>
-		</sect2>
-
-    </sect1>
-
     <sect1 id="api-controlling-time">
         <title>Time-Keeping Events</title>
 
@@ -294,8 +194,8 @@ public class MyUpdateListener implements UpdateListener
 {
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-		// Interrogate events
-		System.out.println("new average price=" + newData[0].get("average");
+        // Interrogate events
+        System.out.println("new average price=" + newData[0].get("average");
 	}
 }
 ]]></programlisting>
@@ -314,8 +214,8 @@ public class MyUpdateListener implements UpdateListener
 {
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-		System.out.println("a event=" + newData[0].get("a").getUnderlying());
-		System.out.println("b event=" + newData[0].get("b").getUnderlying());
+        System.out.println("a event=" + newData[0].get("a").getUnderlying());
+        System.out.println("b event=" + newData[0].get("b").getUnderlying());
 	}
 }
 ]]></programlisting>
@@ -323,4 +223,3 @@ public class MyUpdateListener implements UpdateListener
     </sect1>
 
 </chapter>
-
