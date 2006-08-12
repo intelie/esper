@@ -22,6 +22,7 @@ public class TestExprElseNode extends TestCase
         ExprCountNode countNode = new ExprCountNode(false);
         countNode.validate(null);
         _elseNode.addChildNode(countNode);
+        _elseNode.validate(null);
         assertEquals(countNode.getType(), _elseNode.getType());
         _elseNode.getChildNodes().clear();
     }
@@ -38,12 +39,25 @@ public class TestExprElseNode extends TestCase
         {
             // Expected
         }
+        // test fails, only specific classes are allowed
         SupportExprNode testNode = new SupportExprNode(Integer.class);
         _elseNode.addChildNode(testNode);
+        try
+        {
+            _elseNode.validate(null);
+            fail();
+        }
+        catch (ExprValidationException ex)
+        {
+            // Expected
+        }
+        _elseNode.getChildNodes().clear();
         // test successful, only one child value Expression is allowed
+        ExprConstantNode constNode = new  ExprConstantNode("2");
+        _elseNode.addChildNode(constNode);
         _elseNode.validate(null);
-        SupportExprNode testNode2 = new SupportExprNode(Integer.class);
-        _elseNode.addChildNode(testNode2);
+        ExprConstantNode constNode2 = new  ExprConstantNode("3");
+        _elseNode.addChildNode(constNode2);
         // More than one node causes an exception
         try
         {
@@ -64,6 +78,7 @@ public class TestExprElseNode extends TestCase
         arithNode.validateDescendents(null);
         assertEquals(5.0d, arithNode.evaluate(null));
         _elseNode.addChildNode(arithNode);
+        _elseNode.validate(null);
         // Evaluation of else Node is the result from its expression node
         assertEquals(arithNode.evaluate(null), _elseNode.evaluate(null));
         _elseNode.getChildNodes().clear();
@@ -75,13 +90,20 @@ public class TestExprElseNode extends TestCase
         elseNodes[0] = new ExprElseNode();
         elseNodes[1] = new ExprElseNode();
         ExprMinMaxRowNode minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
+        minMaxNode.addChildNode(new SupportExprNode(9d));
+        minMaxNode.addChildNode(new SupportExprNode(6));
         ExprEqualsNode eqNode = new ExprEqualsNode(false);
+        eqNode.addChildNode(new SupportExprNode(1L));
+        eqNode.addChildNode(new SupportExprNode(new Integer(1)));
         elseNodes[0].addChildNode(minMaxNode);
         elseNodes[1].addChildNode(eqNode);
+        elseNodes[0].validate(null);
+        elseNodes[1].validate(null);
         assertFalse(elseNodes[0].equalsNode(elseNodes[1]));
         // Make the two subNodes identical: test succeeds.
         elseNodes[0].getChildNodes().clear();
         elseNodes[0].addChildNode(eqNode);
+        elseNodes[0].validate(null);
         assertTrue(elseNodes[0].equalsNode(elseNodes[1]));
     }
 
@@ -92,7 +114,7 @@ public class TestExprElseNode extends TestCase
         ExprMathNode arithNodeChild = new ExprMathNode(ArithTypeEnum.MULTIPLY);
         arithNodeChild = (ExprMathNode) makeNode(arithNodeChild,2,6);
         sumNode.addChildNode(arithNodeChild);
-        _elseNode.addChildNode(sumNode);
+        _elseNode = new ExprElseNode(sumNode);
         assertEquals(" else sum((2*6))", _elseNode.toExpressionString());
         _elseNode.getChildNodes().clear();
     }

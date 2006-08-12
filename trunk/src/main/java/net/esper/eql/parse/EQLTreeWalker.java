@@ -226,7 +226,10 @@ public class EQLTreeWalker extends EQLBaseWalker
             	leaveInsertInto(node);
             	break;
             case CASE:
-                leaveCaseNode(node);
+                leaveCaseNode(node, false);
+                break;
+            case CASE2:
+                leaveCaseNode(node, true);
                 break;
             case WHEN:
                 leaveWhenNode(node);
@@ -567,18 +570,31 @@ public class EQLTreeWalker extends EQLBaseWalker
 	    astNodeMap.put(node, bwNode);       
     }
 
-    private void leaveCaseNode(AST node_)
+    private void leaveCaseNode(AST node_, boolean incase2_)
     {
-        log.debug(".leaveCaseNode");
+        if (incase2_)
+        {
+            log.debug(".leaveCase2Node");
+        }
+        else
+        {
+            log.debug(".leaveCaseNode");
+        }
+
         if (astNodeMap.size() == 0)
         {
             throw new ASTWalkException("Unexpected AST tree contains zero child element for case node");
         }
         AST childNode = node_.getFirstChild();
-        if ((astNodeMap.size() == 1) && (childNode.getType() != WHEN))
+        if ((!incase2_) && (astNodeMap.size() == 1) && (childNode.getType() != WHEN))
         {
-            throw new ASTWalkException("Unexpected AST tree contains only else node for case node");
+            throw new ASTWalkException("AST tree doesn not contain at least when node for case node");
         }
+        else if ((incase2_) && (astNodeMap.size() >= 2) && (childNode.getNextSibling().getType() != WHEN))
+        {
+            throw new ASTWalkException("AST tree doesn not contain at least when node for case node");
+        }
+
         List<ExprNode> exprNodeList = new ArrayList<ExprNode>();
         do {
             ExprNode thisEvalNode = astNodeMap.get(childNode);
@@ -590,21 +606,27 @@ public class EQLTreeWalker extends EQLBaseWalker
             }
         }
         while (childNode != null);
-        ExprCaseNode caseNode = new ExprCaseNode(false, exprNodeList);
+        ExprCaseNode caseNode = new ExprCaseNode(incase2_, exprNodeList);
         astNodeMap.put(node_, caseNode);
     }
 
     private void leaveWhenNode(AST node_)
     {
         log.debug(".leaveWhenNode");
-        ExprWhenNode whenNode = new ExprWhenNode();
+        AST childNode = node_.getFirstChild();
+        ExprNode thisEvalNode = astNodeMap.get(childNode);
+        childNode = childNode.getNextSibling();
+        ExprNode thisValNode = astNodeMap.get(childNode);
+        ExprWhenNode whenNode = new ExprWhenNode(thisEvalNode, thisValNode);
         astNodeMap.put(node_, whenNode);
     }
 
     private void leaveElseNode(AST node_)
     {
         log.debug(".leaveElseNode");
-        ExprElseNode elseNode = new ExprElseNode();
+        AST childNode = node_.getFirstChild();
+        ExprNode thisEvalNode = astNodeMap.get(childNode);
+        ExprElseNode elseNode = new ExprElseNode(thisEvalNode);
         astNodeMap.put(node_, elseNode);
     }
 

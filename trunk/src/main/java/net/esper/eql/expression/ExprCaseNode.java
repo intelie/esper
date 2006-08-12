@@ -18,19 +18,24 @@ import java.util.Iterator;
 public class ExprCaseNode extends ExprNode
 {
 
-    private boolean _inCase2=false;
+    private boolean _inCase2;
+    private ValueExprNode _valExprNode;
     private List<ExprNode> _exprNodeList;
 
     public ExprCaseNode(boolean caseFlag_, List<ExprNode> exprNodeList_)
     {
         _inCase2 = caseFlag_;
         _exprNodeList = exprNodeList_;
+        if (_inCase2)
+        {
+            _valExprNode =  new ValueExprNode(exprNodeList_.get(0));
+        }
     }
 
     public String toExpressionString()
      {
          StringBuffer buffer = new StringBuffer();
-         buffer.append(" case");
+         buffer.append(" case ");
          for (ExprNode node : _exprNodeList) {
              buffer.append(node.toExpressionString());
          }
@@ -72,12 +77,7 @@ public class ExprCaseNode extends ExprNode
 
    public void validate(StreamTypeService streamTypeService_) throws ExprValidationException
     {
-        if (_exprNodeList == null)
-        {
-            throw new ExprValidationException("The Case node requires at least one child expression");
-        }
-
-        if (_exprNodeList.size() == 0)
+        if ((_exprNodeList == null) || (_exprNodeList.size() == 0))
         {
             throw new ExprValidationException("The Case node requires at least one child expression");
         }
@@ -121,12 +121,20 @@ public class ExprCaseNode extends ExprNode
             ExprNode node = it.next();
             if (node instanceof ExprWhenNode)
             {
-                if ((node.evaluate(eventsPerStream_)) != null)
+                ValueExprNode compareValueExprNode = ((ExprWhenNode) node).getEvalExprNode();
+                if (!_inCase2)
                 {
-                    try {
-                        return node.getType();
-                    } catch (ExprValidationException e) {
-                        e.printStackTrace();  
+                    if (((compareValueExprNode.getType()) == Boolean.class) &&
+                        ((Boolean) (compareValueExprNode.evaluate(eventsPerStream_)) == true))
+                    {
+                        return ((ExprWhenNode)node).getType();
+                    }
+                }
+                else if (_inCase2)
+                {
+                    if (_valExprNode.equalsNode(compareValueExprNode, eventsPerStream_))
+                    {
+                        return ((ExprWhenNode)node).getType();
                     }
                 }
             }
@@ -147,12 +155,26 @@ public class ExprCaseNode extends ExprNode
         ExprElseNode elseNode = null;
 
         for (ExprNode node : _exprNodeList) {
-            if (node instanceof ExprWhenNode) {
-                Object result = node.evaluate(eventsPerStream_);
-                if (result != null) {
-                    return result;
+            if (node instanceof ExprWhenNode)
+            {
+                ValueExprNode compareValueExprNode = ((ExprWhenNode) node).getEvalExprNode();
+                if (!_inCase2)
+                {
+                    if (((compareValueExprNode.getType()) == Boolean.class) &&
+                        ((Boolean) (compareValueExprNode.evaluate(eventsPerStream_)) == true))
+                    {
+                        return ((ExprWhenNode)node).evaluate(eventsPerStream_);
+                    }
                 }
-            } else if (node instanceof ExprElseNode) {
+                else if (_inCase2)
+                {
+                    if (_valExprNode.equalsNode(compareValueExprNode, eventsPerStream_))
+                    {
+                        return ((ExprWhenNode)node).evaluate(eventsPerStream_);
+                    }
+                }
+            }
+            else if (node instanceof ExprElseNode) {
                 elseNode = (ExprElseNode) node;
             }
         }

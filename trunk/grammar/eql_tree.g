@@ -65,14 +65,10 @@ selectionListElement
 //	|	#(s2:SELECTION_ELEMENT_EXPR caseExpr (IDENT)? { leaveNode(#s2); } )		
 
 caseExpr
-	: #(cs:CASE (#(wh:WHEN evalExprChoice valueExpr {leaveNode(#wh); }))+ (#(el:ELSE valueExpr {leaveNode(#el);}))?  {leaveNode(#cs); })
-	| #(cs2:CASE2 valueExpr (#(WHEN valueExpr valueExpr))+ (#(ELSE valueExpr))? {leaveNode(#cs2); })
+	: #(cs1:CASE (#(wh1:WHEN valueExpr valueExpr {leaveNode(#wh1); }))+ (#(el1:ELSE valueExpr {leaveNode(#el1);}))?  {leaveNode(#cs1); })
+	| #(cs2:CASE2 valueExpr (#(wh2:WHEN valueExpr valueExpr {leaveNode(#wh2);} ))+ (#(el2:ELSE valueExpr {leaveNode(#el2);}))? {leaveNode(#cs2); })
 	| valueExpr
 	;
-
-whenExpr
-   : #(wh:WHEN evalExprChoice (#(th:THEN valueExpr { leaveNode(#th); })) {leaveNode(#wh); })
-   ;
 
 outerJoin
 	:	outerJoinIdent

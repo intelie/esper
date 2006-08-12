@@ -9,6 +9,7 @@ import net.esper.type.RelationalOpEnum;
 import net.esper.type.ArithTypeEnum;
 import net.esper.support.eql.SupportExprNode;
 import net.esper.support.eql.SupportAggregationResultFuture;
+import net.esper.eql.parse.ASTFilterSpecHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -238,7 +239,10 @@ public class TestExprCaseNode extends TestCase
         // Build: case when 2.5>2 then count(5) when 3>2 then (25+130.5) else (3*3) end
         _caseNode=buildCaseNode(true, 7);
         log.debug(_caseNode.toExpressionString());
-        assertEquals(" case when 2.5>2 then count(5) when 3>2 then (25+130.5) else (3*3) end", _caseNode.toExpressionString());
+        assertEquals(" case  when 2.5>2 then count(5) when 3>2 then (25+130.5) else (3*3) end", _caseNode.toExpressionString());
+        _caseNode = buildCase2Node();
+        log.debug(_caseNode.toExpressionString());
+        assertEquals(" case eventPropertySimple.intPrimitive when eventPropertySimple.longBoxed then count(5) when (3*2.0) then (eventPropertySimple.intPrimitive*2.0) else (3*3) end", _caseNode.toExpressionString());    
     }
 
     private ExprNode makeNode(ExprNode node_, Class typeLeft_, Class typeRight_)
@@ -264,7 +268,7 @@ public class TestExprCaseNode extends TestCase
 
     private ExprCaseNode buildCaseNode(boolean withValue_, int whenIndex_) throws Exception
     {
-        List<ExprNode> listExprNode = new ArrayList<ExprNode>();;
+        List<ExprNode> listExprNode = new ArrayList<ExprNode>();
         ExprWhenNode[] whenNodes = new ExprWhenNode[2];
         ExprRelationalOpNode opNode = new ExprRelationalOpNode(RelationalOpEnum.GT);
         if ((withValue_) && ((whenIndex_ & 1)==1))
@@ -318,6 +322,47 @@ public class TestExprCaseNode extends TestCase
             elseNode.addChildNode(arithNode);
             listExprNode.add(elseNode);
         }
+        ExprCaseNode node = new ExprCaseNode(false, listExprNode);
+        return (node);
+    }
+
+    private ExprCaseNode buildCase2Node() throws Exception
+    {
+        // Build: case intPrimitive when longBoxed then count(5) when (3*2) then (intPrimitive*2) else (3*3) end
+        List<ExprNode> listExprNode = new ArrayList<ExprNode>();
+        ExprIdentNode[] identNodes = new ExprIdentNode[2];
+        ExprWhenNode[] whenNodes = new ExprWhenNode[2];
+        String streamOrNestedPropertyName = "eventPropertySimple";
+        identNodes[0] = new ExprIdentNode("intPrimitive", "eventPropertySimple");
+        listExprNode.add(identNodes[0]);
+        identNodes[1] = new ExprIdentNode("longBoxed", "eventPropertySimple");
+        SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[] {10, 20});
+        ExprCountNode countNode = new ExprCountNode(false);
+        countNode = (ExprCountNode) makeNode(countNode, 5, Integer.class);
+        countNode.setAggregationResultFuture(future, 1);
+        countNode.validate(null);
+        whenNodes[0] = new ExprWhenNode();
+        whenNodes[0].addChildNode(identNodes[1]);
+        whenNodes[0].addChildNode(countNode);
+        listExprNode.add(whenNodes[0]);
+        ExprMathNode arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        arithNode.addChildNode(new SupportExprNode(new Integer(3)));
+        arithNode.addChildNode(new SupportExprNode(new Double(2.0)));
+        arithNode.validateDescendents(null);
+        whenNodes[1] = new ExprWhenNode();
+        whenNodes[1].addChildNode(arithNode);
+        arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        arithNode.addChildNode(identNodes[0]);
+        arithNode.addChildNode(new SupportExprNode(new Double(2.0)));
+        whenNodes[1].addChildNode(arithNode);
+        listExprNode.add(whenNodes[1]);
+        ExprElseNode elseNode = new ExprElseNode();
+        arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        arithNode.addChildNode(new SupportExprNode(new Integer(3)));
+        arithNode.addChildNode(new SupportExprNode(new Integer(3)));
+        arithNode.validateDescendents(null);
+        elseNode.addChildNode(arithNode);
+        listExprNode.add(elseNode);
         ExprCaseNode node = new ExprCaseNode(false, listExprNode);
         return (node);
     }

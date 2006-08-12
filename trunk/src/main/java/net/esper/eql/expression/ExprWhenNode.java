@@ -5,14 +5,26 @@ import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.List;
+import java.util.LinkedList;
+
 /**
  * Represents an equals (=) comparator in a filter expressiun tree.
  */
 public class ExprWhenNode extends ExprNode
 {
+    private ValueExprNode _evalExprNode;
+    private ValueExprNode _valExprNode;
 
-    private ExprNode _logExprNode;
-    private ExprNode _valExprNode;
+    public ExprWhenNode()
+    {
+    }
+
+    public ExprWhenNode(ExprNode evalExprNode_, ExprNode valExprNode_)
+    {
+        _evalExprNode =  new ValueExprNode(evalExprNode_);
+        _valExprNode =  new ValueExprNode(valExprNode_);
+    }
 
     public void validate(StreamTypeService streamTypeService_) throws ExprValidationException
     {
@@ -23,76 +35,36 @@ public class ExprWhenNode extends ExprNode
         }
 
         setWhenNodes();
-        // The first node is a logical expression and should return a boolean
-        if (_logExprNode.getType() != Boolean.class)
-        {
-            throw new ExprValidationException("datatype '" + _logExprNode.getClass().getName()+
-                    "should be a logical expression");
-        }
+        _evalExprNode.validate(streamTypeService_);
+        _valExprNode.validate(streamTypeService_);
     }
 
     public Class getType()
     {
-        setWhenNodes();
-        try {
-            if (_valExprNode != null)
-            {
-                return _valExprNode.getType();
-            }
-            else
-            {
-                return null;
-            }
-        } catch (ExprValidationException e) {
-            e.printStackTrace();
+        if (_valExprNode != null)
+        {
+            return _valExprNode.getType();
         }
-        return null;
+        else
+        {
+            return null;
+        }
     }
 
     public Object evaluate(EventBean[] eventsPerStream_)
     {
-        Object leftResult = null;
-        Object rightResult = null;
-
-        setWhenNodes();
-        if (_logExprNode != null)
-        {
-            leftResult  = _logExprNode.evaluate(eventsPerStream_);
-        }
-        else
-        {
-            return null;
-        }
-        if (!(leftResult instanceof Boolean))
-        {
-            return null;
-        }
-
         if (_valExprNode != null)
         {
-            rightResult  = _valExprNode.evaluate(eventsPerStream_);
+            return _valExprNode.evaluate(eventsPerStream_);
         }
-        else
-        {
-            return null;
-        }
-
-        if (((Boolean) leftResult) == true)
-        {
-            return rightResult;
-        }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     public String toExpressionString()
     {
-        setWhenNodes();
         StringBuffer buffer = new StringBuffer();
         buffer.append(" when ");
-        buffer.append(_logExprNode.toExpressionString());
+        buffer.append(_evalExprNode.toExpressionString());
         buffer.append(" then ");
         buffer.append(_valExprNode.toExpressionString());
         return buffer.toString();
@@ -105,12 +77,8 @@ public class ExprWhenNode extends ExprNode
             return false;
         }
 
-        setWhenNodes();
         ExprWhenNode other = (ExprWhenNode) node_;
-        ExprNode otherLogExpr = other.getChildNodes().get(0);
-        ExprNode otherValExpr = other.getChildNodes().get(1);
-
-        if ((!(_logExprNode.equalsNode(otherLogExpr))) || (!(_valExprNode.equalsNode(otherValExpr))))
+        if ((!(_evalExprNode.equalsNode(other._evalExprNode))) || (!(_valExprNode.equalsNode(other._valExprNode))))
         {
             return false;
         }
@@ -122,34 +90,31 @@ public class ExprWhenNode extends ExprNode
     {
         if (getChildNodes() != null)
         {
-            _logExprNode = getChildNodes().get(0);
-            _valExprNode = getChildNodes().get(1);
+            _evalExprNode = new ValueExprNode(getChildNodes().get(0));
+            _evalExprNode.addChildNode(getChildNodes().get(0));
+            _valExprNode = new ValueExprNode(getChildNodes().get(1));
+            _valExprNode.addChildNode(getChildNodes().get(1));
         }
     }
 
-    public ExprNode getLogExprNode()
+    public ValueExprNode getEvalExprNode()
     {
-        _logExprNode = getChildNodes().get(0);
-        return _logExprNode;
+        return _evalExprNode;
     }
 
-    public void setLogExprNode(ExprNode node_)
+    public void setEvalExprNode(ExprNode node_)
     {
-        getChildNodes().set(0,node_);
-        _logExprNode=node_;
+        _evalExprNode.setExprNode(node_);
     }
 
-    public ExprNode getValExprNode()
+    public ValueExprNode getValExprNode()
     {
-        _valExprNode = getChildNodes().get(1);                
         return _valExprNode;
     }
 
     public void setValExprNode(ExprNode node_)
     {
-        getChildNodes().set(1,node_);
-        _valExprNode=node_;
+        _valExprNode.setExprNode(node_);
     }
 
-    private static final Log log = LogFactory.getLog(ExprWhenNode.class);
 }

@@ -404,6 +404,15 @@ public class TestEQLTreeWalker extends TestCase
         return bitWiseNode.evaluate(null);
     }
 
+    public void testIfThenElseCase() throws Exception
+    {
+        String text;
+        text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) when longPrimitive > intPrimitive then count(longPrimitive) else shortPrimitive end from " +    SupportBean.class.getName() + "().win:lenght(10) as win";
+        parseAndWalk(text);
+        text = "select case intPrimitive  when 1 then count(intPrimitive) end from " +    SupportBean.class.getName() + "().win:lenght(10) as win";
+        parseAndWalk(text);
+    }
+
     private void tryOuterJoin(String outerType, OuterJoinType typeExpected) throws Exception
     {
         String text = "select intPrimitive from " +
