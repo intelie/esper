@@ -9,16 +9,23 @@ import net.esper.type.RelationalOpEnum;
 import net.esper.type.ArithTypeEnum;
 import net.esper.support.eql.SupportExprNode;
 import net.esper.support.eql.SupportAggregationResultFuture;
+import net.esper.support.eql.SupportStreamTypeSvc3Stream;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.eql.parse.ASTFilterSpecHelper;
+import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class TestExprCaseNode extends TestCase
 {
     private ExprCaseNode _caseNode;
+    private StreamTypeService _streamTypeService = new SupportStreamTypeSvc3Stream();
+    private EventBean[] _events;
+
     public void setUp()
     {
-           //_caseNode = new ExprCaseNode(false);
+        StreamTypeService _streamTypeService = new SupportStreamTypeSvc3Stream();
     }
 
     public void testGetType()  throws Exception
@@ -28,18 +35,20 @@ public class TestExprCaseNode extends TestCase
         // for this when node.
 
         // Template expression is:
-        // case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
+        // case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) end
         // Build case node, logical nodes don't return any values:
         // case Node type is null
         _caseNode=buildCaseNode(false,0);
         assertEquals(null, _caseNode.getType());
-        // first when is true, case node type is the first when node type
         _caseNode.clearExprNodeList();
+        // First when node is true, case node type is the first when node type
+        // case when (2.5>2) then count(5) when (Long>Integer) then (25 + 130.5) end
         _caseNode=buildCaseNode(true, 1);
         ExprWhenNode whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(0));
         assertEquals(whenNode.getValExprNode().getType(), _caseNode.getType());
         _caseNode.clearExprNodeList();
-        // Second when is true, case node type is the type of the second when node
+        // Second when node is true, case node type is the type of the second when node
+        // case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) end
         _caseNode=buildCaseNode(true, 2);
         whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
         assertEquals(whenNode.getValExprNode().getType(), _caseNode.getType());
@@ -65,6 +74,37 @@ public class TestExprCaseNode extends TestCase
         ExprElseNode elseNode = (ExprElseNode) (_caseNode.getExprNodeList(2));
         assertEquals(elseNode.getType(), _caseNode.getType());
         _caseNode.clearExprNodeList();
+
+        // Second set of tests
+
+        // case intPrimitive when longBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        _caseNode=buildCase2Node();
+        elseNode = (ExprElseNode) (_caseNode.getExprNodeList(3));
+        assertEquals(elseNode.getType(), _caseNode.getType());
+        _caseNode.clearExprNodeList();
+        // case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        // intPrimitive = intBoxed
+        _events = new EventBean[] {makeEvent(10), makeEvent(new Integer(10))};
+        _caseNode=buildCase2Node();
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
+        assertEquals(whenNode.getType(), _caseNode.getType(_events));
+        _caseNode.clearExprNodeList();
+        // Changing the event flow
+        _events = new EventBean[] {makeEvent(10), makeEvent(new Integer(20))};
+        _caseNode=buildCase2Node();
+        // case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        // intPrimitive != intBoxed
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(2));
+        assertEquals(whenNode.getType(), _caseNode.getType(_events));
+        _caseNode.clearExprNodeList();
+        // case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        // This time intPrimitive=20, intBoxed=40
+        // Else node type becomes the case node type
+        _events = new EventBean[] {makeEvent(20), makeEvent(new Integer(40))};
+        _caseNode=buildCase2Node();
+        elseNode = (ExprElseNode) (_caseNode.getExprNodeList(3));
+        assertEquals(elseNode.getType(), _caseNode.getType(_events));
+
     }
 
     public void testValidate() throws Exception
@@ -127,8 +167,11 @@ public class TestExprCaseNode extends TestCase
         _caseNode=buildCaseNode(false, 7);
         _caseNode.validate(null);
         _caseNode.clearExprNodeList();
-        _caseNode=buildCaseNode(true, 7);
-        _caseNode.validate(null);
+
+        // Second case
+        _events = new EventBean[] {makeEvent(20), makeEvent(new Integer(40))};
+        _caseNode=buildCase2Node();
+        _caseNode.validate(_streamTypeService);
         _caseNode.clearExprNodeList();
     }
 
@@ -175,6 +218,37 @@ public class TestExprCaseNode extends TestCase
         ExprElseNode elseNode = (ExprElseNode) (_caseNode.getExprNodeList(2));
         assertEquals(elseNode.evaluate(null), _caseNode.evaluate(null));
         _caseNode.clearExprNodeList();
+
+        // Second set of tests
+
+        // case intPrimitive when longBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        _caseNode=buildCase2Node();
+        elseNode = (ExprElseNode) (_caseNode.getExprNodeList(3));
+        assertEquals(elseNode.evaluate(null), _caseNode.evaluate(null));
+        _caseNode.clearExprNodeList();
+        // case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        // intPrimitive = intBoxed
+        _events = new EventBean[] {makeEvent(10), makeEvent(new Integer(10))};
+        _caseNode=buildCase2Node();
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
+        assertEquals(whenNode.evaluate(_events), _caseNode.evaluate(_events));
+        _caseNode.clearExprNodeList();
+        // Changing the event flow
+        _events = new EventBean[] {makeEvent(10), makeEvent(new Integer(20))};
+        _caseNode=buildCase2Node();
+        // case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        // intPrimitive != intBoxed
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(2));
+        assertEquals(whenNode.evaluate(_events), _caseNode.evaluate(_events));
+        _caseNode.clearExprNodeList();
+        // case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        // This time intPrimitive=20, intBoxed=40
+        // Else node type becomes the case node type
+        _events = new EventBean[] {makeEvent(20), makeEvent(new Integer(40))};
+        _caseNode=buildCase2Node();
+        elseNode = (ExprElseNode) (_caseNode.getExprNodeList(3));
+        assertEquals(elseNode.evaluate(_events), _caseNode.evaluate(_events));
+
     }
 
     public void testEquals()  throws Exception
@@ -206,21 +280,15 @@ public class TestExprCaseNode extends TestCase
         assertTrue(_caseNode.equalsNode(otherCaseNode));
         // We change the value expression for the second when node regarding
         // the second case node.
-        ExprMathNode arithNode = new ExprMathNode(ArithTypeEnum.ADD);
+        ExprMathNode arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
         ExprWhenNode whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
         whenNode.setValExprNode(arithNode);
         _caseNode.setExprNodeList(1, whenNode);
-        // The test is yet successful, the ExprMathNode nodes are equals
+        // The test is not successful, the ExprMathNode nodes are not equals
         // when only their operators are the same.
-        assertTrue(_caseNode.equalsNode(otherCaseNode));
-        // This test shows it.
-        arithNode = new ExprMathNode(ArithTypeEnum.DIVIDE);
-        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
-        whenNode.setValExprNode(arithNode);
-        _caseNode.setExprNodeList(1, whenNode);        
         assertFalse(_caseNode.equalsNode(otherCaseNode));
-        //Testign equalNode on the else node.
-        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3&3) end
+        //Testing equalNode on the else node.
+        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3*3) end
         otherCaseNode.clearExprNodeList();
         _caseNode.clearExprNodeList();
         _caseNode=buildCaseNode(true, 4);
@@ -229,9 +297,29 @@ public class TestExprCaseNode extends TestCase
         // Changing only the else node for the other case node.
         arithNode = new ExprMathNode(ArithTypeEnum.DIVIDE);
         ExprElseNode elseNode = (ExprElseNode) (otherCaseNode.getExprNodeList(2));
-        elseNode.getChildNodes().set(0,arithNode);
+        elseNode.setExprNode(arithNode);
         otherCaseNode.setExprNodeList(2, elseNode);
         assertFalse(otherCaseNode.equalsNode(_caseNode));
+
+        // Second set of tests
+
+        // case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        _caseNode=buildCase2Node();
+        otherCaseNode=buildCase2Node();
+        assertTrue(_caseNode.equalsNode(otherCaseNode));
+        assertTrue(otherCaseNode.equalsNode(_caseNode));
+        _caseNode.clearExprNodeList();
+        otherCaseNode.clearExprNodeList();
+        _caseNode=buildCase2Node();
+        otherCaseNode=buildCase2Node();
+        // We change the event property for the first when node
+        // Case nodes are no longer equals
+        ExprIdentNode identNode = new ExprIdentNode("longBoxed", "s1");
+        identNode.validate(_streamTypeService);
+        whenNode = (ExprWhenNode) (_caseNode.getExprNodeList(1));
+        whenNode.setEvalExprNode(identNode);
+        assertFalse(_caseNode.equalsNode(otherCaseNode));
+
     }
 
     public void testToExpressionString() throws Exception
@@ -241,8 +329,7 @@ public class TestExprCaseNode extends TestCase
         log.debug(_caseNode.toExpressionString());
         assertEquals(" case  when 2.5>2 then count(5) when 3>2 then (25+130.5) else (3*3) end", _caseNode.toExpressionString());
         _caseNode = buildCase2Node();
-        log.debug(_caseNode.toExpressionString());
-        assertEquals(" case eventPropertySimple.intPrimitive when eventPropertySimple.longBoxed then count(5) when (3*2.0) then (eventPropertySimple.intPrimitive*2.0) else (3*3) end", _caseNode.toExpressionString());    
+        assertEquals(" case s0.intPrimitive when s1.intBoxed then count(5) when (5*2) then (s0.intPrimitive*4.0) else (10.0*20.0) end", _caseNode.toExpressionString());
     }
 
     private ExprNode makeNode(ExprNode node_, Class typeLeft_, Class typeRight_)
@@ -268,6 +355,7 @@ public class TestExprCaseNode extends TestCase
 
     private ExprCaseNode buildCaseNode(boolean withValue_, int whenIndex_) throws Exception
     {
+        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3&3) end
         List<ExprNode> listExprNode = new ArrayList<ExprNode>();
         ExprWhenNode[] whenNodes = new ExprWhenNode[2];
         ExprRelationalOpNode opNode = new ExprRelationalOpNode(RelationalOpEnum.GT);
@@ -287,9 +375,11 @@ public class TestExprCaseNode extends TestCase
         countNode.setAggregationResultFuture(future, 1);
         countNode.validate(null);
         log.debug("countNode " + countNode.toExpressionString());
+        log.debug("countNode Type " + countNode.getType().getName());
         whenNodes[0] = new ExprWhenNode();
         whenNodes[0].addChildNode(opNode);
         whenNodes[0].addChildNode(countNode);
+        whenNodes[0].validate(null);
         log.debug(whenNodes[0].getType().getName());
         listExprNode.add(whenNodes[0]);
         opNode = new ExprRelationalOpNode(RelationalOpEnum.GT);
@@ -307,9 +397,11 @@ public class TestExprCaseNode extends TestCase
         arithNode.addChildNode(new SupportExprNode(new Integer(25)));
         arithNode.addChildNode(new SupportExprNode(new Double(130.5)));
         arithNode.validateDescendents(null);
+        log.debug("ArithNodeType " + arithNode.getType().getName());
         whenNodes[1] = new ExprWhenNode();
         whenNodes[1].addChildNode(opNode);
         whenNodes[1].addChildNode(arithNode);
+        whenNodes[1].validate(null);
         log.debug(whenNodes[1].getType().getName());
         listExprNode.add(whenNodes[1]);
         if ((whenIndex_ & 4)==4)
@@ -320,6 +412,7 @@ public class TestExprCaseNode extends TestCase
             arithNode.addChildNode(new SupportExprNode(new Integer(3)));
             arithNode.validateDescendents(null);
             elseNode.addChildNode(arithNode);
+            elseNode.validate(null);
             listExprNode.add(elseNode);
         }
         ExprCaseNode node = new ExprCaseNode(false, listExprNode);
@@ -328,14 +421,23 @@ public class TestExprCaseNode extends TestCase
 
     private ExprCaseNode buildCase2Node() throws Exception
     {
-        // Build: case intPrimitive when longBoxed then count(5) when (3*2) then (intPrimitive*2) else (3*3) end
+        // Build: case intPrimitive when longBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
         List<ExprNode> listExprNode = new ArrayList<ExprNode>();
         ExprIdentNode[] identNodes = new ExprIdentNode[2];
         ExprWhenNode[] whenNodes = new ExprWhenNode[2];
-        String streamOrNestedPropertyName = "eventPropertySimple";
-        identNodes[0] = new ExprIdentNode("intPrimitive", "eventPropertySimple");
+        identNodes[0] = new ExprIdentNode("intPrimitive", "s0");
+        identNodes[0].validate(_streamTypeService);
+        if ((_events != null) && (_events[0] != null))
+        {
+            log.debug("intPrimitive.so " + identNodes[0].evaluate(_events));
+        }
         listExprNode.add(identNodes[0]);
-        identNodes[1] = new ExprIdentNode("longBoxed", "eventPropertySimple");
+        identNodes[1] = new ExprIdentNode("intBoxed", "s1");
+        identNodes[1].validate(_streamTypeService);
+        if ((_events != null) && (_events[1] != null))
+        {
+            log.debug("intBoxed.s1 " + identNodes[1].evaluate(_events));
+        }
         SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[] {10, 20});
         ExprCountNode countNode = new ExprCountNode(false);
         countNode = (ExprCountNode) makeNode(countNode, 5, Integer.class);
@@ -344,27 +446,45 @@ public class TestExprCaseNode extends TestCase
         whenNodes[0] = new ExprWhenNode();
         whenNodes[0].addChildNode(identNodes[1]);
         whenNodes[0].addChildNode(countNode);
+        whenNodes[0].validate(_streamTypeService);
         listExprNode.add(whenNodes[0]);
         ExprMathNode arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
-        arithNode.addChildNode(new SupportExprNode(new Integer(3)));
-        arithNode.addChildNode(new SupportExprNode(new Double(2.0)));
-        arithNode.validateDescendents(null);
+        arithNode.addChildNode(new SupportExprNode(new Integer(5)));
+        arithNode.addChildNode(new SupportExprNode(new Integer(2)));
+        arithNode.validateDescendents(_streamTypeService);
         whenNodes[1] = new ExprWhenNode();
         whenNodes[1].addChildNode(arithNode);
         arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
         arithNode.addChildNode(identNodes[0]);
-        arithNode.addChildNode(new SupportExprNode(new Double(2.0)));
+        arithNode.addChildNode(new SupportExprNode(new Double(4.0)));
+        arithNode.validateDescendents(_streamTypeService);
         whenNodes[1].addChildNode(arithNode);
+        whenNodes[1].validate(_streamTypeService);
         listExprNode.add(whenNodes[1]);
         ExprElseNode elseNode = new ExprElseNode();
         arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
-        arithNode.addChildNode(new SupportExprNode(new Integer(3)));
-        arithNode.addChildNode(new SupportExprNode(new Integer(3)));
-        arithNode.validateDescendents(null);
+        arithNode.addChildNode(new SupportExprNode(new Double(10.0)));
+        arithNode.addChildNode(new SupportExprNode(new Double(20.0)));
+        arithNode.validateDescendents(_streamTypeService);
         elseNode.addChildNode(arithNode);
+        elseNode.validate(_streamTypeService);
         listExprNode.add(elseNode);
-        ExprCaseNode node = new ExprCaseNode(false, listExprNode);
+        ExprCaseNode node = new ExprCaseNode(true, listExprNode);
         return (node);
+    }
+
+    private EventBean makeEvent(int intPrimitive)
+    {
+        SupportBean event = new SupportBean();
+        event.setIntPrimitive(intPrimitive);
+        return SupportEventBeanFactory.createObject(event);
+    }
+
+    private EventBean makeEvent(Integer intBoxed_)
+    {
+        SupportBean event = new SupportBean();
+        event.setIntBoxed(intBoxed_);
+        return SupportEventBeanFactory.createObject(event);
     }
 
      private static final Log log = LogFactory.getLog(TestExprCaseNode.class);

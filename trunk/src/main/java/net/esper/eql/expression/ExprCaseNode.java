@@ -84,9 +84,16 @@ public class ExprCaseNode extends ExprNode
 
         // Sub-nodes must be at least one when expression
         boolean noWhenExpr = true;
-        for (Iterator<ExprNode> it=_exprNodeList.iterator(); it.hasNext();)
+        Iterator<ExprNode> it=_exprNodeList.iterator();
+        ExprNode node;
+        if (_inCase2)
         {
-            ExprNode node = it.next();
+            //Skip the value Expression of the case node
+            node = it.next();
+        }
+        do
+        {
+            node = it.next();
             if (node instanceof ExprWhenNode)
             {
                 noWhenExpr = false;
@@ -95,14 +102,15 @@ public class ExprCaseNode extends ExprNode
             {
                 throw new ExprValidationException("The Case node requires a when or else expression");
             }
-        }
+        } while (it.hasNext());
+
         if (noWhenExpr)
         {
             throw new ExprValidationException("The Case node requires at least one when expression");
         }
-        for (Iterator<ExprNode> it=_exprNodeList.iterator(); it.hasNext();)
+        for (it=_exprNodeList.iterator(); it.hasNext();)
         {
-            ExprNode node = it.next();
+            node = it.next();
             node.validate(streamTypeService_);
         }
     }

@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ValueExprNode extends ExprNode
 {
-    private Class[] aClasses = new Class[]
+    private static Class[] aClasses = new Class[]
     {
         // Constant
         ExprConstantNode.class,
@@ -59,9 +59,9 @@ public class ValueExprNode extends ExprNode
 
         _node = this.getChildNodes().getFirst();
         boolean isValueExp = false;
-        for (int i=0; i<aClasses.length; i++)
+        for (int i=0; i<ValueExprNode.aClasses.length; i++)
         {
-            if (_node.getClass() == aClasses[i])
+            if (_node.getClass() == ValueExprNode.aClasses[i])
             {
                 isValueExp = true;
             }
@@ -79,7 +79,8 @@ public class ValueExprNode extends ExprNode
     {
         try {
             return _node.getType();
-        } catch (ExprValidationException e) {
+        }
+        catch (ExprValidationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return null;
@@ -111,22 +112,17 @@ public class ValueExprNode extends ExprNode
             return false;
         }
         ExprNode othervalNode = ((ValueExprNode)node_)._node;
-        try {
-            if ((_node.getType()) != (othervalNode.getType()))
-            {
-                return false;
-            }
-            if ((_node instanceof ExprNode) && (!_node.equalsNode(othervalNode)))
-            {
-                return false;
-            }
-            if ((_node instanceof ExprAggregateNode) && (!(((ExprAggregateNode)_node).equalsNodeAggregate((ExprAggregateNode)othervalNode))))
-            {
-                return false;
-            }
+        /* if ((_node.getType()) != (othervalNode.getType()))
+        {
+            return false;
+        }*/
+        if ((_node instanceof ExprNode) && (!_node.equalsNode(othervalNode)))
+        {
+            return false;
         }
-        catch (ExprValidationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        if ((_node instanceof ExprAggregateNode) && (!(((ExprAggregateNode)_node).equalsNodeAggregate((ExprAggregateNode)othervalNode))))
+        {
+            return false;
         }
         return true;
     }
@@ -139,20 +135,27 @@ public class ValueExprNode extends ExprNode
             return false;
         }
         ExprNode othervalNode = ((ValueExprNode)node_)._node;
-        try {
-            if ((_node.getType()) != (othervalNode.getType()))
-            {
-                return false;
-            }
-        }
-        catch (ExprValidationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
         if (_node instanceof ExprNode)
         {
-            Object result = ((ExprNode)_node).evaluate(eventsPerStream_);
-            Object otherResult = ((ExprNode)node_).evaluate(eventsPerStream_);
-            return (result.equals(otherResult));
+            if (eventsPerStream_ == null)
+            {
+              try
+              {
+                  if ((_node.getType()) != (othervalNode.getType()))
+                  {
+                    return false;
+                  }
+              }
+              catch (ExprValidationException e) {
+                  e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+              }
+            }
+            else
+            {
+                Object result = ((ExprNode)_node).evaluate(eventsPerStream_);
+                Object otherResult = ((ExprNode)node_).evaluate(eventsPerStream_);
+                return (result.equals(otherResult));
+            }
         }
         if (_node instanceof ExprAggregateNode)
         {
