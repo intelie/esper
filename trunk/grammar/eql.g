@@ -255,7 +255,21 @@ outputLimit
 
 // Main expression rule
 expression
-	: evalOrExpression
+	: caseExpression
+	;
+
+caseExpression
+	: CASE^ (whenClause)+ (elseClause)? END!
+	| CASE^ { #CASE.setType(CASE2); } expression (whenClause)+ (elseClause)? END!
+	| evalOrExpression
+	;
+
+whenClause
+	: (WHEN^ expression THEN! expression)
+	;
+
+elseClause
+	: (ELSE^ expression)
 	;
 
 evalOrExpression
@@ -314,25 +328,17 @@ unaryExpression
 	| constant
 	| LPAREN! expression RPAREN!
 	| builtinFunc
-	| caseExpression
 	;
 
-caseExpression
-	: CASE^ (whenClause)+ (elseClause)? END!
-	| CASE^ { #CASE.setType(CASE2); } unaryExpression (altWhenClause)+ (elseClause)? END!
-	;
+//unaryExpression
+//	: MINUS^ {#MINUS.setType(UNARY_MINUS);} eventProperty
+//	| eventProperty
+//	| constant
+//	| LPAREN! expression RPAREN!
+//	| builtinFunc
+//	| caseExpression
+//	;
 
-whenClause
-	: (WHEN^ expression THEN! unaryExpression)
-	;
-
-altWhenClause
-	: (WHEN^ unaryExpression THEN! unaryExpression)
-	;
-
-elseClause
-	: (ELSE^ unaryExpression)
-	;
 
 builtinFunc
 	: (MAX^ | MIN^) LPAREN! (ALL! | DISTINCT)? expression (COMMA! expression (COMMA! expression)* )? RPAREN!

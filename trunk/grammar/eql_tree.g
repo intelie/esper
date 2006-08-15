@@ -61,9 +61,6 @@ selectionListElement
 	:	#(s:SELECTION_ELEMENT_EXPR caseExpr (IDENT)? { leaveNode(#s); } )
 	;
 
-//	:	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
-//	|	#(s2:SELECTION_ELEMENT_EXPR caseExpr (IDENT)? { leaveNode(#s2); } )		
-
 caseExpr
 	: #(cs1:CASE (#(wh1:WHEN valueExpr valueExpr {leaveNode(#wh1); }))+ (#(el1:ELSE valueExpr {leaveNode(#el1);}))?  {leaveNode(#cs1); })
 	| #(cs2:CASE2 valueExpr (#(wh2:WHEN valueExpr valueExpr {leaveNode(#wh2);} ))+ (#(el2:ELSE valueExpr {leaveNode(#el2);}))? {leaveNode(#cs2); })

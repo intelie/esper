@@ -411,6 +411,9 @@ public class TestEQLTreeWalker extends TestCase
         parseAndWalk(text);
         text = "select case intPrimitive  when 1 then count(intPrimitive) end from " +    SupportBean.class.getName() + "().win:lenght(10) as win";
         parseAndWalk(text);
+        text = "select case intPrimitive when longPrimitive then (intPrimitive + longPrimitive) end" +
+        " from " + SupportBean.class.getName() + ".win:length(3)";
+        parseAndWalk(text);
     }
 
     private void tryOuterJoin(String outerType, OuterJoinType typeExpected) throws Exception

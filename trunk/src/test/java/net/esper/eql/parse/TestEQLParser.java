@@ -222,13 +222,20 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testIfThenElseCase() throws Exception
      {
          String className = SupportBean.class.getName();
-         String eqlSmt = "select case a when 1 then (a + 1) end from " + className;
+         String eqlSmt = "select case when 1 then (a + 1) when 2 then (a*2) end from " + className;
+         assertIsValid(eqlSmt + ".win:lenght()");
+         eqlSmt = "select case a when 1 then (a + 1) end from " + className;
          assertIsValid(eqlSmt + ".win:lenght()");
          eqlSmt = "select case count(*) when 10 then sum(a) when 20 then max(a*b) end from " +  className;
          assertIsValid(eqlSmt + ".win:lenght()");
          eqlSmt = "select case (a>b) when true then a when false then b end from " +  className;
          assertIsValid(eqlSmt + ".win:lenght()");
-
+         eqlSmt = "select case a when true then a when false then b end from " +  className;
+         assertIsValid(eqlSmt + ".win:lenght()");
+         eqlSmt = "select case when (a=b) then (a+b) when false then b end as p1 from " +  className;
+         assertIsValid(eqlSmt + ".win:lenght()");
+         eqlSmt = "select case (a+b) when (a*b) then count(a+b) when false then a ^ b end as p1 from " +  className;
+         assertIsValid(eqlSmt + ".win:lenght()");
      }
 
     private void tryJoin(String joinType) throws Exception
