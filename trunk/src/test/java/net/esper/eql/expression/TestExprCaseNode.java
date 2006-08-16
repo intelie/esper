@@ -77,7 +77,7 @@ public class TestExprCaseNode extends TestCase
 
         // Second set of tests
 
-        // case intPrimitive when longBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        // case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
         _caseNode=buildCase2Node();
         elseNode = (ExprElseNode) (_caseNode.getExprNodeList(3));
         assertEquals(elseNode.getType(), _caseNode.getType());
@@ -421,7 +421,7 @@ public class TestExprCaseNode extends TestCase
 
     private ExprCaseNode buildCase2Node() throws Exception
     {
-        // Build: case intPrimitive when longBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
+        // Build: case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (3*3) end
         List<ExprNode> listExprNode = new ArrayList<ExprNode>();
         ExprIdentNode[] identNodes = new ExprIdentNode[2];
         ExprWhenNode[] whenNodes = new ExprWhenNode[2];

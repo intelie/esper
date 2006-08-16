@@ -1,6 +1,7 @@
 package net.esper.eql.expression;
 
 import net.esper.event.EventBean;
+import net.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -154,6 +155,10 @@ public class ValueExprNode extends ExprNode
             {
                 Object result = ((ExprNode)_node).evaluate(eventsPerStream_);
                 Object otherResult = ((ExprNode)node_).evaluate(eventsPerStream_);
+                if (ValueExprNode.valueComparaison(result, otherResult))
+                {
+                    return true;
+                }
                 return (result.equals(otherResult));
             }
         }
@@ -174,6 +179,49 @@ public class ValueExprNode extends ExprNode
     public void setExprNode(ExprNode node_)
     {
         _node = node_;
+    }
+
+    public static boolean valueComparaison(Object objectOne, Object objectTwo)
+    {
+        if ((objectOne == null) || (objectTwo == null))
+        {
+            return false;
+        }
+        
+        Class typeOne = objectOne.getClass();
+        Class typeTwo = objectTwo.getClass();
+
+        if ((typeOne == String.class) && (typeTwo == String.class))
+        {
+            return ((((String)objectOne).intern()) == (((String)objectTwo).intern()));
+        }
+
+        Class boxedOne = JavaClassHelper.getBoxedType(typeOne);
+        Class boxedTwo = JavaClassHelper.getBoxedType(typeTwo);
+
+        if (  ((typeOne == boolean.class) || ((typeOne == Boolean.class))) &&
+              ((typeTwo == boolean.class) || ((typeTwo == Boolean.class))) )
+        {
+            return (((Boolean)objectOne) == ((Boolean)objectTwo));
+        }
+
+        if (!JavaClassHelper.isNumeric(boxedOne) || !JavaClassHelper.isNumeric(boxedTwo))
+        {
+            return false;
+        }
+        if ((boxedOne == Double.class) || (boxedTwo == Double.class))
+        {
+            return ((((Number) objectOne).doubleValue()) == (((Number) objectTwo).doubleValue()));
+        }
+        if ((boxedOne == Float.class) || (boxedTwo == Float.class))
+        {
+            return ((((Number) objectOne).floatValue()) == (((Number) objectTwo).floatValue()));
+        }
+        if ((boxedOne == Long.class) || (boxedTwo == Long.class))
+        {
+            return ((((Number) objectOne).longValue()) == (((Number) objectTwo).longValue()));
+        }
+        return ((((Number) objectOne).intValue()) == (((Number) objectTwo).intValue()));
     }
 
     private static final Log log = LogFactory.getLog(ValueExprNode.class);

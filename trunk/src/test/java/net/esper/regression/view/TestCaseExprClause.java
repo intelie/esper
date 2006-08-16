@@ -52,17 +52,24 @@ public class TestCaseExprClause extends TestCase
                 "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
 
         String caseExpr = "select case " +
-                " intPrimitive when longPrimitive then (intPrimitive + longPrimitive) end as p1" +
+                " intPrimitive when longPrimitive then (intPrimitive + longPrimitive) " +
+                " when doublePrimitive then intPrimitive * doublePrimitive" +
+                " when floatPrimitive then floatPrimitive / doublePrimitive end as p1" +
                 " from " + SupportBean.class.getName() + ".win:length(3)";
 
         selectTestCase = epService.getEPAdministrator().createEQL(caseExpr);
         testListener = new SupportUpdateListener();
         selectTestCase.addListener(testListener);
 
-        sendSupportBeanEvent(2, 2, 2, 2);
+        sendSupportBeanEvent(2, 2, 1, 1);
         EventBean event = testListener.getAndResetLastNewData()[0];
-        //assertEquals(Long.class, event.getEventType().getPropertyType("p1"));
         assertEquals(4l, event.get("p1"));
+        sendSupportBeanEvent(5, 1, 12, 5);
+        event = testListener.getAndResetLastNewData()[0];
+        assertEquals(25.0, event.get("p1"));        
+        sendSupportBeanEvent(12, 1, 12, 4);
+        event = testListener.getAndResetLastNewData()[0];
+        assertEquals(3.0, event.get("p1"));
 
     }
 
