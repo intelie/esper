@@ -26,18 +26,17 @@ public class TestCSVEvents extends TestCase
 	SupportUpdateListener listener;
 	protected void setUp() throws ClassNotFoundException
 	{
-		propertyTypeNames.put("myInt", Integer.class.getName());
-		propertyTypeNames.put("myDouble", Double.class.getName());
-		propertyTypeNames.put("myString", String.class.getName());
+		propertyTypes.put("myInt", Integer.class);
+		propertyTypes.put("myDouble", Double.class);
+		propertyTypes.put("myString", String.class);
 		
 		String eventTypeAlias = "mapEvent";
 		Configuration configuration = new Configuration();
-		configuration.addEventTypeAlias(eventTypeAlias, propertyTypeNames);
+		configuration.addEventTypeAlias(eventTypeAlias, propertyTypes);
 		
 		EPServiceProvider epService = EPServiceProviderManager.getProvider("CSVProvider", configuration);
 		EPRuntime epRuntime = epService.getEPRuntime();
-		mapEventSpec = new MapEventSpec(eventTypeAlias, propertyTypeNames, epRuntime);
-		propertyTypes = mapEventSpec.getPropertyTypes();
+		mapEventSpec = new MapEventSpec(eventTypeAlias, propertyTypes, epRuntime);
 		
 		EPAdministrator administrator = epService.getEPAdministrator();
 		String statementText = "select * from mapEvent.win:length(5)";
@@ -122,8 +121,8 @@ public class TestCSVEvents extends TestCase
 		CSVAdapterGroup group = new CSVAdapterGroup();
 		CSVAdapterSpec adapterSpecOne = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
 		CSVAdapterSpec adapterSpecTwo = new CSVAdapterSpec("regression/timestampTwo.csv", false, -1);
-		group.addNewAdapter(adapterSpecOne, mapEventSpec);
-		group.addNewAdapter(adapterSpecTwo, mapEventSpec);
+		group.add(new CSVAdapter(adapterSpecOne, mapEventSpec));
+		group.add(new CSVAdapter(adapterSpecTwo, mapEventSpec));
 		
 		group.start();		
 		
@@ -162,8 +161,8 @@ public class TestCSVEvents extends TestCase
 		CSVAdapterSpec adapterSpecOne = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
 		// Second file is 5 events per sec and is looped
 		CSVAdapterSpec adapterSpecTwo = new CSVAdapterSpec("regression/noTimestampTwo.csv", true, 5);
-		group.addNewAdapter(adapterSpecOne, mapEventSpec);
-		group.addNewAdapter(adapterSpecTwo, mapEventSpec);
+		group.add(new CSVAdapter(adapterSpecOne, mapEventSpec));
+		group.add(new CSVAdapter(adapterSpecTwo, mapEventSpec));
 		
 		group.start();		
 		
