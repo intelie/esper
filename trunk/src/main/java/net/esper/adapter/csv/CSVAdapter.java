@@ -27,7 +27,7 @@ public class CSVAdapter
 	public static final String TIMESTAMP_COLUMN_NAME = "timestamp";
 	private final MapEventSpec mapEventSpec;	
 	private final int eventsPerSec;
-	private final CSVTimer timer;
+	private CSVTimer timer;
 	
 	private final CSVReader reader;
 	private final Map<String, FastConstructor>propertyConstructors;
@@ -35,7 +35,10 @@ public class CSVAdapter
 	private final boolean propertyOrderContainsTimestamp;
 	private final Map<String, Object> mapToSend = new HashMap<String, Object>();
 	private long totalDelay = 0;
-	private boolean cancelled = false;
+	
+	private boolean isStarted;
+	private boolean isCancelled;
+	private boolean isPaused;
 	
 	/**
 	 * Ctor.
@@ -98,10 +101,15 @@ public class CSVAdapter
 	 */
 	protected void start() throws CSVAdapterException
 	{
-		if(cancelled)
+		if(isStarted)
 		{
-			throw new CSVAdapterException("CSVAdapter already cancelled");
+			throw new CSVAdapterException("CSVAdapter is already started");
 		}
+		if(isCancelled)
+		{
+			throw new CSVAdapterException("CSVAdapter is already cancelled");
+		}
+		isStarted = true;
 		timer.start();
 	}
 	
@@ -111,24 +119,53 @@ public class CSVAdapter
 	 */
 	protected void cancel() throws CSVAdapterException
 	{
-		if(cancelled)
+		if(isCancelled)
 		{
-			throw new CSVAdapterException("CSVAdapter already cancelled");
+			throw new CSVAdapterException("CSVAdapter is already cancelled");
 		}
-		timer.cancel();
 		close();
 	}
 	
 	/**
 	 * Close the file reader and associated resources.
 	 */
-	protected void close()
+	protected synchronized void close()
 	{
-		if(!cancelled)
+		if(!isCancelled)
 		{
-			cancelled = true;
+			isCancelled = true;
 			reader.close();
 		}
+	}
+	
+	protected synchronized void pause()
+	{
+		if(isCancelled)
+		{
+			throw new CSVAdapterException("CSVAdapter is already cancelled");
+		}
+		isPaused = true;
+	}
+	
+	protected synchronized void resume()
+	{
+		if(!isPaused)
+		{
+			throw new CSVAdapterException("CSVAdapter isn't paused");
+		}
+		if(isCancelled)
+		{
+			throw new CSVAdapterException("CSVAdapter is already cancelled");
+		}
+		try
+		{
+			scheduleNewCallback();
+		}
+		catch (EOFException e)
+		{
+			// Do nothing
+		}
+		isPaused = false;
 	}
 	
 	/**
@@ -159,6 +196,15 @@ public class CSVAdapter
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Set the timer.
+	 * @param timer - the new timer to use
+	 */
+	protected void setTimer(CSVTimer timer)
+	{
+		this.timer = timer;
 	}
 
 	private static boolean isValidTitleRow(String[] row, Map<String, Class> propertyTypes)
@@ -342,16 +388,18 @@ public class CSVAdapter
 	{
 		public void run()
 		{
-			sendMap();
-			try
+			if (!isPaused && !isCancelled)
 			{
-				scheduleNewCallback();
-			} 
-			catch (EOFException e)
-			{
-				log.debug("timer task calling close()");
-				close();
-			}
+				sendMap();
+				try
+				{
+					scheduleNewCallback();
+				} catch (EOFException e)
+				{
+					log.debug("timer task calling close()");
+					close();
+				}
+			}			
 		}
 	}
 }
