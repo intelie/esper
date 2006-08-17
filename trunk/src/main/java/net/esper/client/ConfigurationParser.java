@@ -118,7 +118,7 @@ class ConfigurationParser {
 	        String clazz = propertyList.item(i).getAttributes().getNamedItem("class").getTextContent();
 	        propertyTypeNames.put(name, clazz);
 	    }
-    	configuration.addEventTypeAlias(aliasName, propertyTypeNames);
+		configuration.addEventTypeAlias(aliasName, createPropertyTypes(propertyTypeNames));
     }
 
     private static void handleXMLDOM(String aliasName, Configuration configuration, Element xmldomElement)
@@ -335,5 +335,22 @@ class ConfigurationParser {
         }
     }
 
+	private static Map<String, Class> createPropertyTypes(Map<String, String> propertyNames) 
+	{
+		Map<String, Class> propertyTypes = new LinkedHashMap<String, Class>();
+		for(String property : propertyNames.keySet())
+		{
+			try
+			{
+				propertyTypes.put(property, Class.forName(propertyNames.get(property)));
+			} 
+			catch (ClassNotFoundException ex)
+			{
+				throw new EPException(ex);
+			}
+		}
+		return propertyTypes;
+	}
+	
     private static Log log = LogFactory.getLog(ConfigurationParser.class);
 }
