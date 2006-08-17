@@ -24,27 +24,31 @@ public class TestCSVAdapterGroup extends TestCase
 		CSVAdapterSpec adapterSpecOne = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
 		CSVAdapterSpec adapterSpecTwo = new CSVAdapterSpec("regression/timestampTwo.csv", false, -1);
 		
-		Map<String, String> propertyTypeNames = new LinkedHashMap<String, String>();
-		propertyTypeNames.put("myInt", Integer.class.getName());
-		propertyTypeNames.put("myDouble", Double.class.getName());
-		propertyTypeNames.put("myString", String.class.getName());	
+		Map<String, Class> propertyTypes = new LinkedHashMap<String, Class>();
+		propertyTypes.put("myInt", Integer.class);
+		propertyTypes.put("myDouble", Double.class);
+		propertyTypes.put("myString", String.class);	
 		
 		String eventTypeAlias = "mapEvent";
 		Configuration configuration = new Configuration();
-		configuration.addEventTypeAlias(eventTypeAlias, propertyTypeNames);
+		configuration.addEventTypeAlias(eventTypeAlias, propertyTypes);
 		
 		EPServiceProvider epService = EPServiceProviderManager.getProvider("CSVProvider", configuration);
 		EPRuntime epRuntime = epService.getEPRuntime();
-		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypeNames, epRuntime);
+		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypes, epRuntime);
 
-		group.addNewAdapter(adapterSpecOne, mapSpec);
-		group.addNewAdapter(adapterSpecTwo, mapSpec);
+		group.add(new CSVAdapter(adapterSpecOne, mapSpec));
+		group.add(new CSVAdapter(adapterSpecTwo, mapSpec));
 	}
 	
 	public void testCancel()
 	{
 		group.start();
+		// Check events arriving
+		
 		group.cancel();
+		// Check events not arriving
+		
 		try
 		{
 			group.start();
@@ -60,6 +64,52 @@ public class TestCSVAdapterGroup extends TestCase
 			fail();
 		}
 		catch (CSVAdapterException e)
+		{
+			// Expected
+		}
+	}
+	
+	public void testPauseAndResume()
+	{
+		group.start();
+		// Check events arriving
+
+		group.pause();
+		// Check events not arriving
+		
+		group.resume();
+		// Check arriving again
+		
+		try
+		{
+			group.resume();
+			fail();
+		}
+		catch(CSVAdapterException ex)
+		{
+			// Expected
+		}
+		
+		group.cancel();
+		// Check events not arriving
+
+		try 
+		{
+			group.pause();
+			fail();
+		}
+		catch(CSVAdapterException ex)
+		{
+			// Expected
+		}
+		
+		
+		try
+		{
+			group.resume();
+			fail();
+		}
+		catch(CSVAdapterException ex)
 		{
 			// Expected
 		}
