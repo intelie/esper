@@ -15,7 +15,7 @@ public class CSVTimer
 {
 	private final Timer timer;
 	private final Map<TimerTask, Long> initialTasks;
-	private boolean started = false;
+	private boolean isStarted;
 	private Date startTime;
 	
 	/**
@@ -25,7 +25,7 @@ public class CSVTimer
 	{
 		timer = new Timer();
 		initialTasks = new HashMap<TimerTask, Long>();
-		started = false;
+		isStarted = false;
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class CSVTimer
 	 */
 	protected void schedule(TimerTask timerTask, long timestamp)
 	{
-		if(started)
+		if(isStarted)
 		{
 			scheduleTask(timerTask, timestamp);
 		}
@@ -50,13 +50,13 @@ public class CSVTimer
 	 */
 	protected void start()
 	{
-		if(started == true)
+		if(isStarted == true)
 		{
-			throw new IllegalStateException("Calling start() on a CSVTimer that has already been started");
+			throw new IllegalStateException("The timer has already been started");
 		}
 		
 		startTime = new Date(System.currentTimeMillis());
-		started = true;
+		isStarted = true;
 		scheduleInitialTasks();
 	}
 
