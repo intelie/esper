@@ -12,15 +12,15 @@ import net.esper.support.util.SupportUpdateListener;
 
 public class TestMapEvents extends TestCase
 {
-	Map<String, String> properties;
+	Map<String, Class> properties;
 	Map<String, Object> map;
 	EPServiceProvider epService;
 	
 	protected void setUp()
 	{
-		properties = new HashMap<String, String>();
-		properties.put("myInt", Integer.class.getName());
-		properties.put("myString", String.class.getName());
+		properties = new HashMap<String, Class>();
+		properties.put("myInt", Integer.class);
+		properties.put("myString", String.class);
 		
 		map = new HashMap<String, Object>();
 		map.put("myInt", 3);
