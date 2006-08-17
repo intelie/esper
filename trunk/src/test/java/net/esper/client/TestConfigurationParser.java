@@ -52,9 +52,9 @@ public class TestConfigurationParser extends TestCase
     
         assertEquals(1, config.getMapAliases().size());        
         assertTrue(config.getMapAliases().keySet().contains("myMapEvent"));
-        Map<String, String> expectedProps = new HashMap<String, String>();
-        expectedProps.put("myInt", "java.lang.Integer");
-        expectedProps.put("myString", "java.lang.String");
+        Map<String, Class> expectedProps = new HashMap<String, Class>();
+        expectedProps.put("myInt", Integer.class);
+        expectedProps.put("myString", String.class);
         assertEquals(expectedProps, config.getMapAliases().get("myMapEvent"));
     }
 }
