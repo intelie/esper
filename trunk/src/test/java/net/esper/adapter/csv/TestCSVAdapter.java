@@ -17,25 +17,23 @@ import junit.framework.TestCase;
 
 public class TestCSVAdapter extends TestCase
 {
-	Map<String, Class> propertyTypes = new LinkedHashMap<String, Class>();
-	CSVAdapter adapter;
+	private Map<String, Class> propertyTypes;
 	private MapEventSpec mapEventSpec;
 	
 	protected void setUp() throws ClassNotFoundException
 	{
-		Map<String, String> propertyTypeNames = new LinkedHashMap<String, String>();
-		propertyTypeNames.put("myInt", Integer.class.getName());
-		propertyTypeNames.put("myDouble", Double.class.getName());
-		propertyTypeNames.put("myString", String.class.getName());
+		propertyTypes = new LinkedHashMap<String, Class>();
+		propertyTypes.put("myInt", Integer.class);
+		propertyTypes.put("myDouble", Double.class);
+		propertyTypes.put("myString", String.class);
 		
 		String eventTypeAlias = "mapEvent";
 		Configuration configuration = new Configuration();
-		configuration.addEventTypeAlias(eventTypeAlias, propertyTypeNames);
+		configuration.addEventTypeAlias(eventTypeAlias, propertyTypes);
 		
 		EPServiceProvider epService = EPServiceProviderManager.getProvider("CSVProvider", configuration);
 		EPRuntime epRuntime = epService.getEPRuntime();
-		mapEventSpec = new MapEventSpec(eventTypeAlias, propertyTypeNames, epRuntime);
-		propertyTypes = mapEventSpec.getPropertyTypes();
+		mapEventSpec = new MapEventSpec(eventTypeAlias, propertyTypes, epRuntime);
 	}
 
 	public void testResolveTitleRow()
