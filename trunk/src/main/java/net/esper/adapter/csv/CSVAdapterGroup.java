@@ -10,24 +10,25 @@ public class CSVAdapterGroup
 {
 	private final List<CSVAdapter> adapters;
 	private final CSVTimer timer;
-	private boolean cancelled;
+	private boolean isStarted;
+	private boolean isCancelled;
+	private boolean isPaused;
 	
 	protected CSVAdapterGroup()
 	{
 		adapters = new ArrayList<CSVAdapter>();
 		timer = new CSVTimer();
-		cancelled = false;
+		isStarted = false;
+		isCancelled = false;
 	}
 	
 	/**
-	 * Create a new CSVAdapter and add it to the group.
-	 * @param adapterSpec - describes the parameters for this adapter
-	 * @param mapSpec - describes the format of the events to create and send into the EPRuntime
-	 * @throws CSVAdapterException in case of errors opening the CSV file
+	 * Add a CSVAdapter to the group.
+	 * @param adapter - the adapter to add
 	 */
-	protected void addNewAdapter(CSVAdapterSpec adapterSpec, MapEventSpec mapSpec) throws CSVAdapterException
+	protected void add(CSVAdapter adapter)
 	{
-		CSVAdapter adapter = new CSVAdapter(adapterSpec, mapSpec, timer);
+		adapter.setTimer(timer);
 		adapters.add(adapter);
 	}
 	
@@ -37,7 +38,11 @@ public class CSVAdapterGroup
 	 */
 	protected void start() throws CSVAdapterException
 	{
-		if(cancelled)
+		if(isStarted)
+		{
+			throw new CSVAdapterException("CSVAdapterGroup already started");
+		}
+		if(isCancelled)
 		{
 			throw new CSVAdapterException("CSVAdapterGroup already cancelled");
 		}
@@ -50,15 +55,44 @@ public class CSVAdapterGroup
 	 */
 	protected void cancel() throws CSVAdapterException
 	{
-		if(cancelled)
+		if(isCancelled)
 		{
 			throw new CSVAdapterException("CSVAdapterGroup already cancelled");
 		}
-		cancelled = true;
-		timer.cancel();
+		isCancelled = true;
 		for(CSVAdapter adapter : adapters)
 		{
 			adapter.close();
 		}
+	}
+	
+	protected void pause()
+	{
+		if(isCancelled)
+		{
+			throw new CSVAdapterException("CSVAdapterGroup is already cancelled");
+		}
+		isPaused = true;
+		for(CSVAdapter adapter : adapters)
+		{
+			adapter.pause();
+		}
+	}
+	
+	protected void resume()
+	{
+		if(!isPaused)
+		{
+			throw new CSVAdapterException("CSVAdapterGroup isn't paused");
+		}
+		if(isCancelled)
+		{
+			throw new CSVAdapterException("CSVAdapterGroup is already cancelled");
+		}
+		for(CSVAdapter adapter : adapters)
+		{
+			adapter.resume();
+		}
+		isPaused = false;
 	}
 }
