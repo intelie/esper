@@ -1,13 +1,17 @@
 package net.esper.core;
 
-import net.esper.client.*;
+import java.util.Map;
+
+import net.esper.client.Configuration;
+import net.esper.client.ConfigurationEventTypeXMLDOM;
+import net.esper.client.ConfigurationException;
+import net.esper.client.EPAdministrator;
+import net.esper.client.EPRuntime;
+import net.esper.client.EPServiceProvider;
 import net.esper.eql.expression.AutoImportService;
 import net.esper.eql.expression.AutoImportServiceImpl;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
@@ -70,22 +74,10 @@ public class EPServiceProviderImpl implements EPServiceProvider
         	throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
         }
         
-        Map<String, Map<String, String>> mapAliases = configuration.getMapAliases();
-        for(Map.Entry<String, Map<String, String>> entry : mapAliases.entrySet())
+        Map<String, Map<String, Class>> mapAliases = configuration.getMapAliases();
+        for(String eventTypeAlias : mapAliases.keySet())
         {
-        	try
-        	{
-        		Map<String, Class> propertyTypes = createPropertyTypes(entry.getValue());
-        		eventAdapterService.addMapType(entry.getKey(), propertyTypes);
-        	}
-        	catch (EventAdapterException ex)
-        	{
-        		throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
-        	} 
-        	catch (ClassNotFoundException ex)
-			{
-        		throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
-			}
+        		eventAdapterService.addMapType(eventTypeAlias, mapAliases.get(eventTypeAlias));
         }
         
         initialize();
@@ -132,15 +124,5 @@ public class EPServiceProviderImpl implements EPServiceProvider
 
         // Start clocking
         services.getTimerService().startInternalClock();
-    }
-    
-    private Map<String, Class> createPropertyTypes(Map<String, String> propertyNames) throws ClassNotFoundException
-    {
-    	Map<String, Class> propertyTypes = new HashMap<String, Class>();
-    	for(String property : propertyNames.keySet())
-    	{
-    		propertyTypes.put(property, Class.forName(propertyNames.get(property)));
-    	}
-    	return propertyTypes;
     }
 }
