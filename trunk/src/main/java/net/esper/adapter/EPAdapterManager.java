@@ -1,6 +1,6 @@
 package net.esper.adapter;
 
-import net.esper.adapter.csv.CSVAdapterNew;
+import net.esper.adapter.csv.CSVAdapter;
 import net.esper.adapter.csv.Conductor;
 import net.esper.event.EventAdapterService;
 import net.esper.schedule.ScheduleBucket;
@@ -14,7 +14,7 @@ public class EPAdapterManager
 	private final EventAdapterService eventAdapterService;
 	private final SchedulingService schedulingService;
 	private final ScheduleBucket scheduleBucket;
-	private final CSVAdapterNew csvAdapter;
+	private final CSVAdapter csvAdapter;
 	
 	/**
 	 * Ctor.
@@ -26,7 +26,7 @@ public class EPAdapterManager
 		this.eventAdapterService = eventAdapterService;
 		this.schedulingService = schedulingService;
 		scheduleBucket = schedulingService.allocateBucket();
-		csvAdapter = new CSVAdapterNew(eventAdapterService, schedulingService, scheduleBucket);
+		csvAdapter = new CSVAdapter(eventAdapterService, schedulingService, scheduleBucket);
 	}
 	
 	public Conductor createConductor()
@@ -34,7 +34,7 @@ public class EPAdapterManager
 		return new Conductor();
 	}
 	
-	public CSVAdapterNew getCSVAdapter()
+	public CSVAdapter getCSVAdapter()
 	{
 		return csvAdapter;
 	}
