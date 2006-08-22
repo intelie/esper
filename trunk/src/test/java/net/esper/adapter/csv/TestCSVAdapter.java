@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import net.esper.adapter.csv.CSVAdapter;
+import net.esper.adapter.csv.CSVPlayer;
 import net.esper.adapter.csv.CSVAdapterException;
 import net.esper.adapter.csv.CSVAdapterSpec;
 import net.esper.adapter.csv.MapEventSpec;
@@ -40,25 +40,25 @@ public class TestCSVAdapter extends TestCase
 	{
 		// Use first row
 		String[] firstRow = new String[] { "myDouble", "myInt", "myString" };
-		assertEquals(firstRow, CSVAdapter.resolvePropertyOrder(firstRow, propertyTypes));
+		assertEquals(firstRow, CSVPlayer.resolvePropertyOrder(firstRow, propertyTypes));
 		
 		firstRow = new String[] { "myDouble", "myInt", "myString", "timestamp" };
-		assertEquals(firstRow, CSVAdapter.resolvePropertyOrder(firstRow, propertyTypes));
+		assertEquals(firstRow, CSVPlayer.resolvePropertyOrder(firstRow, propertyTypes));
 		
 		// Use propertyTypes
 		firstRow = new String[] { "1", "2.0", "text" };
 		String[] expected = propertyTypes.keySet().toArray(new String[0]);
-		assertEquals(Arrays.asList(expected), Arrays.asList(CSVAdapter.resolvePropertyOrder(firstRow, propertyTypes)));
+		assertEquals(Arrays.asList(expected), Arrays.asList(CSVPlayer.resolvePropertyOrder(firstRow, propertyTypes)));
 
 		propertyTypes.put("timestamp", long.class);
 		expected = propertyTypes.keySet().toArray(new String[0]);
-		assertEquals(Arrays.asList(expected), Arrays.asList(CSVAdapter.resolvePropertyOrder(firstRow, propertyTypes)));
+		assertEquals(Arrays.asList(expected), Arrays.asList(CSVPlayer.resolvePropertyOrder(firstRow, propertyTypes)));
 	}
 	
 	public void testCancel()
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec("regression/noTimestampOne.csv", false, 10);
-		CSVAdapter adapter = new CSVAdapter(adapterSpec, mapEventSpec);
+		CSVPlayer adapter = new CSVPlayer(adapterSpec, mapEventSpec);
 
 		adapter.start();
 		adapter.cancel();

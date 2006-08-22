@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import net.esper.adapter.csv.CSVAdapter;
-import net.esper.adapter.csv.CSVAdapterGroup;
+import net.esper.adapter.csv.CSVPlayer;
+import net.esper.adapter.csv.Conductor;
 import net.esper.adapter.csv.CSVAdapterSpec;
 import net.esper.adapter.csv.MapEventSpec;
 import net.esper.client.Configuration;
@@ -50,7 +50,7 @@ public class TestCSVEvents extends TestCase
 	public void testSingleFileNoTimeStamp() throws InterruptedException 
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec("regression/noTimestampOne.csv", false, 10);
-		CSVAdapter adapter = new CSVAdapter(adapterSpec, mapEventSpec);
+		CSVPlayer adapter = new CSVPlayer(adapterSpec, mapEventSpec);
 		
 		adapter.start();
 		
@@ -73,7 +73,7 @@ public class TestCSVEvents extends TestCase
 	public void testSingleFileTimestamp() throws InterruptedException
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
-		CSVAdapter adapter = new CSVAdapter(adapterSpec, mapEventSpec);
+		CSVPlayer adapter = new CSVPlayer(adapterSpec, mapEventSpec);
 		
 		adapter.start();
 		
@@ -96,7 +96,7 @@ public class TestCSVEvents extends TestCase
 	public void testTitleRow() throws InterruptedException
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec("regression/titleRow.csv", false, -1);
-		CSVAdapter adapter = new CSVAdapter(adapterSpec, mapEventSpec);
+		CSVPlayer adapter = new CSVPlayer(adapterSpec, mapEventSpec);
 		
 		adapter.start();
 		
@@ -118,11 +118,11 @@ public class TestCSVEvents extends TestCase
 	
 	public void testMultipleFilesTimestamp() throws InterruptedException
 	{
-		CSVAdapterGroup group = new CSVAdapterGroup();
+		Conductor group = new Conductor();
 		CSVAdapterSpec adapterSpecOne = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
 		CSVAdapterSpec adapterSpecTwo = new CSVAdapterSpec("regression/timestampTwo.csv", false, -1);
-		group.add(new CSVAdapter(adapterSpecOne, mapEventSpec));
-		group.add(new CSVAdapter(adapterSpecTwo, mapEventSpec));
+		group.add(new CSVPlayer(adapterSpecOne, mapEventSpec));
+		group.add(new CSVPlayer(adapterSpecTwo, mapEventSpec));
 		
 		group.start();		
 		
@@ -156,13 +156,13 @@ public class TestCSVEvents extends TestCase
 	
 	public void testMultipleFilesMixed() throws InterruptedException
 	{
-		CSVAdapterGroup group = new CSVAdapterGroup();
+		Conductor group = new Conductor();
 		// First file has timestamps and isn't looped
 		CSVAdapterSpec adapterSpecOne = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
 		// Second file is 5 events per sec and is looped
 		CSVAdapterSpec adapterSpecTwo = new CSVAdapterSpec("regression/noTimestampTwo.csv", true, 5);
-		group.add(new CSVAdapter(adapterSpecOne, mapEventSpec));
-		group.add(new CSVAdapter(adapterSpecTwo, mapEventSpec));
+		group.add(new CSVPlayer(adapterSpecOne, mapEventSpec));
+		group.add(new CSVPlayer(adapterSpecTwo, mapEventSpec));
 		
 		group.start();		
 		

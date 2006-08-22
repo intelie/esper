@@ -6,7 +6,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import net.esper.adapter.csv.CSVAdapterException;
-import net.esper.adapter.csv.CSVAdapterGroup;
+import net.esper.adapter.csv.Conductor;
 import net.esper.adapter.csv.CSVAdapterSpec;
 import net.esper.adapter.csv.MapEventSpec;
 import net.esper.client.Configuration;
@@ -16,11 +16,11 @@ import net.esper.client.EPServiceProviderManager;
 
 public class TestCSVAdapterGroup extends TestCase
 {
-	CSVAdapterGroup group;
+	Conductor group;
 	
 	protected void setUp() throws ClassNotFoundException
 	{
-		group = new CSVAdapterGroup();
+		group = new Conductor();
 		CSVAdapterSpec adapterSpecOne = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
 		CSVAdapterSpec adapterSpecTwo = new CSVAdapterSpec("regression/timestampTwo.csv", false, -1);
 		
@@ -37,8 +37,8 @@ public class TestCSVAdapterGroup extends TestCase
 		EPRuntime epRuntime = epService.getEPRuntime();
 		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypes, epRuntime);
 
-		group.add(new CSVAdapter(adapterSpecOne, mapSpec));
-		group.add(new CSVAdapter(adapterSpecTwo, mapSpec));
+		group.add(new CSVPlayer(adapterSpecOne, mapSpec));
+		group.add(new CSVPlayer(adapterSpecTwo, mapSpec));
 	}
 	
 	public void testCancel()
