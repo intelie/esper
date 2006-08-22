@@ -1,6 +1,5 @@
 package net.esper.adapter.csv;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.esper.client.EPRuntime;
@@ -22,7 +21,7 @@ public class MapEventSpec
 	 * @param epRuntime - the EPRuntime to send the Map objects into
 	 * @throws ClassNotFoundException 
 	 */
-	protected MapEventSpec(String eventTypeAlias, Map<String, Class> propertyTypes, EPRuntime epRuntime) throws ClassNotFoundException
+	protected MapEventSpec(String eventTypeAlias, Map<String, Class> propertyTypes, EPRuntime epRuntime) 
 	{
 		this.eventTypeAlias = eventTypeAlias;
 		this.propertyTypes = propertyTypes;
