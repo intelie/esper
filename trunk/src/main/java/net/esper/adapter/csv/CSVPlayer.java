@@ -11,6 +11,8 @@ import java.util.TimerTask;
 
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
+import net.esper.schedule.ScheduleBucket;
+import net.esper.schedule.SchedulingService;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastConstructor;
 
@@ -26,6 +28,9 @@ public class CSVPlayer
 	private static final Log log = LogFactory.getLog(CSVPlayer.class);
 
 	public static final String TIMESTAMP_COLUMN_NAME = "timestamp";
+
+	private final SchedulingService schedulingService;
+	private final ScheduleBucket scheduleBucket;
 	private final MapEventSpec mapEventSpec;	
 	private final int eventsPerSec;
 	private CSVTimer timer;
@@ -43,33 +48,26 @@ public class CSVPlayer
 	
 	/**
 	 * Ctor.
+	 * @param schedulingService - used for making callbacks
+	 * @param scheduleBucket - the schedule bucket used by all adapters
 	 * @param adapterSpec - describes the parameters for this adapter
 	 * @param mapSpec - describes the format of the events to create and send into the EPRuntime
 	 * @throws EPException in case of errors opening the CSV file
 	 */
-	protected CSVPlayer(CSVAdapterSpec adapterSpec, MapEventSpec mapSpec) throws EPException
-	{
-		this(adapterSpec, mapSpec, new CSVTimer());
-	}
-	
-	/**
-	 * Ctor.
-	 * @param adapterSpec - describes the parameters for this adapter
-	 * @param mapSpec - describes the format of the events to create and send into the EPRuntime
-	 * @param timer - the timer to use for scheduling times to send events into the EPRuntime
-	 * @throws EPException in case of errors opening the CSV file
-	 */
-	protected CSVPlayer(CSVAdapterSpec adapterSpec, MapEventSpec mapSpec, CSVTimer timer)
+	protected CSVPlayer(SchedulingService schedulingService, ScheduleBucket scheduleBucket, CSVAdapterSpec adapterSpec, MapEventSpec mapSpec) throws EPException
 	{
 		if(!legalEventsPerSecValue(adapterSpec.getEventsPerSec()))
 		{
 			throw new IllegalArgumentException("Illegal value for events per second to send into the runtime: " + adapterSpec.getEventsPerSec());
 		}
 		
+		this.schedulingService = schedulingService;
+		this.scheduleBucket = scheduleBucket;
+		
 		reader = new CSVReader(adapterSpec.getPath(), adapterSpec.isLooping());
 		
 		this.mapEventSpec = mapSpec;
-		this.timer = timer;
+		this.timer = new CSVTimer();
 		
 		// Resolve the order of properties in the CSV file
 		String[] firstRow;
