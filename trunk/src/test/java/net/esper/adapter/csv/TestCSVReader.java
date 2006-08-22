@@ -98,6 +98,80 @@ public class TestCSVReader extends TestCase
 		}
 	}
 	
+	public void testReset() throws EOFException, EPException
+	{
+		boolean isLooping = true;
+		CSVReader reader = new CSVReader("regression/endOnNewline.csv", isLooping);
+		
+		String[] nextRecord = reader.getNextRecord();
+		String[] expected = new String[] {"first line", "1"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+
+		reader.reset();
+		
+		nextRecord = reader.getNextRecord();
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+
+		reader.reset();
+		
+		nextRecord = reader.getNextRecord();
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+	}
+	
+	public void testTitleRow() throws EOFException, EPException
+	{
+		boolean isLooping = true;
+		CSVReader reader = new CSVReader("regression/titleRow.csv", isLooping);
+		
+		// isUsingTitleRow is false by default, so get the title row
+		String[] nextRecord = reader.getNextRecord();
+		String[] expected = new String[] {"myString", "myInt", "timestamp", "myDouble"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		// Acknowledge the title row and reset the file afterwards
+		reader.setIsUsingTitleRow(true);
+		reader.reset();
+		
+		// First time through the file
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"one", "1", "100", "1.1"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"three", "3", "300", "3.3"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"five", "5", "500", "5.5"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		// Second time through the file
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"one", "1", "100", "1.1"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"three", "3", "300", "3.3"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"five", "5", "500", "5.5"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		// Pretend no title row again
+		reader.setIsUsingTitleRow(false);
+
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"myString", "myInt", "timestamp", "myDouble"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+
+		reader.reset();
+
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"myString", "myInt", "timestamp", "myDouble"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+	}
+	
 	private void assertLooping(String path) throws EOFException
 	{
 		boolean isLooping = true;
