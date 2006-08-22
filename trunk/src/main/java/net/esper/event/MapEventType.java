@@ -1,11 +1,10 @@
 package net.esper.event;
 
-import net.esper.collection.InterchangeablePair;
-
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Implementation of the {@link EventType} interface for handling plain Maps containing name value pairs.
@@ -24,7 +23,7 @@ class MapEventType implements EventType
     public MapEventType(Map<String, Class> propertyTypes)
     {
         // copy the property names and types
-        this.types = new HashMap<String, Class>();
+        this.types = new LinkedHashMap<String, Class>();
         this.types.putAll(propertyTypes);
 
         hashCode = 0;
