@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 
+import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
@@ -28,7 +29,10 @@ public class CSVAdapter
 	 * @param schedulingService - used for making callbacks
 	 * @param scheduleBucket - the scheduling bucket that all adapters use
 	 */
-	public CSVAdapter(EPRuntime runtime, final EventAdapterService eventAdapterService, final SchedulingService schedulingService, final ScheduleBucket scheduleBucket)
+	public CSVAdapter(EPRuntime runtime,
+					  EventAdapterService eventAdapterService, 
+					  SchedulingService schedulingService, 
+					  ScheduleBucket scheduleBucket)
 	{
 		this.runtime = runtime;
 		this.eventAdapterService = eventAdapterService;
@@ -36,14 +40,27 @@ public class CSVAdapter
 		this.scheduleBucket = scheduleBucket;
 	}
 	
-	public void play(String eventTypeAlias, String filename)
+	/**
+	 * Create and start a CSVPlayer.
+	 * @param eventTypeAlias - the alias for the map events generated from the CSV file
+	 * @param filename - the path to the CSV file
+	 * @throws EPException if eventTypeAlias does not correspond to a map event
+	 */
+	public void play(String eventTypeAlias, String filename) throws EPException
 	{
 		CSVPlayer player = createCSVPlayer(eventTypeAlias, filename);
 		players.add(player);
 		player.start();
 	}
 	
-	public CSVPlayer createCSVPlayer(String eventTypeAlias, String filename)
+	/**
+	 * Create a CSV player.
+	 * @param eventTypeAlias - the alias for the map events generated from the CSV file
+	 * @param filename - the path to the CSV file
+	 * @return the created CSVPlayer
+	 * 	 * @throws EPException if the eventTypeAlias does not correspond to a map event
+	 */
+	public CSVPlayer createCSVPlayer(String eventTypeAlias, String filename) throws EPException
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec(filename, false, -1);
 		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias);
@@ -51,10 +68,14 @@ public class CSVAdapter
 		return new CSVPlayer(schedulingService, scheduleBucket, adapterSpec, mapSpec);
 	}
 	
-	private Map<String, Class> constructPropertyTypes(String eventTypeAlias)
+	private Map<String, Class> constructPropertyTypes(String eventTypeAlias) 
 	{
 		Map<String, Class> propertyTypes = new LinkedHashMap<String, Class>();
 		EventType eventType = eventAdapterService.getEventType(eventTypeAlias);
+		if(eventType.getUnderlyingType().equals(Map.class))
+		{
+			throw new EPException("Alias " + eventTypeAlias + " does not correspond to a map event");
+		}
 		for(String property : eventType.getPropertyNames())
 		{
 			Class type = eventType.getPropertyType(property);
