@@ -2,6 +2,7 @@ package net.esper.core;
 
 import java.util.Map;
 
+import net.esper.adapter.EPAdapterManager;
 import net.esper.client.Configuration;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.ConfigurationException;
@@ -21,6 +22,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
     private EPServicesContext services;
     private EPRuntimeImpl runtime;
     private EPAdministratorImpl admin;
+    private EPAdapterManager adapters;
 
     private final EventAdapterServiceImpl eventAdapterService;
     private final AutoImportService autoImportService;
@@ -92,6 +94,11 @@ public class EPServiceProviderImpl implements EPServiceProvider
     {
         return admin;
     }
+    
+    public EPAdapterManager getEPAdapters()
+    {
+    	return adapters;
+    }
 
     public void initialize()
     {
@@ -114,6 +121,9 @@ public class EPServiceProviderImpl implements EPServiceProvider
 
         // New runtime
         runtime = new EPRuntimeImpl(services);
+        
+        // New adapter manager
+        adapters = new EPAdapterManager(eventAdapterService, services.getSchedulingService());
 
         // Configure services
         services.setInternalEventRouter(runtime);
