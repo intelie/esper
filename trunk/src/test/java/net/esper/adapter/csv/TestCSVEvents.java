@@ -50,7 +50,7 @@ public class TestCSVEvents extends TestCase
 	public void testSingleFileNoTimeStamp() throws InterruptedException 
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec("regression/noTimestampOne.csv", false, 10);
-		CSVPlayer adapter = new CSVPlayer(adapterSpec, mapEventSpec);
+		CSVPlayer adapter = new CSVPlayer(null, null, adapterSpec, mapEventSpec);
 		
 		adapter.start();
 		
@@ -73,7 +73,7 @@ public class TestCSVEvents extends TestCase
 	public void testSingleFileTimestamp() throws InterruptedException
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
-		CSVPlayer adapter = new CSVPlayer(adapterSpec, mapEventSpec);
+		CSVPlayer adapter = new CSVPlayer(null, null, adapterSpec, mapEventSpec);
 		
 		adapter.start();
 		
@@ -96,7 +96,7 @@ public class TestCSVEvents extends TestCase
 	public void testTitleRow() throws InterruptedException
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec("regression/titleRow.csv", false, -1);
-		CSVPlayer adapter = new CSVPlayer(adapterSpec, mapEventSpec);
+		CSVPlayer adapter = new CSVPlayer(null, null, adapterSpec, mapEventSpec);
 		
 		adapter.start();
 		
@@ -121,8 +121,8 @@ public class TestCSVEvents extends TestCase
 		Conductor group = new Conductor();
 		CSVAdapterSpec adapterSpecOne = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
 		CSVAdapterSpec adapterSpecTwo = new CSVAdapterSpec("regression/timestampTwo.csv", false, -1);
-		group.add(new CSVPlayer(adapterSpecOne, mapEventSpec));
-		group.add(new CSVPlayer(adapterSpecTwo, mapEventSpec));
+		group.add(new CSVPlayer(null, null, adapterSpecOne, mapEventSpec));
+		group.add(new CSVPlayer(null, null, adapterSpecTwo, mapEventSpec));
 		
 		group.start();		
 		
@@ -161,8 +161,8 @@ public class TestCSVEvents extends TestCase
 		CSVAdapterSpec adapterSpecOne = new CSVAdapterSpec("regression/timestampOne.csv", false, -1);
 		// Second file is 5 events per sec and is looped
 		CSVAdapterSpec adapterSpecTwo = new CSVAdapterSpec("regression/noTimestampTwo.csv", true, 5);
-		group.add(new CSVPlayer(adapterSpecOne, mapEventSpec));
-		group.add(new CSVPlayer(adapterSpecTwo, mapEventSpec));
+		group.add(new CSVPlayer(null, null, adapterSpecOne, mapEventSpec));
+		group.add(new CSVPlayer(null, null, adapterSpecTwo, mapEventSpec));
 		
 		group.start();		
 		

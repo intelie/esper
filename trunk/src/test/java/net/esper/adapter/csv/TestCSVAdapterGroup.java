@@ -33,8 +33,8 @@ public class TestCSVAdapterGroup extends TestCase
 		EPRuntime epRuntime = epService.getEPRuntime();
 		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypes, epRuntime);
 
-		group.add(new CSVPlayer(adapterSpecOne, mapSpec));
-		group.add(new CSVPlayer(adapterSpecTwo, mapSpec));
+		group.add(new CSVPlayer(null, null, adapterSpecOne, mapSpec));
+		group.add(new CSVPlayer(null, null, adapterSpecTwo, mapSpec));
 	}
 	
 	public void testCancel()

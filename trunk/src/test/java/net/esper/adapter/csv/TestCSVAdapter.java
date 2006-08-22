@@ -54,7 +54,7 @@ public class TestCSVAdapter extends TestCase
 	public void testCancel()
 	{
 		CSVAdapterSpec adapterSpec = new CSVAdapterSpec("regression/noTimestampOne.csv", false, 10);
-		CSVPlayer adapter = new CSVPlayer(adapterSpec, mapEventSpec);
+		CSVPlayer adapter = new CSVPlayer(null, null, adapterSpec, mapEventSpec);
 
 		adapter.start();
 		adapter.cancel();
