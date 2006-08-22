@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimerTask;
 
+import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastConstructor;
@@ -44,9 +45,9 @@ public class CSVPlayer
 	 * Ctor.
 	 * @param adapterSpec - describes the parameters for this adapter
 	 * @param mapSpec - describes the format of the events to create and send into the EPRuntime
-	 * @throws CSVAdapterException in case of errors opening the CSV file
+	 * @throws EPException in case of errors opening the CSV file
 	 */
-	protected CSVPlayer(CSVAdapterSpec adapterSpec, MapEventSpec mapSpec) throws CSVAdapterException
+	protected CSVPlayer(CSVAdapterSpec adapterSpec, MapEventSpec mapSpec) throws EPException
 	{
 		this(adapterSpec, mapSpec, new CSVTimer());
 	}
@@ -56,7 +57,7 @@ public class CSVPlayer
 	 * @param adapterSpec - describes the parameters for this adapter
 	 * @param mapSpec - describes the format of the events to create and send into the EPRuntime
 	 * @param timer - the timer to use for scheduling times to send events into the EPRuntime
-	 * @throws CSVAdapterException in case of errors opening the CSV file
+	 * @throws EPException in case of errors opening the CSV file
 	 */
 	protected CSVPlayer(CSVAdapterSpec adapterSpec, MapEventSpec mapSpec, CSVTimer timer)
 	{
@@ -86,7 +87,7 @@ public class CSVPlayer
 		catch (EOFException e)
 		{
 			reader.close();
-			throw new CSVAdapterException("The CSV file is empty");
+			throw new EPException("The CSV file is empty");
 		}		
 		
 		this.propertyConstructors = createPropertyConstructors(mapEventSpec.getPropertyTypes());
@@ -97,17 +98,17 @@ public class CSVPlayer
 	
 	/**
 	 * Start the sending of events into the EPRuntime.
-	 * @throws CSVAdapterException in case of errors reading the file or sending the events
+	 * @throws EPException in case of errors reading the file or sending the events
 	 */
-	protected void start() throws CSVAdapterException
+	protected void start() throws EPException
 	{
 		if(isStarted)
 		{
-			throw new CSVAdapterException("CSVAdapter is already started");
+			throw new EPException("CSVAdapter is already started");
 		}
 		if(isCancelled)
 		{
-			throw new CSVAdapterException("CSVAdapter is already cancelled");
+			throw new EPException("CSVAdapter is already cancelled");
 		}
 		isStarted = true;
 		timer.start();
@@ -115,13 +116,13 @@ public class CSVPlayer
 	
 	/**
 	 * Cancel the sending of events and release all resources.
-	 * @throws CSVAdapterException in case of errors in closing the CSV file or associated resources
+	 * @throws EPException in case of errors in closing the CSV file or associated resources
 	 */
-	protected void cancel() throws CSVAdapterException
+	protected void cancel() throws EPException
 	{
 		if(isCancelled)
 		{
-			throw new CSVAdapterException("CSVAdapter is already cancelled");
+			throw new EPException("CSVAdapter is already cancelled");
 		}
 		close();
 	}
@@ -142,7 +143,7 @@ public class CSVPlayer
 	{
 		if(isCancelled)
 		{
-			throw new CSVAdapterException("CSVAdapter is already cancelled");
+			throw new EPException("CSVAdapter is already cancelled");
 		}
 		isPaused = true;
 	}
@@ -151,11 +152,11 @@ public class CSVPlayer
 	{
 		if(!isPaused)
 		{
-			throw new CSVAdapterException("CSVAdapter isn't paused");
+			throw new EPException("CSVAdapter isn't paused");
 		}
 		if(isCancelled)
 		{
-			throw new CSVAdapterException("CSVAdapter is already cancelled");
+			throw new EPException("CSVAdapter is already cancelled");
 		}
 		try
 		{
@@ -190,7 +191,7 @@ public class CSVPlayer
 			result = propertyTypes.keySet().toArray(new String[0]);
 			if(!columnNamesAreValid(result, propertyTypes))
 			{
-				throw new CSVAdapterException("Cannot resolve the order of properties in the CSV file");	
+				throw new EPException("Cannot resolve the order of properties in the CSV file");	
 			}
 			log.debug(".resolvePropertyOrder using propertyTypes, propertyOrder==" + Arrays.asList(result));
 		}
@@ -283,7 +284,7 @@ public class CSVPlayer
 		} 
 		catch (InvocationTargetException e)
 		{
-			throw new CSVAdapterException(e);
+			throw new EPException(e);
 		}
 	}
 	
@@ -341,7 +342,7 @@ public class CSVPlayer
 		}
 		else
 		{
-			throw new CSVAdapterException("Couldn't resolve the timestamp for record " + Arrays.asList(row));
+			throw new EPException("Couldn't resolve the timestamp for record " + Arrays.asList(row));
 		}
 	}
 	

@@ -3,10 +3,8 @@ package net.esper.adapter.csv;
 import java.io.EOFException;
 import java.util.Arrays;
 
-import net.esper.adapter.csv.CSVAdapterException;
-import net.esper.adapter.csv.CSVReader;
-
 import junit.framework.TestCase;
+import net.esper.client.EPException;
 
 public class TestCSVReader extends TestCase
 {
@@ -85,7 +83,7 @@ public class TestCSVReader extends TestCase
 			reader.getNextRecord();
 			fail();
 		}
-		catch (CSVAdapterException e)
+		catch (EPException e)
 		{
 			// Expected
 		}
@@ -94,7 +92,7 @@ public class TestCSVReader extends TestCase
 			reader.close();
 			fail();
 		}
-		catch (CSVAdapterException e)
+		catch (EPException e)
 		{
 			// Expected
 		}

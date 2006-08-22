@@ -4,12 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-
-import net.esper.adapter.csv.CSVAdapterException;
-import net.esper.adapter.csv.Conductor;
-import net.esper.adapter.csv.CSVAdapterSpec;
-import net.esper.adapter.csv.MapEventSpec;
 import net.esper.client.Configuration;
+import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
@@ -54,7 +50,7 @@ public class TestCSVAdapterGroup extends TestCase
 			group.start();
 			fail();
 		}
-		catch (CSVAdapterException e)
+		catch (EPException e)
 		{
 			// Expected
 		}
@@ -63,7 +59,7 @@ public class TestCSVAdapterGroup extends TestCase
 			group.cancel();
 			fail();
 		}
-		catch (CSVAdapterException e)
+		catch (EPException e)
 		{
 			// Expected
 		}
@@ -85,7 +81,7 @@ public class TestCSVAdapterGroup extends TestCase
 			group.resume();
 			fail();
 		}
-		catch(CSVAdapterException ex)
+		catch(EPException ex)
 		{
 			// Expected
 		}
@@ -98,7 +94,7 @@ public class TestCSVAdapterGroup extends TestCase
 			group.pause();
 			fail();
 		}
-		catch(CSVAdapterException ex)
+		catch(EPException ex)
 		{
 			// Expected
 		}
@@ -109,7 +105,7 @@ public class TestCSVAdapterGroup extends TestCase
 			group.resume();
 			fail();
 		}
-		catch(CSVAdapterException ex)
+		catch(EPException ex)
 		{
 			// Expected
 		}

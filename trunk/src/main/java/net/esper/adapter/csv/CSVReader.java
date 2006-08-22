@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.esper.client.EPException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,9 +33,9 @@ public class CSVReader
 	 * Ctor.
 	 * @param path - the path to the CSV file to read
 	 * @param isLooping - true if processing should start over from the beginning after the end of the CSV file is reached
-	 * @throws CSVAdapterException in case of errors in reading the CSV file
+	 * @throws EPException in case of errors in reading the CSV file
 	 */
-	protected CSVReader(String path, boolean isLooping) throws CSVAdapterException
+	protected CSVReader(String path, boolean isLooping) throws EPException
 	{
 		this.path = path;
 		this.isLooping = isLooping;
@@ -44,13 +46,13 @@ public class CSVReader
 	
 	/**
 	 * Close the reader and release any associated resources.
-	 * @throws CSVAdapterException in case of error in closing resources
+	 * @throws EPException in case of error in closing resources
 	 */
-	protected void close() throws CSVAdapterException
+	protected void close() throws EPException
 	{
 		if(isClosed)
 		{
-			throw new CSVAdapterException("Calling close() on an already closed CSVReader");
+			throw new EPException("Calling close() on an already closed CSVReader");
 		}
 		try
 		{
@@ -60,7 +62,7 @@ public class CSVReader
 		} 
 		catch (IOException e)
 		{
-			throw new CSVAdapterException(e);
+			throw new EPException(e);
 		}
 	}
 
@@ -68,9 +70,9 @@ public class CSVReader
 	 * Get the next record from the CSV file
 	 * @return a string array containing the values of the record
 	 * @throws EOFException in case no more records can be read (end-of-file has been reached and isLooping is false)
-	 * @throws CSVAdapterException in case of error in reading the CSV file
+	 * @throws EPException in case of error in reading the CSV file
 	 */
-	protected String[] getNextRecord() throws EOFException, CSVAdapterException
+	protected String[] getNextRecord() throws EOFException, EPException
 	{
 		try
 		{
@@ -90,7 +92,7 @@ public class CSVReader
 		}
 		catch(IOException e)
 		{
-			throw new CSVAdapterException(e);
+			throw new EPException(e);
 		}
 	}
 
@@ -108,7 +110,7 @@ public class CSVReader
     		stream = CSVReader.class.getClassLoader().getResourceAsStream( path );
     	}
     	if ( stream == null ) {
-    		throw new CSVAdapterException( path + " not found" );
+    		throw new EPException( path + " not found" );
     	}
     	
     	return stream;
@@ -356,9 +358,9 @@ public class CSVReader
 		atEOF = false;
 	}
 	
-	private CSVAdapterException unexpectedCharacterException(char unexpected)
+	private EPException unexpectedCharacterException(char unexpected)
 	{
-		return new CSVAdapterException("In processing record " + record + " of CSV file " + path + ", encountered unexpected character " + unexpected);
+		return new EPException("In processing record " + record + " of CSV file " + path + ", encountered unexpected character " + unexpected);
 	}
 	
 	private void skipCommentedLines() throws IOException
