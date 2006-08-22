@@ -19,8 +19,9 @@ public class CSVReader
 {
 	private static final Log log = LogFactory.getLog(CSVReader.class);
 	
-	private final boolean isLooping;
 	private final String path;
+	private final boolean isLooping;
+	private boolean isUsingTitleRow;
 	
 	private final List<String> values = new ArrayList<String>();
 	private InputStream inputStream;
@@ -35,7 +36,7 @@ public class CSVReader
 	 * @param isLooping - true if processing should start over from the beginning after the end of the CSV file is reached
 	 * @throws EPException in case of errors in reading the CSV file
 	 */
-	protected CSVReader(String path, boolean isLooping) throws EPException
+	public CSVReader(String path, boolean isLooping) throws EPException
 	{
 		this.path = path;
 		this.isLooping = isLooping;
@@ -48,7 +49,7 @@ public class CSVReader
 	 * Close the reader and release any associated resources.
 	 * @throws EPException in case of error in closing resources
 	 */
-	protected void close() throws EPException
+	public void close() throws EPException
 	{
 		if(isClosed)
 		{
@@ -72,7 +73,7 @@ public class CSVReader
 	 * @throws EOFException in case no more records can be read (end-of-file has been reached and isLooping is false)
 	 * @throws EPException in case of error in reading the CSV file
 	 */
-	protected String[] getNextRecord() throws EOFException, EPException
+	public String[] getNextRecord() throws EOFException, EPException
 	{
 		try
 		{
@@ -95,8 +96,42 @@ public class CSVReader
 			throw new EPException(e);
 		}
 	}
+	
+	/**
+	 * Set the isUsingTitleRow value.
+	 * @param isUsingTitleRow - true if the CSV file contains a valid title row
+	 */
+	public void setIsUsingTitleRow(boolean isUsingTitleRow)
+	{
+		this.isUsingTitleRow = isUsingTitleRow;
+	}
 
-    private static InputStream resolvePathAsStream(String path)
+    /**
+     * Reset the reader to the beginning of the file.
+     * @throws EPException in case of errors in resetting the reader
+     */
+	public void reset() 
+	{
+		try
+		{
+			inputStream.close();
+			reader.close();
+			inputStream = resolvePathAsStream(path);
+			reader = new BufferedInputStream(inputStream);
+			atEOF = false;
+			if(isUsingTitleRow)
+			{
+				// Ignore the title row
+				getNextRecord();
+			}
+		} 
+		catch (IOException e)
+		{
+			throw new EPException(e);
+		}
+	}
+
+	private static InputStream resolvePathAsStream(String path)
     {
     	InputStream stream = null;
     	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -128,7 +163,7 @@ public class CSVReader
 			result = getNewValues();
 			if(atEOF && isLooping)
 			{
-				loop();
+				reset();
 			}
 		}
 		return result;
@@ -349,15 +384,6 @@ public class CSVReader
 		return currentChar == ' ' || currentChar == '\t';
 	}
 	
-	private void loop() throws IOException
-	{
-		inputStream.close();
-		reader.close();
-		inputStream = resolvePathAsStream(path);
-		reader = new BufferedInputStream(inputStream);
-		atEOF = false;
-	}
-	
 	private EPException unexpectedCharacterException(char unexpected)
 	{
 		return new EPException("In processing record " + record + " of CSV file " + path + ", encountered unexpected character " + unexpected);
@@ -370,7 +396,7 @@ public class CSVReader
 		{
 			if(atEOF && isLooping)
 			{
-				loop();
+				reset();
 			}
 			if(atChar('#', doConsume))
 			{
