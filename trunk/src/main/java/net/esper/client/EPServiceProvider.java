@@ -1,5 +1,7 @@
 package net.esper.client;
 
+import net.esper.adapter.EPAdapterManager;
+
 
 /**
  * This class provides access to the EPRuntime and EPAdministrator implementations.
@@ -17,6 +19,12 @@ public interface EPServiceProvider
      * @return an instance of EPAdministrator
      */
     public EPAdministrator getEPAdministrator();
+    
+    /**
+     * Get the manager for input and output adapters
+     * @return an instance of EPAdapterManager
+     */
+    public EPAdapterManager getEPAdapters();
 
     /**
      * Frees any resources associated with this runtime instance.
