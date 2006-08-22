@@ -65,6 +65,20 @@ public class EPServiceProviderImpl implements EPServiceProvider
                 throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
             }
         }
+        
+        // Add aliases for map events
+        Map<String, Map<String, Class>> mapAliases = configuration.getMapAliases();
+        for(String eventTypeAlias : mapAliases.keySet())
+        {
+        	try
+        	{
+        		eventAdapterService.addMapType(eventTypeAlias, mapAliases.get(eventTypeAlias));
+        	} 
+        	catch (EventAdapterException ex)
+        	{
+        		throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
+        	}
+        }
 
         // Add auto-imports
         try
@@ -74,12 +88,6 @@ public class EPServiceProviderImpl implements EPServiceProvider
         catch (IllegalArgumentException ex)
         {
         	throw new ConfigurationException("Error configuring engine:" + ex.getMessage(), ex);
-        }
-        
-        Map<String, Map<String, Class>> mapAliases = configuration.getMapAliases();
-        for(String eventTypeAlias : mapAliases.keySet())
-        {
-        		eventAdapterService.addMapType(eventTypeAlias, mapAliases.get(eventTypeAlias));
         }
         
         initialize();
@@ -123,7 +131,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
         runtime = new EPRuntimeImpl(services);
         
         // New adapter manager
-        adapters = new EPAdapterManager(eventAdapterService, services.getSchedulingService());
+        adapters = new EPAdapterManager(runtime, eventAdapterService, services.getSchedulingService());
 
         // Configure services
         services.setInternalEventRouter(runtime);
