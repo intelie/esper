@@ -13,6 +13,10 @@ import net.esper.event.EventType;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 
+/**
+ * A class that manages running instances of input adapters for
+ * CSV files.
+ */
 public class CSVAdapter
 {
 	private final EPRuntime runtime;
@@ -54,7 +58,7 @@ public class CSVAdapter
 	}
 	
 	/**
-	 * Create a CSV player.
+	 * Create a CSVPlayer.
 	 * @param eventTypeAlias - the alias for the map events generated from the CSV file
 	 * @param filename - the path to the CSV file
 	 * @return the created CSVPlayer
@@ -62,17 +66,16 @@ public class CSVAdapter
 	 */
 	public CSVPlayer createCSVPlayer(String eventTypeAlias, String filename) throws EPException
 	{
-		CSVAdapterSpec adapterSpec = new CSVAdapterSpec(filename, false, -1);
 		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias);
 		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypes, runtime);
-		return new CSVPlayer(schedulingService, scheduleBucket, adapterSpec, mapSpec);
+		return new CSVPlayer(filename, mapSpec, schedulingService, scheduleBucket.allocateSlot());
 	}
 	
 	private Map<String, Class> constructPropertyTypes(String eventTypeAlias) 
 	{
 		Map<String, Class> propertyTypes = new LinkedHashMap<String, Class>();
 		EventType eventType = eventAdapterService.getEventType(eventTypeAlias);
-		if(eventType.getUnderlyingType().equals(Map.class))
+		if(!eventType.getUnderlyingType().equals(Map.class))
 		{
 			throw new EPException("Alias " + eventTypeAlias + " does not correspond to a map event");
 		}
