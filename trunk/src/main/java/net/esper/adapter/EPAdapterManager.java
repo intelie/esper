@@ -1,7 +1,6 @@
 package net.esper.adapter;
 
 import net.esper.adapter.csv.CSVAdapter;
-import net.esper.adapter.csv.Conductor;
 import net.esper.client.EPRuntime;
 import net.esper.event.EventAdapterService;
 import net.esper.schedule.ScheduleBucket;
@@ -21,8 +20,8 @@ public class EPAdapterManager
 	/**
 	 * Ctor.
 	 * @param runtime - the EPRuntime to send events into
-	 * @param eventAdapterService - used for resolving event type aliases
-	 * @param schedulingService - used for scheduling callbacks
+	 * @param eventAdapterService - for resolving event type aliases
+	 * @param schedulingService - for scheduling callbacks
 	 */
 	public EPAdapterManager(EPRuntime runtime, final EventAdapterService eventAdapterService, final SchedulingService schedulingService)
 	{
@@ -33,11 +32,19 @@ public class EPAdapterManager
 		csvAdapter = new CSVAdapter(runtime, eventAdapterService, schedulingService, scheduleBucket);
 	}
 	
+	/**
+	 * Create an instance of Conductor.
+	 * @return a new instance of Conductor
+	 */
 	public Conductor createConductor()
 	{
 		return new Conductor();
 	}
 	
+	/**
+	 * Get the adapter for CSV files.
+	 * @return the CSVAdapter
+	 */
 	public CSVAdapter getCSVAdapter()
 	{
 		return csvAdapter;
