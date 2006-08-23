@@ -10,9 +10,8 @@ public class TestCSVReader extends TestCase
 {
 	public void testParsing() throws Exception
 	{
-		boolean isLooping = false;
 		String path = "regression/parseTests.csv";
-		CSVReader reader = new CSVReader(path, isLooping);
+		CSVReader reader = new CSVReader(path);
 
 		String[] nextRecord = reader.getNextRecord();
 		String[] expected = new String[] {"8", "8.0", "c", "'c'", "string", "string"};
@@ -73,9 +72,8 @@ public class TestCSVReader extends TestCase
 	
 	public void testClose() throws EOFException
 	{
-		boolean isLooping = false;
 		String path = "regression/parseTests.csv";
-		CSVReader reader = new CSVReader(path, isLooping);
+		CSVReader reader = new CSVReader(path);
 		
 		reader.close();
 		try
@@ -100,8 +98,7 @@ public class TestCSVReader extends TestCase
 	
 	public void testReset() throws EOFException, EPException
 	{
-		boolean isLooping = true;
-		CSVReader reader = new CSVReader("regression/endOnNewline.csv", isLooping);
+		CSVReader reader = new CSVReader("regression/endOnNewline.csv");
 		
 		String[] nextRecord = reader.getNextRecord();
 		String[] expected = new String[] {"first line", "1"};
@@ -120,8 +117,8 @@ public class TestCSVReader extends TestCase
 	
 	public void testTitleRow() throws EOFException, EPException
 	{
-		boolean isLooping = true;
-		CSVReader reader = new CSVReader("regression/titleRow.csv", isLooping);
+		CSVReader reader = new CSVReader("regression/titleRow.csv");
+		reader.setIsLooping(true);
 		
 		// isUsingTitleRow is false by default, so get the title row
 		String[] nextRecord = reader.getNextRecord();
@@ -174,8 +171,8 @@ public class TestCSVReader extends TestCase
 	
 	private void assertLooping(String path) throws EOFException
 	{
-		boolean isLooping = true;
-		CSVReader reader = new CSVReader(path, isLooping);
+		CSVReader reader = new CSVReader(path);
+		reader.setIsLooping(true);
 		
 		String[] nextRecord = reader.getNextRecord();
 		String[] expected = new String[] {"first line", "1"};
@@ -202,8 +199,7 @@ public class TestCSVReader extends TestCase
 	
 	private void assertNonLooping(String path) throws EOFException
 	{
-		boolean isLooping = false;
-		CSVReader reader = new CSVReader(path, isLooping);
+		CSVReader reader = new CSVReader(path);
 		
 		String[] nextRecord = reader.getNextRecord();
 		String[] expected = new String[] {"first line", "1"};
