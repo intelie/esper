@@ -20,7 +20,7 @@ public class CSVReader
 	private static final Log log = LogFactory.getLog(CSVReader.class);
 	
 	private final String path;
-	private final boolean isLooping;
+	private boolean isLooping;
 	private boolean isUsingTitleRow;
 	
 	private final List<String> values = new ArrayList<String>();
@@ -33,14 +33,11 @@ public class CSVReader
 	/**
 	 * Ctor.
 	 * @param path - the path to the CSV file to read
-	 * @param isLooping - true if processing should start over from the beginning after the end of the CSV file is reached
 	 * @throws EPException in case of errors in reading the CSV file
 	 */
-	public CSVReader(String path, boolean isLooping) throws EPException
+	public CSVReader(String path) throws EPException
 	{
 		this.path = path;
-		this.isLooping = isLooping;
-		
 		inputStream = resolvePathAsStream(path);
 		reader = new BufferedInputStream(inputStream);
 	}
@@ -104,6 +101,15 @@ public class CSVReader
 	public void setIsUsingTitleRow(boolean isUsingTitleRow)
 	{
 		this.isUsingTitleRow = isUsingTitleRow;
+	}
+	
+	/**
+	 * Set the isLooping value.
+	 * @param isLooping - true if processing should start over from the beginning after the end of the CSV file is reached
+	 */
+	public void setIsLooping(boolean isLooping)
+	{
+		this.isLooping = isLooping;
 	}
 
     /**
