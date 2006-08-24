@@ -1,5 +1,7 @@
 package net.esper.adapter;
 
+import java.io.EOFException;
+
 import net.esper.client.EPException;
 
 /**
@@ -31,5 +33,13 @@ public interface Player
 	 * @throws EPException in case of errors processing the events
 	 */
 	public void resume() throws EPException;
+	
+	/**
+	/**
+	 * Get the next event in line to be sent into the runtime.
+	 * @return a instance of SendableEvent that wraps the next event to send
+	 * @throws EPException in case of errors creating the event
+	 */
+	public SendableEvent read() throws EPException, EOFException;
 
 }
