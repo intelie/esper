@@ -10,6 +10,7 @@ import java.util.Set;
 
 import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.Player;
+import net.esper.adapter.SendableEvent;
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.esper.schedule.ScheduleCallback;
@@ -20,6 +21,9 @@ import net.sf.cglib.reflect.FastConstructor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import sun.nio.cs.ext.ISCII91;
+import sun.security.krb5.internal.crypto.e;
 
 /** 
  * A class for sending records from a CSV file into 
@@ -96,10 +100,7 @@ public class CSVPlayer implements Player
 	 */
 	public void start() throws EPException
 	{
-		if(isStopped)
-		{
-			throw new EPException("CSVAdapter is already stopped");
-		}
+		assertNotStopped();
 		if(!isStarted)
 		{
 			isStarted = true;
@@ -133,10 +134,7 @@ public class CSVPlayer implements Player
 	 */
 	public synchronized void pause() throws EPException
 	{
-		if(isStopped)
-		{
-			throw new EPException("CSVAdapter is already stopped");
-		}
+		assertNotStopped();
 		isPaused = true;
 	}
 	
@@ -146,10 +144,8 @@ public class CSVPlayer implements Player
 	 */
 	public synchronized void resume() throws EPException
 	{
-		if(isStopped)
-		{
-			throw new EPException("CSVAdapter is already stopped");
-		}
+		assertNotStopped();
+		
 		if(isPaused)
 		{
 			try
@@ -168,6 +164,55 @@ public class CSVPlayer implements Player
 				stop();
 			}
 			isPaused = false;
+		}
+	}
+	
+	public synchronized SendableEvent read() throws EPException
+	{
+		assertNotStopped();
+		
+		
+		Map<String, Object> map;
+		try
+		{
+			if(currentRow == null)
+			{
+				map = newMapEvent();
+			}
+			else
+			{
+				map = currentMapEvent();
+			}
+		}
+		catch (EOFException e)
+		{
+			throw new EPException(e);
+		}
+		
+		return new SendableMapEvent(map, mapEventSpec.getEventTypeAlias());
+	}
+
+	private Map<String, Object> currentMapEvent() throws EOFException
+	{
+		Map<String, Object> map = new HashMap<String, Object>(mapToSend);
+		currentRow = reader.getNextRecord();
+		populateMapToSend(currentRow);
+		return map;
+	}
+
+	private Map<String, Object> newMapEvent() throws EOFException
+	{
+		String[] row =  reader.getNextRecord();
+		populateMapToSend(row);
+		Map<String, Object> map = new HashMap<String, Object>(mapToSend);
+		return map;
+	}
+
+	private void assertNotStopped()
+	{
+		if(isStopped)
+		{
+			throw new EPException("The CSVPlayer is already stopped.");
 		}
 	}
 	
