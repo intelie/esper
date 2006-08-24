@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
+import net.esper.adapter.AdapterInputSource;
 import net.esper.client.EPException;
 
 public class TestCSVReader extends TestCase
@@ -11,7 +12,7 @@ public class TestCSVReader extends TestCase
 	public void testParsing() throws Exception
 	{
 		String path = "regression/parseTests.csv";
-		CSVReader reader = new CSVReader(path);
+		CSVReader reader = new CSVReader(new AdapterInputSource(path));
 
 		String[] nextRecord = reader.getNextRecord();
 		String[] expected = new String[] {"8", "8.0", "c", "'c'", "string", "string"};
@@ -73,7 +74,7 @@ public class TestCSVReader extends TestCase
 	public void testClose() throws EOFException
 	{
 		String path = "regression/parseTests.csv";
-		CSVReader reader = new CSVReader(path);
+		CSVReader reader = new CSVReader(new AdapterInputSource(path));
 		
 		reader.close();
 		try
@@ -98,7 +99,7 @@ public class TestCSVReader extends TestCase
 	
 	public void testReset() throws EOFException, EPException
 	{
-		CSVReader reader = new CSVReader("regression/endOnNewline.csv");
+		CSVReader reader = new CSVReader(new AdapterInputSource("regression/endOnNewline.csv"));
 		
 		String[] nextRecord = reader.getNextRecord();
 		String[] expected = new String[] {"first line", "1"};
@@ -117,7 +118,7 @@ public class TestCSVReader extends TestCase
 	
 	public void testTitleRow() throws EOFException, EPException
 	{
-		CSVReader reader = new CSVReader("regression/titleRow.csv");
+		CSVReader reader = new CSVReader(new AdapterInputSource("regression/titleRow.csv"));
 		reader.setIsLooping(true);
 		
 		// isUsingTitleRow is false by default, so get the title row
@@ -171,7 +172,7 @@ public class TestCSVReader extends TestCase
 	
 	private void assertLooping(String path) throws EOFException
 	{
-		CSVReader reader = new CSVReader(path);
+		CSVReader reader = new CSVReader(new AdapterInputSource(path));
 		reader.setIsLooping(true);
 		
 		String[] nextRecord = reader.getNextRecord();
@@ -199,7 +200,7 @@ public class TestCSVReader extends TestCase
 	
 	private void assertNonLooping(String path) throws EOFException
 	{
-		CSVReader reader = new CSVReader(path);
+		CSVReader reader = new CSVReader(new AdapterInputSource(path));
 		
 		String[] nextRecord = reader.getNextRecord();
 		String[] expected = new String[] {"first line", "1"};

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.esper.adapter.AdapterInputSource;
 import net.esper.client.EPException;
 
 import org.apache.commons.logging.Log;
@@ -19,7 +20,7 @@ public class CSVReader
 {
 	private static final Log log = LogFactory.getLog(CSVReader.class);
 	
-	private final String path;
+	private final AdapterInputSource inputSource;
 	private boolean isLooping;
 	private boolean isUsingTitleRow;
 	
@@ -32,13 +33,13 @@ public class CSVReader
 	
 	/**
 	 * Ctor.
-	 * @param path - the path to the CSV file to read
+	 * @param adapterInputSource - the source of the CSV file
 	 * @throws EPException in case of errors in reading the CSV file
 	 */
-	public CSVReader(String path) throws EPException
+	public CSVReader(AdapterInputSource adapterInputSource) throws EPException
 	{
-		this.path = path;
-		inputStream = resolvePathAsStream(path);
+		this.inputSource = adapterInputSource;
+		inputStream = inputSource.openStream();
 		reader = new BufferedInputStream(inputStream);
 	}
 	
@@ -78,7 +79,7 @@ public class CSVReader
 			
 			if(atEOF && result == null)
 			{
-				throw new EOFException("In reading CSV file " + path + "reached end-of-file and not looping to the beginning");
+				throw new EOFException("In reading CSV file " + inputSource + "reached end-of-file and not looping to the beginning");
 			}
 			
 			record++;
@@ -122,7 +123,7 @@ public class CSVReader
 		{
 			inputStream.close();
 			reader.close();
-			inputStream = resolvePathAsStream(path);
+			inputStream = inputSource.openStream();
 			reader = new BufferedInputStream(inputStream);
 			atEOF = false;
 			if(isUsingTitleRow)
@@ -137,26 +138,6 @@ public class CSVReader
 		}
 	}
 
-	private static InputStream resolvePathAsStream(String path)
-    {
-    	InputStream stream = null;
-    	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    	if (classLoader!=null) {
-    		stream = classLoader.getResourceAsStream( path );
-    	}
-    	if ( stream == null ) {
-    		stream = CSVReader.class.getResourceAsStream( path );
-    	}
-    	if ( stream == null ) {
-    		stream = CSVReader.class.getClassLoader().getResourceAsStream( path );
-    	}
-    	if ( stream == null ) {
-    		throw new EPException( path + " not found" );
-    	}
-    	
-    	return stream;
-    }
-    
 	private String[] getNextValidRecord() throws IOException
 	{
 		String[] result = null;
@@ -392,7 +373,7 @@ public class CSVReader
 	
 	private EPException unexpectedCharacterException(char unexpected)
 	{
-		return new EPException("In processing record " + record + " of CSV file " + path + ", encountered unexpected character " + unexpected);
+		return new EPException("In processing record " + record + " of CSV file " + inputSource + ", encountered unexpected character " + unexpected);
 	}
 	
 	private void skipCommentedLines() throws IOException

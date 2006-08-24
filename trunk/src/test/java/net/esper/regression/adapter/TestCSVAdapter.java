@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.Conductor;
 import net.esper.adapter.csv.CSVAdapter;
 import net.esper.adapter.csv.CSVPlayer;
@@ -340,7 +341,7 @@ public class TestCSVAdapter extends TestCase
 	
 	private void startPlayer(String filename, int eventsPerSec, boolean isLooping)
 	{
-		player = adapter.createCSVPlayer(eventTypeAlias, filename);
+		player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource(filename));
 		if(eventsPerSec != -1)
 		{
 			player.setEventsPerSec(eventsPerSec);
@@ -355,7 +356,7 @@ public class TestCSVAdapter extends TestCase
 		int count = 0;
 		for(String filename : filenames)
 		{
-			CSVPlayer player = adapter.createCSVPlayer(eventTypeAlias, filename);
+			CSVPlayer player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource(filename));
 			if(eventsPerSecArray[count] != -1)
 			{
 				player.setEventsPerSec(eventsPerSecArray[count]);

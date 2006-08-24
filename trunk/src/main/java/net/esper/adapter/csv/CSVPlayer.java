@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.Player;
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
@@ -55,20 +56,20 @@ public class CSVPlayer implements Player
 	
 	/**
 	 * Ctor.
-	 * @param path - the path to the CSV file
+	 * @param adapterInputSource - the source of the CSV file
 	 * @param mapSpec - describes the format of the events to create and send into the EPRuntime
 	 * @param schedulingService - used for making callbacks
 	 * @param scheduleSlot - this player's unique schedule slot
 	 * @throws EPException in case of errors opening the CSV file
 	 */
-	public CSVPlayer(String path, MapEventSpec mapSpec, SchedulingService schedulingService, ScheduleSlot scheduleSlot) throws EPException
+	public CSVPlayer(AdapterInputSource adapterInputSource, MapEventSpec mapSpec, SchedulingService schedulingService, ScheduleSlot scheduleSlot) throws EPException
 	{
 		this.schedulingService = schedulingService;
 		this.scheduleSlot = scheduleSlot;
 		this.mapEventSpec = mapSpec;
 
 		this.propertyConstructors = createPropertyConstructors(mapEventSpec.getPropertyTypes());
-		reader = new CSVReader(path);
+		reader = new CSVReader(adapterInputSource);
 		
 		// Resolve the order of properties in the CSV file
 		String[] firstRow;

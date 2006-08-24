@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 
+import net.esper.adapter.AdapterInputSource;
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.esper.event.EventAdapterService;
@@ -47,12 +48,12 @@ public class CSVAdapter
 	/**
 	 * Create and start a CSVPlayer.
 	 * @param eventTypeAlias - the alias for the map events generated from the CSV file
-	 * @param filename - the path to the CSV file
+	 * @param adapterInputSource - the source of the CSV file
 	 * @throws EPException if eventTypeAlias does not correspond to a map event
 	 */
-	public void play(String eventTypeAlias, String filename) throws EPException
+	public void play(String eventTypeAlias, AdapterInputSource adapterInputSource) throws EPException
 	{
-		CSVPlayer player = createCSVPlayer(eventTypeAlias, filename);
+		CSVPlayer player = createCSVPlayer(eventTypeAlias, adapterInputSource);
 		players.add(player);
 		player.start();
 	}
@@ -60,15 +61,15 @@ public class CSVAdapter
 	/**
 	 * Create a CSVPlayer.
 	 * @param eventTypeAlias - the alias for the map events generated from the CSV file
-	 * @param filename - the path to the CSV file
+	 * @param adapterInputSource - the source of the CSV file
 	 * @return the created CSVPlayer
-	 * 	 * @throws EPException if the eventTypeAlias does not correspond to a map event
+	 * @throws EPException if eventTypeAlias does not correspond to a map event
 	 */
-	public CSVPlayer createCSVPlayer(String eventTypeAlias, String filename) throws EPException
+	public CSVPlayer createCSVPlayer(String eventTypeAlias, AdapterInputSource adapterInputSource) throws EPException
 	{
 		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias);
 		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypes, runtime);
-		return new CSVPlayer(filename, mapSpec, schedulingService, scheduleBucket.allocateSlot());
+		return new CSVPlayer(adapterInputSource, mapSpec, schedulingService, scheduleBucket.allocateSlot());
 	}
 	
 	private Map<String, Class> constructPropertyTypes(String eventTypeAlias) 
