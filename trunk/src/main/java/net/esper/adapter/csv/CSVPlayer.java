@@ -402,6 +402,7 @@ public class CSVPlayer implements Player
 			if (!isPaused && !isStopped)
 			{
 				sendMap();
+				currentRow = null;
 				try
 				{
 					scheduleNewCallback();
