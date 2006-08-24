@@ -96,4 +96,12 @@ public class Conductor implements Player
 		}
 		isPaused = false;
 	}
+	
+	/**
+	 * Not supported currently.
+	 */
+	public SendableEvent read()
+	{
+		throw new UnsupportedOperationException("Conductor does not support read()");
+	}
 }
