@@ -21,7 +21,10 @@ public class Conductor implements Player
 	 */
 	public void add(Player player)
 	{
-		players.add(player);
+		if(!players.contains(player))
+		{
+			players.add(player);
+		}
 	}
 	
 	/**
