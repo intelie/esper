@@ -8,11 +8,13 @@ import java.util.Map;
 import junit.framework.TestCase;
 import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.Conductor;
+import net.esper.adapter.SendableEvent;
 import net.esper.adapter.csv.CSVAdapter;
 import net.esper.adapter.csv.CSVPlayer;
 import net.esper.client.Configuration;
 import net.esper.client.EPAdministrator;
 import net.esper.client.EPException;
+import net.esper.client.EPRuntime;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
@@ -30,6 +32,7 @@ public class TestCSVAdapter extends TestCase
 	private long currentTime;
 	private CSVPlayer player;
 	private Conductor conductor;
+	private EPRuntime runtime;
 	
 	protected void setUp()
 	{
@@ -44,6 +47,7 @@ public class TestCSVAdapter extends TestCase
 		
 		epService = EPServiceProviderManager.getProvider("CSVProvider", configuration);
 		epService.initialize();
+		runtime = epService.getEPRuntime();
 		EPAdministrator administrator = epService.getEPAdministrator();
 		String statementText = "select * from mapEvent.win:length(5)";
 		EPStatement statement = administrator.createEQL(statementText);
@@ -237,6 +241,97 @@ public class TestCSVAdapter extends TestCase
 		{
 			// Expected
 		}
+	}
+	
+	public void testReadBeforeStart()
+	{
+		// Create a looping, 10 event per sec player
+		player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("regression/noTimestampOne.csv"));
+		player.setIsLooping(true);
+		player.setEventsPerSec(10);
+		
+		SendableEvent event = player.read();
+		event.send(runtime);
+		assertEvent(1, 1.1, "one");
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(2, 2.2, "two");
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(3, 3.3, "three");
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(1, 1.1, "one");
+	}
+	public void testReadAfterStart()
+	{
+		// Create a looping, 10 event per sec player
+		player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("regression/noTimestampOne.csv"));
+		player.setIsLooping(true);
+		player.setEventsPerSec(10);
+		player.start();
+		
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "one");
+		
+		SendableEvent event = player.read();
+		event.send(runtime);
+		assertEvent(2, 2.2, "two");
+		
+		sendTimeEvent(100);
+		assertEvent(3, 3.3, "three");
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(1, 1.1, "one");
+		
+		player.stop();
+		try
+		{
+			event = player.read();
+			fail();
+		}
+		catch(EPException e)
+		{
+			// Expected
+		}
+	}
+	
+	public void testReadDuringPause()
+	{
+		// Create a looping, 10 event per sec player
+		player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("regression/noTimestampOne.csv"));
+		player.setIsLooping(true);
+		player.setEventsPerSec(10);
+		player.start();
+		
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "one");
+		
+		sendTimeEvent(100);
+		assertEvent(2, 2.2, "two");
+		
+		player.pause();
+		
+		SendableEvent event = player.read();
+		event.send(runtime);
+		assertEvent(3, 3.3, "three");
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(1, 1.1, "one");
+		
+		player.resume();
+		
+		sendTimeEvent(100);
+		assertEvent(2, 2.2, "two");
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(3, 3.3, "three");
 	}
 	
 	private void sendTimeEvent(int timeIncrement){
