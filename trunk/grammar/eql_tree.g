@@ -27,6 +27,7 @@ tokens
 {
 	private static Log log = LogFactory.getLog(EQLBaseWalker.class);
 
+	protected void enterNode(AST node) throws SemanticException {}
 	protected void leaveNode(AST node) throws SemanticException {}
 	protected void end() throws SemanticException {}
 }
@@ -73,7 +74,8 @@ outerJoinIdent
 	;
 
 streamExpression
-	:	#(s:STREAM_EXPR eventFilterExpr viewListExpr (IDENT)? { leaveNode(#s); } )
+	:	#(v:VIEW_STREAM_EXPR eventFilterExpr viewListExpr (IDENT)? { leaveNode(#v); } )
+	|	#(p:PATTERN_STREAM_EXPR { enterNode(#p); } exprChoice (IDENT)? { leaveNode(#p); } )
 	;
 
 viewListExpr

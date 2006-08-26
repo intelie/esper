@@ -3,6 +3,7 @@ package net.esper.pattern;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.filter.FilterService;
+import net.esper.event.EventAdapterService;
 
 /**
  * Contains handles to implementations of services needed by evaluation nodes.
@@ -12,6 +13,7 @@ public final class PatternContext
     private final FilterService filterService;
     private final SchedulingService schedulingService;
     private final ScheduleBucket scheduleBucket;
+    private final EventAdapterService eventAdapterService;
 
     /**
      * Constructor.
@@ -19,11 +21,12 @@ public final class PatternContext
      * @param scheduleBucket schedule buckets for use by scheduling service for ordering scheduling callbacks for pattern statements 
      * @param schedulingService implementation for schedule evaluation
      */
-    public PatternContext(FilterService filterService, SchedulingService schedulingService, ScheduleBucket scheduleBucket)
+    public PatternContext(FilterService filterService, SchedulingService schedulingService, ScheduleBucket scheduleBucket, EventAdapterService eventAdapterService)
     {
         this.filterService = filterService;
         this.schedulingService = schedulingService;
         this.scheduleBucket = scheduleBucket;
+        this.eventAdapterService = eventAdapterService;
     }
 
     /**
@@ -51,5 +54,10 @@ public final class PatternContext
     public ScheduleBucket getScheduleBucket()
     {
         return scheduleBucket;
+    }
+
+    public EventAdapterService getEventAdapterService()
+    {
+        return eventAdapterService;
     }
 }

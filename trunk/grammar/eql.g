@@ -57,6 +57,7 @@ tokens
 	DESC="desc";
 	RSTREAM="rstream";
 	ISTREAM="istream";
+	PATTERN="pattern";
    	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -71,7 +72,8 @@ tokens
    	GUARD_EXPR;
    	OBSERVER_EXPR;
    	VIEW_EXPR;
-   	STREAM_EXPR;
+   	VIEW_STREAM_EXPR;
+   	PATTERN_STREAM_EXPR;
    	WHERE_EXPR;
    	HAVING_EXPR;
 	EVAL_BITWISE_EXPR;
@@ -150,8 +152,7 @@ constant
 eqlExpression 
 	:	(INSERT! insertIntoExpr)?
 		SELECT! selectionListExpr 
-		FROM! streamExpression
-		(regularJoin | outerJoinList)
+		FROM! streamExpression (regularJoin | outerJoinList)
 		(WHERE! whereClause)?
 		(GROUP! BY! groupByListExpr)?
 		(HAVING! havingClause)?
@@ -209,8 +210,18 @@ selectionListElement
 	;
 		
 streamExpression
+	:	patternStreamExpression
+	|	viewStreamExpression
+	;
+
+viewStreamExpression
 	:	eventFilterExpression DOT! viewExpression (DOT! viewExpression)* (AS! IDENT | IDENT)?
-		{ #streamExpression = #([STREAM_EXPR,"streamExpression"], #streamExpression); }
+		{ #viewStreamExpression = #([VIEW_STREAM_EXPR,"viewStreamExpression"], #viewStreamExpression); }
+	;
+	
+patternStreamExpression
+	:	PATTERN! LBRACK! patternExpression RBRACK! (AS! IDENT | IDENT)?
+		{ #patternStreamExpression = #([PATTERN_STREAM_EXPR,"patternStreamExpression"], #patternStreamExpression); }
 	;
 
 viewExpression

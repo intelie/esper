@@ -14,7 +14,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select a & b from " + className + "().win:lenght(10)";
+        String pattern = "a=" + className + " -> b=" + className;
+        String expression = "select * from pattern [" + pattern + "]";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -217,6 +218,10 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("insert into MyEvent (a, b, c) select 1 from b.win:length(1)");
         assertIsValid("insert istream into MyEvent select 1 from b.win:length(1)");
         assertIsValid("insert rstream into MyEvent select 1 from b.win:length(1)");
+
+        // pattern inside EQL
+        assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "]");
+        assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "] as xyz");
     }
 
     public void testBitWiseCases() throws Exception

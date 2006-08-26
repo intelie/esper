@@ -105,8 +105,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
         // Build event type of aggregate event representing the pattern
         Map<String, EventType> eventTypes = walker.getTaggedEventTypes();
-        Map<String, Class> types = getUnderlyingTypes(eventTypes);
-        EventType eventType = services.getEventAdapterService().createAnonymousMapType(types);
+        EventType eventType = services.getEventAdapterService().createAnonymousMapTypeUnd(eventTypes);
 
         EPPatternStmtStartMethod startMethod = new EPPatternStmtStartMethod(services, walker.getRootNode());
 
@@ -164,25 +163,6 @@ public class EPAdministratorImpl implements EPAdministrator
 
         return new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod);
     }
-
-    /**
-     * Return a map of property name and types for a given map of property name and event type,
-     * by extracting the underlying type for the event types.
-     * @param types is the various event types returned.
-     * @return map of property name and type
-     */
-    private static Map<String, Class> getUnderlyingTypes(Map<String, EventType> types)
-    {
-        Map<String, Class> classes = new HashMap<String, Class>();
-
-        for (Map.Entry<String, EventType> type : types.entrySet())
-        {
-            classes.put(type.getKey(), type.getValue().getUnderlyingType());
-        }
-
-        return classes;
-    }
-
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);
 }

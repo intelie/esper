@@ -46,6 +46,16 @@ public interface EventAdapterService
     public EventType createAnonymousMapType(Map<String, Class> propertyTypes);
 
     /**
+     * Creates a new anonymous EventType instance for an event type that contains a map of name value pairs.
+     * The method accepts a Map that contains the property names as keys and EventType objects as the values.
+     * The EventType instances represent the property types whose underlying class is used to set the type,
+     * via method {@see createAnonymousMapType}.
+     * @param propertyTypes is a map of String to EventType objects
+     * @return EventType implementation for map field names and value types which are the underlying types to the event type passed in
+     */
+    public EventType createAnonymousMapTypeUnd(Map<String, EventType> propertyTypes);
+
+    /**
      * Create an event wrapper bean from a set of event properties (name and value objectes) stored in a Map.
      * @param properties is key-value pairs for the event properties
      * @param eventType is the type metadata for any maps of that type

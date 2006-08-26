@@ -210,4 +210,28 @@ public class EventAdapterServiceImpl implements EventAdapterService
         eventTypes.put(eventTypeAlias, type);
         xmldomRootElementNames.put(configurationEventTypeXMLDOM.getRootElementName(), type);
     }
+
+    public EventType createAnonymousMapTypeUnd(Map<String, EventType> propertyTypes)
+    {
+        Map<String, Class> underlyingTypes = getUnderlyingTypes(propertyTypes);
+        return this.createAnonymousMapType(underlyingTypes);
+    }
+
+    /**
+     * Return a map of property name and types for a given map of property name and event type,
+     * by extracting the underlying type for the event types.
+     * @param types is the various event types returned.
+     * @return map of property name and type
+     */
+    private static Map<String, Class> getUnderlyingTypes(Map<String, EventType> types)
+    {
+        Map<String, Class> classes = new HashMap<String, Class>();
+
+        for (Map.Entry<String, EventType> type : types.entrySet())
+        {
+            classes.put(type.getKey(), type.getValue().getUnderlyingType());
+        }
+
+        return classes;
+    }
 }

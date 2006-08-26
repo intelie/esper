@@ -2,6 +2,7 @@ package net.esper.core;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.esper.client.EPStatementException;
 import net.esper.collection.Pair;
@@ -15,6 +16,7 @@ import net.esper.eql.join.JoinSetFilter;
 import net.esper.eql.view.FilterExprView;
 import net.esper.eql.view.OutputProcessView;
 import net.esper.eql.view.InternalRouteView;
+import net.esper.eql.view.PatternAdapterView;
 import net.esper.event.EventType;
 import net.esper.view.EventStream;
 import net.esper.view.View;
@@ -23,6 +25,9 @@ import net.esper.view.ViewServiceContext;
 import net.esper.view.Viewable;
 import net.esper.view.internal.BufferView;
 import net.esper.schedule.ScheduleBucket;
+import net.esper.pattern.EvalRootNode;
+import net.esper.pattern.PatternContext;
+import net.esper.pattern.PatternStopCallback;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,29 +106,45 @@ public class EPEQLStmtStartMethod
     {
         ViewServiceContext viewContext = new ViewServiceContext(services.getSchedulingService(), scheduleBucket, services.getEventAdapterService());
 
+        // Determine stream names for each stream - some streams may not have a name given
+        String[] streamNames = determineStreamNames(streams);
+        EventType[] streamTypes = new EventType[streams.size()];
+        View[] streamViews = new View[streams.size()];
+        List<PatternStopCallback> patternStopCallbacks = new LinkedList<PatternStopCallback>();
+
+        // Create streams and views
+        for (int i = 0; i < streams.size(); i++)
+        {
+            StreamSpec streamSpec = streams.get(i);
+            if (streamSpec instanceof FilterAndViewStreamSpec)
+            {
+                FilterAndViewStreamSpec filterStreamSpec = (FilterAndViewStreamSpec) streamSpec;
+                EventStream eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
+                streamViews[i] = services.getViewService().createView(eventStream, filterStreamSpec.getViewSpecs(), viewContext);
+                streamTypes[i] = streamViews[i].getEventType();
+            }
+            else
+            {
+                PatternContext context = new PatternContext(services.getFilterService(), services.getSchedulingService(), scheduleBucket, services.getEventAdapterService());
+                PatternStreamSpec patternStreamSpec = (PatternStreamSpec) streamSpec;
+                PatternAdapterView view = new PatternAdapterView(patternStreamSpec, context);
+            }
+        }
+
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
         {
             public void stop()
             {
                 for (StreamSpec streamSpec : streams)
                 {
-                    services.getStreamService().dropStream(streamSpec.getFilterSpec(), services.getFilterService());
+                    if (streamSpec instanceof FilterAndViewStreamSpec)
+                    {
+                        FilterAndViewStreamSpec filterAndViewStreamSpec = (FilterAndViewStreamSpec) streamSpec;
+                        services.getStreamService().dropStream(filterAndViewStreamSpec.getFilterSpec(), services.getFilterService());
+                    }
                 }
             }
         };
-
-        // Determine stream names for each stream - some streams may not have a name given
-        String[] streamNames = determineStreamNames(streams);
-        EventType[] streamTypes = new EventType[streams.size()];
-        View[] streamViews = new View[streams.size()];
-
-        // Create streams and views
-        for (int i = 0; i < streams.size(); i++)
-        {
-            EventStream eventStream = services.getStreamService().createStream(streams.get(i).getFilterSpec(), services.getFilterService());
-            streamViews[i] = services.getViewService().createView(eventStream, streams.get(i).getViewSpecs(), viewContext);
-            streamTypes[i] = streamViews[i].getEventType();
-        }
 
         // Construct type information per stream
         StreamTypeService typeService = new StreamTypeServiceImpl(streamTypes, streamNames);

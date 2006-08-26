@@ -7,43 +7,22 @@ import java.util.List;
 import java.util.LinkedList;
 
 /**
- * Specification for building a stream.
+ * Abstract base specification for a stream, consists simply of an optional stream name.
+ * <p>
+ * Implementation classes for views and patterns add additional information defining the
+ * stream of events.
  */
-public class StreamSpec
+public abstract class StreamSpec
 {
-    private FilterSpec filterSpec;
-    private List<ViewSpec> viewSpecs = new LinkedList<ViewSpec>();
     private String optionalStreamName;
 
     /**
      * Ctor.
-     * @param filterSpec - specifies what events we are interested in.
-     * @param viewSpecs - specifies what view to use to derive data
      * @param optionalStreamName - stream name, or null if none supplied
      */
-    public StreamSpec(FilterSpec filterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
+    public StreamSpec(String optionalStreamName)
     {
-        this.filterSpec = filterSpec;
-        this.viewSpecs = viewSpecs;
         this.optionalStreamName = optionalStreamName;
-    }
-
-    /**
-     * Returns filter specification for which events the stream will getSelectListEvents.
-     * @return filter spec
-     */
-    public FilterSpec getFilterSpec()
-    {
-        return filterSpec;
-    }
-
-    /**
-     * Returns view definitions to use to construct views to derive data on stream.
-     * @return view defs
-     */
-    public List<ViewSpec> getViewSpecs()
-    {
-        return viewSpecs;
     }
 
     /**
