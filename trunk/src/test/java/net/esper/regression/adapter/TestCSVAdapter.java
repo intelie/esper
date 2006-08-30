@@ -7,8 +7,8 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Conductor;
 import net.esper.adapter.SendableEvent;
+import net.esper.adapter.Player.State;
 import net.esper.adapter.csv.CSVAdapter;
 import net.esper.adapter.csv.CSVPlayer;
 import net.esper.client.Configuration;
@@ -31,7 +31,6 @@ public class TestCSVAdapter extends TestCase
 	private EPServiceProvider epService;
 	private long currentTime;
 	private CSVPlayer player;
-	private Conductor conductor;
 	private EPRuntime runtime;
 	
 	protected void setUp()
@@ -44,6 +43,7 @@ public class TestCSVAdapter extends TestCase
 		eventTypeAlias = "mapEvent";
 		Configuration configuration = new Configuration();
 		configuration.addEventTypeAlias(eventTypeAlias, propertyTypes);
+		configuration.addEventTypeAlias("myNonMapEvent", Class.class.getName());
 		
 		epService = EPServiceProviderManager.getProvider("CSVProvider", configuration);
 		epService.initialize();
@@ -64,36 +64,93 @@ public class TestCSVAdapter extends TestCase
     	sendTimeEvent(0);
 	}
 	
-
-	
-	public void testSingleFileNoTimestamp() throws InterruptedException 
+	public void testRunWrongAlias()
 	{
 		String filename = "regression/noTimestampOne.csv";
-		int eventsPerSec = 10;
-		
-		List<Object[]> events = new ArrayList<Object[]>();
-		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 100, 2, 2.2, "two"});
-		events.add(new Object[] { 100, 3, 3.3, "three"});
-		
-		boolean isLooping = false;
-		startPlayer(filename, eventsPerSec, isLooping);
-		assertEvents(isLooping, events);
-		
-		isLooping = true;
-		startPlayer(filename, eventsPerSec, isLooping);
-		assertEvents(isLooping, events);
+		assertFailedConstruction(filename);
+	}
+
+	public void testRunWrongMapType()
+	{
+		String filename = "regression/differentMap.csv";
+		assertFailedConstruction(filename);
+	}
+
+	public void testRunNonexistentFile()
+	{
+		String filename = "someNonexistentFile";	
+		assertFailedConstruction(filename);
+	}
+
+	public void testRunEmptyFile()
+	{
+		String filename = "regression/emptyFile.csv";
+		startPlayer(filename, -1, true);
+		assertFalse(listener.getAndClearIsInvoked());
+		assertEquals(State.STOPPED, player.getState());
 	}
 	
-	public void testSingleFileTimestamp() throws InterruptedException
+	public void testRunTitleRowOnly()
+	{
+		String filename = "regression/titleRowOnly.csv";
+		startPlayer(filename, -1, true);
+		assertFalse(listener.getAndClearIsInvoked());
+		assertEquals(State.STOPPED, player.getState());
+	}
+	
+	public void testRunDecreasingTimestamps()
+	{
+		String filename = "regression/decreasingTimestamps.csv";
+		try
+		{
+			startPlayer(filename, -1, false);
+		
+			sendTimeEvent(100);
+			assertEvent(1, 1.1, "one");
+		
+			sendTimeEvent(200);
+			fail();
+		}
+		catch(EPException e)
+		{
+			// Expected  
+		}
+	}
+	
+	public void testRunNegativeTimestamps()
+	{
+		String filename = "regression/negativeTimestamps.csv";
+		try
+		{
+			startPlayer(filename, -1, false);
+
+			sendTimeEvent(100);
+			assertEvent(1, 1.1, "one");
+
+			sendTimeEvent(200);
+			fail();
+		}
+		catch(EPException ex)
+		{
+			// Expected
+		}
+	}
+	
+	public void testRunNoTimestampColumn()
+	{
+		String filename = "regression/noTimestampOne.csv";
+		assertFailedConstruction(filename);
+	}
+	
+	public void testRunTimestamps() 
 	{
 		String filename =  "regression/timestampOne.csv";
 		int eventsPerSec = -1;
 		
 		List<Object[]> events = new ArrayList<Object[]>();
 		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 300, 3, 3.3, "three"});
-		events.add(new Object[] { 500, 5, 5.5, "five"});
+		events.add(new Object[] { 200, 3, 3.3, "three"});
+		events.add(new Object[] { 200, 5, 5.5, "five"});
 		
 		boolean isLooping = false;
 		startPlayer(filename, eventsPerSec, isLooping);
@@ -104,236 +161,286 @@ public class TestCSVAdapter extends TestCase
 		assertEvents(isLooping, events);
 	}
 
-
-
-	public void testTitleRow() throws InterruptedException
+	public void testStartOneRow()
 	{
-		String filename = "regression/titleRow.csv";
-		int eventsPerSec = -1;
+		String filename = "regression/oneRow.csv";
+		startPlayer(filename, -1, false);
 		
-		List<Object[]> events = new ArrayList<Object[]>();
-		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 300, 3, 3.3, "three"});
-		events.add(new Object[] { 500, 5, 5.5, "five"});
-	
-		boolean isLooping = false;
-		startPlayer(filename, eventsPerSec, isLooping);
-		assertEvents(isLooping, events);
-		
-		isLooping = true;
-		startPlayer(filename, eventsPerSec, isLooping);
-		assertEvents(isLooping, events);
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "one");
+		assertEquals(State.STOPPED, player.getState());
 	}
 	
-	public void testMultipleFilesTimestamp() throws InterruptedException
-	{
-		String filenameOne = "regression/timestampOne.csv";
-		String filenameTwo = "regression/timestampTwo.csv";
-		int eventsPerSec = -1;
-		
-		List<Object[]> events = new ArrayList<Object[]>();
-		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 100, 2, 2.2, "two"});
-		events.add(new Object[] { 100, 3, 3.3, "three"});
-		events.add(new Object[] { 100, 4, 4.4, "four"});
-		events.add(new Object[] { 100, 5, 5.5, "five"});
-		events.add(new Object[] { 100, 6, 6.6, "six"});
-		
-		boolean isLooping = false;
-		startGroup(new String[] { filenameOne, filenameTwo }, new int[] { eventsPerSec, eventsPerSec}, new boolean[] { isLooping, isLooping });
-		assertEvents(isLooping, events);
-		
-		events.remove(5);
-		events.add(new Object[] { 100, 1, 1.1, "one", 6, 6.6, "six" });
-		events.add(new Object[] { 200, 3, 3.3, "three", 2, 2.2, "two" });
-		
-		isLooping = true;
-		startGroup(new String[] { filenameOne, filenameTwo }, new int[] { eventsPerSec, eventsPerSec}, new boolean[] { isLooping, isLooping });
-		assertFlatEvents(events);
-	}
-	
-	public void testMultipleFilesMixed() throws InterruptedException
-	{	
-		String filenameOne = "regression/timestampOne.csv";
-		String filenameTwo = "regression/noTimestampTwo.csv";
-		int eventsPerSecOne = -1;
-		int eventsPerSecTwo = 5;
-		
-		List<Object[]> events = new ArrayList<Object[]>();
-		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 100, 2, 2.2, "two"});
-		events.add(new Object[] { 100, 3, 3.3, "three"});
-		events.add(new Object[] { 100, 4, 4.4, "four"});
-		events.add(new Object[] { 100, 5, 5.5, "five"});
-		events.add(new Object[] { 100, 2, 2.2, "two"});
-		events.add(new Object[] { 200, 4, 4.4, "four"});
-		
-		boolean isLoopingOne = false;
-		boolean isLoopingTwo = true;
-		startGroup(new String[] { filenameOne, filenameTwo }, new int[] { eventsPerSecOne, eventsPerSecTwo}, new boolean[] { isLoopingOne, isLoopingTwo });
-		assertFlatEvents(events);
-	}
-	
-	public void testStates()
+	public void testPause()
 	{
 		String filename = "regression/noTimestampOne.csv";
-		int eventsPerSec = 10;
+		startPlayer(filename, 10, false);
+		
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "one");
+		
+		player.pause();
+		
+		sendTimeEvent(100);
+		assertEquals(State.PAUSED, player.getState());
+		assertFalse(listener.getAndClearIsInvoked());
+	}
+	
+	public void testResumeWholeInterval()
+	{
+		String filename = "regression/noTimestampOne.csv";
+		startPlayer(filename, 10, false);
+		
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "one");
+		
+		player.pause();
+		sendTimeEvent(100);
+		assertFalse(listener.getAndClearIsInvoked());
+		player.resume();
+		
+		
+		assertEvent(2, 2.2, "two");
+	}
+	
+	public void testResumePartialInterval()
+	{
+		String filename = "regression/noTimestampOne.csv";
+		startPlayer(filename, 10, false);
+		
+		// time is 100
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "one");
+		
+		// time is 150
+		sendTimeEvent(50);
+		
+		player.pause();
+		// time is 200
+		sendTimeEvent(50);
+		assertFalse(listener.getAndClearIsInvoked());
+		player.resume();
+		
+		assertEvent(2, 2.2, "two");
+	}
+	
+	public void testReadAndRun()
+	{
+		player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("regression/noTimestampOne.csv"));
+		player.setIsLooping(true);
+		player.setEventsPerSec(10);
+		
+		SendableEvent event = player.read();
+		event.send(runtime);
+		assertEvent(1, 1.1, "one");
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(2, 2.2, "two");
+		
+		player.start();
+		sendTimeEvent(300);
+		assertEvent(3, 3.3, "three");
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(1, 1.1, "one");
+		
+		sendTimeEvent(200);
+		assertEvent(2, 2.2, "two");
+		
+		sendTimeEvent(50);
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		event = player.read();
+		event.send(runtime);
+		assertEvent(3, 3.3, "three");
+		
+		sendTimeEvent(50);
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "one");
+	}
+	
+	public void testReadAndPause()
+	{
+		String filename = "regression/noTimestampOne.csv";
+		startPlayer(filename, 10, true);
+		
+		sendTimeEvent(150);
+		assertEvent(1, 1.1, "one");
+		
+		player.pause();	
+		
+		SendableEvent event = player.read();
+		event.send(runtime);
+		assertEvent(2, 2.2, "two");
+		
+		player.resume();
+		
+		sendTimeEvent(50);
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		sendTimeEvent(100);
+		assertEvent(3, 3.3, "three");
+	}
+	
+	public void testReadAfterStopped()
+	{
+		String filename = "regression/noTimestampOne.csv";
+		startPlayer(filename, 10, true);
+		player.stop();
+		
+		assertNull(player.read());
+	}
+	
+	public void testReadTillStop()
+	{
+		String filename = "regression/noTimestampOne.csv";
+		startPlayer(filename, 10, false);
+		
+		player.read();
+		player.read();
+		player.read();
+		assertNull(player.read());
+		assertEquals(State.STOPPED, player.getState());
+	}
+	
+	public void testEventsPerSecInvalid()
+	{
+		String filename = "regression/timestampOne.csv";
+		startPlayer(filename, -1, true);
+
+		try
+		{
+			player.setEventsPerSec(0);
+			fail();
+		}
+		catch(IllegalArgumentException e)
+		{
+			// Expected
+		}
+		
+		try
+		{
+			player.setEventsPerSec(-1);
+			fail();
+		}
+		catch(IllegalArgumentException e)
+		{
+			// Expected
+		}
+		
+		try
+		{
+			player.setEventsPerSec(1001);
+			fail();
+		}
+		catch(IllegalArgumentException e)
+		{
+			// Expected
+		}
+	}
+	
+	public void testEventsPerSecValid()
+	{
+		String filename = "regression/timestampOne.csv";
+		startPlayer(filename, -1, true);
+		
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "one");
+		
+		player.setEventsPerSec(10);
+		
+		// This was already scheduled using timestamps
+		sendTimeEvent(200);
+		assertEvent(3, 3.3, "three");
+		
+		player.setEventsPerSec(20);
+
+		// This reacts to the first setting of eventsPerSec
+		sendTimeEvent(100);
+		assertEvent(5, 5.5, "five");
+		
+		// This reacts to the second setting of eventsPerSec
+		sendTimeEvent(50);
+		assertEvent(1, 1.1, "one");
+	}
+	
+	public void testIsLoopingTitleRow()
+	{
+		String filename =  "regression/titleRow.csv";
+		int eventsPerSec = -1;
+		
+		List<Object[]> events = new ArrayList<Object[]>();
+		events.add(new Object[] { 100, 1, 1.1, "one"});
+		events.add(new Object[] { 200, 3, 3.3, "three"});
+		events.add(new Object[] { 200, 5, 5.5, "five"});
+		
 		boolean isLooping = true;
 		startPlayer(filename, eventsPerSec, isLooping);
+		assertLoopingEvents(events);
+	}
+	
+	public void testIsLoopingNoTitleRow()
+	{
+		String filename =  "regression/timestampOne.csv";
+		int eventsPerSec = -1;
+		
+		List<Object[]> events = new ArrayList<Object[]>();
+		events.add(new Object[] { 100, 1, 1.1, "one"});
+		events.add(new Object[] { 200, 3, 3.3, "three"});
+		events.add(new Object[] { 200, 5, 5.5, "five"});
+		
+		boolean isLooping = true;
+		startPlayer(filename, eventsPerSec, isLooping);
+		assertLoopingEvents(events);
+	}
+	
+	public void testTitleRowNoTimestamp()
+	{
+		String filename =  "regression/titleRowNoTimestamp.csv";
+		int eventsPerSec = 10;
+		
+		List<Object[]> events = new ArrayList<Object[]>();
+		events.add(new Object[] { 100, 1, 1.1, "one"});
+		events.add(new Object[] { 100, 3, 3.3, "three"});
+		events.add(new Object[] { 100, 5, 5.5, "five"});
+		
+		boolean isLooping = true;
+		startPlayer(filename, eventsPerSec, isLooping);
+		assertLoopingEvents(events);
+	}
+	
+	public void testComments()
+	{
+		String filename =  "regression/comments.csv";
+		int eventsPerSec = -1;
+		
+		List<Object[]> events = new ArrayList<Object[]>();
+		events.add(new Object[] { 100, 1, 1.1, "one"});
+		events.add(new Object[] { 200, 3, 3.3, "three"});
+		events.add(new Object[] { 200, 5, 5.5, "five"});
+		
+		boolean isLooping = false;
+		startPlayer(filename, eventsPerSec, isLooping);
+		assertEvents(isLooping, events);
+		
+		isLooping = true;
+		startPlayer(filename, eventsPerSec, isLooping);
+		assertEvents(isLooping, events);
+	}
+	
+	public void testStop()
+	{
+		String filename = "regression/timestampOne.csv";
+		startPlayer(filename, -1, false);
+		player.stop();
+		assertEquals(State.STOPPED, player.getState());
+		assertNull(player.read());
+	}
 
-		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
-		
-		sendTimeEvent(100);
-		assertEvent(2, 2.2, "two");
-		
-		player.pause();
-		
-		sendTimeEvent(100);
-		assertFalse(listener.getAndClearIsInvoked());
-		
-		player.resume();
-		
-		sendTimeEvent(100);
-		assertEvent(3, 3.3, "three");
-		
-		player.pause();
-		
-		sendTimeEvent(100);
-		assertFalse(listener.getAndClearIsInvoked());
-		
-		player.resume();
-		
-		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
-		
-		player.stop();
-		
-		sendTimeEvent(1000);
-		assertFalse(listener.getAndClearIsInvoked());
-		
-		try
-		{
-			player.start();
-			fail();
-		}
-		catch(EPException e)
-		{
-			// Expected
-		}
-		
-		try
-		{
-			player.pause();
-			fail();
-		}
-		catch(EPException e)
-		{
-			// Expected
-		}
-		
-		try
-		{
-			player.resume();
-			fail();
-		}
-		catch(EPException e)
-		{
-			// Expected
-		}
-	}
-	
-	public void testReadBeforeStart()
-	{
-		// Create a looping, 10 event per sec player
-		player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("regression/noTimestampOne.csv"));
-		player.setIsLooping(true);
-		player.setEventsPerSec(10);
-		
-		SendableEvent event = player.read();
-		event.send(runtime);
-		assertEvent(1, 1.1, "one");
-		
-		event = player.read();
-		event.send(runtime);
-		assertEvent(2, 2.2, "two");
-		
-		event = player.read();
-		event.send(runtime);
-		assertEvent(3, 3.3, "three");
-		
-		event = player.read();
-		event.send(runtime);
-		assertEvent(1, 1.1, "one");
-	}
-	public void testReadAfterStart()
-	{
-		// Create a looping, 10 event per sec player
-		player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("regression/noTimestampOne.csv"));
-		player.setIsLooping(true);
-		player.setEventsPerSec(10);
-		player.start();
-		
-		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
-		
-		SendableEvent event = player.read();
-		event.send(runtime);
-		assertEvent(2, 2.2, "two");
-		
-		sendTimeEvent(100);
-		assertEvent(3, 3.3, "three");
-		
-		event = player.read();
-		event.send(runtime);
-		assertEvent(1, 1.1, "one");
-		
-		player.stop();
-		try
-		{
-			event = player.read();
-			fail();
-		}
-		catch(EPException e)
-		{
-			// Expected
-		}
-	}
-	
-	public void testReadDuringPause()
-	{
-		// Create a looping, 10 event per sec player
-		player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("regression/noTimestampOne.csv"));
-		player.setIsLooping(true);
-		player.setEventsPerSec(10);
-		player.start();
-		
-		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
-		
-		sendTimeEvent(100);
-		assertEvent(2, 2.2, "two");
-		
-		player.pause();
-		
-		SendableEvent event = player.read();
-		event.send(runtime);
-		assertEvent(3, 3.3, "three");
-		
-		event = player.read();
-		event.send(runtime);
-		assertEvent(1, 1.1, "one");
-		
-		player.resume();
-		
-		sendTimeEvent(100);
-		assertEvent(2, 2.2, "two");
-		
-		event = player.read();
-		event.send(runtime);
-		assertEvent(3, 3.3, "three");
-	}
-	
 	private void sendTimeEvent(int timeIncrement){
 		currentTime += timeIncrement;
 	    CurrentTimeEvent event = new CurrentTimeEvent(currentTime);
@@ -419,6 +526,10 @@ public class TestCSVAdapter extends TestCase
 	{
 		assertFlatEvents(events);
 		assertFlatEvents(events);
+		player.setIsLooping(false);
+		assertFlatEvents(events);
+		assertNull(player.read());
+		assertEquals(State.STOPPED, player.getState());
 	}
 
 
@@ -444,23 +555,18 @@ public class TestCSVAdapter extends TestCase
 		player.setIsLooping(isLooping);
 		player.start();
 	}
-	
-	private void startGroup(String[] filenames, int eventsPerSecArray[], boolean[] isLoopingArray)
+
+	private void assertFailedConstruction(String filename)
 	{
-		conductor = epService.getEPAdapters().createConductor();
-		int count = 0;
-		for(String filename : filenames)
+		try
 		{
-			CSVPlayer player = adapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource(filename));
-			if(eventsPerSecArray[count] != -1)
-			{
-				player.setEventsPerSec(eventsPerSecArray[count]);
-			}
-			player.setIsLooping(isLoopingArray[count]);
-			conductor.add(player);
-			count++;
+			player = adapter.createCSVPlayer("myNonMapEvent", new AdapterInputSource(filename));
+			fail();
 		}
-		conductor.start();
+		catch(EPException ex)
+		{
+			// Expected
+		}
 	}
 	
 }
