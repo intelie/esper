@@ -1,19 +1,16 @@
+
 package net.esper.adapter.csv;
 
 import java.io.EOFException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
+import net.esper.adapter.AbstractPlayer;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Player;
 import net.esper.adapter.SendableEvent;
 import net.esper.client.EPException;
-import net.esper.client.EPRuntime;
-import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.schedule.SchedulingService;
 import net.sf.cglib.reflect.FastClass;
@@ -22,28 +19,24 @@ import net.sf.cglib.reflect.FastConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import sun.nio.cs.ext.ISCII91;
-import sun.security.krb5.internal.crypto.e;
-
 /** 
- * A class for sending records from a CSV file into 
- * the EPRuntime. It has two settable parameters:
- * isLooping (false by default) which is true if processing
+ * A Player for sending records from a CSV file into 
+ * the EPRuntime. The settable parameters are:
+ * 1. isLooping (false by default) which is true if processing
  * of the CSV file should begin over after the end of the file
- * is reached; 
- * eventsPerSec, which indicates how many events per second
+ * is reached.
+ * 2. eventsPerSec, which indicates how many events per second
  * should be sent into the runtime. The value must be between
  * 1 and 1000, inclusive. If this value isn't set, the CSVPlayer
  * will attempt to send events according to a timestamp column in
  * the CSV file.
  */
-public class CSVPlayer implements Player
+public class CSVPlayer extends AbstractPlayer
 {
 	private static final Log log = LogFactory.getLog(CSVPlayer.class);
 
 	public static final String TIMESTAMP_COLUMN_NAME = "timestamp";
 
-	private final SchedulingService schedulingService;
 	private final ScheduleSlot scheduleSlot;
 	private final MapEventSpec mapEventSpec;	
 	private int eventsPerSec = -1;
@@ -51,24 +44,23 @@ public class CSVPlayer implements Player
 	private final Map<String, FastConstructor>propertyConstructors;
 	private final String[] propertyOrder;
 	private final boolean propertyOrderContainsTimestamp;
-	private final Map<String, Object> mapToSend = new HashMap<String, Object>();
-	private boolean isStarted;
-	private boolean isStopped;
-	private boolean isPaused;
 	private long lastTimestamp = 0;
-	private String[] currentRow = null;
-	
+	private long totalDelay = 0;
 	/**
 	 * Ctor.
 	 * @param adapterInputSource - the source of the CSV file
 	 * @param mapSpec - describes the format of the events to create and send into the EPRuntime
 	 * @param schedulingService - used for making callbacks
-	 * @param scheduleSlot - this player's unique schedule slot
+	 * @param scheduleSlot - this player's schedule slot
 	 * @throws EPException in case of errors opening the CSV file
 	 */
-	public CSVPlayer(AdapterInputSource adapterInputSource, MapEventSpec mapSpec, SchedulingService schedulingService, ScheduleSlot scheduleSlot) throws EPException
+	public CSVPlayer(AdapterInputSource adapterInputSource, 
+					 MapEventSpec mapSpec, 
+					 SchedulingService schedulingService, 
+					 ScheduleSlot scheduleSlot) 
+	throws EPException
 	{
-		this.schedulingService = schedulingService;
+		super(mapSpec.getEpRuntime(), schedulingService);
 		this.scheduleSlot = scheduleSlot;
 		this.mapEventSpec = mapSpec;
 
@@ -80,145 +72,52 @@ public class CSVPlayer implements Player
 		try
 		{
 			firstRow = reader.getNextRecord();
-			this.propertyOrder = resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes());
-			this.propertyOrderContainsTimestamp = propertyOrderContainsTimestamp();
-		
-			boolean isUsingTitleRow = (firstRow == propertyOrder);
-			reader.setIsUsingTitleRow(isUsingTitleRow);
-			reader.reset();
 		} 
 		catch (EOFException e)
 		{
-			reader.close();
-			throw new EPException("The CSV file is empty");
+			stop();
+			firstRow = null;
 		}		
-	}
-	
-	/**
-	 * Start the sending of events into the EPRuntime.
-	 * @throws EPException in case of errors reading the file or sending the events
-	 */
-	public void start() throws EPException
-	{
-		assertNotStopped();
-		if(!isStarted)
-		{
-			isStarted = true;
-			try
-			{
-				scheduleNewCallback();
-			} 
-			catch (EOFException e)
-			{
-				stop();
-			}
-		}
-	}
-	
-	/**
-	 * Stop the sending of events and release all resources.
-	 * @throws EPException in case of errors in closing the CSV file or associated resources
-	 */
-	public synchronized void stop() throws EPException
-	{
-		if(!isStopped)
-		{
-			isStopped = true;
-			reader.close();
-		}
-	}
-	
-	/**
-	 * Pause the sending of events.
-	 * @throws EPException if this player has already been stoppped
-	 */
-	public synchronized void pause() throws EPException
-	{
-		assertNotStopped();
-		isPaused = true;
-	}
-	
-	/**
-	 * Resume sending events after the player has been paused.
-	 * @throws EPException in case of errors in reading the CSV file or sending events
-	 */
-	public synchronized void resume() throws EPException
-	{
-		assertNotStopped();
 		
-		if(isPaused)
-		{
-			try
-			{
-				if(currentRow == null)
-				{
-					scheduleNewCallback();
-				}
-				else
-				{
-					scheduleNewCallback(currentRow);
-				}
-			}
-			catch (EOFException e)
-			{
-				stop();
-			}
-			isPaused = false;
-		}
+		this.propertyOrder = PropertyOrderHelper.resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes());
+		this.propertyOrderContainsTimestamp = PropertyOrderHelper.propertyOrderContainsTimestamp(propertyOrder);
+	
+		boolean isUsingTitleRow = (firstRow == propertyOrder);
+		reader.setIsUsingTitleRow(isUsingTitleRow);
+		reader.reset();
 	}
 	
 	public synchronized SendableEvent read() throws EPException
 	{
-		assertNotStopped();
+		if(state == State.STOPPED)
+		{
+			return null;
+		}
 		
-		
-		Map<String, Object> map;
 		try
 		{
-			if(currentRow == null)
+			if(eventsToSend.isEmpty())
 			{
-				map = newMapEvent();
+				return new SendableMapEvent(newMapEvent(), mapEventSpec.getEventTypeAlias(), totalDelay, scheduleSlot);
 			}
 			else
 			{
-				map = currentMapEvent();
+				SendableEvent event = eventsToSend.first();
+				eventsToSend.remove(event);
+				return event;
 			}
 		}
 		catch (EOFException e)
 		{
-			throw new EPException(e);
-		}
-		
-		return new SendableMapEvent(map, mapEventSpec.getEventTypeAlias());
-	}
-
-	private Map<String, Object> currentMapEvent() throws EOFException
-	{
-		Map<String, Object> map = new HashMap<String, Object>(mapToSend);
-		currentRow = reader.getNextRecord();
-		populateMapToSend(currentRow);
-		return map;
-	}
-
-	private Map<String, Object> newMapEvent() throws EOFException
-	{
-		String[] row =  reader.getNextRecord();
-		populateMapToSend(row);
-		Map<String, Object> map = new HashMap<String, Object>(mapToSend);
-		return map;
-	}
-
-	private void assertNotStopped()
-	{
-		if(isStopped)
-		{
-			throw new EPException("The CSVPlayer is already stopped.");
+			log.debug(".read reached end of CSV file");
+			stop();
+			return null;
 		}
 	}
-	
+
 	/**
 	 * Set the eventsPerSec value.
-	 * @param eventsPerSec - the value to use, must be greater than 0 and at most 1000
+	 * @param eventsPerSec - the value to use, must be between 1 and 1000, inclusive
 	 */
 	public void setEventsPerSec(int eventsPerSec)
 	{
@@ -228,7 +127,7 @@ public class CSVPlayer implements Player
 		}
 		this.eventsPerSec = eventsPerSec;
 	}
-	
+
 	/**
 	 * Set the isLooping value.
 	 * @param isLooping - true if processing should start over from the beginning after the end of the CSV file is reached
@@ -237,66 +136,38 @@ public class CSVPlayer implements Player
 	{
 		reader.setIsLooping(isLooping);
 	}
+
+	/**
+	 * Close the CSVReader. 
+	 */
+	protected void close()
+	{
+		reader.close();
+	}
 	
 	/**
-	 * Resolve the order of the properties that appear in the CSV file.
-	 * If the first row of the file is a valid title row, use that;
-	 * otherwise, use the order given in the propertyTypes map.
-	 * @param firstRow - the first record of the CSV file
-	 * @param propertyTypes - describes the event to send into the EPRuntime
-	 * @return the property names in the order in which they occur in the file
+	 * Remove the first member of eventsToSend. If there is
+	 * another record in the CSV file, insert the event created
+	 * from it into eventsToSend.
 	 */
-	protected static String[] resolvePropertyOrder(String[] firstRow, Map<String, Class> propertyTypes)
+	protected void replaceFirstEventToSend()
 	{
-		String[] result = null;
-		
-		if(isValidTitleRow(firstRow, propertyTypes))
+		eventsToSend.remove(eventsToSend.first());
+		SendableEvent event = read();
+		if(event != null)
 		{
-			result = firstRow;
-			log.debug(".resolvePropertyOrder using valid title row, propertyOrder==" + Arrays.asList(result));
+			eventsToSend.add(event);
 		}
-		else 
-		{
-			result = propertyTypes.keySet().toArray(new String[0]);
-			if(!columnNamesAreValid(result, propertyTypes))
-			{
-				throw new EPException("Cannot resolve the order of properties in the CSV file");	
-			}
-			log.debug(".resolvePropertyOrder using propertyTypes, propertyOrder==" + Arrays.asList(result));
-		}
-		
-		return result;
-	}
-	
-	private static boolean isValidTitleRow(String[] row, Map<String, Class> propertyTypes)
-	{
-		return isValidRowLength(row, propertyTypes) && columnNamesAreValid(row, propertyTypes);
 	}
 
-	private static boolean columnNamesAreValid(String[] row, Map<String, Class> propertyTypes)
+	private Map<String, Object> newMapEvent() throws EOFException
 	{
-		Set<String> properties = new HashSet<String>();
-		for(String property : row)
-		{
-			if(!isValidColumnName(property, propertyTypes) || !properties.add(property))
-			{
-				return false;
-			}
-		}
-		return true;
+		String[] row =  reader.getNextRecord();
+		updateTotalDelay(row, reader.getAndClearIsReset());
+		return createMapFromRow(row);
 	}
-	
-	private static boolean isValidColumnName(String columnName, Map<String, Class> propertyTypes)
-	{
-		return propertyTypes.containsKey(columnName) || columnName.equals(TIMESTAMP_COLUMN_NAME);
-	}
-	
-	private static boolean isValidRowLength(String[] row, Map<String, Class> propertyTypes)
-	{
-		return ( row.length == propertyTypes.size() ) || ( row.length == propertyTypes.size() + 1 );
-	}
-	
-	private static Map<String, FastConstructor> createPropertyConstructors(Map<String, Class> propertyTypes)
+
+	private Map<String, FastConstructor> createPropertyConstructors(Map<String, Class> propertyTypes)
 	{
 		Map<String, FastConstructor> constructors = new HashMap<String, FastConstructor>();
 
@@ -310,15 +181,9 @@ public class CSVPlayer implements Player
 		return constructors;
 	}
 	
-	private void sendMap()
+	private Map<String, Object> createMapFromRow(String[] row)
 	{
-		EPRuntime epRuntime = mapEventSpec.getEpRuntime();
-		epRuntime.sendEvent(mapToSend, mapEventSpec.getEventTypeAlias());
-	}
-	
-	private void populateMapToSend(String[] row)
-	{
-		mapToSend.clear();
+		Map<String, Object> map = new HashMap<String, Object>();
 		
 		int count = 0;
 		if(expectingUndeclaredTimestamp(row))
@@ -339,13 +204,14 @@ public class CSVPlayer implements Player
 				}
 				Object[] parameters = new Object[] { row[count++] };
 				Object value = propertyConstructors.get(property).newInstance(parameters);
-				mapToSend.put(property, value);
+				map.put(property, value);
 			}
 		} 
 		catch (InvocationTargetException e)
 		{
 			throw new EPException(e);
 		}
+		return map;
 	}
 	
 	private boolean expectingUndeclaredTimestamp(String[] row)
@@ -353,62 +219,50 @@ public class CSVPlayer implements Player
 		return !propertyOrderContainsTimestamp && propertyOrder.length + 1 == row.length;
 	}
 	
-	private boolean propertyOrderContainsTimestamp()
-	{
-		boolean result = false;
-		for(String property : propertyOrder)
-		{
-			if(property.equals(TIMESTAMP_COLUMN_NAME))
-			{
-				result = true;
-				break;
-			}
-		}
-		return result;
-	}
-	
-	private void scheduleNewCallback() throws EOFException
-	{
-		currentRow = reader.getNextRecord();
-		populateMapToSend(currentRow);
-		scheduleNewCallback(currentRow);
-	}
-
-	private void scheduleNewCallback(String[] row)
+	private void updateTotalDelay(String[] row, boolean isFirstRow)
 	{
 		if(eventsPerSec != -1)
 		{
-			scheduleEventsPerSecCallback(row);
+			int msecPerEvent = 1000/eventsPerSec;
+			totalDelay += msecPerEvent;
 		}
 		else
 		{
-			scheduleTimestampCallback(row);
+			Long timestamp = resolveTimestamp(row);
+			if(timestamp == null)
+			{
+				throw new EPException("Couldn't resolve the timestamp for record " + Arrays.asList(row));
+			}
+			else if(timestamp < 0)
+			{
+				throw new EPException("Encountered negative timestamp for CSV record : " + Arrays.asList(row));
+			}
+			else
+			{
+				long timestampDifference = 0;
+				if(timestamp < lastTimestamp)
+				{
+					if(!isFirstRow)
+					{
+						throw new EPException("Subsequent timestamp " + timestamp + " is smaller than previous timestamp " + lastTimestamp);
+					}
+					else
+					{
+						timestampDifference = timestamp;
+					}
+				}
+				else
+				{
+					timestampDifference = timestamp - lastTimestamp;
+				}
+				lastTimestamp = timestamp;
+				totalDelay += timestampDifference;
+			}
 		}
 	}
 	
 	
-	private void scheduleEventsPerSecCallback(String[] row)
-	{
-		int delay = 1000 / eventsPerSec;
-		schedulingService.add(delay, new CSVScheduleCallback(), scheduleSlot);
-	}
-
-	private void scheduleTimestampCallback(String[] row)
-	{
-		long timestamp = resolveTimestamp(row);
-		if(timestamp != -1)
-		{
-			long delay = (timestamp <= lastTimestamp) ? timestamp : timestamp - lastTimestamp;
-			schedulingService.add(delay, new CSVScheduleCallback(), scheduleSlot);
-			lastTimestamp = timestamp;
-		}
-		else
-		{
-			throw new EPException("Couldn't resolve the timestamp for record " + Arrays.asList(row));
-		}
-	}
-	
-	private long resolveTimestamp(String[] row)
+	private Long resolveTimestamp(String[] row)
 	{
 		int timestampIndex = getTimestampIndex(row);
 		if(timestampIndex != -1)
@@ -417,7 +271,7 @@ public class CSVPlayer implements Player
 		}
 		else
 		{
-			return -1;
+			return null;
 		}
 	}
 	
@@ -438,23 +292,5 @@ public class CSVPlayer implements Player
 			}
 		}
 		return -1;
-	}
-	
-	private class CSVScheduleCallback implements ScheduleCallback
-	{
-		public void scheduledTrigger()
-		{
-			if (!isPaused && !isStopped)
-			{
-				sendMap();
-				try
-				{
-					scheduleNewCallback();
-				} catch (EOFException e)
-				{
-					stop();
-				}
-			}			
-		}
 	}
 }
