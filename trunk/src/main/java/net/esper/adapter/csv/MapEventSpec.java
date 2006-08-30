@@ -28,6 +28,7 @@ public class MapEventSpec
 	}
 
 	/**
+	 * Get the runtime.
 	 * @return the epRuntime
 	 */
 	public EPRuntime getEpRuntime()
@@ -36,6 +37,7 @@ public class MapEventSpec
 	}
 
 	/**
+	 * Get the event type alias.
 	 * @return the eventTypeAlias
 	 */
 	public String getEventTypeAlias()
@@ -44,11 +46,11 @@ public class MapEventSpec
 	}
 
 	/**
+	 * Get propertyTypes.
 	 * @return the propertyTypes
 	 */
 	public Map<String, Class> getPropertyTypes()
 	{
 		return propertyTypes;
 	}
-
 }
