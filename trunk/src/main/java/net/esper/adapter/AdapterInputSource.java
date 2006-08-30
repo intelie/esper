@@ -7,11 +7,19 @@ import java.net.URL;
 import net.esper.adapter.csv.CSVReader;
 import net.esper.client.EPException;
 
+/**
+ * An input source for adapters that accepts either URLs or 
+ * classpath resource names.
+ */
 public class AdapterInputSource
 {
 	private final URL url;
 	private final String classpathResource;
 	
+	/**
+	 * Ctor.
+	 * @param classpathResource - the name of the resource on the classpath to use as the source for an adapter
+	 */
 	public AdapterInputSource(String classpathResource)
 	{
 		if(classpathResource == null)
@@ -22,6 +30,10 @@ public class AdapterInputSource
 		this.url = null;
 	}
 	
+	/**
+	 * Ctor.
+	 * @param url - the URL for the resource to use as source for an adapter
+	 */
 	public AdapterInputSource(URL url)
 	{
 		if(url == null)
@@ -32,6 +44,10 @@ public class AdapterInputSource
 		this.classpathResource = null;
 	}
 	
+	/**
+	 * Open the resource as an input stream
+	 * @return a new input stream generated from the resource
+	 */
 	public InputStream openStream()
 	{
 		if(url != null)
