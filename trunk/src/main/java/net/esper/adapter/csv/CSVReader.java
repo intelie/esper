@@ -5,6 +5,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.esper.adapter.AdapterInputSource;
@@ -14,7 +15,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A reader for CSV files.
+ * A reader that processes a CSV file and returns CSV records 
+ * from that file.
  */
 public class CSVReader
 {
@@ -29,8 +31,7 @@ public class CSVReader
 	private BufferedInputStream reader;
 	private boolean isClosed = false;
 	private boolean atEOF = false;
-	private int record = 1;
-	
+	private boolean isReset = true;
 	/**
 	 * Ctor.
 	 * @param adapterInputSource - the source of the CSV file
@@ -44,7 +45,7 @@ public class CSVReader
 	}
 	
 	/**
-	 * Close the reader and release any associated resources.
+	 * Close the reader and release the input source.
 	 * @throws EPException in case of error in closing resources
 	 */
 	public void close() throws EPException
@@ -66,7 +67,7 @@ public class CSVReader
 	}
 
 	/**
-	 * Get the next record from the CSV file
+	 * Get the next record from the CSV file.
 	 * @return a string array containing the values of the record
 	 * @throws EOFException in case no more records can be read (end-of-file has been reached and isLooping is false)
 	 * @throws EPException in case of error in reading the CSV file
@@ -82,7 +83,7 @@ public class CSVReader
 				throw new EOFException("In reading CSV file " + inputSource + "reached end-of-file and not looping to the beginning");
 			}
 			
-			record++;
+			log.debug(".getNextRecord record==" + Arrays.asList(result));
 			return result; 
 		} 
 		catch (EOFException e)
@@ -121,6 +122,7 @@ public class CSVReader
 	{
 		try
 		{
+			log.debug(".reset");
 			inputStream.close();
 			reader.close();
 			inputStream = inputSource.openStream();
@@ -131,27 +133,54 @@ public class CSVReader
 				// Ignore the title row
 				getNextRecord();
 			}
+			isReset = true;
 		} 
 		catch (IOException e)
 		{
 			throw new EPException(e);
 		}
 	}
+	
+	/**
+	 * Return and set to false the isReset value, which is set to
+	 * true whenever the CSVReader is reset.
+	 * @return isReset
+	 */
+	public boolean getAndClearIsReset()
+	{
+		log.debug(".getAndClearIsReset isReset==" + isReset);
+		boolean result = isReset;
+		isReset = false;
+		return result;
+	}
 
 	private String[] getNextValidRecord() throws IOException
 	{
 		String[] result = null;
 		
+		// Search for a valid record to the end of the CSV file
+		result = getNoCommentNoWhitespace();
+		
+		// If haven't found a valid record and at the end of the
+		// file and looping, search from the beginning of the file
+		if(result == null && atEOF && isLooping)
+		{
+			reset();
+			result = getNoCommentNoWhitespace();
+		}
+
+		return result;
+	}
+
+	private String[] getNoCommentNoWhitespace() throws IOException
+	{
+		String[] result = null;
 		// This loop serves to filter out commented lines and
 		//lines that contain only whitespace
 		while(result == null && !atEOF)
 		{
 			skipCommentedLines();
 			result = getNewValues();
-			if(atEOF && isLooping)
-			{
-				reset();
-			}
 		}
 		return result;
 	}
@@ -373,7 +402,7 @@ public class CSVReader
 	
 	private EPException unexpectedCharacterException(char unexpected)
 	{
-		return new EPException("In processing record " + record + " of CSV file " + inputSource + ", encountered unexpected character " + unexpected);
+		return new EPException("Encountered unexpected character " + unexpected);
 	}
 	
 	private void skipCommentedLines() throws IOException
