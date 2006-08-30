@@ -179,21 +179,31 @@ public class TestCSVReader extends TestCase
 		String[] expected = new String[] {"first line", "1"};
 		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
 
-		nextRecord = reader.getNextRecord();
-		expected = new String[] {"second line", "2"};
-		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
-		
-		nextRecord = reader.getNextRecord();
-		expected = new String[] {"first line", "1"};
-		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		assertTrue(reader.getAndClearIsReset());
 		
 		nextRecord = reader.getNextRecord();
 		expected = new String[] {"second line", "2"};
 		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
 		
+		assertFalse(reader.getAndClearIsReset());
+		
 		nextRecord = reader.getNextRecord();
 		expected = new String[] {"first line", "1"};
 		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		assertTrue(reader.getAndClearIsReset());
+		
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"second line", "2"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		assertFalse(reader.getAndClearIsReset());
+		
+		nextRecord = reader.getNextRecord();
+		expected = new String[] {"first line", "1"};
+		assertEquals(Arrays.asList(expected), Arrays.asList(nextRecord));
+		
+		assertTrue(reader.getAndClearIsReset());
 		
 		reader.close();
 	}
