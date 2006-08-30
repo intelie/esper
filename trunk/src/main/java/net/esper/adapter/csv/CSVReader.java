@@ -39,6 +39,10 @@ public class CSVReader
 	 */
 	public CSVReader(AdapterInputSource adapterInputSource) throws EPException
 	{
+		if(adapterInputSource == null)
+		{
+			throw new NullPointerException("AdapterInputSource cannot be null");
+		}
 		this.inputSource = adapterInputSource;
 		inputStream = inputSource.openStream();
 		reader = new BufferedInputStream(inputStream);
@@ -148,7 +152,6 @@ public class CSVReader
 	 */
 	public boolean getAndClearIsReset()
 	{
-		log.debug(".getAndClearIsReset isReset==" + isReset);
 		boolean result = isReset;
 		isReset = false;
 		return result;
