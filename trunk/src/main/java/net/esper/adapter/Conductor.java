@@ -1,110 +1,91 @@
 package net.esper.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.esper.client.EPException;
+import net.esper.client.EPRuntime;
+import net.esper.schedule.SchedulingService;
 
 /**
- * A utility for synchronizing several Players.
+ * A utility that allows several Players to be synchronized so 
+ * that they can send events into the runtime according to some
+ * pre-defined ordering. 
+ * <p> 
+ * The Conductor relies on the underlying Players' read() method, 
+ * and calls to the Conductor will not affect the underlying 
+ * Players' state except for changes that occur by calling an 
+ * individual Player's read() method.
+ * <p>
+ * The Conductor will keep trying to pull events from a Player as
+ * long as the Player is not stopped.
  */
-public class Conductor implements Player
+public class Conductor extends AbstractPlayer
 {
-	private final List<Player> players = new ArrayList<Player>();
-	private boolean isStarted = false;
-	private boolean isStopped = false;
-	private boolean isPaused = false;
+	private final Map<SendableEvent, Player> eventsFromPlayers = new HashMap<SendableEvent, Player>();
+	/**
+	 * Ctor.
+	 * @param runtime - the runtime to send events into
+	 * @param schedulingService - used for making callbacks
+	 */
+	public Conductor(EPRuntime runtime, SchedulingService schedulingService)
+	{
+		super(runtime, schedulingService);
+	}
+
+	public SendableEvent read() throws EPException
+	{
+		if(state == State.STOPPED || eventsToSend.isEmpty())
+		{
+			return null;
+		}
+		SendableEvent result = eventsToSend.first();
+		replaceFirstEventToSend();
+		return result;
+	}
 	
 	/**
-	 * Add a Player.
-	 * @param player - the adapter to add
+	 * Add a Player to the Conductor.
+	 * @param player - the Player to add
 	 */
 	public void add(Player player)
 	{
-		if(!players.contains(player))
+		if(eventsFromPlayers.values().contains(player))
 		{
-			players.add(player);
+			return;
 		}
+		addNewEvent(player);
 	}
-	
+
 	/**
-	 * Start all the Players in the group.
-	 * @throws EPException in case of errors starting Players
+	 * Does nothing.
 	 */
-	public void start() throws EPException
+	protected void close()
 	{
-		if(isStopped)
-		{
-			throw new EPException("CSVAdapterGroup already cancelled");
-		}
-		if(!isStarted)
-		{
-			for(Player player : players)
-			{
-				player.start();
-			}
-		}
+		// Do nothing
 	}
-	
+
 	/**
-	 * Stop all the Players in the group.
-	 * @throws EPException in case of errors stopping Players
+	 * Replace the first member of eventsToSend with the next 
+	 * event returned by the read() method of the same Player that
+	 * provided the first event.
 	 */
-	public void stop() throws EPException
+	protected void replaceFirstEventToSend()
 	{
-		if(!isStopped)
+		SendableEvent event = eventsToSend.first();
+		eventsToSend.remove(event);
+		Player player = eventsFromPlayers.get(event);
+		addNewEvent(player);
+	}
+
+	private void addNewEvent(Player player)
+	{
+		SendableEvent event = player.read();
+		if(event != null)
 		{
-			isStopped = true;
-			for(Player adapter : players)
-			{
-				adapter.stop();
-			}
+			eventsToSend.add(event);
+			eventsFromPlayers.put(event, player);
 		}
 	}
-	
-	/**
-	 * Pause all the players in the group.
-	 * @throws EPException in case of errors pausing Players
-	 */
-	public void pause() throws EPException
-	{
-		if(isStopped)
-		{
-			throw new EPException("CSVAdapterGroup is already cancelled");
-		}
-		isPaused = true;
-		for(Player adapter : players)
-		{
-			adapter.pause();
-		}
-	}
-	
-	/**
-	 * Resume all the Players in the group.
-	 * @throws EPExceptions in case of errors resuming Players
-	 */
-	public void resume()
-	{
-		if(!isPaused)
-		{
-			throw new EPException("CSVAdapterGroup isn't paused");
-		}
-		if(isStopped)
-		{
-			throw new EPException("CSVAdapterGroup is already cancelled");
-		}
-		for(Player adapter : players)
-		{
-			adapter.resume();
-		}
-		isPaused = false;
-	}
-	
-	/**
-	 * Not supported currently.
-	 */
-	public SendableEvent read()
-	{
-		throw new UnsupportedOperationException("Conductor does not support read()");
-	}
+
 }
