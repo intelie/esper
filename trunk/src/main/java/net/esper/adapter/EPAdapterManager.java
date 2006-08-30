@@ -12,7 +12,6 @@ import net.esper.schedule.SchedulingService;
 public class EPAdapterManager
 {
 	private final EPRuntime runtime;
-	private final EventAdapterService eventAdapterService;
 	private final SchedulingService schedulingService;
 	private final ScheduleBucket scheduleBucket;
 	private final CSVAdapter csvAdapter;
@@ -26,7 +25,6 @@ public class EPAdapterManager
 	public EPAdapterManager(EPRuntime runtime, final EventAdapterService eventAdapterService, final SchedulingService schedulingService)
 	{
 		this.runtime = runtime;
-		this.eventAdapterService = eventAdapterService;
 		this.schedulingService = schedulingService;
 		scheduleBucket = schedulingService.allocateBucket();
 		csvAdapter = new CSVAdapter(runtime, eventAdapterService, schedulingService, scheduleBucket);
@@ -38,7 +36,7 @@ public class EPAdapterManager
 	 */
 	public Conductor createConductor()
 	{
-		return new Conductor();
+		return new Conductor(runtime, schedulingService);
 	}
 	
 	/**
