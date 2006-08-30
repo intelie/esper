@@ -1,26 +1,19 @@
 package net.esper.adapter;
 
-import java.io.EOFException;
-
 import net.esper.client.EPException;
 
 /**
- * An interface that represents a running input adapter.
+ * An interface that represents a runnable input adapter.
  */
 public interface Player
 {
+	public enum State { NEW, RUNNING, PAUSED, STOPPED };
 
 	/**
 	 * Start the sending of events into the EPRuntime.
 	 * @throws EPException in case of errors processing the events
 	 */
 	public void start() throws EPException;
-
-	/**
-	 * Stop the sending of events and release all resources.
-	 * @throws EPException in case of errors releasing resources
-	 */
-	public void stop() throws EPException;
 
 	/**
 	 * Pause the sending of events.
@@ -33,13 +26,24 @@ public interface Player
 	 * @throws EPException in case of errors processing the events
 	 */
 	public void resume() throws EPException;
-	
+
 	/**
+	 * Stop the sending of events and release all resources.
+	 * @throws EPException in case of errors releasing resources
+	 */
+	public void stop() throws EPException;
+
 	/**
-	 * Get the next event in line to be sent into the runtime.
-	 * @return a instance of SendableEvent that wraps the next event to send
+	 * Get the next event in line to be sent into the runtime , or null if there is no available event.
+	 * @return an instance of SendableEvent that wraps the next event to send, or null if none
 	 * @throws EPException in case of errors creating the event
 	 */
-	public SendableEvent read() throws EPException, EOFException;
+	public SendableEvent read() throws EPException;
+
+	/**
+	 * Get the state of this Player.
+	 * @return state
+	 */
+	public State getState();
 
 }
