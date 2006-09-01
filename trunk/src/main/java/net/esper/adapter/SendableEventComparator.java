@@ -18,7 +18,7 @@ public class SendableEventComparator implements Comparator<SendableEvent>
 		{
 			return 1;
 		}
-		else 
+		else
 		{
 			return one.getScheduleSlot().compareTo(two.getScheduleSlot());
 		}

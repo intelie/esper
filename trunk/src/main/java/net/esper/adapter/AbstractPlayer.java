@@ -3,15 +3,14 @@ package net.esper.adapter;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import net.esper.adapter.Player.State;
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.schedule.SchedulingService;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A skeleton implementation of the Player interface.
@@ -97,10 +96,6 @@ public abstract class AbstractPlayer implements Player
 		state = State.RUNNING;
 		updateCurrentTime();
 		fillEventsToSend();
-		if(eventsToSend.isEmpty())
-		{
-			return;
-		}
 		sendSoonestEvents();
 		scheduleNextCallback();
 	}
@@ -145,11 +140,15 @@ public abstract class AbstractPlayer implements Player
 	{
 		if(eventsToSend.isEmpty())
 		{
-			return;
+			log.debug(".scheduleNextCallback no events to send, scheduling callback in 100 ms");
+			schedulingService.add(100, new ScheduleCallback() { public void scheduledTrigger() { reactToCallback(); } }, null);
 		}
-		long afterMsec = eventsToSend.first().getSendTime() - currentTime;
-		ScheduleSlot scheduleSlot = eventsToSend.first().getScheduleSlot();
-		log.debug(".scheduleNextCallback schedulingCallback in " + afterMsec + " milliseconds");
-		schedulingService.add(afterMsec, new ScheduleCallback() { public void scheduledTrigger() { reactToCallback(); } }, scheduleSlot);
+		else
+		{
+			long afterMsec = eventsToSend.first().getSendTime() - currentTime;
+			ScheduleSlot scheduleSlot = eventsToSend.first().getScheduleSlot();
+			log.debug(".scheduleNextCallback schedulingCallback in " + afterMsec + " milliseconds");
+			schedulingService.add(afterMsec, new ScheduleCallback() { public void scheduledTrigger() { reactToCallback(); } }, scheduleSlot);
+		}
 	}
 }
