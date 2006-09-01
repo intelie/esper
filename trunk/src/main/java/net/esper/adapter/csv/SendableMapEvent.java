@@ -27,6 +27,10 @@ public class SendableMapEvent implements SendableEvent
 	 */
 	public SendableMapEvent(Map<String, Object> mapToSend, String eventTypeAlias, long timestamp, ScheduleSlot scheduleSlot)
 	{
+		if(scheduleSlot == null)
+		{
+			throw new NullPointerException("ScheduleSlot cannot be null");
+		}
 		this.mapToSend = new HashMap<String, Object>(mapToSend);
 		this.eventTypeAlias = eventTypeAlias;
 		this.timestamp = timestamp;
