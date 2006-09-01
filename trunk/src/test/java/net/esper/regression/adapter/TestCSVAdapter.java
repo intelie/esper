@@ -148,9 +148,9 @@ public class TestCSVAdapter extends TestCase
 		int eventsPerSec = -1;
 		
 		List<Object[]> events = new ArrayList<Object[]>();
-		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 200, 3, 3.3, "three"});
-		events.add(new Object[] { 200, 5, 5.5, "five"});
+		events.add(new Object[] { 100, 1, 1.1, "timestampOne.one"});
+		events.add(new Object[] { 200, 3, 3.3, "timestampOne.three"});
+		events.add(new Object[] { 200, 5, 5.5, "timestampOne.five"});
 		
 		boolean isLooping = false;
 		startPlayer(filename, eventsPerSec, isLooping);
@@ -177,7 +177,7 @@ public class TestCSVAdapter extends TestCase
 		startPlayer(filename, 10, false);
 		
 		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "noTimestampOne.one");
 		
 		player.pause();
 		
@@ -192,7 +192,7 @@ public class TestCSVAdapter extends TestCase
 		startPlayer(filename, 10, false);
 		
 		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "noTimestampOne.one");
 		
 		player.pause();
 		sendTimeEvent(100);
@@ -200,7 +200,7 @@ public class TestCSVAdapter extends TestCase
 		player.resume();
 		
 		
-		assertEvent(2, 2.2, "two");
+		assertEvent(2, 2.2, "noTimestampOne.two");
 	}
 	
 	public void testResumePartialInterval()
@@ -210,7 +210,7 @@ public class TestCSVAdapter extends TestCase
 		
 		// time is 100
 		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "noTimestampOne.one");
 		
 		// time is 150
 		sendTimeEvent(50);
@@ -221,7 +221,7 @@ public class TestCSVAdapter extends TestCase
 		assertFalse(listener.getAndClearIsInvoked());
 		player.resume();
 		
-		assertEvent(2, 2.2, "two");
+		assertEvent(2, 2.2, "noTimestampOne.two");
 	}
 	
 	public void testReadAndRun()
@@ -232,35 +232,35 @@ public class TestCSVAdapter extends TestCase
 		
 		SendableEvent event = player.read();
 		event.send(runtime);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "noTimestampOne.one");
 		
 		event = player.read();
 		event.send(runtime);
-		assertEvent(2, 2.2, "two");
+		assertEvent(2, 2.2, "noTimestampOne.two");
 		
 		player.start();
 		sendTimeEvent(300);
-		assertEvent(3, 3.3, "three");
+		assertEvent(3, 3.3, "noTimestampOne.three");
 		
 		event = player.read();
 		event.send(runtime);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "noTimestampOne.one");
 		
 		sendTimeEvent(200);
-		assertEvent(2, 2.2, "two");
+		assertEvent(2, 2.2, "noTimestampOne.two");
 		
 		sendTimeEvent(50);
 		assertFalse(listener.getAndClearIsInvoked());
 		
 		event = player.read();
 		event.send(runtime);
-		assertEvent(3, 3.3, "three");
+		assertEvent(3, 3.3, "noTimestampOne.three");
 		
 		sendTimeEvent(50);
 		assertFalse(listener.getAndClearIsInvoked());
 		
 		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "noTimestampOne.one");
 	}
 	
 	public void testReadAndPause()
@@ -269,13 +269,13 @@ public class TestCSVAdapter extends TestCase
 		startPlayer(filename, 10, true);
 		
 		sendTimeEvent(150);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "noTimestampOne.one");
 		
 		player.pause();	
 		
 		SendableEvent event = player.read();
 		event.send(runtime);
-		assertEvent(2, 2.2, "two");
+		assertEvent(2, 2.2, "noTimestampOne.two");
 		
 		player.resume();
 		
@@ -283,7 +283,7 @@ public class TestCSVAdapter extends TestCase
 		assertFalse(listener.getAndClearIsInvoked());
 		
 		sendTimeEvent(100);
-		assertEvent(3, 3.3, "three");
+		assertEvent(3, 3.3, "noTimestampOne.three");
 	}
 	
 	public void testReadAfterStopped()
@@ -349,23 +349,23 @@ public class TestCSVAdapter extends TestCase
 		startPlayer(filename, -1, true);
 		
 		sendTimeEvent(100);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "timestampOne.one");
 		
 		player.setEventsPerSec(10);
 		
 		// This was already scheduled using timestamps
 		sendTimeEvent(200);
-		assertEvent(3, 3.3, "three");
+		assertEvent(3, 3.3, "timestampOne.three");
 		
 		player.setEventsPerSec(20);
 
 		// This reacts to the first setting of eventsPerSec
 		sendTimeEvent(100);
-		assertEvent(5, 5.5, "five");
+		assertEvent(5, 5.5, "timestampOne.five");
 		
 		// This reacts to the second setting of eventsPerSec
 		sendTimeEvent(50);
-		assertEvent(1, 1.1, "one");
+		assertEvent(1, 1.1, "timestampOne.one");
 	}
 	
 	public void testIsLoopingTitleRow()
@@ -389,9 +389,9 @@ public class TestCSVAdapter extends TestCase
 		int eventsPerSec = -1;
 		
 		List<Object[]> events = new ArrayList<Object[]>();
-		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 200, 3, 3.3, "three"});
-		events.add(new Object[] { 200, 5, 5.5, "five"});
+		events.add(new Object[] { 100, 1, 1.1, "timestampOne.one"});
+		events.add(new Object[] { 200, 3, 3.3, "timestampOne.three"});
+		events.add(new Object[] { 200, 5, 5.5, "timestampOne.five"});
 		
 		boolean isLooping = true;
 		startPlayer(filename, eventsPerSec, isLooping);

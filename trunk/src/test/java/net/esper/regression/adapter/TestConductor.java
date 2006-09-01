@@ -1,15 +1,21 @@
 package net.esper.regression.adapter;
 
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import junit.framework.TestCase;
 import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.Conductor;
+import net.esper.adapter.SendableEvent;
 import net.esper.adapter.csv.CSVAdapter;
 import net.esper.adapter.csv.CSVPlayer;
+import net.esper.adapter.csv.SendableMapEvent;
 import net.esper.client.Configuration;
 import net.esper.client.EPAdministrator;
 import net.esper.client.EPRuntime;
@@ -19,19 +25,26 @@ import net.esper.client.EPStatement;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
+import net.esper.schedule.ScheduleSlot;
+import net.esper.support.adapter.SupportPlayer;
 import net.esper.support.util.SupportUpdateListener;
-import junit.framework.TestCase;
 
 public class TestConductor extends TestCase
 {
+	private static final Log log = LogFactory.getLog(TestConductor.class);
+	
 	private SupportUpdateListener listener;
 	private CSVAdapter csvAdapter;
 	private String eventTypeAlias;
 	private EPServiceProvider epService;
 	private long currentTime;
-	private CSVPlayer player;
 	private Conductor conductor;
+	private SupportPlayer supportPlayer = new SupportPlayer();
+	private CSVPlayer timestampsLooping;
+	private CSVPlayer noTimestampsLooping;
 	private EPRuntime runtime;
+	private CSVPlayer noTimestampsNotLooping;
+	private CSVPlayer timestampsNotLooping;
 	
 	protected void setUp()
 	{
@@ -61,162 +74,288 @@ public class TestConductor extends TestCase
 		// Set the clock to 0
 		currentTime = 0;
 		sendTimeEvent(0);
-	}
-
-	private void startGroup(String[] filenames, int eventsPerSecArray[], boolean[] isLoopingArray)
-	{
+		
 		conductor = epService.getEPAdapters().createConductor();
-		int count = 0;
-		for(String filename : filenames)
-		{
-			CSVPlayer player = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource(filename));
-			if(eventsPerSecArray[count] != -1)
-			{
-				player.setEventsPerSec(eventsPerSecArray[count]);
-			}
-			player.setIsLooping(isLoopingArray[count]);
-			conductor.add(player);
-			count++;
-		}
-		conductor.start();
-	}
 
-	private void assertNonLoopingEvents(List<Object[]> events)
+		// A CSVPlayer for a file with timestamps, not looping
+		timestampsNotLooping = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("/regression/timestampOne.csv"));
+		
+		// A CSVPlauer for a file with timestamps, looping
+		timestampsLooping = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("/regression/timestampTwo.csv"));
+		timestampsLooping.setIsLooping(true);
+		
+		// A CSVPlayer that sends 10 events per sec, not looping
+		noTimestampsNotLooping = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("/regression/noTimestampOne.csv"));
+		noTimestampsNotLooping.setEventsPerSec(10);
+		
+		// A CSVPlayer that sends 5 events per sec, looping
+		noTimestampsLooping = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("/regression/noTimestampTwo.csv"));
+		noTimestampsLooping.setEventsPerSec(5);
+		noTimestampsLooping.setIsLooping(true);
+	}
+	
+	public void testRun()
+	{		
+		conductor.add(timestampsNotLooping);
+		conductor.add(timestampsLooping);
+		conductor.add(noTimestampsNotLooping);
+		conductor.add(noTimestampsLooping);
+		
+		// Add a SupportPlayer
+		setSupportEvent(50);
+		conductor.add(supportPlayer);
+		
+		// Time is 0
+		assertFalse(listener.getAndClearIsInvoked());
+		conductor.start();
+		
+		// Time is 50
+		sendTimeEvent(50);
+		assertEvent(0, 0, 0.0, "supportPlayer.zero");
+		setSupportEvent(250);
+		assertSizeAndReset(1);
+		
+		// Time is 100
+		sendTimeEvent(50);
+		assertEvent(0, 1, 1.1, "timestampOne.one");
+		assertEvent(1, 1, 1.1, "noTimestampOne.one");
+		assertSizeAndReset(2);
+		
+		// Time is 150
+		sendTimeEvent(50);
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		// Time is 200
+		sendTimeEvent(50);
+		assertEvent(0, 2, 2.2, "timestampTwo.two");
+		assertEvent(1, 2, 2.2, "noTimestampOne.two");
+		assertEvent(2, 2, 2.2, "noTimestampTwo.two");
+		assertSizeAndReset(3);
+		
+		// Time is 250
+		sendTimeEvent(50);
+		assertEvent(0, 0, 0.0, "supportPlayer.zero");
+		setSupportEvent(400);
+		assertSizeAndReset(1);
+		
+		// Time is 300	
+		sendTimeEvent(50);
+		assertEvent(0, 3, 3.3, "timestampOne.three");
+		assertEvent(1, 3, 3.3, "noTimestampOne.three");
+		assertSizeAndReset(2);
+		
+		// Time is 350
+		sendTimeEvent(50);
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		conductor.pause();
+		
+		// Time is 400
+		sendTimeEvent(50);
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		// Time is 450
+		sendTimeEvent(50);
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		conductor.resume();
+		
+		assertEvent(0, 4, 4.4, "timestampTwo.four");
+		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
+		assertEvent(2, 0, 0.0, "supportPlayer.zero");
+		assertSizeAndReset(3);
+		
+		// Time is 500
+		sendTimeEvent(50);
+		assertEvent(0, 5, 5.5, "timestampOne.five");
+		assertSizeAndReset(1);
+		
+		// Time is 600
+		sendTimeEvent(100);
+		assertEvent(0, 6, 6.6, "timestampTwo.six");
+		assertEvent(1, 2, 2.2, "noTimestampTwo.two");
+		assertSizeAndReset(2);
+		
+		// Time is 800
+		sendTimeEvent(200);
+		assertEvent(0, 2, 2.2, "timestampTwo.two");
+		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
+		assertSizeAndReset(2);				
+		
+		conductor.stop();
+		sendTimeEvent(1000);
+		assertFalse(listener.getAndClearIsInvoked());
+		assertNull(conductor.read());
+	}
+	
+	public void testRead()
 	{
-		assertFlatEvents(events);
+		conductor.add(timestampsNotLooping);
+		conductor.add(timestampsLooping);
+		conductor.add(noTimestampsNotLooping);
+		conductor.add(noTimestampsLooping);
+		
+		// Add a SupportPlayer
+		setSupportEvent(50);
+		conductor.add(supportPlayer);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 0, 0.0, "supportPlayer.zero");
+		setSupportEvent(250);
+		assertSizeAndReset(1);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 1, 1.1, "timestampOne.one");
+		(conductor.read()).send(runtime);
+		assertEvent(1, 1, 1.1, "noTimestampOne.one");
+		assertSizeAndReset(2);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 2, 2.2, "timestampTwo.two");
+		(conductor.read()).send(runtime);
+		assertEvent(1, 2, 2.2, "noTimestampOne.two");
+		(conductor.read()).send(runtime);
+		assertEvent(2, 2, 2.2, "noTimestampTwo.two");
+		assertSizeAndReset(3);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 0, 0.0, "supportPlayer.zero");
+		setSupportEvent(400);
+		assertSizeAndReset(1);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 3, 3.3, "timestampOne.three");
+		(conductor.read()).send(runtime);
+		assertEvent(1, 3, 3.3, "noTimestampOne.three");
+		assertSizeAndReset(2);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 4, 4.4, "timestampTwo.four");
+		(conductor.read()).send(runtime);
+		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
+		(conductor.read()).send(runtime);
+		assertEvent(2, 0, 0.0, "supportPlayer.zero");
+		assertSizeAndReset(3);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 5, 5.5, "timestampOne.five");
+		assertSizeAndReset(1);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 6, 6.6, "timestampTwo.six");
+		(conductor.read()).send(runtime);
+		assertEvent(1, 2, 2.2, "noTimestampTwo.two");
+		assertSizeAndReset(2);
+		
+		(conductor.read()).send(runtime);
+		assertEvent(0, 2, 2.2, "timestampTwo.two");
+		(conductor.read()).send(runtime);
+		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
+		assertSizeAndReset(2);	
+		
+		conductor.start();
 		
 		sendTimeEvent(1000);
-		assertEvent(new Object[] { 1000 });
+		assertEvent(0, 4, 4.4, "timestampTwo.four");
+		assertEvent(1, 2, 2.2, "noTimestampTwo.two");
+		assertSizeAndReset(2);	
+		
+		sendTimeEvent(100);
+		(conductor.read()).send(runtime);
+		assertEvent(0, 6, 6.6, "timestampTwo.six");
+		(conductor.read()).send(runtime);
+		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
+		assertSizeAndReset(2);
+		
+		sendTimeEvent(100);
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		sendTimeEvent(200);
+		assertEvent(0, 2, 2.2, "timestampTwo.two");
+		assertEvent(1, 2, 2.2, "noTimestampTwo.two");
+		assertSizeAndReset(2);	
 	}
-
-	private void assertLoopingEvents(List<Object[]> events)
+	
+	public void testRunTillNull()
 	{
-		assertFlatEvents(events);
-		assertFlatEvents(events);
+		conductor.add(timestampsNotLooping);
+		conductor.add(supportPlayer);
+		conductor.start();
+		
+		// Time is 100
+		sendTimeEvent(100);
+		log.debug(".testRunTillNull time==100");
+		assertEvent(0, 1, 1.1, "timestampOne.one");
+		assertSizeAndReset(1);
+		
+		// Time is 300
+		sendTimeEvent(200);
+		log.debug(".testRunTillNull time==300");
+		assertEvent(0, 3, 3.3, "timestampOne.three");
+		assertSizeAndReset(1);
+		
+		// Time is 500
+		sendTimeEvent(200);
+		log.debug(".testRunTillNull time==500");
+		assertEvent(0, 5, 5.5, "timestampOne.five");
+		assertSizeAndReset(1);
+		
+		// Time is 600
+		sendTimeEvent(100);
+		log.debug(".testRunTillNull time==600");
+		assertFalse(listener.getAndClearIsInvoked());
+		assertNull(conductor.read());
+		
+		setSupportEvent(800);
+		
+		// Time is 700
+		sendTimeEvent(100);
+		log.debug(".testRunTillNull time==700");
+		assertFalse(listener.getAndClearIsInvoked());
+		
+		// Time is 800
+		sendTimeEvent(100);
+		log.debug(".testRunTillNull time==800");
+		assertEvent(0, 0, 0.0, "supportPlayer.zero");
+		assertSizeAndReset(1);
 	}
-
-	private void assertEvents(boolean isLooping, List<Object[]> events)
+	
+	private void assertEvent(int howManyBack, Integer myInt, Double myDouble, String myString)
 	{
-		if(isLooping)
-		{
-			assertLoopingEvents(events);
-		}
-		else
-		{
-			assertNonLoopingEvents(events);
-		}
-	}
-
-	private void assertEvent(Object[] properties)
-	{
-		if(properties.length == 1)
-		{
-			assertFalse(listener.getAndClearIsInvoked());
-		}
-		else if(properties.length == 4)
-		{
-			// properties = [callbackDelay, myInt, myDouble, myString]
-			assertEvent((Integer)properties[1], (Double)properties[2], (String)properties[3]);
-		}
-		else
-		{
-			// properties = [callbackDelay, intOne, doubleOne, StringOne, intTwo, doubleTwo, stringTwo]
-			assertTwoEvents((Integer)properties[1], (Double)properties[2], (String)properties[3], (Integer)properties[4], (Double)properties[5], (String)properties[6]);
-		}
-	}
-
-	private void assertEvent(Integer myInt, Double myDouble, String myString)
-	{
-		assertTrue(listener.getAndClearIsInvoked());
-		assertEquals(1, listener.getLastNewData().length);
-		EventBean event = listener.getLastNewData()[0];
+		assertTrue(listener.isInvoked());
+		assertTrue(howManyBack < listener.getNewDataList().size());
+		EventBean[] data = listener.getNewDataList().get(howManyBack);
+		assertEquals(1, data.length);
+		EventBean event = data[0];
 		assertEquals(myInt, event.get("myInt"));
 		assertEquals(myDouble, event.get("myDouble"));
 		assertEquals(myString, event.get("myString"));
 	}
-
-	private void assertTwoEvents(Integer intOne, Double doubleOne, String stringOne,
-								 Integer intTwo, Double doubleTwo, String stringTwo)
-	{
-		assertTrue(listener.isInvoked());
-		assertEquals(2, listener.getNewDataList().size());
-		
-		assertEquals(1, listener.getNewDataList().get(0).length);
-		EventBean event = listener.getNewDataList().get(0)[0];
-		assertEquals(intOne, event.get("myInt"));
-		assertEquals(doubleOne, event.get("myDouble"));
-		assertEquals(stringOne, event.get("myString"));
-		
-		assertEquals(1, listener.getNewDataList().get(1).length);
-		event = listener.getNewDataList().get(1)[0];
-		assertEquals(intTwo, event.get("myInt"));
-		assertEquals(doubleTwo, event.get("myDouble"));
-		assertEquals(stringTwo, event.get("myString"));
-	}
-
-	private void assertFlatEvents(List<Object[]> events)
-	{
-		for(Object[] event : events)
-		{
-			sendTimeEvent((Integer)event[0]);
-			assertEvent(event);
-			listener.reset();
-		}
-	}
-
-	public void testMultipleFilesTimestamp() throws InterruptedException
-	{
-		String filenameOne = "regression/timestampOne.csv";
-		String filenameTwo = "regression/timestampTwo.csv";
-		int eventsPerSec = -1;
-		
-		List<Object[]> events = new ArrayList<Object[]>();
-		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 100, 2, 2.2, "two"});
-		events.add(new Object[] { 100, 3, 3.3, "three"});
-		events.add(new Object[] { 100, 4, 4.4, "four"});
-		events.add(new Object[] { 100, 5, 5.5, "five"});
-		events.add(new Object[] { 100, 6, 6.6, "six"});
-		
-		boolean isLooping = false;
-		startGroup(new String[] { filenameOne, filenameTwo }, new int[] { eventsPerSec, eventsPerSec}, new boolean[] { isLooping, isLooping });
-		assertEvents(isLooping, events);
-		
-		events.remove(5);
-		events.add(new Object[] { 100, 1, 1.1, "one", 6, 6.6, "six" });
-		events.add(new Object[] { 200, 3, 3.3, "three", 2, 2.2, "two" });
-		
-		isLooping = true;
-		startGroup(new String[] { filenameOne, filenameTwo }, new int[] { eventsPerSec, eventsPerSec}, new boolean[] { isLooping, isLooping });
-		assertFlatEvents(events);
-	}
-
-	public void testMultipleFilesMixed() throws InterruptedException
-	{	
-		String filenameOne = "regression/timestampOne.csv";
-		String filenameTwo = "regression/noTimestampTwo.csv";
-		int eventsPerSecOne = -1;
-		int eventsPerSecTwo = 5;
-		
-		List<Object[]> events = new ArrayList<Object[]>();
-		events.add(new Object[] { 100, 1, 1.1, "one"});
-		events.add(new Object[] { 100, 2, 2.2, "two"});
-		events.add(new Object[] { 100, 3, 3.3, "three"});
-		events.add(new Object[] { 100, 4, 4.4, "four"});
-		events.add(new Object[] { 100, 5, 5.5, "five"});
-		events.add(new Object[] { 100, 2, 2.2, "two"});
-		events.add(new Object[] { 200, 4, 4.4, "four"});
-		
-		boolean isLoopingOne = false;
-		boolean isLoopingTwo = true;
-		startGroup(new String[] { filenameOne, filenameTwo }, new int[] { eventsPerSecOne, eventsPerSecTwo}, new boolean[] { isLoopingOne, isLoopingTwo });
-		assertFlatEvents(events);
-	}
+	
 
 	private void sendTimeEvent(int timeIncrement){
 		currentTime += timeIncrement;
 	    CurrentTimeEvent event = new CurrentTimeEvent(currentTime);
 	    epService.getEPRuntime().sendEvent(event);                
+	}
+	
+	private void setSupportEvent(long timestamp)
+	{
+		Map<String, Object> mapToSend = new HashMap<String, Object>();
+		mapToSend.put("myInt", 0);
+		mapToSend.put("myDouble", 0D);
+		mapToSend.put("myString", "supportPlayer.zero");
+		ScheduleSlot slot = new ScheduleSlot(10, 10);
+		SendableEvent event = new SendableMapEvent(mapToSend, eventTypeAlias, timestamp, slot);
+		supportPlayer.setEvent(event);
+	}
+	
+	private void assertSizeAndReset(int size)
+	{
+		List<EventBean[]> list = listener.getNewDataList();
+		assertEquals(size, list.size());
+		list.clear();
+		listener.getAndClearIsInvoked();
 	}
 
 }
