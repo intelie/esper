@@ -57,16 +57,11 @@ selectionListExpr
 	|	STAR
 	;
 	
+
 selectionListElement
-	:	#(s:SELECTION_ELEMENT_EXPR caseExpr (IDENT)? { leaveNode(#s); } )
+	:	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
 	;
-
-caseExpr
-	: #(cs1:CASE (#(wh1:WHEN valueExpr valueExpr {leaveNode(#wh1); }))+ (#(el1:ELSE valueExpr {leaveNode(#el1);}))?  {leaveNode(#cs1); })
-	| #(cs2:CASE2 valueExpr (#(wh2:WHEN valueExpr valueExpr {leaveNode(#wh2);} ))+ (#(el2:ELSE valueExpr {leaveNode(#el2);}))? {leaveNode(#cs2); })
-	| valueExpr
-	;
-
+	
 outerJoin
 	:	outerJoinIdent
 	;
@@ -129,6 +124,7 @@ evalExprChoice
 	|	#(jne:EVAL_NOTEQUALS_EXPR valueExpr valueExpr { leaveNode(#jne); } )
 	|	r:relationalExpr { leaveNode(#r); }
 	;
+
 	
 valueExpr
 	: 	c:constant { leaveNode(#c); }
@@ -136,9 +132,22 @@ valueExpr
 	| 	eventPropertyExpr
 	|   evalExprChoice
 	|	f:builtinFunc { leaveNode(#f); }
+	|	cs:caseExpr { leaveNode(#cs); }
 	;
 
+caseExpr
+	: #(CASE whenExpr  (whenExpr)* (elseExpr)?)
+	| #(CASE2 valueExpr whenExpr (whenExpr)* (elseExpr)?)
+	;
 
+whenExpr
+	: #(WHEN valueExpr valueExpr)	
+	;
+
+elseExpr
+	: #(ELSE valueExpr)	
+	;
+	
 builtinFunc
 	: 	#(MAX (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )
 	| 	#(MIN (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )

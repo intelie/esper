@@ -330,15 +330,6 @@ unaryExpression
 	| builtinFunc
 	;
 
-//unaryExpression
-//	: MINUS^ {#MINUS.setType(UNARY_MINUS);} eventProperty
-//	| eventProperty
-//	| constant
-//	| LPAREN! expression RPAREN!
-//	| builtinFunc
-//	| caseExpression
-//	;
-
 
 builtinFunc
 	: (MAX^ | MIN^) LPAREN! (ALL! | DISTINCT)? expression (COMMA! expression (COMMA! expression)* )? RPAREN!
