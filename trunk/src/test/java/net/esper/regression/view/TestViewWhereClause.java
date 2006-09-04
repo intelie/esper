@@ -49,6 +49,7 @@ public class TestViewWhereClause extends TestCase
                 " floatPrimitive / doublePrimitive as p3" +
                 " from " + SupportBean.class.getName() + ".win:length(3) where " +
                 "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
+
         testView = epService.getEPAdministrator().createEQL(viewExpr);
         testListener = new SupportUpdateListener();
         testView.addListener(testListener);
