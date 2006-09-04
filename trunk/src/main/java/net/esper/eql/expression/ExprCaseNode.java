@@ -152,27 +152,20 @@ public class ExprCaseNode extends ExprNode
         // A when node as its condition part not null
         boolean noWhenExpr = true;
         int oneElse = 0;
-        Iterator<Pair<ExprNode,ExprNode>> it=_exprNodeList.iterator();
-        while (it.hasNext())
+        for (Pair<ExprNode, ExprNode> p : _exprNodeList)
         {
-            Pair<ExprNode,ExprNode> p = it.next();
-            if (p.getFirst()!= null)
-            {
+            if (p.getFirst() != null) {
+                p.getFirst().validate(streamTypeService_);
                 noWhenExpr = false;
-                if (p.getSecond() == null)
-                {
+                if (p.getSecond() == null) {
                     throw new ExprValidationException("The Case expression is not syntaxically correct. The when statement is uncomplete");
                 }
-            }
-            else
-            {
+            } else {
                 // No more than one else expression per case statement.
-                if (p.getSecond() == null)
-                {
+                if (p.getSecond() == null) {
                     throw new ExprValidationException("The Case expression is not syntaxically correct");
                 }
-                if (++oneElse > 1)
-                {
+                if (++oneElse > 1) {
                     throw new ExprValidationException("The Case expression contains more than one else statement");
                 }
             }
@@ -226,7 +219,7 @@ public class ExprCaseNode extends ExprNode
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
                 }
-                else if (_inCase2)
+                else
                 {
                     // This is a "case value when condition then action" statement
                     // This time the first when node for which its condition matches in value
@@ -289,7 +282,7 @@ public class ExprCaseNode extends ExprNode
                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
                 }
-                else if (_inCase2)
+                else
                 {
                     // This is a "case value when condition then action" statement
                     // This time the first when node for which its condition matches in value
@@ -367,7 +360,7 @@ public class ExprCaseNode extends ExprNode
         if (  ((typeOne == boolean.class) || ((typeOne == Boolean.class))) &&
               ((typeTwo == boolean.class) || ((typeTwo == Boolean.class))) )
         {
-            return (((Boolean)objectOne) == ((Boolean)objectTwo));
+            return (objectOne == objectTwo);
         }
 
         if (!JavaClassHelper.isNumeric(boxedOne) || !JavaClassHelper.isNumeric(boxedTwo))
@@ -404,7 +397,7 @@ public class ExprCaseNode extends ExprNode
         {
             return null;
         }
-        return (Pair<ExprNode,ExprNode>) _exprNodeList.get(ndx_);
+        return _exprNodeList.get(ndx_);
     }
 
     public boolean setExprNodeList(int ndx_, Pair<ExprNode,ExprNode> pair_)

@@ -4,13 +4,9 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
-import net.esper.client.time.TimerControlEvent;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
-import net.esper.event.EventType;
 import net.esper.event.EventBean;
-
-import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,24 +29,10 @@ public class TestCaseExprClause extends TestCase
         testListener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
-        //epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-
-        //String viewExpr = "select string, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" +
-          //                " from " + SupportBean.class.getName() + ".win:length(3) " +
-            //              " where boolBoxed = true";
-        //selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
-        //selectTestCase.addListener(testListener);
     }
 
     public void testCaseNumericType()
     {
-        String viewExpr = "select " +
-                " intPrimitive + longPrimitive as p1," +
-                " intPrimitive * doublePrimitive as p2," +
-                " floatPrimitive / doublePrimitive as p3" +
-                " from " + SupportBean.class.getName() + ".win:length(3) where " +
-                "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
-
         String caseExpr = "select case " +
                 " intPrimitive when longPrimitive then (intPrimitive + longPrimitive) " +
                 " when doublePrimitive then intPrimitive * doublePrimitive" +
@@ -72,17 +54,6 @@ public class TestCaseExprClause extends TestCase
         assertEquals(3.0, event.get("p1"));
 
     }
-
-    /* public void testGetEventType()
-    {
-        EventType type = selectTestView.getEventType();
-        log.debug(".testGetEventType properties=" + Arrays.toString(type.getPropertyNames()));
-        assertTrue(Arrays.equals(type.getPropertyNames(), new String[] {"(3*intPrimitive)", "string", "result", "aBool"}));
-        assertEquals(String.class, type.getPropertyType("string"));
-        assertEquals(Boolean.class, type.getPropertyType("aBool"));
-        assertEquals(Float.class, type.getPropertyType("result"));
-        assertEquals(Integer.class, type.getPropertyType("(3*intPrimitive)"));
-    }  */
 
     private void sendSupportBeanEvent(int i, long l, float f, double d)
     {
