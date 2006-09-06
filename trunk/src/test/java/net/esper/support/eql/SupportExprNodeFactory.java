@@ -2,6 +2,11 @@ package net.esper.support.eql;
 
 import net.esper.eql.expression.*;
 import net.esper.type.ArithTypeEnum;
+import net.esper.type.RelationalOpEnum;
+import net.esper.collection.Pair;
+
+import java.util.List;
+import java.util.LinkedList;
 
 public class SupportExprNodeFactory
 {
@@ -94,6 +99,15 @@ public class SupportExprNodeFactory
         return mathNode;
     }
 
+    public static ExprNode makeMathNode(ArithTypeEnum operator_, Object valueLeft_, Object valueRight_) throws Exception
+    {
+        ExprMathNode mathNode = new ExprMathNode(operator_);
+        mathNode.addChildNode(new SupportExprNode(valueLeft_));
+        mathNode.addChildNode(new SupportExprNode(valueRight_));
+        validate(mathNode);
+        return mathNode;
+    }
+
     public static ExprNode makeSumAndFactorNode() throws Exception
     {
         // sum node
@@ -120,6 +134,99 @@ public class SupportExprNodeFactory
         validate(top);
 
         return top;
+    }
+
+    public static ExprNode makeCountNode(Object value, Class type) throws Exception
+    {
+        ExprCountNode countNode = new ExprCountNode(false);
+        countNode.addChildNode(new SupportExprNode(value, type));
+        SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[] {10, 20});
+        countNode.setAggregationResultFuture(future, 1);
+        validate(countNode);
+        return countNode;
+    }
+
+    public static ExprNode makeRelationalOpNode(RelationalOpEnum operator_, Object valueLeft_, Class typeLeft_, Object valueRight_, Class typeRight_) throws Exception
+    {
+        ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
+        opNode.addChildNode(new SupportExprNode(valueLeft_, typeLeft_));
+        opNode.addChildNode(new SupportExprNode(valueRight_, typeRight_));
+        validate(opNode);
+        return opNode;
+    }
+
+    public static ExprNode makeRelationalOpNode(RelationalOpEnum operator_, Class typeLeft_, Class typeRight_) throws Exception
+    {
+        ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
+        opNode.addChildNode(new SupportExprNode(typeLeft_));
+        opNode.addChildNode(new SupportExprNode(typeRight_));
+        validate(opNode);
+        return opNode;
+    }
+
+    public static ExprCaseNode makeCaseNode(boolean withValue_, int whenIndex_) throws Exception
+    {
+        //Build:
+        // case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3*3) end
+        List<Pair<ExprNode, ExprNode>> listExprNode = new LinkedList<Pair<ExprNode, ExprNode>>();
+        ExprNode node1, node2;
+        if ((withValue_) && ((whenIndex_ & 1)==1))
+        {
+            node1 = makeRelationalOpNode(RelationalOpEnum.GT, new Float(2.5F), Float.class, new Short((short)2), Short.class);
+        }
+        else
+        {
+            node1 = makeRelationalOpNode(RelationalOpEnum.GT, Float.class, Short.class);
+        }
+        node2 = makeCountNode(5, Integer.class);
+        Pair<ExprNode, ExprNode> p = new Pair(node1,node2);
+        listExprNode.add(p);
+        if ((withValue_) && ((whenIndex_ & 2)==2))
+        {
+            node1 = makeRelationalOpNode(RelationalOpEnum.GT, new Long(3L), Long.class, new Integer(2), Integer.class);
+        }
+        else
+        {
+            node1 = makeRelationalOpNode(RelationalOpEnum.GT, Long.class, Integer.class);
+        }
+        node2 = makeMathNode(ArithTypeEnum.ADD, new Integer(25), new Double(130.5));
+        p = new Pair(node1,node2);
+        listExprNode.add(p);
+        if ((whenIndex_ & 4)==4)
+        {
+            node2 = makeMathNode(ArithTypeEnum.MULTIPLY, new Integer(3), new Integer(3));
+            p = new Pair(null,node2);
+            listExprNode.add(p);
+        }
+        ExprCaseNode node = new ExprCaseNode(false, listExprNode);
+        return (node);
+    }
+
+    public static ExprCaseNode makeCase2Node() throws Exception
+    {
+        // Build:
+        // case s0.intPrimitive when s1.intBoxed then count(5) when (5*2) then (s0.intPrimitive*4) else (10*20) end
+        List<Pair<ExprNode, ExprNode>> listExprNode = new LinkedList<Pair<ExprNode, ExprNode>>();
+        ExprNode[] mathNodes = new  ExprNode[2];
+        ExprNode[] identNodes = new ExprNode[2];
+        identNodes[0] = makeIdentNode("intPrimitive","s0");
+        identNodes[1] = makeIdentNode("intBoxed", "s1");
+        ExprNode countNode = makeCountNode(5, Integer.class);
+        Pair<ExprNode, ExprNode> p = new Pair(identNodes[1],countNode);
+        listExprNode.add(p);
+        mathNodes[0] = makeMathNode(ArithTypeEnum.MULTIPLY, new Integer(5), new Integer(2));
+        mathNodes[1] = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        mathNodes[1].addChildNode(identNodes[0]);
+        mathNodes[1].addChildNode(new SupportExprNode(new Double(4.0)));
+        validate(mathNodes[1]);
+        p = new Pair(mathNodes[0],mathNodes[1]);
+        listExprNode.add(p);
+        mathNodes[0] = makeMathNode(ArithTypeEnum.MULTIPLY, new Double(10.0), new Double(20.0));
+        p = new Pair(null,mathNodes[0]);
+        listExprNode.add(p);
+        ExprCaseNode node = new ExprCaseNode(true, listExprNode);
+        node.addChildNode(identNodes[0]);
+        return (node);
     }
 
     private static void validate(ExprNode topNode) throws Exception

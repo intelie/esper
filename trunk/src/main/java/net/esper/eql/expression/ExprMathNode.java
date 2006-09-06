@@ -32,7 +32,6 @@ public class ExprMathNode extends ExprNode
 
         for (ExprNode child : this.getChildNodes())
         {
-            child.validate(streamTypeService);
             Class childType = child.getType();
             if (!JavaClassHelper.isNumeric(childType))
             {
