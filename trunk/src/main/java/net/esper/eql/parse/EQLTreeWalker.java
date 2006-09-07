@@ -585,6 +585,7 @@ public class EQLTreeWalker extends EQLBaseWalker
             throw new ASTWalkException("AST tree doesn not contain at least when node for case node");
         }
         List<Pair<ExprNode, ExprNode>> exprNodeList = new LinkedList<Pair<ExprNode, ExprNode>>();
+        AST previousNode = node_;
         while (childNode != null)
         {
             if (childNode != null)
@@ -593,10 +594,22 @@ public class EQLTreeWalker extends EQLBaseWalker
                 {
                     // Expression is when X then Y else Z
                     AST downChildNode = childNode.getFirstChild();
+                    if (previousNode == node_)
+                    {
+                        previousNode.setFirstChild(downChildNode);
+                    }
+                    else
+                    {
+                        if (previousNode != null)
+                        {
+                            previousNode.setNextSibling(downChildNode);
+                        }
+                    }
                     ExprNode downEvalChildNode = astNodeMap.get(downChildNode);
                     if ((downChildNode != null) && (downEvalChildNode != null))
                     {
                         AST actionNode = downChildNode.getNextSibling();
+                        previousNode = actionNode;
                         // There is no sibling for the child node of else node.
                         // The child node of the else node is the action node.
                         if (actionNode == null)
@@ -607,11 +620,12 @@ public class EQLTreeWalker extends EQLBaseWalker
                         {
                             ExprNode actionEvalNode = astNodeMap.get(actionNode);
                             exprNodeList.add(new Pair<ExprNode, ExprNode>(downEvalChildNode, actionEvalNode));
-                            astNodeMap.remove(actionNode);
                         }
-                        astNodeMap.remove(downChildNode);
-
                     }
+                }
+                else
+                {
+                    previousNode = childNode;
                 }
                 childNode = childNode.getNextSibling();
             }
