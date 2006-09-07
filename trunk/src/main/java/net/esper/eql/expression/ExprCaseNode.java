@@ -169,7 +169,6 @@ public class ExprCaseNode extends ExprNode
                     throw new ExprValidationException("The Case expression contains more than one else statement");
                 }
             }
-            p.getSecond().validate(streamTypeService_);
         }
 
         if (noWhenExpr)
