@@ -65,16 +65,5 @@ public class TestCaseExprClause extends TestCase
         epService.getEPRuntime().sendEvent(event);
     }
 
-    private void sendEvent(String s, boolean b, int i, float f1, float f2)
-    {
-        SupportBean bean = new SupportBean();
-        bean.setString(s);
-        bean.setBoolBoxed(b);
-        bean.setIntPrimitive(i);
-        bean.setFloatPrimitive(f1);
-        bean.setFloatBoxed(f2);
-        epService.getEPRuntime().sendEvent(bean);
-    }
-
     private static final Log log = LogFactory.getLog(TestCaseExprClause.class);
 }
