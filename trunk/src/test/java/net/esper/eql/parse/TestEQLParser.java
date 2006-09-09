@@ -222,6 +222,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         // pattern inside EQL
         assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "]");
         assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "] as xyz");
+        assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "].win:length(100) as xyz");
+        assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "].win:length(100).std:count() as xyz");
     }
 
     public void testBitWiseCases() throws Exception

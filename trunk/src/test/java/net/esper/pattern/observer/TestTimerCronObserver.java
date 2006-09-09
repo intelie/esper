@@ -4,9 +4,9 @@ import net.esper.schedule.SchedulingServiceImpl;
 import net.esper.schedule.ScheduleSpec;
 import net.esper.schedule.ScheduleUnit;
 import net.esper.support.guard.SupportObserverEvaluator;
+import net.esper.support.event.SupportEventAdapterService;
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.MatchedEventMap;
-import net.esper.pattern.observer.TimerAtObserver;
 import junit.framework.TestCase;
 
 public class TestTimerCronObserver extends TestCase
@@ -21,7 +21,7 @@ public class TestTimerCronObserver extends TestCase
         beginState = new MatchedEventMap();
 
         scheduleService = new SchedulingServiceImpl();
-        PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket());
+        PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService());
 
         ScheduleSpec scheduleSpec = new ScheduleSpec();
         scheduleSpec.addValue(ScheduleUnit.SECONDS, 1);

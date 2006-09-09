@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.pattern.PatternContext;
 import net.esper.schedule.SchedulingServiceImpl;
 import net.esper.support.guard.SupportQuitable;
+import net.esper.support.event.SupportEventAdapterService;
 
 public class TestTimerWithinGuard extends TestCase
 {
@@ -14,7 +15,7 @@ public class TestTimerWithinGuard extends TestCase
     public void setUp()
     {
         scheduleService = new SchedulingServiceImpl();
-        PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket());
+        PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService());
 
         quitable = new SupportQuitable();
 

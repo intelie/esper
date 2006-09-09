@@ -2,6 +2,7 @@ package net.esper.pattern.observer;
 
 import net.esper.schedule.SchedulingServiceImpl;
 import net.esper.support.guard.SupportObserverEvaluator;
+import net.esper.support.event.SupportEventAdapterService;
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.MatchedEventMap;
 import junit.framework.TestCase;
@@ -19,7 +20,7 @@ public class TestTimerIntervalObserver extends TestCase
         beginState = new MatchedEventMap();
 
         scheduleService = new SchedulingServiceImpl();
-        context = new PatternContext(null, scheduleService, scheduleService.allocateBucket());
+        context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService());
 
         evaluator = new SupportObserverEvaluator();
 

@@ -37,7 +37,7 @@ public class EPPatternStmtStartMethod
      */
     public EPStatementStopMethod start(PatternMatchCallback matchCallback)
     {
-        PatternContext context = new PatternContext(services.getFilterService(), services.getSchedulingService(), scheduleBucket);
+        PatternContext context = new PatternContext(services.getFilterService(), services.getSchedulingService(), scheduleBucket, services.getEventAdapterService());
         final PatternStopCallback stopCallback = patternStarter.start(matchCallback, context);
 
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
