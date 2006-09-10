@@ -140,27 +140,13 @@ public class EQLTreeWalker extends EQLBaseWalker
         return orderByList;
     }
 
-    /**
-     * Enter AST node setting state on how to process child nodes.
-     * @param node is the AST node entered
-     * @throws ASTWalkException
-     */
-    protected void enterNode(AST node) throws ASTWalkException
+    protected void setIsPatternWalk(boolean isPatternWalk)
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".enterNode " + node);
+            log.debug(".setIsPatternWalk " + isPatternWalk);
         }
-
-        switch (node.getType())
-        {
-            case PATTERN_STREAM_EXPR:
-                isProcessingPattern = true;
-                break;
-            default:
-                throw new ASTWalkException("Unhandled node type encountered during enter, type '" + node.getType() +
-                        "' with text '" + node.getText() + "'");
-        }
+        isProcessingPattern = isPatternWalk;
     }
 
     /**
@@ -177,22 +163,21 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         switch (node.getType())
         {
-            case VIEW_STREAM_EXPR:
-                leaveViewStreamExpr(node);
-                break;
-            case PATTERN_STREAM_EXPR:
-                leavePatternStreamExpr(node);
-                return;
-            case SELECTION_EXPR:
-                return;
-            case SELECTION_ELEMENT_EXPR:
-                leaveSelectionElement(node);
+            case STREAM_EXPR:
+                leaveStreamExpr(node);
                 break;
             case EVENT_FILTER_EXPR:
                 leaveFilter(node);
                 break;
+            case PATTERN_INCL_EXPR:
+                return;
             case VIEW_EXPR:
                 leaveView(node);
+                break;
+            case SELECTION_EXPR:
+                return;
+            case SELECTION_ELEMENT_EXPR:
+                leaveSelectionElement(node);
                 break;
             case EVENT_PROP_EXPR:
                 if (!isProcessingPattern)
@@ -394,26 +379,49 @@ public class EQLTreeWalker extends EQLBaseWalker
         viewSpecs.add(spec);
     }
 
-    private void leaveViewStreamExpr(AST node)
+    private void leaveStreamExpr(AST node)
     {
-        log.debug(".leaveStream");
+        log.debug(".leaveStreamExpr");
 
-        // The stream name node is an identifier
+        // Determine the optional stream name
+        // Search for identifier node that carries the stream name in an "from Class.win:time().std:doit() as StreamName"
         AST streamNameNode = node.getFirstChild().getNextSibling();
         while ((streamNameNode != null) && (streamNameNode.getType() != IDENT))
         {
             streamNameNode = streamNameNode.getNextSibling();
         }
-
-        // Stream name is optional
         String streamName = null;
         if (streamNameNode != null)
         {
             streamName = streamNameNode.getText();
         }
 
-        StreamSpec streamSpec = new FilterAndViewStreamSpec(filterSpec, viewSpecs, streamName);
-        viewSpecs = new LinkedList<ViewSpec>();
+        // Convert to a stream specification instance
+        StreamSpec streamSpec = null;
+        // If the first subnode is a filter node, we have a filter stream specification
+        if (node.getFirstChild().getType() == EVENT_FILTER_EXPR)
+        {
+            streamSpec = new FilterStreamSpec(filterSpec, viewSpecs, streamName);
+        }
+        else  if (node.getFirstChild().getType() == PATTERN_INCL_EXPR)
+        {
+            if ((astPatternNodeMap.size() > 1) || ((astPatternNodeMap.size() == 0)))
+            {
+                throw new ASTWalkException("Unexpected AST tree contains zero or more then 1 child elements for root");
+            }
+
+            // Get expression node sub-tree from the AST nodes placed so far
+            EvalNode evalNode = astPatternNodeMap.values().iterator().next();
+
+            streamSpec = new PatternStreamSpec(evalNode, taggedEventTypes, viewSpecs, streamName);
+            taggedEventTypes.clear();
+            astPatternNodeMap.clear();
+        }
+        else
+        {
+            throw new ASTWalkException("Unexpected AST child node to stream expression, type=" + node.getFirstChild().getType());
+        }
+        viewSpecs.clear();
         streamSpecs.add(streamSpec);
     }
 
@@ -1008,38 +1016,6 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         EvalObserverNode observerNode = new EvalObserverNode(observerFactory);
         astPatternNodeMap.put(node, observerNode);
-    }
-
-    private void leavePatternStreamExpr(AST node)
-    {
-        isProcessingPattern = false;
-
-        if ((astPatternNodeMap.size() > 1) || ((astPatternNodeMap.size() == 0)))
-        {
-            throw new ASTWalkException("Unexpected AST tree contains zero or more then 1 child elements for root");
-        }
-
-        // Get expression node sub-tree from the AST nodes placed so far
-        EvalNode evalNode = astPatternNodeMap.values().iterator().next();
-
-        // The stream name node is an identifier
-        AST streamNameNode = node.getFirstChild().getNextSibling();
-        while ((streamNameNode != null) && (streamNameNode.getType() != IDENT))
-        {
-            streamNameNode = streamNameNode.getNextSibling();
-        }
-
-        // Stream name is optional
-        String streamName = null;
-        if (streamNameNode != null)
-        {
-            streamName = streamNameNode.getText();
-        }
-
-        streamSpecs.add(new PatternStreamSpec(evalNode, taggedEventTypes, streamName));
-
-        taggedEventTypes.clear();
-        astPatternNodeMap.clear();
     }
 
     private static final Log log = LogFactory.getLog(EQLTreeWalker.class);

@@ -2,7 +2,6 @@ package net.esper.core;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import net.esper.client.EPStatementException;
 import net.esper.collection.Pair;
@@ -25,7 +24,6 @@ import net.esper.view.ViewServiceContext;
 import net.esper.view.Viewable;
 import net.esper.view.internal.BufferView;
 import net.esper.schedule.ScheduleBucket;
-import net.esper.pattern.EvalRootNode;
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.PatternStopCallback;
 
@@ -116,9 +114,9 @@ public class EPEQLStmtStartMethod
         for (int i = 0; i < streams.size(); i++)
         {
             StreamSpec streamSpec = streams.get(i);
-            if (streamSpec instanceof FilterAndViewStreamSpec)
+            if (streamSpec instanceof FilterStreamSpec)
             {
-                FilterAndViewStreamSpec filterStreamSpec = (FilterAndViewStreamSpec) streamSpec;
+                FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
                 EventStream eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
                 streamViews[i] = services.getViewService().createView(eventStream, filterStreamSpec.getViewSpecs(), viewContext);
                 streamTypes[i] = streamViews[i].getEventType();
@@ -137,10 +135,10 @@ public class EPEQLStmtStartMethod
             {
                 for (StreamSpec streamSpec : streams)
                 {
-                    if (streamSpec instanceof FilterAndViewStreamSpec)
+                    if (streamSpec instanceof FilterStreamSpec)
                     {
-                        FilterAndViewStreamSpec filterAndViewStreamSpec = (FilterAndViewStreamSpec) streamSpec;
-                        services.getStreamService().dropStream(filterAndViewStreamSpec.getFilterSpec(), services.getFilterService());
+                        FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
+                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
                     }
                 }
             }

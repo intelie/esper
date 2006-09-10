@@ -10,10 +10,9 @@ import java.util.LinkedList;
  * Specification for building an event stream out of a filter for events (supplying type and basic filter criteria)
  * and views onto these events which are staggered onto each other to supply a final stream of events.
  */
-public class FilterAndViewStreamSpec extends StreamSpec
+public class FilterStreamSpec extends StreamSpec
 {
     private FilterSpec filterSpec;
-    private List<ViewSpec> viewSpecs = new LinkedList<ViewSpec>();
 
     /**
      * Ctor.
@@ -21,11 +20,10 @@ public class FilterAndViewStreamSpec extends StreamSpec
      * @param viewSpecs - specifies what view to use to derive data
      * @param optionalStreamName - stream name, or null if none supplied
      */
-    public FilterAndViewStreamSpec(FilterSpec filterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
+    public FilterStreamSpec(FilterSpec filterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
     {
-        super(optionalStreamName);
+        super(optionalStreamName, viewSpecs);
         this.filterSpec = filterSpec;
-        this.viewSpecs = viewSpecs;
     }
 
     /**
@@ -35,14 +33,5 @@ public class FilterAndViewStreamSpec extends StreamSpec
     public FilterSpec getFilterSpec()
     {
         return filterSpec;
-    }
-
-    /**
-     * Returns view definitions to use to construct views to derive data on stream.
-     * @return view defs
-     */
-    public List<ViewSpec> getViewSpecs()
-    {
-        return viewSpecs;
     }
 }

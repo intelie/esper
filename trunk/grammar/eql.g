@@ -72,8 +72,7 @@ tokens
    	GUARD_EXPR;
    	OBSERVER_EXPR;
    	VIEW_EXPR;
-   	VIEW_STREAM_EXPR;
-   	PATTERN_STREAM_EXPR;
+   	PATTERN_INCL_EXPR;
    	WHERE_EXPR;
    	HAVING_EXPR;
 	EVAL_BITWISE_EXPR;
@@ -84,6 +83,7 @@ tokens
    	EVAL_IDENT;
    	SELECTION_EXPR;
    	SELECTION_ELEMENT_EXPR;
+   	STREAM_EXPR;
    	OUTERJOIN_EXPR;
    	LEFT_OUTERJOIN_EXPR;
    	RIGHT_OUTERJOIN_EXPR;
@@ -210,20 +210,16 @@ selectionListElement
 	;
 		
 streamExpression
-	:	patternStreamExpression
-	|	viewStreamExpression
+	:	(eventFilterExpression | patternInclusionExpression)
+		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)?
+		{ #streamExpression = #([STREAM_EXPR,"streamExpression"], #streamExpression); }
 	;
-
-viewStreamExpression
-	:	eventFilterExpression DOT! viewExpression (DOT! viewExpression)* (AS! IDENT | IDENT)?
-		{ #viewStreamExpression = #([VIEW_STREAM_EXPR,"viewStreamExpression"], #viewStreamExpression); }
+			
+patternInclusionExpression
+	:	PATTERN! LBRACK! patternExpression RBRACK! 
+		{ #patternInclusionExpression = #([PATTERN_INCL_EXPR,"patternInclusionExpression"], #patternInclusionExpression); }
 	;
 	
-patternStreamExpression
-	:	PATTERN! LBRACK! patternExpression RBRACK! (AS! IDENT | IDENT)?
-		{ #patternStreamExpression = #([PATTERN_STREAM_EXPR,"patternStreamExpression"], #patternStreamExpression); }
-	;
-
 viewExpression
 	:	IDENT COLON! IDENT LPAREN! (parameterSet)? RPAREN!
 		{ 

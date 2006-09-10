@@ -34,14 +34,14 @@ public class TestEQLTreeWalker extends TestCase
 
         assertEquals(2, walker.getStreamSpecs().size());
 
-        FilterAndViewStreamSpec streamSpec = (FilterAndViewStreamSpec) walker.getStreamSpecs().get(0);
+        FilterStreamSpec streamSpec = (FilterStreamSpec) walker.getStreamSpecs().get(0);
         assertEquals(2, streamSpec.getViewSpecs().size());
         assertEquals(SupportBean.class, streamSpec.getFilterSpec().getEventType().getUnderlyingType());
         assertEquals("length", streamSpec.getViewSpecs().get(0).getObjectName());
         assertEquals("lastevent", streamSpec.getViewSpecs().get(1).getObjectName());
         assertEquals("win1", streamSpec.getOptionalStreamName());
 
-        streamSpec = (FilterAndViewStreamSpec) walker.getStreamSpecs().get(1);
+        streamSpec = (FilterStreamSpec) walker.getStreamSpecs().get(1);
         assertEquals("win2", streamSpec.getOptionalStreamName());
 
         // Join expression tree validation
@@ -73,7 +73,7 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("win2", walker.getStreamSpecs().get(1).getOptionalStreamName());
         assertEquals("win3", walker.getStreamSpecs().get(2).getOptionalStreamName());
 
-        FilterAndViewStreamSpec streamSpec = (FilterAndViewStreamSpec) walker.getStreamSpecs().get(2);
+        FilterStreamSpec streamSpec = (FilterStreamSpec) walker.getStreamSpecs().get(2);
         assertEquals(2, streamSpec.getViewSpecs().size());
         assertEquals(SupportBean.class, streamSpec.getFilterSpec().getEventType().getUnderlyingType());
         assertEquals("length", streamSpec.getViewSpecs().get(0).getObjectName());
@@ -180,14 +180,14 @@ public class TestEQLTreeWalker extends TestCase
         String text = "select * from " + SupportBean.class.getName() + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni('price', false)";
 
         EQLTreeWalker walker = parseAndWalk(text);
-        FilterSpec filterSpec = ((FilterAndViewStreamSpec) walker.getStreamSpecs().get(0)).getFilterSpec();
+        FilterSpec filterSpec = ((FilterStreamSpec) walker.getStreamSpecs().get(0)).getFilterSpec();
 
         // Check filter spec properties
         assertEquals(SupportBean.class, filterSpec.getEventType().getUnderlyingType());
         assertEquals(1, filterSpec.getParameters().size());
 
         // Check views
-        List<ViewSpec> viewSpecs = ((FilterAndViewStreamSpec) walker.getStreamSpecs().get(0)).getViewSpecs();
+        List<ViewSpec> viewSpecs = ((FilterStreamSpec) walker.getStreamSpecs().get(0)).getViewSpecs();
         assertEquals(2, viewSpecs.size());
 
         ViewSpec specOne = viewSpecs.get(0);
@@ -231,7 +231,7 @@ public class TestEQLTreeWalker extends TestCase
         String text = "select * from " + SupportBean.class.getName() + "().win:lenght({10, 11, 12})";
         EQLTreeWalker walker = parseAndWalk(text);
 
-        List<ViewSpec> viewSpecs = ((FilterAndViewStreamSpec) walker.getStreamSpecs().get(0)).getViewSpecs();
+        List<ViewSpec> viewSpecs = ((FilterStreamSpec) walker.getStreamSpecs().get(0)).getViewSpecs();
         int[] intParams = (int[]) viewSpecs.get(0).getObjectParameters().get(0);
         assertEquals(10, intParams[0]);
         assertEquals(11, intParams[1]);
@@ -240,7 +240,7 @@ public class TestEQLTreeWalker extends TestCase
         // Check a list of objects
         text = "select * from " + SupportBean.class.getName() + "().win:lenght({false, 11.2, 's'})";
         walker = parseAndWalk(text);
-        viewSpecs = ((FilterAndViewStreamSpec)walker.getStreamSpecs().get(0)).getViewSpecs();
+        viewSpecs = ((FilterStreamSpec)walker.getStreamSpecs().get(0)).getViewSpecs();
         Object[] objParams = (Object[]) viewSpecs.get(0).getObjectParameters().get(0);
         assertEquals(false, objParams[0]);
         assertEquals(11.2, objParams[1]);

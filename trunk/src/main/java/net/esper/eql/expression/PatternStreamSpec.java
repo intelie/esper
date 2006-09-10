@@ -2,11 +2,15 @@ package net.esper.eql.expression;
 
 import net.esper.pattern.EvalNode;
 import net.esper.event.EventType;
+import net.esper.view.ViewSpec;
+
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
 /**
- * Specification for building an event stream out of a pattern statement.
+ * Specification for building an event stream out of a pattern statement and views staggered onto the
+ * pattern statement.
  * <p>
  * The pattern statement is represented by the top EvalNode evaluation node.
  * A pattern statement contains tagged events (i.e. a=A -> b=B).
@@ -20,12 +24,13 @@ public class PatternStreamSpec extends StreamSpec
     /**
      * Ctor.
      * @param evalNode - pattern evaluation node representing pattern statement
+     * @param viewSpecs - specifies what view to use to derive data
      * @param taggedEventTypes - event tags and their types as specified in the pattern, copied to allow original collection to change
      * @param optionalStreamName - stream name, or null if none supplied
      */
-    public PatternStreamSpec(EvalNode evalNode, Map<String, EventType> taggedEventTypes, String optionalStreamName)
+    public PatternStreamSpec(EvalNode evalNode, Map<String, EventType> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName)
     {
-        super(optionalStreamName);
+        super(optionalStreamName, viewSpecs);
         this.evalNode = evalNode;
 
         Map<String, EventType> copy = new HashMap<String, EventType>();

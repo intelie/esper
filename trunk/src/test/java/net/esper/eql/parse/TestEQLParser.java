@@ -15,7 +15,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     {
         String className = SupportBean.class.getName();
         String pattern = "a=" + className + " -> b=" + className;
-        String expression = "select * from pattern [" + pattern + "]";
+        //String expression = "select * from pattern [" + pattern + "].win:length(100).std:someview()";
+        //String expression = "select * from " + className + ".win:length(100).std:someview()";
+        //String expression = "select * from " + className;
+        //String expression = "select * from pattern [" + pattern + "]";
+        String expression = "select * from pattern [" + pattern + "] as A, pattern [" + pattern + "] as B";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -59,7 +63,6 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid(className + "().win:lenght(\"s')");
 
         assertIsInvalid("select MAX(intBoxed) from " + className + "().std:win(20)");
-        assertIsInvalid("select * from xxx");
         assertIsInvalid("select * from com.xxx().std:win(3) where a not is null");
         assertIsInvalid("select * from com.xxx().std:win(3) where a = not null");
         assertIsInvalid("select * from com.xxx().std:win(3) where not not");
@@ -223,7 +226,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "]");
         assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "] as xyz");
         assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "].win:length(100) as xyz");
-        assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "].win:length(100).std:count() as xyz");
+        assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "].win:length(100).std:someview() as xyz");
+        assertIsValid("select * from xxx");
     }
 
     public void testBitWiseCases() throws Exception
