@@ -452,6 +452,17 @@ public class TestEQLTreeWalker extends TestCase
         patternStreamSpec = (PatternStreamSpec) walker.getStreamSpecs().get(2);
         assertEquals("s2", patternStreamSpec.getOptionalStreamName());
         assertEquals(SupportBean_S2.class, patternStreamSpec.getTaggedEventTypes().get("x").getUnderlyingType());
+
+        // Test patterns with views
+        walker = parseAndWalk("select * from pattern [" + patternOne + "].win:time(1), pattern [" + patternTwo + "].win:length(1).std:lastevent() as s1");
+        assertEquals(2, walker.getStreamSpecs().size());
+        patternStreamSpec = (PatternStreamSpec) walker.getStreamSpecs().get(0);
+        assertEquals(1, patternStreamSpec.getViewSpecs().size());
+        assertEquals("time", patternStreamSpec.getViewSpecs().get(0).getObjectName());
+        patternStreamSpec = (PatternStreamSpec) walker.getStreamSpecs().get(1);
+        assertEquals(2, patternStreamSpec.getViewSpecs().size());
+        assertEquals("length", patternStreamSpec.getViewSpecs().get(0).getObjectName());
+        assertEquals("lastevent", patternStreamSpec.getViewSpecs().get(1).getObjectName());
     }
 
     private void tryOuterJoin(String outerType, OuterJoinType typeExpected) throws Exception
