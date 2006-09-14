@@ -38,44 +38,32 @@ public class TestExprCaseNode extends TestCase
         // for this when node.
 
         // Template expression is:
-        // case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) end
+        // case when (so.floatPrimitive>s1.shortBoxed) then count(5) when (so.LongPrimitive>s1.intPrimitive) then (25 + 130.5) else (3*3) end
         // Build case node, logical nodes don't return any values:
-        // case Node type is null
-        _caseNode=makeCaseNode(false,0);
-        assertEquals(null, _caseNode.getType());
-        _caseNode.clearExprNodeList();
-        // First when node is true, case node type is the first when node type
-        // case when (2.5>2) then count(5) when (Long>Integer) then (25 + 130.5) end
-        _caseNode=makeCaseNode(true, 1);
+        // case Node type is the first boolean expression found.
+        _caseNode=makeCaseNode();
         Pair<ExprNode, ExprNode> p = _caseNode.getExprNodeList(0);
-        assertEquals(p.getSecond().getType(), _caseNode.getType());
+        assertEquals(p.getFirst().getType(), _caseNode.getType());
         _caseNode.clearExprNodeList();
+        // case when (2.5>2) then count(5) when (1>3) then (25 + 130.5) else (3*3) end
+        // First when node is true, case node type is the first when node type.
+        _caseNode=makeCaseNode();
+        _events = new EventBean[] {makeEvent(0,null,2.5F,null,1L), makeEvent(3,null,0,new Short((short)2),0)};
+        p = _caseNode.getExprNodeList(0);
+        assertEquals(p.getSecond().getType(), _caseNode.getType(_events));
+        _caseNode.clearExprNodeList();
+        // case when (2>10) then count(5) when (3>1) then (25 + 130.5) else (3*3) end
         // Second when node is true, case node type is the type of the second when node
-        // case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) end
-        _caseNode=makeCaseNode(true, 2);
+        _caseNode=makeCaseNode();
+        _events = new EventBean[] {makeEvent(0,null,2F,null,3L), makeEvent(1,null,0,new Short((short)10),0)};
         p = _caseNode.getExprNodeList(1);
-        assertEquals(p.getSecond().getType(), _caseNode.getType());
+        assertEquals(p.getSecond().getType(), _caseNode.getType(_events));
         _caseNode.clearExprNodeList();
-        // Third test: we enable both when nodes: case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) end
-        _caseNode=makeCaseNode(true, 3);
-        p = _caseNode.getExprNodeList(0);
-        assertEquals(p.getSecond().getType(), _caseNode.getType());
-        _caseNode.clearExprNodeList();
-        // Enabling the whole expression: case when (2.5>1) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
-        // the case node type is still the first value node expression type
-        _caseNode=makeCaseNode(true, 7);
-        p = _caseNode.getExprNodeList(0);
-        assertEquals(p.getSecond().getType(), _caseNode.getType());
-        _caseNode.clearExprNodeList();
-        // Building expression:  case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
-        _caseNode=makeCaseNode(true, 6);
-        p = _caseNode.getExprNodeList(1);
-        assertEquals(p.getSecond().getType(), _caseNode.getType());
-        _caseNode.clearExprNodeList();
-        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3*3) end
-        _caseNode=makeCaseNode(true, 4);
+        // Last test: case when (2>10) then count(5) when (1>3) then (25 + 130.5) else (3*3) end
+        _caseNode=makeCaseNode();
+        _events = new EventBean[] {makeEvent(0,null,2F,null,1L), makeEvent(3,null,0,new Short((short)10),0)};
         p = _caseNode.getExprNodeList(2);
-        assertEquals(p.getSecond().getType(), _caseNode.getType());
+        assertEquals(p.getSecond().getType(), _caseNode.getType(_events));
         _caseNode.clearExprNodeList();
 
         // Second set of tests
@@ -109,6 +97,7 @@ public class TestExprCaseNode extends TestCase
         assertEquals(p.getSecond().getType(), _caseNode.getType(_events));
         _caseNode.clearExprNodeList();
     }
+
 
     public void testValidate() throws Exception
     {
@@ -176,7 +165,7 @@ public class TestExprCaseNode extends TestCase
         {
             // Expected
         }
-        // One when node but more than one "else nods"
+        // One when node but more than one "else nodes"
         // This should throw an exception.
         try
         {
@@ -197,8 +186,9 @@ public class TestExprCaseNode extends TestCase
         }
         // expression: case when (2.5>1) then count(5) when (3>2) then (25 + 130.5) end
         // The validation should be successful for every node traversed.
-        _caseNode=makeCaseNode(false, 7);
-        _caseNode.validate(null);
+        _caseNode=makeCaseNode();
+        _events = new EventBean[] {makeEvent(1,new Integer(2),2F,new Short((short)3),1L), makeEvent(4,new Integer(5),0,new Short((short)10),0)};
+        _caseNode.validate(_streamTypeService);
         _caseNode.clearExprNodeList();
 
         // Second case
@@ -214,42 +204,28 @@ public class TestExprCaseNode extends TestCase
         // The result of the case node is the result of the expression
         // for the first when node condition true
         // Template expression is:
-        // case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
-        // Build case node, logical nodes don't return any values:
-        // case Node type is null
-        _caseNode=makeCaseNode(false,0);
-        assertEquals(null, _caseNode.evaluate(null));
+        // case when (so.floatPrimitive>s1.shortBoxed) then count(5) when (so.LongPrimitive>s1.intPrimitive) then (25 + 130.5) else (3*3) end
+
         // first when is true, case node type is the first when node type
-        _caseNode.clearExprNodeList();
-        _caseNode=makeCaseNode(true, 1);
+        // case when (2.5>2) then count(5) when (1>3) then (25 + 130.5) else (3*3) end
+        // First when node is true, case node type is the first when node type.
+        _caseNode=makeCaseNode();
+        _events = new EventBean[] {makeEvent(0,null,2.5F,null,1L), makeEvent(3,null,0,new Short((short)2),0)};
         Pair<ExprNode, ExprNode> p = _caseNode.getExprNodeList(0);
-        assertEquals(p.getSecond().evaluate(null), _caseNode.evaluate(null));
+        assertEquals(p.getSecond().evaluate(_events), _caseNode.evaluate(_events));
         _caseNode.clearExprNodeList();
         // Second when is true, case node type is the type of the second when node
-        _caseNode=makeCaseNode(true, 2);
+        // case when (2>10) then count(5) when (3>1) then (25 + 130.5) else (3*3) end
+        _caseNode=makeCaseNode();
+        _events = new EventBean[] {makeEvent(0,null,2F,null,3L), makeEvent(1,null,0,new Short((short)10),0)};
         p = _caseNode.getExprNodeList(1);
-        assertEquals(p.getSecond().evaluate(null), _caseNode.evaluate(null));
+        assertEquals(p.getSecond().evaluate(_events), _caseNode.evaluate(_events));
         _caseNode.clearExprNodeList();
-        // Third test: we enable both when nodes: case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) end
-        _caseNode=makeCaseNode(true, 3);
-        p = _caseNode.getExprNodeList(0);
-        assertEquals(p.getSecond().evaluate(null), _caseNode.evaluate(null));
-        _caseNode.clearExprNodeList();
-        // Enabling the whole expression: case when (2.5>1) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
-        // the case node type is still the first value node expression type
-        _caseNode=makeCaseNode(true, 7);
-        p = _caseNode.getExprNodeList(0);
-        assertEquals(p.getSecond().evaluate(null), _caseNode.evaluate(null));
-        _caseNode.clearExprNodeList();
-        // Building expression:  case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
-        _caseNode=makeCaseNode(true, 6);
-        p = _caseNode.getExprNodeList(1);
-        assertEquals(p.getSecond().evaluate(null), _caseNode.evaluate(null));
-        _caseNode.clearExprNodeList();
-        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3*3) end
-        _caseNode=makeCaseNode(true, 4);
+        // Third test: case when (2>10) then count(5) when (1>3) then (25 + 130.5) else (3*3) end
+        _caseNode=makeCaseNode();
+        _events = new EventBean[] {makeEvent(0,null,2F,null,1L), makeEvent(3,null,0,new Short((short)10),0)};
         p = _caseNode.getExprNodeList(2);
-        assertEquals(p.getSecond().evaluate(null), _caseNode.evaluate(null));
+        assertEquals(p.getSecond().evaluate(_events), _caseNode.evaluate(_events));
         _caseNode.clearExprNodeList();
 
         // Second set of tests
@@ -285,41 +261,34 @@ public class TestExprCaseNode extends TestCase
 
     public void testEquals()  throws Exception
     {
-        // Template expression is:
-        // case when (2.5>2) then count(5) when (3>2) then (25 + 130.5) else (3*3) end
+        ExprCaseNode otherCaseNode;
 
         // Building expression:
-        // case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) end
-        ExprCaseNode otherCaseNode;
-        _caseNode=makeCaseNode(false,0);
-        otherCaseNode=makeCaseNode(false,0);
+        // case when (so.floatPrimitive>s1.shortBoxed) then count(5) when (so.LongPrimitive>s1.intPrimitive) then (25 + 130.5) else (3*3) end
+        _caseNode=makeCaseNode();
+        otherCaseNode=makeCaseNode();
         assertTrue(_caseNode.equalsNode(otherCaseNode));
+        assertTrue(otherCaseNode.equalsNode(_caseNode));
         _caseNode.clearExprNodeList();
         otherCaseNode.clearExprNodeList();
-        // case when (2.5>2) then count(5) when (Long>Integer) then (25 + 130.5) end
-        _caseNode=makeCaseNode(true, 1);
-        // We compare this last expression to:
-        // case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) end
-        // Test successful as only the operand of the Relational Operator is used
-        // for the comparison.
-        otherCaseNode=makeCaseNode(false,0);
-        assertTrue(_caseNode.equalsNode(otherCaseNode));
-        _caseNode.clearExprNodeList();
-        otherCaseNode.clearExprNodeList();
-        // case when (Float>Short) then count(5) when (3>2) then (25 + 130.5) end
-        _caseNode=makeCaseNode(true, 2);
-        otherCaseNode=makeCaseNode(true,2);
-        assertTrue(_caseNode.equalsNode(otherCaseNode));
+
         // We change the condition expression for the first when node regarding
         // the first case expression.
+        _caseNode=makeCaseNode();
+        otherCaseNode=makeCaseNode();
         ExprRelationalOpNode opNode = new ExprRelationalOpNode(RelationalOpEnum.GE);
         Pair<ExprNode,ExprNode> p = _caseNode.getExprNodeList(0);
-        p.setSecond(opNode);
+        p.setFirst(opNode);
         _caseNode.setExprNodeList(0, p);
         // The test is not successful, the relational operators are not equals
         assertFalse(_caseNode.equalsNode(otherCaseNode));
+        _caseNode.clearExprNodeList();
+        otherCaseNode.clearExprNodeList();
+
         // We change the value expression for the second when node regarding
         // the first case expression.
+        _caseNode=makeCaseNode();
+        otherCaseNode=makeCaseNode();
         ExprMathNode arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
         p = _caseNode.getExprNodeList(1);
         p.setSecond(arithNode);
@@ -327,19 +296,19 @@ public class TestExprCaseNode extends TestCase
         // The test is not successful, the ExprMathNode nodes are not equals
         // when their operators are not the same.
         assertFalse(_caseNode.equalsNode(otherCaseNode));
-        //Testing equalNode on the else node.
-        // Last test: case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3*3) end
-        otherCaseNode.clearExprNodeList();
         _caseNode.clearExprNodeList();
-        _caseNode=makeCaseNode(true, 4);
-        otherCaseNode=makeCaseNode(true, 4);
-        assertTrue(otherCaseNode.equalsNode(_caseNode));
+        otherCaseNode.clearExprNodeList();
+
         // Changing only the else node for the other case node.
+        _caseNode=makeCaseNode();
+        otherCaseNode=makeCaseNode();
         arithNode = new ExprMathNode(ArithTypeEnum.DIVIDE);
         p = otherCaseNode.getExprNodeList(2);
         p.setSecond(arithNode);
         otherCaseNode.setExprNodeList(2, p);
         assertFalse(otherCaseNode.equalsNode(_caseNode));
+        _caseNode.clearExprNodeList();
+        otherCaseNode.clearExprNodeList();
 
         // Second set of tests
 
@@ -366,11 +335,22 @@ public class TestExprCaseNode extends TestCase
     public void testToExpressionString() throws Exception
     {
         // Build: case when 2.5>2 then count(5) when 3>2 then (25+130.5) else (3*3) end
-        _caseNode=makeCaseNode(true, 7);
-         assertEquals(" case  when 2.5>2 then count(5) when 3>2 then (25+130.5) else (3*3) end", _caseNode.toExpressionString());
+        _caseNode=makeCaseNode();
+        assertEquals(" case  when s0.floatPrimitive>s1.shortBoxed then count(5) when s0.longPrimitive>s1.intPrimitive then (25+130.5) else (3*3) end", _caseNode.toExpressionString());
         // Build: case intPrimitive when intBoxed then count(5) when (5*2) then (intPrimitive*4) else (10*20) end
         _caseNode = makeCase2Node();
         assertEquals(" case s0.intPrimitive when s1.intBoxed then count(5) when (5*2) then (s0.intPrimitive*4.0) else (10.0*20.0) end", _caseNode.toExpressionString());
+    }
+
+    private EventBean makeEvent(int i, Integer iB, float f, Short s, long l)
+    {
+        SupportBean event = new SupportBean();
+        event.setIntPrimitive(i);
+        event.setIntBoxed(iB);
+        event.setFloatPrimitive(f);
+        event.setShortBoxed(s);
+        event.setLongPrimitive(l);
+        return SupportEventBeanFactory.createObject(event);
     }
 
     private EventBean makeEvent(int intPrimitive)

@@ -5,6 +5,8 @@ import net.esper.type.ArithTypeEnum;
 import net.esper.type.RelationalOpEnum;
 import net.esper.collection.Pair;
 
+import net.esper.event.EventType;
+
 import java.util.List;
 import java.util.LinkedList;
 
@@ -164,40 +166,37 @@ public class SupportExprNodeFactory
         return opNode;
     }
 
-    public static ExprCaseNode makeCaseNode(boolean withValue_, int whenIndex_) throws Exception
+    public static ExprNode makeRelationalOpNode(RelationalOpEnum operator_, ExprNode nodeLeft_, ExprNode nodeRight_) throws Exception
+    {
+        ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
+        opNode.addChildNode(nodeLeft_);
+        opNode.addChildNode(nodeRight_);
+        validate(opNode);
+        return opNode;
+    }
+
+    public static ExprCaseNode makeCaseNode() throws Exception
     {
         //Build:
-        // case when (Float>Short) then count(5) when (Long>Integer) then (25 + 130.5) else (3*3) end
+        // case when (so.floatPrimitive>s1.shortBoxed) then count(5) when (so.LongPrimitive>s1.intPrimitive) then (25 + 130.5) else (3*3) end
         List<Pair<ExprNode, ExprNode>> listExprNode = new LinkedList<Pair<ExprNode, ExprNode>>();
         ExprNode node1, node2;
-        if ((withValue_) && ((whenIndex_ & 1)==1))
-        {
-            node1 = makeRelationalOpNode(RelationalOpEnum.GT, new Float(2.5F), Float.class, new Short((short)2), Short.class);
-        }
-        else
-        {
-            node1 = makeRelationalOpNode(RelationalOpEnum.GT, Float.class, Short.class);
-        }
+        ExprNode[] identNodes = new ExprNode[4];
+        identNodes[0] = makeIdentNode("intPrimitive","s1");
+        identNodes[1] = makeIdentNode("floatPrimitive", "s0");
+        identNodes[2] = makeIdentNode("shortBoxed", "s1");
+        identNodes[3] = makeIdentNode("longPrimitive", "s0");
+        node1 =  makeRelationalOpNode(RelationalOpEnum.GT, identNodes[1], identNodes[2]);
         node2 = makeCountNode(5, Integer.class);
         Pair<ExprNode, ExprNode> p = new Pair(node1,node2);
         listExprNode.add(p);
-        if ((withValue_) && ((whenIndex_ & 2)==2))
-        {
-            node1 = makeRelationalOpNode(RelationalOpEnum.GT, new Long(3L), Long.class, new Integer(2), Integer.class);
-        }
-        else
-        {
-            node1 = makeRelationalOpNode(RelationalOpEnum.GT, Long.class, Integer.class);
-        }
+        node1 =  makeRelationalOpNode(RelationalOpEnum.GT, identNodes[3], identNodes[0]);
         node2 = makeMathNode(ArithTypeEnum.ADD, new Integer(25), new Double(130.5));
         p = new Pair(node1,node2);
         listExprNode.add(p);
-        if ((whenIndex_ & 4)==4)
-        {
-            node2 = makeMathNode(ArithTypeEnum.MULTIPLY, new Integer(3), new Integer(3));
-            p = new Pair(null,node2);
-            listExprNode.add(p);
-        }
+        node2 = makeMathNode(ArithTypeEnum.MULTIPLY, new Integer(3), new Integer(3));
+        p = new Pair(null,node2);
+        listExprNode.add(p);
         ExprCaseNode node = new ExprCaseNode(false, listExprNode);
         return (node);
     }
