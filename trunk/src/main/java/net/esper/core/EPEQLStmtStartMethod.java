@@ -2,6 +2,7 @@ package net.esper.core;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.esper.client.EPStatementException;
 import net.esper.collection.Pair;
@@ -15,17 +16,15 @@ import net.esper.eql.join.JoinSetFilter;
 import net.esper.eql.view.FilterExprView;
 import net.esper.eql.view.OutputProcessView;
 import net.esper.eql.view.InternalRouteView;
-import net.esper.eql.view.PatternAdapterView;
 import net.esper.event.EventType;
-import net.esper.view.EventStream;
-import net.esper.view.View;
-import net.esper.view.ViewProcessingException;
-import net.esper.view.ViewServiceContext;
-import net.esper.view.Viewable;
+import net.esper.event.EventBean;
+import net.esper.view.*;
 import net.esper.view.internal.BufferView;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.PatternStopCallback;
+import net.esper.pattern.EvalRootNode;
+import net.esper.pattern.PatternMatchCallback;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -107,26 +106,45 @@ public class EPEQLStmtStartMethod
         // Determine stream names for each stream - some streams may not have a name given
         String[] streamNames = determineStreamNames(streams);
         EventType[] streamTypes = new EventType[streams.size()];
-        View[] streamViews = new View[streams.size()];
-        List<PatternStopCallback> patternStopCallbacks = new LinkedList<PatternStopCallback>();
+        Viewable[] streamViews = new Viewable[streams.size()];
+        final List<PatternStopCallback> patternStopCallbacks = new LinkedList<PatternStopCallback>();
 
         // Create streams and views
         for (int i = 0; i < streams.size(); i++)
         {
             StreamSpec streamSpec = streams.get(i);
+            EventStream eventStream = null;
+
             if (streamSpec instanceof FilterStreamSpec)
             {
                 FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
-                EventStream eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
-                streamViews[i] = services.getViewService().createView(eventStream, filterStreamSpec.getViewSpecs(), viewContext);
-                streamTypes[i] = streamViews[i].getEventType();
+                eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
             }
             else
             {
-                PatternContext context = new PatternContext(services.getFilterService(), services.getSchedulingService(), scheduleBucket, services.getEventAdapterService());
                 PatternStreamSpec patternStreamSpec = (PatternStreamSpec) streamSpec;
-                PatternAdapterView view = new PatternAdapterView(patternStreamSpec, context);
+                final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
+                final EventStream sourceEventStream = new ZeroDepthStream(eventType);
+                eventStream = sourceEventStream;
+
+                EvalRootNode rootNode = new EvalRootNode();
+                rootNode.addChildNode(patternStreamSpec.getEvalNode());
+                final PatternContext patternContext = new PatternContext(services.getFilterService(), services.getSchedulingService(), scheduleBucket, services.getEventAdapterService());
+
+                PatternMatchCallback callback = new PatternMatchCallback() {
+                    public void matchFound(Map<String, EventBean> matchEvent)
+                    {
+                        EventBean compositeEvent = patternContext.getEventAdapterService().adapterForCompositeEvent(eventType, matchEvent);
+                        sourceEventStream.insert(compositeEvent);
+                    }
+                };
+
+                PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
+                patternStopCallbacks.add(patternStopCallback);
             }
+
+            streamViews[i] = services.getViewService().createView(eventStream, streamSpec.getViewSpecs(), viewContext);
+            streamTypes[i] = streamViews[i].getEventType();
         }
 
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
@@ -140,6 +158,10 @@ public class EPEQLStmtStartMethod
                         FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
                         services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
                     }
+                }
+                for (PatternStopCallback patternStopCallback : patternStopCallbacks)
+                {
+                    patternStopCallback.stop();
                 }
             }
         };
@@ -307,12 +329,12 @@ public class EPEQLStmtStartMethod
         }
     }
 
-    private Viewable handleSimpleSelect(View view,
+    private Viewable handleSimpleSelect(Viewable view,
                                         ResultSetProcessor optionalResultSetProcessor,
                                         InsertIntoDesc insertIntoDesc,
                                         ViewServiceContext viewContext)
     {
-        View finalView = view;
+        Viewable finalView = view;
 
         // Add filter view that evaluates the filter expression
         if (optionalFilterNode != null)

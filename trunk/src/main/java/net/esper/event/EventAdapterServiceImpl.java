@@ -185,6 +185,16 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return new XMLEventBean(node, eventType);
     }
 
+    public EventType createAnonymousCompositeType(Map<String, EventType> taggedEventTypes)
+    {
+        return new CompositeEventType(taggedEventTypes);
+    }
+
+    public EventBean adapterForCompositeEvent(EventType eventType, Map<String, EventBean> taggedEvents)
+    {
+        return new CompositeEventBean(taggedEvents, eventType);
+    }
+
     /**
      * Add a configured XML DOM event type.
      * @param eventTypeAlias is the alias name of the event type

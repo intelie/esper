@@ -1,6 +1,6 @@
 package net.esper.event;
 
-public class TestPatternCompositeEventBean extends TestPatternCompositeEventBase
+public class TestCompositeEventBean extends TestCompositeEventBase
 {
     public void testGet()
     {

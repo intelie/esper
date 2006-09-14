@@ -134,4 +134,7 @@ public interface EventAdapterService
      * @return event wrapper for document
      */
     public EventBean adapterForDOM(Node node);
+
+    public EventType createAnonymousCompositeType(Map<String, EventType> taggedEventTypes);
+    public EventBean adapterForCompositeEvent(EventType eventType, Map<String, EventBean> taggedEvents);
 }

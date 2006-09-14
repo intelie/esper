@@ -26,16 +26,17 @@ public class TestMapEventType extends TestCase
         Map<String, Class> testTypesMap = new HashMap<String, Class>();
         testTypesMap.put("myInt", int.class);
         testTypesMap.put("myString", String.class);
+        testTypesMap.put("myNullableString", String.class);
         testTypesMap.put("mySupportBean", SupportBean.class);
         testTypesMap.put("myComplexBean", SupportBeanComplexProps.class);
+        testTypesMap.put("myNullableSupportBean", SupportBean.class);
         eventType = new MapEventType(testTypesMap, eventAdapterService);
     }
 
     public void testGetPropertyNames()
     {
         String[] properties = eventType.getPropertyNames();
-        assertTrue(properties.length == 4);
-        ArrayAssertionUtil.assertEqualsAnyOrder(properties, new String[] {"myInt", "myString", "mySupportBean", "myComplexBean"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(properties, new String[] {"myInt", "myString", "myNullableString", "mySupportBean", "myComplexBean", "myNullableSupportBean"});
     }
 
     public void testGetPropertyType()
@@ -88,6 +89,8 @@ public class TestMapEventType extends TestCase
         valuesMap.put("myString", "a");
         valuesMap.put("mySupportBean", nestedSupportBean);
         valuesMap.put("myComplexBean", complexPropBean);
+        valuesMap.put("myNullableSupportBean", null);
+        valuesMap.put("myNullableString", null);
         EventBean eventBean = new MapEventBean(valuesMap, eventType);
 
         EventPropertyGetter getter = eventType.getGetter("myInt");
@@ -96,11 +99,17 @@ public class TestMapEventType extends TestCase
         getter = eventType.getGetter("myString");
         assertEquals("a", getter.get(eventBean));
 
+        getter = eventType.getGetter("myNullableString");
+        assertNull(getter.get(eventBean));
+
         getter = eventType.getGetter("mySupportBean");
         assertEquals(nestedSupportBean, getter.get(eventBean));
 
         getter = eventType.getGetter("mySupportBean.intPrimitive");
         assertEquals(100, getter.get(eventBean));
+
+        getter = eventType.getGetter("myNullableSupportBean.intPrimitive");
+        assertNull(getter.get(eventBean));
 
         getter = eventType.getGetter("myComplexBean.nested.nestedValue");
         assertEquals("nestedValue", getter.get(eventBean));
@@ -128,9 +137,11 @@ public class TestMapEventType extends TestCase
         Map<String, Class> mapTwo = new LinkedHashMap<String, Class>();
         mapTwo.put("myInt", int.class);
         mapTwo.put("mySupportBean", SupportBean.class);
+        mapTwo.put("myNullableSupportBean", SupportBean.class);
         mapTwo.put("myComplexBean", SupportBeanComplexProps.class);
         assertFalse((new MapEventType(mapTwo, eventAdapterService)).equals(eventType));
         mapTwo.put("myString", String.class);
+        mapTwo.put("myNullableString", String.class);
 
         // compare, should equal
         assertEquals(new MapEventType(mapTwo, eventAdapterService), eventType);

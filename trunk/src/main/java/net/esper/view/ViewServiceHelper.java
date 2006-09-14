@@ -114,7 +114,7 @@ public class ViewServiceHelper
      * @return chain of orphaned views
      */
     protected static List<View> removeChainLeafView(Viewable parentViewable,
-                                            View viewToRemove)
+                                            Viewable viewToRemove)
     {
         List<View> removedViews = new LinkedList<View>();
 
@@ -136,7 +136,7 @@ public class ViewServiceHelper
         // The viewToRemove is a direct child view of the stream
         if (viewPath.size() == 0)
         {
-            boolean isViewRemoved = parentViewable.removeView(viewToRemove);
+            boolean isViewRemoved = parentViewable.removeView( (View) viewToRemove);
 
             if (!isViewRemoved)
             {
@@ -145,12 +145,12 @@ public class ViewServiceHelper
                 throw new IllegalStateException(message);
             }
 
-            removedViews.add(viewToRemove);
+            removedViews.add((View) viewToRemove);
             return removedViews;
         }
 
         View[] viewPathArray = viewPath.toArray(new View[0]);
-        View currentView = viewToRemove;
+        View currentView = (View) viewToRemove;
 
         // Remove child from parent views until a parent view has more children,
         // or there are no more parents (index=0).

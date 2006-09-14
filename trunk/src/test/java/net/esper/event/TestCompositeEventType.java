@@ -3,7 +3,7 @@ package net.esper.event;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.ArrayAssertionUtil;
 
-public class TestPatternCompositeEventType extends TestPatternCompositeEventBase
+public class TestCompositeEventType extends TestCompositeEventBase
 {
     public void testGetPropertyType()
     {

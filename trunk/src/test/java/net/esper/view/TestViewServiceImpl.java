@@ -12,11 +12,11 @@ public class TestViewServiceImpl extends TestCase
 {
     private ViewServiceImpl viewService;
 
-    private View viewOne;
-    private View viewTwo;
-    private View viewThree;
-    private View viewFour;
-    private View viewFive;
+    private Viewable viewOne;
+    private Viewable viewTwo;
+    private Viewable viewThree;
+    private Viewable viewFour;
+    private Viewable viewFive;
 
     private EventStream streamOne;
     private EventStream streamTwo;

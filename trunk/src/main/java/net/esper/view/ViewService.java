@@ -15,7 +15,7 @@ public interface ViewService
      * @return last view in chain
      * @throws ViewProcessingException thrown if a view cannot be created
      */
-    public View createView(EventStream eventStream,
+    public Viewable createView(EventStream eventStream,
                            List<ViewSpec> viewSpecList,
                            ViewServiceContext context)
         throws ViewProcessingException;
@@ -23,7 +23,7 @@ public interface ViewService
     /**
      * Removes a view discoupling the view and any of it's parent views up the tree to the last shared parent view.
      * @param eventStream - the event stream that originates the raw events
-     * @param view - the view (should be the last in a chain) to remove
+     * @param viewable - the view (should be the last in a chain) to remove
      */
-    public void remove(EventStream eventStream, View view);
+    public void remove(EventStream eventStream, Viewable view);
 }

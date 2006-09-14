@@ -2,12 +2,12 @@ package net.esper.event;
 
 import java.util.Map;
 
-public class PatternCompositeEventBean implements EventBean
+public class CompositeEventBean implements EventBean
 {
     private final Map<String, EventBean> wrappedEvents;
     private final EventType eventType;
 
-    public PatternCompositeEventBean(Map<String, EventBean> wrappedEvents, EventType eventType)
+    public CompositeEventBean(Map<String, EventBean> wrappedEvents, EventType eventType)
     {
         this.wrappedEvents = wrappedEvents;
         this.eventType = eventType;

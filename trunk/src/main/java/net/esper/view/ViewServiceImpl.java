@@ -25,7 +25,7 @@ public final class ViewServiceImpl implements ViewService
         streams = new HashMap<EventStream, Map<View, ViewSpec>>();
     }
 
-    public View createView(EventStream eventStream,
+    public Viewable createView(EventStream eventStream,
                            List<ViewSpec> viewSpecDefinitions,
                            ViewServiceContext context) throws ViewProcessingException
     {
@@ -59,7 +59,7 @@ public final class ViewServiceImpl implements ViewService
                 ViewSupport.dumpChildViews("EventStream ", eventStream);
             }
 
-            return (View) parentViewable;   // we know its a view here since the spec list is empty 
+            return parentViewable;   // we know its a view here since the spec list is empty 
         }
 
         // Instantiate remaining chain of views from the remaining specifications which didn't match to existing views.
@@ -92,7 +92,7 @@ public final class ViewServiceImpl implements ViewService
         return lastView;
     }
 
-    public void remove(EventStream eventStream, View viewToRemove)
+    public void remove(EventStream eventStream, Viewable viewToRemove)
     {
         // If the viewToRemove to remove has child viewToRemove, don't disconnect - the child viewToRemove(s) need this viewToRemove
         if (viewToRemove.hasViews())

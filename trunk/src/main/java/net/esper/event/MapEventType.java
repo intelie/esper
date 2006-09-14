@@ -149,6 +149,11 @@ class MapEventType implements EventType
                 // If the map does not contain the key, this is allowed and represented as null
                 Object value = map.get(propertyMap);
 
+                if (value == null)
+                {
+                    return null;
+                }
+                
                 // Wrap object
                 EventBean event = MapEventType.this.eventAdapterService.adapterForBean(value);
                 return nestedGetter.get(event);

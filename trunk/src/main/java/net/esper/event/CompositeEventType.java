@@ -3,11 +3,11 @@ package net.esper.event;
 import java.util.Iterator;
 import java.util.Map;
 
-public class PatternCompositeEventType implements EventType
+public class CompositeEventType implements EventType
 {
     private final Map<String, EventType> taggedEventTypes;
 
-    public PatternCompositeEventType(Map<String, EventType> taggedEventTypes)
+    public CompositeEventType(Map<String, EventType> taggedEventTypes)
     {
         this.taggedEventTypes = taggedEventTypes;
     }

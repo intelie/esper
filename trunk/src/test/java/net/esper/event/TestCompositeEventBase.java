@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import junit.framework.TestCase;
 
-public abstract class TestPatternCompositeEventBase extends TestCase
+public abstract class TestCompositeEventBase extends TestCase
 {
     protected EventType eventType;
     protected EventBean eventBeanComplete;
@@ -21,7 +21,7 @@ public abstract class TestPatternCompositeEventBase extends TestCase
         Map<String, EventType> taggedEventTypes = new HashMap<String, EventType>();
         taggedEventTypes.put("a", SupportEventAdapterService.getService().addBeanType("A", SupportBean.class));
         taggedEventTypes.put("b", SupportEventAdapterService.getService().addBeanType("B", SupportBeanComplexProps.class));
-        eventType = new PatternCompositeEventType(taggedEventTypes);
+        eventType = new CompositeEventType(taggedEventTypes);
 
         event = new SupportBean();
         event.setIntPrimitive(1);
@@ -29,11 +29,11 @@ public abstract class TestPatternCompositeEventBase extends TestCase
         Map<String, EventBean> wrappedEvents = new HashMap<String, EventBean>();
         wrappedEvents.put("a", SupportEventAdapterService.getService().adapterForBean(event));
         wrappedEvents.put("b", SupportEventAdapterService.getService().adapterForBean(SupportBeanComplexProps.makeDefaultBean()));
-        eventBeanComplete = new PatternCompositeEventBean(wrappedEvents, eventType);
+        eventBeanComplete = new CompositeEventBean(wrappedEvents, eventType);
 
         wrappedEvents = new HashMap<String, EventBean>();
         wrappedEvents.put("a", SupportEventAdapterService.getService().adapterForBean(event));
-        eventBeanInComplete = new PatternCompositeEventBean(wrappedEvents, eventType);
+        eventBeanInComplete = new CompositeEventBean(wrappedEvents, eventType);
     }
 
 }

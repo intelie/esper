@@ -14,8 +14,7 @@ import net.esper.collection.Pair;
 import net.esper.eql.expression.OuterJoinDesc;
 import net.esper.type.OuterJoinType;
 import net.esper.event.EventAdapterService;
-import net.esper.pattern.EvalFollowedByNode;
-import net.esper.pattern.EvalOrNode;
+import net.esper.pattern.*;
 
 import java.util.List;
 
@@ -544,6 +543,95 @@ public class TestEQLTreeWalker extends TestCase
         EQLTreeWalker walker = new EQLTreeWalker(eventAdapterService);
         walker.startEQLExpressionRule(ast);
         return walker;
+    }
+
+
+    public void testWalkPattern() throws Exception
+    {
+        String text = "every g=" + SupportBean.class.getName() + "(string=\"IBM\") where timer:within(20)";
+
+        EQLPatternTreeWalker walker = parseAndWalk(text);
+
+        EvalRootNode rootNode = walker.getRootNode();
+        rootNode.dumpDebug(".testWalk ");
+
+        assertEquals(1, rootNode.getChildNodes().size());
+        assertTrue(rootNode.getChildNodes().get(0) instanceof EvalEveryNode);
+        EvalNode everyNode = rootNode.getChildNodes().get(0);
+
+        assertEquals(1, everyNode.getChildNodes().size());
+        assertTrue(everyNode.getChildNodes().get(0) instanceof EvalGuardNode);
+        EvalGuardNode guardNode = (EvalGuardNode) everyNode.getChildNodes().get(0);
+
+        assertEquals(1, guardNode.getChildNodes().size());
+        assertTrue(guardNode.getChildNodes().get(0) instanceof EvalFilterNode);
+        EvalFilterNode filterNode = (EvalFilterNode) guardNode.getChildNodes().get(0);
+
+        assertEquals("g", filterNode.getEventAsName());
+        assertEquals(0, filterNode.getChildNodes().size());
+        assertEquals(1, filterNode.getFilterSpec().getParameters().size());
+
+        assertEquals(1, walker.getTaggedEventTypes().size());
+        assertEquals(SupportBean.class, walker.getTaggedEventTypes().get("g").getUnderlyingType());
+    }
+
+    public void testWalkPropertyCombination() throws Exception
+    {
+        final String EVENT = SupportBeanComplexProps.class.getName();
+        String property = tryWalkGetProperty(EVENT + "(mapped ( 'key' )  = 'value')");
+        assertEquals("mapped('key')", property);
+
+        property = tryWalkGetProperty(EVENT + "(indexed [ 1 ]  = 1)");
+        assertEquals("indexed[1]", property);
+        property = tryWalkGetProperty(EVENT + "(nested . nestedValue  = 'value')");
+        assertEquals("nested.nestedValue", property);
+    }
+
+    public void testWalkPatternUseResult() throws Exception
+    {
+        final String EVENT = SupportBean_N.class.getName();
+        String text = "na=" + EVENT + "() -> every nb=" + EVENT + "(doublePrimitive in [0:na.doublePrimitive])";
+        parseAndWalk(text);
+    }
+
+    public void testWalkPatternNoPackage() throws Exception
+    {
+        SupportEventAdapterService.getService().addBeanType("SupportBean_N", SupportBean_N.class);
+        String text = "na=SupportBean_N()";
+        parseAndWalk(text);
+    }
+
+    public void testWalkPatternTypesValid() throws Exception
+    {
+        String text = SupportBean.class.getName();
+        EQLTreeWalker walker = parseAndWalk(text);
+        assertEquals(0, walker.getTaggedEventTypes().size());
+    }
+
+    public void testPatternWalkTypesInvalid() throws Exception
+    {
+        String text = "a=" + SupportBean.class.getName() + " or a=" + SupportBean_A.class.getName();
+
+        try
+        {
+            parseAndWalk(text);
+            TestCase.fail();
+        }
+        catch (Exception ex)
+        {
+            log.debug(".testWalkTypesInvalid Expected exception, msg=" + ex.getMessage());
+        }
+    }
+
+    private String tryWalkGetProperty(String stmt) throws Exception
+    {
+        EQLPatternTreeWalker walker = parseAndWalk(stmt);
+        EvalRootNode rootNode = walker.getRootNode();
+        rootNode.dumpDebug(".testWalk ");
+
+        EvalFilterNode filterNode = (EvalFilterNode) rootNode.getChildNodes().get(0);
+        assertEquals(1, filterNode.getFilterSpec().getParameters().size());
+        return filterNode.getFilterSpec().getParameters().get(0).getPropertyName();
     }
 
     private static final Log log = LogFactory.getLog(TestEQLTreeWalker.class);

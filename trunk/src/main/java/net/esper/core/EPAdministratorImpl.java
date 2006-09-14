@@ -11,11 +11,11 @@ import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.expression.*;
 import net.esper.collection.Pair;
 import net.esper.util.DebugFacility;
+import net.esper.pattern.EvalRootNode;
 
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.HashMap;
 
 import antlr.TokenStreamException;
 import antlr.RecognitionException;
@@ -81,7 +81,7 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         // Parse and walk
         AST ast = ParseHelper.parse(expression, patternParseRule);
-        EQLPatternTreeWalker walker = new EQLPatternTreeWalker(services.getEventAdapterService());
+        EQLTreeWalker walker = new EQLTreeWalker(services.getEventAdapterService());
 
         try
         {
@@ -104,10 +104,16 @@ public class EPAdministratorImpl implements EPAdministrator
         }
 
         // Build event type of aggregate event representing the pattern
-        Map<String, EventType> eventTypes = walker.getTaggedEventTypes();
-        EventType eventType = services.getEventAdapterService().createAnonymousMapTypeUnd(eventTypes);
+        // TODO checking if more then 1, comments in code
+        PatternStreamSpec patternStreamSpec = (PatternStreamSpec) walker.getStreamSpecs().get(0);
 
-        EPPatternStmtStartMethod startMethod = new EPPatternStmtStartMethod(services, walker.getRootNode());
+        EvalRootNode rootNode = new EvalRootNode();
+        rootNode.addChildNode(patternStreamSpec.getEvalNode());
+        EPPatternStmtStartMethod startMethod = new EPPatternStmtStartMethod(services, rootNode);
+
+        // generate event type
+        Map<String, EventType> eventTypes = patternStreamSpec.getTaggedEventTypes();
+        EventType eventType = services.getEventAdapterService().createAnonymousMapTypeUnd(eventTypes);
 
         EPPatternStatementImpl patternStatement = new EPPatternStatementImpl(expression,
                 eventType, services.getDispatchService(), services.getEventAdapterService(), startMethod);
