@@ -1,6 +1,9 @@
 package net.esper.support.eql;
 
 import net.esper.eql.expression.*;
+import net.esper.eql.core.Aggregator;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 import net.esper.event.EventBean;
 
 public class SupportAggregateExprNode extends ExprAggregateNode

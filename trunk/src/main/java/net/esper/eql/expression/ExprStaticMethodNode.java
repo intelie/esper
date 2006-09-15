@@ -7,6 +7,8 @@ import java.util.List;
 import net.esper.client.EPException;
 import net.esper.event.EventBean;
 import net.esper.util.StaticMethodResolver;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -111,7 +113,7 @@ public class ExprStaticMethodNode extends ExprNode
 		}
 	}
 
-	public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException 
+	public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
 	{
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();

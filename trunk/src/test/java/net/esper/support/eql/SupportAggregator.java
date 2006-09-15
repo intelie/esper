@@ -1,6 +1,6 @@
 package net.esper.support.eql;
 
-import net.esper.eql.expression.Aggregator;
+import net.esper.eql.core.Aggregator;
 
 public class SupportAggregator implements Aggregator
 {

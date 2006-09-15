@@ -1,6 +1,7 @@
 package net.esper.support.eql;
 
 import net.esper.eql.expression.*;
+import net.esper.eql.spec.SelectExprElementSpec;
 import net.esper.type.ArithTypeEnum;
 
 import java.util.List;
@@ -8,44 +9,44 @@ import java.util.LinkedList;
 
 public class SupportSelectExprFactory
 {
-    public static List<SelectExprElement> makeInvalidSelectList() throws Exception
+    public static List<SelectExprElementSpec> makeInvalidSelectList() throws Exception
     {
-        List<SelectExprElement> selectionList = new LinkedList<SelectExprElement>();
+        List<SelectExprElementSpec> selectionList = new LinkedList<SelectExprElementSpec>();
         ExprIdentNode node = new ExprIdentNode("xxxx", "s0");
-        selectionList.add(new SelectExprElement(node, null));
+        selectionList.add(new SelectExprElementSpec(node, null));
         return selectionList;
     }
 
-    public static List<SelectExprElement> makeSelectListFromIdent(String propertyName, String streamName) throws Exception
+    public static List<SelectExprElementSpec> makeSelectListFromIdent(String propertyName, String streamName) throws Exception
     {
-        List<SelectExprElement> selectionList = new LinkedList<SelectExprElement>();
+        List<SelectExprElementSpec> selectionList = new LinkedList<SelectExprElementSpec>();
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode(propertyName, streamName);
-        selectionList.add(new SelectExprElement(identNode, null));
+        selectionList.add(new SelectExprElementSpec(identNode, null));
         return selectionList;
     }
 
-    public static List<SelectExprElement> makeNoAggregateSelectList() throws Exception
+    public static List<SelectExprElementSpec> makeNoAggregateSelectList() throws Exception
     {
-        List<SelectExprElement> selectionList = new LinkedList<SelectExprElement>();
+        List<SelectExprElementSpec> selectionList = new LinkedList<SelectExprElementSpec>();
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         ExprNode mathNode = SupportExprNodeFactory.makeMathNode();
-        selectionList.add(new SelectExprElement(identNode, null));
-        selectionList.add(new SelectExprElement(mathNode, "result"));
+        selectionList.add(new SelectExprElementSpec(identNode, null));
+        selectionList.add(new SelectExprElementSpec(mathNode, "result"));
         return selectionList;
     }
 
-    public static List<SelectExprElement> makeAggregateSelectListWithProps() throws Exception
+    public static List<SelectExprElementSpec> makeAggregateSelectListWithProps() throws Exception
     {
         ExprNode top = new ExprSumNode(false);
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         top.addChildNode(identNode);
 
-        List<SelectExprElement> selectionList = new LinkedList<SelectExprElement>();
-        selectionList.add(new SelectExprElement(top, null));
+        List<SelectExprElementSpec> selectionList = new LinkedList<SelectExprElementSpec>();
+        selectionList.add(new SelectExprElementSpec(top, null));
         return selectionList;
     }
 
-    public static List<SelectExprElement> makeAggregatePlusNoAggregate() throws Exception
+    public static List<SelectExprElementSpec> makeAggregatePlusNoAggregate() throws Exception
     {
         ExprNode top = new ExprSumNode(false);
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
@@ -53,29 +54,29 @@ public class SupportSelectExprFactory
 
         ExprNode identNode2 = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
 
-        List<SelectExprElement> selectionList = new LinkedList<SelectExprElement>();
-        selectionList.add(new SelectExprElement(top, null));
-        selectionList.add(new SelectExprElement(identNode2, null));
+        List<SelectExprElementSpec> selectionList = new LinkedList<SelectExprElementSpec>();
+        selectionList.add(new SelectExprElementSpec(top, null));
+        selectionList.add(new SelectExprElementSpec(identNode2, null));
         return selectionList;
     }
 
-    public static List<SelectExprElement> makeAggregateMixed() throws Exception
+    public static List<SelectExprElementSpec> makeAggregateMixed() throws Exception
     {
         // make a "select doubleBoxed, sum(intPrimitive)" -equivalent
-        List<SelectExprElement> selectionList = new LinkedList<SelectExprElement>();
+        List<SelectExprElementSpec> selectionList = new LinkedList<SelectExprElementSpec>();
 
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
-        selectionList.add(new SelectExprElement(identNode, null));
+        selectionList.add(new SelectExprElementSpec(identNode, null));
 
         ExprNode top = new ExprSumNode(false);
         identNode = SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0");
         top.addChildNode(identNode);
-        selectionList.add(new SelectExprElement(top, null));
+        selectionList.add(new SelectExprElementSpec(top, null));
 
         return selectionList;
     }
 
-    public static List<SelectExprElement> makeAggregateSelectListNoProps() throws Exception
+    public static List<SelectExprElementSpec> makeAggregateSelectListNoProps() throws Exception
     {
         /*
                                     top (*)
@@ -94,8 +95,8 @@ public class SupportSelectExprFactory
 
         top.getValidatedSubtree(null, null);
 
-        List<SelectExprElement> selectionList = new LinkedList<SelectExprElement>();
-        selectionList.add(new SelectExprElement(top, null));
+        List<SelectExprElementSpec> selectionList = new LinkedList<SelectExprElementSpec>();
+        selectionList.add(new SelectExprElementSpec(top, null));
         return selectionList;
     }
 }

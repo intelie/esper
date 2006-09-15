@@ -1,7 +1,7 @@
 package net.esper.eql.join;
 
 import net.esper.eql.expression.ExprNode;
-import net.esper.eql.expression.OuterJoinDesc;
+import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.eql.join.exec.ExecNode;
 import net.esper.eql.join.plan.QueryPlan;
 import net.esper.eql.join.plan.QueryPlanBuilder;
@@ -11,7 +11,6 @@ import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.table.PropertyIndexedEventTable;
 import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.event.EventType;
-import net.esper.core.EPEQLStmtStartMethod;
 
 import java.util.List;
 

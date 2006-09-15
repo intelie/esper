@@ -3,6 +3,8 @@ package net.esper.eql.expression;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.type.MinMaxTypeEnum;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 
 /**
  * Represents the MAX(a,b) and MIN(a,b) functions is an expression tree.
@@ -130,7 +132,7 @@ public class ExprMinMaxRowNode extends ExprNode
         for (int i = 2; i < this.getChildNodes().size(); i++)
         {
             buffer.append(",");
-            buffer.append(this.getChildNodes().get(i).toExpressionString());            
+            buffer.append(this.getChildNodes().get(i).toExpressionString());
         }
 
         buffer.append(")");

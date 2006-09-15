@@ -4,6 +4,8 @@ import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.type.RelationalOpEnum;
 import net.esper.eql.expression.ExprNode;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 
 /**
  * Represents a lesser or greater then (</<=/>/>=) expression in a filter expression tree.
@@ -68,7 +70,7 @@ public class ExprRelationalOpNode extends ExprNode
         {
             return false;
         }
-        
+
         return computer.compare(valueLeft, valueRight);
     }
 

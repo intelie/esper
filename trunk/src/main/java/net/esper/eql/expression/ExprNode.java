@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 
 /**
  * Superclass for filter nodes in a filter expression tree. Allow
@@ -51,29 +53,29 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
     public ExprNode getValidatedSubtree(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         ExprNode result = this;
-    	
-    	for (int i = 0; i < childNodes.size(); i++)
+
+        for (int i = 0; i < childNodes.size(); i++)
         {
             childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, autoImportService));
         }
-        
-    	try
-    	{
-    		validate(streamTypeService, autoImportService);
-    	}
-    	catch(ExprValidationException e)
-    	{
-    		if(this instanceof ExprIdentNode)
-    		{
-    			result = resolveIdentAsStaticMethod(streamTypeService, autoImportService, e);
-    		}
-    		else
-    		{
-    			throw e;
-    		}
-    	}
-    	
-    	return result;
+
+        try
+        {
+            validate(streamTypeService, autoImportService);
+        }
+        catch(ExprValidationException e)
+        {
+            if(this instanceof ExprIdentNode)
+            {
+                result = resolveIdentAsStaticMethod(streamTypeService, autoImportService, e);
+            }
+            else
+            {
+                throw e;
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -157,53 +159,53 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
         }
         return true;
     }
-    
+
     // Assumes that this is an ExprIdentNode
     private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, AutoImportService autoImportService, ExprValidationException propertyException)
     throws ExprValidationException
     {
-    	// Reconstruct the original string
-    	ExprIdentNode identNode = (ExprIdentNode) this;
-    	StringBuffer name = new StringBuffer(identNode.getUnresolvedPropertyName());
-    	if(identNode.getStreamOrPropertyName() != null)
-    	{
-    		name.insert(0, identNode.getStreamOrPropertyName() + ".");
-    	}
-    	
-    	// Parse the string to see if it looks like a method invocation
-    	// (Ident nodes can only have a single string value in parentheses)
-    	String classNameRegEx = "((\\w+\\.)*\\w+)";
-    	String methodNameRegEx = "(\\w+)";
-    	String argsRegEx = "\\s*\\(\\s*[\'\"]\\s*(\\w+)\\s*[\'\"]\\s*\\)\\s*";			
-    	String methodInvocationRegEx = classNameRegEx + "\\." + methodNameRegEx + argsRegEx;
+        // Reconstruct the original string
+        ExprIdentNode identNode = (ExprIdentNode) this;
+        StringBuffer name = new StringBuffer(identNode.getUnresolvedPropertyName());
+        if(identNode.getStreamOrPropertyName() != null)
+        {
+            name.insert(0, identNode.getStreamOrPropertyName() + ".");
+        }
 
-    	Pattern pattern = Pattern.compile(methodInvocationRegEx);
-    	Matcher matcher = pattern.matcher(name);
-    	if(!matcher.matches())
-    	{
-    		// This property name doesn't look like a method invocation
-    		throw propertyException;
-    	}
+        // Parse the string to see if it looks like a method invocation
+        // (Ident nodes can only have a single string value in parentheses)
+        String classNameRegEx = "((\\w+\\.)*\\w+)";
+        String methodNameRegEx = "(\\w+)";
+        String argsRegEx = "\\s*\\(\\s*[\'\"]\\s*(\\w+)\\s*[\'\"]\\s*\\)\\s*";
+        String methodInvocationRegEx = classNameRegEx + "\\." + methodNameRegEx + argsRegEx;
 
-    	// Create a new static method node and add the method 
-    	// argument as a child node
-    	String className = matcher.group(1);
-    	String methodName = matcher.group(3);
-    	String argString = matcher.group(4);
-    	ExprNode result = new ExprStaticMethodNode(className, methodName);
-    	result.addChildNode(new ExprConstantNode(argString));
-    	
-    	// Validate
-    	try
-    	{
-    		result.validate(streamTypeService, autoImportService);	
-    	}
-    	catch(ExprValidationException e)
-    	{
-    		throw new ExprValidationException("Failed to resolve " + name + " as either an event property or as a static method invocation");
-    	}
-    	
-    	return result;
+        Pattern pattern = Pattern.compile(methodInvocationRegEx);
+        Matcher matcher = pattern.matcher(name);
+        if(!matcher.matches())
+        {
+            // This property name doesn't look like a method invocation
+            throw propertyException;
+        }
+
+        // Create a new static method node and add the method
+        // argument as a child node
+        String className = matcher.group(1);
+        String methodName = matcher.group(3);
+        String argString = matcher.group(4);
+        ExprNode result = new ExprStaticMethodNode(className, methodName);
+        result.addChildNode(new ExprConstantNode(argString));
+
+        // Validate
+        try
+        {
+            result.validate(streamTypeService, autoImportService);
+        }
+        catch(ExprValidationException e)
+        {
+            throw new ExprValidationException("Failed to resolve " + name + " as either an event property or as a static method invocation");
+        }
+
+        return result;
     }
 
     private static final Log log = LogFactory.getLog(ExprNode.class);

@@ -1,9 +1,8 @@
 package net.esper.support.eql;
 
-import net.esper.eql.expression.ResultSetProcessor;
+import net.esper.eql.core.ResultSetProcessor;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
-import net.esper.event.BeanEventAdapter;
 import net.esper.collection.Pair;
 import net.esper.collection.MultiKey;
 import net.esper.support.bean.SupportBean;

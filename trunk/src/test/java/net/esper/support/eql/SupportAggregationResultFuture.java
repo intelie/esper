@@ -1,6 +1,6 @@
 package net.esper.support.eql;
 
-import net.esper.eql.expression.AggregationResultFuture;
+import net.esper.eql.core.AggregationResultFuture;
 
 public class SupportAggregationResultFuture implements AggregationResultFuture
 {

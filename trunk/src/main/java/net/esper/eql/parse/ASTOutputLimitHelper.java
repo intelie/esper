@@ -1,7 +1,7 @@
 package net.esper.eql.parse;
 
-import net.esper.eql.expression.OutputLimitSpec;
-import net.esper.eql.expression.OutputLimitSpec.DisplayLimit;
+import net.esper.eql.spec.OutputLimitSpec;
+import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
 import net.esper.eql.generated.EqlTokenTypes;
 import antlr.collections.AST;
 

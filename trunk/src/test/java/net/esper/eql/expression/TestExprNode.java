@@ -4,6 +4,9 @@ import junit.framework.TestCase;
 import net.esper.support.eql.SupportExprNode;
 import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.support.eql.SupportStreamTypeSvc1Stream;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.AutoImportServiceImpl;
+import net.esper.eql.core.StreamTypeService;
 
 public class TestExprNode extends TestCase
 {
@@ -41,45 +44,45 @@ public class TestExprNode extends TestCase
         assertEquals(6, parent_2.getValidateCountSnapshot());
         assertEquals(7, topNode.getValidateCountSnapshot());
     }
-    
+
     public void testIdentToStaticMethod() throws ExprValidationException
     {
-    	StreamTypeService typeService = new SupportStreamTypeSvc1Stream();
-    	AutoImportService autoImportService = new AutoImportServiceImpl(new String[] {"java.lang.*" });
-    	
-    	ExprNode identNode = new ExprIdentNode("Integer.valueOf(\"3\")");
-    	ExprNode result = identNode.getValidatedSubtree(typeService, autoImportService);
-    	assertTrue(result instanceof ExprStaticMethodNode);
-    	assertEquals(Integer.valueOf("3"), result.evaluate(null));
-    	
-    	identNode = new ExprIdentNode("Integer.valueOf(\'3\')");
-    	result = identNode.getValidatedSubtree(typeService, autoImportService);
-    	assertTrue(result instanceof ExprStaticMethodNode);
-    	assertEquals(Integer.valueOf("3"), result.evaluate(null));
-    	
-    	identNode = new ExprIdentNode("UknownClass.nonexistentMethod(\"3\")");
-    	try
-    	{
-    		result = identNode.getValidatedSubtree(typeService, autoImportService);
-    		fail();
-    	}
-    	catch(ExprValidationException e)
-    	{
-    		// Expected
-    	}
-    	
-    	identNode = new ExprIdentNode("unknownMap(\"key\")");
-    	try
-    	{
-    		result = identNode.getValidatedSubtree(typeService, autoImportService);
-    		fail();
-    	}
-    	catch(ExprValidationException e)
-    	{
-    		// Expected
-    	}
+        StreamTypeService typeService = new SupportStreamTypeSvc1Stream();
+        AutoImportService autoImportService = new AutoImportServiceImpl(new String[] {"java.lang.*" });
+
+        ExprNode identNode = new ExprIdentNode("Integer.valueOf(\"3\")");
+        ExprNode result = identNode.getValidatedSubtree(typeService, autoImportService);
+        assertTrue(result instanceof ExprStaticMethodNode);
+        assertEquals(Integer.valueOf("3"), result.evaluate(null));
+
+        identNode = new ExprIdentNode("Integer.valueOf(\'3\')");
+        result = identNode.getValidatedSubtree(typeService, autoImportService);
+        assertTrue(result instanceof ExprStaticMethodNode);
+        assertEquals(Integer.valueOf("3"), result.evaluate(null));
+
+        identNode = new ExprIdentNode("UknownClass.nonexistentMethod(\"3\")");
+        try
+        {
+            result = identNode.getValidatedSubtree(typeService, autoImportService);
+            fail();
+        }
+        catch(ExprValidationException e)
+        {
+            // Expected
+        }
+
+        identNode = new ExprIdentNode("unknownMap(\"key\")");
+        try
+        {
+            result = identNode.getValidatedSubtree(typeService, autoImportService);
+            fail();
+        }
+        catch(ExprValidationException e)
+        {
+            // Expected
+        }
     }
-    
+
     public void testDeepEquals() throws Exception
     {
         assertFalse(ExprNode.deepEquals(SupportExprNodeFactory.make2SubNodeAnd(), SupportExprNodeFactory.make3SubNodeAnd()));

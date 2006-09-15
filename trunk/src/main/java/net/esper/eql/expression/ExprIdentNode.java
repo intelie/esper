@@ -4,6 +4,10 @@ import net.esper.event.EventBean;
 import net.esper.event.PropertyAccessException;
 import net.esper.event.EventPropertyGetter;
 import net.esper.collection.Pair;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.PropertyResolutionDescriptor;
+import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.StreamTypesException;
 
 /**
  * Represents an stream property identifier in a filter expressiun tree.
@@ -225,7 +229,7 @@ public class ExprIdentNode extends ExprNode
             buffer.append(streamOrPropertyName + ".");
         }
         buffer.append(unresolvedPropertyName);
-        
+
         return buffer.toString();
     }
 

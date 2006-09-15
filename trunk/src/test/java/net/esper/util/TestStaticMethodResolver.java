@@ -2,8 +2,8 @@ package net.esper.util;
 
 import java.lang.reflect.Method;
 
-import net.esper.eql.expression.AutoImportService;
-import net.esper.eql.expression.AutoImportServiceImpl;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.AutoImportServiceImpl;
 import net.esper.util.StaticMethodResolver;
 
 import junit.framework.TestCase;

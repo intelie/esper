@@ -6,6 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import net.esper.event.EventBean;
 import net.esper.type.BitWiseOpEnum;
 import net.esper.util.JavaClassHelper;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 
 /**
  * Represents the bit-wise operators in an expression tree.
@@ -22,9 +24,9 @@ public class ExprBitWiseNode extends ExprNode {
      */
     public ExprBitWiseNode(BitWiseOpEnum bitWiseOpEnum_)
     {
-    	_bitWiseOpEnum = bitWiseOpEnum_;
-    }	
-    
+        _bitWiseOpEnum = bitWiseOpEnum_;
+    }
+
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
@@ -37,32 +39,32 @@ public class ExprBitWiseNode extends ExprNode {
             Class childType = child.getType();
             if ((!JavaClassHelper.isBoolean(childType)) && (!JavaClassHelper.isNumeric(childType)))
             {
-            	throw new ExprValidationException("Invalid datatype for bitwise " +
-            			childType.getName() + " is not allowed");
+                throw new ExprValidationException("Invalid datatype for bitwise " +
+                        childType.getName() + " is not allowed");
             }
         }
 
         // Determine result type, set up compute function
         Class childTypeOne = this.getChildNodes().get(0).getType();
         Class childTypeTwo = this.getChildNodes().get(1).getType();
-    	if ((JavaClassHelper.isFloatingPointClass(childTypeOne)) || (JavaClassHelper.isFloatingPointClass(childTypeTwo)))
-    	{
-    		throw new ExprValidationException("Invalid type for bitwise " + _bitWiseOpEnum.getComputeDescription()  + " operator");
-    	}        	        	
-    	else
-    	{
-    		Class childBoxedTypeOne = JavaClassHelper.getBoxedType(childTypeOne) ;
-    		Class childBoxedTypeTwo = JavaClassHelper.getBoxedType(childTypeTwo) ;
-        	if (childBoxedTypeOne == childBoxedTypeTwo)
-        	{
+        if ((JavaClassHelper.isFloatingPointClass(childTypeOne)) || (JavaClassHelper.isFloatingPointClass(childTypeTwo)))
+        {
+            throw new ExprValidationException("Invalid type for bitwise " + _bitWiseOpEnum.getComputeDescription()  + " operator");
+        }
+        else
+        {
+            Class childBoxedTypeOne = JavaClassHelper.getBoxedType(childTypeOne) ;
+            Class childBoxedTypeTwo = JavaClassHelper.getBoxedType(childTypeTwo) ;
+            if (childBoxedTypeOne == childBoxedTypeTwo)
+            {
                 _resultType = childBoxedTypeOne;
-                _bitWiseOpEnumComputer = _bitWiseOpEnum.getComputer(_resultType);        		
-        	}
-        	else
-        	{
-        		throw new ExprValidationException("Both nodes muts be of the same type for bitwise " + _bitWiseOpEnum.getComputeDescription()  + " operator");        		
-        	}
-    	}
+                _bitWiseOpEnumComputer = _bitWiseOpEnum.getComputer(_resultType);
+            }
+            else
+            {
+                throw new ExprValidationException("Both nodes muts be of the same type for bitwise " + _bitWiseOpEnum.getComputeDescription()  + " operator");
+            }
+        }
     }
 
     public Class getType() throws ExprValidationException
@@ -100,7 +102,7 @@ public class ExprBitWiseNode extends ExprNode {
         }
 
         return true;
-    }    
+    }
 
     public String toExpressionString()
     {

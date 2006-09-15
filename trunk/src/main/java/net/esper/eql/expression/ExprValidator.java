@@ -1,5 +1,8 @@
 package net.esper.eql.expression;
 
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
+
 /**
  * Validation interface for filter nodes.
  */

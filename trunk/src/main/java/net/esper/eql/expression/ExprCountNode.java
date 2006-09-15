@@ -1,5 +1,9 @@
 package net.esper.eql.expression;
 
+import net.esper.eql.core.Aggregator;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
+
 /**
  * Represents the count(...) and count(*) and count(distinct ...) aggregate function is an expression tree.
  */

@@ -1,6 +1,6 @@
 package net.esper.eql.view;
 
-import net.esper.eql.expression.OutputLimitSpec;
+import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.view.ViewServiceContext;
 
 import org.apache.commons.logging.Log;

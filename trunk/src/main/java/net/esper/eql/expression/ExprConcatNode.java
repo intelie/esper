@@ -1,6 +1,8 @@
 package net.esper.eql.expression;
 
 import net.esper.event.EventBean;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.

@@ -3,10 +3,9 @@ package net.esper.eql.expression;
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.eql.SupportStreamTypeSvc3Stream;
 import net.esper.support.event.SupportEventBeanFactory;
-import net.esper.regression.eql.TestPerfPropertyAccess;
+import net.esper.eql.core.StreamTypeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

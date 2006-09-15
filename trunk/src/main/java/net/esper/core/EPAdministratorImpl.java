@@ -8,14 +8,12 @@ import net.esper.event.EventType;
 import net.esper.eql.parse.*;
 import net.esper.eql.generated.EQLStatementParser;
 import net.esper.eql.generated.EQLBaseWalker;
-import net.esper.eql.expression.*;
-import net.esper.collection.Pair;
+import net.esper.eql.spec.StatementSpec;
+import net.esper.eql.spec.PatternStreamSpec;
 import net.esper.util.DebugFacility;
 import net.esper.pattern.EvalRootNode;
 
 import java.util.Map;
-import java.util.List;
-import java.util.LinkedList;
 
 import antlr.TokenStreamException;
 import antlr.RecognitionException;
@@ -105,7 +103,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
         // Build event type of aggregate event representing the pattern
         // TODO checking if more then 1, comments in code
-        PatternStreamSpec patternStreamSpec = (PatternStreamSpec) walker.getStreamSpecs().get(0);
+        PatternStreamSpec patternStreamSpec = (PatternStreamSpec) walker.getStatementSpec().getStreamSpecs().get(0);
 
         EvalRootNode rootNode = new EvalRootNode();
         rootNode.addChildNode(patternStreamSpec.getEvalNode());
@@ -146,26 +144,10 @@ public class EPAdministratorImpl implements EPAdministrator
             DebugFacility.dumpAST(walker.getAST());
         }
 
-        // Compile list of selection elements
-        List<Pair<ExprNode, String>> rawSelectionList = walker.getSelectListExpressions();
-        List<SelectExprElement> selectClause = new LinkedList<SelectExprElement>();
-        for (Pair<ExprNode, String> raw : rawSelectionList)
-        {
-            selectClause.add(new SelectExprElement(raw.getFirst(), raw.getSecond()));
-        }
 
         // Create start method
-        List<StreamSpec> fromClause = walker.getStreamSpecs();
-        List<OuterJoinDesc> outerJoinClauses = walker.getOuterJoinDescList();
-        ExprNode whereClause = walker.getFilterRootNode();
-        List<ExprNode> groupByNodes = walker.getGroupByExpressions();
-        ExprNode havingClause = walker.getHavingExprRootNode();
-        OutputLimitSpec outputClause = walker.getOutputLimitSpec();
-        InsertIntoDesc insertIntoDesc = walker.getInsertIntoDesc();
-        List<Pair<ExprNode, Boolean>> orderByClause = walker.getOrderByList();
-
-        EPEQLStmtStartMethod startMethod = new EPEQLStmtStartMethod(insertIntoDesc, selectClause, fromClause,
-                outerJoinClauses, whereClause, groupByNodes, havingClause, outputClause, orderByClause, eqlStatement, services);
+        StatementSpec statementSpec = walker.getStatementSpec();
+        EPEQLStmtStartMethod startMethod = new EPEQLStmtStartMethod(statementSpec, eqlStatement, services);
 
         return new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod);
     }

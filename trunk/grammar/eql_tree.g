@@ -27,7 +27,10 @@ tokens
 {
 	private static Log log = LogFactory.getLog(EQLBaseWalker.class);
 
+	// For pattern processing within EQL and for create pattern
 	protected void setIsPatternWalk(boolean isPatternWalk) throws SemanticException {}
+	protected void endPattern() throws SemanticException {}
+	
 	protected void leaveNode(AST node) throws SemanticException {}
 	protected void end() throws SemanticException {}
 }
@@ -171,7 +174,7 @@ libFunc
 // pattern expression
 //----------------------------------------------------------------------------
 startPatternExpressionRule
-	:	exprChoice { end(); }
+	:	{setIsPatternWalk(true);} exprChoice { endPattern(); end(); }
 	;
 
 exprChoice

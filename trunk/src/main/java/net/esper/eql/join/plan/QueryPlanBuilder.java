@@ -1,7 +1,7 @@
 package net.esper.eql.join.plan;
 
 import net.esper.eql.expression.ExprNode;
-import net.esper.eql.expression.OuterJoinDesc;
+import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.type.OuterJoinType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

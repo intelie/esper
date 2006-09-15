@@ -1,6 +1,6 @@
 package net.esper.eql.join.plan;
 
-import net.esper.eql.expression.OuterJoinDesc;
+import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.support.eql.SupportOuterJoinDescFactory;
 import net.esper.type.OuterJoinType;
 import junit.framework.TestCase;

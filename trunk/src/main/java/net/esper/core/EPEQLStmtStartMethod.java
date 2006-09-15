@@ -16,6 +16,8 @@ import net.esper.eql.join.JoinSetFilter;
 import net.esper.eql.view.FilterExprView;
 import net.esper.eql.view.OutputProcessView;
 import net.esper.eql.view.InternalRouteView;
+import net.esper.eql.spec.*;
+import net.esper.eql.core.*;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.*;
@@ -34,62 +36,32 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EPEQLStmtStartMethod
 {
-    private InsertIntoDesc optionalInsertIntoDesc;
-    private List<SelectExprElement> selectionList;
-    private List<StreamSpec> streams;
-    private ExprNode optionalFilterNode;
-    private ExprNode optionalHavingNode;
-    private OutputLimitSpec optionalOutputLimitSpec;
-    private List<OuterJoinDesc> outerJoinDescList;
-    private List<ExprNode> groupByNodes;
-    private List<Pair<ExprNode, Boolean>> orderByNodes;
-    private String eqlStatement;
-    private EPServicesContext services;
-    private ScheduleBucket scheduleBucket;
+    private final StatementSpec statementSpec;
+    private final String eqlStatement;
+    private final ScheduleBucket scheduleBucket;
+    private final EPServicesContext services;
+    private final ViewServiceContext viewContext;
 
     /**
      * Ctor.
-     * @param insertIntoDesc describes the insert-into information supplied, or null if no insert into defined
-     * @param selectionList describes the list of selected fields, empty list if wildcarded (SELECT-clause)
-     * @param streams is a definition of the event streams (FROM-clause)
-     * @param outerJoinDescList is a list of outer join descriptors indicating join type and properties (OUTER-JOIN clauses)
-     * @param optionalFilterNode is filter conditions that result sets must meet (WHERE clause)
-     * @param groupByNodes is a list of expressions that represent the grouping criteria in a group by clause,
-     *        empty list if none supplied (GROUP BY)
-     * @param optionalHavingNode is filter conditions that grouped-by results must meet (HAVING clause)
-     * @param optionalOutputLimitViewSpecs is a list of the output rate limiting views,
-     *        empty list if none supplied (OUTPUT clause)
-     * @param orderByNodes is the order-by expression nodes
+     * @param statementSpec is a container for the definition of all statement constructs that
+     * may have been used in the statement, i.e. if defines the select clauses, insert into, outer joins etc.
      * @param eqlStatement is the expression text
      * @param services is the service instances for dependency injection
      */
-    public EPEQLStmtStartMethod(InsertIntoDesc insertIntoDesc,
-                                List<SelectExprElement> selectionList,
-                                List<StreamSpec> streams,
-                                List<OuterJoinDesc> outerJoinDescList,
-                                ExprNode optionalFilterNode,
-                                List<ExprNode> groupByNodes,
-                                ExprNode optionalHavingNode,
-                                OutputLimitSpec optionalOutputLimitViewSpecs,
-                                List<Pair<ExprNode, Boolean>> orderByNodes,
+    public EPEQLStmtStartMethod(StatementSpec statementSpec,
                                 String eqlStatement,
                                 EPServicesContext services)
     {
-        this.optionalInsertIntoDesc = insertIntoDesc;
-        this.selectionList = selectionList;
-        this.streams = streams;
-        this.outerJoinDescList = outerJoinDescList;
-        this.optionalFilterNode = optionalFilterNode;
-        this.groupByNodes = groupByNodes;
-        this.optionalHavingNode = optionalHavingNode;
-        this.optionalOutputLimitSpec = optionalOutputLimitViewSpecs;
-        this.orderByNodes = orderByNodes;
+        this.statementSpec = statementSpec;
         this.services = services;
         this.eqlStatement = eqlStatement;
 
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
         scheduleBucket = services.getSchedulingService().allocateBucket();
+
+        viewContext = new ViewServiceContext(services.getSchedulingService(), scheduleBucket, services.getEventAdapterService());
     }
 
     /**
@@ -101,25 +73,25 @@ public class EPEQLStmtStartMethod
     public Pair<Viewable, EPStatementStopMethod> start()
         throws ExprValidationException, ViewProcessingException
     {
-        ViewServiceContext viewContext = new ViewServiceContext(services.getSchedulingService(), scheduleBucket, services.getEventAdapterService());
-
         // Determine stream names for each stream - some streams may not have a name given
-        String[] streamNames = determineStreamNames(streams);
-        EventType[] streamTypes = new EventType[streams.size()];
-        Viewable[] streamViews = new Viewable[streams.size()];
+        String[] streamNames = determineStreamNames(statementSpec.getStreamSpecs());
+        EventType[] streamTypes = new EventType[statementSpec.getStreamSpecs().size()];
+        Viewable[] streamViews = new Viewable[streamTypes.length];
         final List<PatternStopCallback> patternStopCallbacks = new LinkedList<PatternStopCallback>();
 
         // Create streams and views
-        for (int i = 0; i < streams.size(); i++)
+        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
-            StreamSpec streamSpec = streams.get(i);
+            StreamSpec streamSpec = statementSpec.getStreamSpecs().get(i);
             EventStream eventStream = null;
 
+            // Create stream based on a filter specification
             if (streamSpec instanceof FilterStreamSpec)
             {
                 FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
                 eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
             }
+            // Create stream based on a pattern expression
             else
             {
                 PatternStreamSpec patternStreamSpec = (PatternStreamSpec) streamSpec;
@@ -143,15 +115,17 @@ public class EPEQLStmtStartMethod
                 patternStopCallbacks.add(patternStopCallback);
             }
 
+            // Cascade views onto the (filter or pattern) stream
             streamViews[i] = services.getViewService().createView(eventStream, streamSpec.getViewSpecs(), viewContext);
             streamTypes[i] = streamViews[i].getEventType();
         }
 
+        // create stop method
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
         {
             public void stop()
             {
-                for (StreamSpec streamSpec : streams)
+                for (StreamSpec streamSpec : statementSpec.getStreamSpecs())
                 {
                     if (streamSpec instanceof FilterStreamSpec)
                     {
@@ -174,12 +148,13 @@ public class EPEQLStmtStartMethod
         
         // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
         // May return null if we don't need to post-process results posted by views or joins.
-        ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(selectionList,
-                optionalInsertIntoDesc,
-                groupByNodes,
-                optionalHavingNode,
-                optionalOutputLimitSpec,
-                orderByNodes,
+        ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                statementSpec.getSelectListExpressions(),
+                statementSpec.getInsertIntoDesc(),
+                statementSpec.getGroupByExpressions(),
+                statementSpec.getHavingExprRootNode(),
+                statementSpec.getOutputLimitSpec(),
+                statementSpec.getOrderByList(),
                 typeService,
                 services.getEventAdapterService(),
                 autoImportService);
@@ -187,27 +162,41 @@ public class EPEQLStmtStartMethod
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, autoImportService);
 
-        // For just 1 event stream without joins, handle the one-table process separatly.
-        if (streams.size() == 1)
-        {
-            Viewable finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, optionalInsertIntoDesc, viewContext);
+        Pair<Viewable, EPStatementStopMethod> viewableAndStopMethod = null;
 
-            return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
+        // For just 1 event stream without joins, handle the one-table process separatly.
+        if (streamNames.length == 1)
+        {
+            Viewable finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, statementSpec.getInsertIntoDesc(), viewContext);
+            viewableAndStopMethod = new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
+        }
+        else
+        {
+            viewableAndStopMethod = handleJoin(streamNames, streamTypes, streamViews, optionalResultSetProcessor, stopMethod);
         }
 
+        return viewableAndStopMethod;
+    }
+
+    private Pair<Viewable, EPStatementStopMethod> handleJoin(String[] streamNames,
+                                                             EventType[] streamTypes,
+                                                             Viewable[] streamViews,
+                                                             ResultSetProcessor optionalResultSetProcessor,
+                                                             EPStatementStopMethod stopMethod)
+    {
         // Handle joins
-        JoinSetComposer composer = JoinSetComposerFactory.makeComposer(outerJoinDescList, optionalFilterNode, streamTypes, streamNames);
-        JoinSetFilter filter = new JoinSetFilter(optionalFilterNode);
-        OutputProcessView indicatorView = new OutputProcessView(optionalResultSetProcessor, streams.size(), optionalOutputLimitSpec, viewContext);
+        JoinSetComposer composer = JoinSetComposerFactory.makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames);
+        JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
+        OutputProcessView indicatorView = new OutputProcessView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), viewContext);
 
         // Create strategy for join execution
         JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
 
         // Hook up dispatchable with buffer and execution strategy
-        JoinExecStrategyDispatchable dispatchable = new JoinExecStrategyDispatchable(services.getDispatchService(), execution, streams.size());
+        JoinExecStrategyDispatchable dispatchable = new JoinExecStrategyDispatchable(services.getDispatchService(), execution, statementSpec.getStreamSpecs().size());
 
         // Create buffer for each view. Point buffer to dispatchable for join.
-        for (int i = 0; i < streams.size(); i++)
+        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             BufferView buffer = new BufferView(i);
             streamViews[i].addView(buffer);
@@ -216,9 +205,9 @@ public class EPEQLStmtStartMethod
 
         // Hook up internal event route for insert-into if required
         View finalView = indicatorView;
-        if (optionalInsertIntoDesc != null)
+        if (statementSpec.getInsertIntoDesc() != null)
         {
-            InternalRouteView routeView = new InternalRouteView(optionalInsertIntoDesc.isIStream(), services.getInternalEventRouter());
+            InternalRouteView routeView = new InternalRouteView(statementSpec.getInsertIntoDesc().isIStream(), services.getInternalEventRouter());
             finalView.addView(routeView);
             finalView = routeView;
         }
@@ -248,12 +237,15 @@ public class EPEQLStmtStartMethod
 
     private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService)
     {
-        if (optionalFilterNode != null)
+        if (statementSpec.getFilterRootNode() != null)
         {
+            ExprNode optionalFilterNode = statementSpec.getFilterRootNode();
+
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
                 optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, autoImportService);
+                statementSpec.setFilterExprRootNode(optionalFilterNode);
 
                 // Make sure there is no aggregation in the where clause
                 List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
@@ -268,12 +260,11 @@ public class EPEQLStmtStartMethod
                 log.debug(".validateNodes Validation exception for filter=" + optionalFilterNode.toExpressionString(), ex);
                 throw new EPStatementException("Error validating expression: " + ex.getMessage(), eqlStatement);
             }
-
         }
 
-        for (int outerJoinCount = 0; outerJoinCount < outerJoinDescList.size(); outerJoinCount++)
+        for (int outerJoinCount = 0; outerJoinCount < statementSpec.getOuterJoinDescList().size(); outerJoinCount++)
         {
-            OuterJoinDesc outerJoinDesc = outerJoinDescList.get(outerJoinCount);
+            OuterJoinDesc outerJoinDesc = statementSpec.getOuterJoinDescList().get(outerJoinCount);
 
             // Validate the outer join clause using an artificial equals-node on top.
             // Thus types are checked via equals.
@@ -337,17 +328,17 @@ public class EPEQLStmtStartMethod
         Viewable finalView = view;
 
         // Add filter view that evaluates the filter expression
-        if (optionalFilterNode != null)
+        if (statementSpec.getFilterRootNode() != null)
         {
-            FilterExprView filterView = new FilterExprView(optionalFilterNode);
+            FilterExprView filterView = new FilterExprView(statementSpec.getFilterRootNode());
             finalView.addView(filterView);
             finalView = filterView;
         }
 
         // Add select expression view if there is any
-       if (optionalResultSetProcessor != null || optionalOutputLimitSpec != null)
+       if (optionalResultSetProcessor != null || statementSpec.getOutputLimitSpec() != null)
         {
-            OutputProcessView selectView = new OutputProcessView(optionalResultSetProcessor, streams.size(), optionalOutputLimitSpec, viewContext);
+            OutputProcessView selectView = new OutputProcessView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), viewContext);
             finalView.addView(selectView);
             finalView = selectView;
         }

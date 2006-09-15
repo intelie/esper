@@ -1,6 +1,7 @@
 package net.esper.support.eql;
 
 import net.esper.eql.expression.*;
+import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.type.OuterJoinType;
 
 public class SupportOuterJoinDescFactory

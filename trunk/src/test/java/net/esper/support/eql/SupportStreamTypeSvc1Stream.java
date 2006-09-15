@@ -1,12 +1,9 @@
 package net.esper.support.eql;
 
-import net.esper.eql.expression.*;
-import net.esper.collection.Pair;
+import net.esper.eql.core.*;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.event.SupportEventBeanFactory;
 

@@ -1,6 +1,7 @@
 package net.esper.eql.expression;
 
 import net.esper.support.eql.SupportAggregator;
+import net.esper.eql.core.UniqueValueAggregator;
 import junit.framework.TestCase;
 
 public class TestUniqueValueAggregator extends TestCase

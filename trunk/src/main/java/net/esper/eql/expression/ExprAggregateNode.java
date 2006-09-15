@@ -2,6 +2,10 @@ package net.esper.eql.expression;
 
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
+import net.esper.eql.core.AggregationResultFuture;
+import net.esper.eql.core.Aggregator;
+import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.UniqueValueAggregator;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -13,7 +17,7 @@ import java.util.LinkedList;
  * <p>
  * In terms of validation each concrete aggregation node must implement it's own validation.
  * <p>
- * In terms of evaluation this base class will ask the assigned {@link AggregationResultFuture} for the current state,
+ * In terms of evaluation this base class will ask the assigned {@link net.esper.eql.core.AggregationResultFuture} for the current state,
  * using a column number assigned to the node.
  * <p>
  * Concrete subclasses must supply an aggregation state prototype node {@link Aggregator} that reflects

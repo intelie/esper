@@ -2,6 +2,9 @@ package net.esper.eql.expression;
 
 import net.esper.type.MinMaxTypeEnum;
 import net.esper.collection.SortedRefCountedSet;
+import net.esper.eql.core.Aggregator;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 
 /**
  * Represents the min/max(distinct? ...) aggregate function is an expression tree.

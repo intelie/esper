@@ -1,6 +1,5 @@
 package net.esper.eql.view;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -9,8 +8,8 @@ import java.util.Set;
 
 import net.esper.collection.MultiKey;
 import net.esper.collection.Pair;
-import net.esper.eql.expression.OutputLimitSpec;
-import net.esper.eql.expression.ResultSetProcessor;
+import net.esper.eql.spec.OutputLimitSpec;
+import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -45,7 +44,7 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
      * @param outputLimitSpec is the specification for limiting output (the output condition and the result set processor)
      * @param viewContext is the services the output condition may depend on
      */
-    public OutputProcessView(ResultSetProcessor resultSetProcessor, 
+    public OutputProcessView(ResultSetProcessor resultSetProcessor,
     					  int streamCount, 
     					  OutputLimitSpec outputLimitSpec, 
     					  ViewServiceContext viewContext)

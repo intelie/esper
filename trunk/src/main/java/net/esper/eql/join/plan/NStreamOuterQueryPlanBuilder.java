@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-import net.esper.eql.expression.OuterJoinDesc;
+import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.eql.join.assemble.BaseAssemblyNode;
 import net.esper.eql.join.assemble.AssemblyStrategyTreeBuilder;
 import net.esper.type.OuterJoinType;

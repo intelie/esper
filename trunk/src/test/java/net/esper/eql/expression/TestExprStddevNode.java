@@ -1,8 +1,7 @@
 package net.esper.eql.expression;
 
 import net.esper.support.eql.SupportExprNode;
-import net.esper.type.ArithTypeEnum;
-import net.esper.type.RelationalOpEnum;
+import net.esper.eql.core.Aggregator;
 
 public class TestExprStddevNode extends TestExprAggregateNodeAdapter
 {

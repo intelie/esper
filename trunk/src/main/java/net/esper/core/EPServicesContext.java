@@ -4,7 +4,7 @@ import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.DispatchServiceProvider;
 import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
-import net.esper.eql.expression.AutoImportService;
+import net.esper.eql.core.AutoImportService;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
 import net.esper.filter.FilterServiceProvider;

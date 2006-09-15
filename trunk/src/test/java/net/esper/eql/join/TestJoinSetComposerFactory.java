@@ -3,7 +3,6 @@ package net.esper.eql.join;
 import junit.framework.TestCase;
 
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.eql.SupportExprNode;
@@ -12,7 +11,7 @@ import net.esper.eql.join.table.PropertyIndexedEventTable;
 import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.exec.TableLookupExecNode;
-import net.esper.eql.expression.OuterJoinDesc;
+import net.esper.eql.spec.OuterJoinDesc;
 
 import java.util.List;
 import java.util.LinkedList;

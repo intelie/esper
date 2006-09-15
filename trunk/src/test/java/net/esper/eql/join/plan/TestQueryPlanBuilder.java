@@ -3,7 +3,7 @@ package net.esper.eql.join.plan;
 import junit.framework.TestCase;
 import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.support.eql.SupportOuterJoinDescFactory;
-import net.esper.eql.expression.OuterJoinDesc;
+import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.type.OuterJoinType;
 
 import java.util.List;

@@ -1,9 +1,9 @@
 package net.esper.support.eql;
 
-import net.esper.eql.expression.AutoImportService;
+import net.esper.eql.core.AutoImportService;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.expression.StreamTypeService;
+import net.esper.eql.core.StreamTypeService;
 import net.esper.event.EventBean;
 
 public class SupportBoolExprNode extends ExprNode

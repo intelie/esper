@@ -1,8 +1,8 @@
 package net.esper.core;
 
 import net.esper.client.*;
-import net.esper.eql.expression.AutoImportService;
-import net.esper.eql.expression.AutoImportServiceImpl;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.AutoImportServiceImpl;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.util.JavaClassHelper;

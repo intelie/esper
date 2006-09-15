@@ -1,8 +1,7 @@
 package net.esper.eql.view;
 
-import net.esper.eql.expression.OutputLimitSpec;
-import net.esper.eql.expression.OutputLimitSpec.DisplayLimit;
-import net.esper.schedule.SchedulingService;
+import net.esper.eql.spec.OutputLimitSpec;
+import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.view.SupportViewContextFactory;
 import net.esper.view.ViewServiceContext;

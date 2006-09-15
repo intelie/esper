@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.esper.eql.expression.AutoImportService;
+import net.esper.eql.core.AutoImportService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

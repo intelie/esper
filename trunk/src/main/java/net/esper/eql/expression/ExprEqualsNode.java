@@ -2,6 +2,8 @@ package net.esper.eql.expression;
 
 import net.esper.util.JavaClassHelper;
 import net.esper.event.EventBean;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 
 /**
  * Represents an equals (=) comparator in a filter expressiun tree.

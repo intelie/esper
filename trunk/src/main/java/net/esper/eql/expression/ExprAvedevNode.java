@@ -1,6 +1,9 @@
 package net.esper.eql.expression;
 
 import net.esper.collection.RefCountedSet;
+import net.esper.eql.core.Aggregator;
+import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.StreamTypeService;
 
 import java.util.Map;
 import java.util.Iterator;
