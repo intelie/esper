@@ -55,7 +55,7 @@
         <title>The Administrative Interface</title>
 
         <para>
-			Create event patterns or EQL statements via the administrative interface <literal>EPAdministrator</literal>.
+			Create event pattern expression and EQL statements via the administrative interface <literal>EPAdministrator</literal>.
         </para>
 
         <para>
@@ -63,11 +63,17 @@
         </para>
 		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
 EPAdministrator admin = epService.getEPAdministrator();
+
 EPStatement 10secRecurTrigger = admin.createPattern(
   "every timer:at(*, *, *, *, *, */10)");
+
 EPStatement countStmt = admin.createEQL(
   "select count(*) from MarketDataBean.win:time(60)");
 ]]></programlisting>
+
+        <para>
+			Note that event pattern expressions can also occur within EQL statements. This is outlined in more detail in <xref linkend="eql-from-clause-patterns"/>.
+        </para>
 
         <para>
 			The <literal>createPattern</literal> and <literal>createEQL</literal> methods return <literal>EPStatement</literal> instances. Statements are automatically started and active when created. A statement can also be stopped and started again via the <literal>stop</literal> and <literal>start</literal> methods shown in the code snippet below.

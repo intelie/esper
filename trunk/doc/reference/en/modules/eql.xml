@@ -154,48 +154,91 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 		<synopsis>from <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>] [, <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>]] [, ...]</synopsis>
 
 		<para>
-			The event stream definition <emphasis>stream_def</emphasis> as shown in the syntax above consists of an event type, an optional filter property list and an optional list of views that derive data from a stream must be supplied. The syntax for an event stream definition is as below:
+			The event stream definition <emphasis>stream_def</emphasis> as shown in the syntax above can consists of either a filter-based event stream definition or a pattern-based event stream definition. 
 		</para>
-
-		<synopsis><emphasis>event_type</emphasis> ( [<emphasis>filter_criteria</emphasis>] ) [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
 
 		<para>
-			The following EQL statement selects all event properties for the last 100 events of IBM stock ticks for volume. In the example, the event type is the fully qualified Java class name <literal>org.esper.example.StockTick</literal>. The expression filters for events where the property <literal>symbol</literal> has a value of "IBM". The optional view specifications for deriving data from the StockTick events are a length window and a view for computing statistics on volume. The name for the event stream is "volumeStats".
+			For joins and outer joins, specify two or more event streams. Joins between pattern-based and filter-based event streams are also supported.
 		</para>
-		<programlisting><![CDATA[select * from org.esper.example.StockTick(symbol='IBM').win:length(100).stat:uni('volume') as volumeStats]]></programlisting>
 
-		<para>
-			Instead of the fully-qualified Java class name any other event name can be mapped via Configuration to a Java class, making the resulting statement more readable.
-		</para>
-		<programlisting><![CDATA[select * from StockTick(symbol='IBM').win:length(100).stat:uni('volume') as volumeStats]]></programlisting>
+        <sect2 id="eql-from-clause-filter" >
+           <title>Filter-based event streams</title>
 
-        <sect2 id="eql-from-clause-event-type" >
-           <title>Specifying an event type</title>
 			<para>
-				In the example above the event type was <literal>org.esper.example.StockTick</literal>. The event type is simply the fully qualified Java class name. Interfaces and abstract classes are also supported. Alternatively, via configuration an alias for an event type can be defined and used instead of the fully qualified class name. The below example shows one way to obtain the fully qualified class name of a given Java class <literal>StockTick</literal>.
+				For filter-based event streams, the event stream definition <emphasis>stream_def</emphasis> as shown in the syntax above consists of an event type, an optional filter property list and an optional list of views that derive data from a stream. The syntax for a filter-based event stream is as below:
 			</para>
+	
+			<synopsis><emphasis>event_type</emphasis> ( [<emphasis>filter_criteria</emphasis>] ) [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
+	
+			<para>
+				The following EQL statement selects all event properties for the last 100 events of IBM stock ticks for volume. In the example, the event type is the fully qualified Java class name <literal>org.esper.example.StockTick</literal>. The expression filters for events where the property <literal>symbol</literal> has a value of "IBM". The optional view specifications for deriving data from the StockTick events are a length window and a view for computing statistics on volume. The name for the event stream is "volumeStats".
+			</para>
+			<programlisting><![CDATA[select * from 
+  org.esper.example.StockTick(symbol='IBM').win:length(100).stat:uni('volume') as volumeStats]]></programlisting>
+	
+			<para>
+				Instead of the fully-qualified Java class name any other event name can be mapped via Configuration to a Java class, making the resulting statement more readable.
+			</para>
+			<programlisting><![CDATA[select * from StockTick(symbol='IBM').win:length(100).stat:uni('volume') as volumeStats]]></programlisting>
 
-			<programlisting><![CDATA[String eventName = StockTick.class.getName();]]>
-String stmt = "from " + eventName + ".win:length(100)"
-</programlisting>
+			<sect3 id="eql-from-clause-event-type" >
+			   <title>Specifying an event type</title>
+				<para>
+					In the example above the event type was <literal>org.esper.example.StockTick</literal>. The event type is simply the fully qualified Java class name. Interfaces and abstract classes are also supported. Alternatively, via configuration an alias for an event type can be defined and used instead of the fully qualified class name. The below example shows one way to obtain the fully qualified class name of a given Java class <literal>StockTick</literal>.
+				</para>
+	
+				<programlisting><![CDATA[String eventName = StockTick.class.getName();]]>
+	String stmt = "from " + eventName + ".win:length(100)"
+	</programlisting>
+			</sect3>
+		
+			<sect3 id="eql-from-clause-filter-criteria" >
+			   <title>Specifying event filter criteria</title>
+				<para>
+					Filter criteria follow the same syntax as outlined in the event pattern section on filters; see <xref linkend="pattern-filter"/>. Filter criteria operators are: <literal>=, &lt; , &gt; , &gt;=, &lt;=</literal>. Ranges use the <literal>in </literal> keyword and round <literal>(...)</literal> or square brackets <literal>[]</literal>.
+				</para>
+				
+				<para>
+					Esper filters out events in an event stream as defined by filter criteria before it sends events to subsequent views. Thus, compared to search conditions in a where-clause, filter criteria remove unneeded events early.
+				</para>
+	
+				<para>
+					The below example is a filter criteria list that removes events based on category, price and grade.
+				</para>
+			 <programlisting><![CDATA[from mypackage.RfidEvent(category="Perishable", price<1.00, grade in [1, 2])]]></programlisting>
+			</sect3>
 		</sect2>
 		
-        <sect2 id="eql-from-clause-filter-criteria" >
-           <title>Specifying event filter criteria</title>
+        <sect2 id="eql-from-clause-patterns" >
+           <title>Pattern-based event streams</title>
 			<para>
-				Filter criteria follow the same syntax as outlined in the event pattern section on filters; see <xref linkend="pattern-filter"/>. Filter criteria operators are: <literal>=, &lt; , &gt; , &gt;=, &lt;=</literal>. Ranges use the <literal>in </literal> keyword and round <literal>(...)</literal> or square brackets <literal>[]</literal>.
+				Event pattern expressions can also be used to specify one or more event streams in an EQL statement.
+				For pattern-based event streams, the event stream definition <emphasis>stream_def</emphasis> consists of the keyword <literal>pattern</literal> and a pattern expression in brackets <literal>[]</literal>. The syntax for an event stream definition using a pattern expression is below. As in filter-based event streams, an optional list of views that derive data from the stream can be supplied.
 			</para>
 			
-			<para>
-				Esper filters out events in an event stream as defined by filter criteria before it sends events to subsequent views. Thus, compared to search conditions in a where-clause, filter criteria remove unneeded events early.
-			</para>
+			<synopsis>pattern [<emphasis>pattern_expression</emphasis>] [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
 
 			<para>
-				The below example is a filter criteria list that removes events based on category, price and grade.
-			</para>
-         <programlisting><![CDATA[from mypackage.RfidEvent(category="Perishable", price<1.00, grade in [1, 2])]]></programlisting>
+				Lets look at a simple example. The next statement specifies an event stream that consists of both stock tick events and trade events. The example tags stock tick events with the name "tick" and trade events with the name "trade".
+			</para>			
+            <programlisting><![CDATA[select * from pattern [every tick=StockTickEvent or every trade=TradeEvent]]]></programlisting>
+			
+			<para>
+				This statement generates an event every time the engine receives either one of the event types. The generated events resemble a map with "tick" and "trade" keys. For stock tick events, the "tick" key value is the underlying stock tick event, and the "trade" key value is a null value. For trade events, the "trade" key value is the underlying trade event, and the "tick" key value is a null value.
+			</para>			
+
+			<para>
+				Lets further refine this statement adding a view the gives us the last 30 seconds of either stock tick or trade events. Lets also select prices and a price total.
+			</para>			
+            <programlisting><![CDATA[select tick.price as tickPrice, trade.price as tradePrice, 
+       sum(tick.price) + sum(trade.price) as total
+  from pattern [every tick=StockTickEvent or every trade=TradeEvent].win:time(30)]]></programlisting>
+
+			<para>
+				Note that in the statement above <literal>tickPrice</literal> and <literal>tradePrice</literal> can each be null values depending on the event processed. Therefore, an aggregation function such as <literal>sum(tick.price + trade.price))</literal> would always return null values as either of the two price properties are always a null value for any event matching the pattern. Use the <literal>coalesce</literal> function to handle null values, for example: <literal>sum(coalesce(tick.price, 0) + coalesce(trade.price, 0))</literal>.
+			</para>			
 		</sect2>
-		
+
         <sect2 id="eql-from-clause-view-spec" >
            <title>Specifying views</title>
 			<para>
@@ -203,7 +246,7 @@ String stmt = "from " + eventName + ".win:length(100)"
 			</para>
 						
 			<para>
-				Views can optionally take one or parameters. These parameters can consist of primitive constants such as String, boolean or numeric types. Arrays are also supported as a view parameter types.
+				Views can optionally take one or more parameters. These parameters can consist of primitive constants such as String, boolean or numeric types. Arrays are also supported as a view parameter types.
 			</para>
 
 			<para>
@@ -218,7 +261,7 @@ String stmt = "from " + eventName + ".win:length(100)"
   std:groupby({'expressway', 'direction', 'segment'}).std:size()
 ]]></programlisting>
 		</sect2>
-
+		
     </sect1>
     
     <sect1 id="eql-where-clause">

@@ -53,36 +53,39 @@
            <title>Pattern Syntax</title>
            
 			<para>
-				The <literal>createPattern</literal> method on the <literal>EPAdministrator</literal> administrative interface creates pattern statements 
-				for the given pattern expression string.
-			</para>
-			
-			<para>
 				This is an example pattern expression that matches on every <literal>ServiceMeasurement</literal> events in which the
-				value of the <literal>latency</literal> event property is over 20 seconds, and on every<literal>ServiceMeasurement</literal> events in which the
+				value of the <literal>latency</literal> event property is over 20 seconds, and on every <literal>ServiceMeasurement</literal> event in which the
 				<literal>success</literal> property is false. Either one or the other condition must be true for this pattern to match.
 			</para>
 			<programlisting><![CDATA[every (spike=ServiceMeasurement(latency>20000) or error=ServiceMeasurement(success=false))]]></programlisting>
 			
 			<para>
-				The Java code to create this trigger is below.
-			</para>
-
-			<programlisting><![CDATA[EPAdministrator admin = EPServiceProviderManager.getDefaultProvider().getEPAdministrator();
-
-String eventName = ServiceMeasurement.class.getName();
-
-EPStatement myTrigger = admin.createPattern(
-  "every (spike=" + eventName + "(latency>20000) or error=" + eventName + "(success=false))");
-]]></programlisting>
-
-			<para>
-				The pattern expression starts with an <literal>every</literal> operator to indicate that the pattern should fire for every matching events and not just the first
+				In the example above, the pattern expression starts with an <literal>every</literal> operator to indicate that the pattern should fire for every matching events and not just the first
 				matching event. Within the <literal>every</literal> operator in round brackets is a nested pattern expression using the <literal>or</literal> operator. 
 				The left hand of the <literal>or</literal> operator is a filter expression that filters for events with a high latency value. The right hand of the operator 
 				contains a filter expression that filters for events with error status. Filter expressions are explained in <xref linkend="pattern-filter"/>.
 			</para>
 						
+			<para>
+				Pattern statements are created via the <literal>EPAdministrator</literal> interface. The <literal>EPAdministrator</literal> interface allows to create pattern statements in two ways:
+				Pattern statements that want to make use of the EQL <literal>select</literal> clause or any other EQL constructs use the <literal>createEQL</literal> method to create a statement that specifies one or more pattern expressions. EQL statements that use patterns are described in more detail in <xref linkend="eql-from-clause-patterns"/>. Use the syntax as shown in below example.
+			</para>
+				
+			<programlisting><![CDATA[EPAdministrator admin = EPServiceProviderManager.getDefaultProvider().getEPAdministrator();
+
+String eventName = ServiceMeasurement.class.getName();
+
+EPStatement myTrigger = admin.createEQL("select * from pattern [" +
+  "every (spike=" + eventName + "(latency>20000) or error=" + eventName + "(success=false))]");
+]]></programlisting>
+
+			<para>
+				Pattern statements that do not need to make use of the EQL <literal>select</literal> clause or any other EQL constructs can use the <literal>createPattern</literal> method, as in below example.
+			</para>
+
+			<programlisting><![CDATA[EPStatement myTrigger = admin.createPattern(
+  "every (spike=" + eventName + "(latency>20000) or error=" + eventName + "(success=false))");
+]]></programlisting>
 		</sect2>
 		
         <sect2 id="patterns-howto-subscribe" >
@@ -236,7 +239,7 @@ else
          <programlisting><![CDATA[mypackage.RfidEvent(category="Perishable", price<1.00, grade in [1:2])]]></programlisting>
          
         <para>
-            Filter criteria can also refer to events machting prior named events in the same expression. Below pattern is an example in which the pattern
+            Filter criteria can also refer to events matching prior named events in the same expression. Below pattern is an example in which the pattern
             matches once for every RfidEvent that is preceded by an RfidEvent with the same item id.
          </para>
          <programlisting><![CDATA[every A=mypackage.RfidEvent -> B=mypackage.RfidEvent(itemId=A.itemId)]]></programlisting>
