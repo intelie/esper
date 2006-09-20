@@ -1,0 +1,21 @@
+License
+~~~~~~~~~~~~~~
+
+	Esper is Free Software.
+
+	The LGPL license is sufficiently flexible to allow the use of Esper in both open source and commercial projects. 
+	The LGPL guarantees that Esper and any modifications made to Esper will stay open source, protecting our and your work. 
+
+	Esper is and will be open source distributed under the LGPL.
+
+	Using Esper (by importing Esper's public interfaces in your Java code), and extending Esper 
+	(by subclassing or implementation of an extension interface) is considered by the authors of Esper to be dynamic linking. 
+	Hence our interpretation of the LGPL is that the use of the unmodified Esper source does not affect the license of your 
+	application code.
+
+	The use of the unmodified Esper binary of course never affects the license of your application or distribution. 
+	The LGPL also forbids distribution for profit, so you will never have to pay money to any commercial entity for 
+	using or integrating Esper.
+
+	If you modify Esper and redistribute your modifications, the LGPL applies. 
+	Please submit any modifications to the issue tracking system.

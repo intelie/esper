@@ -1,0 +1,36 @@
+<chapter id="Indicators">
+    <title>Indicators</title>
+
+    <sect1 id="indicators-intro">
+        <title>Intro</title>
+    
+		<para>
+			Indicators are pluggable modules that communicate the results of event stream processing to the external world. 
+			Indicators can act as visualizers that present a graphical view of their event inputs. They can also be warning agents
+			(monitors) that send alerts, warnings or other control events to the outside world. 
+		</para>
+		
+		<para>
+			In their implementation indicators can be classes that implement the <literal>UpdateListener</literal> interface and that can thus
+			be attached directly to one or more statements. Indicactors can also be attached to one or more <literal>EPStatement</literal> instances.
+			This makes is possible for indicators to merge data as well as pull data from trigger and statement views.
+		</para>
+
+		<para>
+			Indicators may be integration components that plug together with other software, an some indicators will be supplied by Esper.
+			Esper currently only has one indicator module as described below.
+		</para>
+    </sect1>
+
+    <sect1 id="indicators-jmx">
+        <title>JMX Indicator</title>
+    
+		<para>
+			The <literal>net.esper.indicator.jmx.JMXLastEventIndicator</literal> displays the last event in a JMX MBean it registers with the
+			MBeanServer obtained via ManagementFactory.getPlatformMBeanServer();
+		</para>
+    </sect1>
+    
+</chapter>
+
+
