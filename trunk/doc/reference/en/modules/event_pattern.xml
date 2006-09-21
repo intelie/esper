@@ -195,6 +195,11 @@ else
             </listitem>
             <listitem>
                 <para>
+                    not equals <literal>!=</literal>
+                </para>
+            </listitem>
+            <listitem>
+                <para>
                     comparison operators <literal>&lt; , &gt; , &gt;=, &lt;=</literal>
                 </para>
             </listitem>

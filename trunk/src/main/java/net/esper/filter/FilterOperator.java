@@ -18,6 +18,11 @@ public enum FilterOperator
     EQUAL,
 
     /**
+     * Exact not matche (!=).
+     */
+    NOT_EQUAL,
+
+    /**
      * Less (<).
      */
     LESS,
@@ -58,6 +63,7 @@ public enum FilterOperator
     RANGE_HALF_CLOSED;
 
     private final static String EQUAL_OP = "=";
+    private final static String NOT_EQUAL_OP = "!=";
     private final static String LESS_OP = "<";
     private final static String LESS_EQUAL_OP = "<=";
     private final static String GREATER_OP = ">";
@@ -110,6 +116,10 @@ public enum FilterOperator
         if (operator.equals(EQUAL_OP))
         {
             return FilterOperator.EQUAL;
+        }
+        if (operator.equals(NOT_EQUAL_OP))
+        {
+            return FilterOperator.NOT_EQUAL;
         }
         if (operator.equals(LESS_OP))
         {

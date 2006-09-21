@@ -27,12 +27,15 @@ public class TestFilterSpecParamComparator extends TestCase
         FilterValueSetParamImpl param5 = new FilterValueSetParamImpl("e", FilterOperator.RANGE_CLOSED, null);
         FilterValueSetParamImpl param6 = new FilterValueSetParamImpl("e", FilterOperator.RANGE_CLOSED, null);
         FilterValueSetParamImpl param7 = new FilterValueSetParamImpl("f", FilterOperator.GREATER, null);
+        FilterValueSetParamImpl param8 = new FilterValueSetParamImpl("g", FilterOperator.NOT_EQUAL, null);
 
         // Compare same comparison types
         assertTrue(comparator.compare(param1, param2) == -1);
         assertTrue(comparator.compare(param2, param1) == 1);
         assertTrue(comparator.compare(param3, param2) == 1);
         assertTrue(comparator.compare(param2, param2) == 0);
+        assertTrue(comparator.compare(param8, param1) == 1);
+        assertTrue(comparator.compare(param1, param8) == -1);
 
         assertTrue(comparator.compare(param4, param5) == -1);
         assertTrue(comparator.compare(param5, param4) == 1);
@@ -65,7 +68,7 @@ public class TestFilterSpecParamComparator extends TestCase
         }
 
         assertEquals(FilterOperator.EQUAL, sorted.first().getFilterOperator());
-        assertEquals(FilterOperator.GREATER, sorted.last().getFilterOperator());
+        assertEquals(FilterOperator.NOT_EQUAL, sorted.last().getFilterOperator());
 
         log.debug(".testCompareAll " + Arrays.toString(sorted.toArray()));
     }

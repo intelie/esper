@@ -6,6 +6,7 @@ public class TestFilterOperator extends TestCase
 {
     public void testOperatorsFromString()
     {
+        assertTrue(FilterOperator.parseComparisonOperator("!=") == FilterOperator.NOT_EQUAL);
         assertTrue(FilterOperator.parseComparisonOperator(">") == FilterOperator.GREATER);
         assertTrue(FilterOperator.parseComparisonOperator("=") == FilterOperator.EQUAL);
         assertTrue(FilterOperator.parseComparisonOperator("<=") == FilterOperator.LESS_OR_EQUAL);
@@ -31,6 +32,7 @@ public class TestFilterOperator extends TestCase
         assertTrue(FilterOperator.LESS_OR_EQUAL.isComparisonOperator());
         assertFalse(FilterOperator.RANGE_CLOSED.isComparisonOperator());
         assertFalse(FilterOperator.EQUAL.isComparisonOperator());
+        assertFalse(FilterOperator.NOT_EQUAL.isComparisonOperator());
     }
 
     public void testIsRange()
@@ -41,5 +43,6 @@ public class TestFilterOperator extends TestCase
         assertTrue(FilterOperator.RANGE_HALF_CLOSED.isRangeOperator());
         assertFalse(FilterOperator.LESS.isRangeOperator());
         assertFalse(FilterOperator.EQUAL.isRangeOperator());
+        assertFalse(FilterOperator.NOT_EQUAL.isRangeOperator());
     }
 }

@@ -1,6 +1,11 @@
 Esper Changelog
 ===================
 
+Changes in version XXX
+----------------------
+* (EQL and Pattern) Support for != (not equals) in filter expressions (Enhancement request ESPER-63)
+
+
 Changes in version 1.1.0
 ------------------------------------
 * (EQL) Added support for pattern expressions in EQL statements (Enhancement request ESPER-53 Consuming pattern-generated events in EQL)

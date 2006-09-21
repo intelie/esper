@@ -147,7 +147,7 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
             }
             return createRangeParam(propertyName, primitiveValue, filterCompareNode);
         }
-        else if ((nodeType == EQUALS) || (nodeType == LT) || (nodeType == LE) ||
+        else if ((nodeType == EQUALS) || (nodeType == NOT_EQUAL) || (nodeType == LT) || (nodeType == LE) ||
                  (nodeType == GT) || (nodeType == GE))
         {
             return createNonRangeParam(propertyName, primitiveValue, filterCompareNode);

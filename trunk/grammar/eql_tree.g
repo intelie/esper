@@ -213,6 +213,7 @@ filterParam
 	
 filterParamComparator
 	:	#(EQUALS filterAtom)
+	|	#(NOT_EQUAL filterAtom)
 	|	#(LT filterAtom)
 	|	#(LE filterAtom)
 	|	#(GT filterAtom)

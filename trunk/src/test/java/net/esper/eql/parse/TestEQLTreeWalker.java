@@ -10,6 +10,7 @@ import net.esper.support.event.SupportEventAdapterService;
 import net.esper.eql.expression.*;
 import net.esper.view.ViewSpec;
 import net.esper.filter.FilterSpec;
+import net.esper.filter.FilterOperator;
 import net.esper.eql.spec.*;
 import net.esper.type.OuterJoinType;
 import net.esper.event.EventAdapterService;
@@ -526,7 +527,7 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testWalkPattern() throws Exception
     {
-        String text = "every g=" + SupportBean.class.getName() + "(string=\"IBM\") where timer:within(20)";
+        String text = "every g=" + SupportBean.class.getName() + "(string=\"IBM\", intPrimitive != 1) where timer:within(20)";
 
         EQLTreeWalker walker = parseAndWalkPattern(text);
 
@@ -548,7 +549,10 @@ public class TestEQLTreeWalker extends TestCase
 
         assertEquals("g", filterNode.getEventAsName());
         assertEquals(0, filterNode.getChildNodes().size());
-        assertEquals(1, filterNode.getFilterSpec().getParameters().size());
+        assertEquals(2, filterNode.getFilterSpec().getParameters().size());
+        assertEquals("intPrimitive", filterNode.getFilterSpec().getParameters().get(1).getPropertyName());
+        assertEquals(FilterOperator.NOT_EQUAL, filterNode.getFilterSpec().getParameters().get(1).getFilterOperator());
+        assertEquals(1, filterNode.getFilterSpec().getParameters().get(1).getFilterValue(null));
 
         assertEquals(1, patternStreamSpec.getTaggedEventTypes().size());
         assertEquals(SupportBean.class, patternStreamSpec.getTaggedEventTypes().get("g").getUnderlyingType());

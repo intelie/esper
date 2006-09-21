@@ -550,7 +550,7 @@ filterParameter
 	;
 	
 filterParamConstant 
-	:	(EQUALS^ | LT^ | LE^ | GE^ | GT^) (constant | filterIdentifier)
+	:	(EQUALS^ | NOT_EQUAL^ | LT^ | LE^ | GE^ | GT^) (constant | filterIdentifier)
 	;
 
 filterParamRange 

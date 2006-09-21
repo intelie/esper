@@ -32,6 +32,14 @@ public class TestIndexFactory extends TestCase
         assertTrue(index.getPropertyName().equals("string"));
         assertTrue(index.getFilterOperator() == FilterOperator.EQUAL);
 
+        // Create an "not equals" index
+        index = IndexFactory.createIndex(eventType, "string", FilterOperator.NOT_EQUAL);
+
+        assertTrue(index != null);
+        assertTrue(index instanceof FilterParamIndexNotEquals);
+        assertTrue(index.getPropertyName().equals("string"));
+        assertTrue(index.getFilterOperator() == FilterOperator.NOT_EQUAL);
+
         // Create a range index
         index = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.RANGE_CLOSED);
         assertTrue(index instanceof FilterParamIndexRange);

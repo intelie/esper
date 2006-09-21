@@ -136,6 +136,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(preFill + "().win:some_window('count','l','a').std:lastevent('s','tyr')");
         assertIsValid(preFill + "().win:some_view({'count'},'l','a')");
         assertIsValid(preFill + "().win:some_view({})");
+        assertIsValid(preFill + "(string != 'test').win:lenght(100)");
 
         assertIsValid("select max(intPrimitive, intBoxed) from " + className + "().std:win(20)");
         assertIsValid("select max(intPrimitive, intBoxed, longBoxed) from " + className + "().std:win(20)");

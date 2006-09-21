@@ -27,6 +27,13 @@ public class IndexFactory
             return index;
         }
 
+        // Handle all NOT-EQUAL comparisons
+        if (filterOperator == FilterOperator.NOT_EQUAL)
+        {
+            index = new FilterParamIndexNotEquals(propertyName, eventType);
+            return index;
+        }
+
         // Handle all GREATER, LESS etc. comparisons
         if ((filterOperator == FilterOperator.GREATER) ||
             (filterOperator == FilterOperator.GREATER_OR_EQUAL) ||
