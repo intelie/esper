@@ -4,6 +4,7 @@ Esper Changelog
 Changes in version XXX
 ----------------------
 * (EQL and Pattern) Support for != (not equals) in filter expressions (Enhancement request ESPER-63)
+* (EQL) Support for select-clause istream and rstream keywords (Enhancement request ESPER-54)
 
 
 Changes in version 1.1.0

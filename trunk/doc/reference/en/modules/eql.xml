@@ -82,6 +82,16 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 			The select clause is required in all EQL statements. The select clause can be used to select all properties via the wildcard <literal>*</literal>, or to specify a list of event properties and expressions. The select clause defines the event type (event property names and types) of the resulting events published by the statement, or pulled from the statement.
 		</para>
 
+		<para>
+			The select clause also offers optional <literal>istream</literal> and <literal>rstream</literal> keywords to control how events are posted to <literal>UpdateListener</literal> instances listening to the statement.
+		</para>
+
+		<para>
+			The syntax for the <literal>select</literal> clause is summarized below.
+		</para>
+
+		<synopsis>select [rstream | istream] * | <emphasis>expression_list</emphasis> ... </synopsis>
+
         <sect2 id="eql-select-all-props" >
            <title>Choosing all event properties: select *</title>
 
@@ -143,6 +153,38 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 ]]></programlisting>
 		</sect2>
 		
+        <sect2 id="eql-select-using-istream-rstream" >
+            <title>Selecting <literal>istream</literal> and <literal>rstream</literal> events</title>
+
+			<para>
+				The optional <literal>istream</literal> and <literal>rstream</literal> keywords in the select clause define the event stream posted to listeners to the statement. 
+			</para>
+
+			<para>
+				If neither keyword is specified, the engine posts
+				insert stream events via the <literal>newEvents</literal> parameter to the <literal>update</literal> method of <literal>UpdateListener</literal> instances listening to 
+				the statement. The engine posts remove stream events to the <literal>oldEvents</literal> parameter of the <literal>update</literal> method.
+				The insert stream consists of the events entering the respective window(s) or stream(s), while the remove stream consists of the events leaving the respective window(s). 
+			</para>
+			
+			<para>
+				By specifying the <literal>istream</literal> keyword you can instruct the engine to only post insert stream events via the <literal>newEvents</literal> parameter to the <literal>update</literal> method on listeners. The engine will then not post any remove stream events, and the <literal>oldEvents</literal> parameter is always a null value.
+			</para>
+				
+			<para>
+				By specifying the <literal>rstream</literal> keyword you can instruct the engine to only post remove stream events via the <literal>newEvents</literal> parameter to the <literal>update</literal> method on listeners. The engine will then not post any insert stream events, and the <literal>oldEvents</literal> parameter is also always a null value.
+			</para>
+
+			<para>
+				The following statement selects only the events that are leaving the 30 second time window.
+			</para>
+			<programlisting><![CDATA[select rstream * from StockTick.win:time(30)]]></programlisting>
+
+			<para>
+				The <literal>istream</literal> and <literal>rstream</literal> keywords in the select clause are matched by same-name keywords available in the insert into clause. While the keywords in the select clause control the event stream posted to listeners to the statement, the same keywords in the insert into clause specify the event stream that the engine makes available to other statements.
+			</para>
+		</sect2>
+
     </sect1>
 
     <sect1 id="eql-from-clause">
