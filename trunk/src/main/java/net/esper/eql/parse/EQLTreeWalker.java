@@ -98,7 +98,8 @@ public class EQLTreeWalker extends EQLBaseWalker
                 leaveView(node);
                 break;
             case SELECTION_EXPR:
-                return;
+                leaveSelectClause(node);
+                break;
             case SELECTION_ELEMENT_EXPR:
                 leaveSelectionElement(node);
                 break;
@@ -1037,6 +1038,21 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         EvalObserverNode observerNode = new EvalObserverNode(observerFactory);
         astPatternNodeMap.put(node, observerNode);
+    }
+
+    private void leaveSelectClause(AST node)
+    {
+        log.debug(".leaveSelectClause");
+
+        int nodeType = node.getFirstChild().getType();
+        if (nodeType == RSTREAM)
+        {
+            statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.RSTREAM_ONLY);
+        }
+        if (nodeType == ISTREAM)
+        {
+            statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+        }
     }
 
     private static final Log log = LogFactory.getLog(EQLTreeWalker.class);

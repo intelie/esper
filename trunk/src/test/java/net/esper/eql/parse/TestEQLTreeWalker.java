@@ -577,6 +577,21 @@ public class TestEQLTreeWalker extends TestCase
         parseAndWalkPattern(text);
     }
 
+    public void testWalkIStreamRStreamSelect() throws Exception
+    {
+        String text = "select rstream 'a' from " + SupportBean_N.class.getName();
+        EQLTreeWalker walker = parseAndWalkEQL(text);
+        assertEquals(SelectClauseStreamSelectorEnum.RSTREAM_ONLY, walker.getStatementSpec().getSelectStreamSelectorEnum());
+
+        text = "select istream 'a' from " + SupportBean_N.class.getName();
+        walker = parseAndWalkEQL(text);
+        assertEquals(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, walker.getStatementSpec().getSelectStreamSelectorEnum());
+
+        text = "select 'a' from " + SupportBean_N.class.getName();
+        walker = parseAndWalkEQL(text);
+        assertEquals(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, walker.getStatementSpec().getSelectStreamSelectorEnum());
+    }
+
     public void testWalkPatternNoPackage() throws Exception
     {
         SupportEventAdapterService.getService().addBeanType("SupportBean_N", SupportBean_N.class);

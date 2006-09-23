@@ -59,9 +59,7 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);		
     	this.outputCondition = OutputConditionFactory.createCondition(outputLimitSpec, viewContext, outputCallback);
         this.resultSetProcessor = resultSetProcessor;
-        this.outputLastOnly = outputLimitSpec != null ?
-        		outputLimitSpec.isDisplayLastOnly() :
-        			false;
+        this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.isDisplayLastOnly());
     }
     
     /**

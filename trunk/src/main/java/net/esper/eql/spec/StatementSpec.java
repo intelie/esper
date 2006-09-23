@@ -13,6 +13,7 @@ import java.util.LinkedList;
 public class StatementSpec
 {
     private InsertIntoDesc insertIntoDesc;
+    private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
     private List<SelectExprElementUnnamedSpec> selectListExpressions = new LinkedList<SelectExprElementUnnamedSpec>();
     private List<StreamSpec> streamSpecs = new LinkedList<StreamSpec>();
     private List<OuterJoinDesc> outerJoinDescList = new LinkedList<OuterJoinDesc>();
@@ -102,6 +103,11 @@ public class StatementSpec
         return orderByList;
     }
 
+    public SelectClauseStreamSelectorEnum getSelectStreamSelectorEnum()
+    {
+        return selectStreamDirEnum;
+    }
+
     /**
      * Sets the output limiting definition.
      * @param outputLimitSpec defines the rules for output limiting
@@ -136,5 +142,10 @@ public class StatementSpec
     public void setInsertIntoDesc(InsertIntoDesc insertIntoDesc)
     {
         this.insertIntoDesc = insertIntoDesc;
+    }
+
+    public void setSelectStreamDirEnum(SelectClauseStreamSelectorEnum selectStreamDirEnum)
+    {
+        this.selectStreamDirEnum = selectStreamDirEnum;
     }
 }

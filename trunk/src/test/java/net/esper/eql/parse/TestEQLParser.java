@@ -15,7 +15,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     {
         String className = SupportBean.class.getName();
         //String expression = "select case intPrimitive when 1 then null when 2 then 2 else 3 end " + "from " + className;
-        String expression = "select case when 1 then null when 2 then 2 else 3 end from " + className;
+        String expression = "select rstream 1 from " + className;
         //String expression = "select case 1 when 1 then 2 end from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
@@ -228,6 +228,10 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "].win:length(100) as xyz");
         assertIsValid("select * from pattern [a=" + SupportBean.class.getName() + "].win:length(100).std:someview() as xyz");
         assertIsValid("select * from xxx");
+        assertIsValid("select rstream * from xxx");
+        assertIsValid("select istream * from xxx");
+        assertIsValid("select rstream 1, 2 from xxx");
+        assertIsValid("select istream 1, 2 from xxx");
 
         // coalesce
         assertIsValid("select coalesce(tick.price, 0) from x");

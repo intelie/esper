@@ -40,7 +40,8 @@ tokens
 //----------------------------------------------------------------------------
 startEQLExpressionRule
 	:	(insertIntoExpr)?
-		selectionListExpr streamExpression (streamExpression (outerJoin)* )*
+		selectClause 
+		fromClause
 		(whereClause)?
 		(groupByClause)?
 		(havingClause)?
@@ -57,9 +58,17 @@ insertIntoExprCol
 	:	#(i:INSERTINTO_EXPRCOL IDENT (IDENT)* )
 	;
 
-selectionListExpr
-	:	#(s:SELECTION_EXPR selectionListElement (selectionListElement)* )
+selectClause
+	:	#(s:SELECTION_EXPR (RSTREAM | ISTREAM)? (STAR | selectionList) { leaveNode(#s); })
 	|	STAR
+	;
+
+fromClause
+	:	streamExpression (streamExpression (outerJoin)* )*
+	;
+	
+selectionList
+	:	selectionListElement (selectionListElement)*
 	;
 	
 selectionListElement

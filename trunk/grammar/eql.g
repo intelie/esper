@@ -157,7 +157,7 @@ constant
 //----------------------------------------------------------------------------
 eqlExpression 
 	:	(INSERT! insertIntoExpr)?
-		SELECT! selectionListExpr
+		SELECT! selectClause
 		FROM! streamExpression (regularJoin | outerJoinList)
 		(WHERE! whereClause)?
 		(GROUP! BY! groupByListExpr)?
@@ -204,10 +204,13 @@ whereClause
 		{ #whereClause = #([WHERE_EXPR,"whereClause"], #whereClause); }
 	;
 	
-selectionListExpr
-	:	STAR
-	|	selectionListElement (COMMA! selectionListElement)*
-		{ #selectionListExpr = #([SELECTION_EXPR,"selectionListExpr"], #selectionListExpr); }
+selectClause
+	:	(r:RSTREAM! | i:ISTREAM!)? (s:STAR | l:selectionList)
+		{ #selectClause = #([SELECTION_EXPR,"selectClause"], #r, #i, #s, #l); }
+	;
+
+selectionList 	
+	:	selectionListElement (COMMA! selectionListElement)*
 	;
 
 selectionListElement
