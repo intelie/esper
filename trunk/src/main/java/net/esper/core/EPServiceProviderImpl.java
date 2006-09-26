@@ -123,7 +123,24 @@ public class EPServiceProviderImpl implements EPServiceProvider
 
     private static EventAdapterService makeEventAdapterService(ConfigurationSnapshot configSnapshot)
     {
-        EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl();
+        // Extract legacy event type definitions for each event type alias, if supplied.
+        //
+        // We supply this information as setup information to the event adapter service
+        // to allow discovery of superclasses and interfaces during event type construction for bean events,
+        // such that superclasses and interfaces can use the legacy type definitions.
+        Map<String, ConfigurationEventTypeLegacy> classLegacyInfo = new HashMap<String, ConfigurationEventTypeLegacy>();
+        for (Map.Entry<String, String> entry : configSnapshot.getJavaClassAliases().entrySet())
+        {
+            String aliasName = entry.getKey();
+            String className = entry.getValue();
+            ConfigurationEventTypeLegacy legacyDef = configSnapshot.getLegacyAliases().get(aliasName);
+            if (legacyDef != null)
+            {
+                classLegacyInfo.put(className, legacyDef);
+            }
+        }
+
+        EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl(classLegacyInfo);
 
         // Add from the configuration the Java event class aliases
         Map<String, String> javaClassAliases = configSnapshot.getJavaClassAliases();
@@ -132,7 +149,8 @@ public class EPServiceProviderImpl implements EPServiceProvider
             // Add Java class alias
             try
             {
-                eventAdapterService.addBeanType(entry.getKey(), entry.getValue());
+                String aliasName = entry.getKey();
+                eventAdapterService.addBeanType(aliasName, entry.getValue());
             }
             catch (EventAdapterException ex)
             {
@@ -198,6 +216,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
     {
         private Map<String, String> javaClassAliases = new HashMap<String, String>();
         private Map<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = new HashMap<String, ConfigurationEventTypeXMLDOM>();
+        private Map<String, ConfigurationEventTypeLegacy> legacyAliases = new HashMap<String, ConfigurationEventTypeLegacy>();
         private String[] autoImports;
         private Map<String, Properties> mapAliases = new HashMap<String, Properties>();
 
@@ -214,6 +233,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
             xmlDOMAliases.putAll(configuration.getEventTypesXMLDOM());
             autoImports = configuration.getImports().toArray(new String[0]);
             mapAliases.putAll(configuration.getEventTypesMapEvents());
+            legacyAliases.putAll(configuration.getEventTypesLegacy());
         }
 
         /**
@@ -250,6 +270,11 @@ public class EPServiceProviderImpl implements EPServiceProvider
         public Map<String, Properties> getMapAliases()
         {
             return mapAliases;
+        }
+
+        public Map<String, ConfigurationEventTypeLegacy> getLegacyAliases()
+        {
+            return legacyAliases;
         }
     }
 }

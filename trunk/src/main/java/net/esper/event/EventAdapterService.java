@@ -4,6 +4,8 @@ import org.w3c.dom.Node;
 
 import java.util.Map;
 
+import net.esper.client.ConfigurationEventTypeLegacy;
+
 /**
  * Interface for a service to resolve event names to event type.
  */

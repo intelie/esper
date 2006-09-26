@@ -79,31 +79,35 @@ class ConfigurationParser {
         {
             String name = nodes.item(i).getAttributes().getNamedItem("alias").getTextContent();
             Node classNode = nodes.item(i).getAttributes().getNamedItem("class");
+
+            String optionalClassName = null;
             if (classNode != null)
             {
-                String clazz = classNode.getTextContent();
-                configuration.addEventTypeAlias(name, clazz);
+                optionalClassName = classNode.getTextContent();
+                configuration.addEventTypeAlias(name, optionalClassName);
             }
-            else
-            {
-                handleNonJavaType(name, configuration, nodes.item(i));
-            }
+            handleSubElement(name, optionalClassName, configuration, nodes.item(i));
         }
     }
 
-    private static void handleNonJavaType(String aliasName, Configuration configuration, Node parentNode)
+    private static void handleSubElement(String aliasName, String optionalClassName, Configuration configuration, Node parentNode)
     {
         ElementIterator eventTypeNodeIterator = new ElementIterator(parentNode.getChildNodes());
         while (eventTypeNodeIterator.hasNext())
         {
             Element eventTypeElement = eventTypeNodeIterator.next();
-            if (eventTypeElement.getNodeName().equals("xml-dom"))
+            String nodeName = eventTypeElement.getNodeName();
+            if (nodeName.equals("xml-dom"))
             {
                 handleXMLDOM(aliasName, configuration, eventTypeElement);
             }
-            else if(eventTypeElement.getNodeName().equals("java-util-map"))
+            else if(nodeName.equals("java-util-map"))
             {
             	handleMap(aliasName, configuration, eventTypeElement);
+            }
+            else if (nodeName.equals("legacy-type"))
+            {
+                handleLegacy(aliasName, optionalClassName, configuration, eventTypeElement);
             }
         }
     }
@@ -169,6 +173,46 @@ class ConfigurationParser {
                         propertyName + "' and type '" + propertyType + "'");
                 }
                 xmlDOMEventTypeDesc.addXPathProperty(propertyName, xPath, xpathConstantType);
+            }
+        }
+    }
+
+    private static void handleLegacy(String aliasName, String className, Configuration configuration, Element xmldomElement)
+    {
+        // Class name is required for legacy classes
+        if (className == null)
+        {
+            throw new ConfigurationException("Required class name not supplied for legacy type definition");
+        }
+        
+        String accessorStyle = xmldomElement.getAttributes().getNamedItem("accessor-style").getTextContent();
+        String codeGeneration = xmldomElement.getAttributes().getNamedItem("code-generation").getTextContent();
+
+        ConfigurationEventTypeLegacy legacyDesc = new ConfigurationEventTypeLegacy();
+        legacyDesc.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.valueOf(accessorStyle.toUpperCase()));
+        legacyDesc.setCodeGeneration(ConfigurationEventTypeLegacy.CodeGeneration.valueOf(codeGeneration.toUpperCase()));
+        configuration.addEventTypeAlias(aliasName, className, legacyDesc);
+
+        ElementIterator propertyNodeIterator = new ElementIterator(xmldomElement.getChildNodes());
+        while (propertyNodeIterator.hasNext())
+        {
+            Element propertyElement = propertyNodeIterator.next();
+            if (propertyElement.getNodeName().equals("method-property"))
+            {
+                String name = propertyElement.getAttributes().getNamedItem("name").getTextContent();
+                String method = propertyElement.getAttributes().getNamedItem("accessor-method").getTextContent();
+                legacyDesc.addMethodProperty(name, method);
+            }
+            else if (propertyElement.getNodeName().equals("field-property"))
+            {
+                String name = propertyElement.getAttributes().getNamedItem("name").getTextContent();
+                String field = propertyElement.getAttributes().getNamedItem("accessor-field").getTextContent();
+                legacyDesc.addFieldProperty(name, field);
+            }
+            else
+            {
+                throw new ConfigurationException("Invalid node " + propertyElement.getNodeName()
+                        + " encountered while parsing legacy type definition");
             }
         }
     }

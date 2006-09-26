@@ -54,9 +54,9 @@ public class TestPropertyHelper extends TestCase
     public void testRemoveDuplicateProperties()
     {
         List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
-        result.add(new EventPropertyDescriptor("x", "x", null, null));
-        result.add(new EventPropertyDescriptor("x", "x", null, null));
-        result.add(new EventPropertyDescriptor("y", "y", null, null));
+        result.add(new EventPropertyDescriptor("x", "x", (Method) null, null));
+        result.add(new EventPropertyDescriptor("x", "x", (Method) null, null));
+        result.add(new EventPropertyDescriptor("y", "y", (Method) null, null));
 
         PropertyHelper.removeDuplicateProperties(result);
 
@@ -68,8 +68,11 @@ public class TestPropertyHelper extends TestCase
     public void testRemoveJavaProperties()
     {
         List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
-        result.add(new EventPropertyDescriptor("x", "x", null, null));
-        result.add(new EventPropertyDescriptor("class", "class", null, null));
+        result.add(new EventPropertyDescriptor("x", "x", (Method) null, null));
+        result.add(new EventPropertyDescriptor("class", "class", (Method) null, null));
+        result.add(new EventPropertyDescriptor("hashCode", "hashCode", (Method) null, null));
+        result.add(new EventPropertyDescriptor("toString", "toString", (Method) null, null));
+        result.add(new EventPropertyDescriptor("getClass", "getClass", (Method) null, null));
 
         PropertyHelper.removeJavaProperties(result);
 

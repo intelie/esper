@@ -73,7 +73,7 @@ public class NestedProperty implements Property
                 {
                     return null;
                 }
-                eventType = (BeanEventType) beanEventAdapter.createBeanType(clazz);
+                eventType = (BeanEventType) beanEventAdapter.createOrGetBeanType(clazz);
             }
             getters.add(getter);
         }
@@ -109,7 +109,7 @@ public class NestedProperty implements Property
                     return null;
                 }
 
-                eventType = beanEventAdapter.createBeanType(result);
+                eventType = beanEventAdapter.createOrGetBeanType(result);
             }
         }
 

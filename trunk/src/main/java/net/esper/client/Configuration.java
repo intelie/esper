@@ -41,9 +41,14 @@ public class Configuration {
 	protected Map<String, String> eventClasses;
 
     /**
-     * Map of event name and fully-qualified Java class name.
+     * Map of event type alias and XML DOM configuration.
      */
 	protected Map<String, ConfigurationEventTypeXMLDOM> eventTypesXMLDOM;
+
+    /**
+     * Map of event type alias and Legacy-type event configuration.
+     */
+	protected Map<String, ConfigurationEventTypeLegacy> eventTypesLegacy;
 
 	/**
 	 * The type aliases for events that result when maps are sent
@@ -103,6 +108,17 @@ public class Configuration {
     }
 
     /**
+     * Add an alias for an event type that represents legacy Java type (non-JavaBean style) events.
+     * @param eventTypeAlias is the alias for the event type
+     * @param legacyEventTypeDesc descriptor containing property and mapping information for Legacy Java type events
+     */
+    public void addEventTypeAlias(String eventTypeAlias, String javaEventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+    {
+        eventClasses.put(eventTypeAlias, javaEventClass);
+        eventTypesLegacy.put(eventTypeAlias, legacyEventTypeDesc);
+    }
+
+    /**
      * Add an import (a class or package). Adding will suppress the use of the default imports.
      * @param autoImport - the import to add
      */
@@ -142,6 +158,15 @@ public class Configuration {
     public Map<String, ConfigurationEventTypeXMLDOM> getEventTypesXMLDOM()
     {
         return eventTypesXMLDOM;
+    }
+
+    /**
+     * Returns the mapping of event type alias to legacy java event type information.
+     * @return event type aliases mapping to legacy java class configs
+     */
+    public Map<String, ConfigurationEventTypeLegacy> getEventTypesLegacy()
+    {
+        return eventTypesLegacy;
     }
 
     /**
@@ -314,6 +339,7 @@ public class Configuration {
         eventClasses = new HashMap<String, String>();
         mapAliases = new HashMap<String, Properties>();
         eventTypesXMLDOM = new HashMap<String, ConfigurationEventTypeXMLDOM>();
+        eventTypesLegacy = new HashMap<String, ConfigurationEventTypeLegacy>();
         imports = new ArrayList<String>();
         addDefaultImports();
         isUsingDefaultImports = true;

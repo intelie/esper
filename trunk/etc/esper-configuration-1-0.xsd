@@ -16,6 +16,7 @@
 				<xs:sequence>
 					<xs:element ref="xml-dom" minOccurs="0"/>
 					<xs:element ref="java-util-map" minOccurs="0"/>
+					<xs:element ref="legacy-type" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
@@ -72,4 +73,39 @@
 			<xs:attribute name="import-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="legacy-type">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="method-property" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="field-property" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="accessor-style" type="accessorStyleEnum" use="optional"/>
+			<xs:attribute name="code-generation" type="codeGenerationEnum" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="method-property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="accessor-method" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="field-property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="accessor-field" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="accessorStyleEnum">
+             <xs:restriction base="xs:token">
+                   <xs:enumeration value="javabean"/>
+                   <xs:enumeration value="explicit"/>
+                   <xs:enumeration value="public"/>
+             </xs:restriction>
+     </xs:simpleType>
+	<xs:simpleType name="codeGenerationEnum">
+             <xs:restriction base="xs:token">
+                   <xs:enumeration value="enabled"/>
+                   <xs:enumeration value="disabled"/>
+             </xs:restriction>
+     </xs:simpleType>
 </xs:schema>

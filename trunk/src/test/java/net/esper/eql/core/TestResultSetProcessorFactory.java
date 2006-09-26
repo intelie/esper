@@ -30,7 +30,7 @@ public class TestResultSetProcessorFactory extends TestCase
         typeService1Stream = new SupportStreamTypeSvc1Stream();
         typeService3Stream = new SupportStreamTypeSvc3Stream();
         groupByList = new LinkedList<ExprNode>();
-        eventAdapterService = new EventAdapterServiceImpl();
+        eventAdapterService = new EventAdapterServiceImpl(null);
         orderByList = new LinkedList<Pair<ExprNode, Boolean>>();
     }
 

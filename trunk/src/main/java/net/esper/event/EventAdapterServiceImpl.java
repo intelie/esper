@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import net.esper.client.ConfigurationEventTypeXMLDOM;
+import net.esper.client.ConfigurationEventTypeLegacy;
 import net.esper.event.xml.SimpleXMLEventType;
 import net.esper.event.xml.XMLEventBean;
 import net.esper.event.xml.SchemaXMLEventType;
@@ -23,11 +24,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
     /**
      * Ctor.
      */
-    public EventAdapterServiceImpl()
+    public EventAdapterServiceImpl(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
     {
         eventTypes = new HashMap<String, EventType>();
         xmldomRootElementNames = new HashMap<String, EventType>();
-        beanEventAdapter = new BeanEventAdapter();
+        beanEventAdapter = new BeanEventAdapter(classToLegacyConfigs);
     }
 
     public EventType getEventType(String eventName)
@@ -50,7 +51,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     "' has already been declared with differing type information");
         }
 
-        EventType eventType = beanEventAdapter.createBeanType(clazz);
+        EventType eventType = beanEventAdapter.createOrGetBeanType(clazz);
         eventTypes.put(eventTypeAlias, eventType);
 
         return eventType;
@@ -80,7 +81,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             throw new EventAdapterException("Failed to load class " + fullyQualClassName, ex);
         }
 
-        EventType eventType = beanEventAdapter.createBeanType(clazz);
+        EventType eventType = beanEventAdapter.createOrGetBeanType(clazz);
         eventTypes.put(eventTypeAlias, eventType);
 
         return eventType;

@@ -113,7 +113,10 @@ public class PropertyHelper
         // add removed entries to separate list
         for (EventPropertyDescriptor desc : properties)
         {
-            if (desc.getPropertyName().equals("class"))
+            if ((desc.getPropertyName().equals("class")) ||
+                (desc.getPropertyName().equals("getClass")) ||
+                (desc.getPropertyName().equals("toString")) ||
+                (desc.getPropertyName().equals("hashCode")))
             {
                 toRemove.add(desc);
             }

@@ -1,5 +1,7 @@
 package net.esper.event;
 
+import net.esper.client.ConfigurationEventTypeLegacy;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -10,14 +12,21 @@ import java.util.HashMap;
 public class BeanEventAdapter
 {
     private final Map<Class, BeanEventType> typesPerJavaBean;
+    private final Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
 
     /**
      * Ctor.
      * Start with an empty list of known classes and event types.
      */
-    public BeanEventAdapter()
+    public BeanEventAdapter(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
     {
         typesPerJavaBean = new HashMap<Class, BeanEventType>();
+
+        this.classToLegacyConfigs = new HashMap<String, ConfigurationEventTypeLegacy>();
+        if (classToLegacyConfigs != null)
+        {
+            this.classToLegacyConfigs.putAll(classToLegacyConfigs);
+        }
     }
 
     /**
@@ -28,7 +37,7 @@ public class BeanEventAdapter
     public EventBean adapterForBean(Object event)
     {
         Class eventClass = event.getClass();
-        EventType eventType = createBeanType(eventClass);
+        EventType eventType = createOrGetBeanType(eventClass);
         return new BeanEventBean(event, eventType);
     }
 
@@ -38,7 +47,7 @@ public class BeanEventAdapter
      * @param clazz is the class of the Java bean.
      * @return EventType implementation for bean class
      */
-    public final BeanEventType createBeanType(Class clazz)
+    public final BeanEventType createOrGetBeanType(Class clazz)
     {
         if (clazz == null)
         {
@@ -52,7 +61,10 @@ public class BeanEventAdapter
             return eventType;
         }
 
-        eventType = new BeanEventType(clazz, this);
+        // Check if we have a legacy type definition for this class
+        ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(clazz.getName());
+
+        eventType = new BeanEventType(clazz, this, legacyDef);
         typesPerJavaBean.put(clazz, eventType);
 
         return eventType;

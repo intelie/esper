@@ -12,18 +12,18 @@ public class TestBeanEventAdapter extends TestCase
 
     public void setUp()
     {
-        beanEventAdapter = new BeanEventAdapter();
+        beanEventAdapter = new BeanEventAdapter(null);
     }
 
     public void testCreateBeanType()
     {
-        EventType eventType = beanEventAdapter.createBeanType(SupportBeanSimple.class);
+        EventType eventType = beanEventAdapter.createOrGetBeanType(SupportBeanSimple.class);
 
         assertEquals(SupportBeanSimple.class, eventType.getUnderlyingType());
         assertEquals(2, eventType.getPropertyNames().length);
 
         // Second call to create the event type, should be the same instance as the first
-        EventType eventTypeTwo = beanEventAdapter.createBeanType(SupportBeanSimple.class);
+        EventType eventTypeTwo = beanEventAdapter.createOrGetBeanType(SupportBeanSimple.class);
         assertTrue(eventTypeTwo == eventType);
     }
 
@@ -40,14 +40,14 @@ public class TestBeanEventAdapter extends TestCase
                 new String[] {"d", "baseD", "baseDBase"});
 
         // Assert intermediate interfaces have full set of fields
-        EventType interfaceType = beanEventAdapter.createBeanType(ISupportD.class);
+        EventType interfaceType = beanEventAdapter.createOrGetBeanType(ISupportD.class);
         ArrayAssertionUtil.assertEqualsAnyOrder(interfaceType.getPropertyNames(),
                 new String[] {"d", "baseD", "baseDBase"});
     }
 
     public void testMappedIndexedNestedProperty() throws Exception
     {
-    	EventType eventType = beanEventAdapter.createBeanType(SupportBeanComplexProps.class);
+    	EventType eventType = beanEventAdapter.createOrGetBeanType(SupportBeanComplexProps.class);
 
         assertEquals(Map.class, eventType.getPropertyType("mapProperty"));
         assertEquals(String.class, eventType.getPropertyType("mapped('x')"));

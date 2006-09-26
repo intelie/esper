@@ -20,7 +20,7 @@ public class TestNestedProperty extends TestCase
 
     public void setUp()
     {
-        beanEventAdapter = new BeanEventAdapter();
+        beanEventAdapter = new BeanEventAdapter(null);
 
         nested = new NestedProperty[2];
         nested[0] = makeProperty(new String[] {"nested", "nestedValue"});

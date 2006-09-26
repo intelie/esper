@@ -1,6 +1,7 @@
 package net.esper.event;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 /**
  * Encapsulates the event property information available after introspecting an event's class members
@@ -8,10 +9,11 @@ import java.lang.reflect.Method;
  */
 public class EventPropertyDescriptor
 {
-	private String propertyName;
+    private String propertyName;
     private String listedName;
-	private Method readMethod;
-	private EventPropertyType propertyType;
+    private Method readMethod;
+    private Field accessorField;
+    private EventPropertyType propertyType;
 
     /**
      * Ctor.
@@ -25,6 +27,21 @@ public class EventPropertyDescriptor
         this.propertyName = propertyName;
         this.listedName = listedName;
         this.readMethod = readMethod;
+        this.propertyType = propertyType;
+    }
+
+    /**
+     * Ctor.
+     * @param propertyName - name of property, from getter method
+     * @param listedName - name the property may show up when listed as a valid property, such as indexed[], mapped()
+     * @param accessorField - field to get value from
+     * @param propertyType - type of property
+     */
+    public EventPropertyDescriptor(String propertyName, String listedName, Field accessorField, EventPropertyType propertyType)
+    {
+        this.propertyName = propertyName;
+        this.listedName = listedName;
+        this.accessorField = accessorField;
         this.propertyType = propertyType;
     }
 
@@ -54,25 +71,68 @@ public class EventPropertyDescriptor
      * Returns an enum indicating the type of property: simple, mapped, indexed.
      * @return enum with property type info
      */
-	public EventPropertyType getPropertyType()
-	{
-		return propertyType;
-	}
+    public EventPropertyType getPropertyType()
+    {
+        return propertyType;
+    }
 
     /**
      * Returns the read method.
      * @return read method
      */
-	public Method getReadMethod()
-	{
-		return readMethod;
-	}
+    public Method getReadMethod()
+    {
+        return readMethod;
+    }
 
     public String toString()
     {
         return  "propertyName=" + propertyName +
-                "listedName=" + listedName +
-                " readMethod=" + readMethod.toString() +
+                " listedName=" + listedName +
+                " readMethod=" + readMethod +
+                " accessorField=" + accessorField +
                 " propertyType=" + propertyType;
+    }
+
+    public boolean equals(Object other)
+    {
+        if (!(other instanceof EventPropertyDescriptor))
+        {
+            return false;
+        }
+        EventPropertyDescriptor otherDesc = (EventPropertyDescriptor) other;
+        if (!otherDesc.propertyName.equals(propertyName))
+        {
+            return false;
+        }
+        if (!otherDesc.listedName.equals(listedName))
+        {
+            return false;
+        }
+        if  ( ((otherDesc.readMethod == null) && (readMethod != null)) ||
+              ((otherDesc.readMethod != null) && (readMethod == null)) )
+        {
+            return false;
+        }
+        if ((otherDesc.readMethod != null) && (readMethod != null) &&
+            (!otherDesc.readMethod.equals(readMethod)))
+        {
+            return false;
+        }
+        if  ( ((otherDesc.accessorField == null) && (accessorField != null)) ||
+              ((otherDesc.accessorField != null) && (accessorField == null)) )
+        {
+            return false;
+        }
+        if ((otherDesc.accessorField != null) && (accessorField != null) &&
+            (!otherDesc.accessorField.equals(accessorField)))
+        {
+            return false;
+        }
+        if (otherDesc.propertyType != propertyType)
+        {
+            return false;
+        }
+        return true;
     }
 }

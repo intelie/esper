@@ -22,7 +22,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void setUp()
     {
-        adapterService = new EventAdapterServiceImpl();
+        adapterService = new EventAdapterServiceImpl(null);
     }
 
     public void testCreateMapType()

@@ -14,7 +14,7 @@ public class TestPropertyParser extends TestCase
 
     public void setUp()
     {
-        beanEventAdapter = new BeanEventAdapter();
+        beanEventAdapter = new BeanEventAdapter(null);
     }
 
     public void testParse() throws Exception

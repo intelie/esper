@@ -6,10 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 
 import net.sf.cglib.reflect.FastClass;
-import net.esper.event.property.PropertyHelper;
-import net.esper.event.property.PropertyParser;
-import net.esper.event.property.Property;
-import net.esper.event.property.SimpleProperty;
+import net.esper.event.property.*;
+import net.esper.client.ConfigurationEventTypeLegacy;
 
 /**
  * Implementation of the EventType interface for handling JavaBean-type classes.
@@ -18,6 +16,7 @@ public class BeanEventType implements EventType
 {
     private final Class clazz;
     private final BeanEventAdapter beanEventAdapter;
+    private final ConfigurationEventTypeLegacy optionalLegacyDef;
 
     private String[] propertyNames;
     private Map<String, Class> simplePropertyTypes;
@@ -34,10 +33,12 @@ public class BeanEventType implements EventType
      * @param clazz is the class of a java bean or other POJO
      * @param beanEventAdapter is the chache and factory for event bean types and event wrappers
      */
-    public BeanEventType(Class clazz, BeanEventAdapter beanEventAdapter)
+    public BeanEventType(Class clazz, BeanEventAdapter beanEventAdapter,
+                         ConfigurationEventTypeLegacy optionalLegacyDef)
     {
         this.clazz = clazz;
         this.beanEventAdapter = beanEventAdapter;
+        this.optionalLegacyDef = optionalLegacyDef;
 
         initialize();
     }
@@ -152,7 +153,8 @@ public class BeanEventType implements EventType
 
     private void initialize()
     {
-        List<EventPropertyDescriptor> properties = PropertyHelper.getProperties(clazz);
+        PropertyListBuilder propertyListBuilder = PropertyListBuilderFactory.createBuilder(optionalLegacyDef);
+        List<EventPropertyDescriptor> properties = propertyListBuilder.assessProperties(clazz);
 
         this.propertyNames = new String[properties.size()];
         this.simplePropertyTypes = new HashMap<String, Class>();
@@ -210,7 +212,7 @@ public class BeanEventType implements EventType
         deepSuperTypes = new HashSet<EventType>();
         for (Class superClass : supers)
         {
-            EventType superType = beanEventAdapter.createBeanType(superClass);
+            EventType superType = beanEventAdapter.createOrGetBeanType(superClass);
             deepSuperTypes.add(superType);
         }
     }
@@ -239,7 +241,7 @@ public class BeanEventType implements EventType
         {
             if (!superclass.getName().startsWith("java"))
             {
-                EventType superType = beanEventAdapter.createBeanType(superclass);
+                EventType superType = beanEventAdapter.createOrGetBeanType(superclass);
                 superTypes.add(superType);
             }
         }
