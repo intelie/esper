@@ -78,7 +78,7 @@ public class NestedProperty implements Property
             getters.add(getter);
         }
 
-        return new EventNestedPropertyGetter(getters, beanEventAdapter);
+        return new NestedPropertyGetter(getters, beanEventAdapter);
     }
 
     public Class getPropertyType(BeanEventType eventType)

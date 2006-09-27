@@ -1,29 +1,30 @@
 package net.esper.event.property;
 
 import junit.framework.TestCase;
-import net.sf.cglib.reflect.FastClass;
-import net.sf.cglib.reflect.FastMethod;
-import net.esper.support.bean.SupportBeanComplexProps;
-import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.event.EventBean;
 import net.esper.event.PropertyAccessException;
+import net.esper.support.bean.SupportBeanComplexProps;
+import net.esper.support.bean.SupportLegacyBean;
+import net.esper.support.event.SupportEventBeanFactory;
+import java.lang.reflect.Field;
 
-public class TestEventArrayPropertyGetter extends TestCase
+public class TestArrayFieldPropertyGetter extends TestCase
 {
-    private EventArrayPropertyGetter getter;
-    private EventArrayPropertyGetter getterOutOfBounds;
+    private ArrayFieldPropertyGetter getter;
+    private ArrayFieldPropertyGetter getterOutOfBounds;
     private EventBean event;
-    private SupportBeanComplexProps bean;
+    private SupportLegacyBean bean;
 
     public void setUp() throws Exception
     {
-        bean = SupportBeanComplexProps.makeDefaultBean();
+        bean = new SupportLegacyBean(new String[] {"a", "b"});
         event = SupportEventBeanFactory.createObject(bean);
+
         getter = makeGetter(0);
         getterOutOfBounds = makeGetter(Integer.MAX_VALUE);
     }
 
-    public void testCtor()
+    public void testCtor() throws Exception
     {
         try
         {
@@ -38,7 +39,7 @@ public class TestEventArrayPropertyGetter extends TestCase
 
     public void testGet()
     {
-        assertEquals(bean.getArrayProperty()[0], getter.get(event));
+        assertEquals(bean.fieldStringArray[0], getter.get(event));
 
         assertNull(getterOutOfBounds.get(event));
 
@@ -53,10 +54,9 @@ public class TestEventArrayPropertyGetter extends TestCase
         }
     }
 
-    private EventArrayPropertyGetter makeGetter(int index)
+    private ArrayFieldPropertyGetter makeGetter(int index) throws Exception
     {
-        FastClass fastClass = FastClass.create(SupportBeanComplexProps.class);
-        FastMethod method = fastClass.getMethod("getArrayProperty", new Class[0]);
-        return new EventArrayPropertyGetter(method, index);
+        Field field = SupportLegacyBean.class.getField("fieldStringArray");
+        return new ArrayFieldPropertyGetter(field, index);
     }
 }

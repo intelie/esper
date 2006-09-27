@@ -5,26 +5,27 @@ import net.esper.event.EventBean;
 import net.esper.event.PropertyAccessException;
 import net.sf.cglib.reflect.FastMethod;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
- * Getter for an array property identified by a given index, using the CGLIB fast method.
+ * Getter for an array property identified by a given index, using vanilla reflection.
  */
-public class EventArrayPropertyGetter implements EventPropertyGetter
+public class ArrayMethodPropertyGetter implements EventPropertyGetter
 {
-    private final FastMethod fastMethod;
+    private final Method method;
     private final int index;
 
     /**
      * Constructor.
-     * @param fastMethod is the method to use to retrieve a value from the object
+     * @param method is the method to use to retrieve a value from the object
      * @param index is tge index within the array to get the property from
      */
-    public EventArrayPropertyGetter(FastMethod fastMethod, int index)
+    public ArrayMethodPropertyGetter(Method method, int index)
     {
         this.index = index;
-        this.fastMethod = fastMethod;
+        this.method = method;
 
         if (index < 0)
         {
@@ -38,7 +39,7 @@ public class EventArrayPropertyGetter implements EventPropertyGetter
 
         try
         {
-            Object value = fastMethod.invoke(underlying, null);
+            Object value = method.invoke(underlying, null);
             if (Array.getLength(value) <= index)
             {
                 return null;
@@ -53,12 +54,20 @@ public class EventArrayPropertyGetter implements EventPropertyGetter
         {
             throw new PropertyAccessException(e);
         }
+        catch (IllegalAccessException e)
+        {
+            throw new PropertyAccessException(e);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new PropertyAccessException(e);
+        }
     }
 
     public String toString()
     {
-        return "EventKeyedPropertyGetter " +
-                " fastMethod=" + fastMethod.toString() +
+        return "ArrayMethodPropertyGetter " +
+                " method=" + method.toString() +
                 " index=" + index;
     }
 }

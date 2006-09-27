@@ -137,8 +137,8 @@ public class BeanEventType implements EventType
     }
 
     /**
-     * Returns the fast class reference, if it exists.
-     * @return fast class
+     * Returns the fast class reference, if code generation is used for this type, else null.
+     * @return fast class, or null if no code generation
      */
     public FastClass getFastClass()
     {
@@ -163,17 +163,21 @@ public class BeanEventType implements EventType
         this.mappedPropertyDescriptors = new HashMap<String, EventPropertyDescriptor>();
         this.indexedPropertyDescriptors = new HashMap<String, EventPropertyDescriptor>();
 
-        // get CGLib fast class
-        fastClass = null;
-        try
+        if ((optionalLegacyDef == null) ||
+            (optionalLegacyDef.getCodeGeneration() != ConfigurationEventTypeLegacy.CodeGeneration.DISABLED))
         {
-            fastClass = FastClass.create(clazz);
-        }
-        catch (Throwable ex)
-        {
-            log.warn(".initialize Unable to obtain CGLib fast class and/or method implementation for class " +
-                    clazz.getName() + ", error msg is " + ex.getMessage());
+            // get CGLib fast class
             fastClass = null;
+            try
+            {
+                fastClass = FastClass.create(clazz);
+            }
+            catch (Throwable ex)
+            {
+                log.warn(".initialize Unable to obtain CGLib fast class and/or method implementation for class " +
+                        clazz.getName() + ", error msg is " + ex.getMessage());
+                fastClass = null;
+            }
         }
 
         int count = 0;
@@ -184,8 +188,18 @@ public class BeanEventType implements EventType
 
             if (desc.getPropertyType().equals(EventPropertyType.SIMPLE))
             {
-                EventPropertyGetter getter = PropertyHelper.getGetter(desc.getReadMethod(), fastClass);
-                simplePropertyTypes.put(propertyName, desc.getReadMethod().getReturnType());
+                EventPropertyGetter getter = null;
+                if (desc.getReadMethod() != null)
+                {
+                    getter = PropertyHelper.getGetter(desc.getReadMethod(), clazz, fastClass);
+                    simplePropertyTypes.put(propertyName, desc.getReadMethod().getReturnType());
+                }
+                else
+                {
+                    getter = new ReflectionPropFieldGetter(desc.getAccessorField());
+                    simplePropertyTypes.put(propertyName, desc.getAccessorField().getType());
+                }
+
                 simplePropertyGetters.put(propertyName, getter);
                 simplePropertyDescriptors.put(propertyName, desc);
             }

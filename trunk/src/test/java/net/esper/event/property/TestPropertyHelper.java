@@ -91,7 +91,7 @@ public class TestPropertyHelper extends TestCase
         FastClass fastClass = FastClass.create(SupportBeanPropertyNames.class);
         EventBean bean = SupportEventBeanFactory.createObject(new SupportBeanPropertyNames());
         Method method = SupportBeanPropertyNames.class.getMethod("getA", new Class[0]);
-        EventPropertyGetter getter = PropertyHelper.getGetter(method, fastClass);
+        EventPropertyGetter getter = PropertyHelper.getGetter(method, SupportBeanPropertyNames.class, fastClass);
         assertEquals("", getter.get(bean));
     }
 

@@ -6,24 +6,25 @@ import net.esper.event.PropertyAccessException;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
- * Getter for a key property identified by a given key value, using the CGLIB fast method.
+ * Getter for a key property identified by a given key value, using vanilla reflection.
  */
-public class EventKeyedPropertyGetter implements EventPropertyGetter
+public class KeyedMethodPropertyGetter implements EventPropertyGetter
 {
-    private final FastMethod fastMethod;
+    private final Method method;
     private final Object key;
 
     /**
      * Constructor.
-     * @param fastMethod is the method to use to retrieve a value from the object.
+     * @param method is the method to use to retrieve a value from the object.
      * @param key is the key to supply as parameter to the mapped property getter
      */
-    public EventKeyedPropertyGetter(FastMethod fastMethod, Object key)
+    public KeyedMethodPropertyGetter(Method method, Object key)
     {
         this.key = key;
-        this.fastMethod = fastMethod;
+        this.method = method;
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException
@@ -32,7 +33,7 @@ public class EventKeyedPropertyGetter implements EventPropertyGetter
 
         try
         {
-            return fastMethod.invoke(underlying, new Object[] {key});
+            return method.invoke(underlying, new Object[] {key});
         }
         catch (ClassCastException e)
         {
@@ -42,12 +43,20 @@ public class EventKeyedPropertyGetter implements EventPropertyGetter
         {
             throw new PropertyAccessException(e);
         }
+        catch (IllegalAccessException e)
+        {
+            throw new PropertyAccessException(e);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new PropertyAccessException(e);
+        }
     }
 
     public String toString()
     {
-        return "EventKeyedPropertyGetter " +
-                " fastMethod=" + fastMethod.toString() +
+        return "KeyedMethodPropertyGetter " +
+                " method=" + method.toString() +
                 " key=" + key;
     }
 }

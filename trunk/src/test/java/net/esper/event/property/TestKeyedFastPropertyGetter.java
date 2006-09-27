@@ -8,9 +8,9 @@ import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.event.EventBean;
 import net.esper.event.PropertyAccessException;
 
-public class TestEventKeyedPropertyGetter extends TestCase
+public class TestKeyedFastPropertyGetter extends TestCase
 {
-    private EventKeyedPropertyGetter getter;
+    private KeyedFastPropertyGetter getter;
     private EventBean event;
     private SupportBeanComplexProps bean;
 
@@ -20,7 +20,7 @@ public class TestEventKeyedPropertyGetter extends TestCase
         event = SupportEventBeanFactory.createObject(bean);
         FastClass fastClass = FastClass.create(SupportBeanComplexProps.class);
         FastMethod method = fastClass.getMethod("getIndexed", new Class[] {int.class});
-        getter = new EventKeyedPropertyGetter(method, 1);
+        getter = new KeyedFastPropertyGetter(method, 1);
     }
 
     public void testGet()

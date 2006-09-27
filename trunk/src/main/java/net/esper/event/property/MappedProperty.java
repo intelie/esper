@@ -38,17 +38,24 @@ public class MappedProperty extends PropertyBase
 
     public EventPropertyGetter getGetter(BeanEventType eventType)
     {
-        FastClass fastClass = eventType.getFastClass();
         EventPropertyDescriptor propertyDesc = eventType.getMappedProperty(propertyName);
         if (propertyDesc == null)
         {
             // property not found, is not a property
             return null;
         }
-        Method method = propertyDesc.getReadMethod();
-        FastMethod fastMethod = fastClass.getMethod(method);
 
-        return new EventKeyedPropertyGetter(fastMethod, key);
+        Method method = propertyDesc.getReadMethod();
+        FastClass fastClass = eventType.getFastClass();
+        if (fastClass != null)
+        {
+            FastMethod fastMethod = fastClass.getMethod(method);
+            return new KeyedFastPropertyGetter(fastMethod, key);
+        }
+        else
+        {
+            return new KeyedMethodPropertyGetter(method, key);
+        }
     }
 
     public Class getPropertyType(BeanEventType eventType)

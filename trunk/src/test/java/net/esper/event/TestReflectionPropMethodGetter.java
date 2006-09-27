@@ -8,7 +8,7 @@ import net.esper.support.event.SupportEventBeanFactory;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
-public class TestReflectionPropertyGetter extends TestCase
+public class TestReflectionPropMethodGetter extends TestCase
 {
     EventBean unitTestBean;
 
@@ -24,7 +24,7 @@ public class TestReflectionPropertyGetter extends TestCase
 
     public void testGetter() throws Exception
     {
-        ReflectionPropertyGetter getter = makeGetter(SupportBean.class, "getIntPrimitive");
+        ReflectionPropMethodGetter getter = makeGetter(SupportBean.class, "getIntPrimitive");
         assertEquals(10, getter.get(unitTestBean));
 
         getter = makeGetter(SupportBean.class, "getString");
@@ -48,7 +48,7 @@ public class TestReflectionPropertyGetter extends TestCase
 
     public void testPerformance() throws Exception
     {
-        ReflectionPropertyGetter getter = makeGetter(SupportBean.class, "getIntPrimitive");
+        ReflectionPropMethodGetter getter = makeGetter(SupportBean.class, "getIntPrimitive");
 
         log.info(".testPerformance Starting test");
 
@@ -61,14 +61,14 @@ public class TestReflectionPropertyGetter extends TestCase
         log.info(".testPerformance Done test");
     }
 
-    private ReflectionPropertyGetter makeGetter(Class clazz, String methodName) throws Exception
+    private ReflectionPropMethodGetter makeGetter(Class clazz, String methodName) throws Exception
     {
         Method method = clazz.getMethod(methodName, new Class[] {});
 
-        ReflectionPropertyGetter getter = new ReflectionPropertyGetter(method);
+        ReflectionPropMethodGetter getter = new ReflectionPropMethodGetter(method);
 
         return getter;
     }
 
-    private static final Log log = LogFactory.getLog(TestReflectionPropertyGetter.class);
+    private static final Log log = LogFactory.getLog(TestReflectionPropMethodGetter.class);
 }

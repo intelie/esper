@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Getter for one or more levels deep nested properties.
  */
-public class EventNestedPropertyGetter implements EventPropertyGetter
+public class NestedPropertyGetter implements EventPropertyGetter
 {
     private final EventPropertyGetter[] getterChain;
     private final BeanEventAdapter beanEventAdapter;
@@ -16,7 +16,7 @@ public class EventNestedPropertyGetter implements EventPropertyGetter
      * @param getterChain is the chain of getters to retrieve each nested property
      * @param beanEventAdapter is the chache and factory for event bean types and event wrappers
      */
-    public EventNestedPropertyGetter(List<EventPropertyGetter> getterChain, BeanEventAdapter beanEventAdapter)
+    public NestedPropertyGetter(List<EventPropertyGetter> getterChain, BeanEventAdapter beanEventAdapter)
     {
         this.getterChain = getterChain.toArray(new EventPropertyGetter[0]);
         this.beanEventAdapter = beanEventAdapter;

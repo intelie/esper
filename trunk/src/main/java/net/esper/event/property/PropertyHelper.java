@@ -22,13 +22,16 @@ public class PropertyHelper
      * @param fastClass is the CGLIB fast classs to make FastMethod for
      * @return property getter
      */
-    public static EventPropertyGetter getGetter(Method method, FastClass fastClass)
+    public static EventPropertyGetter getGetter(Method method, Class clazz, FastClass fastClass)
     {
         // Get CGLib fast method handle
         FastMethod fastMethod = null;
         try
         {
-            fastMethod = fastClass.getMethod(method);
+            if (fastClass != null)
+            {
+                fastMethod = fastClass.getMethod(method);
+            }
         }
         catch (Throwable ex)
         {
@@ -43,7 +46,7 @@ public class PropertyHelper
         }
         else
         {
-            getter = new ReflectionPropertyGetter(method);
+            getter = new ReflectionPropMethodGetter(method);
         }
 
         return getter;

@@ -36,15 +36,15 @@ public class TestPropertyListBuilderPublic extends TestCase
 
         List<EventPropertyDescriptor> expected = new LinkedList<EventPropertyDescriptor>();
         expected.add(new EventPropertyDescriptor("fieldLegacyVal", "fieldLegacyVal", SupportLegacyBean.class.getField("fieldLegacyVal"), EventPropertyType.SIMPLE));
-        expected.add(new EventPropertyDescriptor("fieldStringArray", "fieldStringArray", SupportLegacyBean.class.getField("fieldStringArray"), EventPropertyType.INDEXED));
-        expected.add(new EventPropertyDescriptor("fieldMapped", "fieldMapped", SupportLegacyBean.class.getField("fieldMapped"), EventPropertyType.MAPPED));
+        expected.add(new EventPropertyDescriptor("fieldStringArray", "fieldStringArray", SupportLegacyBean.class.getField("fieldStringArray"), EventPropertyType.SIMPLE));
+        expected.add(new EventPropertyDescriptor("fieldMapped", "fieldMapped", SupportLegacyBean.class.getField("fieldMapped"), EventPropertyType.SIMPLE));
         expected.add(new EventPropertyDescriptor("fieldNested", "fieldNested", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
 
         expected.add(new EventPropertyDescriptor("readLegacyBeanVal", "readLegacyBeanVal", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
-        expected.add(new EventPropertyDescriptor("readStringArray", "readStringArray", SupportLegacyBean.class.getMethod("readStringArray"), EventPropertyType.INDEXED));
+        expected.add(new EventPropertyDescriptor("readStringArray", "readStringArray", SupportLegacyBean.class.getMethod("readStringArray"), EventPropertyType.SIMPLE));
         expected.add(new EventPropertyDescriptor("readStringIndexed", "readStringIndexed", SupportLegacyBean.class.getMethod("readStringIndexed", new Class[] {int.class}), EventPropertyType.INDEXED));
         expected.add(new EventPropertyDescriptor("readMapByKey", "readMapByKey", SupportLegacyBean.class.getMethod("readMapByKey", new Class[] {String.class}), EventPropertyType.MAPPED));
-        expected.add(new EventPropertyDescriptor("readMap", "readMap", SupportLegacyBean.class.getMethod("readMap"), EventPropertyType.MAPPED));
+        expected.add(new EventPropertyDescriptor("readMap", "readMap", SupportLegacyBean.class.getMethod("readMap"), EventPropertyType.SIMPLE));
         expected.add(new EventPropertyDescriptor("readLegacyNested", "readLegacyNested", SupportLegacyBean.class.getMethod("readLegacyNested"), EventPropertyType.SIMPLE));
 
         expected.add(new EventPropertyDescriptor("x", "x", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));

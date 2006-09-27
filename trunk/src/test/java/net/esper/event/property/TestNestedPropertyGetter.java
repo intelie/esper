@@ -13,10 +13,10 @@ import net.esper.event.BeanEventAdapter;
 import java.util.List;
 import java.util.LinkedList;
 
-public class TestEventNestedPropertyGetter extends TestCase
+public class TestNestedPropertyGetter extends TestCase
 {
-    private EventNestedPropertyGetter getter;
-    private EventNestedPropertyGetter getterNull;
+    private NestedPropertyGetter getter;
+    private NestedPropertyGetter getterNull;
     private EventBean event;
     private SupportBeanCombinedProps bean;
     private BeanEventAdapter beanEventAdapter;
@@ -30,12 +30,12 @@ public class TestEventNestedPropertyGetter extends TestCase
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
         getters.add(makeGetterOne(0));
         getters.add(makeGetterTwo("0ma"));
-        getter = new EventNestedPropertyGetter(getters, beanEventAdapter);
+        getter = new NestedPropertyGetter(getters, beanEventAdapter);
 
         getters = new LinkedList<EventPropertyGetter>();
         getters.add(makeGetterOne(2));
         getters.add(makeGetterTwo("0ma"));
-        getterNull = new EventNestedPropertyGetter(getters, beanEventAdapter);
+        getterNull = new NestedPropertyGetter(getters, beanEventAdapter);
     }
 
     public void testGet()
@@ -56,17 +56,17 @@ public class TestEventNestedPropertyGetter extends TestCase
         }
     }
 
-    private EventKeyedPropertyGetter makeGetterOne(int index)
+    private KeyedFastPropertyGetter makeGetterOne(int index)
     {
         FastClass fastClassOne = FastClass.create(SupportBeanCombinedProps.class);
         FastMethod methodOne = fastClassOne.getMethod("getIndexed", new Class[] {int.class});
-        return new EventKeyedPropertyGetter(methodOne, index);
+        return new KeyedFastPropertyGetter(methodOne, index);
     }
 
-    private EventKeyedPropertyGetter makeGetterTwo(String key)
+    private KeyedFastPropertyGetter makeGetterTwo(String key)
     {
         FastClass fastClassTwo = FastClass.create(SupportBeanCombinedProps.NestedLevOne.class);
         FastMethod methodTwo = fastClassTwo.getMethod("getMapped", new Class[] {String.class});
-        return new EventKeyedPropertyGetter(methodTwo, key);
+        return new KeyedFastPropertyGetter(methodTwo, key);
     }
 }

@@ -5,6 +5,7 @@ import net.sf.cglib.reflect.FastMethod;
 import net.sf.cglib.reflect.FastClass;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 /**
  * Represents an indexed property or array property, ie. an 'value' property with read method getValue(int index)
@@ -40,9 +41,16 @@ public class IndexedProperty extends PropertyBase
         EventPropertyDescriptor propertyDesc = eventType.getIndexedProperty(propertyName);
         if (propertyDesc != null)
         {
-            Method method = propertyDesc.getReadMethod();
-            FastMethod fastMethod = fastClass.getMethod(method);
-            return new EventKeyedPropertyGetter(fastMethod, index);
+            if (fastClass != null)
+            {
+                Method method = propertyDesc.getReadMethod();
+                FastMethod fastMethod = fastClass.getMethod(method);
+                return new KeyedFastPropertyGetter(fastMethod, index);
+            }
+            else
+            {
+                return new KeyedMethodPropertyGetter(propertyDesc.getReadMethod(), index);
+            }
         }
 
         // Try the array as a simple property
@@ -52,12 +60,27 @@ public class IndexedProperty extends PropertyBase
             return null;
         }
 
-        Class returnType = propertyDesc.getReadMethod().getReturnType();
+        Class returnType = propertyDesc.getReturnType();
         if (returnType.isArray())
         {
-            Method method = propertyDesc.getReadMethod();
-            FastMethod fastMethod = fastClass.getMethod(method);
-            return new EventArrayPropertyGetter(fastMethod, index);
+            if (propertyDesc.getReadMethod() != null)
+            {
+                Method method = propertyDesc.getReadMethod();
+                if (fastClass != null)
+                {
+                    FastMethod fastMethod = fastClass.getMethod(method);
+                    return new ArrayFastPropertyGetter(fastMethod, index);
+                }
+                else
+                {
+                    return new ArrayMethodPropertyGetter(method, index);   
+                }
+            }
+            else
+            {
+                Field field = propertyDesc.getAccessorField();
+                return new ArrayFieldPropertyGetter(field, index);
+            }
         }
 
         return null;
@@ -68,7 +91,7 @@ public class IndexedProperty extends PropertyBase
         EventPropertyDescriptor descriptor = eventType.getIndexedProperty(propertyName);
         if (descriptor != null)
         {
-            return descriptor.getReadMethod().getReturnType();
+            return descriptor.getReturnType();
         }
 
         // Check if this is an method returning array which is a type of simple property
@@ -77,8 +100,8 @@ public class IndexedProperty extends PropertyBase
         {
             return null;
         }
-        
-        Class returnType = descriptor.getReadMethod().getReturnType();
+
+        Class returnType = descriptor.getReturnType();
         if (returnType.isArray())
         {
             return returnType.getComponentType();

@@ -77,12 +77,33 @@ public class EventPropertyDescriptor
     }
 
     /**
-     * Returns the read method.
-     * @return read method
+     * Returns the read method. Can return null if the property is backed by a field..
+     * @return read method of null if field property
      */
     public Method getReadMethod()
     {
         return readMethod;
+    }
+
+    /**
+     * Returns the accessor field. Can return null if the property is backed by a method.
+     * @return accessor field of null if method property
+     */
+    public Field getAccessorField()
+    {
+        return accessorField;
+    }
+
+    public Class getReturnType()
+    {
+        if (readMethod != null)
+        {
+            return readMethod.getReturnType();
+        }
+        else
+        {
+            return accessorField.getType();
+        }
     }
 
     public String toString()

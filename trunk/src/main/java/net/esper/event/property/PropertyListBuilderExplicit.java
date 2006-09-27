@@ -107,41 +107,15 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
 
     protected static EventPropertyDescriptor makeFieldDesc(Field field, String name)
     {
-        Class type = field.getType();
-        EventPropertyType propertyType = null;
-        if (type.isArray())
-        {
-            propertyType = EventPropertyType.INDEXED;
-        }
-        else if ((type == Map.class) || (Arrays.asList(type.getInterfaces()).contains(Map.class)))
-        {
-            propertyType = EventPropertyType.MAPPED;
-        }
-        else
-        {
-            propertyType = EventPropertyType.SIMPLE;
-        }
-
-        return new EventPropertyDescriptor(name, name, field, propertyType);
+        return new EventPropertyDescriptor(name, name, field, EventPropertyType.SIMPLE);
     }
 
     protected static EventPropertyDescriptor makeMethodDesc(Method method, String name)
     {
         Class type = method.getReturnType();
         EventPropertyType propertyType = null;
-        if (type.isArray())
-        {
-            propertyType = EventPropertyType.INDEXED;
-        }
-        else if ((type == Map.class) || (Arrays.asList(type.getInterfaces()).contains(Map.class)))
-        {
-            propertyType = EventPropertyType.MAPPED;
-        }
-        else if (method.getParameterTypes().length == 0)
-        {
-            propertyType = EventPropertyType.SIMPLE;
-        }
-        else
+
+        if (method.getParameterTypes().length == 1)
         {
             Class parameterType = method.getParameterTypes()[0];
             if (parameterType == String.class)
@@ -152,6 +126,10 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
             {
                 propertyType = EventPropertyType.INDEXED;
             }
+        }
+        else
+        {
+            propertyType = EventPropertyType.SIMPLE;
         }
 
         return new EventPropertyDescriptor(name, name, method, propertyType);

@@ -17,6 +17,16 @@ public class SupportLegacyBean
     public Map<String, String> fieldMapped;
     public LegacyNested fieldNested;
 
+    public SupportLegacyBean(String legacyBeanVal)
+    {
+        this(legacyBeanVal, null, null, null);        
+    }
+
+    public SupportLegacyBean(String[] stringArray)
+    {
+        this(null, stringArray, null, null);
+    }
+
     public SupportLegacyBean(String legacyBeanVal, String[] stringArray, Map<String, String> mapped, String legacyNested)
     {
         this.legacyBeanVal = legacyBeanVal;
@@ -62,16 +72,16 @@ public class SupportLegacyBean
 
     public class LegacyNested
     {
-        private String nestedValue;
+        public String fieldNestedValue;
 
         public LegacyNested(String nestedValue)
         {
-            this.nestedValue = nestedValue;
+            this.fieldNestedValue = nestedValue;
         }
 
         public String readNestedValue()
         {
-            return nestedValue;
+            return fieldNestedValue;
         }
     }
 }
