@@ -8,7 +8,7 @@
     </para>
 
     <sect1 id="configuration-programmatic" revision="1">
-        <title>Programmatic configuration</title>
+        <title>Programmatic Configuration</title>
 
         <para>
             An instance of <literal>net.esper.client.Configuration</literal> represents all configuration parameters. The <literal>Configuration</literal> is used to build an (immutable) <literal>EPServiceProvider</literal>, which provides the administrative and runtime interfaces for an Esper engine instance. 
@@ -34,7 +34,7 @@ EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", con
     </sect1>
 
 	<sect1 id="configuration-via-xml" revision="1">
-        <title>Configuration via XML file</title>
+        <title>Configuration via XML File</title>
 
         <para>
 			An alternative approach to configuration is to specify a configuration in an XML file. 
@@ -56,7 +56,7 @@ configuration.configure("myengine.esper.cfg.xml");
     </sect1>
 
 	<sect1 id="configuration-xml" revision="1">
-        <title>XML Configuration file</title>
+        <title>XML Configuration File</title>
 
         <para>
 			Here is an example configuration file. The schema for the configuration file can be found in the <literal>etc</literal> folder and is named <literal>esper-configuration-1-0</literal>.		</para>
@@ -70,65 +70,174 @@ configuration.configure("myengine.esper.cfg.xml");
 </esper-configuration>		
 ]]></programlisting>
 
+        <para>
+			The example above is only a subset of the configuration items available. The next chapters outline the available configuration in greater detail.
+		</para>
     </sect1>
 
 	<sect1 id="configuration-items" revision="1">
-        <title>Configuration items</title>
+        <title>Configuration Items</title>
 
-		<sect2 id="config-event-name" revision="1">
-			<title>Event type alias to Java class mapping</title>
+		<sect2 id="config-java" revision="1">
+			<title>Events represented by Java Classes</title>
 			
-			<para>
-				This configuration item can be set to allow event pattern statements and EQL statements to use an event type alias rather then the fully qualified Java class name. Interfaces and abstract classes are also supported as event types.
-			</para>
+			<sect3 id="config-java-event-name" revision="1">
+				<title>Event type alias to Java class mapping</title>
+				
+				<para>
+					This configuration item can be used to allow event pattern statements and EQL statements to use an event type alias rather then the fully qualified Java class name. Note that Java Interface classes and abstract classes are also supported as event types via the fully qualified Java class name, and an event type alias can also be defined for such classes.
+				</para>
+				
+				<para>
+					The example pattern statement below first shows a pattern that uses the alias <literal>StockTick</literal>. The second pattern statement is equivalent but specifies the fully-qualified Java class name.
+				</para>
+
+				<programlisting><![CDATA[every StockTick(symbol='IBM')"]]></programlisting>
+				<programlisting><![CDATA[every net.esper.example.stockticker.event.StockTick(symbol='IBM')]]></programlisting>
+
+				<para>
+					The event type alias can be listed in the XML configuration file as shown below. The <literal>Configuration</literal> API can also be used to programatically specify an event type alias, as shown in an earlier code snippet.
+				</para>
+				<programlisting><![CDATA[<event-type alias="StockTick" class="net.esper.example.stockticker.event.StockTick"/>]]></programlisting>
+				
+			</sect3>
 			
-			<programlisting><![CDATA[every StockTick(symbol='IBM')"
-// via configuration equivalent to
-every net.esper.example.stockticker.event.StockTick(symbol='IBM')]]></programlisting>
+			<sect3 id="config-java-legacy" revision="1">
+				<title>Non-JavaBean and Legacy Java Event Classes</title>
+				
+				<para>
+					Esper can process Java classes that provide event properties through other means then through JavaBean-style getter methods. It is not necessary that the method and member variable names in your Java class adhere to the JavaBean convention - any public methods and public member variables can be exposed as event properties via the below configuration.
+				</para>
+								
+				<para>
+					A Java class can optionally be configured with an accessor style attribute. This attribute instructs the engine how it should expose methods and fields for use as event properties in statements.
+				</para>
+
+				<table frame="topbot">
+					<title>Accessor Styles</title>
+					<tgroup cols="2">
+						<colspec colwidth="1.5*"/>
+						<colspec colwidth="2*"/>
+						<thead>
+							<row>
+								<entry>Style Name</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>javabean</literal></entry>
+								<entry>As the default setting, the engine exposes an event property for each public method following the JavaBean getter-method conventions</entry>
+							</row>
+							<row>
+								<entry><literal>public</literal></entry>
+								<entry>The engine exposes an event property for each public method and public member variable of the given class</entry>
+							</row>
+							<row>
+								<entry><literal>explicit</literal></entry>
+								<entry>The engine exposes an event property only for the explicitly configured public methods and public member variables</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				
+				<para>
+					Using the <literal>public</literal> setting for the <literal>accessor-style</literal> attribute instructs the engine to expose an event property for each public method and public member variable of a Java class. The engine assigns event property names of the same name as the name of the method or member variable in the Java class.
+				</para>
+				
+				<para>					
+					For example, assuming the class <literal>MyLegacyEvent</literal> exposes a method named <literal>readValue</literal> and a member variable named <literal>myField</literal>, we can then use properties as shown. 
+				</para>
+				<programlisting><![CDATA[select readValue, myField from MyLegacyEvent]]></programlisting>
+
+				<para>
+					Using the <literal>explicit</literal> setting for the <literal>accessor-style</literal> attribute requires that event properties are declared via configuration. This is outlined in the next chapter.
+				</para>
+
+				<para>
+					When configuring an engine instance from an XML configuration file, the XML snippet below demonstrates the use of the <literal>legacy-type</literal> element and the <literal>accessor-style</literal> attribute.
+				</para>
+
+				<programlisting><![CDATA[<event-type alias="MyLegacyEvent" class="com.mycompany.mypackage.MyLegacyEventClass">
+  <legacy-type accessor-style="public"/>
+</event-type>]]></programlisting>
+
+				<para>
+					When configuring an engine instance via Configuration API, the sample code below shows how to set the accessor style.
+				</para>
+
+				<programlisting><![CDATA[Configuration configuration = new Configuration();
+ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
+legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);
+config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyDef);
+
+EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", configuration);
+]]></programlisting>
+
+			</sect3>
+
+			<sect3 id="config-java-spec-properties" revision="1">
+				<title>Specifying Event Properties for Java Classes</title>
+				
+				<para>
+					Sometimes it may be convenient to use event property names in pattern and EQL statements that are backed up by a given public method or member variable (field) in a Java class. And it can be useful to declare multiple event properties that each map to the same method or member variable.
+				</para>
+
+				<para>
+					We can configure properties of events via <literal>method-property</literal> and <literal>field-property</literal> elements, as the next example shows.
+				</para>
+
+				<programlisting><![CDATA[<event-type alias="StockTick" class="net.esper.example.stockticker.event.StockTickEvent">
+	<legacy-type accessor-style="javabean" code-generation="enabled">
+		<method-property name="price" accessor-method="getCurrentPrice" />
+		<field-property name="volume" accessor-field="volumeField" />
+	</legacy-type>
+</event-type>]]></programlisting>
+
+				<para>
+					The XML configuration snippet above declared an event property named <literal>price</literal> backed by a getter-method named <literal>getCurrentPrice</literal>, and a second event property named <literal>volume</literal> that is backed by a public member variable named <literal>volumeField</literal>. Thus the price and volume properties can be used in a statement:
+				</para>								
+				<programlisting><![CDATA[select avg(price * volume) from StockTick]]></programlisting>
+
+				<para>
+					As with all configuration options, the API can also be used:
+				</para>
+
+				<programlisting><![CDATA[Configuration configuration = new Configuration();
+ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
+legacyDef.addMethodProperty("price", "getCurrentPrice");
+legacyDef.addFieldProperty("volume", "volumeField");
+config.addEventTypeAlias("StockTick", StockTickEvent.class.getName(), legacyDef);]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-java-codegen" revision="1">
+				<title>Turning off Code Generation</title>
+				
+				<para>
+					Esper employes the <literal>CGLIB</literal> library for very fast read access to event property values. For certain legacy Java classes it may be desirable to disable the use of this library and instead use Java reflection to obtain event property values from event objects.
+				</para>
+								
+				<para>
+					In the XML configuration, the optional <literal>code-generation</literal> attribute in the <literal>legacy-type</literal> section can be set to <literal>disabled</literal> as shown next.
+				</para>
+				<programlisting><![CDATA[<event-type alias="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass">
+	<legacy-type accessor-style="javabean" code-generation="disabled" />
+</event-type>
+]]></programlisting>
+
+				<para>
+					The sample below shows how to configure this option via the API.
+				</para>
+
+				<programlisting><![CDATA[Configuration configuration = new Configuration();
+ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
+legacyDef.setCodeGeneration(ConfigurationEventTypeLegacy.CodeGeneration.DISABLED);
+config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyDef);]]></programlisting>
+
+			</sect3>
+
 		</sect2>
 			
-		<sect2 id="config-class--package-imports" revision="1">
-			<title>Class and package imports</title>
-			
-			<para>
-				Esper allows invocations of static Java library functions as outlined in <xref linkend="eql-single-row-function-ref"/>. This configuration 
-				item can be set to allow a partial rather than a fully qualified class name in such invocations. The imports work in the same way as in Java files, so both packages and classes can be imported.
-			</para>
-			
-			<programlisting>select Math.max(priceOne, PriceTwo)
-// via configuration equivalent to
-select java.lang.Math.max(priceOne, priceTwo)</programlisting>
-
-			<para>
-				Esper auto-imports the following Java library packages if no other configuration is supplied.
-				This list is replaced with any configuration specified in a configuration file or through the API.
-			</para>
-
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						java.lang.*
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						java.math.*
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						java.text.*
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						java.util.*
-					</para>
-				</listitem>
-			</itemizedlist>
-
-		</sect2>
-
 		<sect2 id="config-java-util-map" revision="1">
 			<title>Events represented by <literal>java.util.Map</literal></title>
 			
@@ -367,7 +476,56 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 		  </sect3>
 		  
 		</sect2>
-		
+					
+		<sect2 id="config-class--package-imports" revision="1">
+			<title>Class and package imports</title>
+			
+			<para>
+				Esper allows invocations of static Java library functions as outlined in <xref linkend="eql-single-row-function-ref"/>. This configuration 
+				item can be set to allow a partial rather than a fully qualified class name in such invocations. The imports work in the same way as in Java files, so both packages and classes can be imported.
+			</para>
+			
+			<programlisting>select Math.max(priceOne, PriceTwo)
+// via configuration equivalent to
+select java.lang.Math.max(priceOne, priceTwo)</programlisting>
+
+			<para>
+				Esper auto-imports the following Java library packages if no other configuration is supplied.
+				This list is replaced with any configuration specified in a configuration file or through the API.
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						java.lang.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.math.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.text.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.util.*
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				In an XML configuration file the auto-import configuration may look as below. Note that all configuration options are available through the <literal>Configuration</literal> API as well.
+			</para>
+
+		<programlisting><![CDATA[<auto-import import-name="com.mycompany.mypackage.*"/>
+  <auto-import import-name="com.mycompany.myapp.MyUtilityClass"/>
+]]></programlisting>
+
+		</sect2>
     </sect1>
 </chapter>
 
