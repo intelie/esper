@@ -1,15 +1,11 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<name>Esper Examples</name>
-	<artifactId>esper_examples</artifactId>
-	<groupId>net.esper.examples</groupId>
+	<name>Esper Examples TerminalSvc - Receiver</name>
+	<artifactId>esper-terminalsvc-receiver</artifactId>
+	<groupId>net.esper.examples.terminal.receiver</groupId>
 	<version>1.1.0</version>
 	<packaging>jar</packaging>
-	<modules>
-		<module>terminalsvc-client</module>
-		<module>terminalsvc-mdb</module>
-	</modules>
-	<description>Esper CEP ESP engine for Java examples, basedir is ${basedir}</description>
+	<description>Esper Example - TerminalSvc Receiver, basedir is ${basedir}</description>
 	<repositories>
 		<repository>
 			<id>local-repository</id>
@@ -47,6 +43,11 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 		</dependency>
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-j2ee</artifactId>
+			<version>4.0.2</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -71,7 +72,7 @@
 					</systemProperties>
 				</configuration>
 			</plugin>
-		</plugins>
+      </plugins>
 		<testResources>
 			<testResource>
 				<directory>etc</directory>
