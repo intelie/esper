@@ -4,8 +4,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.jms.*;
 import java.util.Random;
-import java.util.Set;
-import java.util.HashSet;
+import net.esper.example.terminal.common.*;
+import com.thoughtworks.xstream.XStream;
 
 public class TerminalEventSender
 {
@@ -13,15 +13,18 @@ public class TerminalEventSender
 
     private static volatile boolean isShutdownRequested;
 
-    private QueueConnection conn;
-    private QueueSession session;
-    private Queue queB;
+    private final Random random;
+    private final XStream encoder_decoder;
 
-    private Random random = new Random();
+    private final QueueConnection conn;
+    private final QueueSession session;
+    private final QueueSender sender;
 
-    public void setupPTP()
-        throws JMSException, NamingException
+    public TerminalEventSender() throws JMSException, NamingException
     {
+        random = new Random();
+        encoder_decoder = new XStream();
+
         System.setProperty("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
         System.setProperty("java.naming.provider.url", "localhost:1099");
 
@@ -29,44 +32,61 @@ public class TerminalEventSender
         Object tmp = iniCtx.lookup("ConnectionFactory");
         QueueConnectionFactory qcf = (QueueConnectionFactory) tmp;
         conn = qcf.createQueueConnection();
-        queB = (Queue) iniCtx.lookup("queue/B");
+        Queue queB = (Queue) iniCtx.lookup("queue/B");
         session = conn.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
+        sender = session.createSender(queB);
         conn.start();
     }
 
     public void sendEvents()
         throws JMSException, NamingException, InterruptedException
     {
-        // Generate up to 100 unique desk ids between 1000 and 2000
-        long[] deskIds = new long[100];
+        // Generate up to 100 unique desk ids between 100 and 200
+        String[] deskIds = new String[1];
         for (int i = 0; i < deskIds.length; i++)
         {
-            deskIds.add(1000L + random.nextInt(1000));
+            deskIds[i] = Long.toString(i + 100);
         }
 
-        // Send a check-in started event for each
-        for (Long deskId = deskIds)
+        // Swap desks, send check-in events
+        randomize(deskIds);
+        sendCheckinEvents(deskIds);
 
-        // long deskId;
-        // string eventType;
+        // Swap desks, send cancelled or completed events
+        randomize(deskIds);
+        sendDoneEvents(deskIds);
+    }
 
-        System.out.println("Begin sendRecvAsync");
-
-        setupPTP();
-
-        QueueSender send = session.createSender(queB);
-
-        for(int m = 0; m < 10; m ++) {
-            TextMessage tm = session.createTextMessage(textBase+"#"+m);
-            send.send(tm);
-            System.out.println("sendRecvAsync, sent text=" + tm.getText());
+    private void sendCheckinEvents(String[] deskIds)
+    {
+        for (int i = 0; i < deskIds.length; i++)
+        {
+            Checkin checkin = new Checkin(new DeskInfo(deskIds[i], false, ""));
+            sendEvent(checkin);
         }
-        System.out.println("End sendRecvAsync");
+    }
+
+    private void sendDoneEvents(String[] deskIds)
+    {
+        for (int i = 0; i < deskIds.length; i++)
+        {
+            BaseDeskEvent doneEvent = null;
+            if (random.nextBoolean())
+            {
+                doneEvent = new Completed(new DeskInfo(deskIds[i], false, ""));
+            }
+            else
+            {
+                doneEvent = new Cancelled(new DeskInfo(deskIds[i], false, ""));
+            }
+            sendEvent(doneEvent);
+        }
     }
 
     public void stop()
         throws JMSException
     {
+        sender.close();
         conn.stop();
         session.close();
         conn.close();
@@ -78,17 +98,47 @@ public class TerminalEventSender
         System.out.println("TerminalEventSender sending to queue " + SEND_QUEUE + "...");
 
         TerminalEventSender client = new TerminalEventSender();
-        client.setupPTP();
 
         Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         while (!isShutdownRequested)
         {
             client.sendEvents();
+            isShutdownRequested = true;
         }
 
         client.stop();
         System.exit(0);
         System.out.println("TerminalEventSender ended");
+    }
+
+    // Swap 100 values in the array
+    private void randomize(String[] values)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            int pos1 = random.nextInt(values.length);
+            int pos2 = random.nextInt(values.length);
+            String temp = values[pos2];
+            values[pos2] = values[pos1];
+            values[pos1] = temp;
+        }
+    }
+
+    private void sendEvent(BaseDeskEvent baseDeskEvent)
+    {
+        try
+        {
+            String xml = encoder_decoder.toXML(baseDeskEvent);
+            TextMessage textMessage = session.createTextMessage();
+            textMessage.setText(xml);
+            sender.send(textMessage);
+
+            System.out.println(xml);
+        }
+        catch (JMSException ex)
+        {
+            System.out.println("Error sending event:" + ex.toString());
+        }
     }
 
     /**

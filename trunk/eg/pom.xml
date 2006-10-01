@@ -5,11 +5,7 @@
 	<groupId>net.esper.examples</groupId>
 	<version>1.1.0</version>
 	<packaging>jar</packaging>
-	<modules>
-		<module>terminalsvc-client</module>
-		<module>terminalsvc-mdb</module>
-	</modules>
-	<description>Esper CEP ESP engine for Java examples, basedir is ${basedir}</description>
+	<description>Esper CEP ESP engine for Java examples</description>
 	<repositories>
 		<repository>
 			<id>local-repository</id>

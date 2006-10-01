@@ -1,11 +1,11 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<name>Esper Examples TerminalSvc - MDB</name>
-	<artifactId>esper-terminalsvc-mdb</artifactId>
-	<groupId>net.esper.examples.terminal.mdb</groupId>
+	<artifactId>example-terminalsvc-mdb</artifactId>
+	<groupId>esper</groupId>
 	<version>1.1.0</version>
-	<packaging>jar</packaging>
-	<description>Esper TerminalSvc example - MDB, basedir is ${basedir}</description>
+	<packaging>ejb</packaging>
+	<description>Esper TerminalSvc example - MDB</description>
 	<repositories>
 		<repository>
 			<id>local-repository</id>
@@ -17,7 +17,12 @@
 			<groupId>esper</groupId>
 			<artifactId>esper</artifactId>
 			<version>1.1.0</version>
-		</dependency>
+      	</dependency>
+		<dependency>
+			<groupId>esper</groupId>
+			<artifactId>example-terminalsvc-common</artifactId>
+			<version>1.1.0</version>
+		</dependency>		
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -47,7 +52,13 @@
 			<groupId>jboss</groupId>
 			<artifactId>jboss-j2ee</artifactId>
 			<version>4.0.2</version>
+			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.2</version>
+    	</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -72,14 +83,21 @@
 					</systemProperties>
 				</configuration>
 			</plugin>
-			<plugin>
+		    <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ejb-plugin</artifactId>
+				<configuration>
+				   <ejbVersion>2.0</ejbVersion>
+				</configuration>
+		  	</plugin>
+    		<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 				  <execution>
-					<phase>install</phase>
+					<phase>deploy</phase>
 					<configuration>
 					  <tasks>
-						<copy file="${basedir}/target/esper-terminalsvc-mdb-1.1.0.jar" todir="${env.JBOSS_HOME}/server/default/deploy"/>
+						<copy file="${basedir}/target/example-terminalsvc-mdb-1.1.0.jar" todir="${env.JBOSS_HOME}/server/default/deploy"/>
 					  </tasks>
 					</configuration>
 					<goals>

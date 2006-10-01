@@ -10,12 +10,16 @@ import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import com.thoughtworks.xstream.XStream;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+
 public class TerminalMDB implements MessageDrivenBean, MessageListener
 {
-    private QueueConnection conn;
     private QueueSession session;
-    private Queue queA;
     private QueueSender sender;
+    private XStream encoder_decoder;
+    private static EPServiceProvider epService;
 
     public void setMessageDrivenContext(MessageDrivenContext messageDrivenContext) throws EJBException
     {
@@ -23,16 +27,21 @@ public class TerminalMDB implements MessageDrivenBean, MessageListener
 
     public void ejbCreate() throws EJBException
     {
+        epService = EPServiceProviderManager.getDefaultProvider();
+
+        encoder_decoder = new XStream();
+
         try
         {
             InitialContext iniCtx = new InitialContext();
             Object tmp = iniCtx.lookup("ConnectionFactory");
             QueueConnectionFactory qcf = (QueueConnectionFactory) tmp;
-            conn = qcf.createQueueConnection();
-            queA = (Queue) iniCtx.lookup("queue/A");
+            QueueConnection conn = qcf.createQueueConnection();
+            Queue queA = (Queue) iniCtx.lookup("queue/A");
             session = conn.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
             conn.start();
             sender = session.createSender(queA);
+
         }
         catch (NamingException ex)
         {
@@ -54,12 +63,36 @@ public class TerminalMDB implements MessageDrivenBean, MessageListener
 
     public void onMessage(Message message)
     {
+        String xml = null;
         try
         {
             TextMessage textMessage = (TextMessage) message;
             System.out.println("Message=" + textMessage.getText());
+            xml = textMessage.getText();
+        }
+        catch (JMSException ex)
+        {
+            String messageText = "Error sending response message";
+            log.error(messageText, ex);
+            return;
+        }
 
-            Message response = session.createTextMessage("Hello" + textMessage.getText());
+        try
+        {
+            // TODO: synchronization: get provider, send event, insert statement
+            Object event = encoder_decoder.fromXML(xml);
+            epService.getEPRuntime().sendEvent(event);
+        }
+        catch (RuntimeException ex)
+        {
+            String messageText = "Error processing message, xml=" + xml;
+            log.error(messageText, ex);
+            return;
+        }
+
+        try
+        {
+            Message response = session.createTextMessage(xml);
             sender.send(response);
         }
         catch (JMSException ex)

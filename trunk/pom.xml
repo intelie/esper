@@ -21,7 +21,7 @@ mvn javadoc:javadoc
 	<groupId>esper</groupId>
 	<version>1.1.0</version>
 	<packaging>jar</packaging>
-	<description>Esper CEP engine for Java, basedir is ${basedir}</description>
+	<description>Esper CEP engine for Java</description>
 	<inceptionYear>2005</inceptionYear>
 	<dependencies>
 		<dependency>
