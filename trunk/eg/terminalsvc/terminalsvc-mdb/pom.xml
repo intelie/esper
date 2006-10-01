@@ -94,7 +94,7 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 				  <execution>
-					<phase>deploy</phase>
+					<phase>install</phase>
 					<configuration>
 					  <tasks>
 						<copy file="${basedir}/target/example-terminalsvc-mdb-1.1.0.jar" todir="${env.JBOSS_HOME}/server/default/deploy"/>
