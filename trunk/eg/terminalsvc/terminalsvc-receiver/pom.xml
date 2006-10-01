@@ -1,9 +1,9 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<name>Esper Examples TerminalSvc - Receiver</name>
-	<artifactId>esper-terminalsvc-receiver</artifactId>
+	<artifactId>example-terminalsvc-receiver</artifactId>
 	<groupId>esper</groupId>
-	<version>1.1.0</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 	<description>Esper Example - TerminalSvc Receiver</description>
 	<repositories>

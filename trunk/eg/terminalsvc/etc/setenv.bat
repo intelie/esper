@@ -22,14 +22,17 @@ if not exist %LIB%\log4j-1.2.8.jar goto badenv
 if not exist %LIB%\antlr-2.7.5.jar goto badenv
 
 set CLASSPATH=.
-set CLASSPATH=%CLASSPATH%;..\terminalsvc-receiver\target\esper-terminalsvc-receiver-1.1.0.jar
-set CLASSPATH=%CLASSPATH%;..\terminalsvc-sender\target\esper-terminalsvc-sender-1.1.0.jar
+set CLASSPATH=%CLASSPATH%;..\terminalsvc-receiver\target\example-terminalsvc-receiver-1.0.jar
+set CLASSPATH=%CLASSPATH%;..\terminalsvc-sender\target\example-terminalsvc-sender-1.0.jar
+set CLASSPATH=%CLASSPATH%;..\terminalsvc-common\target\example-terminalsvc-common-1.0.jar
 set CLASSPATH=%CLASSPATH%;..\..\..\esper-1.1.0.jar
 set CLASSPATH=%CLASSPATH%;..\lib\concurrent.jar
 set CLASSPATH=%CLASSPATH%;..\lib\jboss-common-client.jar
 set CLASSPATH=%CLASSPATH%;..\lib\jbossmq-client.jar
 set CLASSPATH=%CLASSPATH%;..\lib\jnp-client.jar
 set CLASSPATH=%CLASSPATH%;..\lib\jboss-j2ee.jar
+set CLASSPATH=%CLASSPATH%;..\lib\xpp3_min-1.1.3.4.O.jar
+set CLASSPATH=%CLASSPATH%;..\lib\xstream-1.2.jar
 set CLASSPATH=%CLASSPATH%;%LIB%\cglib-full-2.0.2.jar
 set CLASSPATH=%CLASSPATH%;%LIB%\commons-beanutils-1.7.0.jar
 set CLASSPATH=%CLASSPATH%;%LIB%\commons-logging-1.0.3.jar
