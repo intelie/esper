@@ -91,9 +91,13 @@
 		    <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ejb-plugin</artifactId>
-				<configuration>
-				   <ejbVersion>2.0</ejbVersion>
-				</configuration>
+				<configuration> 
+					<archive> 
+						<manifest> 
+							<addClasspath>true</addClasspath> 
+						</manifest> 
+					</archive> 
+				</configuration> 
 		  	</plugin>
 		</plugins>
 		<testResources>
