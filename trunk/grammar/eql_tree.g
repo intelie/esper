@@ -235,7 +235,7 @@ filterAtom
 	|	filterIdentifier;
 	
 filterIdentifier
-	:	#(EVENT_FILTER_IDENT IDENT IDENT)
+	:	#(EVENT_FILTER_IDENT IDENT eventPropertyExpr)
 	;	
 	
 eventPropertyExpr

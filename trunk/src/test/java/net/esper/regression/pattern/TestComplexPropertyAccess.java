@@ -7,6 +7,11 @@ import net.esper.regression.support.EventCollectionFactory;
 import net.esper.regression.support.EventExpressionCase;
 import net.esper.regression.support.PatternTestHarness;
 import net.esper.support.bean.*;
+import net.esper.support.util.SupportUpdateListener;
+import net.esper.client.EPStatement;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+import net.esper.event.EventBean;
 
 public class TestComplexPropertyAccess extends TestCase
 {
@@ -81,14 +86,57 @@ public class TestComplexPropertyAccess extends TestCase
         util.runTest();
     }
 
-    /*
-    testData.put("e1", SupportBeanComplexProps.makeDefaultBean());
-    testData.put("e2", SupportBeanCombinedProps.makeDefaultBean());
+    public void testIndexedFilterProp() throws Exception
+    {
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        epService.initialize();
 
-    "mapped, indexed, combined or nested - you name it, it's tested"
-    */
+        String type = SupportBeanComplexProps.class.getName();
+        String pattern = "every a=" + type + "(indexed[0]=3)";
 
+        EPStatement stmt = epService.getEPAdministrator().createPattern(pattern);
+        stmt.addListener(testListener);
 
+        Object event = new SupportBeanComplexProps(new int[] { 3, 4});
+        epService.getEPRuntime().sendEvent(event);
+        assertSame(event, testListener.assertOneGetNewAndReset().get("a"));
+
+        event = new SupportBeanComplexProps(new int[] { 6});
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(testListener.isInvoked());
+
+        event = new SupportBeanComplexProps(new int[] { 3});
+        epService.getEPRuntime().sendEvent(event);
+        assertSame(event, testListener.assertOneGetNewAndReset().get("a"));
+    }
+
+    public void testIndexedValueProp() throws Exception
+    {
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        epService.initialize();
+
+        String type = SupportBeanComplexProps.class.getName();
+        String pattern = "every a=" + type + " -> b=" + type + "(indexed[0] = a.indexed[0])";
+
+        EPStatement stmt = epService.getEPAdministrator().createPattern(pattern);
+        stmt.addListener(testListener);
+
+        Object eventOne = new SupportBeanComplexProps(new int[] {3});
+        epService.getEPRuntime().sendEvent(eventOne);
+        assertFalse(testListener.isInvoked());
+
+        Object event = new SupportBeanComplexProps(new int[] { 6});
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(testListener.isInvoked());
+
+        Object eventTwo = new SupportBeanComplexProps(new int[] { 3});
+        epService.getEPRuntime().sendEvent(eventTwo);
+        EventBean eventBean = testListener.assertOneGetNewAndReset();
+        assertSame(eventOne, eventBean.get("a"));
+        assertSame(eventTwo, eventBean.get("b"));
+    }
 }
 
 

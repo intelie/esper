@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.support.eql.parse.SupportParserHelper;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.eql.generated.EqlTokenTypes;
 import antlr.collections.AST;

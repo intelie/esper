@@ -13,4 +13,19 @@ public class DeskInfo
         this.locationCode = locationCode;
     }
 
+    public String getId()
+    {
+        return id;
+    }
+
+    public boolean isKiosk()
+    {
+        return isKiosk;
+    }
+
+    public String getLocationCode()
+    {
+        return locationCode;
+    }
+
 }

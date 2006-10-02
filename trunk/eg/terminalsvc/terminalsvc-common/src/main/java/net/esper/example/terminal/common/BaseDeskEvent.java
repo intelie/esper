@@ -2,15 +2,15 @@ package net.esper.example.terminal.common;
 
 public class BaseDeskEvent
 {
-    private final DeskInfo deskInfo;
+    private final DeskInfo desk;
 
     public BaseDeskEvent(DeskInfo deskInfo)
     {
-        this.deskInfo = deskInfo;
+        this.desk = deskInfo;
     }
 
-    public DeskInfo getDeskInfo()
+    public DeskInfo getDesk()
     {
-        return deskInfo;
+        return desk;
     }
 }

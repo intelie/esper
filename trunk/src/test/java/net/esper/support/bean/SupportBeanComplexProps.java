@@ -31,6 +31,11 @@ public class SupportBeanComplexProps
         return new SupportBeanComplexProps("simple", properties, new int[] {1, 2}, mapProp, arrayProp, "nestedValue", "nestedNestedValue");
 	}
 	
+    public SupportBeanComplexProps(int[] indexedProps)
+    {
+        this.indexedProps = indexedProps;
+    }
+
 	public SupportBeanComplexProps(String simpleProperty, Properties mappedProps, int[] indexedProps, Map<String, String> mapProperty, int[] arrayProperty, String nestedValue, String nestedNestedValue)
 	{
         this.simpleProperty = simpleProperty;

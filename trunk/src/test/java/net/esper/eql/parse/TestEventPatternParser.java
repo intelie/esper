@@ -348,6 +348,7 @@ public class TestEventPatternParser extends TestCase implements EqlTokenTypes
         assertIsValid("A(x('1') = 1)");
         assertIsValid("A(x(\"1\") = 1)");
         assertIsValid("B(a('aa').b.c[1].d.e(\"ee\")=2)");
+        assertIsValid("a=X -> b=Y(id=a.indexed[0])");
     }
 
     public void testParserNodeGeneration() throws Exception

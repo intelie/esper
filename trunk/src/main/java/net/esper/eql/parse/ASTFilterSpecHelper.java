@@ -211,7 +211,8 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
         {
             AST identRoot = filterParamNode.getFirstChild();
             String eventAsName = identRoot.getFirstChild().getText();
-            String eventProperty = identRoot.getFirstChild().getNextSibling().getText();
+            AST propertyRoot = identRoot.getFirstChild().getNextSibling().getFirstChild();
+            String eventProperty = getPropertyName(propertyRoot);
             return new FilterSpecParamEventProp(propertyName, operator, eventAsName, eventProperty);
         }
 
@@ -284,7 +285,8 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
         if (ast.getType() == EVENT_FILTER_IDENT)
         {
             String eventAsName = ast.getFirstChild().getText();
-            String eventProperty = ast.getFirstChild().getNextSibling().getText();
+            AST propertyRoot = ast.getFirstChild().getNextSibling().getFirstChild();
+            String eventProperty = getPropertyName(propertyRoot);
             return new RangeValueEventProp(eventAsName, eventProperty);
         }
         else

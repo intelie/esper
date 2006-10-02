@@ -562,7 +562,7 @@ filterParamRange
 	;    
 
 filterIdentifier
-	:	IDENT DOT! IDENT
+	:	IDENT DOT! eventProperty
 		{ #filterIdentifier = #([EVENT_FILTER_IDENT,"filterIdentifier"], #filterIdentifier); }
 	;
 	
