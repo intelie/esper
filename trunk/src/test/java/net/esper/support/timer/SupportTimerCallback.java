@@ -4,25 +4,26 @@ import net.esper.timer.TimerCallback;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class SupportTimerCallback implements TimerCallback
 {
-    private int numInvoked;
+    private AtomicInteger numInvoked = new AtomicInteger();
 
     public void timerCallback()
     {
-        numInvoked++;
-        log.debug(".timerCallback numInvoked=" + numInvoked);
+        int current = numInvoked.incrementAndGet();
+        log.debug(".timerCallback numInvoked=" + current + " thread=" + Thread.currentThread());
     }
 
     public int getCount()
     {
-        return numInvoked;
+        return numInvoked.get();
     }
 
     public int getAndResetCount()
     {
-        int count = numInvoked;
-        numInvoked = 0;
+        int count = numInvoked.getAndSet(0);
         return count;
     }
 

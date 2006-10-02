@@ -42,8 +42,8 @@ public class TestStockTickerGenerator extends TestCase implements StockTickerReg
             double initialPrice = initialPrices[0].getPrice();
             double range = initialPrice * limitBeans[0].getLimitPct() / 100;
 
-            assertTrue(tick.getPrice() > (initialPrice - range));
-            assertTrue(tick.getPrice() < (initialPrice + range));
+            assertTrue(tick.getPrice() > (initialPrice - range) - 1);
+            assertTrue(tick.getPrice() < (initialPrice + range) + 1);
         }
     }
 
