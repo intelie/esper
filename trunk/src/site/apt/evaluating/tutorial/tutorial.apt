@@ -1,14 +1,17 @@
 Tutorial
 ~~~~~~~~~~~~~~
 
-  Esper offers two principal methods of event processing:
+  EQL is name of the event query language that Esper provides. EQL is very similar to SQL in it's syntax and 
+  offers additional capabilities for event stream processing. As part of EQL, Esper also offers a pattern language that provides for stateful (state-machine) event pattern matching. EQL and patterns can be used alone or can be combined into useful, easy to read statements. EQL also has object-oriented event processing capabilities leveraging the Java type system and XML.
+
+  EQL offers two principal methods of event processing that can be used alone or in combination:
   
   [[1]] Event stream analysis
 
   [[2]] Event pattern matching
     
   []
-  
+    
       
 * Event Stream Analysis
 	
@@ -90,6 +93,19 @@ group by symbol
  
 ----------------------------------------
   every a=EventX -> every b=EventY(objectID=a.objectID)
+----------------------------------------
+
+* Combining Patterns Matching with Event Stream Analysis
+
+	Patterns match when a sequence (or absence) of events is detected. Pattern match results are available for
+	further analysis and processing.
+	
+	The pattern below detects a sitation where a Status event is not followed by another Status event with the same id within 10 seconds.
+	The statement further counts all such occurances grouped per id. 
+
+----------------------------------------
+select a.id, count(*) from pattern [ every a=Status -> (timer:interval(10000) and not Status(id=a.id)]
+group by id
 ----------------------------------------
 
 * Event Representation in Java

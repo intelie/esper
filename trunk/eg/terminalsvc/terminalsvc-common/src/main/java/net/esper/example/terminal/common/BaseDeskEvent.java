@@ -1,6 +1,8 @@
 package net.esper.example.terminal.common;
 
-public class BaseDeskEvent
+import java.io.Serializable;
+
+public class BaseDeskEvent implements Serializable
 {
     private final DeskInfo desk;
 

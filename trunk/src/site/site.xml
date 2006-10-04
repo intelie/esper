@@ -17,8 +17,9 @@
 			</item>
 			<item name="Evaluating Esper" href="/evaluating/evaluating.html" collapse="false">
 				<item name="Tutorial" href="/evaluating/tutorial/tutorial.html"/>
-				<item name="Short Case Study" href="/evaluating/tutorial/feedmonitor_casestudy.html"/>
-				<item name="Longer Case Study" href="/evaluating/tutorial/transaction_casestudy.html"/>
+				<item name="Case Study 1" href="/evaluating/tutorial/feedmonitor_casestudy.html"/>
+				<item name="Case Study 2" href="/evaluating/tutorial/selfservterminal_casestudy.html"/>
+				<item name="Case Study 3" href="/evaluating/tutorial/transaction_casestudy.html"/>
 				<item name="Solution Patterns" href="/tutorial/faq/solution_patterns.html"/>
 				<item name="Download" href="http://dist.codehaus.org/esper"/>
 			</item>

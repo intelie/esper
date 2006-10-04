@@ -1,6 +1,8 @@
 package net.esper.example.terminal.common;
 
-public class DeskInfo
+import java.io.Serializable;
+
+public class DeskInfo implements Serializable
 {
     private String id;
     private boolean isKiosk;

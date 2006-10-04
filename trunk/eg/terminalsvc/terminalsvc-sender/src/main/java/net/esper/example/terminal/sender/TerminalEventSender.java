@@ -5,7 +5,6 @@ import javax.naming.NamingException;
 import javax.jms.*;
 import java.util.Random;
 import net.esper.example.terminal.common.*;
-import com.thoughtworks.xstream.XStream;
 
 public class TerminalEventSender
 {
@@ -14,7 +13,6 @@ public class TerminalEventSender
     private static volatile boolean isShutdownRequested;
 
     private final Random random;
-    private final XStream encoder_decoder;
 
     private final QueueConnection conn;
     private final QueueSession session;
@@ -23,7 +21,6 @@ public class TerminalEventSender
     public TerminalEventSender() throws JMSException, NamingException
     {
         random = new Random();
-        encoder_decoder = new XStream();
 
         System.setProperty("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
         System.setProperty("java.naming.provider.url", "localhost:1099");
@@ -128,12 +125,8 @@ public class TerminalEventSender
     {
         try
         {
-            String xml = encoder_decoder.toXML(baseDeskEvent);
-            TextMessage textMessage = session.createTextMessage();
-            textMessage.setText(xml);
+            ObjectMessage textMessage = session.createObjectMessage(baseDeskEvent);
             sender.send(textMessage);
-
-            System.out.println(xml);
         }
         catch (JMSException ex)
         {
