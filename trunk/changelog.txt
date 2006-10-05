@@ -1,8 +1,9 @@
 Esper Changelog
 ===================
 
-Changes in version XXX
+Changes in version 1.2.0
 ----------------------
+* (Doc) Add J2EE example (Enhancement request ESPER-64)
 * (EQL and Pattern) Mechanism to support EventType Adaptors for legacy Java classes (Enhancement request ESPER-55)
 * (EQL and Pattern) Support for != (not equals) in filter expressions (Enhancement request ESPER-63)
 * (EQL) Support for select-clause istream and rstream keywords (Enhancement request ESPER-54)

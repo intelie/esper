@@ -5,15 +5,15 @@ J2EE Self-Service Terminal - Case Study
 
 	Our goal is to resolve self-service terminal or network problems before our customers report them to us, which means higher availability and greater customer satisfaction.
 	
-	For accomplish this, we would like to alert when certain condition occur that warrant human intervention. For example, 
+	To accomplish this, we would like to alert when certain condition occur that warrant human intervention. For example, 
 	a customer may be in the middle of a check-in process when the terminal detects a hardware problem or when the network goes down. 
 	Under these conditions we would like to dispatch staff to help that customer, and staff to diagnose the hardware or network problem.
 
-	We also need to view and summarize activity on an ongoing basis. A real-time interface enables a human to watch the system in action and spot abnormalities. Summarized activity data can also be compared to stored normal usage patterns.
+	We also need to view and summarize activity on an ongoing basis and feed this to a real-time interface. This enables a person to watch the system in action and spot abnormalities. And the system can compare the summarized activity to stored normal usage patterns.
 
 	The case study will first define the events published by terminals. Next, it discusses and evolves 
 	the EQL event queries to solve a couple of different challenges in managing and reporting 
-	on terminal activity. Last, the case study shows how Esper can be used within an J2EE application server.
+	on terminal activity. Last, the case study discusses how this example has been implemented using a J2EE application server.
 		
 
 * Events
@@ -31,16 +31,17 @@ J2EE Self-Service Terminal - Case Study
 *----------+--------------+
 | LowPaper | Indicates the terminal is low on paper     |
 *----------+--------------+
-| Status | Indicates terminal status, published every 1 minute regardless of activity     |
+| Status | Indicates terminal status, published every 1 minute regardless of activity as a terminal heartbeat    |
 *----------+--------------+
 Event Types
 		
-	All events provide information about the terminal that published the event. The terminal
+	All events provide information about the terminal that published the event, and a timestamp. The terminal
 	information is held in a property named "term" and provides a terminal id.
 
 	Since all events carry similar information, we model each event as a subtype to a base class BaseTerminalEvent,
 	which will provide the terminal information that all events share.
-	This enables us to treat all terminal events polymorphically, and helps simplify our queries.	
+	This enables us to treat all terminal events polymorphically, that is we can treat derived event types
+	just like their parent event types. This helps simplify our queries.	
 	
 	All terminals publish Status events every 1 minute. In normal cases, the Status events indicate that a terminal is alive and online.
 	The absence of status events may indicate that a terminal went offline for some reason and that may need to be investigated.
@@ -48,7 +49,7 @@ Event Types
 	
 * Introduction to EQL and Patterns
 
-	EQL is the object-oriented event stream query language that Esper provides. EQL is very similar to SQL in it's syntax and 
+	EQL is the object-oriented event stream query language that Esper provides. EQL is very similar to SQL in its syntax and 
 	provides additional capabilities. As part of EQL, Esper also offers a pattern language that provides for stateful (state-machine)
 	event pattern matching. EQL and patterns can be used alone or can be combined into useful, easy to read statements. 
 	
@@ -59,7 +60,7 @@ Event Types
 select * from LowPaper
 ----------------------------------------
 
-	The next statement is equivalent to the statement before but uses a pattern syntax to filter for LowPaper events. Pattern statements
+	The next statement is equivalent to the statement before, but uses a pattern syntax to filter for LowPaper events. Pattern statements
 	are identified via the <pattern> keyword and placed in square brackets.
 	
 ----------------------------------------
@@ -72,21 +73,28 @@ select a from pattern [ every a=LowPaper ]
 select a,b from pattern [ every a=LowPaper or every b=OutOfOrder]
 ----------------------------------------
 
-	Lets look at another solution that we could implement with the help of BaseTerminalEvent. Remember,  all our events are subclasses of BaseTerminalEvent since they share similar information. We can use the <where> clause to filter out the events we are interested in.
+	We could also use two separate statements that each filter for only one type of event:
+	
+----------------------------------------
+select * from LowPaper
+select * from OutOfOrder
+----------------------------------------
+
+	Let's look at another solution that we could implement with the help of BaseTerminalEvent. Remember,  all our events are subclasses of BaseTerminalEvent since they share similar information. We can use the <where> clause to filter out the events we are interested in.
 	
 ----------------------------------------
 select * from BaseTerminalEvent
 where type = 'LowPaper' or type = 'OutOfOrder'
 ----------------------------------------
 
-* Detecting customer checkin problems
+* Detecting customer check-in issues
 	
-	A customer may be in the middle of a check-in when the terminal detects a problem or when the network goes down. In that
-	sitation we want to alert a team member to help the customer. 
+	A customer may be in the middle of a check-in when the terminal detects a hardware problem or when the network goes down. In that
+	situation we want to alert a team member to help the customer. 
 	
 	When the terminal detects a problem, it issues an OutOfOrder event. When the network or network connection goes down, we can detect this fact by the absence of Status events that the terminal sends every 1 minute.
 	
-	First lets look at a simple pattern that allows us to detect a Checkin event that is followed by an OutOfOrder event for the same terminal:
+	A simple pattern that allows us to detect a Checkin event that is followed by an OutOfOrder event for the same terminal is shown below.
 	
 ----------------------------------------
 select * from pattern [ every a=Checkin -> OutOfOrder(term.id = a.term.id) ]
@@ -96,98 +104,110 @@ select * from pattern [ every a=Checkin -> OutOfOrder(term.id = a.term.id) ]
 	The <-\>> symbol is the followed-by operator. In the followed-by we are looking for OutOfOrder events
 	in which the terminal id matches the terminal id of the Checkin event.
 	
-	If the customers cancels or completes his checkin process before the terminal indicates an OutOfOrder event, then we don't want to alert a team member right away. Let's refine the pattern to match on CheckIn events followed by an OutOfOrder event without a Cancelled or Completed event in between.
-	
-	The <and> and the <not> pattern operators allow us to specify that we are not interested in OutOfOrder events after a customer 
-	cancelled or completed his checkin process.
-	
+	If the customer cancels or completes her or his check-in process before the terminal indicates an OutOfOrder event, then we don't want to alert a team member right away. Let's refine the pattern to match on CheckIn events followed by an OutOfOrder event without a Cancelled or Completed event in between.
+		
 ----------------------------------------
 select * from pattern [ every a=Checkin -> 
       ( OutOfOrder(term.id=a.term.id) and not (Cancelled(term.id=a.term.id) or Completed(term.id=a.term.id)) )]
 ----------------------------------------
 
-	With the statement above, if a CheckIn event is followed by an OutOfOrder event without a Cancelled or Completed event in between, the statement fires.
+	The <and> and the <not> pattern operators allow us to specify that we are not interested in OutOfOrder events after a customer 
+	cancelled or completed his check-in process. The last statement fires if a Checkin event is followed by an OutOfOrder event without a Cancelled or Completed event occurring after the Checkin event and before the OutOfOrder event.
+
 	
 * Absence of Status events
 
-	Each self-service terminal publishes a Status event every 1 minute. In normal cases, the status indicates the terminal is alive and online. The absence of Status events may indicate that a terminal went offline for some reason and that needs to be investigated.
+	Each self-service terminal publishes a Status event every 1 minute. In normal cases, the Status event indicates the terminal is alive and online. The absence of Status events may indicate that a terminal went offline for some reason and that needs to be investigated.
 	
-	Since Status events arrive in regular intervals of 60 seconds, we can make us of the temporal pattern matching using <timer> to
-	find events that didn't arrive. We can use <timer:wait(milliseconds)> to repeat an action every 60 seconds. We can specify 
-	an interval using <timer:interval(milliseconds)> and combine this with a <not> operator to check for absence of Status events.
-	
-	The next statement detects situations in which a Status event is not followed by another Status event within 65 seconds for
-	a given terminal with id 1.
-
-----------------------------------------
-select "terminal 1 is offline" from pattern [ every timer:wait(60000) -> (timer:interval(65000) and not Status(term.id = 1)) ]
-----------------------------------------
-			
-
-* Reporting rates
-
-	It would also be nice to get a statistic on how many Checkin events were processed.
+	Since Status events arrive in regular intervals of 60 seconds, we can make us of temporal pattern matching using <timer> to
+	find events that didn't arrive. We can use the <every> operator and <timer:interval(milliseconds)> to repeat an action every 60 seconds. Then we combine this with a <not> operator to check for absence of Status events. A 65 second interval during which we look for Status events allows 5 seconds to account for a possible delay in transmission or processing:
 	
 ----------------------------------------
-select count(*) from Checkin
+select "terminal 1 is offline" from pattern [ every timer:interval(60000) -> (timer:interval(65000) and not Status(term.id = 1)) ]
 ----------------------------------------
 
-	We could expand this statistic to break down the number of events per event type. Remember that we decided to create a 
-	BaseTerminalEvent as a base event type to model different events with similar properties.
+	This statement allowed us to detect situations in which no Status event arrives for a given terminal id 1. The statement will alert us to the absence of Status events every 60 seconds. 
+
+	We way not want to see an alert for the same terminal every 1 minute. Therefore let's add an <output first> clause to indicate that
+	we only want to be alerted the first time this happens, and then not be alerted for 5 minutes, and then be alerted again if it happens again.
 	
 ----------------------------------------
-select type, count(*) from BaseTerminalEvent
+select "terminal 1 is offline" from pattern [ every timer:interval(60000) -> (timer:interval(65000) and not Status(term.id = 1)) ]
+output first every 5 minutes
+----------------------------------------
+
+* Activity summary data
+
+	By presenting statistical information about terminal activity to our staff in real-time we enable them to monitor the system
+	and spot problems. To begin with, the real-time console should show a count of the number of check-in processes started, in progress, cancelled and completed within the last 10 minutes.
+
+	Let's model a first query that counts the number of Checkin processes only, considering only the last 10 minutes of event data:
+	
+----------------------------------------
+select count(*) from Checkin.win:time(600)
+----------------------------------------
+
+	Note the use of the <win:time> syntax that gives us a time window consisting of only the last 10 minutes of Checkin events. 
+	
+	We can easily improve on this query and get a count per event type considering all types of events (Checkin, Completed, Cancelled, Status, OutOfOrder, LowPaper) by using BaseTerminalEvent. Again we want to look at only the last 10 minutes of events.
+	
+----------------------------------------
+select type, count(*) from BaseTerminalEvent.win:time(600) group by type
+----------------------------------------
+
+	Let's also use the number of events per event type to compare against a pre-recorded normal usage pattern. 
+	By using the <insert into> syntax we can make the results of this query available to other statements:
+	
+----------------------------------------
+insert into CountPerType
+select type, min(timestamp) as time, count(*) as count 
+from BaseTerminalEvent.win:time(600) 
 group by type
+output all every 1 minute
 ----------------------------------------
-
-	We want to get the total number of events in the last 10 minutes to compare against normal usage patterns. We can easily add a time window to the query.
-	
-----------------------------------------
-select count(*) from BaseTerminalEvent.win:time(600)
-----------------------------------------
-
-	The results of this query could further be useful to compare against a recorded normal usage pattern by using a join statement
-	to correlate the events.
-	
-----------------------------------------
-insert into Last10MinEvents 
-select count(*) as count from BaseTerminalEvent.win:time(600)
-
-select * from Last10MinCheckins as t1, NormalUsagePatterm as t2
-where t1.interval = t2.interval and t1.count \< 0.75 * t2.count
-----------------------------------------
-
-
-	Next we'd like to be informed if the ratio of cancellations to completions.
-	
-----------------------------------------
-insert into CancelLast10Min select count(*) as cancelCount from Cancelled.win:time(600)
-insert into CompleteLast10Min select count(*) as completeCount from Completed.win:time(600)
-
-select * from CancelLast10Min.std:last(), CompletexLast10Min.std:last()
-  where cancelCount < completeCount * 
-output first every 1 minute
-----------------------------------------
-
-* J2EE Implementation
-	
-	We used a message-driven bean (MDB) as a convenient place for processing incoming events. 
 		
-	This example has been packaged for deployment into a JBoss Java application server (www.jboss.org) with default deployment 
+	In the above query we have added an <output all> clause. Since we only need to compare the counts every minute or so, via the <output all> we can trigger the query to output counts for all event types every 1 minute only rather then continuously.
+
+	In our terminal managing system, when the count for any event type falls below 50% of the normal usage pattern for that time, we would like to have the system alert a staff member.
+	
+	Assuming that usage pattern data has been loaded into NormalUsagePattern at the beginning of the day, we can join the
+	CountPerType as defined by the statement before:
+	
+----------------------------------------
+select type, count from CountPerType.win:time(600) as t1, NormalUsagePattern as t2
+where t1.time = t2.time
+  and t1.count < 0.5 * t2.count
+----------------------------------------
+
+
+* Sample application for J2EE application server
+
+	The example code in the distribution package implements a message-driven enterprise java bean (MDB EJB).
+	We used an MDB as a convenient place for processing incoming events via a JMS message queue or topic. The example uses 
+	2 JMS queues: One queue to receive events published by the terminals, and a second queue to indicate situations detected
+	via EQL statement and listener back to a receiving process.
+		
+	This example has been packaged for deployment into a JBoss Java application server (see http://www.jboss.org) with default deployment 
 	configuration. JBoss is an open-source application server available under LGPL license.
 	Of course the choice of application server does not indicate a requirement or preference for the use of Esper in a J2EE
-	container. Other quality J2EE application servers are available and perhaps more suitable to run this example.	
+	container. Other quality J2EE application servers are available and perhaps more suitable to run this example or
+	a similar application.
+	
+	Note that the example code implements only a subset of the statements in this case study, since many of the statements
+	are shown to provide a step-by-step explanation. The complete example code can be found in the "eg/terminalsvc" folder of the distribution. The Java package name is net.esper.example.terminalsvc. 
+
   
 * Running the Example 
+		
+	The pre-build EAR file contains the MDB for deployment to a JBoss application server with default deployment options.
+	The JBoss default configuration provides 2 queues that this example utilizes: queue/A and queue/B.
 	
-	The complete example code can be found in the "eg/terminalsvc" folder of the distribution in package net.esper.example.terminalsvc. 
-	
-	The prebuild EAR file contains the MDB for deployment to a JBoss application server with default deployment options.
-	Deploy by copying the ear file in the "eg/terminalsvc/terminalsvc-ear" folder to your JBoss 
+	The application can be deployed by copying the ear file in the "eg/terminalsvc/terminalsvc-ear" folder to your JBoss 
 	deployment directory located under the JBoss home directory under "server/default/deploy".
 	
 	The example contains an event simulator that can be invoked from the command line.	
-	See the folder "eg/terminalsvc/etc" folder for instructions and start scripts.
+	See the folder "eg/terminalsvc/etc" folder for instructions and start scripts for Windows and Unix.
+	
 			
 * Building the Example 
 
