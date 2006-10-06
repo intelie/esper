@@ -335,6 +335,24 @@ To make testing easier, standard and to demonstrate how the example works, the e
 			</sect2>
     </sect1>
 
+    <sect1 id="examples-terminalsvc-J2EE">
+        <title>J2EE Self-Service Terminal Management </title>
+
+		<para>
+			This example is described in greater detail on the Esper website <literal>http://esper.codehaus.org</literal> as a case study. The online text also outlines build and deploy
+			steps. The "readme" file in the directory "eg/terminalsvc/etc" also provides information on how to deploy and run the example.
+		</para>
+		
+		<para>
+			The example is about a J2EE-based self-service terminal managing system in an airport that gets a lot of events from connected terminals. The event rate is around 500 events per second. Some events indicate abnormal situations such as 'paper low' or 'terminal out of order'. Other events observe activity as customers use a terminal to check in and print boarding tickets.
+		</para>
+		
+		<para>
+			The example also contains an event simulator that generates meaningful events. The simulator can be run from the directory "eg/terminalsvc/etc" via the command "run_terminalsvc_sender.bat" (Windows) and "run_terminalsvc_sender.sh" (Linux). The event simulator generates a batch of at least 200 events every 1 second. Randomly, with a chance of 1 in 10 for each batch of events, the simulator generates either an OutOfOrder or a LowPaper event for a random terminal. Each batch the simulator generates 100 random terminal ids and generates a Checkin event for each. It then generates either a Cancelled or a Completed event for each. With a chance of 1 in 1000, it generates an OutOfOrder event instead of the Cancelled or Completed event for a terminal.
+		</para>		
+
+    </sect1>
+
     <sect1 id="examples-autoid">
         <title>AutoID RFID Reader</title>
 

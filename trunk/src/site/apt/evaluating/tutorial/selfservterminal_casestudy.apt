@@ -205,8 +205,9 @@ where t1.timeMinute = t2.timeMinute
 	The application can be deployed by copying the ear file in the "eg/terminalsvc/terminalsvc-ear" folder to your JBoss 
 	deployment directory located under the JBoss home directory under "server/default/deploy".
 	
-	The example contains an event simulator that can be invoked from the command line.	
-	See the folder "eg/terminalsvc/etc" folder for instructions and start scripts for Windows and Unix.
+	The example contains an event simulator and a event receiver that can be invoked from the command line.
+	See the folder "eg/terminalsvc/etc" folder readme file and start scripts for Windows and Unix, and the documentation 
+	set for further information on the simulator.
 	
 			
 * Building the Example 
