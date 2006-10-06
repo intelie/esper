@@ -1,9 +1,14 @@
 package net.esper.example.terminal.common;
 
-public class Completed extends BaseDeskEvent
+public class Completed extends BaseTerminalEvent
 {
-    public Completed(DeskInfo deskInfo)
+    public Completed(TerminalInfo deskInfo)
     {
         super(deskInfo);
+    }
+
+    public String getType()
+    {
+        return "Completed";
     }
 }

@@ -202,12 +202,10 @@ public class ViewServiceHelper
      * This parameter is changed by this method, ie. specifications are removed if they match existing views.
      * @return a pair of (A) the stream if no views matched, or the last child view that matched (B) the full list
      * of parent views
-     * @throws ViewProcessingException to indicate an error finding matching views 
      */
     protected static Pair<Viewable, List<View>> matchExistingViews(Viewable rootViewable,
                                                  Map<View, ViewSpec> specificationRepository,
                                                  List<ViewSpec> specifications)
-        throws ViewProcessingException
     {
         Viewable currentParent = rootViewable;
         List<View> matchedViewList = new LinkedList<View>();
@@ -222,11 +220,13 @@ public class ViewServiceHelper
             {
                 ViewSpec spec = specificationRepository.get(childView);
 
+                // It's possible that a child view is not known to this service since the
+                // child view may not be reusable, such as a stateless filter (where-clause),
+                // output rate limiting view, or such.
+                // Continue and ignore that child view if it's view specification is not known.
                 if (spec == null)
                 {
-                    String message = "Internal error, view specification not found";
-                    log.fatal(".matchExistingViews " + message);
-                    throw new ViewProcessingException(message);
+                    continue;
                 }
 
                 // If the specification is found equal, remove

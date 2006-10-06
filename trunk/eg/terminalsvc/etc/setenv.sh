@@ -19,8 +19,15 @@ fi
 LIB=../../../lib
 
 CLASSPATH=.
-CLASSPATH=$CLASSPATH:esper-terminalsvc-client-1.1.0.jar
+CLASSPATH=$CLASSPATH:../terminalsvc-sender/target/example-terminalsvc-sender-1.0.jar
+CLASSPATH=$CLASSPATH:../terminalsvc-common/target/example-terminalsvc-common-1.0.jar
+CLASSPATH=$CLASSPATH:../terminalsvc-receiver/target/example-terminalsvc-receiver-1.0.jar
 CLASSPATH=$CLASSPATH:../../../esper-1.1.0.jar
+CLASSPATH=$CLASSPATH:../lib/concurrent.jar
+CLASSPATH=$CLASSPATH:../lib/jboss-common-client.jar
+CLASSPATH=$CLASSPATH:../lib/jbossmq-client.jar
+CLASSPATH=$CLASSPATH:../lib/jnp-client.jar
+CLASSPATH=$CLASSPATH:../lib/jboss-j2ee.jar
 CLASSPATH=$CLASSPATH:$LIB/cglib-full-2.0.2.jar
 CLASSPATH=$CLASSPATH:$LIB/commons-beanutils-1.7.0.jar
 CLASSPATH=$CLASSPATH:$LIB/commons-logging-1.0.3.jar

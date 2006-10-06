@@ -1,9 +1,14 @@
 package net.esper.example.terminal.common;
 
-public class Cancelled extends BaseDeskEvent
+public class Cancelled extends BaseTerminalEvent
 {
-    public Cancelled(DeskInfo deskInfo)
+    public Cancelled(TerminalInfo deskInfo)
     {
         super(deskInfo);
+    }
+
+    public String getType()
+    {
+        return "Cancelled";
     }
 }

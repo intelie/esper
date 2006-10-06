@@ -4,6 +4,9 @@ import javax.jms.MessageListener;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 import javax.jms.JMSException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class TerminalServiceListener implements MessageListener
 {
@@ -11,8 +14,11 @@ public class TerminalServiceListener implements MessageListener
     {
         try
         {
+            DateFormat dateFormat = SimpleDateFormat.getInstance();
+            String date = dateFormat.format(new Date());
+
             TextMessage textMessage = (TextMessage) message;
-            System.out.println(textMessage.getText());
+            System.out.println(date + " " + textMessage.getText());
         }
         catch (JMSException ex)
         {

@@ -1,137 +1,65 @@
 package net.esper.example.terminal.sender;
 
-import javax.naming.InitialContext;
+import net.esper.example.terminal.common.BaseTerminalEvent;
+
 import javax.naming.NamingException;
 import javax.jms.*;
-import java.util.Random;
-import net.esper.example.terminal.common.*;
+import java.util.List;
 
 public class TerminalEventSender
 {
-    private static final String SEND_QUEUE = "queue/B";
-
     private static volatile boolean isShutdownRequested;
+    private final InboundQueueSender sender;
+    private final EventGenerator eventGenerator;
 
-    private final Random random;
-
-    private final QueueConnection conn;
-    private final QueueSession session;
-    private final QueueSender sender;
-
-    public TerminalEventSender() throws JMSException, NamingException
+    public TerminalEventSender(String providerURL) throws JMSException, NamingException
     {
-        random = new Random();
-
-        System.setProperty("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
-        System.setProperty("java.naming.provider.url", "localhost:1099");
-
-        InitialContext iniCtx = new InitialContext();
-        Object tmp = iniCtx.lookup("ConnectionFactory");
-        QueueConnectionFactory qcf = (QueueConnectionFactory) tmp;
-        conn = qcf.createQueueConnection();
-        Queue queB = (Queue) iniCtx.lookup("queue/B");
-        session = conn.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
-        sender = session.createSender(queB);
-        conn.start();
+        sender = new InboundQueueSender(providerURL);
+        eventGenerator = new EventGenerator();
     }
 
-    public void sendEvents()
-        throws JMSException, NamingException, InterruptedException
+    public void destroy() throws JMSException
     {
-        // Generate up to 100 unique desk ids between 100 and 200
-        String[] deskIds = new String[1];
-        for (int i = 0; i < deskIds.length; i++)
+        sender.destroy();
+    }
+
+    public void sendEvents() throws JMSException, NamingException, InterruptedException
+    {
+        List<BaseTerminalEvent> eventsToSend = eventGenerator.generateBatch();
+
+        for (BaseTerminalEvent event : eventsToSend)
         {
-            deskIds[i] = Long.toString(i + 100);
+            sender.sendEvent(event);
         }
 
-        // Swap desks, send check-in events
-        randomize(deskIds);
-        sendCheckinEvents(deskIds);
-
-        // Swap desks, send cancelled or completed events
-        randomize(deskIds);
-        sendDoneEvents(deskIds);
-    }
-
-    private void sendCheckinEvents(String[] deskIds)
-    {
-        for (int i = 0; i < deskIds.length; i++)
-        {
-            Checkin checkin = new Checkin(new DeskInfo(deskIds[i], false, ""));
-            sendEvent(checkin);
-        }
-    }
-
-    private void sendDoneEvents(String[] deskIds)
-    {
-        for (int i = 0; i < deskIds.length; i++)
-        {
-            BaseDeskEvent doneEvent = null;
-            if (random.nextBoolean())
-            {
-                doneEvent = new Completed(new DeskInfo(deskIds[i], false, ""));
-            }
-            else
-            {
-                doneEvent = new Cancelled(new DeskInfo(deskIds[i], false, ""));
-            }
-            sendEvent(doneEvent);
-        }
-    }
-
-    public void stop()
-        throws JMSException
-    {
-        sender.close();
-        conn.stop();
-        session.close();
-        conn.close();
+        // Throttle the sender to roughly send a batch every 1 second
+        System.out.println("Sleeping 1 second");
+        Thread.sleep(1000);
     }
 
     public static void main(String args[])
         throws Exception
     {
-        System.out.println("TerminalEventSender sending to queue " + SEND_QUEUE + "...");
+        String providerURL = "localhost:1099";
+        if (args.length > 0)
+        {
+            providerURL = args[0];
+        }
 
-        TerminalEventSender client = new TerminalEventSender();
+        System.out.println("TerminalServiceReceiver attaching to provider url " +
+                providerURL + " and queue " + InboundQueueSender.SEND_QUEUE + "...");
+
+        TerminalEventSender client = new TerminalEventSender(providerURL);
 
         Runtime.getRuntime().addShutdownHook(new ShutdownThread());
         while (!isShutdownRequested)
         {
             client.sendEvents();
-            isShutdownRequested = true;
         }
 
-        client.stop();
+        client.destroy();
         System.exit(0);
         System.out.println("TerminalEventSender ended");
-    }
-
-    // Swap 100 values in the array
-    private void randomize(String[] values)
-    {
-        for (int i = 0; i < 100; i++)
-        {
-            int pos1 = random.nextInt(values.length);
-            int pos2 = random.nextInt(values.length);
-            String temp = values[pos2];
-            values[pos2] = values[pos1];
-            values[pos1] = temp;
-        }
-    }
-
-    private void sendEvent(BaseDeskEvent baseDeskEvent)
-    {
-        try
-        {
-            ObjectMessage textMessage = session.createObjectMessage(baseDeskEvent);
-            sender.send(textMessage);
-        }
-        catch (JMSException ex)
-        {
-            System.out.println("Error sending event:" + ex.toString());
-        }
     }
 
     /**

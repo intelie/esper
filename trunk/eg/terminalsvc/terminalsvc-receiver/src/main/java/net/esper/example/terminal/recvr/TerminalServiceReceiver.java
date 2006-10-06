@@ -15,12 +15,10 @@ public class TerminalServiceReceiver
     private Queue queA;
     private QueueReceiver receiver;
 
-
-    public void setupPTP()
-        throws JMSException, NamingException
+    public TerminalServiceReceiver(String providerURL) throws NamingException, JMSException
     {
         System.setProperty("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
-        System.setProperty("java.naming.provider.url", "localhost:1099");
+        System.setProperty("java.naming.provider.url", providerURL);
 
         InitialContext iniCtx = new InitialContext();
         Object tmp = iniCtx.lookup("ConnectionFactory");
@@ -44,10 +42,16 @@ public class TerminalServiceReceiver
     public static void main(String args[])
         throws Exception
     {
-        System.out.println("TerminalServiceReceiver listening to queue " + LISTEN_QUEUE + "...");
+        String providerURL = "localhost:1099";
+        if (args.length > 0)
+        {
+            providerURL = args[0];
+        }
 
-        TerminalServiceReceiver client = new TerminalServiceReceiver();
-        client.setupPTP();
+        System.out.println("TerminalServiceReceiver attaching to provider url " +
+                providerURL + " and queue " + LISTEN_QUEUE + "...");
+
+        TerminalServiceReceiver client = new TerminalServiceReceiver(providerURL);
 
         // wait for shutdown
         Runtime.getRuntime().addShutdownHook(new ShutdownThread());

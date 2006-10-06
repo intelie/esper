@@ -1,9 +1,14 @@
 package net.esper.example.terminal.common;
 
-public class Checkin extends BaseDeskEvent
+public class Checkin extends BaseTerminalEvent
 {
-    public Checkin(DeskInfo deskInfo)
+    public Checkin(TerminalInfo deskInfo)
     {
         super(deskInfo);
+    }
+
+    public String getType()
+    {
+        return "Checkin";
     }
 }
