@@ -109,6 +109,12 @@ tokens
 	CONCAT;	
 	LIB_FUNCTION;
 	UNARY_MINUS;
+	INTERVAL;
+	DAY_PART;
+	HOUR_PART;
+	MINUTE_PART;
+	SECOND_PART;
+	MILLISECOND_PART;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -468,6 +474,7 @@ singleParameter
 	| 	frequencyOperand
 	|	STAR^
 	|	constant
+	|	interval
 	;
 
 frequencyOperand
@@ -578,6 +585,43 @@ eventPropertyAtomic
 		{ #eventPropertyAtomic = #([EVENT_PROP_INDEXED,"eventPropertyIndexed"], #eventPropertyAtomic); }
 	|	IDENT LPAREN! (STRING_LITERAL | QUOTED_STRING_LITERAL) RPAREN!
 		{ #eventPropertyAtomic = #([EVENT_PROP_MAPPED,"eventPropertyMapped"], #eventPropertyAtomic); }
+	;
+
+interval 	
+	:	
+	(	
+		dayPart (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
+	|	hourPart (minutePart)? (secondPart)? (millisecondPart)?
+	|	minutePart (secondPart)? (millisecondPart)?
+	|	secondPart (millisecondPart)?
+	|	millisecondPart
+	)
+		{ #interval = #([INTERVAL,"interval"], #interval); }
+	;
+
+dayPart
+	:	number ("days"! | "day"!)
+		{ #dayPart = #([DAY_PART,"dayPart"], #dayPart); }
+	;
+
+hourPart 
+	:	number ("hours"! | "hour"!)
+		{ #hourPart = #([HOUR_PART,"hourPart"], #hourPart); }
+	;
+
+minutePart 
+	:	number ("minutes"! | "minute"! | "min"!)
+		{ #minutePart = #([MINUTE_PART,"minutePart"], #minutePart); }
+	;
+	
+secondPart 
+	:	number ("seconds"! | "second"! | "sec"!)
+		{ #secondPart = #([SECOND_PART,"secondPart"], #secondPart); }
+	;
+	
+millisecondPart 
+	:	number ("milliseconds"! | "millisecond"! | "msec"!)
+		{ #millisecondPart = #([MILLISECOND_PART,"millisecondPart"], #millisecondPart); }
 	;
 	
 //----------------------------------------------------------------------------

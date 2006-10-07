@@ -349,6 +349,19 @@ public class TestEventPatternParser extends TestCase implements EqlTokenTypes
         assertIsValid("A(x(\"1\") = 1)");
         assertIsValid("B(a('aa').b.c[1].d.e(\"ee\")=2)");
         assertIsValid("a=X -> b=Y(id=a.indexed[0])");
+
+        // intervals specs
+        assertIsValid("timer:interval(5 seconds)");
+        assertIsValid("timer:interval(5 seconds 3.3 milliseconds)");
+        assertIsValid("timer:interval(1 days 5 seconds 3.3 milliseconds)");
+        assertIsValid("timer:interval(1 days 3.3 milliseconds)");
+        assertIsValid("timer:interval(1 day 1E1 minute 3.3 milliseconds)");
+        assertIsValid("timer:interval(1.0001 hours 1E1 minute)");
+        assertIsValid("timer:interval(1.1 minute 2.2 seconds)");
+        assertIsValid("A where timer:within(5 seconds)");
+        assertIsValid("A where timer:within(1 days 1 milliseconds)");
+        assertIsValid("A where timer:within(100 days 0.00001 millisecond)");
+        assertIsValid("A where timer:within(100 hours 3 minutes 1.00001 millisecond)");
     }
 
     public void testParserNodeGeneration() throws Exception

@@ -48,9 +48,47 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
             case STAR:                      return new WildcardParameter();
             case NUMERIC_PARAM_LIST:        return makeList(node);
             case ARRAY_PARAM_LIST:          return makeArray(node);
+            case INTERVAL:                  return makeInterval(node);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
         }
+    }
+
+    private static double makeInterval(AST node)
+    {
+        AST child = node.getFirstChild();
+        double result = 0;
+
+        while(child != null)
+        {
+            Number numValue = (Number) parseConstant(child.getFirstChild());
+            double partValue = numValue.doubleValue();
+
+            switch (child.getType())
+            {
+                case MILLISECOND_PART :
+                    result += partValue / 1000d;
+                    break;
+                case SECOND_PART :
+                    result += partValue;
+                    break;
+                case MINUTE_PART :
+                    result += 60 * partValue;
+                    break;
+                case HOUR_PART :
+                    result += 60 * 60 * partValue;
+                    break;
+                case DAY_PART :
+                    result += 24 * 60 * 60 * partValue;
+                    break;
+                default:
+                    throw new IllegalStateException("Illegal part of interval encountered, type=" + child.getType() + " text=" + child.getText());
+            }
+
+            child = child.getNextSibling();
+        }
+
+        return result;
     }
 
     private static Object makeList(AST node) throws ASTWalkException

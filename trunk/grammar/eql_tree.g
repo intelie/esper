@@ -262,12 +262,45 @@ singleParameter
 	| 	constant
 	| 	#( NUMERIC_PARAM_RANGE NUM_INT NUM_INT)
 	| 	#( NUMERIC_PARAM_FREQUENCY NUM_INT)
+	| 	interval
 	;
 
 numericParameterList
 	: 	NUM_INT
 	| 	#( NUMERIC_PARAM_RANGE NUM_INT NUM_INT)
 	| 	#( NUMERIC_PARAM_FREQUENCE NUM_INT)
+	;
+
+interval
+	: 	#( INTERVAL intervalDef )
+	;
+	
+intervalDef
+	: 	dayPart (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
+	|	hourPart (minutePart)? (secondPart)? (millisecondPart)?
+	|	minutePart (secondPart)? (millisecondPart)?
+	|	secondPart (millisecondPart)?
+	|	millisecondPart
+	;
+	
+dayPart
+	:	#( DAY_PART number)
+	;
+
+hourPart
+	:	#( HOUR_PART number)
+	;
+
+minutePart
+	:	#( MINUTE_PART number)
+	;
+
+secondPart
+	:	#( SECOND_PART number)
+	;
+
+millisecondPart
+	:	#( MILLISECOND_PART number)
 	;
 
 constant

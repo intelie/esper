@@ -27,7 +27,7 @@
 
 	<target name="source_zip" description="Zip up dev artifacts">
 		<echo message="Building a zip of the development artifacts" />
-		<zip zipfile="${dist.dir}/${fullname}-dev-artifacts.zip" basedir="." excludes="target/**, eg/target/**, lib/**, doc/javadoc/**, doc/build/**, doc/reference/support/**,doc/reference/build/**, esper*.jar" />
+		<zip zipfile="${dist.dir}/${fullname}-dev-artifacts.zip" basedir="." excludes="target/**, eg/target/**, lib/**, doc/javadoc/**, doc/build/**, doc/reference/support/**,doc/reference/build/**, **/esper*.jar, **/*.ear, **/*.war" />
 	</target>
 	
 	<target name="touch_all" description="Update timestamp all artifacts">

@@ -5,7 +5,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.support.eql.parse.SupportParserHelper;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.eql.generated.EqlTokenTypes;
 import antlr.collections.AST;
@@ -15,9 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        //String expression = "select case intPrimitive when 1 then null when 2 then 2 else 3 end " + "from " + className;
-        String expression = "select rstream 1 from " + className;
-        //String expression = "select case 1 when 1 then 2 end from " + className;
+        String expression = "select 1 from " + className + ".win:time(1 day 3 hours 1.5 minutes 2 seconds 1E10 milliseconds)";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -112,6 +109,12 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("insert xxx into A(,a) select 1 from b.win:length(1)");
 
         assertIsInvalid("select coalesce(tick.price) from x");
+
+        assertIsInvalid("select * from x.win:time(sec 99)");
+        assertIsInvalid("select * from x.win:time(99 min min)");
+        assertIsInvalid("select * from x.win:time(88 sec day)");
+        assertIsInvalid("select * from x.win:time(1 sec 88 days)");
+        assertIsInvalid("select * from x.win:time(1 day 2 hours 1 day)");
     }
 
     public void testValidCases() throws Exception
@@ -125,8 +128,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(preFill + "().win:lenght(4)");
         assertIsValid(preFill + "().win:lenght(\"\",5)");
         assertIsValid(preFill + "().win:lenght(10.9,1E30,-4.4,\"\",5)");
-        assertIsValid(preFill + "().win:lenght(4).n:c(3.3, -3.3).n:d(\"price\")");
-        assertIsValid(preFill + "().win:lenght().n:c().n:d().n:e().n:f().n:g().n:h(2.0)");
+        assertIsValid(preFill + "().win:lenght(4).n:c(3.3, -3.3).n:some(\"price\")");
+        assertIsValid(preFill + "().win:lenght().n:c().n:da().n:e().n:f().n:g().n:xh(2.0)");
         assertIsValid(preFill + "().win:lenght({\"s\"})");
         assertIsValid(preFill + "().win:lenght({\"a\",\"b\"})");
         assertIsValid(preFill + "().win:lenght({\"a\",\"b\",\"c\"})");
@@ -238,6 +241,34 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select coalesce(tick.price, 0) from x");
         assertIsValid("select coalesce(tick.price, null, -1) from x");
         assertIsValid("select coalesce(tick.price, tick.price, tick.price, tick.price) from x");
+
+        // time intervals
+        assertIsValid("select * from x.win:time(1 seconds)");
+        assertIsValid("select * from x.win:time(1.5 second)");
+        assertIsValid("select * from x.win:time(120230L sec)");
+        assertIsValid("select * from x.win:time(1.5d milliseconds)");
+        assertIsValid("select * from x.win:time(1E30 millisecond)");
+        assertIsValid("select * from x.win:time(1.0 msec)");
+        assertIsValid("select * from x.win:time(0001 minutes)");
+        assertIsValid("select * from x.win:time(.1 minute)");
+        assertIsValid("select * from x.win:time(1.1111001 min)");
+        assertIsValid("select * from x.win:time(5 hours)");
+        assertIsValid("select * from x.win:time(5 hour)");
+        assertIsValid("select * from x.win:time(5 days)");
+        assertIsValid("select * from x.win:time(5 day)");
+        assertIsValid("select * from x.win:time(5 days 2 hours 88 minutes 1 seconds 9.8 milliseconds)");
+        assertIsValid("select * from x.win:time(5 day 2 hour 88 minute 1 second 9.8 millisecond)");
+        assertIsValid("select * from x.win:time(5 days 2 hours 88 minutes 1 seconds)");
+        assertIsValid("select * from x.win:time(5 days 2 hours 88 minutes)");
+        assertIsValid("select * from x.win:time(5 days 2 hours)");
+        assertIsValid("select * from x.win:time(2 hours 88 minutes 1 seconds 9.8 milliseconds)");
+        assertIsValid("select * from x.win:time(2 hours 88 minutes 1 seconds)");
+        assertIsValid("select * from x.win:time(2 hours 88 minutes)");
+        assertIsValid("select * from x.win:time(88 minutes 1 seconds 9.8 milliseconds)");
+        assertIsValid("select * from x.win:time(88 minutes 1 seconds)");
+        assertIsValid("select * from x.win:time(1 seconds 9.8 milliseconds)");
+        assertIsValid("select * from x.win:time(1 seconds 9.8 milliseconds).win:goodie(1 sec)");
+        assertIsValid("select * from x.win:time(1 seconds 9.8 milliseconds).win:goodie(1 sec).win:otto(1.1 days 1.1 msec)");
     }
 
     public void testBitWiseCases() throws Exception
