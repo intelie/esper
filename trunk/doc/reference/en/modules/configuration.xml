@@ -337,7 +337,7 @@ configuration.addEventTypeAlias("MyMapEvent", properties);]]></programlisting>
 			<para>
 				Finally, here is a sample EQL statement that uses the configured <literal>MyMapEvent</literal> map event. This statement uses the <literal>chassisTag</literal> and <literal>numParts</literal> properties of <literal>Assembly</literal> objects in each map.
 			</para>
-			<programlisting>select carType, assembly.chassisTag, count(assembly.numParts) from MyMapEvent.win:time(60)</programlisting>
+			<programlisting>select carType, assembly.chassisTag, count(assembly.numParts) from MyMapEvent.win:time(60 sec)</programlisting>
 
 		</sect2>
 		
@@ -404,7 +404,7 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 				 Here is an example EQL statement using the configured event type named <literal>AutoIdRFIDEvent</literal>.
 			</para>
 
-			<programlisting><![CDATA[select ID, countTags from AutoIdRFIDEvent.win:time(30)]]></programlisting>
+			<programlisting><![CDATA[select ID, countTags from AutoIdRFIDEvent.win:time(30 sec)]]></programlisting>
 
 			<sect3 id="config-xml-dom-schema" revision="1">
 				<title>Schema Resource</title>

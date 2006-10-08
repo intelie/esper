@@ -224,7 +224,7 @@ epRuntime.sendEvent(event, "CarLocUpdateEvent");]]></programlisting>
 		<para>
 			The <literal>CarLocUpdateEvent</literal> can now be used in a statement:
 		</para>
-		<programlisting>select carId from CarLocUpdateEvent.win:time(60) where direction = 1</programlisting> 
+		<programlisting>select carId from CarLocUpdateEvent.win:time(1 min) where direction = 1</programlisting> 
 		
 		<para>
 			The engine can also query Java objects as values in a <literal>Map</literal> event via the nested property syntax. Thus <literal>Map</literal> events can be used to 
@@ -238,7 +238,7 @@ epRuntime.sendEvent(event, "TxnEvent");]]></programlisting>
 		<para>
 			An example statement could look as follows.
 		</para>
-		<programlisting>select account.id, account.rate * txn.amount from TxnEvent.win:time(60) group by account.id</programlisting> 
+		<programlisting>select account.id, account.rate * txn.amount from TxnEvent.win:time(60 sec) group by account.id</programlisting> 
 
     </sect1>
 
@@ -280,7 +280,7 @@ epRuntime.sendEvent(event, "TxnEvent");]]></programlisting>
 			To configure the engine for processing Sensor documents, simply configure a <literal>SensorEvent</literal> event type alias for the <literal>Sensor</literal> element name via Configuration. Now the document can be queried as below.
 		</para>
 <programlisting><![CDATA[select ID, Observation.ID, Observation.Command, Observation.Tag[0], countTags
-from SensorEvent.win:time(30)]]></programlisting>
+from SensorEvent.win:time(30 sec)]]></programlisting>
 
 		<para>
 			The equivalent XPath expressions to each of the properties are listed below.

@@ -39,29 +39,29 @@ public class TestOrderBySimple extends TestCase {
 	    prices = new LinkedList<Double>();
 	    volumes = new LinkedList<Long>();
 	}
-    
+
     public void testAcrossJoin()
 	{
     	String statementString = "select symbol, string from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by price";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by price";
     	createAndSend(statementString);
-    	sendJoinEvents();    	
+    	sendJoinEvents();
     	orderValuesByPriceJoin();
     	assertValues(symbols, "symbol");
     	assertValues(symbols, "string");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "string"}));
     	clearValues();
-    	
+
     	statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by string, price";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by string, price";
     	createAndSend(statementString);
     	sendJoinEvents();
     	orderValuesBySymbolPrice();
@@ -69,52 +69,52 @@ public class TestOrderBySimple extends TestCase {
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
     	clearValues();
 	}
-    
+
     public void testDescending()
 	{
 		String statementString = "select symbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by price desc";    	
+		"output every 6 events "  +
+		"order by price desc";
 		createAndSend(statementString);
 		orderValuesByPriceDesc();
 		assertValues(symbols, "symbol");
 		clearValues();
-		
+
 		statementString = "select symbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by price desc, symbol asc";    	
+		"output every 6 events "  +
+		"order by price desc, symbol asc";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		Collections.reverse(symbols);
 		assertValues(symbols, "symbol");
 		clearValues();
-		
+
 		statementString = "select symbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by price asc";    	
+		"output every 6 events "  +
+		"order by price asc";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		assertValues(symbols, "symbol");
 		clearValues();
-		
+
 		statementString = "select symbol, volume from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by symbol desc";    	
+		"output every 6 events "  +
+		"order by symbol desc";
 		createAndSend(statementString);
 		orderValuesBySymbol();
 		Collections.reverse(symbols);
 		assertValues(symbols, "symbol");
 		assertValues(volumes, "volume");
-		clearValues();	
-		
+		clearValues();
+
 		statementString = "select symbol, price from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by symbol desc, price desc";    	
+		"output every 6 events "  +
+		"order by symbol desc, price desc";
 		createAndSend(statementString);
 		orderValuesBySymbolPrice();
 		Collections.reverse(symbols);
@@ -122,147 +122,147 @@ public class TestOrderBySimple extends TestCase {
 		assertValues(symbols, "symbol");
 		assertValues(prices, "price");
 		clearValues();
-		
+
 		statementString = "select symbol, price from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by symbol, price";    	
+		"output every 6 events "  +
+		"order by symbol, price";
 		createAndSend(statementString);
 		orderValuesBySymbolPrice();
 		assertValues(symbols, "symbol");
 		assertValues(prices, "price");
 		clearValues();
 	}
-    
+
     public void testExpressions()
 	{
 		String statementString = "select symbol from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by (price * 6) + 5";    	
+	 	"output every 6 events "  +
+	 	"order by (price * 6) + 5";
 	 	createAndSend(statementString);
 	 	orderValuesByPrice();
 	 	assertValues(symbols, "symbol");
 		assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
 	 	clearValues();
-	 	
+
 	 	epService.initialize();
-	 	
+
 		statementString = "select symbol, price from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by (price * 6) + 5, price";    	
+	 	"output every 6 events "  +
+	 	"order by (price * 6) + 5, price";
 	 	createAndSend(statementString);
 	 	orderValuesByPrice();
 	 	assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "price"}));
 	 	clearValues();
-	 	
+
 	 	epService.initialize();
-	 	
+
 		statementString = "select symbol, 1+volume*23 from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by (price * 6) + 5, price, volume";    	
+	 	"output every 6 events "  +
+	 	"order by (price * 6) + 5, price, volume";
 	 	createAndSend(statementString);
 	 	orderValuesByPrice();
 	 	assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(1+(volume*23))"}));
 	 	clearValues();
-	 	
+
 	 	epService.initialize();
-	 	
+
 		statementString = "select symbol from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by volume*price, symbol";    	
+	 	"output every 6 events "  +
+	 	"order by volume*price, symbol";
 	 	createAndSend(statementString);
 	 	orderValuesBySymbol();
 	 	assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
 	 	clearValues();
-	 	
+
 	 	epService.initialize();
-	 	
+
 		statementString = "select symbol, sum(price) from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by volume*sum(price), symbol";    	
+	 	"output every 6 events "  +
+	 	"order by volume*sum(price), symbol";
 	 	createAndSend(statementString);
 	 	orderValuesBySymbol();
 	 	assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
 	 	clearValues();
 	}
-    
+
     public void testExpressionsJoin()
     {
     	String statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-     	"output every 6 events "  + 
-     	"order by (price * 6) + 5";    	
+    	"where one.symbol = two.string " +
+     	"output every 6 events "  +
+     	"order by (price * 6) + 5";
      	createAndSend(statementString);
      	sendJoinEvents();
      	orderValuesByPriceJoin();
      	assertValues(symbols, "symbol");
     	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
      	clearValues();
-     	
+
      	epService.initialize();
-     	
+
     	statementString = "select symbol, price from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-     	"output every 6 events "  + 
-     	"order by (price * 6) + 5, price";    	
+    	"where one.symbol = two.string " +
+     	"output every 6 events "  +
+     	"order by (price * 6) + 5, price";
      	createAndSend(statementString);
      	sendJoinEvents();
      	orderValuesByPriceJoin();
      	assertValues(prices, "price");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "price"}));
      	clearValues();
-     	
+
      	epService.initialize();
-     	
+
     	statementString = "select symbol, 1+volume*23 from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-     	"output every 6 events "  + 
-     	"order by (price * 6) + 5, price, volume";    	
+    	"where one.symbol = two.string " +
+     	"output every 6 events "  +
+     	"order by (price * 6) + 5, price, volume";
      	createAndSend(statementString);
      	sendJoinEvents();
      	orderValuesByPriceJoin();
      	assertValues(symbols, "symbol");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(1+(volume*23))"}));
      	clearValues();
-     	
+
      	epService.initialize();
-     	
+
     	statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-     	"output every 6 events "  + 
-     	"order by volume*price, symbol";    	
+    	"where one.symbol = two.string " +
+     	"output every 6 events "  +
+     	"order by volume*price, symbol";
      	createAndSend(statementString);
      	sendJoinEvents();
      	orderValuesBySymbol();
      	assertValues(symbols, "symbol");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
      	clearValues();
-     	
+
      	epService.initialize();
-     	
+
     	statementString = "select symbol, sum(price) from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-     	"output every 6 events "  + 
-     	"order by volume*sum(price), symbol";    	
+    	"where one.symbol = two.string " +
+     	"output every 6 events "  +
+     	"order by volume*sum(price), symbol";
      	createAndSend(statementString);
      	sendJoinEvents();
      	orderValuesBySymbol();
@@ -270,182 +270,182 @@ public class TestOrderBySimple extends TestCase {
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
      	clearValues();
     }
-    
+
     public void testInvalid()
 	{
 		String statementString = "select symbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by sum(price)";    	
+		"output every 6 events "  +
+		"order by sum(price)";
 		try
 		{
 			createAndSend(statementString);
 			fail();
-		} 
+		}
 		catch(EPStatementException ex)
 		{
 			// expected
 		}
-		
+
 		statementString = "select sum(price) from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by sum(price + 6)";    	
+		"output every 6 events "  +
+		"order by sum(price + 6)";
 		try
 		{
 			createAndSend(statementString);
 			fail();
-		} 
+		}
 		catch(EPStatementException ex)
 		{
 			// expected
 		}
-		
+
 		statementString = "select sum(price + 6) from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by sum(price)";    	
+		"output every 6 events "  +
+		"order by sum(price)";
 		try
 		{
 			createAndSend(statementString);
 			fail();
-		} 
+		}
 		catch(EPStatementException ex)
 		{
 			// expected
 		}
 	}
-    
+
     public void testInvalidJoin()
     {
     	String statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by sum(price)";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by sum(price)";
     	try
     	{
     		createAndSend(statementString);
     		fail();
-    	} 
+    	}
     	catch(EPStatementException ex)
     	{
     		// expected
     	}
-    	
+
     	statementString = "select sum(price) from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by sum(price + 6)";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by sum(price + 6)";
     	try
     	{
     		createAndSend(statementString);
     		fail();
-    	} 
+    	}
     	catch(EPStatementException ex)
     	{
     		// expected
     	}
-    	
+
     	statementString = "select sum(price + 6) from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by sum(price)";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by sum(price)";
     	try
     	{
     		createAndSend(statementString);
     		fail();
-    	} 
+    	}
     	catch(EPStatementException ex)
     	{
     		// expected
     	}
     }
-    
+
     public void testMultipleKeys()
 	{
 		String statementString = "select symbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"output every 6 events "  + 
-		"order by symbol, price";    	
+		"output every 6 events "  +
+		"order by symbol, price";
 		createAndSend(statementString);
 		orderValuesBySymbolPrice();
 		assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
 		clearValues();
-		
+
 		statementString = "select symbol from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by price, symbol, volume";    	
+	 	"output every 6 events "  +
+	 	"order by price, symbol, volume";
 	 	createAndSend(statementString);
 	 	orderValuesByPriceSymbol();
 	 	assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
 	 	clearValues();
-	 	
+
 		statementString = "select symbol, volume*2 from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by price, volume";    	
+	 	"output every 6 events "  +
+	 	"order by price, volume";
 	 	createAndSend(statementString);
 	 	orderValuesByPrice();
 	 	assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(volume*2)"}));
 	 	clearValues();
 	}
-    
+
 	public void testAliases()
 	{
 		String statementString = "select symbol as mySymbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by mySymbol";    	
+		"output every 6 events "  +
+		"order by mySymbol";
 		createAndSend(statementString);
 		orderValuesBySymbol();
 		assertValues(symbols, "mySymbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"mySymbol"}));
 		clearValues();
-		
+
 		statementString = "select symbol as mySymbol, price as myPrice from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by myPrice";   
+		"output every 6 events "  +
+		"order by myPrice";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		assertValues(symbols, "mySymbol");
 		assertValues(prices, "myPrice");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"mySymbol", "myPrice"}));
-		clearValues();	
-		
+		clearValues();
+
 		statementString = "select symbol, price as myPrice from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by (myPrice * 6) + 5, price";    	
+	 	"output every 6 events "  +
+	 	"order by (myPrice * 6) + 5, price";
 	 	createAndSend(statementString);
 	 	orderValuesByPrice();
 	 	assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "myPrice"}));
 	 	clearValues();
-	 	
+
 		statementString = "select symbol, 1+volume*23 as myVol from " +
 	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by (price * 6) + 5, price, myVol";    	
+	 	"output every 6 events "  +
+	 	"order by (price * 6) + 5, price, myVol";
 	 	createAndSend(statementString);
 	 	orderValuesByPrice();
 	 	assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "myVol"}));
 	 	clearValues();
-	 	
+
 		statementString = "select symbol as mySymbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"order by price, mySymbol";    	
+		"order by price, mySymbol";
 		createAndSend(statementString);
 		symbols.add("CAT");
 		assertValues(symbols, "mySymbol");
@@ -455,41 +455,41 @@ public class TestOrderBySimple extends TestCase {
 		assertValues(symbols, "mySymbol");
 		clearValues();
 	}
-    
+
     public void testMultipleKeysJoin()
     {
     	String statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by symbol, price";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by symbol, price";
     	createAndSend(statementString);
     	sendJoinEvents();
     	orderValuesBySymbolPrice();
     	assertValues(symbols, "symbol");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
     	clearValues();
-    	
+
     	statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-     	"output every 6 events "  + 
-     	"order by price, symbol, volume";    	
+    	"where one.symbol = two.string " +
+     	"output every 6 events "  +
+     	"order by price, symbol, volume";
      	createAndSend(statementString);
     	sendJoinEvents();
      	orderValuesByPriceSymbol();
      	assertValues(symbols, "symbol");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
      	clearValues();
-     	
+
     	statementString = "select symbol, volume*2 from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-     	"output every 6 events "  + 
-     	"order by price, volume";    	
+    	"where one.symbol = two.string " +
+     	"output every 6 events "  +
+     	"order by price, volume";
      	createAndSend(statementString);
     	sendJoinEvents();
      	orderValuesByPriceJoin();
@@ -497,165 +497,165 @@ public class TestOrderBySimple extends TestCase {
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(volume*2)"}));
      	clearValues();
     }
-    
+
     public void testSimple()
 	{
 		String statementString = "select symbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by price";    	
+		"output every 6 events "  +
+		"order by price";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		assertValues(symbols, "symbol");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
 		clearValues();
-		
+
 		statementString = "select symbol, price from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by price";   
+		"output every 6 events "  +
+		"order by price";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		assertValues(symbols, "symbol");
 		assertValues(prices, "price");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "price"}));
-		clearValues();	
-		
+		clearValues();
+
 		statementString = "select symbol, volume from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by price";    
+		"output every 6 events "  +
+		"order by price";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		assertValues(symbols, "symbol");
 		assertValues(volumes, "volume");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "volume"}));
-		clearValues();	
-		
+		clearValues();
+
 		statementString = "select symbol, volume*2 from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by price";    
+		"output every 6 events "  +
+		"order by price";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		assertValues(symbols, "symbol");
 		assertValues(volumes, "(volume*2)");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(volume*2)"}));
-		clearValues();	
-		
+		clearValues();
+
 		statementString = "select symbol, volume from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by symbol";    	
+		"output every 6 events "  +
+		"order by symbol";
 		createAndSend(statementString);
 		orderValuesBySymbol();
 		assertValues(symbols, "symbol");
 		assertValues(volumes, "volume");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "volume"}));
-		clearValues();	
-		
+		clearValues();
+
 		statementString = "select price from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by symbol";    	
+		"output every 6 events "  +
+		"order by symbol";
 		createAndSend(statementString);
 		orderValuesBySymbol();
 		assertValues(prices, "price");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"price"}));
 		clearValues();
 	}
-    
+
     public void testSimpleJoin()
     {
     	String statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by price";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by price";
     	createAndSend(statementString);
-    	sendJoinEvents();    	
+    	sendJoinEvents();
     	orderValuesByPriceJoin();
     	assertValues(symbols, "symbol");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
     	clearValues();
-    	
+
     	statementString = "select symbol, price from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by price";   
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by price";
     	createAndSend(statementString);
-    	sendJoinEvents();  
+    	sendJoinEvents();
     	orderValuesByPriceJoin();
     	assertValues(symbols, "symbol");
     	assertValues(prices, "price");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "price"}));
-    	clearValues();	
-    	
+    	clearValues();
+
     	statementString = "select symbol, volume from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by price";    
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by price";
     	createAndSend(statementString);
-    	sendJoinEvents();  
+    	sendJoinEvents();
     	orderValuesByPriceJoin();
     	assertValues(symbols, "symbol");
     	assertValues(volumes, "volume");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "volume"}));
-    	clearValues();	
-    	
+    	clearValues();
+
     	statementString = "select symbol, volume*2 from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by price";    
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by price";
     	createAndSend(statementString);
-    	sendJoinEvents();  
+    	sendJoinEvents();
     	orderValuesByPriceJoin();
     	assertValues(symbols, "symbol");
     	assertValues(volumes, "(volume*2)");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(volume*2)"}));
-    	clearValues();	
-    	
+    	clearValues();
+
     	statementString = "select symbol, volume from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by symbol";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by symbol";
     	createAndSend(statementString);
-    	sendJoinEvents();  
+    	sendJoinEvents();
     	orderValuesBySymbol();
     	assertValues(symbols, "symbol");
     	assertValues(volumes, "volume");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "volume"}));
-    	clearValues();	
-    	
+    	clearValues();
+
     	statementString = "select price from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by symbol, price";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by symbol, price";
     	createAndSend(statementString);
-    	sendJoinEvents();  
+    	sendJoinEvents();
     	orderValuesBySymbolJoin();
     	assertValues(prices, "price");
        	assertOnlyProperties(Arrays.asList(new String[] {"price"}));
     	clearValues();
     }
-    
+
     public void testWildcard()
 	{
 		String statementString = "select * from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by price";    	
+		"output every 6 events "  +
+		"order by price";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		assertValues(symbols, "symbol");
@@ -663,11 +663,11 @@ public class TestOrderBySimple extends TestCase {
 		assertValues(volumes, "volume");
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "volume", "price", "feed"}));
 		clearValues();
-	
+
 		statementString = "select * from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by symbol";  
+		"output every 6 events "  +
+		"order by symbol";
 		createAndSend(statementString);
 		orderValuesBySymbol();
 		assertValues(symbols, "symbol");
@@ -676,42 +676,42 @@ public class TestOrderBySimple extends TestCase {
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "volume", "price", "feed"}));
 		clearValues();
 	}
-    
-    
+
+
     public void testWildcardJoin()
     {
     	String statementString = "select * from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events " + 
-    	"order by price";    	
+    	"where one.symbol = two.string " +
+    	"output every 6 events " +
+    	"order by price";
     	createAndSend(statementString);
-    	sendJoinEvents();    	
+    	sendJoinEvents();
     	orderValuesByPriceJoin();
     	assertSymbolsJoinWildCard();
     	clearValues();
 
     	epService.initialize();
-    	
+
     	statementString = "select * from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by symbol, price";  
+    	"where one.symbol = two.string " +
+    	"output every 6 events "  +
+    	"order by symbol, price";
     	createAndSend(statementString);
-    	sendJoinEvents(); 
+    	sendJoinEvents();
     	orderValuesBySymbolJoin();
     	assertSymbolsJoinWildCard();
     	clearValues();
     }
-    
+
     public void testNoOutputClauseView()
     {
 		String statementString = "select symbol from " +
 		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"order by price";    	
+		"order by price";
 		createAndSend(statementString);
 		symbols.add("CAT");
 		assertValues(symbols, "symbol");
@@ -720,18 +720,18 @@ public class TestOrderBySimple extends TestCase {
 		symbols.add("FOX");
 		assertValues(symbols, "symbol");
 		clearValues();
-		
+
 		epService.initialize();
-		
+
 		// Set manual clocking
 		epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-		
+
 		// Set start time
 		sendTimeEvent(0);
-		
+
 		statementString = "select symbol from " +
-		SupportMarketDataBean.class.getName() + ".win:time_batch(1) " +
-		"order by price";    	
+		SupportMarketDataBean.class.getName() + ".win:time_batch(1 sec) " +
+		"order by price";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		sendTimeEvent(1000);
@@ -739,16 +739,16 @@ public class TestOrderBySimple extends TestCase {
 	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol"}));
 		clearValues();
     }
-    
+
     public void testNoOutputClauseJoin()
     {
     	String statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"order by price";    	
+    	"where one.symbol = two.string " +
+    	"order by price";
     	createAndSend(statementString);
-    	sendJoinEvents();    	
+    	sendJoinEvents();
 		symbols.add("KGB");
 		assertValues(symbols, "symbol");
 		clearValues();
@@ -756,22 +756,22 @@ public class TestOrderBySimple extends TestCase {
 		symbols.add("DOG");
 		assertValues(symbols, "symbol");
 		clearValues();
-		
+
 		epService.initialize();
-		
+
 		// Set manual clocking
 		epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-		
+
 		// Set start time
 		sendTimeEvent(0);
-		
+
     	statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:time_batch(1) as one, " +
     	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"order by price, symbol";    	
+    	"where one.symbol = two.string " +
+    	"order by price, symbol";
     	createAndSend(statementString);
-    	sendJoinEvents();    	
+    	sendJoinEvents();
     	orderValuesByPriceJoin();
 		sendTimeEvent(1000);
     	assertValues(symbols, "symbol");
@@ -806,7 +806,7 @@ public class TestOrderBySimple extends TestCase {
     		assertEquals(symbols.get(i), event.getSymbol());
     	}
     }
-    
+
     private void assertValues(List values, String valueName)
     {
     	EventBean[] events = testListener.getLastNewData();
@@ -825,7 +825,7 @@ public class TestOrderBySimple extends TestCase {
     	volumes.clear();
     	symbols.clear();
     }
-	
+
 	private void createAndSend(String statementString) {
 		testListener = new SupportUpdateListener();
 		EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
@@ -837,7 +837,7 @@ public class TestOrderBySimple extends TestCase {
     	sendEvent("CAT", 6);
     	sendEvent("CAT", 5);
 	}
-    
+
 
 	private void orderValuesByPrice()
     {
@@ -860,7 +860,7 @@ public class TestOrderBySimple extends TestCase {
     	volumes.add(4, 0l);
     	volumes.add(5, 0l);
     }
-    
+
     private void orderValuesByPriceDesc()
     {
     	symbols.add(0, "IBM");
@@ -904,7 +904,7 @@ public class TestOrderBySimple extends TestCase {
     	volumes.add(4, 0l);
     	volumes.add(5, 0l);
     }
-    
+
     private void orderValuesByPriceSymbol()
     {
     	symbols.add(0, "KGB");
@@ -948,7 +948,7 @@ public class TestOrderBySimple extends TestCase {
     	volumes.add(4, 0l);
     	volumes.add(5, 0l);
     }
-    
+
     private void orderValuesBySymbolJoin()
     {
     	symbols.add(0, "CAT");
@@ -998,13 +998,13 @@ public class TestOrderBySimple extends TestCase {
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
 	    epService.getEPRuntime().sendEvent(bean);
 	}
-	
+
 	private void sendTimeEvent(int millis)
 	{
         CurrentTimeEvent event = new CurrentTimeEvent(millis);
         epService.getEPRuntime().sendEvent(event);
 	}
-	
+
 	private void sendJoinEvents()
 	{
 		epService.getEPRuntime().sendEvent(new SupportBeanString("CAT"));
@@ -1013,5 +1013,5 @@ public class TestOrderBySimple extends TestCase {
 		epService.getEPRuntime().sendEvent(new SupportBeanString("KGB"));
 		epService.getEPRuntime().sendEvent(new SupportBeanString("DOG"));
 	}
-	
+
 }

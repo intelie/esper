@@ -28,7 +28,7 @@ double askPrice;
 ----------------------------------------
 insert into TicksPerSecond
 select feed, count(*) as cnt 
-  from MarketDataEvent.win:time_batch(1) 
+  from MarketDataEvent.win:time_batch(1 sec) 
  group by feed
 ----------------------------------------
 
@@ -43,7 +43,7 @@ select feed, count(*) as cnt
 
 ----------------------------------------
 select feed, avg(cnt) as avgCnt, cnt as feedCnt 
-  from TicksPerSecond.win:time(10)
+  from TicksPerSecond.win:time(10 seconds)
  group by feed 
 having cnt < avg(cnt) * 0.75
 ----------------------------------------

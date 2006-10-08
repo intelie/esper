@@ -554,28 +554,41 @@ else
             <para>
 				The <literal>timer:within</literal> guard acts like a stopwatch. 
 				If the associated pattern expression does not turn true within the specified time period it is stopped and permanently false.
+				The <literal>timer:within</literal> guard takes a time period (see <xref linkend="eql-syntax-time-periods"/>) or a number of seconds as a parameter.
             </para>
             
             <para>
+				This pattern fires if an A event arrives within 5 seconds after statement creation.
+            </para>
+			<programlisting><![CDATA[A where timer:within (5 seconds)]]></programlisting>
+
+            <para>
 				This pattern fires for all A events that arrive within 5 seconds. After 5 seconds, this pattern stops matching even if more A events arrive.
             </para>
-			<programlisting><![CDATA[(every A) where timer:within (5000)]]></programlisting>
+			<programlisting><![CDATA[(every A) where timer:within (5 seconds)]]></programlisting>
             
             <para>
 				This pattern is similar to the first pattern but here every time A arrives within 5 seconds, the pattern begins looking for A for another 5 seconds. As long
 				as A events arrive within 5 seconds after the last A, the pattern does not stop matching.
             </para>
-			<programlisting><![CDATA[every (A where timer:within (5000))]]></programlisting>
+			<programlisting><![CDATA[every (A where timer:within (5 sec))]]></programlisting>
 
             <para>
 				This pattern matches for any one A or B event in the next 5 seconds.
             </para>
-			<programlisting><![CDATA[( A or B ) where timer:within (5000)]]></programlisting>
+			<programlisting><![CDATA[( A or B ) where timer:within (5 sec)]]></programlisting>
 
             <para>
 				This pattern matches for any 2 errors that happen 10 seconds within each other.
             </para>
-			<programlisting><![CDATA[every (StatusEvent(status='ERROR') -> StatusEvent(status='ERROR') where timer:within (10000))]]></programlisting>
+			<programlisting><![CDATA[every (StatusEvent(status='ERROR') -> StatusEvent(status='ERROR') where timer:within (10 sec))]]></programlisting>
+
+			<para>
+				The following guards are equivalent:
+			</para>
+			<programlisting><![CDATA[]]>timer:within(2 minutes 5 seconds)
+timer:within(125 sec)
+timer:within(125)</programlisting>
 
         </sect2>
    </sect1>
@@ -587,19 +600,25 @@ else
            <title>timer:interval</title>
                
             <para>
-				The <literal>timer:interval</literal> observer takes a wait time in milliseconds and waits for the defined time before the 
-				truth value of the observer turns true.
+				The <literal>timer:interval</literal> observer waits for the defined time before the truth value of the observer turns true.
+				The observer takes a time period (see <xref linkend="eql-syntax-time-periods"/>) or a number of seconds as a parameter.
             </para>
 
             <para>
 				After event A arrived wait 10 seconds then indicate that the pattern matches.
             </para>
-			<programlisting><![CDATA[A -> timer:interval(10000) ]]></programlisting>
+			<programlisting><![CDATA[A -> timer:interval(10 seconds) ]]></programlisting>
 
             <para>
 				The pattern below fires every 20 seconds.
             </para>
-			<programlisting><![CDATA[every timer:interval(20000)]]></programlisting>
+			<programlisting><![CDATA[every timer:interval(20 sec)]]></programlisting>
+
+            <para>
+				The next example pattern fires for every event A that is not followed by an event B within 60 seconds after event A arrived. B must have the same "id" property
+				value as A.
+            </para>
+			<programlisting><![CDATA[every a=A -> (timer:interval(60 sec) and not B(id=a.id)) ]]></programlisting>
         </sect2>
 
         <sect2 id="pattern-timer-at" >

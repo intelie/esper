@@ -68,7 +68,7 @@ EPStatement 10secRecurTrigger = admin.createPattern(
   "every timer:at(*, *, *, *, *, */10)");
 
 EPStatement countStmt = admin.createEQL(
-  "select count(*) from MarketDataBean.win:time(60)");
+  "select count(*) from MarketDataBean.win:time(60 sec)");
 ]]></programlisting>
 
         <para>

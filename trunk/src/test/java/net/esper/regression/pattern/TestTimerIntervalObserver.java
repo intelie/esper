@@ -3,7 +3,6 @@ package net.esper.regression.pattern;
 import junit.framework.*;
 import net.esper.regression.support.*;
 import net.esper.support.bean.SupportBeanConstants;
-import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
@@ -187,11 +186,5 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
         EPRuntime runtime = epService.getEPRuntime();
         runtime.sendEvent(event);
-    }
-
-    private void sendEvent(EPServiceProvider epService)
-    {
-        SupportBean event = new SupportBean();
-        epService.getEPRuntime().sendEvent(event);
     }
 }

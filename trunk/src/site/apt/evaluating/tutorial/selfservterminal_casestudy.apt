@@ -120,10 +120,10 @@ select * from pattern [ every a=Checkin ->
 	Each self-service terminal publishes a Status event every 1 minute. In normal cases, the Status event indicates the terminal is alive and online. The absence of Status events may indicate that a terminal went offline for some reason and that needs to be investigated.
 	
 	Since Status events arrive in regular intervals of 60 seconds, we can make us of temporal pattern matching using <timer> to
-	find events that didn't arrive. We can use the <every> operator and <timer:interval(milliseconds)> to repeat an action every 60 seconds. Then we combine this with a <not> operator to check for absence of Status events. A 65 second interval during which we look for Status events allows 5 seconds to account for a possible delay in transmission or processing:
+	find events that didn't arrive. We can use the <every> operator and <timer:interval()> to repeat an action every 60 seconds. Then we combine this with a <not> operator to check for absence of Status events. A 65 second interval during which we look for Status events allows 5 seconds to account for a possible delay in transmission or processing:
 	
 ----------------------------------------
-select 'terminal 1 is offline' from pattern [ every timer:interval(60000) -> (timer:interval(65000) and not Status(term.id = 'T1')) ]
+select 'terminal 1 is offline' from pattern [ every timer:interval(60 sec) -> (timer:interval(65 sec) and not Status(term.id = 'T1')) ]
 ----------------------------------------
 
 	This statement allowed us to detect situations in which no Status event arrives for a given terminal id 1. The statement will alert us to the absence of Status events every 60 seconds. 
@@ -132,7 +132,7 @@ select 'terminal 1 is offline' from pattern [ every timer:interval(60000) -> (ti
 	we only want to be alerted the first time this happens, and then not be alerted for 5 minutes, and then be alerted again if it happens again.
 	
 ----------------------------------------
-select 'terminal 1 is offline' from pattern [ every timer:interval(60000) -> (timer:interval(65000) and not Status(term.id = 'T1')) ]
+select 'terminal 1 is offline' from pattern [ every timer:interval(60 sec) -> (timer:interval(65 sec) and not Status(term.id = 'T1')) ]
 output first every 5 minutes
 ----------------------------------------
 
@@ -144,7 +144,7 @@ output first every 5 minutes
 	Let's model a first query that counts the number of Checkin processes only, considering only the last 10 minutes of event data:
 	
 ----------------------------------------
-select count(*) from Checkin.win:time(600)
+select count(*) from Checkin.win:time(10 minutes)
 ----------------------------------------
 
 	Note the use of the <win:time> syntax that gives us a time window consisting of only the last 10 minutes of Checkin events. 
@@ -152,7 +152,7 @@ select count(*) from Checkin.win:time(600)
 	We can easily improve on this query and get a count per event type considering all types of events (Checkin, Completed, Cancelled, Status, OutOfOrder, LowPaper) by using BaseTerminalEvent. Again we want to look at only the last 10 minutes of events.
 	
 ----------------------------------------
-select type, count(*) from BaseTerminalEvent.win:time(600) group by type
+select type, count(*) from BaseTerminalEvent.win:time(10 minutes) group by type
 ----------------------------------------
 
 	Let's also use the number of events per event type to compare against a pre-recorded normal usage pattern. 
@@ -161,7 +161,7 @@ select type, count(*) from BaseTerminalEvent.win:time(600) group by type
 ----------------------------------------
 insert into CountPerType
 select type, min(timeMinute) as time, count(*) as countPerType 
-from BaseTerminalEvent.win:time(600) 
+from BaseTerminalEvent.win:time(10 minutes) 
 group by type
 output all every 1 minutes
 ----------------------------------------
@@ -174,7 +174,7 @@ output all every 1 minutes
 	CountPerType using hour and minute:
 	
 ----------------------------------------
-select type, countPerType from CountPerType.win:time(600) as t1, NormalUsagePattern as t2
+select type, countPerType from CountPerType.win:time(10 minutes) as t1, NormalUsagePattern as t2
 where t1.timeMinute = t2.timeMinute
   and t1.countPerType < 0.5 * t2.countPerType
 ----------------------------------------

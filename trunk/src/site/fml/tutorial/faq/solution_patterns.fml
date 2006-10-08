@@ -11,7 +11,7 @@
           The time batch window of 1 second as shown below produces an event each second with the count of the number of events
           in the batch.
         </p>
-	<div class="source"><pre>select count(*) as cnt from MarketDataEvent.win:time_batch(1)</pre></div>      
+	<div class="source"><pre>select count(*) as cnt from MarketDataEvent.win:time_batch(1 second)</pre></div>      
       </answer>
     </faq>    
 
@@ -21,7 +21,7 @@
         <p>
           We can solve this problem by grouping the events in the window per the category. The below example uses 'feed' as the category.
         </p>
-	<div class="source"><pre>select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1) group by feed</pre></div>      
+	<div class="source"><pre>select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1 second) group by feed</pre></div>      
       </answer>
     </faq>    
     
@@ -37,8 +37,8 @@
           30 seconds of events for each stream.
         </p>
 	<div class="source"><pre>select fraud.accountNumber as accntNum, withdraw.amount as amount         
-from FraudWarningEvent.win:time(30) as fraud,
-     WithdrawalEvent.win:time(30) as withdraw
+from FraudWarningEvent.win:time(30 sec) as fraud,
+     WithdrawalEvent.win:time(30 sec) as withdraw
 where fraud.accountNumber = withdraw.accountNumber</pre></div>      
       </answer>
     </faq>    
@@ -59,9 +59,9 @@ where fraud.accountNumber = withdraw.accountNumber</pre></div>
 	  We want to get notified as these events leave the 60-second time window.
         </p>
 	<div class="source"><pre>select withdraw.accountNumber as accntNum, withdraw.amount as amount         
-from WithdrawalEvent.win:time(60) as withdraw
+from WithdrawalEvent.win:time(60 sec) as withdraw
      left outer join
-     LoginEvent.win:time(60) as login
+     LoginEvent.win:time(60 sec) as login
 on fraud.accountNumber = withdraw.accountNumber
 where login.accountNumber = null</pre></div>      
       </answer>
@@ -96,9 +96,9 @@ where login.accountNumber = null</pre></div>
           aggregation. Here we compute for the last 30 seconds the maximum and minimum rate per feed.
         </p>
 
-	<div class="source"><pre>insert into TicksPerSecond select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1) group by feed
+	<div class="source"><pre>insert into TicksPerSecond select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1 second) group by feed
 	
-select feed, max(cnt) as maxCount, min(cnt) as minCount from TicksPerSecond.win:time(30) group by feed</pre></div>
+select feed, max(cnt) as maxCount, min(cnt) as minCount from TicksPerSecond.win:time(30 sec) group by feed</pre></div>
       </answer>
     </faq>    
 
@@ -113,7 +113,7 @@ select feed, max(cnt) as maxCount, min(cnt) as minCount from TicksPerSecond.win:
           The example below limits the otherwise continuous output to an output row every 5 seconds. The output contains 
           the feed and average volume per feed of the last 60 seconds of market data events.
         </p>
-	<div class="source"><pre>select feed, avg(volume) as cnt from MarketDataEvent.win:time(60) group by feed output every 5 seconds</pre></div>      
+	<div class="source"><pre>select feed, avg(volume) as cnt from MarketDataEvent.win:time(60 sec) group by feed output every 5 seconds</pre></div>      
       </answer>
     </faq>    
 

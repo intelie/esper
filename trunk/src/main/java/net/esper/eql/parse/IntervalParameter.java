@@ -13,4 +13,14 @@ public class IntervalParameter
     {
         return numSeconds;
     }
+
+    public boolean equals(Object object)
+    {
+        if (!(object instanceof IntervalParameter))
+        {
+            return false;
+        }
+        IntervalParameter other = (IntervalParameter) object;
+        return other.numSeconds == this.numSeconds; 
+    }
 }

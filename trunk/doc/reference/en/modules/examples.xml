@@ -101,7 +101,7 @@ double askPrice;
 
 <programlisting><![CDATA[insert into TicksPerSecond
 select feed, count(*) as cnt 
-  from MarketDataEvent.win:time_batch(1) 
+  from MarketDataEvent.win:time_batch(1 second) 
  group by feed
 ]]></programlisting>
 		</sect2>
@@ -121,7 +121,7 @@ select feed, count(*) as cnt
 			</para>
 
 <programlisting><![CDATA[select feed, avg(cnt) as avgCnt, cnt as feedCnt 
-  from TicksPerSecond.win:time(10)
+  from TicksPerSecond.win:time(10 seconds)
  group by feed 
 having cnt < avg(cnt) * 0.75
 ]]></programlisting>
@@ -388,7 +388,7 @@ To make testing easier, standard and to demonstrate how the example works, the e
 		</para>
 
 <programlisting><![CDATA[select ID as sensorId, sum(countTags) as numTagsPerSensor
-from AutoIdRFIDExample.win:time(60)
+from AutoIdRFIDExample.win:time(60 seconds)
 where Observation[0].Command = 'READ_PALLET_TAGS_ONLY'
 group by ID]]></programlisting>
 

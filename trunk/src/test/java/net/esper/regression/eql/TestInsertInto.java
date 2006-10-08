@@ -159,13 +159,13 @@ public class TestInsertInto extends TestCase
 
         // Attach delta statement to statement and add listener
         stmtText = "select min(delta) as minD, max(delta) as maxD " +
-                   "from Event_1.win:time(60)";
+                   "from Event_1.win:time(60 seconds)";
         stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(resultListenerDelta);
 
         // Attach prodict statement to statement and add listener
         stmtText = "select min(product) as minP, max(product) as maxP " +
-                   "from Event_1.win:time(60)";
+                   "from Event_1.win:time(60 seconds)";
         stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(resultListenerProduct);
 

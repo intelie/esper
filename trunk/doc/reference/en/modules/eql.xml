@@ -57,7 +57,7 @@
 			The select clause in an EQL query specifies the event properties or events to retrieve. The <literal>from</literal> clause in an EQL query specifies the event stream definitions and stream names to use. The <literal>where</literal> clause in an EQL query specifies search conditions that specify which event or event combination to search for. For example, the following statement returns the average price for IBM stock ticks in the last 30 seconds.
 		</para>
 
-			<programlisting><![CDATA[select avg(price) from StockTick.win:time(30) where symbol='IBM']]></programlisting>
+			<programlisting><![CDATA[select avg(price) from StockTick.win:time(30 sec) where symbol='IBM']]></programlisting>
 
 		<para>
 			EQL queries follow the below syntax. EQL queries can be simple queries or more complex queries. A simple select contains only a select clause and a single stream definition. Complex EQL queries can be build that feature a more elaborate select list utilizing expressions, may join multiple streams, may contain a where clause with search conditions and so on.
@@ -72,7 +72,32 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 [output <emphasis>output_specification</emphasis>]
 [order by <emphasis>order_by_expression_list</emphasis>]
 </synopsis>
+
+		<sect2 id="eql-syntax-time-periods">
+			<title>Specifying Time Periods</title>
+			
+			<para>
+					Time-based windows as well as pattern observers and guards take a time period as a parameter. Time periods follow the syntax below.
+			</para>
+		
+			<synopsis>time-period : [<emphasis>day-part</emphasis>] [<emphasis>hour-part</emphasis>] [<emphasis>minute-part</emphasis>] [<emphasis>seconds-part</emphasis>] [<emphasis>milliseconds-part</emphasis>]
+
+day-part : <emphasis>number</emphasis> ("days" | "day")
+hour-part : <emphasis>number</emphasis> ("hours" | "hour")
+minute-part : <emphasis>number</emphasis> ("minutes" | "minute" | "min")
+seconds-part : <emphasis>number</emphasis> ("seconds" | "second" | "sec")
+milliseconds-part : <emphasis>number</emphasis> ("milliseconds" | "millisecond" | "msec")</synopsis>
                 
+			<para>
+					Some examples of time periods are:
+			</para>
+			<programlisting>10 seconds
+10 minutes 30 seconds
+20 sec 100 msec
+1 day 2 hours 20 minutes 15 seconds 110 milliseconds
+0.5 minutes</programlisting>
+		</sect2>
+		
     </sect1>
 
     <sect1 id="eql-select-list">
@@ -103,7 +128,7 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 			<para>
 				The following statement selects all univariate statistics properties for the last 30 seconds of IBM stock ticks for price.
 			</para>
-			<programlisting><![CDATA[select * from StockTick(symbol='IBM').win:time(30).stat:uni('price')
+			<programlisting><![CDATA[select * from StockTick(symbol='IBM').win:time(30 sec).stat:uni('price')
 ]]></programlisting>
 
 			<para>
@@ -135,7 +160,7 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 			<para>
 				The following statement selects the volume multiplied by price for a time batch of the last 30 seconds of stock tick events. 
 			</para>
-			<programlisting><![CDATA[select volume * price from StockTick.win:time_batch(30)
+			<programlisting><![CDATA[select volume * price from StockTick.win:time_batch(30 sec)
 ]]></programlisting>
 		</sect2>
 
@@ -178,7 +203,7 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 			<para>
 				The following statement selects only the events that are leaving the 30 second time window.
 			</para>
-			<programlisting><![CDATA[select rstream * from StockTick.win:time(30)]]></programlisting>
+			<programlisting><![CDATA[select rstream * from StockTick.win:time(30 sec)]]></programlisting>
 
 			<para>
 				The <literal>istream</literal> and <literal>rstream</literal> keywords in the select clause are matched by same-name keywords available in the insert into clause. While the keywords in the select clause control the event stream posted to listeners to the statement, the same keywords in the insert into clause specify the event stream that the engine makes available to other statements.
@@ -274,7 +299,7 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 			</para>			
             <programlisting><![CDATA[select tick.price as tickPrice, trade.price as tradePrice, 
        sum(tick.price) + sum(trade.price) as total
-  from pattern [every tick=StockTickEvent or every trade=TradeEvent].win:time(30)]]></programlisting>
+  from pattern [every tick=StockTickEvent or every trade=TradeEvent].win:time(30 sec)]]></programlisting>
 
 			<para>
 				Note that in the statement above <literal>tickPrice</literal> and <literal>tradePrice</literal> can each be null values depending on the event processed. Therefore, an aggregation function such as <literal>sum(tick.price + trade.price))</literal> would always return null values as either of the two price properties are always a null value for any event matching the pattern. Use the <literal>coalesce</literal> function to handle null values, for example: <literal>sum(coalesce(tick.price, 0) + coalesce(trade.price, 0))</literal>.
@@ -334,7 +359,7 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 					calculate and summarize data from event properties.
 					For example, to find out the total price for all stock tick events in the last 30 seconds, type:
 				</para>
-			    <programlisting>select sum(price) from StockTickEvent.win:time(30)</programlisting>
+			    <programlisting>select sum(price) from StockTickEvent.win:time(30 sec)</programlisting>
 
 				<para>
 					Here is the syntax for aggregate functions: 
@@ -354,7 +379,7 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 				<para>
 					For example, to find out the average price for all stock tick events in the last 30 seconds if the price was doubled:
 				</para>
-			    <programlisting>select avg(price * 2) from StockTickEvent.win:time(30)</programlisting>
+			    <programlisting>select avg(price * 2) from StockTickEvent.win:time(30 seconds)</programlisting>
 
 				<para>
 					You can use the optional keyword <literal>distinct</literal> with all aggregate functions to eliminate duplicate values before the aggregate function is applied. The optional 
@@ -493,7 +518,7 @@ where symbol='IBM'</programlisting>
 				<para>
 					For example, the below statement returns the total price per symbol for all stock tick events in the last 30 seconds:
 				</para>
-				<programlisting>select symbol, sum(price) from StockTickEvent.win:time(30) group by symbol</programlisting>
+				<programlisting>select symbol, sum(price) from StockTickEvent.win:time(30 sec) group by symbol</programlisting>
 	
 				<para>
 					The syntax of the group by clause is:
@@ -522,7 +547,7 @@ where symbol='IBM'</programlisting>
 					functions are applied. This statement posts the median volume for all stock tick events in the last 30 seconds per symbol and tick data feed. Esper posts one event for each group to statement listeners:
 				</para>
 				<programlisting>select symbol, tickDataFeed, median(volume) 
-from StockTickEvent.win:time(30) 
+from StockTickEvent.win:time(30 sec) 
 group by symbol, tickDataFeed</programlisting>
 				
 				<para>
@@ -536,7 +561,7 @@ group by symbol, tickDataFeed</programlisting>
 					The statement below demonstrates this case. It calculates the standard deviation for the last 30 seconds of stock ticks aggregating by symbol and posting for 
 					each event the symbol, tickDataFeed and the standard deviation on price.
 				</para>
-				<programlisting>select symbol, tickDataFeed, stddev(price) from StockTickEvent.win:time(30) group by symbol</programlisting>
+				<programlisting>select symbol, tickDataFeed, stddev(price) from StockTickEvent.win:time(30 sec) group by symbol</programlisting>
 				
 				<para>
 					The above example still aggregates the <literal>price</literal> event property based on the <literal>symbol</literal>, but produces one event per incoming event, not one 
@@ -548,13 +573,13 @@ group by symbol, tickDataFeed</programlisting>
 					This is an example that calculates the mean deviation per <literal>symbol</literal> and <literal>tickDataFeed</literal> and posts one event per group with <literal>symbol</literal> and mean deviation of price in the generated events. Since tickDataFeed is not in the posted results, this can potentially be confusing.
 				</para>
 				<programlisting>select symbol, avedev(price) 
-from StockTickEvent.win:time(30) 
+from StockTickEvent.win:time(30 sec) 
 group by symbol, tickDataFeed</programlisting>
 
 				<para>
 					Expressions are also allowed in the <literal>group by</literal> list:
 				</para>
-				<programlisting>select symbol * price, count(*) from StockTickEvent.win:time(30) group by symbol * price</programlisting>
+				<programlisting>select symbol * price, count(*) from StockTickEvent.win:time(30 sec) group by symbol * price</programlisting>
 				
 				<para>
 					If the <literal>group by</literal> expression resulted in a null value, the null value becomes its own group. All null values are aggregated into the same group. If you are using the <literal>count(expression)</literal> aggregate function which does not count null values, the count returns zero if only null values are encountered.								
@@ -563,7 +588,7 @@ group by symbol, tickDataFeed</programlisting>
 				<para>
 					You can use a <literal>where</literal>	clause in a statement with <literal>group by</literal>. Events that do not satisfy the conditions in the <literal>where</literal> clause are eliminated before any grouping is done. For example, the statement below posts the number of stock ticks in the last 30 seconds with a volume larger then 100, posting one event per group (symbol).
 				</para>
-				<programlisting>select symbol, count(*) from StockTickEvent.win:time(30) where volume &gt; 100 group by symbol</programlisting>
+				<programlisting>select symbol, count(*) from StockTickEvent.win:time(30 sec) where volume &gt; 100 group by symbol</programlisting>
 		</sect2>
 
         <sect2 id="eql-grouping-having" >
@@ -576,7 +601,7 @@ group by symbol, tickDataFeed</programlisting>
 					This statement is an example of a <literal>having</literal> clause with an aggregate function. It posts the total price per symbol for the last 30 seconds of stock tick events for only those symbols in which the total price exceeds 1000. The <literal>having</literal> clause eliminates all symbols where the total price is equal or less then 1000.
 				</para>
 				<programlisting>select symbol, sum(price) 
-from StockTickEvent.win:time(30) 
+from StockTickEvent.win:time(30 sec) 
 group by symbol 
 having sum(price) &gt; 1000</programlisting>
 
@@ -585,7 +610,7 @@ having sum(price) &gt; 1000</programlisting>
 					This is shown in the statement below which selects only groups with a total price greater then 1000 and an average volume less then 500.
 				</para>
 				<programlisting>select symbol, sum(price), avg(volume)
-from StockTickEvent.win:time(30) 
+from StockTickEvent.win:time(30 sec) 
 group by symbol 
 having sum(price) &gt; 1000 and avg(volume) &lt; 500</programlisting>			
 
@@ -610,7 +635,7 @@ having sum(price) &gt; 1000 and avg(volume) &lt; 500</programlisting>
 					The <literal>having</literal> clause can also be used without <literal>group by</literal> clause as the below example shows. The example below posts events where the price is less then the current running average price of all stock tick events in the last 30 seconds.
 				</para>
 				<programlisting>select symbol, price, avg(price) 
-from StockTickEvent.win:time(30) 
+from StockTickEvent.win:time(30 sec) 
 having price &lt; avg(price)</programlisting>
 
 		</sect2>
@@ -703,18 +728,18 @@ having stddev(price) &gt; 0.8</programlisting>
 				<para>
 					A second way that output can be stabilized is by batching events until a certain number of events have been collected. The next statement only outputs when either 5 (or more) new or 5 (or more) old events have been batched.
 				</para>				
-			    <programlisting>select * from StockTickEvent.win:time(30) output every 5 events</programlisting>
+			    <programlisting>select * from StockTickEvent.win:time(30 sec) output every 5 events</programlisting>
 			    
 				<para>
 					Additionally, event output can be further modified by the optional <literal>last</literal> keyword, which causes output of only the last event to arrive into an output batch.
 				</para>
-			    <programlisting>select * from StockTickEvent.win:time(30) output last every 5 events</programlisting>
+			    <programlisting>select * from StockTickEvent.win:time(30 sec) output last every 5 events</programlisting>
 
 				<para>
 					Using the <literal>first</literal> keyword you can be notified at the start of the interval. The allows to watch for situations such as a rate falling below a threshold
 					and only be informed every now and again after the specified output interval, but be informed the moment it first happens. 
 				</para>
-			    <programlisting>select * from TickRate.win:time(30) output first every 60 seconds where rate&lt;100</programlisting>
+			    <programlisting>select * from TickRate.win:time(30 seconds) output first every 60 seconds where rate&lt;100</programlisting>
 
 		</sect2>
 
@@ -738,7 +763,7 @@ Second, the <literal>last</literal> and <literal>all</literal> keywords have spe
 			The <literal>order by</literal> clause is optional in Esper. It is used for ordering output events by their properties, or by expressions involving those properties. For example, the following statement outputs batches of 5 or more stock tick events that are sorted first by price and then by volume.				
 		</para>
 
-		<programlisting>select symbol from StockTickEvent.win:time(60) 
+		<programlisting>select symbol from StockTickEvent.win:time(60 sec) 
 output every 5 events 
 order by price, volume</programlisting>
 
@@ -776,7 +801,7 @@ order by price, volume</programlisting>
 
 		<programlisting>insert into CombinedEvent
 select A.customerId as custId, A.timestamp - B.timestamp as latency
-  from EventA.win:time(1800) A, EventB.win:time(1800) B
+  from EventA.win:time(30 min) A, EventB.win:time(30 min) B
  where A.txnId = B.txnId</programlisting>
 
 		<para>
@@ -784,7 +809,7 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 		</para>
 
 		<programlisting>select custId, sum(latency)
-  from CombinedEvent.win:time(1800)
+  from CombinedEvent.win:time(30 min)
  group by custId</programlisting>
 
 		<para>
@@ -845,9 +870,70 @@ select A.customerId, A.timestamp - B.timestamp
 
 		<programlisting>insert rstream into CombinedEvent
 select A.customerId as custId, A.timestamp - B.timestamp as latency
-  from EventA.win:time(1800) A, EventB.win:time(1800) B
+  from EventA.win:time(30 min) A, EventB.win:time(30 min) B
  where A.txnId = B.txnId</programlisting>
 	</sect1>
+
+    <sect1 id="eql-join">
+        <title>Joining Event Streams</title>
+
+		<para>
+			Two or more event streams can be part of the <literal>from</literal> clause and thus both streams determine the resulting events. The where-clause lists the join conditions that Esper uses to relate events in the two or more streams.
+		</para>
+
+		<para>
+			Each point in time that an event arrives to one of the event streams, the two event streams are joined and output events are produced according to the where-clause.
+		</para>
+
+		<para>
+			This example joins 2 event streams. The first event stream consists of fraud warning events for which we keep the last 30 minutes (1800 seconds). The second stream is withdrawal events for which we consider the last 30 seconds. The streams are joined on account number.
+		</para>
+<programlisting><![CDATA[select fraud.accountNumber as accntNum, fraud.warning as warn, withdraw.amount as amount,
+       max(fraud.timestamp, withdraw.timestamp) as timestamp, 'withdrawlFraud' as desc
+  from net.esper.example.atm.FraudWarningEvent.win:time(30 min) as fraud,
+       net.esper.example.atm.WithdrawalEvent.win:time(30 sec) as withdraw
+ where fraud.accountNumber = withdraw.accountNumber]]></programlisting>
+    </sect1>
+
+    <sect1 id="eql-outerjoin">
+        <title>Outer Joins</title>
+
+		<para>
+			Esper supports left outer joins, right outer joins and full outer joins between an unlimited number of event streams.
+		</para>
+
+		<para>
+			If the outer join is a left outer join, there will be an output event for each event of the stream on the left-hand side of the clause. For example, in the left outer join shown below we will get output for each event in the stream RfidEvent, even if the event does not match any event in the event stream OrderList.
+		</para>
+
+<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30 sec) as rfid
+       left outer join
+       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
+     on rfid.itemId = orderList.itemId]]></programlisting>
+		
+		<para>
+			Similarly, if the join is a Right Outer Join, then there will be an output event for each event of the stream on the right-hand side of the clause. For example, in the right outer join shown below we will get output for each event in the stream OrderList, even if the event does not match any event in the event stream RfidEvent.
+		</para>
+
+<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30 sec) as rfid
+       right outer join
+       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
+     on rfid.itemId = orderList.itemId]]></programlisting>
+
+		<para>
+			For all types of outer joins, if the join condition is not met, the select list is computed with the event properties of the arrived event while all other event properties are considered to be null.
+		</para>
+		
+<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30 sec) as rfid
+       full outer join
+       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
+     on rfid.itemId = orderList.itemId]]></programlisting>
+
+		<para>
+			The last type of outer join is a full outer join. In a full outer join, each point in time that an event arrives to one of the event streams, one or more output events are produced. In the example below, when either an RfidEvent or an OrderList event arrive, one or more output event is produced.
+		</para>
+
+    </sect1>
 
 	<sect1 id="eql-single-row-function-ref">
 		<title>Single-row Function Reference</title>
@@ -893,7 +979,7 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 		</para>
 
 		<programlisting>select symbol, Math.round(volume/1000)
-from StockTickEvent.win:time(30)</programlisting>
+from StockTickEvent.win:time(30 sec)</programlisting>
 			
 		<para>
 			In general, arbitrary Java class names have to be fully qualified (e.g. java.lang.Math) but Esper provides a mechanism 
@@ -987,7 +1073,7 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			</para>
 	
 			<programlisting>select symbol, min(ticks.timestamp, news.timestamp) as minT
-	from StockTickEvent.win:time(30) as ticks, NewsEvent.win:time(30) as news
+	from StockTickEvent.win:time(30 sec) as ticks, NewsEvent.win:time(30 sec) as news
 	where ticks.symbol = news.symbol</programlisting>
 		</sect2>
 
@@ -1231,36 +1317,45 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			   <title>Time window</title>
 		
 				<para>
-					The time_window creates a moving time window extending from the specified time interval in seconds into the past based on the system time.
+					Creates a moving time window extending from the specified time interval into the past based on the system time.
+					This view takes a time period (see <xref linkend="eql-syntax-time-periods"/>) or a number of seconds as a parameter.
 				</para>
 
 				<para>
-					For the IBM stock tick events in the last 1000 milliseconds, calculate statistics on price.
+					For the IBM stock tick events in the last 1 second, calculate statistics on price.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent(symbol='IBM').win:time(1).stat:uni('price')]]></programlisting>
+				<programlisting><![CDATA[StockTickEvent(symbol='IBM').win:time(1 sec).stat:uni('price')]]></programlisting>
+
+				<para>
+					The following time windows are equivalent specifications:
+				</para>
+	
+				<programlisting><![CDATA[]]>win:time(2 minutes 5 seconds)
+win:time(125 sec)
+win:time(125)</programlisting>
 			</sect3>
 
 			<sect3 id="view-win-ext_time" >
 			   <title>Externally-timed window</title>
 		
 				<para>
-					Similar to the time window this view moving time window extending from the specified time interval in seconds into the past, but based on the millisecond
-					time value supplied by an event property.
+					Similar to the time window this view moving time window extending from the specified time interval into the past, but based on the millisecond
+					time value supplied by an event property. The view also takes a time period or a number of seconds as a parameter.
 				</para>
 
 				<para>
 					This view holds stock tick events of the last 10 seconds based on the timestamp property in <literal>StockTickEvent</literal>.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.win:ext_timed(10, 'timestamp')]]></programlisting>
+				<programlisting><![CDATA[StockTickEvent.win:ext_timed('timestamp', 10 seconds)]]></programlisting>
 			</sect3>
 
 			<sect3 id="view-win-time-batch" >
 			   <title>Time window buffer</title>
 		
 				<para>
-					This window view buffers events and releases them every specified time interval in one update. 
+					This window view buffers events and releases them every specified time interval in one update. The view takes a time period or a number of seconds as a parameter.
 				</para>
 
 				<para>
@@ -1268,7 +1363,7 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 					posted by this view receive updated information only every 5 seconds.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.win:time_batch(5)]]></programlisting>
+				<programlisting><![CDATA[StockTickEvent.win:time_batch(5 sec)]]></programlisting>
 			</sect3>
 	   </sect2>
 
@@ -1321,7 +1416,7 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 					This example view reports the number of events within the last 1 minute.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.win:time(60000).std:size()]]></programlisting>
+				<programlisting><![CDATA[StockTickEvent.win:time(1 min).std:size()]]></programlisting>
 			</sect3>
 
 			<sect3 id="view-std-last" >
@@ -1431,7 +1526,7 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 					Calculate slope and y-intercept on price and offer for all events in the last 10 seconds.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.win:time(10000).stat:linest('price', 'offer')]]></programlisting>	
+				<programlisting><![CDATA[StockTickEvent.win:time(10 seconds).stat:linest('price', 'offer')]]></programlisting>	
 			</sect3>
 				
 			<sect3 id="view-stat-correl" >
@@ -1500,7 +1595,7 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 					Views that derive the volume-weighted average price for the last 3 seconds.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent(symbol='IBM').win:time(3000).stat:weighted_avg('price', 'volume')]]></programlisting>            
+				<programlisting><![CDATA[StockTickEvent(symbol='IBM').win:time(3 seconds).stat:weighted_avg('price', 'volume')]]></programlisting>            
 			</sect3> 
 			
 			<sect3 id="view-stat-multidim" >
@@ -1585,67 +1680,6 @@ events with the highest price (with ties resolved by alphabetical order of symbo
 
     </sect1>
 
-    <sect1 id="eql-join">
-        <title>Joining Event Streams</title>
-
-		<para>
-			Two or more event streams can be part of the <literal>from</literal> clause and thus both streams determine the resulting events. The where-clause lists the join conditions that Esper uses to relate events in the two or more streams.
-		</para>
-
-		<para>
-			Each point in time that an event arrives to one of the event streams, the two event streams are joined and output events are produced according to the where-clause.
-		</para>
-
-		<para>
-			This example joins 2 event streams. The first event stream consists of fraud warning events for which we keep the last 30 minutes (1800 seconds). The second stream is withdrawal events for which we consider the last 30 seconds. The streams are joined on account number.
-		</para>
-<programlisting><![CDATA[select fraud.accountNumber as accntNum, fraud.warning as warn, withdraw.amount as amount,
-       max(fraud.timestamp, withdraw.timestamp) as timestamp, 'withdrawlFraud' as desc
-  from net.esper.example.atm.FraudWarningEvent.win:time(1800) as fraud,
-       net.esper.example.atm.WithdrawalEvent.win:time(30) as withdraw
- where fraud.accountNumber = withdraw.accountNumber]]></programlisting>
-    </sect1>
-
-    <sect1 id="eql-outerjoin">
-        <title>Outer Joins</title>
-
-		<para>
-			Esper supports left outer joins, right outer joins and full outer joins between an unlimited number of event streams.
-		</para>
-
-		<para>
-			If the outer join is a left outer join, there will be an output event for each event of the stream on the left-hand side of the clause. For example, in the left outer join shown below we will get output for each event in the stream RfidEvent, even if the event does not match any event in the event stream OrderList.
-		</para>
-
-<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30) as rfid
-       left outer join
-       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
-     on rfid.itemId = orderList.itemId]]></programlisting>
-		
-		<para>
-			Similarly, if the join is a Right Outer Join, then there will be an output event for each event of the stream on the right-hand side of the clause. For example, in the right outer join shown below we will get output for each event in the stream OrderList, even if the event does not match any event in the event stream RfidEvent.
-		</para>
-
-<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30) as rfid
-       right outer join
-       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
-     on rfid.itemId = orderList.itemId]]></programlisting>
-
-		<para>
-			For all types of outer joins, if the join condition is not met, the select list is computed with the event properties of the arrived event while all other event properties are considered to be null.
-		</para>
-		
-<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30) as rfid
-       full outer join
-       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
-     on rfid.itemId = orderList.itemId]]></programlisting>
-
-		<para>
-			The last type of outer join is a full outer join. In a full outer join, each point in time that an event arrives to one of the event streams, one or more output events are produced. In the example below, when either an RfidEvent or an OrderList event arrive, one or more output event is produced.
-		</para>
-
-    </sect1>
-
     <sect1 id="eql-user-defined">
         <title>User-Defined Functions</title>
         
@@ -1660,6 +1694,6 @@ events with the highest price (with ties resolved by alphabetical order of symbo
 		 </para>
 		 
 <programlisting><![CDATA[select 3 * MyClass.myFunction(price, volume) as myValue 
-from StockTick.win:time(30)]]></programlisting>
+from StockTick.win:time(30 sec)]]></programlisting>
     </sect1>
 </chapter>

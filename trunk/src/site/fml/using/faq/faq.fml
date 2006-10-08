@@ -117,7 +117,11 @@
 		  and join different event streams, as well as filter and sort them.
         </p>
         <p>
-		  A simple example could be to compute the average stock price of the BEA tick on a sliding window of 30 seconds. Given a StockTick event bean with a price and symbol property and the EQL "select avg(price) from StockTick.win:time(30) where symbol='BEA'", a POJO would get notified as tick come in - and in real world millions of ticks can come in - so there's no way to store them all to later query them using a classical database architecture.
+		  A simple example could be to compute the average stock price of the BEA tick on a sliding window of 30 seconds. 
+		  Given a StockTick event bean with a price and symbol property and the EQL 
+		  "select avg(price) from StockTick.win:time(30 sec) where symbol='BEA'", 
+		  a POJO would get notified as tick come in - and in real world millions of ticks can come in - 
+		  so there's no way to store them all to later query them using a classical database architecture.
 		  Statements can be much more complex, and also be combined together with "followed by" conditions.
         </p>
         <p>

@@ -112,15 +112,15 @@ public class TxnEventA extends TxnEventBase {
 
 	Now that we have defined the event classes, we can compose an EQL statement to detect combined events in which
 	each component of the transaction is present. We restrict the event matching to the events that arrived within 
-	the last 30 minutes (1800 seconds).
+	the last 30 minutes.
 	
 ----------------------------------------
 insert into CombinedEvent(transactionId, customerId, supplierId, latencyAC, latencyBC, latencyAB)
 select C.transactionId, customerId, supplierId, 
        C.timestamp - A.timestamp, C.timestamp - B.timestamp, B.timestamp - A.timestamp 
-  from TxnEventA.win:time(1800) A,
-       TxnEventB.win:time(1800) B,
-       TxnEventC.win:time(1800) C 
+  from TxnEventA.win:time(30 minutes) A,
+       TxnEventB.win:time(30 minutes) B,
+       TxnEventC.win:time(30 minutes) C 
  where A.transactionId = B.transactionId and B.transactionId = C.transactionId
 ----------------------------------------
 	
@@ -136,14 +136,14 @@ select C.transactionId, customerId, supplierId,
 	
 ----------------------------------------
 select min(latencyAC) as minLatencyAC, max(latencyAC) as maxLatencyAC, avg(latencyAC) as avgLatencyAC
-  from CombinedEvent.win:time(1800)
+  from CombinedEvent.win:time(30 minutes)
 ----------------------------------------
 	
 	We can derive this data per customer and supplier id by specifying a <group by> clause.
 	
 ----------------------------------------
 select customerId, min(latencyAC) as minLatencyAC, max(latencyAC) as maxLatencyAC, avg(latencyAC) as avgLatencyAC
-  from CombinedEvent.win:time(1800)
+  from CombinedEvent.win:time(30 minutes)
  group by customerId
 ----------------------------------------
 	
@@ -154,9 +154,9 @@ select customerId, min(latencyAC) as minLatencyAC, max(latencyAC) as maxLatencyA
 	
 ----------------------------------------
 select * 
-  from TxnEventA.win:time(1800) A 
-       full outer join TxnEventC.win:time(3600) C on A.transactionId = C.transactionId
-       full outer join TxnEventB.win:time(1800) B on B.transactionId = C.transactionId
+  from TxnEventA.win:time(30 minutes) A 
+       full outer join TxnEventC.win:time(60 minutes) C on A.transactionId = C.transactionId
+       full outer join TxnEventB.win:time(30 minutes) B on B.transactionId = C.transactionId
  where C.transactionId is null
 ----------------------------------------
 
@@ -188,7 +188,7 @@ EPServiceProvider epService = EPServiceProviderManager.getProvider("TransactionE
 ----------------------------------------
 String stmtSupplier = 
   "select supplierId, min(latencyAC) as minLatency, max(latencyAC) as maxLatency, avg(latencyAC) as avgLatency" +
-  "from CombinedEvent.win:time(1800) " +
+  "from CombinedEvent.win:time(30 minutes) " +
   "group by supplierId";
 
 EPStatement bySupplierStatement = epService.getEPAdministrator().createEQL(stmtSupplier);

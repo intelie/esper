@@ -34,7 +34,7 @@ public class TestAggregateRowForAll extends TestCase
     public void testSumOneView()
     {
         String viewExpr = "select sum(longBoxed) as mySum " +
-                          "from " + SupportBean.class.getName() + ".win:time(10)";
+                          "from " + SupportBean.class.getName() + ".win:time(10 sec)";
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
 
@@ -45,7 +45,7 @@ public class TestAggregateRowForAll extends TestCase
     {
         String viewExpr = "select sum(longBoxed) as mySum " +
                           "from " + SupportBeanString.class.getName() + ".win:time(10) as one, " +
-                                    SupportBean.class.getName() + ".win:time(10) as two " +
+                                    SupportBean.class.getName() + ".win:time(10 sec) as two " +
                           "where one.string = two.string";
 
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
