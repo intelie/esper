@@ -7,6 +7,7 @@ import net.esper.pattern.observer.TimerIntervalObserver;
 import net.esper.pattern.observer.ObserverFactory;
 import net.esper.pattern.observer.EventObserver;
 import net.esper.pattern.observer.TimerAtObserver;
+import net.esper.eql.parse.IntervalParameter;
 
 /**
  * Factory for making observer instances.
@@ -32,6 +33,15 @@ public class TimerObserverFactory implements ObserverFactory
     public TimerObserverFactory(int msec)
     {
         this.msec = msec;
+    }
+
+    /**
+     * Ctor.
+     * @param interval - time in millis.
+     */
+    public TimerObserverFactory(IntervalParameter interval)
+    {
+        this((int) interval.getNumSeconds() * 1000);
     }
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)

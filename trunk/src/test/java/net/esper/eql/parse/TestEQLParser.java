@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select 1 from " + className + ".win:time(1 day 3 hours 1.5 minutes 2 seconds 1E10 milliseconds)";
+        String expression = "select 1 from pattern [" + className + " where timer:within(1 min 50 sec)]";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);

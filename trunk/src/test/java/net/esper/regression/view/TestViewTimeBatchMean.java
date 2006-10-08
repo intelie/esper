@@ -27,7 +27,7 @@ public class TestViewTimeBatchMean extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
 
-        // Set up a 1 second time window
+        // Set up a 2 second time window
         timeBatchMean = epService.getEPAdministrator().createEQL(
                 "select * from " + SupportMarketDataBean.class.getName() +
                 "(symbol='" + SYMBOL + "').win:time_batch(2).stat:uni('volume')");

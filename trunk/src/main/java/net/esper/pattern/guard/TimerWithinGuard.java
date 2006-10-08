@@ -4,6 +4,7 @@ import net.esper.pattern.PatternContext;
 import net.esper.pattern.MatchedEventMap;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
+import net.esper.eql.parse.IntervalParameter;
 
 /**
  * Guard implementation that keeps a timer instance and quits when the timer expired,

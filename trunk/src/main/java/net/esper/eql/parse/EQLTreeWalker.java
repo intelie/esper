@@ -927,14 +927,14 @@ public class EQLTreeWalker extends EQLBaseWalker
 
             if (log.isDebugEnabled())
             {
-                log.debug(".create Successfully instantiated guard");
+                log.debug(".leaveGuard Successfully instantiated guard");
             }
         }
         catch (Exception e)
         {
             String message = "Error invoking constructor for guard '" + objectName;
             message += "', invalid parameter list for the object";
-            log.fatal(".leaveObserver " + message, e);
+            log.fatal(".leaveGuard " + message, e);
             throw new ASTWalkException(message);
         }
 
@@ -956,37 +956,8 @@ public class EQLTreeWalker extends EQLBaseWalker
             throw new ASTWalkException("AST tree doesn not contain at least when node for case node");
         }
 
-        // Refactor WHEN, THEN and ELSE child nodes to list
         ExprCaseNode caseNode = new ExprCaseNode(inCase2);
         astExprNodeMap.put(node, caseNode);
-
-        /*
-        while (childNode != null)
-        {
-
-            if ((childNode.getType() != WHEN) && (childNode.getType() != ELSE))
-            {
-                throw new ASTWalkException("Unexpected child node of CASE encountered with type " + childNode.getType());
-            }
-
-            if (childNode.getType() == ELSE)
-            {
-                ExprNode elseChild = astExprNodeMap.get(childNode.getFirstChild());
-                exprNodeList.add(new Pair<ExprNode, ExprNode>(null, elseChild));
-                astExprNodeMap.remove(childNode.getFirstChild());
-            }
-            if (childNode.getType() == WHEN)
-            {
-                ExprNode whenChild = astExprNodeMap.get(childNode.getFirstChild());
-                ExprNode thenChild = astExprNodeMap.get(childNode.getFirstChild().getNextSibling());
-                exprNodeList.add(new Pair<ExprNode, ExprNode>(whenChild, thenChild));
-                astExprNodeMap.remove(childNode.getFirstChild());
-                astExprNodeMap.remove(childNode.getFirstChild().getNextSibling());
-            }
-
-            childNode = childNode.getNextSibling();
-        }
-        */
     }
 
     private void leaveObserver(AST node) throws ASTWalkException

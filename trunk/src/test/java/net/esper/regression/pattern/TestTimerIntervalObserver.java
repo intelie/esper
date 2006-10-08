@@ -3,6 +3,14 @@ package net.esper.regression.pattern;
 import junit.framework.*;
 import net.esper.regression.support.*;
 import net.esper.support.bean.SupportBeanConstants;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.util.SupportUpdateListener;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPStatement;
+import net.esper.client.EPRuntime;
+import net.esper.client.time.TimerControlEvent;
+import net.esper.client.time.CurrentTimeEvent;
 
 public class TestTimerIntervalObserver extends TestCase implements SupportBeanConstants
 {
@@ -149,5 +157,41 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         // Run all tests
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
         util.runTest();
+    }
+
+    public void testIntervalSpec()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        epService.initialize();
+
+        // External clocking
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0, epService);
+
+        // Set up a timer:within
+        EPStatement statement = epService.getEPAdministrator().createEQL(
+                "select * from pattern [timer:interval(1 minute 2 seconds)]");
+
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        statement.addListener(testListener);
+
+        sendTimer(62*1000 - 1, epService);
+        assertFalse(testListener.isInvoked());
+
+        sendTimer(62*1000, epService);
+        assertTrue(testListener.isInvoked());
+    }
+
+    private void sendTimer(long timeInMSec, EPServiceProvider epService)
+    {
+        CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
+        EPRuntime runtime = epService.getEPRuntime();
+        runtime.sendEvent(event);
+    }
+
+    private void sendEvent(EPServiceProvider epService)
+    {
+        SupportBean event = new SupportBean();
+        epService.getEPRuntime().sendEvent(event);
     }
 }

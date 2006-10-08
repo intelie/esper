@@ -16,6 +16,7 @@ import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.collection.TimeWindow;
 import net.esper.client.EPException;
+import net.esper.eql.parse.IntervalParameter;
 
 /**
  * This view is a moving timeWindow extending the specified amount of milliseconds into the past.
@@ -73,6 +74,16 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         }
 
         this.millisecondsBeforeExpiry = Math.round(1000d * secondsBeforeExpiry);
+    }
+
+    /**
+     * Constructor.
+     * @param interval is the number of seconds before events gets pushed
+     * out of the timeWindow as oldData in the update method.
+     */
+    public TimeWindowView(IntervalParameter interval)
+    {
+        this(interval.getNumSeconds());
     }
 
     /**

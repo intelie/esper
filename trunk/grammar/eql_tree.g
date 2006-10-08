@@ -198,7 +198,7 @@ exprChoice
 	|	patternOp
 	| 	#( a:EVERY_EXPR exprChoice { leaveNode(#a); } )
 	| 	#( n:NOT_EXPR exprChoice { leaveNode(#n); } )
-	| 	#( g:GUARD_EXPR exprChoice IDENT IDENT (constant)* { leaveNode(#g); } )
+	| 	#( g:GUARD_EXPR exprChoice IDENT IDENT (constant | interval)* { leaveNode(#g); } )
 	;
 	
 patternOp

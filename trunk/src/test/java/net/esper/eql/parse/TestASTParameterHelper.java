@@ -95,24 +95,30 @@ public class TestASTParameterHelper extends TestCase implements EqlEvalTokenType
     public void testInterval() throws Exception
     {
         AST ast = makeInternal(new int[] {SECOND_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2d, convert(ast));
+        assertEquals(2d, tryInterval(ast));
 
         ast = makeInternal(new int[] {MILLISECOND_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2/1000d, convert(ast));
+        assertEquals(2/1000d, tryInterval(ast));
 
         ast = makeInternal(new int[] {MINUTE_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2 * 60d, convert(ast));
+        assertEquals(2 * 60d, tryInterval(ast));
 
         ast = makeInternal(new int[] {HOUR_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2 * 60 * 60d, convert(ast));
+        assertEquals(2 * 60 * 60d, tryInterval(ast));
 
         ast = makeInternal(new int[] {DAY_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2 * 24 * 60 * 60d, convert(ast));
+        assertEquals(2 * 24 * 60 * 60d, tryInterval(ast));
 
         ast = makeInternal(new int[] {DAY_PART, HOUR_PART, MINUTE_PART, SECOND_PART, MILLISECOND_PART},
                         new String[] {"2",      "3",       "4",         "5",         "6"},
                         new int[] {NUM_INT, LONG_TYPE, NUM_INT, NUM_INT, NUM_INT});
-        assertEquals(2*24*60*60d + 3*60*60 + 4*60 + 5 + 6/1000d, convert(ast));
+        assertEquals(2*24*60*60d + 3*60*60 + 4*60 + 5 + 6/1000d, tryInterval(ast));
+    }
+
+    private double tryInterval(AST ast) throws Exception
+    {
+        IntervalParameter result = (IntervalParameter) convert(ast);
+        return result.getNumSeconds();
     }
 
     private AST makeInternal(int[] parts, String[] values, int[] types)

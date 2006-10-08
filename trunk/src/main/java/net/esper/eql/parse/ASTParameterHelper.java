@@ -54,7 +54,7 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
         }
     }
 
-    private static double makeInterval(AST node)
+    private static IntervalParameter makeInterval(AST node)
     {
         AST child = node.getFirstChild();
         double result = 0;
@@ -88,7 +88,7 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
             child = child.getNextSibling();
         }
 
-        return result;
+        return new IntervalParameter(result);
     }
 
     private static Object makeList(AST node) throws ASTWalkException

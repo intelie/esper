@@ -9,6 +9,7 @@ import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.PropertyCheckHelper;
 import net.esper.collection.TimeWindow;
+import net.esper.eql.parse.IntervalParameter;
 
 /**
  * View for a moving window extending the specified amount of time into the past, driven entirely by external timing
@@ -62,6 +63,16 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
         {
             throw new IllegalArgumentException("Externally timed window does not allow a zero or negative parameter for the millisecond window length");
         }
+    }
+
+    /**
+     * Constructor - implemented via (String, long) constructor.
+     * @param timestampFieldName is the field name containing a long timestamp value
+     * @param intervalParameter is the number of milliseconds before events gets pushed
+     */
+    public ExternallyTimedWindowView(String timestampFieldName, IntervalParameter intervalParameter)
+    {
+        this(timestampFieldName, (long) intervalParameter.getNumSeconds() * 1000);
     }
 
     /**
