@@ -3,6 +3,9 @@ Esper Changelog
 
 Changes in version 1.2.0
 ----------------------
+* (EQL) Fixed: EQL windows take seconds parameter while patterns take milliseconds parameter (Issue ESPER-52)
+	NOTE: The following functions now take seconds (not milliseconds) as a parameter: timer:within, timer:interval, win:ext_time
+	New syntax for specifying time periods introduced: example: timer:within(1 min 5 sec) equivalent to timer:within(65)
 * (Doc) Add J2EE example (Enhancement request ESPER-64)
 * (EQL and Pattern) Mechanism to support EventType Adaptors for legacy Java classes (Enhancement request ESPER-55)
 * (EQL and Pattern) Support for != (not equals) in filter expressions (Enhancement request ESPER-63)
