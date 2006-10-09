@@ -11,7 +11,7 @@ public class RFIDTagsPerSensorStmt
     public RFIDTagsPerSensorStmt(EPAdministrator admin)
     {
         String stmt = "select ID as sensorId, sum(countTags) as numTagsPerSensor " +
-                      "from AutoIdRFIDExample.win:time(60) " +
+                      "from AutoIdRFIDExample.win:time(60 sec) " +
                       "where Observation[0].Command = 'READ_PALLET_TAGS_ONLY' " +
                       "group by ID";
 

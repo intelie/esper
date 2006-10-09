@@ -17,62 +17,62 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2001)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2001 msec)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2000)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2 sec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(1999)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(1999 msec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10001)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10001 msec)");
         testCase.add("B3", "b", events.getEvent("B3"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10000)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10 sec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(9999)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(9.999)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + ") where timer:within(2001)");
+        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + ") where timer:within(2.001)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(2001)");
+        testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(2.001)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(4001)");
-        testCase.add("B1", "b", events.getEvent("B1"));
-        testCase.add("B2", "b", events.getEvent("B2"));
-        testCaseList.addTest(testCase);
-
-        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + ") where timer:within(4001)");
+        testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(4001 milliseconds)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + " where timer:within(2001))");
+        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + ") where timer:within(4001 millisecond)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:within(2001))");
+        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + " where timer:within(2001 msec))");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + ") where timer:within(6001)");
+        testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:within(2.001))");
+        testCase.add("B1", "b", events.getEvent("B1"));
+        testCase.add("B2", "b", events.getEvent("B2"));
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + ") where timer:within(6.001)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCase.add("B3", "b", events.getEvent("B3"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:within(6001))");
+        testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:within(6.001))");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCase.add("B2", "b", events.getEvent("B2"));
@@ -80,78 +80,78 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         testCase.add("B3", "b", events.getEvent("B3"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:within(4001))");
+        testCase = new EventExpressionCase("every ((every b=" + EVENT_B_CLASS + ") where timer:within(4.001))");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + " where timer:within(4001)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + " where timer:within(4001 milliseconds)");
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:within(4000)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:within(4 sec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() where timer:within (4001) and d=" + EVENT_D_CLASS + "() where timer:within(6001))");
+        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() where timer:within (4.001) and d=" + EVENT_D_CLASS + "() where timer:within(6.001))");
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("B3", "b", events.getEvent("B3"), "d", events.getEvent("D2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001) and d=" + EVENT_D_CLASS + "() where timer:within(6001)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001) and d=" + EVENT_D_CLASS + "() where timer:within(6000)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:within(6000 msec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000) and d=" + EVENT_D_CLASS + "() where timer:within(6001)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) and d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:within(4000)");
+        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:within(4000 msec)");
         testCase.add("D1", "b", events.getEvent("B2"), "d", events.getEvent("D1"));
         testCase.add("D3", "b", events.getEvent("B3"), "d", events.getEvent("D3"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> every d=" + EVENT_D_CLASS + "() where timer:within(4000)");
+        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> every d=" + EVENT_D_CLASS + "() where timer:within(4000 msec)");
         testCase.add("D1", "b", events.getEvent("B2"), "d", events.getEvent("D1"));
         testCase.add("D2", "b", events.getEvent("B2"), "d", events.getEvent("D2"));
         testCase.add("D3", "b", events.getEvent("B2"), "d", events.getEvent("D3"));
         testCase.add("D3", "b", events.getEvent("B3"), "d", events.getEvent("D3"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:within(3999)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "() where timer:within(3999 msec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> every d=" + EVENT_D_CLASS + "() where timer:within(2001)");
+        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() -> every d=" + EVENT_D_CLASS + "() where timer:within(2001 msec)");
         testCase.add("D1", "b", events.getEvent("B2"), "d", events.getEvent("D1"));
         testCase.add("D3", "b", events.getEvent("B3"), "d", events.getEvent("D3"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "()) where timer:within(6001)");
+        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() -> d=" + EVENT_D_CLASS + "()) where timer:within(6001 msec)");
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("D3", "b", events.getEvent("B3"), "d", events.getEvent("D3"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000) or d=" + EVENT_D_CLASS + "() where timer:within(6000)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:within(6000 msec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("(b=" + EVENT_B_CLASS + "() where timer:within (2000) or d=" + EVENT_D_CLASS + "() where timer:within(6000)) where timer:within (1999)");
+        testCase = new EventExpressionCase("(b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:within(6000 msec)) where timer:within (1999 msec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() where timer:within (2001) and d=" + EVENT_D_CLASS + "() where timer:within(6001))");
+        testCase = new EventExpressionCase("every (b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and d=" + EVENT_D_CLASS + "() where timer:within(6001 msec))");
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001) or d=" + EVENT_D_CLASS + "() where timer:within(6001)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) or d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000) or d=" + EVENT_D_CLASS + "() where timer:within(6001)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) or d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
         testCase.add("D1", "d", events.getEvent("D1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() where timer:within (2001) and every d=" + EVENT_D_CLASS + "() where timer:within(6001)");
+        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() where timer:within (2001 msec) and every d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("D1", "b", events.getEvent("B2"), "d", events.getEvent("D1"));
         testCase.add("D2", "b", events.getEvent("B1"), "d", events.getEvent("D2"));
@@ -160,7 +160,7 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         testCase.add("D3", "b", events.getEvent("B2"), "d", events.getEvent("D3"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() where timer:within (2000) and every d=" + EVENT_D_CLASS + "() where timer:within(6001)");
+        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) and every d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
         testCaseList.addTest(testCase);
 
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);

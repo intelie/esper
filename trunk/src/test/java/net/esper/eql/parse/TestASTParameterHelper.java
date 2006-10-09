@@ -92,32 +92,32 @@ public class TestASTParameterHelper extends TestCase implements EqlEvalTokenType
         assertEquals(9, freqParam.getFrequency());
     }
 
-    public void testInterval() throws Exception
+    public void testTimePeriod() throws Exception
     {
         AST ast = makeInternal(new int[] {SECOND_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2d, tryInterval(ast));
+        assertEquals(2d, tryTimePeriod(ast));
 
         ast = makeInternal(new int[] {MILLISECOND_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2/1000d, tryInterval(ast));
+        assertEquals(2/1000d, tryTimePeriod(ast));
 
         ast = makeInternal(new int[] {MINUTE_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2 * 60d, tryInterval(ast));
+        assertEquals(2 * 60d, tryTimePeriod(ast));
 
         ast = makeInternal(new int[] {HOUR_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2 * 60 * 60d, tryInterval(ast));
+        assertEquals(2 * 60 * 60d, tryTimePeriod(ast));
 
         ast = makeInternal(new int[] {DAY_PART}, new String[] {"2"}, new int[] {NUM_INT});
-        assertEquals(2 * 24 * 60 * 60d, tryInterval(ast));
+        assertEquals(2 * 24 * 60 * 60d, tryTimePeriod(ast));
 
         ast = makeInternal(new int[] {DAY_PART, HOUR_PART, MINUTE_PART, SECOND_PART, MILLISECOND_PART},
                         new String[] {"2",      "3",       "4",         "5",         "6"},
                         new int[] {NUM_INT, LONG_TYPE, NUM_INT, NUM_INT, NUM_INT});
-        assertEquals(2*24*60*60d + 3*60*60 + 4*60 + 5 + 6/1000d, tryInterval(ast));
+        assertEquals(2*24*60*60d + 3*60*60 + 4*60 + 5 + 6/1000d, tryTimePeriod(ast));
     }
 
-    private double tryInterval(AST ast) throws Exception
+    private double tryTimePeriod(AST ast) throws Exception
     {
-        IntervalParameter result = (IntervalParameter) convert(ast);
+        TimePeriodParameter result = (TimePeriodParameter) convert(ast);
         return result.getNumSeconds();
     }
 

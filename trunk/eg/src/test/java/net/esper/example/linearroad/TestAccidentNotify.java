@@ -30,7 +30,7 @@ public class TestAccidentNotify extends TestCase
          */
         String joinStatement = "select * from " +
             carLocEvent + ".std:groupby('carId').win:length(4).std:groupby({'expressway', 'direction', 'segment'}).std:size() as accSeg," +
-            carLocEvent + ".win:time(30).std:unique('carId') as curCarSeg" +
+            carLocEvent + ".win:time(30 sec).std:unique('carId') as curCarSeg" +
                 " where accSeg.size >= 4" +
                 "   and accSeg.expressway = curCarSeg.expressway" +
                 "   and accSeg.direction = curCarSeg.direction" +

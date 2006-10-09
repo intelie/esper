@@ -198,7 +198,7 @@ exprChoice
 	|	patternOp
 	| 	#( a:EVERY_EXPR exprChoice { leaveNode(#a); } )
 	| 	#( n:NOT_EXPR exprChoice { leaveNode(#n); } )
-	| 	#( g:GUARD_EXPR exprChoice IDENT IDENT (constant | interval)* { leaveNode(#g); } )
+	| 	#( g:GUARD_EXPR exprChoice IDENT IDENT (constant | time_period)* { leaveNode(#g); } )
 	;
 	
 patternOp
@@ -262,7 +262,7 @@ singleParameter
 	| 	constant
 	| 	#( NUMERIC_PARAM_RANGE NUM_INT NUM_INT)
 	| 	#( NUMERIC_PARAM_FREQUENCY NUM_INT)
-	| 	interval
+	| 	time_period
 	;
 
 numericParameterList
@@ -271,11 +271,11 @@ numericParameterList
 	| 	#( NUMERIC_PARAM_FREQUENCE NUM_INT)
 	;
 
-interval
-	: 	#( INTERVAL intervalDef )
+time_period
+	: 	#( TIME_PERIOD timePeriodDef )
 	;
 	
-intervalDef
+timePeriodDef
 	: 	dayPart (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
 	|	hourPart (minutePart)? (secondPart)? (millisecondPart)?
 	|	minutePart (secondPart)? (millisecondPart)?

@@ -19,7 +19,7 @@ public class TestExternallyTimedWindowView extends TestCase
     public void setUp()
     {
         // Set up timed window view and a test child view, set the time window size to 1 second
-        myView = new ExternallyTimedWindowView("timestamp", 1000);
+        myView = new ExternallyTimedWindowView("timestamp", 1);
         childView = new SupportBeanClassView(SupportBeanTimestamp.class);
         myView.addView(childView);
     }

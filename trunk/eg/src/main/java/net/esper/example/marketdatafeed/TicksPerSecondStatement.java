@@ -11,7 +11,7 @@ public class TicksPerSecondStatement
     public TicksPerSecondStatement(EPAdministrator admin)
     {
         String stmt = "insert into TicksPerSecond " +
-                      "select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1) group by feed";
+                      "select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1 sec) group by feed";
 
         statement = admin.createEQL(stmt);
     }

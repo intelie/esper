@@ -48,13 +48,13 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
             case STAR:                      return new WildcardParameter();
             case NUMERIC_PARAM_LIST:        return makeList(node);
             case ARRAY_PARAM_LIST:          return makeArray(node);
-            case INTERVAL:                  return makeInterval(node);
+            case INTERVAL:                  return makeTimePeriod(node);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
         }
     }
 
-    private static IntervalParameter makeInterval(AST node)
+    private static TimePeriodParameter makeTimePeriod(AST node)
     {
         AST child = node.getFirstChild();
         double result = 0;
@@ -88,7 +88,7 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
             child = child.getNextSibling();
         }
 
-        return new IntervalParameter(result);
+        return new TimePeriodParameter(result);
     }
 
     private static Object makeList(AST node) throws ASTWalkException

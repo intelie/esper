@@ -106,7 +106,7 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
 
         String stmt =
           "select * from pattern [" +
-            " every a=A -> (timer:interval(10000) and not (B(id=a.id) or C(id=a.id)))" +
+            " every a=A -> (timer:interval(10 seconds) and not (B(id=a.id) or C(id=a.id)))" +
           "] ";
 
         SupportUpdateListener listener = new SupportUpdateListener();

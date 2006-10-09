@@ -23,7 +23,7 @@ public class RealtimeSummaryStmt
                                   "min(latencyBC) as minLatencyBC, " +
                                   "max(latencyBC) as maxLatencyBC, " +
                                   "avg(latencyBC) as avgLatencyBC " +
-                           "from CombinedEvent.win:time(1800)";
+                           "from CombinedEvent.win:time(30 min)";
 
         totalsStatement = admin.createEQL(stmtTotal);
 
@@ -35,7 +35,7 @@ public class RealtimeSummaryStmt
                                      "min(latencyAC) as minLatency," +
                                      "max(latencyAC) as maxLatency," +
                                      "avg(latencyAC) as avgLatency " +
-                              "from CombinedEvent.win:time(1800) " +
+                              "from CombinedEvent.win:time(30 min) " +
                               "group by customerId";
 
         byCustomerStatement = admin.createEQL(stmtCustomer);
@@ -44,7 +44,7 @@ public class RealtimeSummaryStmt
                                      "min(latencyAC) as minLatency," +
                                      "max(latencyAC) as maxLatency," +
                                      "avg(latencyAC) as avgLatency " +
-                              "from CombinedEvent.win:time(1800) " +
+                              "from CombinedEvent.win:time(30 min) " +
                               "group by supplierId";
 
         bySupplierStatement = admin.createEQL(stmtSupplier);

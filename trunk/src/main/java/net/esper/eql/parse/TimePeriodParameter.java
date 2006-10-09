@@ -1,10 +1,10 @@
 package net.esper.eql.parse;
 
-public class IntervalParameter
+public class TimePeriodParameter
 {
     private double numSeconds;
 
-    public IntervalParameter(double numSeconds)
+    public TimePeriodParameter(double numSeconds)
     {
         this.numSeconds = numSeconds;
     }
@@ -16,11 +16,11 @@ public class IntervalParameter
 
     public boolean equals(Object object)
     {
-        if (!(object instanceof IntervalParameter))
+        if (!(object instanceof TimePeriodParameter))
         {
             return false;
         }
-        IntervalParameter other = (IntervalParameter) object;
+        TimePeriodParameter other = (TimePeriodParameter) object;
         return other.numSeconds == this.numSeconds; 
     }
 }

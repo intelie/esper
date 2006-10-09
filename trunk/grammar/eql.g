@@ -109,7 +109,7 @@ tokens
 	CONCAT;	
 	LIB_FUNCTION;
 	UNARY_MINUS;
-	INTERVAL;
+	TIME_PERIOD;
 	DAY_PART;
 	HOUR_PART;
 	MINUTE_PART;
@@ -474,7 +474,7 @@ singleParameter
 	| 	frequencyOperand
 	|	STAR^
 	|	constant
-	|	interval
+	|	time_period
 	;
 
 frequencyOperand
@@ -587,7 +587,7 @@ eventPropertyAtomic
 		{ #eventPropertyAtomic = #([EVENT_PROP_MAPPED,"eventPropertyMapped"], #eventPropertyAtomic); }
 	;
 
-interval 	
+time_period 	
 	:	
 	(	
 		dayPart (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
@@ -596,7 +596,7 @@ interval
 	|	secondPart (millisecondPart)?
 	|	millisecondPart
 	)
-		{ #interval = #([INTERVAL,"interval"], #interval); }
+		{ #time_period = #([TIME_PERIOD,"time_period"], #time_period); }
 	;
 
 dayPart

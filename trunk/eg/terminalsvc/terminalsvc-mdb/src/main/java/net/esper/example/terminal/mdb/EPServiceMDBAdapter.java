@@ -37,13 +37,13 @@ public class EPServiceMDBAdapter
         statement = epService.getEPAdministrator().createEQL(stmt);
         statement.addListener(new TerminalEventListener(outboundQueueSender));
 
-        stmt = "select '1' as terminal, 'terminal is offline' as text from pattern [ every timer:interval(60000) -> (timer:interval(65000) and not Status(term.id = 'T1')) ] output first every 5 minutes";
+        stmt = "select '1' as terminal, 'terminal is offline' as text from pattern [ every timer:interval(60 seconds) -> (timer:interval(65 seconds) and not Status(term.id = 'T1')) ] output first every 5 minutes";
         statement = epService.getEPAdministrator().createEQL(stmt);
         statement.addListener(new TerminalStatusListener(outboundQueueSender));
 
         stmt = "insert into CountPerType " +
                 "select type, count(*) as countPerType " +
-                "from BaseTerminalEvent.win:time(600) " +
+                "from BaseTerminalEvent.win:time(10 min) " +
                 "group by type " +
                 "output all every 1 minutes";
         statement = epService.getEPAdministrator().createEQL(stmt);

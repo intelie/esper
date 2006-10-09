@@ -669,8 +669,8 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("win", viewSpec.getObjectNamespace());
         assertEquals("time", viewSpec.getObjectName());
         assertEquals(1, viewSpec.getObjectParameters().size());
-        IntervalParameter intervalParameter = (IntervalParameter) viewSpec.getObjectParameters().get(0);
-        return intervalParameter.getNumSeconds(); 
+        TimePeriodParameter timePeriodParameter = (TimePeriodParameter) viewSpec.getObjectParameters().get(0);
+        return timePeriodParameter.getNumSeconds();
     }
 
     private String tryWalkGetPropertyPattern(String stmt) throws Exception

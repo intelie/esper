@@ -9,7 +9,7 @@ import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.PropertyCheckHelper;
 import net.esper.collection.TimeWindow;
-import net.esper.eql.parse.IntervalParameter;
+import net.esper.eql.parse.TimePeriodParameter;
 
 /**
  * View for a moving window extending the specified amount of time into the past, driven entirely by external timing
@@ -47,17 +47,27 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     /**
      * Constructor.
      * @param timestampFieldName is the field name containing a long timestamp value
+     * @param secondsBeforeExpiry is the number of seconds
+     */
+    public ExternallyTimedWindowView(String timestampFieldName, long secondsBeforeExpiry)
+    {
+        this(timestampFieldName, (double)secondsBeforeExpiry);
+    }
+
+    /**
+     * Constructor.
+     * @param timestampFieldName is the field name containing a long timestamp value
      * that should be in ascending order for the natural order of events and is intended to reflect
      * System.currentTimeInMillis but does not necessarily have to.
-     * @param millisecondsBeforeExpiry is the number of milliseconds before events gets pushed
+     * @param secondsBeforeExpiry is the number of seconds before events gets pushed
      * out of the window as oldData in the update method. The view compares
      * each events timestamp against the newest event timestamp and those with a delta
-     * greater then millisecondsBeforeExpiry are pushed out of the window.
+     * greater then secondsBeforeExpiry are pushed out of the window.
      */
-    public ExternallyTimedWindowView(String timestampFieldName, long millisecondsBeforeExpiry)
+    public ExternallyTimedWindowView(String timestampFieldName, double secondsBeforeExpiry)
     {
         this.timestampFieldName = timestampFieldName;
-        this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
+        this.millisecondsBeforeExpiry = Math.round(secondsBeforeExpiry * 1000d);
 
         if (millisecondsBeforeExpiry <= 0)
         {
@@ -68,11 +78,11 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     /**
      * Constructor - implemented via (String, long) constructor.
      * @param timestampFieldName is the field name containing a long timestamp value
-     * @param intervalParameter is the number of milliseconds before events gets pushed
+     * @param timePeriodParameter is the number of milliseconds before events gets pushed
      */
-    public ExternallyTimedWindowView(String timestampFieldName, IntervalParameter intervalParameter)
+    public ExternallyTimedWindowView(String timestampFieldName, TimePeriodParameter timePeriodParameter)
     {
-        this(timestampFieldName, (long) intervalParameter.getNumSeconds() * 1000);
+        this(timestampFieldName, timePeriodParameter.getNumSeconds());
     }
 
     /**
