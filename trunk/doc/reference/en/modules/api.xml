@@ -149,9 +149,8 @@ runtime.sendEvent(new MarketDataBean('IBM', 75.0));
 
         <para>
 			The <literal>emit</literal> and <literal>addEmittedListener</literal> methods can be used to emit events from a runtime to a registered set of one or more emitted event listeners. 
-			Events are emitted on an event channel identified by a name. Listeners are implementations of the <literal>EmittedListener</literal> interface. Listeners can specify a channel to 
-			listen to and thus only receive events posted to that channel. Listeners can also supply no channel name and thus receive emitted events posted on any channel. Channels are
-			uniquely identified by a string channel name.
+			This mechanism is available as a service to enable channel-based publish-subscribe of events emitted from an engine instance via the <literal>emit</literal> method. Emitting events is not integrated with EQL and is available only via the <literal>EPRuntime</literal> interface.
+			Events are emitted on an event channel identified by a name. Listeners are implementations of the <literal>EmittedListener</literal> interface. Via the <literal>addEmittedListener</literal> method a listener can be added to the specified event channel. The lister receives only those events posted to that channel. The channel parameter to <literal>addEmittedListener</literal> also allows null values. If a null channel value is specified, the listeners receives emitted events posted on any channel.
         </para>
     </sect1>
 

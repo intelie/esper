@@ -12,6 +12,7 @@ public final class TimerServiceImpl implements TimerService
 {
     private TimerCallback timerCallback;
     private Timer timer;
+    private EQLTimerTask timerTask;
 
     /**
      * Constructor.
@@ -44,10 +45,10 @@ public final class TimerServiceImpl implements TimerService
         }
         
         timer = new Timer(true);        // Timer started as a deamon thread
-        EQLTimerTask task = new EQLTimerTask(timerCallback);
+        timerTask = new EQLTimerTask(timerCallback);
 
         // With no delay start every INTERNAL_CLOCK_RESOLUTION_MSEC
-        timer.scheduleAtFixedRate(task, 0, INTERNAL_CLOCK_RESOLUTION_MSEC);
+        timer.scheduleAtFixedRate(timerTask, 0, INTERNAL_CLOCK_RESOLUTION_MSEC);
     }
 
     public final void stopInternalClock(boolean warnIfNotStarted)
@@ -66,6 +67,8 @@ public final class TimerServiceImpl implements TimerService
             log.debug(".stopInternalClock Stopping internal clock daemon thread");
         }
 
+        timerTask.setCancelled(true);
+        timerTask.cancel();
         timer.cancel();
 
         try

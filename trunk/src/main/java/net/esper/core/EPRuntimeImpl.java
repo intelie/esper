@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRouter
 {
     private EPServicesContext services;
-    private static ReadWriteLock timerRWLock;
+    private ReadWriteLock timerRWLock;
     private ThreadWorkQueue threadWorkQueue;
 
     /**

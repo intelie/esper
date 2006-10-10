@@ -8,6 +8,7 @@ import java.util.TimerTask;
 final class EQLTimerTask extends TimerTask
 {
     private final TimerCallback callback;
+    private boolean isCancelled;
 
     public EQLTimerTask(TimerCallback callback)
     {
@@ -16,6 +17,14 @@ final class EQLTimerTask extends TimerTask
 
     public final void run()
     {
-        callback.timerCallback();
+        if (!isCancelled)
+        {
+            callback.timerCallback();
+        }
+    }
+
+    public void setCancelled(boolean cancelled)
+    {
+        isCancelled = cancelled;
     }
 }

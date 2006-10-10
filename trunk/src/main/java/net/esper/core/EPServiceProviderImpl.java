@@ -17,10 +17,7 @@ import java.util.Properties;
  */
 public class EPServiceProviderImpl implements EPServiceProvider
 {
-    private EPServicesContext services;
-    private EPRuntimeImpl runtime;
-    private EPAdministratorImpl admin;
-
+    private volatile EPServiceEngine engine;
     private final ConfigurationSnapshot configSnapshot;
 
     /**
@@ -36,19 +33,19 @@ public class EPServiceProviderImpl implements EPServiceProvider
 
     public EPRuntime getEPRuntime()
     {
-        return runtime;
+        return engine.getRuntime();
     }
 
     public EPAdministrator getEPAdministrator()
     {
-        return admin;
+        return engine.getAdmin();
     }
 
     public void initialize()
     {
-        if (services != null)
+        if (engine != null)
         {
-            services.getTimerService().stopInternalClock(false);
+            engine.getServices().getTimerService().stopInternalClock(false);
             // Give the timer thread a little moment to catch up
             try
             {
@@ -65,17 +62,17 @@ public class EPServiceProviderImpl implements EPServiceProvider
         AutoImportService autoImportService = makeAutoImportService(configSnapshot);
 
         // New services context
-        services = new EPServicesContext(eventAdapterService, autoImportService);
+        EPServicesContext services = new EPServicesContext(eventAdapterService, autoImportService);
 
         // New runtime
-        runtime = new EPRuntimeImpl(services);
+        EPRuntimeImpl runtime = new EPRuntimeImpl(services);
 
         // Configure services to use the new runtime
         services.setInternalEventRouter(runtime);
         services.getTimerService().setCallback(runtime);
 
         // New admin
-        admin = new EPAdministratorImpl(services);
+        EPAdministratorImpl admin = new EPAdministratorImpl(services);
 
         // Start clocking
         services.getTimerService().startInternalClock();
@@ -89,6 +86,9 @@ public class EPServiceProviderImpl implements EPServiceProvider
         {
             // No logic required here
         }
+
+        // Save engine instance
+        engine = new EPServiceEngine(services, runtime, admin);
     }
 
     private static Map<String, Class> createPropertyTypes(Properties properties)
@@ -275,6 +275,35 @@ public class EPServiceProviderImpl implements EPServiceProvider
         public Map<String, ConfigurationEventTypeLegacy> getLegacyAliases()
         {
             return legacyAliases;
+        }
+    }
+
+    private class EPServiceEngine
+    {
+        private EPServicesContext services;
+        private EPRuntimeImpl runtime;
+        private EPAdministratorImpl admin;
+
+        public EPServiceEngine(EPServicesContext services, EPRuntimeImpl runtime, EPAdministratorImpl admin)
+        {
+            this.services = services;
+            this.runtime = runtime;
+            this.admin = admin;
+        }
+
+        public EPServicesContext getServices()
+        {
+            return services;
+        }
+
+        public EPRuntimeImpl getRuntime()
+        {
+            return runtime;
+        }
+
+        public EPAdministratorImpl getAdmin()
+        {
+            return admin;
         }
     }
 }

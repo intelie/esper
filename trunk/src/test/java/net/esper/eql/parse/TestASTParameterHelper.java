@@ -123,7 +123,7 @@ public class TestASTParameterHelper extends TestCase implements EqlEvalTokenType
 
     private AST makeInternal(int[] parts, String[] values, int[] types)
     {
-        AST ast = makeSingleAst(INTERVAL, "interval");
+        AST ast = makeSingleAst(TIME_PERIOD, "interval");
         for (int i = 0; i < parts.length; i++)
         {
             AST childPart = makeSingleAst(parts[i], "part");

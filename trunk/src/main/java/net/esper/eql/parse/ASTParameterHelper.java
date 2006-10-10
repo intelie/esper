@@ -48,7 +48,7 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
             case STAR:                      return new WildcardParameter();
             case NUMERIC_PARAM_LIST:        return makeList(node);
             case ARRAY_PARAM_LIST:          return makeArray(node);
-            case INTERVAL:                  return makeTimePeriod(node);
+            case TIME_PERIOD:               return makeTimePeriod(node);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
         }
