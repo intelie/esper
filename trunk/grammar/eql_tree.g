@@ -151,13 +151,18 @@ valueExpr
 	|	f:builtinFunc { leaveNode(#f); }
 	|   l:libFunc { leaveNode(#l); }
 	|	cs:caseExpr { leaveNode(#cs); }
+	|	in:inExpr { leaveNode(#in); }
 	;
 
 caseExpr
 	: #(CASE (valueExpr)*)
 	| #(CASE2 (valueExpr)*)
 	;
-
+	
+inExpr
+	: #(IN_SET valueExpr valueExpr (valueExpr)*)
+	;
+	
 builtinFunc
 	: 	#(MAX (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )
 	| 	#(MIN (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )

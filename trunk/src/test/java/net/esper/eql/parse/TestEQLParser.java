@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select 1 from pattern [" + className + " where timer:within(1 min 50 sec)]";
+        String expression = "select 1 from " + className + " where intPrimitive*2 not in (1,2)";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -110,11 +110,31 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
 
         assertIsInvalid("select coalesce(tick.price) from x");
 
+        // time periods
         assertIsInvalid("select * from x.win:time(sec 99)");
         assertIsInvalid("select * from x.win:time(99 min min)");
         assertIsInvalid("select * from x.win:time(88 sec day)");
         assertIsInvalid("select * from x.win:time(1 sec 88 days)");
         assertIsInvalid("select * from x.win:time(1 day 2 hours 1 day)");
+
+        // in
+        assertIsInvalid("select * from x where a in()");
+        assertIsInvalid("select * from x where a in(a,)");
+        assertIsInvalid("select * from x where a in(,a)");
+        assertIsInvalid("select * from x where a in(, ,)");
+        assertIsInvalid("select * from x where a in not(1,2)");
+
+        // between
+        assertIsInvalid("select * from x where between a");
+        assertIsInvalid("select * from x where between and b");
+        assertIsInvalid("select * from x where between in and b");
+        assertIsInvalid("select * from x where between");
+
+        // like
+        assertIsInvalid("select * from x where like");
+        assertIsInvalid("select * from x where like escape");
+        assertIsInvalid("select * from x where like a escape");
+        assertIsInvalid("select * from x where escape");
     }
 
     public void testValidCases() throws Exception
@@ -269,6 +289,34 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from x.win:time(1 seconds 9.8 milliseconds)");
         assertIsValid("select * from x.win:time(1 seconds 9.8 milliseconds).win:goodie(1 sec)");
         assertIsValid("select * from x.win:time(1 seconds 9.8 milliseconds).win:goodie(1 sec).win:otto(1.1 days 1.1 msec)");
+
+        // in
+        assertIsValid("select * from x where a in('a')");
+        assertIsValid("select * from x where abc in ('a', 'b')");
+        assertIsValid("select * from x where abc in (8*2, 1.001, 'a' || 'b', coalesce(0,null), null)");
+        assertIsValid("select * from x where abc in (sum(x), max(2,2), true)");
+        assertIsValid("select * from x where abc in (y,z, y+z)");
+        assertIsValid("select * from x where abc not in (1)");
+        assertIsValid("select * from x where abc not in (1, 2, 3)");
+        assertIsValid("select * from x where abc*2/dog not in (1, 2, 3)");
+
+        // between
+        assertIsValid("select * from x where abc between 1 and 10");
+        assertIsValid("select * from x where abc between 'a' and 'x'");
+        assertIsValid("select * from x where abc between 1.1 and 1E1000");
+        assertIsValid("select * from x where abc between a and b");
+        assertIsValid("select * from x where abc between a*2 and sum(b)");
+        assertIsValid("select * from x where abc*3 between a*2 and sum(b)");
+
+        // like
+        assertIsValid("select * from x where abc like 'dog'");
+        assertIsValid("select * from x where abc like '.dog'");
+        assertIsValid("select * from x where abc like '*dog'");
+        assertIsValid("select * from x where abc like '[a-z]dog'");
+        assertIsValid("select * from x where abc like '[a-z]dog' escape 's'");
+        assertIsValid("select * from x where abc like '[a-z]dog' escape 's'");
+        assertIsValid("select * from x where abc like '[a-z]dog' escape \"a\"");
+        assertIsValid("select * from x where abc||'hairdo' like 'dog'");
     }
 
     public void testBitWiseCases() throws Exception

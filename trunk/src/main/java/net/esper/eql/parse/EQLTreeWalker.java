@@ -221,6 +221,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case OBSERVER_EXPR:
                 leaveObserver(node);
                 break;
+            case IN_SET:
+                leaveIn(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + "'");
@@ -875,6 +878,13 @@ public class EQLTreeWalker extends EQLBaseWalker
         log.debug(".leaveOr");
         EvalOrNode orNode = new EvalOrNode();
         astPatternNodeMap.put(node, orNode);
+    }
+
+    private void leaveIn(AST node)
+    {
+        log.debug(".leaveIn");
+        ExprInNode inNode = new ExprInNode();
+        astExprNodeMap.put(node, inNode);
     }
 
     private void leaveNot(AST node)

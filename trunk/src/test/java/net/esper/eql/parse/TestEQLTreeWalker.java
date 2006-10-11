@@ -660,6 +660,12 @@ public class TestEQLTreeWalker extends TestCase
         }
     }
 
+    public void testWalkIn() throws Exception
+    {
+        assertFalse((Boolean) tryRelationalOp("1 in (2,3)"));
+        assertTrue((Boolean) tryRelationalOp("1 in (2,3,1)"));        
+    }
+
     private double tryInterval(String interval) throws Exception
     {
         String text = "select * from " + SupportBean.class.getName() + ".win:time(" + interval + ")";

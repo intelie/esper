@@ -170,6 +170,17 @@ public class SupportExprNodeFactory
         return opNode;
     }
 
+    public static ExprInNode makeInSetNode() throws Exception
+    {
+        // Build :      s0.intPrimitive in (1, 2)
+        ExprInNode inNode = new ExprInNode();
+        inNode.addChildNode(makeIdentNode("intPrimitive","s0"));
+        inNode.addChildNode(new SupportExprNode(1));
+        inNode.addChildNode(new SupportExprNode(2));
+        validate(inNode);
+        return inNode;
+    }
+
     public static ExprCaseNode makeCaseSyntax1Node() throws Exception
     {
         // Build (case 1 expression):

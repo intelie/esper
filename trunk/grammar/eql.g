@@ -15,7 +15,10 @@ options
 // language tokens
 tokens
 {
-	IN="in";	
+	IN_SET="in";
+	BETWEEN="between";
+	LIKE="like";
+	ESCAPE="escape";
 	OR_EXPR="or";
 	AND_EXPR="and";
 	NOT_EXPR="not";
@@ -115,6 +118,9 @@ tokens
 	MINUTE_PART;
 	SECOND_PART;
 	MILLISECOND_PART;
+	NOT_IN;
+	NOT_BETWEEN;
+	NOT_LIKE;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -335,7 +341,30 @@ evalEqualsExpression
 	;
 	
 evalRelationalExpression
-	: concatenationExpr ( (LT^|GT^|LE^|GE^) concatenationExpr )*
+	: concatenationExpr 
+		( 
+			( ( (LT^|GT^|LE^|GE^) concatenationExpr )* )
+	| 		(n:NOT_EXPR!)? 
+			(
+				// Represent the optional NOT prefix using the token type by
+				// testing 'n' and setting the token type accordingly.
+				(i:IN_SET^ {
+						#i.setType( (n == null) ? IN_SET : NOT_IN);
+						#i.setText( (n == null) ? "in" : "not in");
+					}
+					(LPAREN! expression (COMMA! expression)* RPAREN!))
+				| (b:BETWEEN^ {
+						#b.setType( (n == null) ? BETWEEN : NOT_BETWEEN);
+						#b.setText( (n == null) ? "between" : "not between");
+					}
+					betweenList )
+				| (l:LIKE^ {
+						#l.setType( (n == null) ? LIKE : NOT_LIKE);
+						#l.setText( (n == null) ? "like" : "not like");
+					}
+					concatenationExpr likeEscape)
+			)	
+		)
 	;
 		
 concatenationExpr
@@ -360,7 +389,6 @@ unaryExpression
 	| LPAREN! expression RPAREN!
 	| builtinFunc
 	;
-
 
 builtinFunc
 	: (MAX^ | MIN^) LPAREN! (ALL! | DISTINCT)? expression (COMMA! expression (COMMA! expression)* )? RPAREN!
@@ -397,7 +425,15 @@ funcIdent
 	
 libFunctionArgs
 	: expression (COMMA! expression)*
-	;	
+	;
+	
+betweenList
+	: concatenationExpr AND_EXPR! concatenationExpr
+	;
+
+likeEscape
+	: (ESCAPE^ concatenationExpr)?
+	;
 
 //----------------------------------------------------------------------------
 // Pattern event expressions / event pattern operators

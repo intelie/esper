@@ -187,12 +187,22 @@ public class ExprCaseNode extends ExprNode
         {
             comparedTypes.add(pair.getFirst().getType());
         }
+
         // Determine common denominator type
         try {
             coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[0]));
+
+            // Determine if we need to coerce numbers when one type doesn't match any other type
             if (JavaClassHelper.isNumeric(coercionType))
             {
-                mustCoerce = true;
+                mustCoerce = false;
+                for (Class comparedType : comparedTypes)
+                {
+                    if (comparedType != coercionType)
+                    {
+                        mustCoerce = true;
+                    }
+                }
             }
         }
         catch (CoercionException ex)
