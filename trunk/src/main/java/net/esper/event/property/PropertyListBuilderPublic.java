@@ -12,10 +12,18 @@ import java.util.Arrays;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
+/**
+ * Implementation for a property list builder that considers any public method
+ * and public field as the exposed event properties, plus any explicitly configured props.
+ */
 public class PropertyListBuilderPublic implements PropertyListBuilder
 {
     private ConfigurationEventTypeLegacy legacyConfig;
 
+    /**
+     * Ctor.
+     * @param legacyConfig configures legacy type
+     */
     public PropertyListBuilderPublic(ConfigurationEventTypeLegacy legacyConfig)
     {
         if (legacyConfig == null)

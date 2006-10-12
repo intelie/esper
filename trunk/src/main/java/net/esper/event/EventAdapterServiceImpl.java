@@ -23,6 +23,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     /**
      * Ctor.
+     * @param classToLegacyConfigs is a map of event type alias to legacy event type config
      */
     public EventAdapterServiceImpl(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
     {

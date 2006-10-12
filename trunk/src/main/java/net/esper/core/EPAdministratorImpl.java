@@ -101,15 +101,20 @@ public class EPAdministratorImpl implements EPAdministrator
             DebugFacility.dumpAST(walker.getAST());
         }
 
-        // Build event type of aggregate event representing the pattern
-        // TODO checking if more then 1, comments in code
+        if (walker.getStatementSpec().getStreamSpecs().size() > 1)
+        {
+            throw new IllegalStateException("Unexpected multiple stream specifications encountered");
+        }
+
+        // Get pattern specification
         PatternStreamSpec patternStreamSpec = (PatternStreamSpec) walker.getStatementSpec().getStreamSpecs().get(0);
 
+        // Create start method
         EvalRootNode rootNode = new EvalRootNode();
         rootNode.addChildNode(patternStreamSpec.getEvalNode());
         EPPatternStmtStartMethod startMethod = new EPPatternStmtStartMethod(services, rootNode);
 
-        // generate event type
+        // Generate event type
         Map<String, EventType> eventTypes = patternStreamSpec.getTaggedEventTypes();
         EventType eventType = services.getEventAdapterService().createAnonymousMapTypeUnd(eventTypes);
 

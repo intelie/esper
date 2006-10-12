@@ -136,7 +136,7 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
 
         AST filterCompareNode = filterParamNode.getFirstChild().getNextSibling();
         int nodeType = filterCompareNode.getType();
-        if (nodeType == IN)
+        if (nodeType == IN_SET)
         {
             if (!JavaClassHelper.isNumeric(propertyType))
             {

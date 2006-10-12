@@ -14,8 +14,13 @@ public class ExprBetweenNode extends ExprNode
 {
     private final boolean isNotBetween;
 
+    private boolean isAlwaysFalse;
     private ExprBetweenComp computer;
 
+    /**
+     * Ctor.
+     * @param isNotBetween is true to indicate this is a "not between", or false for a "between"
+     */
     public ExprBetweenNode(boolean isNotBetween)
     {
         this.isNotBetween = isNotBetween;
@@ -35,50 +40,40 @@ public class ExprBetweenNode extends ExprNode
 
         if (typeOne == null)
         {
-            throw new ExprValidationException("Null value not allowed for between-clause");
+            throw new ExprValidationException("Null value not allowed in between-clause");
         }
 
-        if ((typeTwo != null) || (typeThree != null))
+        Class compareType = null;
+        if ((typeTwo == null) || (typeThree == null))
         {
-
+            isAlwaysFalse = true;
         }
-
-        if ((typeOne != String.class) || (typeTwo != String.class) || (typeThree != String.class))
-        {
-            if (!JavaClassHelper.isNumeric(typeOne))
+        else {
+            if ((typeOne != String.class) || (typeTwo != String.class) || (typeThree != String.class))
             {
-                throw new ExprValidationException("Implicit conversion from datatype '" +
-                        typeOne.getName() +
-                        "' to numeric is not allowed");
+                if (!JavaClassHelper.isNumeric(typeOne))
+                {
+                    throw new ExprValidationException("Implicit conversion from datatype '" +
+                            typeOne.getName() +
+                            "' to numeric is not allowed");
+                }
+                if (!JavaClassHelper.isNumeric(typeTwo))
+                {
+                    throw new ExprValidationException("Implicit conversion from datatype '" +
+                            typeTwo.getName() +
+                            "' to numeric is not allowed");
+                }
+                if (!JavaClassHelper.isNumeric(typeThree))
+                {
+                    throw new ExprValidationException("Implicit conversion from datatype '" +
+                            typeThree.getName() +
+                            "' to numeric is not allowed");
+                }
             }
-            if (!JavaClassHelper.isNumeric(typeTwo))
-            {
-                throw new ExprValidationException("Implicit conversion from datatype '" +
-                        typeTwo.getName() +
-                        "' to numeric is not allowed");
-            }
-            if (!JavaClassHelper.isNumeric(typeThree))
-            {
-                throw new ExprValidationException("Implicit conversion from datatype '" +
-                        typeThree.getName() +
-                        "' to numeric is not allowed");
-            }
-        }
 
-        Class type = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
-        Class compareType = JavaClassHelper.getCompareToCoercionType(type, typeThree);
-
-        if (compareType == String.class)
-        {
-            computer = new ExprBetweenCompString();
-        }
-        else if (compareType == Long.class)
-        {
-            computer = new ExprBetweenCompLong();
-        }
-        else
-        {
-            computer = new ExprBetweenCompDouble();
+            Class intermedType = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
+            compareType = JavaClassHelper.getCompareToCoercionType(intermedType, typeThree);
+            computer = makeComputer(compareType);
         }
     }
 
@@ -89,12 +84,17 @@ public class ExprBetweenNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream)
     {
+        if (isAlwaysFalse)
+        {
+            return false;
+        }
+
         // Evaluate first child which is the base value to compare to
         Iterator<ExprNode> it = this.getChildNodes().iterator();
         Object value = it.next().evaluate(eventsPerStream);
         if (value == null)
         {
-            return false | isNotBetween;
+            return false;
         }
         Object lower = it.next().evaluate(eventsPerStream);
         Object higher = it.next().evaluate(eventsPerStream);
@@ -140,6 +140,25 @@ public class ExprBetweenNode extends ExprNode
         return buffer.toString();
     }
 
+    private ExprBetweenComp makeComputer(Class compareType)
+    {
+        ExprBetweenComp computer = null;
+
+        if (compareType == String.class)
+        {
+            computer = new ExprBetweenCompString();
+        }
+        else if (compareType == Long.class)
+        {
+            computer = new ExprBetweenCompLong();
+        }
+        else
+        {
+            computer = new ExprBetweenCompDouble();
+        }
+        return computer;
+    }
+
     private interface ExprBetweenComp
     {
         public boolean isBetween(Object value, Object lower, Object upper);
@@ -156,13 +175,28 @@ public class ExprBetweenNode extends ExprNode
             String valueStr = (String) value;
             String lowerStr = (String) lower;
             String upperStr = (String) upper;
-            if (valueStr.compareTo(lowerStr) < 0)
+
+            if (upperStr.compareTo(lowerStr) < 0)
             {
-                return false;
+                if (valueStr.compareTo(lowerStr) > 0)
+                {
+                    return false;
+                }
+                if (valueStr.compareTo(upperStr) < 0)
+                {
+                    return false;
+                }
             }
-            if (valueStr.compareTo(upperStr) > 0)
+            else
             {
-                return false;
+                if (valueStr.compareTo(lowerStr) < 0)
+                {
+                    return false;
+                }
+                if (valueStr.compareTo(upperStr) > 0)
+                {
+                    return false;
+                }
             }
             return true;
         }
@@ -179,6 +213,15 @@ public class ExprBetweenNode extends ExprNode
             double valueD = ((Number) value).doubleValue();
             double lowerD = ((Number) lower).doubleValue();
             double upperD = ((Number) upper).doubleValue();
+
+            if (lowerD > upperD)
+            {
+                if (valueD <= lowerD && valueD >= upperD)
+                {
+                    return true;
+                }
+                return false;
+            }
             if (valueD >= lowerD && valueD <= upperD)
             {
                 return true;
@@ -198,6 +241,15 @@ public class ExprBetweenNode extends ExprNode
             long valueD = ((Number) value).longValue();
             long lowerD = ((Number) lower).longValue();
             long upperD = ((Number) upper).longValue();
+
+            if (lowerD > upperD)
+            {
+                if (valueD <= lowerD && valueD >= upperD)
+                {
+                    return true;
+                }
+                return false;
+            }
             if (valueD >= lowerD && valueD <= upperD)
             {
                 return true;

@@ -20,6 +20,10 @@ public class ExprInNode extends ExprNode
     private Class coercionType;
     private boolean mustCoerce;
 
+    /**
+     * Ctor.
+     * @param isNotIn is true for "not in" and false for "in"
+     */
     public ExprInNode(boolean isNotIn)
     {
         this.isNotIn = isNotIn;

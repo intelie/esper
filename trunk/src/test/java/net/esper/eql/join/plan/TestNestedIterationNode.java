@@ -9,11 +9,6 @@ import net.esper.eql.join.exec.ExecNode;
 
 public class TestNestedIterationNode extends TestCase
 {
-    public void testCtor()
-    {
-        // TODO
-    }
-
     public void testMakeExec()
     {
         try

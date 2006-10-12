@@ -35,8 +35,6 @@ public class TestViewTimeInterval extends TestCase
         tryTimeWindow("0.1 hour 490 min 240 sec");
     }
 
-    // TODO: try time batch and externally timed, try guards
-
     public void testTimeBatchNoRefPoint()
     {
         // Set up a time window with a unique view attached

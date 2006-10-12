@@ -239,7 +239,7 @@ filterParamComparator
 	|	#(LE filterAtom)
 	|	#(GT filterAtom)
 	|	#(GE filterAtom)
-	|	#(IN (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
+	|	#(IN_SET (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
 	;
 	
 filterAtom

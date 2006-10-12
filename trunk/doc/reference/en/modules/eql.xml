@@ -1280,6 +1280,62 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			</table>
 		</sect2>		
 
+		<sect2 id="eql-operator-ref-keyword-in">
+			<title>The '<literal>in</literal>' Keyword</title>
+			<para>
+				The <literal>in</literal> keyword determines if a given value matches any value in a list. The syntax of the keyword is:	
+			</para>
+			
+			<synopsis><emphasis>test_expression</emphasis> [not] in (<emphasis>expression</emphasis> [,<emphasis>expression</emphasis>...] )</synopsis>
+	
+			<para>
+				The <emphasis>test_expression</emphasis> is any valid expression. The keyword is followed by a list of expressions to test for a match. The optional <literal>not</literal> keyword specifies that the result of the predicate be negated.
+			</para>
+				
+			<para>
+				The result of an <literal>in</literal> expression is of type <literal>Boolean</literal>. If the value of <emphasis>test_expression</emphasis> is equal to any expression from the comma-separated list, the result value is <literal>true</literal>. Otherwise, the result value is <literal>false</literal>. All expressions must be of the same type as or a compatible type to <emphasis>test_expression</emphasis>.
+			</para>
+
+			<para>
+				The next example shows how the <literal>in</literal> keyword can be applied to select certain command types of RFID events:
+			</para>
+			<programlisting><![CDATA[select * from RFIDEvent where command in ('OBSERVATION', 'SIGNAL')]]></programlisting>
+			<para>
+				The statement is equivalent to:
+			</para>
+			<programlisting><![CDATA[select * from RFIDEvent where command = 'OBSERVATION' or symbol = 'SIGNAL']]></programlisting>
+		</sect2>		
+
+		<sect2 id="eql-operator-ref-keyword-between">
+			<title>The '<literal>between</literal>' Keyword</title>
+			<para>
+				The <literal>between</literal> keyword specifies a range to test. The syntax of the keyword is:	
+			</para>
+			
+			<synopsis><emphasis>test_expression</emphasis> [not] between <emphasis>begin_expression</emphasis> and <emphasis>end_expression</emphasis></synopsis>
+	
+			<para>
+				The <emphasis>test_expression</emphasis> is any valid expression and is the expression to test for in the range defined by <emphasis>begin_expression</emphasis> and <emphasis>end_expression</emphasis>. The <literal>not</literal> keyword specifies that the result of the predicate be negated. 
+			</para>
+				
+			<para>
+				The result of a <literal>between</literal> expression is of type <literal>Boolean</literal>. If the value of <emphasis>test_expression</emphasis> is greater then or equal to the value of <emphasis>begin_expression</emphasis> and less than or equal to the value of <emphasis>end_expression</emphasis>, the result is <literal>true</literal>. 
+			</para>
+
+			<para>
+				The next example shows how the <literal>between</literal> keyword can be used to select events with a price between 55 and 60 (inclusive).
+			</para>
+			<programlisting><![CDATA[select * from StockTickEvent where price between 55 and 60]]></programlisting>
+			<para>
+				The equivalent expression without <literal>between</literal> is:
+			</para>
+			<programlisting><![CDATA[select * from StockTickEvent where price >= 55 and price <= 60]]></programlisting>
+			<para>
+				And also equivalent to:
+			</para>
+			<programlisting><![CDATA[]]>select * from StockTickEvent where price between 60 and 55</programlisting>
+		</sect2>		
+
 	</sect1>		
 
     <sect1 id="built-in-views">

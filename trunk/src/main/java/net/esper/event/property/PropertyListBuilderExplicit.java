@@ -7,15 +7,21 @@ import net.esper.client.ConfigurationException;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Arrays;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * Introspector that considers explicitly configured event properties only.
+ */
 public class PropertyListBuilderExplicit implements PropertyListBuilder
 {
     private ConfigurationEventTypeLegacy legacyConfig;
 
+    /**
+     * Ctor.
+     * @param legacyConfig is a legacy type specification containing
+     * information about explicitly configured fields and methods
+     */
     public PropertyListBuilderExplicit(ConfigurationEventTypeLegacy legacyConfig)
     {
         if (legacyConfig == null)
@@ -32,6 +38,12 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
         return result;
     }
 
+    /**
+     * Populates explicitly-defined properties into the result list.
+     * @param result is the resulting list of event property descriptors
+     * @param clazz is the class to introspect
+     * @param legacyConfig supplies specification of explicit methods and fields to expose
+     */
     protected static void getExplicitProperties(List<EventPropertyDescriptor> result,
                                                                          Class clazz,
                                                                          ConfigurationEventTypeLegacy legacyConfig)
@@ -105,14 +117,26 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
         return makeFieldDesc(field, fieldDesc.getName());
     }
 
+    /**
+     * Makes a simple-type event property descriptor based on a reflected field.
+     * @param field is the public field
+     * @param name is the name of the event property
+     * @return property descriptor
+     */
     protected static EventPropertyDescriptor makeFieldDesc(Field field, String name)
     {
         return new EventPropertyDescriptor(name, name, field, EventPropertyType.SIMPLE);
     }
 
+    /**
+     * Makes an event property descriptor based on a reflected method, considering
+     * the methods parameters to determine if this is an indexed or mapped event property.
+     * @param method is the public method
+     * @param name is the name of the event property
+     * @return property descriptor
+     */
     protected static EventPropertyDescriptor makeMethodDesc(Method method, String name)
     {
-        Class type = method.getReturnType();
         EventPropertyType propertyType = null;
 
         if (method.getParameterTypes().length == 1)

@@ -11,11 +11,6 @@ public class TestExprBitWiseNode extends TestCase {
 
 	private ExprBitWiseNode _bitWiseNode;
 
-	public TestExprBitWiseNode() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	public void setUp()
 	{
 		_bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);

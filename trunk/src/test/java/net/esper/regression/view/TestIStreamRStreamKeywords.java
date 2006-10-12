@@ -22,8 +22,6 @@ public class TestIStreamRStreamKeywords extends TestCase
         epService.initialize();
     }
 
-    // TODO: test with insert into
-
     public void testRStreamOnly()
     {
         EPStatement statement = epService.getEPAdministrator().createEQL(

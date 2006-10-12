@@ -32,6 +32,7 @@ public class BeanEventType implements EventType
      * Constructor takes a java bean class as an argument.
      * @param clazz is the class of a java bean or other POJO
      * @param beanEventAdapter is the chache and factory for event bean types and event wrappers
+     * @param optionalLegacyDef optional configuration supplying legacy event type information
      */
     public BeanEventType(Class clazz, BeanEventAdapter beanEventAdapter,
                          ConfigurationEventTypeLegacy optionalLegacyDef)
@@ -191,7 +192,7 @@ public class BeanEventType implements EventType
                 EventPropertyGetter getter = null;
                 if (desc.getReadMethod() != null)
                 {
-                    getter = PropertyHelper.getGetter(desc.getReadMethod(), clazz, fastClass);
+                    getter = PropertyHelper.getGetter(desc.getReadMethod(), fastClass);
                     simplePropertyTypes.put(propertyName, desc.getReadMethod().getReturnType());
                 }
                 else

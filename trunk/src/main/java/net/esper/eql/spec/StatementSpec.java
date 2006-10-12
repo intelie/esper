@@ -103,6 +103,10 @@ public class StatementSpec
         return orderByList;
     }
 
+    /**
+     * Returns the stream selector (rstream/istream).
+     * @return stream selector
+     */
     public SelectClauseStreamSelectorEnum getSelectStreamSelectorEnum()
     {
         return selectStreamDirEnum;
@@ -144,6 +148,10 @@ public class StatementSpec
         this.insertIntoDesc = insertIntoDesc;
     }
 
+    /**
+     * Sets the stream selector (rstream/istream/both etc).
+     * @param selectStreamDirEnum to be set
+     */
     public void setSelectStreamDirEnum(SelectClauseStreamSelectorEnum selectStreamDirEnum)
     {
         this.selectStreamDirEnum = selectStreamDirEnum;

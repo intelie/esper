@@ -16,6 +16,10 @@ public class IStreamRStreamSelectorView extends ViewSupport
 {
     private final SelectClauseStreamSelectorEnum selectStreamDirEnum;
 
+    /**
+     * Ctor.
+     * @param selectStreamDirEnum defines what stream is selected, or both streams
+     */
     public IStreamRStreamSelectorView(SelectClauseStreamSelectorEnum selectStreamDirEnum)
     {
         this.selectStreamDirEnum = selectStreamDirEnum;

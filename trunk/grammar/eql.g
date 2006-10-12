@@ -17,7 +17,7 @@ tokens
 {
 	IN_SET="in";
 	BETWEEN="between";
-	LIKE="like";
+	//LIKE="like";
 	ESCAPE="escape";
 	OR_EXPR="or";
 	AND_EXPR="and";
@@ -120,7 +120,7 @@ tokens
 	MILLISECOND_PART;
 	NOT_IN_SET;
 	NOT_BETWEEN;
-	NOT_LIKE;
+	//NOT_LIKE;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -358,11 +358,12 @@ evalRelationalExpression
 						#b.setText( (n == null) ? "between" : "not between");
 					}
 					betweenList )
-				| (l:LIKE^ {
-						#l.setType( (n == null) ? LIKE : NOT_LIKE);
-						#l.setText( (n == null) ? "like" : "not like");
-					}
-					concatenationExpr likeEscape)
+// TODO: implement like
+//				| (l:LIKE^ {
+//						#l.setType( (n == null) ? LIKE : NOT_LIKE);
+//						#l.setText( (n == null) ? "like" : "not like");
+//					}
+//					concatenationExpr likeEscape)
 			)	
 		)
 	;
@@ -600,8 +601,8 @@ filterParamConstant
 	;
 
 filterParamRange 
-	: 	IN^ (l1:LPAREN! | l2:LBRACK!) (c:constant | f1:filterIdentifier) COLON! (constant | filterIdentifier) (r1:RPAREN! | r2:RBRACK!)
-       { #filterParamRange = #(IN, #l1, #l2, #c, #f1, #r1, #r2); }
+	: 	IN_SET^ (l1:LPAREN! | l2:LBRACK!) (c:constant | f1:filterIdentifier) COLON! (constant | filterIdentifier) (r1:RPAREN! | r2:RBRACK!)
+       { #filterParamRange = #(IN_SET, #l1, #l2, #c, #f1, #r1, #r2); }
 	;    
 
 filterIdentifier

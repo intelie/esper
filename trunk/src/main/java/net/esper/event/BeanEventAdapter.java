@@ -16,7 +16,7 @@ public class BeanEventAdapter
 
     /**
      * Ctor.
-     * Start with an empty list of known classes and event types.
+     * @param classToLegacyConfigs us a map of event type alias to legacy event type config
      */
     public BeanEventAdapter(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
     {

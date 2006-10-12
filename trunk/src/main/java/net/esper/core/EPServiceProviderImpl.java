@@ -272,6 +272,10 @@ public class EPServiceProviderImpl implements EPServiceProvider
             return mapAliases;
         }
 
+        /**
+         * Returns the map of event type alias to legacy event type configuration.
+         * @return map with alias as the key and legacy type config as the value
+         */
         public Map<String, ConfigurationEventTypeLegacy> getLegacyAliases()
         {
             return legacyAliases;

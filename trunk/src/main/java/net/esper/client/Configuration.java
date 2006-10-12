@@ -110,6 +110,7 @@ public class Configuration {
     /**
      * Add an alias for an event type that represents legacy Java type (non-JavaBean style) events.
      * @param eventTypeAlias is the alias for the event type
+     * @param javaEventClass fully-qualified class name of the event type
      * @param legacyEventTypeDesc descriptor containing property and mapping information for Legacy Java type events
      */
     public void addEventTypeAlias(String eventTypeAlias, String javaEventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)

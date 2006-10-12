@@ -94,6 +94,10 @@ public class EventPropertyDescriptor
         return accessorField;
     }
 
+    /**
+     * Returns the type of the underlying method or field of the event property.
+     * @return return type
+     */
     public Class getReturnType()
     {
         if (readMethod != null)

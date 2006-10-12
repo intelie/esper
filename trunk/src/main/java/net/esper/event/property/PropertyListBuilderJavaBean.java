@@ -1,21 +1,22 @@
 package net.esper.event.property;
 
 import net.esper.client.ConfigurationEventTypeLegacy;
-import net.esper.client.ConfigurationException;
 import net.esper.event.EventPropertyDescriptor;
-import net.esper.event.EventPropertyType;
-
 import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Arrays;
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
 
+/**
+ * Implementation for a property list builder that considers JavaBean-style methods
+ * as the exposed event properties, plus any explicitly configured props.
+ */
 public class PropertyListBuilderJavaBean implements PropertyListBuilder
 {
     private ConfigurationEventTypeLegacy optionalLegacyConfig;
 
+    /**
+     * Ctor.
+     * @param optionalLegacyConfig configures legacy type, or null information
+     * has been supplied.
+     */
     public PropertyListBuilderJavaBean(ConfigurationEventTypeLegacy optionalLegacyConfig)
     {
         this.optionalLegacyConfig = optionalLegacyConfig;
