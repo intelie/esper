@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select 1 from " + className + " where intPrimitive*2 not in (1,2)";
+        String expression = "select 1 from " + className + " where intPrimitive between 1*2 and 5";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);

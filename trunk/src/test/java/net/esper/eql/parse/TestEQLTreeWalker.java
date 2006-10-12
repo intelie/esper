@@ -660,10 +660,16 @@ public class TestEQLTreeWalker extends TestCase
         }
     }
 
-    public void testWalkIn() throws Exception
+    public void testWalkInAndBetween() throws Exception
     {
         assertFalse((Boolean) tryRelationalOp("1 in (2,3)"));
-        assertTrue((Boolean) tryRelationalOp("1 in (2,3,1)"));        
+        assertTrue((Boolean) tryRelationalOp("1 in (2,3,1)"));
+        assertTrue((Boolean) tryRelationalOp("1 not in (2,3)"));
+
+        assertTrue((Boolean) tryRelationalOp("1 between 0 and 2"));
+        assertFalse((Boolean) tryRelationalOp("-1 between 0 and 2"));
+        assertFalse((Boolean) tryRelationalOp("1 not between 0 and 2"));
+        assertTrue((Boolean) tryRelationalOp("-1 not between 0 and 2"));
     }
 
     private double tryInterval(String interval) throws Exception

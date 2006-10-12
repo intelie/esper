@@ -3,7 +3,7 @@ package net.esper.support.eql;
 import net.esper.eql.expression.*;
 import net.esper.eql.spec.SelectExprElementUnnamedSpec;
 import net.esper.eql.spec.SelectExprElementNamedSpec;
-import net.esper.type.ArithTypeEnum;
+import net.esper.type.MathArithTypeEnum;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -95,7 +95,7 @@ public class SupportSelectExprFactory
                   c1_1 (5)
         */
 
-        ExprNode top = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        ExprNode top = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
         ExprNode c1 = new ExprSumNode(false);
         ExprNode c1_1 = new SupportExprNode(5);
         ExprNode c2 = new SupportExprNode(10);

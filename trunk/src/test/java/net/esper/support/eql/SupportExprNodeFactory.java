@@ -2,7 +2,7 @@ package net.esper.support.eql;
 
 import net.esper.eql.expression.*;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.type.ArithTypeEnum;
+import net.esper.type.MathArithTypeEnum;
 import net.esper.type.RelationalOpEnum;
 
 public class SupportExprNodeFactory
@@ -87,7 +87,7 @@ public class SupportExprNodeFactory
     {
         ExprIdentNode node1 = new ExprIdentNode("intBoxed", "s0");
         ExprIdentNode node2 = new ExprIdentNode("intPrimitive", "s0");
-        ExprMathNode mathNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
         mathNode.addChildNode(node1);
         mathNode.addChildNode(node2);
 
@@ -96,7 +96,7 @@ public class SupportExprNodeFactory
         return mathNode;
     }
 
-    public static ExprNode makeMathNode(ArithTypeEnum operator_, Object valueLeft_, Object valueRight_) throws Exception
+    public static ExprNode makeMathNode(MathArithTypeEnum operator_, Object valueLeft_, Object valueRight_) throws Exception
     {
         ExprMathNode mathNode = new ExprMathNode(operator_);
         mathNode.addChildNode(new SupportExprNode(valueLeft_));
@@ -113,7 +113,7 @@ public class SupportExprNodeFactory
         sum.addChildNode(ident);
 
         ExprIdentNode node = new ExprIdentNode("intBoxed", "s0");
-        ExprMathNode mathNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
         mathNode.addChildNode(node);
         mathNode.addChildNode(sum);
 
@@ -170,10 +170,10 @@ public class SupportExprNodeFactory
         return opNode;
     }
 
-    public static ExprInNode makeInSetNode() throws Exception
+    public static ExprInNode makeInSetNode(boolean isNotIn) throws Exception
     {
         // Build :      s0.intPrimitive in (1, 2)
-        ExprInNode inNode = new ExprInNode();
+        ExprInNode inNode = new ExprInNode(isNotIn);
         inNode.addChildNode(makeIdentNode("intPrimitive","s0"));
         inNode.addChildNode(new SupportExprNode(1));
         inNode.addChildNode(new SupportExprNode(2));

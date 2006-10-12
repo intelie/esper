@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * Enumeration for the type of arithmatic to use.
  */
-public enum ArithTypeEnum
+public enum MathArithTypeEnum
 {
     /**
      * Plus.
@@ -78,7 +78,7 @@ public enum ArithTypeEnum
 
     private String expressionText;
 
-    private ArithTypeEnum(String expressionText)
+    private MathArithTypeEnum(String expressionText)
     {
         this.expressionText = expressionText;
     }

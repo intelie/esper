@@ -3,7 +3,6 @@ package net.esper.eql.expression;
 import junit.framework.TestCase;
 import net.esper.support.eql.SupportExprNode;
 import net.esper.type.MinMaxTypeEnum;
-import net.esper.type.ArithTypeEnum;
 
 public class TestExprMinMaxRowNode extends TestCase
 {
@@ -113,8 +112,8 @@ public class TestExprMinMaxRowNode extends TestCase
     }
 
     private ExprMinMaxRowNode makeNode(Object valueOne, Class typeOne,
-                                    Object valueTwo, Class typeTwo,
-                                    Object valueThree, Class typeThree)
+                                       Object valueTwo, Class typeTwo,
+                                       Object valueThree, Class typeThree)
     {
         ExprMinMaxRowNode maxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
         maxNode.addChildNode(new SupportExprNode(valueOne, typeOne));

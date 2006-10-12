@@ -2,7 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
-import net.esper.type.ArithTypeEnum;
+import net.esper.type.MathArithTypeEnum;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
 
@@ -11,18 +11,18 @@ import net.esper.eql.core.StreamTypeService;
  */
 public class ExprMathNode extends ExprNode
 {
-    private final ArithTypeEnum arithTypeEnum;
+    private final MathArithTypeEnum mathArithTypeEnum;
 
-    private ArithTypeEnum.Computer arithTypeEnumComputer;
+    private MathArithTypeEnum.Computer arithTypeEnumComputer;
     private Class resultType;
 
     /**
      * Ctor.
-     * @param arithTypeEnum - type of math
+     * @param mathArithTypeEnum - type of math
      */
-    public ExprMathNode(ArithTypeEnum arithTypeEnum)
+    public ExprMathNode(MathArithTypeEnum mathArithTypeEnum)
     {
-        this.arithTypeEnum = arithTypeEnum;
+        this.mathArithTypeEnum = mathArithTypeEnum;
     }
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
@@ -30,15 +30,6 @@ public class ExprMathNode extends ExprNode
         if (this.getChildNodes().size() != 2)
         {
             throw new ExprValidationException("Arithmatic node must have 2 child nodes");
-        }
-
-        if ((this.getChildNodes().get(0).getType() == String.class) &&
-            (this.getChildNodes().get(1).getType() == String.class))
-        {
-            if (arithTypeEnum == ArithTypeEnum.ADD)
-            {
-                String hugo = "a" + "b";
-            }
         }
 
         for (ExprNode child : this.getChildNodes())
@@ -64,7 +55,7 @@ public class ExprMathNode extends ExprNode
         {
             resultType = JavaClassHelper.getArithmaticCoercionType(childTypeOne, childTypeTwo);
         }
-        arithTypeEnumComputer = arithTypeEnum.getComputer(resultType);
+        arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType);
     }
 
     public Class getType() throws ExprValidationException
@@ -93,7 +84,7 @@ public class ExprMathNode extends ExprNode
         buffer.append("(");
 
         buffer.append(this.getChildNodes().get(0).toExpressionString());
-        buffer.append(arithTypeEnum.getExpressionText());
+        buffer.append(mathArithTypeEnum.getExpressionText());
         buffer.append(this.getChildNodes().get(1).toExpressionString());
 
         buffer.append(")");
@@ -109,7 +100,7 @@ public class ExprMathNode extends ExprNode
 
         ExprMathNode other = (ExprMathNode) node;
 
-        if (other.arithTypeEnum != this.arithTypeEnum)
+        if (other.mathArithTypeEnum != this.mathArithTypeEnum)
         {
             return false;
         }

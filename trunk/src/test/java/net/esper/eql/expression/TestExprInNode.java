@@ -9,36 +9,79 @@ import net.esper.event.EventBean;
 
 public class TestExprInNode extends TestCase
 {
-    private ExprInNode inNode;
+    private ExprInNode inNodeNormal;
+    private ExprInNode inNodeNotIn;
 
     public void setUp() throws Exception
     {
-        inNode = SupportExprNodeFactory.makeInSetNode();
+        inNodeNormal = SupportExprNodeFactory.makeInSetNode(false);
+        inNodeNotIn = SupportExprNodeFactory.makeInSetNode(true);
     }
 
     public void testGetType()  throws Exception
     {
-        assertEquals(Boolean.class, inNode.getType());
+        assertEquals(Boolean.class, inNodeNormal.getType());
+        assertEquals(Boolean.class, inNodeNotIn.getType());
     }
 
     public void testValidate() throws Exception
     {
-        inNode = SupportExprNodeFactory.makeInSetNode();
-        inNode.validate(null, null);
+        inNodeNormal = SupportExprNodeFactory.makeInSetNode(true);
+        inNodeNormal.validate(null, null);
 
         // No subnodes: Exception is thrown.
-        tryInvalidValidate(new ExprInNode());
+        tryInvalidValidate(new ExprInNode(true));
 
         // singe child node not possible, must be 2 at least
-        inNode = new ExprInNode();
-        inNode.addChildNode(new SupportExprNode(new Integer(4)));
-        tryInvalidValidate(inNode);
+        inNodeNormal = new ExprInNode(true);
+        inNodeNormal.addChildNode(new SupportExprNode(new Integer(4)));
+        tryInvalidValidate(inNodeNormal);
 
         // test a type mismatch
-        inNode = new ExprInNode();
-        inNode.addChildNode(new SupportExprNode("sx"));
-        inNode.addChildNode(new SupportExprNode(4));
-        tryInvalidValidate(inNode);
+        inNodeNormal = new ExprInNode(true);
+        inNodeNormal.addChildNode(new SupportExprNode("sx"));
+        inNodeNormal.addChildNode(new SupportExprNode(4));
+        tryInvalidValidate(inNodeNormal);
+    }
+
+    public void testEvaluate() throws Exception
+    {
+        assertFalse((Boolean) inNodeNormal.evaluate(makeEvent(0)));
+        assertTrue((Boolean) inNodeNormal.evaluate(makeEvent(1)));
+        assertTrue((Boolean) inNodeNormal.evaluate(makeEvent(2)));
+        assertFalse((Boolean) inNodeNormal.evaluate(makeEvent(3)));
+
+        assertTrue((Boolean) inNodeNotIn.evaluate(makeEvent(0)));
+        assertFalse((Boolean) inNodeNotIn.evaluate(makeEvent(1)));
+        assertFalse((Boolean) inNodeNotIn.evaluate(makeEvent(2)));
+        assertTrue((Boolean) inNodeNotIn.evaluate(makeEvent(3)));
+    }
+
+    public void testEquals()  throws Exception
+    {
+        ExprInNode otherInNodeNormal = SupportExprNodeFactory.makeInSetNode(false);
+        ExprInNode otherInNodeNotIn = SupportExprNodeFactory.makeInSetNode(true);
+
+        assertTrue(inNodeNormal.equalsNode(otherInNodeNormal));
+        assertTrue(inNodeNotIn.equalsNode(otherInNodeNotIn));
+
+        assertFalse(inNodeNormal.equalsNode(otherInNodeNotIn));
+        assertFalse(inNodeNotIn.equalsNode(otherInNodeNormal));
+        assertFalse(inNodeNotIn.equalsNode(SupportExprNodeFactory.makeCaseSyntax1Node()));
+        assertFalse(inNodeNormal.equalsNode(SupportExprNodeFactory.makeCaseSyntax1Node()));
+    }
+
+    public void testToExpressionString() throws Exception
+    {
+        assertEquals("s0.intPrimitive in (1,2)", inNodeNormal.toExpressionString());
+        assertEquals("s0.intPrimitive not in (1,2)", inNodeNotIn.toExpressionString());
+    }
+
+    private EventBean[] makeEvent(int intPrimitive)
+    {
+        SupportBean event = new SupportBean();
+        event.setIntPrimitive(intPrimitive);
+        return new EventBean[] {SupportEventBeanFactory.createObject(event)};
     }
 
     private void tryInvalidValidate(ExprInNode exprInNode) throws Exception
@@ -51,33 +94,5 @@ public class TestExprInNode extends TestCase
         {
             // expected
         }
-    }
-
-    public void testEvaluate() throws Exception
-    {
-        assertFalse((Boolean) inNode.evaluate(makeEvent(0)));
-        assertTrue((Boolean) inNode.evaluate(makeEvent(1)));
-        assertTrue((Boolean) inNode.evaluate(makeEvent(2)));
-        assertFalse((Boolean) inNode.evaluate(makeEvent(3)));
-    }
-
-    private EventBean[] makeEvent(int intPrimitive)
-    {
-        SupportBean event = new SupportBean();
-        event.setIntPrimitive(intPrimitive);
-        return new EventBean[] {SupportEventBeanFactory.createObject(event)};
-    }
-
-    public void testEquals()  throws Exception
-    {
-        ExprInNode otherNode = SupportExprNodeFactory.makeInSetNode();
-
-        assertTrue(inNode.equalsNode(otherNode));
-        assertFalse(inNode.equalsNode(SupportExprNodeFactory.makeCaseSyntax1Node()));
-    }
-
-    public void testToExpressionString() throws Exception
-    {
-        assertEquals("s0.intPrimitive in (1,2)", inNode.toExpressionString());
     }
 }

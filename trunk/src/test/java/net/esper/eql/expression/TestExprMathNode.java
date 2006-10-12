@@ -2,7 +2,7 @@ package net.esper.eql.expression;
 
 import junit.framework.TestCase;
 import net.esper.support.eql.SupportExprNode;
-import net.esper.type.ArithTypeEnum;
+import net.esper.type.MathArithTypeEnum;
 
 public class TestExprMathNode extends TestCase
 {
@@ -10,7 +10,7 @@ public class TestExprMathNode extends TestCase
 
     public void setUp()
     {
-        arithNode = new ExprMathNode(ArithTypeEnum.ADD);
+        arithNode = new ExprMathNode(MathArithTypeEnum.ADD);
     }
 
     public void testGetType() throws Exception
@@ -24,11 +24,11 @@ public class TestExprMathNode extends TestCase
     public void testToExpressionString() throws Exception
     {
         // Build (5*(4-2)), not the same as 5*4-2
-        ExprMathNode arithNodeChild = new ExprMathNode(ArithTypeEnum.SUBTRACT);
+        ExprMathNode arithNodeChild = new ExprMathNode(MathArithTypeEnum.SUBTRACT);
         arithNodeChild.addChildNode(new SupportExprNode(4));
         arithNodeChild.addChildNode(new SupportExprNode(2));
 
-        arithNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        arithNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
         arithNode.addChildNode(new SupportExprNode(5));
         arithNode.addChildNode(arithNodeChild);
 
@@ -82,12 +82,12 @@ public class TestExprMathNode extends TestCase
     public void testEqualsNode() throws Exception
     {
         assertTrue(arithNode.equalsNode(arithNode));
-        assertFalse(arithNode.equalsNode(new ExprMathNode(ArithTypeEnum.DIVIDE)));
+        assertFalse(arithNode.equalsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE)));
     }
 
     private ExprMathNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight)
     {
-        ExprMathNode mathNode = new ExprMathNode(ArithTypeEnum.MULTIPLY);
+        ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
         mathNode.addChildNode(new SupportExprNode(valueLeft, typeLeft));
         mathNode.addChildNode(new SupportExprNode(valueRight, typeRight));
         return mathNode;

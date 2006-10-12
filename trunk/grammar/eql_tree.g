@@ -152,6 +152,7 @@ valueExpr
 	|   l:libFunc { leaveNode(#l); }
 	|	cs:caseExpr { leaveNode(#cs); }
 	|	in:inExpr { leaveNode(#in); }
+	|	b:betweenExpr { leaveNode(#b); }
 	;
 
 caseExpr
@@ -161,8 +162,14 @@ caseExpr
 	
 inExpr
 	: #(IN_SET valueExpr valueExpr (valueExpr)*)
+	| #(NOT_IN_SET valueExpr valueExpr (valueExpr)*)
 	;
 	
+betweenExpr
+	: #(BETWEEN valueExpr valueExpr valueExpr)
+	| #(NOT_BETWEEN valueExpr valueExpr (valueExpr)*)
+	;
+
 builtinFunc
 	: 	#(MAX (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )
 	| 	#(MIN (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )

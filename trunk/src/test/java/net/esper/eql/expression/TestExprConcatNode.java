@@ -2,7 +2,7 @@ package net.esper.eql.expression;
 
 import junit.framework.TestCase;
 import net.esper.support.eql.SupportExprNode;
-import net.esper.type.ArithTypeEnum;
+import net.esper.type.MathArithTypeEnum;
 
 public class TestExprConcatNode extends TestCase
 {
@@ -69,6 +69,6 @@ public class TestExprConcatNode extends TestCase
     public void testEqualsNode() throws Exception
     {
         assertTrue(concatNode.equalsNode(concatNode));
-        assertFalse(concatNode.equalsNode(new ExprMathNode(ArithTypeEnum.DIVIDE)));
+        assertFalse(concatNode.equalsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE)));
     }
 }

@@ -118,7 +118,7 @@ tokens
 	MINUTE_PART;
 	SECOND_PART;
 	MILLISECOND_PART;
-	NOT_IN;
+	NOT_IN_SET;
 	NOT_BETWEEN;
 	NOT_LIKE;
 	
@@ -349,7 +349,7 @@ evalRelationalExpression
 				// Represent the optional NOT prefix using the token type by
 				// testing 'n' and setting the token type accordingly.
 				(i:IN_SET^ {
-						#i.setType( (n == null) ? IN_SET : NOT_IN);
+						#i.setType( (n == null) ? IN_SET : NOT_IN_SET);
 						#i.setText( (n == null) ? "in" : "not in");
 					}
 					(LPAREN! expression (COMMA! expression)* RPAREN!))

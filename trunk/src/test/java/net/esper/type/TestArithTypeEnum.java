@@ -1,13 +1,13 @@
 package net.esper.type;
 
 import junit.framework.TestCase;
-import net.esper.type.ArithTypeEnum;
+import net.esper.type.MathArithTypeEnum;
 
 public class TestArithTypeEnum extends TestCase
 {
     public void testAddDouble()
     {
-        ArithTypeEnum.Computer computer = ArithTypeEnum.ADD.getComputer(Double.class);
+        MathArithTypeEnum.Computer computer = MathArithTypeEnum.ADD.getComputer(Double.class);
         assertEquals(12.1d, computer.compute(5.5,6.6));
     }
 
@@ -27,25 +27,25 @@ public class TestArithTypeEnum extends TestCase
 
         for (Class clazz : testClasses)
         {
-            for (ArithTypeEnum type : ArithTypeEnum.values())
+            for (MathArithTypeEnum type : MathArithTypeEnum.values())
             {
-                ArithTypeEnum.Computer computer = type.getComputer(clazz);
+                MathArithTypeEnum.Computer computer = type.getComputer(clazz);
                 Number result = computer.compute(3, 4);
                 assertEquals(clazz, result.getClass());
 
-                if (type == ArithTypeEnum.ADD)
+                if (type == MathArithTypeEnum.ADD)
                 {
                     assertEquals(7d, result.doubleValue());
                 }
-                if (type == ArithTypeEnum.SUBTRACT)
+                if (type == MathArithTypeEnum.SUBTRACT)
                 {
                     assertEquals(-1d, result.doubleValue());
                 }
-                if (type == ArithTypeEnum.MULTIPLY)
+                if (type == MathArithTypeEnum.MULTIPLY)
                 {
                     assertEquals(12d, result.doubleValue());
                 }
-                if (type == ArithTypeEnum.DIVIDE)
+                if (type == MathArithTypeEnum.DIVIDE)
                 {
                     if ((clazz == Integer.class) || (clazz == Long.class))
                     {
@@ -64,7 +64,7 @@ public class TestArithTypeEnum extends TestCase
     {
         try
         {
-            ArithTypeEnum.ADD.getComputer(clazz);
+            MathArithTypeEnum.ADD.getComputer(clazz);
             fail();
         }
         catch (IllegalArgumentException ex)

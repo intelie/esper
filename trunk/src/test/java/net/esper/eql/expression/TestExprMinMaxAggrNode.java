@@ -1,7 +1,7 @@
 package net.esper.eql.expression;
 
 import net.esper.support.eql.SupportExprNode;
-import net.esper.type.ArithTypeEnum;
+import net.esper.type.MathArithTypeEnum;
 import net.esper.type.MinMaxTypeEnum;
 
 public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
@@ -36,7 +36,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
     public void testToExpressionString() throws Exception
     {
         // Build sum(4-2)
-        ExprMathNode arithNodeChild = new ExprMathNode(ArithTypeEnum.SUBTRACT);
+        ExprMathNode arithNodeChild = new ExprMathNode(MathArithTypeEnum.SUBTRACT);
         arithNodeChild.addChildNode(new SupportExprNode(4));
         arithNodeChild.addChildNode(new SupportExprNode(2));
 

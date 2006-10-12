@@ -222,7 +222,12 @@ public class EQLTreeWalker extends EQLBaseWalker
                 leaveObserver(node);
                 break;
             case IN_SET:
+            case NOT_IN_SET:
                 leaveIn(node);
+                break;
+            case BETWEEN:
+            case NOT_BETWEEN:
+                leaveBetween(node);
                 break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
@@ -482,30 +487,30 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
         log.debug(".leaveMath");
 
-        ArithTypeEnum arithTypeEnum;
+        MathArithTypeEnum mathArithTypeEnum;
 
         switch (node.getType())
         {
             case DIV :
-                arithTypeEnum = ArithTypeEnum.DIVIDE;
+                mathArithTypeEnum = MathArithTypeEnum.DIVIDE;
                 break;
             case STAR :
-                arithTypeEnum = ArithTypeEnum.MULTIPLY;
+                mathArithTypeEnum = MathArithTypeEnum.MULTIPLY;
                 break;
             case PLUS :
-                arithTypeEnum = ArithTypeEnum.ADD;
+                mathArithTypeEnum = MathArithTypeEnum.ADD;
                 break;
             case MINUS :
-                arithTypeEnum = ArithTypeEnum.SUBTRACT;
+                mathArithTypeEnum = MathArithTypeEnum.SUBTRACT;
                 break;
             case MOD :
-                arithTypeEnum = ArithTypeEnum.MODULO;
+                mathArithTypeEnum = MathArithTypeEnum.MODULO;
                 break;
             default :
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized math node type");
         }
 
-        ExprMathNode mathNode = new ExprMathNode(arithTypeEnum);
+        ExprMathNode mathNode = new ExprMathNode(mathArithTypeEnum);
         astExprNodeMap.put(node, mathNode);
     }
 
@@ -883,8 +888,17 @@ public class EQLTreeWalker extends EQLBaseWalker
     private void leaveIn(AST node)
     {
         log.debug(".leaveIn");
-        ExprInNode inNode = new ExprInNode();
+
+        ExprInNode inNode = new ExprInNode(node.getType() == NOT_IN_SET);
         astExprNodeMap.put(node, inNode);
+    }
+
+    private void leaveBetween(AST node)
+    {
+        log.debug(".leaveBetween");
+
+        ExprBetweenNode betweenNode = new ExprBetweenNode(node.getType() == NOT_BETWEEN);
+        astExprNodeMap.put(node, betweenNode);
     }
 
     private void leaveNot(AST node)

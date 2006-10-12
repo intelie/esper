@@ -5,7 +5,6 @@ import net.esper.eql.core.AutoImportService;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.CoercionException;
-import net.esper.collection.UniformPair;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -16,11 +15,14 @@ import java.util.Iterator;
  */
 public class ExprInNode extends ExprNode
 {
+    private final boolean isNotIn;
+
     private Class coercionType;
     private boolean mustCoerce;
 
-    public ExprInNode()
+    public ExprInNode(boolean isNotIn)
     {
+        this.isNotIn = isNotIn;
     }
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
@@ -83,6 +85,10 @@ public class ExprInNode extends ExprNode
         }
         while (it.hasNext());
 
+        if (isNotIn)
+        {
+            return !matched;
+        }
         return matched;
     }
 
@@ -93,7 +99,8 @@ public class ExprInNode extends ExprNode
             return false;
         }
 
-        return true;
+        ExprInNode other = (ExprInNode) node_;
+        return other.isNotIn == this.isNotIn;
     }
 
     public String toExpressionString()
@@ -103,7 +110,14 @@ public class ExprInNode extends ExprNode
 
         Iterator<ExprNode> it = this.getChildNodes().iterator();
         buffer.append(it.next().toExpressionString());
-        buffer.append(" in (");
+        if (isNotIn)
+        {
+            buffer.append(" not in (");
+        }
+        else
+        {
+            buffer.append(" in (");
+        }
 
         do
         {
