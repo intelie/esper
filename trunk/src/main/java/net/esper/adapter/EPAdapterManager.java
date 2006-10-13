@@ -1,50 +1,28 @@
 package net.esper.adapter;
 
 import net.esper.adapter.csv.CSVAdapter;
-import net.esper.client.EPRuntime;
-import net.esper.event.EventAdapterService;
-import net.esper.schedule.ScheduleBucket;
-import net.esper.schedule.SchedulingService;
 
-/**
- * A utility that manages and allows access to input and output adapters.
+/** 
+ * A manager for different input adapters.
  */
-public class EPAdapterManager
+public interface EPAdapterManager
 {
-	private final EPRuntime runtime;
-	private final SchedulingService schedulingService;
-	private final ScheduleBucket scheduleBucket;
-	private final CSVAdapter csvAdapter;
+	/**
+	 * Create a new Feed.
+	 * @param feedSpec - the parameters for this feed
+	 * @return the newly created feed
+	 */
+	public Feed createFeed(FeedSpec feedSpec);
 	
 	/**
-	 * Ctor.
-	 * @param runtime - the EPRuntime to send events into
-	 * @param eventAdapterService - for resolving event type aliases
-	 * @param schedulingService - for scheduling callbacks
+	 * Create an instance of FeedCoordinator.
+	 * @return a new instance of FeedCoordinator
 	 */
-	public EPAdapterManager(EPRuntime runtime, final EventAdapterService eventAdapterService, final SchedulingService schedulingService)
-	{
-		this.runtime = runtime;
-		this.schedulingService = schedulingService;
-		scheduleBucket = schedulingService.allocateBucket();
-		csvAdapter = new CSVAdapter(runtime, eventAdapterService, schedulingService, scheduleBucket);
-	}
-	
-	/**
-	 * Create an instance of Conductor.
-	 * @return a new instance of Conductor
-	 */
-	public Conductor createConductor()
-	{
-		return new Conductor(runtime, schedulingService);
-	}
-	
+	public FeedCoordinatorImpl createFeedCoordinator();
+
 	/**
 	 * Get the adapter for CSV files.
 	 * @return the CSVAdapter
 	 */
-	public CSVAdapter getCSVAdapter()
-	{
-		return csvAdapter;
-	}
+	public CSVAdapter getCSVAdapter();
 }

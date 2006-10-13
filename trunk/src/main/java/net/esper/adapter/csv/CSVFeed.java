@@ -7,8 +7,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.esper.adapter.AbstractPlayer;
+import net.esper.adapter.AbstractReadableFeed;
 import net.esper.adapter.AdapterInputSource;
+import net.esper.adapter.Feed;
+import net.esper.adapter.FeedSpec;
+import net.esper.adapter.FeedState;
+import net.esper.adapter.MapEventSpec;
 import net.esper.adapter.SendableEvent;
 import net.esper.client.EPException;
 import net.esper.schedule.ScheduleSlot;
@@ -20,23 +24,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /** 
- * A Player for sending records from a CSV file into 
- * the EPRuntime. The settable parameters are:
- * 1. isLooping (false by default) which is true if processing
- * of the CSV file should begin over after the end of the file
- * is reached.
- * 2. eventsPerSec, which indicates how many events per second
- * should be sent into the runtime. The value must be between
- * 1 and 1000, inclusive. If this value isn't set, the CSVPlayer
- * will attempt to send events according to a timestamp column in
- * the CSV file.
+ * An event Feed that uses a CSV file for a source.
  */
-public class CSVPlayer extends AbstractPlayer
+public class CSVFeed extends AbstractReadableFeed implements Feed
 {
-	private static final Log log = LogFactory.getLog(CSVPlayer.class);
+	private static final Log log = LogFactory.getLog(CSVFeed.class);
 
 	public static final String TIMESTAMP_COLUMN_NAME = "timestamp";
 
+	private final SchedulingService schedulingService;
 	private final ScheduleSlot scheduleSlot;
 	private final MapEventSpec mapEventSpec;	
 	private int eventsPerSec = -1;
@@ -45,27 +41,28 @@ public class CSVPlayer extends AbstractPlayer
 	private final String[] propertyOrder;
 	private final boolean propertyOrderContainsTimestamp;
 	private long lastTimestamp = 0;
-	private long totalDelay = 0;
+	private long totalDelay;
+	boolean atEOF = false;
+	
 	/**
 	 * Ctor.
-	 * @param adapterInputSource - the source of the CSV file
-	 * @param mapSpec - describes the format of the events to create and send into the EPRuntime
-	 * @param schedulingService - used for making callbacks
-	 * @param scheduleSlot - this player's schedule slot
-	 * @throws EPException in case of errors opening the CSV file
+	 * @param feedSpec - the parameters for this feed
+	 * @param mapSpec - the specifications for the map event type to create
+	 * @param schedulingService - used for scheduling callbacks to send events
+	 * @param scheduleSlot - used for ordering this Feeds place for callbacks
 	 */
-	public CSVPlayer(AdapterInputSource adapterInputSource, 
-					 MapEventSpec mapSpec, 
-					 SchedulingService schedulingService, 
-					 ScheduleSlot scheduleSlot) 
-	throws EPException
+	protected CSVFeed(FeedSpec feedSpec, 
+					  MapEventSpec mapSpec, 
+					  SchedulingService schedulingService, 
+					  ScheduleSlot scheduleSlot)
 	{
 		super(mapSpec.getEpRuntime(), schedulingService);
 		this.scheduleSlot = scheduleSlot;
 		this.mapEventSpec = mapSpec;
+		this.schedulingService = schedulingService;
 
 		this.propertyConstructors = createPropertyConstructors(mapEventSpec.getPropertyTypes());
-		reader = new CSVReader(adapterInputSource);
+		reader = new CSVReader((AdapterInputSource)feedSpec.getParameter("adapterInputSource"));
 		
 		// Resolve the order of properties in the CSV file
 		String[] firstRow;
@@ -75,21 +72,35 @@ public class CSVPlayer extends AbstractPlayer
 		} 
 		catch (EOFException e)
 		{
-			stop();
+			atEOF = true;
 			firstRow = null;
 		}		
 		
-		this.propertyOrder = PropertyOrderHelper.resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes());
+		this.propertyOrder = feedSpec.getParameter("propertyOrder") == null ?
+				PropertyOrderHelper.resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes()) :
+					(String[])feedSpec.getParameter("propertyOrder");
 		this.propertyOrderContainsTimestamp = PropertyOrderHelper.propertyOrderContainsTimestamp(propertyOrder);
 	
 		boolean isUsingTitleRow = (firstRow == propertyOrder);
 		reader.setIsUsingTitleRow(isUsingTitleRow);
 		reader.reset();
+		
+		eventsPerSec = feedSpec.getParameter("eventsPerSec") != null ?
+				(Integer)feedSpec.getParameter("eventsPerSec") :
+					-1 ;
+				
+		boolean isLooping = feedSpec.getParameter("isLooping") != null ?
+				(Boolean) feedSpec.getParameter("isLooping") :
+					false;
+		reader.setIsLooping(isLooping);
 	}
 	
-	public synchronized SendableEvent read() throws EPException
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.ReadableFeed#read()
+	 */
+	public SendableEvent read() throws EPException
 	{
-		if(state == State.STOPPED)
+		if(stateManager.getState() == FeedState.DESTROYED || atEOF)
 		{
 			return null;
 		}
@@ -98,7 +109,7 @@ public class CSVPlayer extends AbstractPlayer
 		{
 			if(eventsToSend.isEmpty())
 			{
-				return new SendableMapEvent(newMapEvent(), mapEventSpec.getEventTypeAlias(), totalDelay, scheduleSlot);
+				return new SendableMapEvent(newMapEvent(), mapEventSpec.getEventTypeAlias(), totalDelay + startTime, scheduleSlot);
 			}
 			else
 			{
@@ -110,31 +121,9 @@ public class CSVPlayer extends AbstractPlayer
 		catch (EOFException e)
 		{
 			log.debug(".read reached end of CSV file");
-			stop();
+			atEOF = true;
 			return null;
 		}
-	}
-
-	/**
-	 * Set the eventsPerSec value.
-	 * @param eventsPerSec - the value to use, must be between 1 and 1000, inclusive
-	 */
-	public void setEventsPerSec(int eventsPerSec)
-	{
-		if(eventsPerSec < 1 || eventsPerSec > 1000)
-		{
-			throw new IllegalArgumentException("Illegal value for eventsPerSec: " + eventsPerSec);
-		}
-		this.eventsPerSec = eventsPerSec;
-	}
-
-	/**
-	 * Set the isLooping value.
-	 * @param isLooping - true if processing should start over from the beginning after the end of the CSV file is reached
-	 */
-	public void setIsLooping(boolean isLooping)
-	{
-		reader.setIsLooping(isLooping);
 	}
 
 	/**
@@ -158,6 +147,17 @@ public class CSVPlayer extends AbstractPlayer
 		{
 			eventsToSend.add(event);
 		}
+	}
+	
+	/**
+	 * Reset all the changeable state of this ReadableFeed, as if it were just created.
+	 */
+	protected void reset()
+	{
+		lastTimestamp = 0;
+		totalDelay = 0;
+		atEOF = false;
+		reader.reset();
 	}
 
 	private Map<String, Object> newMapEvent() throws EOFException

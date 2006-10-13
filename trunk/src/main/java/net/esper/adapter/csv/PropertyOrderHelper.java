@@ -29,7 +29,7 @@ public class PropertyOrderHelper
 		boolean result = false;
 		for(String property : propertyOrder)
 		{
-			if(property.equals(CSVPlayer.TIMESTAMP_COLUMN_NAME))
+			if(property.equals(CSVFeed.TIMESTAMP_COLUMN_NAME))
 			{
 				result = true;
 				break;
@@ -39,9 +39,8 @@ public class PropertyOrderHelper
 	}
 
 	/**
-	 * Resolve the order of the properties that appear in the CSV file.
-	 * If the first row of the file is a valid title row, use that;
-	 * otherwise, use the order given in the propertyTypes map.
+	 * Resolve the order of the properties that appear in the CSV file, 
+	 * from the first row of the CSV file.
 	 * @param firstRow - the first record of the CSV file
 	 * @param propertyTypes - describes the event to send into the EPRuntime
 	 * @return the property names in the order in which they occur in the file
@@ -57,12 +56,7 @@ public class PropertyOrderHelper
 		}
 		else 
 		{
-			result = propertyTypes.keySet().toArray(new String[0]);
-			if(!columnNamesAreValid(result, propertyTypes))
-			{
-				throw new EPException("Cannot resolve the order of properties in the CSV file");	
-			}
-			log.debug(".resolvePropertyOrder using propertyTypes, propertyOrder==" + Arrays.asList(result));
+			throw new EPException("Cannot resolve the order of properties in the CSV file");	
 		}
 		
 		return result;
@@ -88,7 +82,7 @@ public class PropertyOrderHelper
 
 	private static boolean isValidColumnName(String columnName, Map<String, Class> propertyTypes)
 	{
-		return propertyTypes.containsKey(columnName) || columnName.equals(CSVPlayer.TIMESTAMP_COLUMN_NAME);
+		return propertyTypes.containsKey(columnName) || columnName.equals(CSVFeed.TIMESTAMP_COLUMN_NAME);
 	}
 
 	private static boolean isValidRowLength(String[] row, Map<String, Class> propertyTypes)

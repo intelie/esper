@@ -37,16 +37,25 @@ public class SendableMapEvent implements SendableEvent
 		this.scheduleSlot = scheduleSlot;
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.SendableEvent#send(net.esper.client.EPRuntime)
+	 */
 	public void send(EPRuntime runtime)
 	{
 		runtime.sendEvent(mapToSend, eventTypeAlias);
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.SendableEvent#getScheduleSlot()
+	 */
 	public ScheduleSlot getScheduleSlot()
 	{
 		return scheduleSlot;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.SendableEvent#getSendTime()
+	 */
 	public long getSendTime()
 	{
 		return timestamp;

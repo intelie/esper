@@ -1,54 +1,50 @@
 package net.esper.support.adapter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import net.esper.adapter.Player;
+import net.esper.adapter.FeedState;
+import net.esper.adapter.FeedStateManager;
+import net.esper.adapter.ReadableFeed;
 import net.esper.adapter.SendableEvent;
 import net.esper.client.EPException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-public class SupportPlayer implements Player
+
+public class SupportReadableFeed implements ReadableFeed
 {
-	private static final Log log = LogFactory.getLog(SupportPlayer.class);
+	private static final Log log = LogFactory.getLog(SupportReadableFeed.class);
 	
 	private SendableEvent event;
-	private State state = State.NEW;
+	private FeedStateManager stateManager = new FeedStateManager();
 
-	public State getState()
+	public FeedState getState()
 	{
-		return state;
+		return stateManager.getState();
 	}
 
 	public void pause() throws EPException
 	{
-		if(state != State.STOPPED)
-		{
-			state = State.PAUSED;
-		}
-		
+		stateManager.pause();
 	}
 
 	public void resume() throws EPException
 	{
-		if(state == State.PAUSED)
-		{
-			state = State.RUNNING;
-		}
-		
+		stateManager.resume();
 	}
 
 	public void start() throws EPException
 	{
-		if(state == State.NEW)
-		{
-			state = State.RUNNING;
-		}
+		stateManager.start();
 	}
 
 	public void stop() throws EPException
 	{
-		state = State.STOPPED;
+		stateManager.stop();
+	}
+	
+	public void destroy() throws EPException
+	{
+		stateManager.destroy();
 	}
 
 	public SendableEvent read() throws EPException

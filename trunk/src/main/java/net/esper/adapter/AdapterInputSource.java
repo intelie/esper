@@ -1,20 +1,22 @@
 package net.esper.adapter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
 
 import net.esper.adapter.csv.CSVReader;
 import net.esper.client.EPException;
 
 /**
- * An input source for adapters that accepts either URLs or 
- * classpath resource names.
+ * An input source for adapters.
  */
 public class AdapterInputSource
 {
 	private final URL url;
 	private final String classpathResource;
+	private final File file;
 	
 	/**
 	 * Ctor.
@@ -28,6 +30,7 @@ public class AdapterInputSource
 		}
 		this.classpathResource = classpathResource;
 		this.url = null;
+		this.file = null;
 	}
 	
 	/**
@@ -42,6 +45,18 @@ public class AdapterInputSource
 		}
 		this.url = url;
 		this.classpathResource = null;
+		this.file = null;
+	}
+	
+	public AdapterInputSource(File file)
+	{
+		if(file == null)
+		{
+			throw new NullPointerException("file cannot be null");
+		}
+		this.file = file;
+		this.url = null;
+		this.classpathResource = null;
 	}
 	
 	/**
@@ -50,6 +65,17 @@ public class AdapterInputSource
 	 */
 	public InputStream openStream()
 	{
+		if(file != null)
+		{
+			try
+			{
+				return file.toURL().openStream();
+			} 
+			catch (IOException e)
+			{
+				throw new EPException(e);
+			}
+		}
 		if(url != null)
 		{
 			try

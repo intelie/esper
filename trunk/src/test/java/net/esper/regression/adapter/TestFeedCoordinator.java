@@ -6,19 +6,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import junit.framework.TestCase;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Conductor;
+import net.esper.adapter.EPAdapterManager;
+import net.esper.adapter.FeedCoordinatorImpl;
 import net.esper.adapter.SendableEvent;
-import net.esper.adapter.csv.CSVAdapter;
-import net.esper.adapter.csv.CSVPlayer;
+import net.esper.adapter.csv.CSVFeedSpec;
 import net.esper.adapter.csv.SendableMapEvent;
 import net.esper.client.Configuration;
 import net.esper.client.EPAdministrator;
-import net.esper.client.EPRuntime;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
@@ -26,25 +22,27 @@ import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
 import net.esper.schedule.ScheduleSlot;
-import net.esper.support.adapter.SupportPlayer;
+import net.esper.support.adapter.SupportReadableFeed;
 import net.esper.support.util.SupportUpdateListener;
 
-public class TestConductor extends TestCase
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class TestFeedCoordinator extends TestCase
 {
-	private static final Log log = LogFactory.getLog(TestConductor.class);
+	private static final Log log = LogFactory.getLog(TestFeedCoordinator.class);
 	
 	private SupportUpdateListener listener;
-	private CSVAdapter csvAdapter;
 	private String eventTypeAlias;
 	private EPServiceProvider epService;
 	private long currentTime;
-	private Conductor conductor;
-	private SupportPlayer supportPlayer = new SupportPlayer();
-	private CSVPlayer timestampsLooping;
-	private CSVPlayer noTimestampsLooping;
-	private EPRuntime runtime;
-	private CSVPlayer noTimestampsNotLooping;
-	private CSVPlayer timestampsNotLooping;
+	private FeedCoordinatorImpl conductor;
+	private SupportReadableFeed supportPlayer = new SupportReadableFeed();
+	private CSVFeedSpec timestampsLooping;
+	private CSVFeedSpec noTimestampsLooping;
+	private CSVFeedSpec noTimestampsNotLooping;
+	private CSVFeedSpec timestampsNotLooping;
+	private String[] propertyOrder;
 	
 	protected void setUp()
 	{
@@ -59,14 +57,11 @@ public class TestConductor extends TestCase
 		
 		epService = EPServiceProviderManager.getProvider("Adapter", configuration);
 		epService.initialize();
-		runtime = epService.getEPRuntime();
 		EPAdministrator administrator = epService.getEPAdministrator();
 		String statementText = "select * from mapEvent.win:length(5)";
 		EPStatement statement = administrator.createEQL(statementText);
 		listener = new SupportUpdateListener();
 		statement.addListener(listener);
-		
-		csvAdapter = epService.getEPAdapters().getCSVAdapter();
 		
 		// Turn off external clocking
 		epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
@@ -75,35 +70,37 @@ public class TestConductor extends TestCase
 		currentTime = 0;
 		sendTimeEvent(0);
 		
-		conductor = epService.getEPAdapters().createConductor();
+		conductor = epService.getEPAdapters().createFeedCoordinator();
 
+    	propertyOrder = new String[] { "myInt", "myDouble", "myString" };
+		
 		// A CSVPlayer for a file with timestamps, not looping
-		timestampsNotLooping = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("/regression/timestampOne.csv"));
+		timestampsNotLooping = new CSVFeedSpec(new AdapterInputSource("/regression/timestampOne.csv"), eventTypeAlias);
+		timestampsNotLooping.setPropertyOrder(propertyOrder);
 		
-		// A CSVPlauer for a file with timestamps, looping
-		timestampsLooping = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("/regression/timestampTwo.csv"));
+		// A CSVFeed for a file with timestamps, looping
+		timestampsLooping = new CSVFeedSpec(new AdapterInputSource("/regression/timestampTwo.csv"), eventTypeAlias);
 		timestampsLooping.setIsLooping(true);
+		timestampsLooping.setPropertyOrder(propertyOrder);
 		
-		// A CSVPlayer that sends 10 events per sec, not looping
-		noTimestampsNotLooping = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("/regression/noTimestampOne.csv"));
+		// A CSVFeed that sends 10 events per sec, not looping
+		noTimestampsNotLooping = new CSVFeedSpec(new AdapterInputSource("/regression/noTimestampOne.csv"), eventTypeAlias);
 		noTimestampsNotLooping.setEventsPerSec(10);
+		noTimestampsNotLooping.setPropertyOrder(propertyOrder);
 		
-		// A CSVPlayer that sends 5 events per sec, looping
-		noTimestampsLooping = csvAdapter.createCSVPlayer(eventTypeAlias, new AdapterInputSource("/regression/noTimestampTwo.csv"));
+		// A CSVFeed that sends 5 events per sec, looping
+		noTimestampsLooping = new CSVFeedSpec(new AdapterInputSource("/regression/noTimestampTwo.csv"), eventTypeAlias);
 		noTimestampsLooping.setEventsPerSec(5);
 		noTimestampsLooping.setIsLooping(true);
+		noTimestampsLooping.setPropertyOrder(propertyOrder);
 	}
 	
 	public void testRun()
 	{		
-		conductor.add(timestampsNotLooping);
-		conductor.add(timestampsLooping);
-		conductor.add(noTimestampsNotLooping);
-		conductor.add(noTimestampsLooping);
-		
-		// Add a SupportPlayer
-		setSupportEvent(50);
-		conductor.add(supportPlayer);
+		conductor.coordinate(timestampsNotLooping);
+		conductor.coordinate(timestampsLooping);
+		conductor.coordinate(noTimestampsNotLooping);
+		conductor.coordinate(noTimestampsLooping);
 		
 		// Time is 0
 		assertFalse(listener.getAndClearIsInvoked());
@@ -111,9 +108,6 @@ public class TestConductor extends TestCase
 		
 		// Time is 50
 		sendTimeEvent(50);
-		assertEvent(0, 0, 0.0, "supportPlayer.zero");
-		setSupportEvent(250);
-		assertSizeAndReset(1);
 		
 		// Time is 100
 		sendTimeEvent(50);
@@ -134,9 +128,6 @@ public class TestConductor extends TestCase
 		
 		// Time is 250
 		sendTimeEvent(50);
-		assertEvent(0, 0, 0.0, "supportPlayer.zero");
-		setSupportEvent(400);
-		assertSizeAndReset(1);
 		
 		// Time is 300	
 		sendTimeEvent(50);
@@ -162,8 +153,7 @@ public class TestConductor extends TestCase
 		
 		assertEvent(0, 4, 4.4, "timestampTwo.four");
 		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
-		assertEvent(2, 0, 0.0, "supportPlayer.zero");
-		assertSizeAndReset(3);
+		assertSizeAndReset(2);
 		
 		// Time is 500
 		sendTimeEvent(50);
@@ -188,98 +178,9 @@ public class TestConductor extends TestCase
 		assertNull(conductor.read());
 	}
 	
-	public void testRead()
-	{
-		conductor.add(timestampsNotLooping);
-		conductor.add(timestampsLooping);
-		conductor.add(noTimestampsNotLooping);
-		conductor.add(noTimestampsLooping);
-		
-		// Add a SupportPlayer
-		setSupportEvent(50);
-		conductor.add(supportPlayer);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 0, 0.0, "supportPlayer.zero");
-		setSupportEvent(250);
-		assertSizeAndReset(1);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 1, 1.1, "timestampOne.one");
-		(conductor.read()).send(runtime);
-		assertEvent(1, 1, 1.1, "noTimestampOne.one");
-		assertSizeAndReset(2);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 2, 2.2, "timestampTwo.two");
-		(conductor.read()).send(runtime);
-		assertEvent(1, 2, 2.2, "noTimestampOne.two");
-		(conductor.read()).send(runtime);
-		assertEvent(2, 2, 2.2, "noTimestampTwo.two");
-		assertSizeAndReset(3);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 0, 0.0, "supportPlayer.zero");
-		setSupportEvent(400);
-		assertSizeAndReset(1);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 3, 3.3, "timestampOne.three");
-		(conductor.read()).send(runtime);
-		assertEvent(1, 3, 3.3, "noTimestampOne.three");
-		assertSizeAndReset(2);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 4, 4.4, "timestampTwo.four");
-		(conductor.read()).send(runtime);
-		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
-		(conductor.read()).send(runtime);
-		assertEvent(2, 0, 0.0, "supportPlayer.zero");
-		assertSizeAndReset(3);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 5, 5.5, "timestampOne.five");
-		assertSizeAndReset(1);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 6, 6.6, "timestampTwo.six");
-		(conductor.read()).send(runtime);
-		assertEvent(1, 2, 2.2, "noTimestampTwo.two");
-		assertSizeAndReset(2);
-		
-		(conductor.read()).send(runtime);
-		assertEvent(0, 2, 2.2, "timestampTwo.two");
-		(conductor.read()).send(runtime);
-		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
-		assertSizeAndReset(2);	
-		
-		conductor.start();
-		
-		sendTimeEvent(1000);
-		assertEvent(0, 4, 4.4, "timestampTwo.four");
-		assertEvent(1, 2, 2.2, "noTimestampTwo.two");
-		assertSizeAndReset(2);	
-		
-		sendTimeEvent(100);
-		(conductor.read()).send(runtime);
-		assertEvent(0, 6, 6.6, "timestampTwo.six");
-		(conductor.read()).send(runtime);
-		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
-		assertSizeAndReset(2);
-		
-		sendTimeEvent(100);
-		assertFalse(listener.getAndClearIsInvoked());
-		
-		sendTimeEvent(200);
-		assertEvent(0, 2, 2.2, "timestampTwo.two");
-		assertEvent(1, 2, 2.2, "noTimestampTwo.two");
-		assertSizeAndReset(2);	
-	}
-	
 	public void testRunTillNull()
 	{
-		conductor.add(timestampsNotLooping);
-		conductor.add(supportPlayer);
+		conductor.coordinate(timestampsNotLooping);
 		conductor.start();
 		
 		// Time is 100
@@ -316,8 +217,6 @@ public class TestConductor extends TestCase
 		// Time is 800
 		sendTimeEvent(100);
 		log.debug(".testRunTillNull time==800");
-		assertEvent(0, 0, 0.0, "supportPlayer.zero");
-		assertSizeAndReset(1);
 	}
 	
 	private void assertEvent(int howManyBack, Integer myInt, Double myDouble, String myString)

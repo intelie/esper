@@ -15,67 +15,66 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A skeleton implementation of the Player interface.
  */
-public abstract class AbstractPlayer implements Player
+public abstract class AbstractReadableFeed implements ReadableFeed
 {
-	private static final Log log = LogFactory.getLog(AbstractPlayer.class);
+	private static final Log log = LogFactory.getLog(AbstractReadableFeed.class);
 	
-	protected State state = State.NEW;
+	protected final FeedStateManager stateManager = new FeedStateManager();
 	protected final SortedSet<SendableEvent> eventsToSend = new TreeSet<SendableEvent>(new SendableEventComparator());
-	private long currentTime = 0;
-	
-	private final SchedulingService schedulingService;
 	private final EPRuntime runtime;
-	
+
+	private final SchedulingService schedulingService;
+	private long currentTime = 0;
+	protected long startTime;
 	
 	/**
 	 * Ctor.
 	 * @param runtime - the runtime to send events into
 	 * @param schedulingService - used for scheduling callbacks
 	 */
-	public AbstractPlayer(EPRuntime runtime, SchedulingService schedulingService)
+	public AbstractReadableFeed(EPRuntime runtime, SchedulingService schedulingService)
 	{
 		this.runtime = runtime;
 		this.schedulingService = schedulingService;
 	}
 	
-	public synchronized State getState()
+	public FeedState getState()
 	{
-		return state;
+		return stateManager.getState();
 	}
 
-	public synchronized void start() throws EPException
+	public void start() throws EPException
 	{
-		if(state == State.NEW)
-		{
-			continuePlaying();
-		}
+		log.debug(".start");
+		startTime = schedulingService.getTime();
+		stateManager.start();
+		continuePlaying();
 	}
 
-	public synchronized void pause() throws EPException
+	public void pause() throws EPException
 	{
-		if(state == State.RUNNING)
-		{
-			log.debug(".pause");
-			state = State.PAUSED;
-		}
+		stateManager.pause();
 	}
 
-	public synchronized void resume() throws EPException
+	public void resume() throws EPException
 	{
-		if(state == State.PAUSED)
-		{
-			log.debug(".resume");
-			continuePlaying();
-		}
+		stateManager.resume();
+		continuePlaying();
 	}
 
-	public synchronized void stop() throws EPException
+	public void destroy() throws EPException
 	{
-		if(state != State.STOPPED)
-		{
-			state = State.STOPPED;
-			close();
-		}
+		stateManager.destroy();
+		close();
+	}
+	
+	public void stop() throws EPException
+	{
+		log.debug(".stop");
+		stateManager.stop();
+		eventsToSend.clear();
+		currentTime = 0;
+		reset();
 	}
 	
 	/**
@@ -90,10 +89,14 @@ public abstract class AbstractPlayer implements Player
 	 * Player.
 	 */
 	protected abstract void replaceFirstEventToSend();
+
+	/**
+	 * Reset all the changeable state of this ReadableFeed, as if it were just created.
+	 */
+	protected abstract void reset();
 	
 	private void continuePlaying()
 	{
-		state = State.RUNNING;
 		updateCurrentTime();
 		fillEventsToSend();
 		sendSoonestEvents();
@@ -103,6 +106,7 @@ public abstract class AbstractPlayer implements Player
 	private void updateCurrentTime()
 	{
 		currentTime = schedulingService.getTime();
+		log.debug(".updateCurrentTime currentTime==" + currentTime);
 	}
 
 	private void fillEventsToSend()
@@ -121,6 +125,7 @@ public abstract class AbstractPlayer implements Player
 	{
 		while(!eventsToSend.isEmpty() && eventsToSend.first().getSendTime() <= currentTime)
 		{
+			log.debug(".sendSoonestEvents sending event " + eventsToSend.first() + ", its sendTime==" + eventsToSend.first().getSendTime());
 			eventsToSend.first().send(runtime);
 			replaceFirstEventToSend();
 		}
@@ -129,7 +134,7 @@ public abstract class AbstractPlayer implements Player
 	private void reactToCallback()
 	{
 		log.debug(".reactToCallback");
-		if(state != State.PAUSED && state != State.STOPPED)
+		if(stateManager.getState() == FeedState.STARTED)
 		{
 			log.debug(".reactToCallback executing");
 			continuePlaying();
@@ -138,17 +143,21 @@ public abstract class AbstractPlayer implements Player
 	
 	private void scheduleNextCallback()
 	{
+		ScheduleCallback nextScheduleCallback = new ScheduleCallback() { public void scheduledTrigger() { reactToCallback(); } };
+		ScheduleSlot nextScheduleSlot;
+
 		if(eventsToSend.isEmpty())
 		{
 			log.debug(".scheduleNextCallback no events to send, scheduling callback in 100 ms");
-			schedulingService.add(100, new ScheduleCallback() { public void scheduledTrigger() { reactToCallback(); } }, null);
+			nextScheduleSlot = new ScheduleSlot(0,0);
+			schedulingService.add(100, nextScheduleCallback, nextScheduleSlot);
 		}
 		else
 		{
 			long afterMsec = eventsToSend.first().getSendTime() - currentTime;
-			ScheduleSlot scheduleSlot = eventsToSend.first().getScheduleSlot();
+			nextScheduleSlot = eventsToSend.first().getScheduleSlot();
 			log.debug(".scheduleNextCallback schedulingCallback in " + afterMsec + " milliseconds");
-			schedulingService.add(afterMsec, new ScheduleCallback() { public void scheduledTrigger() { reactToCallback(); } }, scheduleSlot);
+			schedulingService.add(afterMsec, nextScheduleCallback, nextScheduleSlot);
 		}
 	}
 }

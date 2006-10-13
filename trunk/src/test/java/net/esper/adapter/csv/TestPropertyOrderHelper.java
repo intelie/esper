@@ -1,6 +1,5 @@
 package net.esper.adapter.csv;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,14 +24,5 @@ public class TestPropertyOrderHelper extends TestCase
 		
 		firstRow = new String[] { "myDouble", "myInt", "myString", "timestamp" };
 		assertEquals(firstRow, PropertyOrderHelper.resolvePropertyOrder(firstRow, propertyTypes));
-		
-		// Use propertyTypes
-		firstRow = new String[] { "1", "2.0", "text" };
-		String[] expected = propertyTypes.keySet().toArray(new String[0]);
-		assertEquals(Arrays.asList(expected), Arrays.asList(PropertyOrderHelper.resolvePropertyOrder(firstRow, propertyTypes)));
-
-		propertyTypes.put("timestamp", long.class);
-		expected = propertyTypes.keySet().toArray(new String[0]);
-		assertEquals(Arrays.asList(expected), Arrays.asList(PropertyOrderHelper.resolvePropertyOrder(firstRow, propertyTypes)));
 	}
 }
