@@ -1,0 +1,20 @@
+<chapter id="Adapters">
+    <title>Adapters</title>
+    
+    <para>
+        This chapter discusses adapters (TODO)
+    </para>
+    
+    <sect1 id="adapter-intro">
+        <title>Adapter</title>
+
+        <para>
+            Adapters adapt event executions in the outside world into a format for processing by Esper, and feed events to Esper.
+        </para>
+
+        <para>
+            Currently there are no pre-build adapters available for Esper.
+        </para>
+    </sect1>
+</chapter>
+
