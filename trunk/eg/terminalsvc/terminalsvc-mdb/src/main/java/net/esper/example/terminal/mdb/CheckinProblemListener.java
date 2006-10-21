@@ -5,17 +5,17 @@ import net.esper.event.EventBean;
 
 public class CheckinProblemListener implements UpdateListener
 {
-    private OutboundQueueSender outboundQueueSender;
+    private OutboundSender outboundSender;
 
-    public CheckinProblemListener(OutboundQueueSender outboundQueueSender)
+    public CheckinProblemListener(OutboundSender outboundSender)
     {
-        this.outboundQueueSender = outboundQueueSender;
+        this.outboundSender = outboundSender;
     }
 
     public void update(EventBean[] newEvents, EventBean[] oldEvents)
     {
         String terminal = (String) newEvents[0].get("terminal");
         String message = "Customer checkin problem detected at terminal " + terminal;
-        outboundQueueSender.send(message);
+        outboundSender.send(message);
     }
 }

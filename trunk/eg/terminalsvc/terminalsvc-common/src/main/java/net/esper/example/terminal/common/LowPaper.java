@@ -6,9 +6,4 @@ public class LowPaper extends BaseTerminalEvent
     {
         super(deskInfo);
     }
-
-    public String getType()
-    {
-        return "LowPaper";
-    }
 }

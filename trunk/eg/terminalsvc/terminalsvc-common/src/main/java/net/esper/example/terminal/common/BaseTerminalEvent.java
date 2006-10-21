@@ -27,5 +27,8 @@ public abstract class BaseTerminalEvent implements Serializable
         return hour * 100 + min;
     }
 
-    public abstract String getType();
+    public String getType()
+    {
+        return this.getClass().getSimpleName();
+    }
 }

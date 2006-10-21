@@ -5,7 +5,7 @@ import javax.naming.NamingException;
 import javax.jms.*;
 import javax.ejb.EJBException;
 
-public class OutboundQueueSender
+public class OutboundQueueSender implements OutboundSender
 {
     private QueueSession session;
     private QueueSender sender;

@@ -5,11 +5,11 @@ import net.esper.event.EventBean;
 
 public class TerminalStatusListener implements UpdateListener
 {
-    private OutboundQueueSender outboundQueueSender;
+    private OutboundSender outboundSender;
 
-    public TerminalStatusListener(OutboundQueueSender outboundQueueSender)
+    public TerminalStatusListener(OutboundSender outboundSender)
     {
-        this.outboundQueueSender = outboundQueueSender;
+        this.outboundSender = outboundSender;
     }
 
     public void update(EventBean[] newEvents, EventBean[] oldEvents)
@@ -17,6 +17,6 @@ public class TerminalStatusListener implements UpdateListener
         String terminal = (String) newEvents[0].get("terminal");
         String text = (String) newEvents[0].get("text");
         String message = "Terminal " + terminal + " detected '" + text + "'";
-        outboundQueueSender.send(message);
+        outboundSender.send(message);
     }
 }

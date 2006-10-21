@@ -3,6 +3,7 @@ Esper Changelog
 
 Changes in version 1.2.0
 ----------------------
+* (EQL) Added support for 'in' and 'between' standard SQL keywords
 * (EQL) Fixed: EQL windows take seconds parameter while patterns take milliseconds parameter (Issue ESPER-52)
 	NOTE: The following functions now take seconds (not milliseconds) as a parameter: timer:within, timer:interval, win:ext_time
 	New syntax for specifying time periods introduced: example: timer:within(1 min 5 sec) equivalent to timer:within(65)

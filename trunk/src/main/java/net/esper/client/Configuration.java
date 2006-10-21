@@ -80,11 +80,21 @@ public class Configuration {
     /**
      * Add an alias for an event type represented by Java-bean plain-old Java object events.
      * @param eventTypeAlias is the alias for the event type
-     * @param javaEventClass fully-qualified class name of the event type
+     * @param javaEventClassName fully-qualified class name of the event type
      */
-    public void addEventTypeAlias(String eventTypeAlias, String javaEventClass)
+    public void addEventTypeAlias(String eventTypeAlias, String javaEventClassName)
     {
-        eventClasses.put(eventTypeAlias, javaEventClass);
+        eventClasses.put(eventTypeAlias, javaEventClassName);
+    }
+
+    /**
+     * Add an alias for an event type represented by Java-bean plain-old Java object events.
+     * @param eventTypeAlias is the alias for the event type
+     * @param javaEventClass is the Java event class for which to create the alias
+     */
+    public void addEventTypeAlias(String eventTypeAlias, Class javaEventClass)
+    {
+        addEventTypeAlias(eventTypeAlias, javaEventClass.getName());
     }
 
     /**

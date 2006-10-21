@@ -6,9 +6,4 @@ public class Status extends BaseTerminalEvent
     {
         super(deskInfo);
     }
-
-    public String getType()
-    {
-        return "Status";
-    }
 }

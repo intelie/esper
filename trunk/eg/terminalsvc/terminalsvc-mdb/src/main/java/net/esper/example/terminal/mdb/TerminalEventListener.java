@@ -5,11 +5,11 @@ import net.esper.event.EventBean;
 
 public class TerminalEventListener implements UpdateListener
 {
-    private OutboundQueueSender outboundQueueSender;
+    private OutboundSender outboundSender;
 
-    public TerminalEventListener(OutboundQueueSender outboundQueueSender)
+    public TerminalEventListener(OutboundSender outboundSender)
     {
-        this.outboundQueueSender = outboundQueueSender;
+        this.outboundSender = outboundSender;
     }
 
     public void update(EventBean[] newEvents, EventBean[] oldEvents)
@@ -17,6 +17,6 @@ public class TerminalEventListener implements UpdateListener
         String terminal = (String) newEvents[0].get("term.id");
         String type = (String) newEvents[0].get("type");
         String message = "Terminal " + terminal + " raised an " + type + " event";
-        outboundQueueSender.send(message);
+        outboundSender.send(message);
     }
 }

@@ -6,9 +6,4 @@ public class OutOfOrder extends BaseTerminalEvent
     {
         super(deskInfo);
     }
-
-    public String getType()
-    {
-        return "OutOfOrder";
-    }
 }

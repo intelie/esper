@@ -5,11 +5,11 @@ import net.esper.event.EventBean;
 
 public class CountPerTypeListener implements UpdateListener
 {
-    private OutboundQueueSender outboundQueueSender;
+    private OutboundSender outboundSender;
 
-    public CountPerTypeListener(OutboundQueueSender outboundQueueSender)
+    public CountPerTypeListener(OutboundSender outboundSender)
     {
-        this.outboundQueueSender = outboundQueueSender;
+        this.outboundSender = outboundSender;
     }
 
     public void update(EventBean[] newEvents, EventBean[] oldEvents)
@@ -28,6 +28,6 @@ public class CountPerTypeListener implements UpdateListener
             buffer.append("\n");
         }
 
-        outboundQueueSender.send("Current count per type: " + buffer.toString());
+        outboundSender.send("Current count per type: " + buffer.toString());
     }
 }

@@ -6,9 +6,4 @@ public class Completed extends BaseTerminalEvent
     {
         super(deskInfo);
     }
-
-    public String getType()
-    {
-        return "Completed";
-    }
 }

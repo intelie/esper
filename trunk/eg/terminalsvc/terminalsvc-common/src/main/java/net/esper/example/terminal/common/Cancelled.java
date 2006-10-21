@@ -6,9 +6,4 @@ public class Cancelled extends BaseTerminalEvent
     {
         super(deskInfo);
     }
-
-    public String getType()
-    {
-        return "Cancelled";
-    }
 }

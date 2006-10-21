@@ -10,16 +10,16 @@ public class EPServiceMDBAdapter
 {
     private final EPServiceProvider epService;
 
-    public EPServiceMDBAdapter(OutboundQueueSender outboundQueueSender)
+    public EPServiceMDBAdapter(OutboundSender outboundSender)
     {
         Configuration config = new Configuration();
-        config.addEventTypeAlias("Checkin", Checkin.class.getName());
-        config.addEventTypeAlias("Cancelled", Cancelled.class.getName());
-        config.addEventTypeAlias("Completed", Completed.class.getName());
-        config.addEventTypeAlias("Status", Status.class.getName());
-        config.addEventTypeAlias("LowPaper", LowPaper.class.getName());
-        config.addEventTypeAlias("OutOfOrder", OutOfOrder.class.getName());
-        config.addEventTypeAlias("BaseTerminalEvent", BaseTerminalEvent.class.getName());
+        config.addEventTypeAlias("Checkin", Checkin.class);
+        config.addEventTypeAlias("Cancelled", Cancelled.class);
+        config.addEventTypeAlias("Completed", Completed.class);
+        config.addEventTypeAlias("Status", Status.class);
+        config.addEventTypeAlias("LowPaper", LowPaper.class);
+        config.addEventTypeAlias("OutOfOrder", OutOfOrder.class);
+        config.addEventTypeAlias("BaseTerminalEvent", BaseTerminalEvent.class);
 
         // Get engine instance - same engine instance for all MDB instances
         epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -31,15 +31,15 @@ public class EPServiceMDBAdapter
         stmt = "select a.term.id as terminal from pattern [ every a=Checkin -> " +
                 "      ( OutOfOrder(term.id=a.term.id) and not (Cancelled(term.id=a.term.id) or Completed(term.id=a.term.id)) )]";
         statement = epService.getEPAdministrator().createEQL(stmt);
-        statement.addListener(new CheckinProblemListener(outboundQueueSender));
+        statement.addListener(new CheckinProblemListener(outboundSender));
 
         stmt = "select * from BaseTerminalEvent where type = 'LowPaper' or type = 'OutOfOrder'";
         statement = epService.getEPAdministrator().createEQL(stmt);
-        statement.addListener(new TerminalEventListener(outboundQueueSender));
+        statement.addListener(new TerminalEventListener(outboundSender));
 
         stmt = "select '1' as terminal, 'terminal is offline' as text from pattern [ every timer:interval(60 seconds) -> (timer:interval(65 seconds) and not Status(term.id = 'T1')) ] output first every 5 minutes";
         statement = epService.getEPAdministrator().createEQL(stmt);
-        statement.addListener(new TerminalStatusListener(outboundQueueSender));
+        statement.addListener(new TerminalStatusListener(outboundSender));
 
         stmt = "insert into CountPerType " +
                 "select type, count(*) as countPerType " +
@@ -47,7 +47,7 @@ public class EPServiceMDBAdapter
                 "group by type " +
                 "output all every 1 minutes";
         statement = epService.getEPAdministrator().createEQL(stmt);
-        statement.addListener(new CountPerTypeListener(outboundQueueSender));
+        statement.addListener(new CountPerTypeListener(outboundSender));
     }
 
     public void sendEvent(Object event)
@@ -56,5 +56,10 @@ public class EPServiceMDBAdapter
         {
             epService.getEPRuntime().sendEvent(event);
         }
+    }
+
+    public EPServiceProvider getEpService()
+    {
+        return epService;
     }
 }
