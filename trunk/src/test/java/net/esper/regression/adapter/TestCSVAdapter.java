@@ -32,11 +32,13 @@ public class TestCSVAdapter extends TestCase
 	private EPServiceProvider epService;
 	private long currentTime;
 	private Feed feed;
-	private String[] propertyOrder;
+	private String[] propertyOrderTimestamps;
+	private String[] propertyOrderNoTimestamps;
+	private Map<String, Class> propertyTypes;
 	
 	protected void setUp()
 	{
-		Map<String, Class> propertyTypes = new HashMap<String, Class>();
+		propertyTypes = new HashMap<String, Class>();
 		propertyTypes.put("myInt", Integer.class);
 		propertyTypes.put("myDouble", Double.class);
 		propertyTypes.put("myString", String.class);
@@ -49,8 +51,10 @@ public class TestCSVAdapter extends TestCase
 		epService = EPServiceProviderManager.getProvider("CSVProvider", configuration);
 		epService.initialize();
 		EPAdministrator administrator = epService.getEPAdministrator();
+		
 		String statementText = "select * from mapEvent.win:length(5)";
 		EPStatement statement = administrator.createEQL(statementText);
+		
 		listener = new SupportUpdateListener();
 		statement.addListener(listener);
 		
@@ -64,39 +68,129 @@ public class TestCSVAdapter extends TestCase
     	currentTime = 0;
     	sendTimeEvent(0);
     	
-    	propertyOrder = new String[] { "myInt", "myDouble", "myString" };
+    	propertyOrderNoTimestamps = new String[] { "myInt", "myDouble", "myString" };
+    	propertyOrderTimestamps = new String[] { "timestamp", "myInt", "myDouble", "myString" };
+	}
+	
+	public void testNoPropertyTypes()
+	{
+		CSVFeedSpec feedSpec = new CSVFeedSpec(new AdapterInputSource("regression/noTimestampOne.csv"), "allStringEvent");
+		feedSpec.setEventsPerSec(10);
+		feedSpec.setPropertyOrder(new String[] { "myInt", "myDouble", "myString" });
+		feedSpec.setUsingEngineThread(true);
+		feed = adapter.createFeed(feedSpec);
+		
+		String statementText = "select * from allStringEvent.win:length(5)";
+		EPStatement statement = epService.getEPAdministrator().createEQL(statementText);
+		statement.addListener(listener);
+		
+		feed.start();
+		
+		sendTimeEvent(100);
+		assertEvent("1", "1.1", "noTimestampOne.one");
+		
+		sendTimeEvent(100);
+		assertEvent("2", "2.2", "noTimestampOne.two");
+		
+		sendTimeEvent(100);
+		assertEvent("3", "3.3", "noTimestampOne.three");
+	}
+	
+	public void testRuntimePropertyTypes()
+	{
+		CSVFeedSpec feedSpec = new CSVFeedSpec(new AdapterInputSource("regression/noTimestampOne.csv"), "propertyTypeEvent");
+		feedSpec.setEventsPerSec(10);
+		feedSpec.setPropertyOrder(new String[] { "myInt", "myDouble", "myString" });
+		feedSpec.setPropertyTypes(propertyTypes);
+		feedSpec.setUsingEngineThread(true);
+		feed = adapter.createFeed(feedSpec);	
+		
+		String statementText = "select * from propertyTypeEvent.win:length(5)";
+		EPStatement statement = epService.getEPAdministrator().createEQL(statementText);
+		statement.addListener(listener);
+		
+		feed.start();
+		
+		sendTimeEvent(100);
+		assertEvent(1, 1.1, "noTimestampOne.one");
+		
+		sendTimeEvent(100);
+		assertEvent(2, 2.2, "noTimestampOne.two");
+		
+		sendTimeEvent(100);
+		assertEvent(3, 3.3, "noTimestampOne.three");
+	}
+	
+	public void testRuntimePropertyTypesInvalid()
+	{
+		Map<String, Class> propertyTypesInvalid = new HashMap<String, Class>(propertyTypes);
+		propertyTypesInvalid.put("anotherProperty", String.class);
+		try
+		{
+			csvAdapter.startFeed(new AdapterInputSource("regression/noTimestampOne.csv"), "mapEvent", propertyTypesInvalid);
+			fail();
+		}
+		catch(EPException er)
+		{
+			// Expected
+		}
+		
+		propertyTypesInvalid = new HashMap<String, Class>(propertyTypes);
+		propertyTypesInvalid.put("myInt", String.class);
+		try
+		{
+			csvAdapter.startFeed(new AdapterInputSource("regression/noTimestampOne.csv"), "mapEvent", propertyTypesInvalid);
+			fail();
+		}
+		catch(EPException er)
+		{
+			// Expected
+		}
+		
+		propertyTypesInvalid = new HashMap<String, Class>(propertyTypes);
+		propertyTypesInvalid.remove("myInt");
+		propertyTypesInvalid.put("anotherInt", Integer.class);
+		try
+		{
+			csvAdapter.startFeed(new AdapterInputSource("regression/noTimestampOne.csv"), "mapEvent", propertyTypesInvalid);
+			fail();
+		}
+		catch(EPException er)
+		{
+			// Expected
+		}
 	}
 	
 	public void testRunWrongAlias()
 	{
 		String filename = "regression/noTimestampOne.csv";
-		assertFailedConstruction(filename);
+		assertFailedConstruction(filename, "myNonMapEvent");
 	}
 
 	public void testRunWrongMapType()
 	{
 		String filename = "regression/differentMap.csv";
-		assertFailedConstruction(filename);
+		assertFailedConstruction(filename, eventTypeAlias);
 	}
 
 	public void testRunNonexistentFile()
 	{
 		String filename = "someNonexistentFile";	
-		assertFailedConstruction(filename);
+		assertFailedConstruction(filename, eventTypeAlias);
 	}
 
 	public void testRunEmptyFile()
 	{
 		String filename = "regression/emptyFile.csv";
-		startFeed(filename, -1, true);
+		startFeed(filename, -1, true, true, null, propertyOrderTimestamps);
 		assertFalse(listener.getAndClearIsInvoked());
 	}
 	
 	public void testRunTitleRowOnly()
 	{
 		String filename = "regression/titleRowOnly.csv";
-		propertyOrder = null;
-		startFeed(filename, -1, true);
+		propertyOrderNoTimestamps = null;
+		startFeed(filename, -1, true, true, "timestamp", null);
 		assertFalse(listener.getAndClearIsInvoked());
 	}
 	
@@ -105,7 +199,7 @@ public class TestCSVAdapter extends TestCase
 		String filename = "regression/decreasingTimestamps.csv";
 		try
 		{
-			startFeed(filename, -1, false);
+			startFeed(filename, -1, false, true, null, null);
 		
 			sendTimeEvent(100);
 			assertEvent(1, 1.1, "one");
@@ -124,7 +218,7 @@ public class TestCSVAdapter extends TestCase
 		String filename = "regression/negativeTimestamps.csv";
 		try
 		{
-			startFeed(filename, -1, false);
+			startFeed(filename, -1, false, true, null, null);
 
 			sendTimeEvent(100);
 			assertEvent(1, 1.1, "one");
@@ -141,7 +235,7 @@ public class TestCSVAdapter extends TestCase
 	public void testRunNoTimestampColumn()
 	{
 		String filename = "regression/noTimestampOne.csv";
-		assertFailedConstruction(filename);
+		assertFailedConstruction(filename, eventTypeAlias);
 	}
 	
 	public void testRunTimestamps() 
@@ -155,18 +249,18 @@ public class TestCSVAdapter extends TestCase
 		events.add(new Object[] { 200, 5, 5.5, "timestampOne.five"});
 		
 		boolean isLooping = false;
-		startFeed(filename, eventsPerSec, isLooping);
+		startFeed(filename, eventsPerSec, isLooping, true, "timestamp", propertyOrderTimestamps);
 		assertEvents(isLooping, events);
 		
 		isLooping = true;
-		startFeed(filename, eventsPerSec, isLooping);
+		startFeed(filename, eventsPerSec, isLooping, true, "timestamp", propertyOrderTimestamps);
 		assertEvents(isLooping, events);
 	}
 
 	public void testStartOneRow()
 	{
 		String filename = "regression/oneRow.csv";
-		startFeed(filename, -1, false);
+		startFeed(filename, -1, false, true, "timestamp", propertyOrderTimestamps);
 		
 		sendTimeEvent(100);
 		assertEvent(1, 1.1, "one");
@@ -175,7 +269,7 @@ public class TestCSVAdapter extends TestCase
 	public void testPause()
 	{
 		String filename = "regression/noTimestampOne.csv";
-		startFeed(filename, 10, false);
+		startFeed(filename, 10, false, true, "timestamp", propertyOrderNoTimestamps);
 		
 		sendTimeEvent(100);
 		assertEvent(1, 1.1, "noTimestampOne.one");
@@ -190,7 +284,7 @@ public class TestCSVAdapter extends TestCase
 	public void testResumeWholeInterval()
 	{
 		String filename = "regression/noTimestampOne.csv";
-		startFeed(filename, 10, false);
+		startFeed(filename, 10, false, true, null, propertyOrderNoTimestamps);
 		
 		sendTimeEvent(100);
 		assertEvent(1, 1.1, "noTimestampOne.one");
@@ -207,7 +301,7 @@ public class TestCSVAdapter extends TestCase
 	public void testResumePartialInterval()
 	{
 		String filename = "regression/noTimestampOne.csv";
-		startFeed(filename, 10, false);
+		startFeed(filename, 10, false, true, null, propertyOrderNoTimestamps);
 		
 		// time is 100
 		sendTimeEvent(100);
@@ -231,7 +325,7 @@ public class TestCSVAdapter extends TestCase
 		
 		try
 		{
-			startFeed(filename, 0, true);
+			startFeed(filename, 0, true, true, null, null);
 			fail();
 		}
 		catch(IllegalArgumentException e)
@@ -241,7 +335,7 @@ public class TestCSVAdapter extends TestCase
 		
 		try
 		{
-			startFeed(filename, 1001, true);
+			startFeed(filename, 1001, true, true, null, null);
 			fail();
 		}
 		catch(IllegalArgumentException e)
@@ -261,8 +355,8 @@ public class TestCSVAdapter extends TestCase
 		events.add(new Object[] { 200, 5, 5.5, "five"});
 		
 		boolean isLooping = true;
-		propertyOrder = null;
-		startFeed(filename, eventsPerSec, isLooping);
+		propertyOrderNoTimestamps = null;
+		startFeed(filename, eventsPerSec, isLooping, true, "timestamp", null);
 		assertLoopingEvents(events);
 	}
 	
@@ -277,7 +371,7 @@ public class TestCSVAdapter extends TestCase
 		events.add(new Object[] { 200, 5, 5.5, "timestampOne.five"});
 		
 		boolean isLooping = true;
-		startFeed(filename, eventsPerSec, isLooping);
+		startFeed(filename, eventsPerSec, isLooping, true, "timestamp", propertyOrderTimestamps);
 		assertLoopingEvents(events);
 	}
 	
@@ -292,8 +386,8 @@ public class TestCSVAdapter extends TestCase
 		events.add(new Object[] { 100, 5, 5.5, "five"});
 		
 		boolean isLooping = true;
-		propertyOrder = null;
-		startFeed(filename, eventsPerSec, isLooping);
+		propertyOrderNoTimestamps = null;
+		startFeed(filename, eventsPerSec, isLooping, true, null, null);
 		assertLoopingEvents(events);
 	}
 	
@@ -308,18 +402,18 @@ public class TestCSVAdapter extends TestCase
 		events.add(new Object[] { 200, 5, 5.5, "five"});
 		
 		boolean isLooping = false;
-		startFeed(filename, eventsPerSec, isLooping);
+		startFeed(filename, eventsPerSec, isLooping, true, "timestamp", propertyOrderTimestamps);
 		assertEvents(isLooping, events);
 		
 		isLooping = true;
-		startFeed(filename, eventsPerSec, isLooping);
+		startFeed(filename, eventsPerSec, isLooping, true, "timestamp", propertyOrderTimestamps);
 		assertEvents(isLooping, events);
 	}
 	
 	public void testDestroy()
 	{
 		String filename = "regression/timestampOne.csv";
-		startFeed(filename, -1, false);
+		startFeed(filename, -1, false, true, "timestamp", propertyOrderTimestamps);
 		feed.destroy();
 		assertEquals(FeedState.DESTROYED, feed.getState());
 	}
@@ -334,7 +428,7 @@ public class TestCSVAdapter extends TestCase
 		events.add(new Object[] { 200, 3, 3.3, "timestampOne.three"});
 		
 		boolean isLooping = false;
-		startFeed(filename, eventsPerSec, isLooping);
+		startFeed(filename, eventsPerSec, isLooping, true, "timestamp", propertyOrderTimestamps);
 		
 		assertFlatEvents(events);
 		
@@ -345,6 +439,52 @@ public class TestCSVAdapter extends TestCase
 		
 		feed.start();
 		assertFlatEvents(events);
+	}
+	
+	public void testNotUsingEngineThreadTimestamp()
+	{
+		String filename = "regression/timestampOne.csv";
+		
+		long startTime = System.currentTimeMillis();
+		startFeed(filename, -1, false, false, "timestamp", propertyOrderTimestamps);
+		long endTime = System.currentTimeMillis();
+	
+		// The last event should be sent after 500 ms
+		assertTrue(endTime - startTime > 500);
+		
+		assertEquals(3, listener.getNewDataList().size());
+		assertEvent(0, 1, 1.1, "timestampOne.one");
+		assertEvent(1, 3, 3.3, "timestampOne.three");
+		assertEvent(2, 5, 5.5, "timestampOne.five");
+	}
+	
+	public void testNotUsingEngineThreaNoTimestamp()
+	{
+		String filename = "regression/noTimestampOne.csv";
+		
+		long startTime = System.currentTimeMillis();
+		startFeed(filename, 5, false, false, null, propertyOrderNoTimestamps);
+		long endTime = System.currentTimeMillis();
+	
+		// The last event should be sent after 600 ms
+		assertTrue(endTime - startTime > 600);
+		
+		assertEquals(3, listener.getNewDataList().size());
+		assertEvent(0, 1, 1.1, "noTimestampOne.one");
+		assertEvent(1, 2, 2.2, "noTimestampOne.two");
+		assertEvent(2, 3, 3.3, "noTimestampOne.three");
+	}
+	
+	private void assertEvent(int howManyBack, Integer myInt, Double myDouble, String myString)
+	{
+		assertTrue(listener.isInvoked());
+		assertTrue(howManyBack < listener.getNewDataList().size());
+		EventBean[] data = listener.getNewDataList().get(howManyBack);
+		assertEquals(1, data.length);
+		EventBean event = data[0];
+		assertEquals(myInt, event.get("myInt"));
+		assertEquals(myDouble, event.get("myDouble"));
+		assertEquals(myString, event.get("myString"));
 	}
 
 	private void sendTimeEvent(int timeIncrement){
@@ -387,7 +527,7 @@ public class TestCSVAdapter extends TestCase
 		}
 	}
 	
-	private void assertEvent(Integer myInt, Double myDouble, String myString)
+	private void assertEvent(Object myInt, Object myDouble, Object myString)
 	{
 		assertTrue(listener.getAndClearIsInvoked());
 		assertEquals(1, listener.getLastNewData().length);
@@ -447,26 +587,27 @@ public class TestCSVAdapter extends TestCase
 		}
 	}
 	
-	
-	private void startFeed(String filename, int eventsPerSec, boolean isLooping)
+	private void startFeed(String filename, int eventsPerSec, boolean isLooping, boolean usingEngineThread, String timestampColumn, String[] propertyOrder)
 	{
 		CSVFeedSpec feedSpec = new CSVFeedSpec(new AdapterInputSource(filename), eventTypeAlias);
 		if(eventsPerSec != -1)
 		{
 			feedSpec.setEventsPerSec(eventsPerSec);
 		}
-		feedSpec.setIsLooping(isLooping);
-		feedSpec.setPropertyOrder(propertyOrder);
+		feedSpec.setLooping(isLooping);
+		feedSpec.setPropertyOrder(propertyOrder);	
+		feedSpec.setUsingEngineThread(usingEngineThread);
+		feedSpec.setTimestampColumn(timestampColumn);
 		
 		feed = adapter.createFeed(feedSpec);
 		feed.start();
 	}
 
-	private void assertFailedConstruction(String filename)
+	private void assertFailedConstruction(String filename, String eventTypeAlias)
 	{
 		try
 		{
-			csvAdapter.startFeed(new AdapterInputSource(filename), "myNonMapEvent");
+			csvAdapter.startFeed(new AdapterInputSource(filename), eventTypeAlias);
 			fail();
 		}
 		catch(EPException ex)

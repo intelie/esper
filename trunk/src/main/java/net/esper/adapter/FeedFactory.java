@@ -5,7 +5,7 @@ import net.esper.client.EPException;
 /**
  * A utility for creating a Feed from a FeedSpec.
  */
-public interface FeedCreator
+public interface FeedFactory
 {
 	/**
 	 * Create a new Feed.

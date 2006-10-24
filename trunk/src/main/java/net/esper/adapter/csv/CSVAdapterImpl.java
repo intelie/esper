@@ -1,11 +1,12 @@
 package net.esper.adapter.csv;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.Feed;
-import net.esper.adapter.FeedCreator;
+import net.esper.adapter.FeedFactory;
 import net.esper.client.EPException;
 
 /**
@@ -13,14 +14,14 @@ import net.esper.client.EPException;
  */
 public class CSVAdapterImpl implements CSVAdapter
 {
-	private final FeedCreator feedCreator;
+	private final FeedFactory feedCreator;
 	private final Set<Feed> feeds = new HashSet<Feed>();
 	
 	/**
 	 * Ctor.
 	 * @param feedCreator - the creator to use for creating the Feeds
 	 */
-	public CSVAdapterImpl(FeedCreator feedCreator)
+	public CSVAdapterImpl(FeedFactory feedCreator)
 	{
 		this.feedCreator = feedCreator;
 	}
@@ -34,4 +35,18 @@ public class CSVAdapterImpl implements CSVAdapter
 		feeds.add(feed);
 		feed.start();
 	}
+
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.csv.CSVAdapter#startFeed(net.esper.adapter.AdapterInputSource, java.lang.String, java.util.Map)
+	 */
+	public void startFeed(AdapterInputSource adapterInputSource, String eventTypeAlias, Map<String, Class> propertyTypes) throws EPException
+	{
+		CSVFeedSpec feedSpec = new CSVFeedSpec(adapterInputSource, eventTypeAlias);
+		feedSpec.setPropertyTypes(propertyTypes);
+		Feed feed = feedCreator.createFeed(feedSpec);
+		feeds.add(feed);
+		feed.start();
+	}
+	
+	
 }

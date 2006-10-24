@@ -12,7 +12,7 @@ import net.esper.adapter.FeedType;
  */
 public class CSVFeedSpec implements FeedSpec
 {
-	private final Map<String, Object> parameters = new HashMap<String, Object>();
+	public final Map<String, Object> parameters = new HashMap<String, Object>();
 	
 	/**
 	 * Ctor.
@@ -66,10 +66,39 @@ public class CSVFeedSpec implements FeedSpec
 	}
 
 	/**
-	 * @param isLooping - the isLooping value to set
+	 * @param looping - the isLooping value to set
 	 */
-	public void setIsLooping(boolean isLooping)
+	public void setLooping(boolean looping)
 	{
-		parameters.put("isLooping", isLooping);
+		parameters.put("looping", looping);
+	}
+	
+	/**
+	 * Set the propertyTypes value
+	 * @param propertyTypes - a mapping between the names and types of the properties in the
+	 *  					  CSV file; this will also be the form of the Map event created
+	 *  					  from the data
+	 */
+	public void setPropertyTypes(Map<String, Class> propertyTypes)
+	{
+		parameters.put("propertyTypes", propertyTypes);
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.FeedSpec#setUsingEngineThread(boolean)
+	 */
+	public void setUsingEngineThread(boolean usingEngineThread)
+	{
+		parameters.put("usingEngineThread", usingEngineThread);
+	}
+	
+	/**
+	 * Set the timestamp column name.
+	 * @param timestampColumn - the name of the column to use for timestamps
+	 */
+	public void setTimestampColumn(String timestampColumn)
+	{
+		parameters.put("timestampColumn", timestampColumn);
 	}
 }

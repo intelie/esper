@@ -23,7 +23,7 @@ public class CSVReader
 	private static final Log log = LogFactory.getLog(CSVReader.class);
 	
 	private final AdapterInputSource inputSource;
-	private boolean isLooping;
+	private boolean looping;
 	private boolean isUsingTitleRow;
 	
 	private final List<String> values = new ArrayList<String>();
@@ -110,12 +110,12 @@ public class CSVReader
 	}
 	
 	/**
-	 * Set the isLooping value.
-	 * @param isLooping - true if processing should start over from the beginning after the end of the CSV file is reached
+	 * Set the looping value.
+	 * @param looping - true if processing should start over from the beginning after the end of the CSV file is reached
 	 */
-	public void setIsLooping(boolean isLooping)
+	public void setLooping(boolean looping)
 	{
-		this.isLooping = isLooping;
+		this.looping = looping;
 	}
 
     /**
@@ -166,7 +166,7 @@ public class CSVReader
 		
 		// If haven't found a valid record and at the end of the
 		// file and looping, search from the beginning of the file
-		if(result == null && atEOF && isLooping)
+		if(result == null && atEOF && looping)
 		{
 			reset();
 			result = getNoCommentNoWhitespace();
@@ -413,7 +413,7 @@ public class CSVReader
 		boolean doConsume = false;
 		while(true)
 		{
-			if(atEOF && isLooping)
+			if(atEOF && looping)
 			{
 				reset();
 			}

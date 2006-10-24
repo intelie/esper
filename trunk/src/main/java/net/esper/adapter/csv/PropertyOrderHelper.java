@@ -20,36 +20,19 @@ public class PropertyOrderHelper
 	private static final Log log = LogFactory.getLog(PropertyOrderHelper.class);
 
 	/**
-	 * Indicate whether a timestamp column is represented among the properties
-	 * @param propertyOrder - the order of properties in a CSV file
-	 * @return true if propertyOrder contains the timestamp column
-	 */
-	public static boolean propertyOrderContainsTimestamp(String[] propertyOrder)
-	{
-		boolean result = false;
-		for(String property : propertyOrder)
-		{
-			if(property.equals(CSVFeed.TIMESTAMP_COLUMN_NAME))
-			{
-				result = true;
-				break;
-			}
-		}
-		return result;
-	}
-
-	/**
 	 * Resolve the order of the properties that appear in the CSV file, 
 	 * from the first row of the CSV file.
 	 * @param firstRow - the first record of the CSV file
 	 * @param propertyTypes - describes the event to send into the EPRuntime
+	 * @param timestampColumn - the name of the timestamp column, or null if no timestamp column
 	 * @return the property names in the order in which they occur in the file
 	 */
-	public static String[] resolvePropertyOrder(String[] firstRow, Map<String, Class> propertyTypes)
+	public static String[] resolvePropertyOrder(String[] firstRow, Map<String, Class> propertyTypes, String timestampColumn)
 	{
+		log.debug(".resolvePropertyOrder firstRow==" + Arrays.asList(firstRow));
 		String[] result = null;
 		
-		if(isValidTitleRow(firstRow, propertyTypes))
+		if(isValidTitleRow(firstRow, propertyTypes, timestampColumn))
 		{
 			result = firstRow;
 			log.debug(".resolvePropertyOrder using valid title row, propertyOrder==" + Arrays.asList(result));
@@ -62,31 +45,41 @@ public class PropertyOrderHelper
 		return result;
 	}
 
-	private static boolean isValidTitleRow(String[] row, Map<String, Class> propertyTypes)
+	private static boolean isValidTitleRow(String[] row, Map<String, Class> propertyTypes, String timestampColumn)
 	{
-		return isValidRowLength(row, propertyTypes) && columnNamesAreValid(row, propertyTypes);
+		if(propertyTypes == null)
+		{
+			return true;
+		}
+		else
+		{
+			return isValidRowLength(row, propertyTypes) && columnNamesAreValid(row, propertyTypes, timestampColumn);
+		}
 	}
 
-	private static boolean columnNamesAreValid(String[] row, Map<String, Class> propertyTypes)
+	private static boolean columnNamesAreValid(String[] row, Map<String, Class> propertyTypes, String timestampColumn)
 	{
+		log.debug(".columnNamesAreValid");
 		Set<String> properties = new HashSet<String>();
 		for(String property : row)
 		{
-			if(!isValidColumnName(property, propertyTypes) || !properties.add(property))
+			if(!isValidColumnName(property, propertyTypes, timestampColumn) || !properties.add(property))
 			{
+				log.debug(".columnNamesAreValid invalid name==" + property);
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private static boolean isValidColumnName(String columnName, Map<String, Class> propertyTypes)
+	private static boolean isValidColumnName(String columnName, Map<String, Class> propertyTypes, String timestampColumn)
 	{
-		return propertyTypes.containsKey(columnName) || columnName.equals(CSVFeed.TIMESTAMP_COLUMN_NAME);
+		return propertyTypes.containsKey(columnName) || columnName.equals(timestampColumn);
 	}
 
 	private static boolean isValidRowLength(String[] row, Map<String, Class> propertyTypes)
 	{
+		log.debug(".isValidRowLength");
 		if(row == null)
 		{
 			return false;

@@ -16,9 +16,11 @@ public interface EPAdapterManager
 	
 	/**
 	 * Create an instance of FeedCoordinator.
+	 * @param usingEngineThread - true if the coordinator should set time by the scheduling service in the engine, 
+	 *                            false if it should set time externally through the calling thread 
 	 * @return a new instance of FeedCoordinator
 	 */
-	public FeedCoordinatorImpl createFeedCoordinator();
+	public FeedCoordinatorImpl createFeedCoordinator(boolean usingEngineThread);
 
 	/**
 	 * Get the adapter for CSV files.

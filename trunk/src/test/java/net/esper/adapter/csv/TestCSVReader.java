@@ -119,7 +119,7 @@ public class TestCSVReader extends TestCase
 	public void testTitleRow() throws EOFException, EPException
 	{
 		CSVReader reader = new CSVReader(new AdapterInputSource("regression/titleRow.csv"));
-		reader.setIsLooping(true);
+		reader.setLooping(true);
 		
 		// isUsingTitleRow is false by default, so get the title row
 		String[] nextRecord = reader.getNextRecord();
@@ -173,7 +173,7 @@ public class TestCSVReader extends TestCase
 	private void assertLooping(String path) throws EOFException
 	{
 		CSVReader reader = new CSVReader(new AdapterInputSource(path));
-		reader.setIsLooping(true);
+		reader.setLooping(true);
 		
 		String[] nextRecord = reader.getNextRecord();
 		String[] expected = new String[] {"first line", "1"};

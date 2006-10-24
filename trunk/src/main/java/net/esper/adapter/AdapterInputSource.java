@@ -48,6 +48,10 @@ public class AdapterInputSource
 		this.file = null;
 	}
 	
+	/**
+	 * Ctor.
+	 * @param file - the CSV file to use as a source
+	 */
 	public AdapterInputSource(File file)
 	{
 		if(file == null)

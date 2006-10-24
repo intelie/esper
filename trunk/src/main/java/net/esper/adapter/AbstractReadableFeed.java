@@ -24,18 +24,23 @@ public abstract class AbstractReadableFeed implements ReadableFeed
 	private final EPRuntime runtime;
 
 	private final SchedulingService schedulingService;
+	private final boolean usingEngineThread;
 	private long currentTime = 0;
-	protected long startTime;
+	private long startTime;
 	
 	/**
 	 * Ctor.
 	 * @param runtime - the runtime to send events into
 	 * @param schedulingService - used for scheduling callbacks
+	 * @param usingEngineThread - true if the Feed should set time by the scheduling service in the engine, 
+	 *                            false if it should set time externally through the calling thread
 	 */
-	public AbstractReadableFeed(EPRuntime runtime, SchedulingService schedulingService)
+	public AbstractReadableFeed(EPRuntime runtime, SchedulingService schedulingService, Boolean usingEngineThread)
 	{
 		this.runtime = runtime;
 		this.schedulingService = schedulingService;
+		this.usingEngineThread = usingEngineThread != null ? usingEngineThread : true;
+		log.debug(".ctor usingEngineThread==" + this.usingEngineThread);
 	}
 	
 	public FeedState getState()
@@ -46,9 +51,10 @@ public abstract class AbstractReadableFeed implements ReadableFeed
 	public void start() throws EPException
 	{
 		log.debug(".start");
-		startTime = schedulingService.getTime();
+		startTime = getCurrentTime();
+		log.debug(".start startTime==" + startTime);
 		stateManager.start();
-		continuePlaying();
+		continueSendingEvents();
 	}
 
 	public void pause() throws EPException
@@ -59,7 +65,7 @@ public abstract class AbstractReadableFeed implements ReadableFeed
 	public void resume() throws EPException
 	{
 		stateManager.resume();
-		continuePlaying();
+		continueSendingEvents();
 	}
 
 	public void destroy() throws EPException
@@ -78,35 +84,68 @@ public abstract class AbstractReadableFeed implements ReadableFeed
 	}
 	
 	/**
-	 * Perform any actions specific to this Player that should
-	 * be completed before the Player is stopped.
+	 * Perform any actions specific to this Feed that should
+	 * be completed before the Feed is stopped.
 	 */
 	protected abstract void close();
 
 	/**
 	 * Remove the first member of eventsToSend and insert
 	 * another event chosen in some fashion specific to this 
-	 * Player.
+	 * Feed.
 	 */
 	protected abstract void replaceFirstEventToSend();
 
 	/**
-	 * Reset all the changeable state of this ReadableFeed, as if it were just created.
+	 * Reset all the changeable state of this Feed, as if it were just created.
 	 */
 	protected abstract void reset();
 	
-	private void continuePlaying()
+	private void continueSendingEvents()
 	{
-		updateCurrentTime();
-		fillEventsToSend();
-		sendSoonestEvents();
-		scheduleNextCallback();
+		if(stateManager.getState() == FeedState.STARTED)
+		{
+			currentTime = getCurrentTime();
+			log.debug(".continueSendingEvents currentTime==" + currentTime);
+			fillEventsToSend();
+			sendSoonestEvents();
+			waitToSendEvents();
+		}
+	}
+	
+	private void waitToSendEvents()
+	{
+		if(usingEngineThread)
+		{
+			scheduleNextCallback();
+		}
+		else 
+		{
+			long sleepTime = 0;
+			if(eventsToSend.isEmpty())
+			{
+				sleepTime = 100;
+			}
+			else
+			{
+				sleepTime = eventsToSend.first().getSendTime() - (currentTime - startTime);
+			}
+			
+			try
+			{
+				Thread.sleep(sleepTime);
+			}
+			catch (InterruptedException ex)
+			{
+				throw new EPException(ex);
+			}
+			continueSendingEvents();
+		}
 	}
 
-	private void updateCurrentTime()
+	private long getCurrentTime()
 	{
-		currentTime = schedulingService.getTime();
-		log.debug(".updateCurrentTime currentTime==" + currentTime);
+		return usingEngineThread ? schedulingService.getTime() : System.currentTimeMillis(); 
 	}
 
 	private void fillEventsToSend()
@@ -120,30 +159,21 @@ public abstract class AbstractReadableFeed implements ReadableFeed
 			}
 		}
 	}
-
+	
 	private void sendSoonestEvents()
 	{
-		while(!eventsToSend.isEmpty() && eventsToSend.first().getSendTime() <= currentTime)
+		while(!eventsToSend.isEmpty() && eventsToSend.first().getSendTime() <= currentTime - startTime)
 		{
+			log.debug(".sendSoonestEvents currentTime==" + currentTime);
 			log.debug(".sendSoonestEvents sending event " + eventsToSend.first() + ", its sendTime==" + eventsToSend.first().getSendTime());
 			eventsToSend.first().send(runtime);
 			replaceFirstEventToSend();
 		}
 	}
 
-	private void reactToCallback()
-	{
-		log.debug(".reactToCallback");
-		if(stateManager.getState() == FeedState.STARTED)
-		{
-			log.debug(".reactToCallback executing");
-			continuePlaying();
-		}
-	}
-	
 	private void scheduleNextCallback()
 	{
-		ScheduleCallback nextScheduleCallback = new ScheduleCallback() { public void scheduledTrigger() { reactToCallback(); } };
+		ScheduleCallback nextScheduleCallback = new ScheduleCallback() { public void scheduledTrigger() { continueSendingEvents(); } };
 		ScheduleSlot nextScheduleSlot;
 
 		if(eventsToSend.isEmpty())

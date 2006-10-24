@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.esper.adapter.Feed;
-import net.esper.adapter.FeedCreator;
+import net.esper.adapter.FeedFactory;
 import net.esper.adapter.FeedSpec;
 import net.esper.adapter.FeedType;
 import net.esper.adapter.MapEventSpec;
@@ -18,7 +18,7 @@ import net.esper.schedule.SchedulingService;
 /**
  * A utility for creating CSVFeeds.
  */
-public class CSVFeedCreator implements FeedCreator
+public class CSVFeedFactory implements FeedFactory
 {
 	private final EPRuntime runtime;
 	private final EventAdapterService eventAdapterService;
@@ -32,10 +32,10 @@ public class CSVFeedCreator implements FeedCreator
 	 * @param schedulingService - used for making callbacks
 	 * @param scheduleBucket - the scheduling bucket that all adapters use
 	 */
-	public CSVFeedCreator(EPRuntime runtime,
-					  		 EventAdapterService eventAdapterService, 
-					  		 SchedulingService schedulingService, 
-					  		 ScheduleBucket scheduleBucket)
+	public CSVFeedFactory(EPRuntime runtime,
+					  	  EventAdapterService eventAdapterService, 
+					  	  SchedulingService schedulingService, 
+					  	  ScheduleBucket scheduleBucket)
 	{
 		this.runtime = runtime;
 		this.eventAdapterService = eventAdapterService;
@@ -54,9 +54,9 @@ public class CSVFeedCreator implements FeedCreator
 		checkEventsPerSec(feedSpec);
 
 		String eventTypeAlias = (String)feedSpec.getParameter("eventTypeAlias");
-		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias);
+		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias, (Map)feedSpec.getParameter("propertyTypes"));
 		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypes, runtime);
-		return new CSVFeed(feedSpec, mapSpec, schedulingService, scheduleBucket.allocateSlot());
+		return new CSVFeed(feedSpec, mapSpec, eventAdapterService, schedulingService, scheduleBucket.allocateSlot());
 	}
 	
 	private void checkFeedType(FeedSpec feedSpec)
@@ -106,17 +106,37 @@ public class CSVFeedCreator implements FeedCreator
 		return 1 <= eventsPerSec && eventsPerSec <= 1000;
 	}
 
-	private Map<String, Class> constructPropertyTypes(String eventTypeAlias) 
+	private Map<String, Class> constructPropertyTypes(String eventTypeAlias, Map<String, Class> propertyTypesGiven) 
 	{
 		Map<String, Class> propertyTypes = new HashMap<String, Class>();
 		EventType eventType = eventAdapterService.getEventType(eventTypeAlias);
+		if(eventType == null)
+		{
+			if(propertyTypesGiven != null)
+			{
+				eventAdapterService.addMapType(eventTypeAlias, propertyTypesGiven);
+			}
+			return propertyTypesGiven;
+		}
 		if(!eventType.getUnderlyingType().equals(Map.class))
 		{
 			throw new EPException("Alias " + eventTypeAlias + " does not correspond to a map event");
 		}
+		if(propertyTypesGiven != null && eventType.getPropertyNames().length != propertyTypesGiven.size())
+		{
+			throw new EPException("Event type " + eventTypeAlias + " has already been declared with a different number of parameters");
+		}
 		for(String property : eventType.getPropertyNames())
 		{
 			Class type = eventType.getPropertyType(property);
+			if(propertyTypesGiven != null && propertyTypesGiven.get(property) == null)
+			{
+				throw new EPException("Event type " + eventTypeAlias + "has already been declared with different parameters");
+			}
+			if(propertyTypesGiven != null && !propertyTypesGiven.get(property).equals(type))
+			{
+				throw new EPException("Event type " + eventTypeAlias + "has already been declared with a different type for property " + property);
+			}
 			propertyTypes.put(property, type);
 		}
 		return propertyTypes;

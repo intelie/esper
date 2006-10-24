@@ -15,6 +15,7 @@ import net.esper.adapter.FeedState;
 import net.esper.adapter.MapEventSpec;
 import net.esper.adapter.SendableEvent;
 import net.esper.client.EPException;
+import net.esper.event.EventAdapterService;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.schedule.SchedulingService;
 import net.sf.cglib.reflect.FastClass;
@@ -30,8 +31,7 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 {
 	private static final Log log = LogFactory.getLog(CSVFeed.class);
 
-	public static final String TIMESTAMP_COLUMN_NAME = "timestamp";
-
+	private final String timestampColumn;
 	private final SchedulingService schedulingService;
 	private final ScheduleSlot scheduleSlot;
 	private final MapEventSpec mapEventSpec;	
@@ -39,7 +39,6 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 	private final CSVReader reader;
 	private final Map<String, FastConstructor>propertyConstructors;
 	private final String[] propertyOrder;
-	private final boolean propertyOrderContainsTimestamp;
 	private long lastTimestamp = 0;
 	private long totalDelay;
 	boolean atEOF = false;
@@ -48,20 +47,23 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 	 * Ctor.
 	 * @param feedSpec - the parameters for this feed
 	 * @param mapSpec - the specifications for the map event type to create
+	 * @param eventAdapterService - used for declaring new map types
 	 * @param schedulingService - used for scheduling callbacks to send events
 	 * @param scheduleSlot - used for ordering this Feeds place for callbacks
 	 */
 	protected CSVFeed(FeedSpec feedSpec, 
 					  MapEventSpec mapSpec, 
+					  EventAdapterService eventAdapterService, 
 					  SchedulingService schedulingService, 
 					  ScheduleSlot scheduleSlot)
 	{
-		super(mapSpec.getEpRuntime(), schedulingService);
+		super(mapSpec.getEpRuntime(), schedulingService, (Boolean)feedSpec.getParameter("usingEngineThread"));
+		
 		this.scheduleSlot = scheduleSlot;
 		this.mapEventSpec = mapSpec;
 		this.schedulingService = schedulingService;
+		this.timestampColumn = (String)feedSpec.getParameter("timestampColumn");
 
-		this.propertyConstructors = createPropertyConstructors(mapEventSpec.getPropertyTypes());
 		reader = new CSVReader((AdapterInputSource)feedSpec.getParameter("adapterInputSource"));
 		
 		// Resolve the order of properties in the CSV file
@@ -76,11 +78,20 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 			firstRow = null;
 		}		
 		
+
+		log.debug(".ctor propertyTypes==" + mapSpec.getPropertyTypes());
 		this.propertyOrder = feedSpec.getParameter("propertyOrder") == null ?
-				PropertyOrderHelper.resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes()) :
-					(String[])feedSpec.getParameter("propertyOrder");
-		this.propertyOrderContainsTimestamp = PropertyOrderHelper.propertyOrderContainsTimestamp(propertyOrder);
-	
+				PropertyOrderHelper.resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes(), timestampColumn) :
+					(String[])feedSpec.getParameter("propertyOrder");		
+		log.debug(".ctor propertyOrder==" + Arrays.asList(propertyOrder));		
+				
+		Map<String, Class> propertyTypes = resolvePropertyTypes(mapEventSpec.getPropertyTypes());
+		if(mapEventSpec.getPropertyTypes() == null)
+		{
+			eventAdapterService.addMapType(mapEventSpec.getEventTypeAlias(), propertyTypes);
+		}
+		this.propertyConstructors = createPropertyConstructors(propertyTypes);
+		
 		boolean isUsingTitleRow = (firstRow == propertyOrder);
 		reader.setIsUsingTitleRow(isUsingTitleRow);
 		reader.reset();
@@ -89,10 +100,10 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 				(Integer)feedSpec.getParameter("eventsPerSec") :
 					-1 ;
 				
-		boolean isLooping = feedSpec.getParameter("isLooping") != null ?
-				(Boolean) feedSpec.getParameter("isLooping") :
+		boolean looping = feedSpec.getParameter("looping") != null ?
+				(Boolean) feedSpec.getParameter("looping") :
 					false;
-		reader.setIsLooping(isLooping);
+		reader.setLooping(looping);
 	}
 	
 	/* (non-Javadoc)
@@ -109,7 +120,7 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 		{
 			if(eventsToSend.isEmpty())
 			{
-				return new SendableMapEvent(newMapEvent(), mapEventSpec.getEventTypeAlias(), totalDelay + startTime, scheduleSlot);
+				return new SendableMapEvent(newMapEvent(), mapEventSpec.getEventTypeAlias(), totalDelay, scheduleSlot);
 			}
 			else
 			{
@@ -122,6 +133,14 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 		{
 			log.debug(".read reached end of CSV file");
 			atEOF = true;
+			if(stateManager.getState() == FeedState.STARTED)
+			{
+				stop();
+			}
+			else
+			{
+				destroy();
+			}
 			return null;
 		}
 	}
@@ -186,10 +205,6 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		int count = 0;
-		if(expectingUndeclaredTimestamp(row))
-		{
-			count++;
-		}
 		
 		try
 		{
@@ -197,7 +212,8 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 			{
 				// Skip properties that are in the title row but not
 				// part of the map to send
-				if(!mapEventSpec.getPropertyTypes().containsKey(property))
+				if(mapEventSpec.getPropertyTypes() != null &&
+				   !mapEventSpec.getPropertyTypes().containsKey(property))
 				{
 					count++;
 					continue;
@@ -212,11 +228,6 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 			throw new EPException(e);
 		}
 		return map;
-	}
-	
-	private boolean expectingUndeclaredTimestamp(String[] row)
-	{
-		return !propertyOrderContainsTimestamp && propertyOrder.length + 1 == row.length;
 	}
 	
 	private void updateTotalDelay(String[] row, boolean isFirstRow)
@@ -277,20 +288,31 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 	
 	private int getTimestampIndex(String[] row)
 	{
-		if(expectingUndeclaredTimestamp(row))
-		{
-			return 0;
-		}
-		else if(propertyOrderContainsTimestamp)
+		if(timestampColumn != null)
 		{
 			for(int i = 0; i < propertyOrder.length; i++)
 			{
-				if(propertyOrder[i].equals(TIMESTAMP_COLUMN_NAME))
+				if(propertyOrder[i].equals(timestampColumn))
 				{
 					return i;
 				}
 			}
 		}
 		return -1;
+	}
+	
+	private Map<String, Class> resolvePropertyTypes(Map<String, Class> propertyTypes)
+	{
+		if(propertyTypes != null)
+		{
+			return propertyTypes;
+		}
+		
+		Map<String, Class> result = new HashMap<String, Class>();
+		for(String property : propertyOrder)
+		{
+			result.put(property, String.class);
+		}
+		return result;
 	}
 }

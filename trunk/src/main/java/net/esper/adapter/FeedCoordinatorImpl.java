@@ -1,5 +1,6 @@
 package net.esper.adapter;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,17 +24,21 @@ public class FeedCoordinatorImpl extends AbstractReadableFeed implements FeedCoo
 	private final Map<SendableEvent, ReadableFeed> eventsFromFeeds = new HashMap<SendableEvent, ReadableFeed>();
 	private final Set<ReadableFeed> emptyFeeds = new HashSet<ReadableFeed>();
 	private final EPAdapterManager manager;
+	private final boolean usingEngineThread;
 	
 	/**
 	 * Ctor.
 	 * @param manager - the adapter manager that created this FeedCoordinator
 	 * @param runtime - the runtime to send events into
 	 * @param schedulingService - used for making callbacks
+	 * @param usingEngineThread - true if the coordinator should set time by the scheduling service in the engine, 
+	 *                            false if it should set time externally through the calling thread
 	 */
-	protected FeedCoordinatorImpl(EPAdapterManager manager, EPRuntime runtime, SchedulingService schedulingService)
+	protected FeedCoordinatorImpl(EPAdapterManager manager, EPRuntime runtime, SchedulingService schedulingService, boolean usingEngineThread)
 	{
-		super(runtime, schedulingService);
+		super(runtime, schedulingService, usingEngineThread);
 		this.manager = manager;
+		this.usingEngineThread = usingEngineThread;
 	}
 
 	
@@ -42,7 +47,17 @@ public class FeedCoordinatorImpl extends AbstractReadableFeed implements FeedCoo
 	 */
 	public SendableEvent read() throws EPException
 	{		
-		pollEmptyPlayers();
+		log.debug(".read");
+		pollEmptyFeeds();
+		
+		log.debug(".read eventsToSend.isEmpty==" + eventsToSend.isEmpty());
+		log.debug(".read eventsFromFeeds.isEmpty==" + eventsFromFeeds.isEmpty());
+		log.debug(".read emptyFeeds.isEmpty==" + emptyFeeds.isEmpty());
+		
+		if(eventsToSend.isEmpty() && eventsFromFeeds.isEmpty() && emptyFeeds.isEmpty())
+		{
+			stop();
+		}
 		
 		if(stateManager.getState() == FeedState.DESTROYED || eventsToSend.isEmpty())
 		{
@@ -66,6 +81,7 @@ public class FeedCoordinatorImpl extends AbstractReadableFeed implements FeedCoo
 			throw new NullPointerException("FeedSpec cannot be null");
 		}
 		
+		feedSpec.setUsingEngineThread(usingEngineThread);
 		Feed feed = manager.createFeed(feedSpec);
 		
 		if(!(feed instanceof ReadableFeed))
@@ -94,10 +110,11 @@ public class FeedCoordinatorImpl extends AbstractReadableFeed implements FeedCoo
 	 */
 	protected void replaceFirstEventToSend()
 	{
+		log.debug(".replaceFirstEventToSend");
 		SendableEvent event = eventsToSend.first();
 		eventsToSend.remove(event);
 		addNewEvent(eventsFromFeeds.get(event));
-		pollEmptyPlayers();
+		pollEmptyFeeds();
 	}
 	
 	/**
@@ -110,29 +127,30 @@ public class FeedCoordinatorImpl extends AbstractReadableFeed implements FeedCoo
 	}
 	private void addNewEvent(ReadableFeed feed)
 	{
-		if(feed.getState() == FeedState.DESTROYED)
-		{
-			eventsFromFeeds.values().remove(feed);
-			return;
-		}
-		
+		log.debug(".addNewEvent eventsFromFeeds==" + eventsFromFeeds);
 		SendableEvent event = feed.read();
 		if(event != null)
 		{
-			log.debug(".addNewEvent event==" + event);
+			log.debug(".addNewEvent event==" + event);			
 			eventsToSend.add(event);
 			eventsFromFeeds.put(event, feed);
 		}
-		else
+		else	
 		{
-			log.debug(".addNewEvent player is emtpy");
-			emptyFeeds.add(feed);
+			if(feed.getState() == FeedState.DESTROYED)
+			{
+				eventsFromFeeds.values().removeAll(Collections.singleton(feed));
+			}
+			else
+			{
+				emptyFeeds.add(feed);
+			}
 		}
 	}
 	
-	private void pollEmptyPlayers()
+	private void pollEmptyFeeds()
 	{
-		log.debug(".pollEmptyPlayers");
+		log.debug(".pollEmptyFeeds emptyFeeds.size==" + emptyFeeds.size());
 		for(Iterator<ReadableFeed> iterator = emptyFeeds.iterator(); iterator.hasNext(); )
 		{
 			ReadableFeed feed = iterator.next();

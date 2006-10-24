@@ -20,9 +20,6 @@ public class TestPropertyOrderHelper extends TestCase
 	{
 		// Use first row
 		String[] firstRow = new String[] { "myDouble", "myInt", "myString" };
-		assertEquals(firstRow, PropertyOrderHelper.resolvePropertyOrder(firstRow, propertyTypes));
-		
-		firstRow = new String[] { "myDouble", "myInt", "myString", "timestamp" };
-		assertEquals(firstRow, PropertyOrderHelper.resolvePropertyOrder(firstRow, propertyTypes));
+		assertEquals(firstRow, PropertyOrderHelper.resolvePropertyOrder(firstRow, propertyTypes, null));
 	}
 }

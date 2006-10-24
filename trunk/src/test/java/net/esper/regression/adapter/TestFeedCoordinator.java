@@ -8,8 +8,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.EPAdapterManager;
-import net.esper.adapter.FeedCoordinatorImpl;
+import net.esper.adapter.FeedCoordinator;
 import net.esper.adapter.SendableEvent;
 import net.esper.adapter.csv.CSVFeedSpec;
 import net.esper.adapter.csv.SendableMapEvent;
@@ -36,13 +35,13 @@ public class TestFeedCoordinator extends TestCase
 	private String eventTypeAlias;
 	private EPServiceProvider epService;
 	private long currentTime;
-	private FeedCoordinatorImpl conductor;
+	private FeedCoordinator coordinator;
 	private SupportReadableFeed supportPlayer = new SupportReadableFeed();
 	private CSVFeedSpec timestampsLooping;
 	private CSVFeedSpec noTimestampsLooping;
 	private CSVFeedSpec noTimestampsNotLooping;
 	private CSVFeedSpec timestampsNotLooping;
-	private String[] propertyOrder;
+	private String[] propertyOrderNoTimestamp;
 	
 	protected void setUp()
 	{
@@ -70,41 +69,48 @@ public class TestFeedCoordinator extends TestCase
 		currentTime = 0;
 		sendTimeEvent(0);
 		
-		conductor = epService.getEPAdapters().createFeedCoordinator();
+		coordinator = epService.getEPAdapters().createFeedCoordinator(true);
 
-    	propertyOrder = new String[] { "myInt", "myDouble", "myString" };
+    	propertyOrderNoTimestamp = new String[] { "myInt", "myDouble", "myString" };
+    	String[] propertyOrderTimestamp = new String[] { "timestamp", "myInt", "myDouble", "myString" };
 		
 		// A CSVPlayer for a file with timestamps, not looping
 		timestampsNotLooping = new CSVFeedSpec(new AdapterInputSource("/regression/timestampOne.csv"), eventTypeAlias);
-		timestampsNotLooping.setPropertyOrder(propertyOrder);
+		timestampsNotLooping.setUsingEngineThread(true);
+		timestampsNotLooping.setPropertyOrder(propertyOrderTimestamp);
+		timestampsNotLooping.setTimestampColumn("timestamp");
 		
 		// A CSVFeed for a file with timestamps, looping
 		timestampsLooping = new CSVFeedSpec(new AdapterInputSource("/regression/timestampTwo.csv"), eventTypeAlias);
-		timestampsLooping.setIsLooping(true);
-		timestampsLooping.setPropertyOrder(propertyOrder);
+		timestampsLooping.setLooping(true);
+		timestampsLooping.setUsingEngineThread(true);
+		timestampsLooping.setPropertyOrder(propertyOrderTimestamp);
+		timestampsLooping.setTimestampColumn("timestamp");
 		
 		// A CSVFeed that sends 10 events per sec, not looping
 		noTimestampsNotLooping = new CSVFeedSpec(new AdapterInputSource("/regression/noTimestampOne.csv"), eventTypeAlias);
 		noTimestampsNotLooping.setEventsPerSec(10);
-		noTimestampsNotLooping.setPropertyOrder(propertyOrder);
+		noTimestampsNotLooping.setPropertyOrder(propertyOrderNoTimestamp);
+		noTimestampsNotLooping.setUsingEngineThread(true);
 		
 		// A CSVFeed that sends 5 events per sec, looping
 		noTimestampsLooping = new CSVFeedSpec(new AdapterInputSource("/regression/noTimestampTwo.csv"), eventTypeAlias);
 		noTimestampsLooping.setEventsPerSec(5);
-		noTimestampsLooping.setIsLooping(true);
-		noTimestampsLooping.setPropertyOrder(propertyOrder);
+		noTimestampsLooping.setLooping(true);
+		noTimestampsLooping.setPropertyOrder(propertyOrderNoTimestamp);
+		noTimestampsLooping.setUsingEngineThread(true);
 	}
 	
 	public void testRun()
 	{		
-		conductor.coordinate(timestampsNotLooping);
-		conductor.coordinate(timestampsLooping);
-		conductor.coordinate(noTimestampsNotLooping);
-		conductor.coordinate(noTimestampsLooping);
+		coordinator.coordinate(timestampsNotLooping);
+		coordinator.coordinate(timestampsLooping);
+		coordinator.coordinate(noTimestampsNotLooping);
+		coordinator.coordinate(noTimestampsLooping);
 		
 		// Time is 0
 		assertFalse(listener.getAndClearIsInvoked());
-		conductor.start();
+		coordinator.start();
 		
 		// Time is 50
 		sendTimeEvent(50);
@@ -139,7 +145,7 @@ public class TestFeedCoordinator extends TestCase
 		sendTimeEvent(50);
 		assertFalse(listener.getAndClearIsInvoked());
 		
-		conductor.pause();
+		coordinator.pause();
 		
 		// Time is 400
 		sendTimeEvent(50);
@@ -149,7 +155,7 @@ public class TestFeedCoordinator extends TestCase
 		sendTimeEvent(50);
 		assertFalse(listener.getAndClearIsInvoked());
 		
-		conductor.resume();
+		coordinator.resume();
 		
 		assertEvent(0, 4, 4.4, "timestampTwo.four");
 		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
@@ -172,16 +178,15 @@ public class TestFeedCoordinator extends TestCase
 		assertEvent(1, 4, 4.4, "noTimestampTwo.four");
 		assertSizeAndReset(2);				
 		
-		conductor.stop();
+		coordinator.stop();
 		sendTimeEvent(1000);
 		assertFalse(listener.getAndClearIsInvoked());
-		assertNull(conductor.read());
 	}
 	
 	public void testRunTillNull()
 	{
-		conductor.coordinate(timestampsNotLooping);
-		conductor.start();
+		coordinator.coordinate(timestampsNotLooping);
+		coordinator.start();
 		
 		// Time is 100
 		sendTimeEvent(100);
@@ -205,7 +210,6 @@ public class TestFeedCoordinator extends TestCase
 		sendTimeEvent(100);
 		log.debug(".testRunTillNull time==600");
 		assertFalse(listener.getAndClearIsInvoked());
-		assertNull(conductor.read());
 		
 		setSupportEvent(800);
 		
@@ -217,6 +221,28 @@ public class TestFeedCoordinator extends TestCase
 		// Time is 800
 		sendTimeEvent(100);
 		log.debug(".testRunTillNull time==800");
+	}
+	
+	public void testNotUsingEngineThread()
+	{
+		coordinator = epService.getEPAdapters().createFeedCoordinator(false);
+		coordinator.coordinate(noTimestampsNotLooping);
+		coordinator.coordinate(timestampsNotLooping);
+		
+		long startTime = System.currentTimeMillis();
+		coordinator.start();
+		long endTime = System.currentTimeMillis();
+
+		// The last event should be sent after 500 ms
+		assertTrue(endTime - startTime > 500);
+		
+		assertEquals(6, listener.getNewDataList().size());
+		assertEvent(0, 1, 1.1, "noTimestampOne.one");
+		assertEvent(1, 1, 1.1, "timestampOne.one");
+		assertEvent(2, 2, 2.2, "noTimestampOne.two");
+		assertEvent(3, 3, 3.3, "noTimestampOne.three");
+		assertEvent(4, 3, 3.3, "timestampOne.three");
+		assertEvent(5, 5, 5.5, "timestampOne.five");
 	}
 	
 	private void assertEvent(int howManyBack, Integer myInt, Double myDouble, String myString)

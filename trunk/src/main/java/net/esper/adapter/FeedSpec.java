@@ -17,4 +17,11 @@ public interface FeedSpec
 	 * @return the parameter value, or null if the parameter wasn't set
 	 */
 	public Object getParameter(String parameterName);
+
+	/**
+	 * Set the usingEngineThread value.
+	 * @param usingEngineThread - true if the Feed should set time by the scheduling service in the engine, 
+	 *                            false if it should set time externally through the calling thread
+	 */
+	public void setUsingEngineThread(boolean usingEngineThread);
 }
