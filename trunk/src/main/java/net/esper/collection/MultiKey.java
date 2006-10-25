@@ -1,13 +1,14 @@
 package net.esper.collection;
 
 import java.util.Arrays;
+import java.io.Serializable;
 
 /**
  * Functions as a key value for Maps where keys need to be composite values.
  * The class allows a Map that uses MultiKeyUntyped entries for key values to use multiple objects as keys.
  * It calculates the hashCode from the key objects on construction and caches the hashCode.
  */
-public final class MultiKey<T>
+public final class MultiKey<T> implements Serializable
 {
     private final T[] keys;
     private final int hashCode;
@@ -52,7 +53,7 @@ public final class MultiKey<T>
     public final T get(int index)
     {
         return keys[index];
-    }        
+    }
 
     public final boolean equals(Object other)
     {

@@ -28,6 +28,7 @@ import net.esper.pattern.PatternContext;
 import net.esper.pattern.PatternStopCallback;
 import net.esper.pattern.EvalRootNode;
 import net.esper.pattern.PatternMatchCallback;
+import net.esper.persist.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +43,7 @@ public class EPEQLStmtStartMethod
     private final ScheduleBucket scheduleBucket;
     private final EPServicesContext services;
     private final ViewServiceContext viewContext;
+    private final LogContextNode<String> statementLogContextNode;
 
     /**
      * Ctor.
@@ -52,11 +54,13 @@ public class EPEQLStmtStartMethod
      */
     public EPEQLStmtStartMethod(StatementSpec statementSpec,
                                 String eqlStatement,
-                                EPServicesContext services)
+                                EPServicesContext services,
+                                LogContextNode<String> statementLogContextNode)
     {
         this.statementSpec = statementSpec;
         this.services = services;
         this.eqlStatement = eqlStatement;
+        this.statementLogContextNode = statementLogContextNode;
 
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
@@ -158,7 +162,8 @@ public class EPEQLStmtStartMethod
                 statementSpec.getOrderByList(),
                 typeService,
                 services.getEventAdapterService(),
-                autoImportService);
+                autoImportService,
+                statementLogContextNode);
 
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, autoImportService);

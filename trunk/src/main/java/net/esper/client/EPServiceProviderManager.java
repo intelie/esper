@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public final class EPServiceProviderManager
 {
-    private static Map<String, EPServiceProvider> runtimes = new HashMap<String, EPServiceProvider>();
+    private static Map<String, EPServiceProviderImpl> runtimes = new HashMap<String, EPServiceProviderImpl>();
 
     /**
      * Returns the default EPServiceProvider.
@@ -53,11 +53,14 @@ public final class EPServiceProviderManager
     {
         if (runtimes.containsKey(uri))
         {
-            return runtimes.get(uri);
+            // Existing runtime, setting a new configuration that will be picked up with next initialize()
+            EPServiceProviderImpl impl = runtimes.get(uri);
+            impl.setConfiguration(configuration);
+            return impl;
         }
 
         // New runtime
-        EPServiceProvider runtime = new EPServiceProviderImpl(configuration);
+        EPServiceProviderImpl runtime = new EPServiceProviderImpl(uri, configuration);
         runtimes.put(uri, runtime);
 
         return runtime;

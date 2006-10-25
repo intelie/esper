@@ -7,6 +7,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventAdapterService;
 import net.esper.collection.SingleEventIterator;
 import net.esper.dispatch.DispatchService;
+import net.esper.persist.LogContextNode;
 
 import java.util.*;
 
@@ -41,8 +42,12 @@ public class EPPatternStatementImpl extends EPStatementSupport implements Patter
                                   EventType eventType,
                                   DispatchService dispatchService,
                                   EventAdapterService eventAdapterService,
-                                  EPPatternStmtStartMethod startMethod)
+                                  LogContextNode<String> statementLogContext,
+                                  EPPatternStmtStartMethod startMethod
+                                  )
     {
+        super(statementLogContext);
+        
         this.expressionText = expressionText;
         this.eventType = eventType;
         this.dispatchService = dispatchService;

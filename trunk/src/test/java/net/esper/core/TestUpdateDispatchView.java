@@ -10,6 +10,8 @@ import net.esper.dispatch.DispatchServiceImpl;
 import net.esper.event.EventBean;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.event.SupportEventBeanFactory;
+import net.esper.support.persist.SupportLogContextNodeFactory;
+import net.esper.persist.LogContextNode;
 
 public class TestUpdateDispatchView extends TestCase
 {
@@ -28,7 +30,9 @@ public class TestUpdateDispatchView extends TestCase
         listeners.add(listenerTwo);
 
         dispatchService = new DispatchServiceImpl();
-        updateDispatchView = new UpdateDispatchView(listeners, dispatchService);
+
+        LogContextNode<Set<UpdateListener>> updateListenerState = SupportLogContextNodeFactory.createChild(listeners);
+        updateDispatchView = new UpdateDispatchView(updateListenerState, dispatchService);
     }
 
     public void testUpdateOnceAndDispatch()

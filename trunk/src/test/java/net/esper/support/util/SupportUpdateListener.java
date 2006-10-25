@@ -5,16 +5,17 @@ import net.esper.event.EventBean;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.io.Serializable;
 
 import junit.framework.Assert;
 
-public class SupportUpdateListener implements UpdateListener
+public class SupportUpdateListener implements UpdateListener, Serializable
 {
-    private final List<EventBean[]> newDataList;
-    private final List<EventBean[]> oldDataList;
-    private EventBean[] lastNewData;
-    private EventBean[] lastOldData;
-    private boolean isInvoked;
+    private transient List<EventBean[]> newDataList;
+    private transient List<EventBean[]> oldDataList;
+    private transient EventBean[] lastNewData;
+    private transient EventBean[] lastOldData;
+    private transient boolean isInvoked;
 
     public SupportUpdateListener()
     {
@@ -24,6 +25,12 @@ public class SupportUpdateListener implements UpdateListener
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
+        if (newDataList == null)
+        {
+            newDataList = new LinkedList<EventBean[]>();
+            oldDataList = new LinkedList<EventBean[]>();
+        }
+
         this.oldDataList.add(oldData);
         this.newDataList.add(newData);
 

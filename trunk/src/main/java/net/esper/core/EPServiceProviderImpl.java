@@ -7,10 +7,21 @@ import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
 import net.esper.util.JavaClassHelper;
+import net.esper.client.logstate.LogEntryHandler;
+import net.esper.client.logstate.LogEntry;
+import net.esper.client.logstate.LogEntryType;
+import net.esper.client.logstate.LogKey;
+import net.esper.persist.LogContextNode;
+import net.esper.persist.LogServiceImpl;
+import net.esper.persist.LogServiceUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.io.Serializable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
@@ -18,17 +29,82 @@ import java.util.Properties;
 public class EPServiceProviderImpl implements EPServiceProvider
 {
     private volatile EPServiceEngine engine;
-    private final ConfigurationSnapshot configSnapshot;
+    private ConfigurationSnapshot configSnapshot;
+    private final String optionalURI;
+
+    public void startTransaction()
+    {
+        engine.getServices().getLogService().getLogEntryHandler().startTransaction();
+    }
+
+    public void prepareCommit()
+    {
+        engine.getServices().getLogService().flush();
+    }
+
+    public void commit()
+    {
+        engine.getServices().getLogService().getLogEntryHandler().commit();
+    }
+
+    public void replayLogs(LogEntry[] logEntries)
+    {
+        if (logEntries.length == 0)
+        {
+            log.info(".replayLogs No logs to replay");
+            return;
+        }
+
+        log.info(".replayLogs Unflattening logs=...\n" + LogEntry.print(logEntries));
+
+        // re-create all statements
+        for (int i = 0; i < logEntries.length; i++)
+        {
+            if (logEntries[i].getType() != LogEntryType.STATEMENT)
+            {
+                continue;
+            }
+            String eql = (String) logEntries[i].getState();
+            log.info(".replayLogs Playing in eql=" + eql);
+            engine.getAdmin().createEQL(eql);
+        }
+
+        // then map the remainder of the tree to each statement's tree
+        log.info(".replayLogs Restoring state");
+        LogContextNode engineParentNode = engine.getServices().getLogContext().getRootNode();
+        Map<LogKey, LogContextNode> engineMap = LogServiceUtil.getDeepNodeMap(engineParentNode);
+        Map<LogKey, Serializable> restoreMap = LogServiceUtil.getStateMap(logEntries);
+
+        // Restore each entry
+        for (LogKey key : restoreMap.keySet())
+        {
+            LogContextNode engineNode = engineMap.get(key);
+            if (engineNode == null)
+            {
+                throw new IllegalStateException("Could not find matching engine node " + key);
+            }
+            Serializable state = restoreMap.get(key);
+            log.info(".replayLogs Restoring key=" + key + " value=" + state);
+
+            engineNode.setState(state);
+        }
+    }
 
     /**
      * Constructor - initializes services.
      * @param configuration is the engine configuration
      * @throws ConfigurationException is thrown to indicate a configuraton error
      */
-    public EPServiceProviderImpl(Configuration configuration) throws ConfigurationException
+    public EPServiceProviderImpl(String optionalURI, Configuration configuration) throws ConfigurationException
     {
+        this.optionalURI = optionalURI;
         configSnapshot = new ConfigurationSnapshot(configuration);
         initialize();
+    }
+
+    public void setConfiguration(Configuration configuration)
+    {
+        configSnapshot = new ConfigurationSnapshot(configuration);
     }
 
     public EPRuntime getEPRuntime()
@@ -62,7 +138,8 @@ public class EPServiceProviderImpl implements EPServiceProvider
         AutoImportService autoImportService = makeAutoImportService(configSnapshot);
 
         // New services context
-        EPServicesContext services = new EPServicesContext(eventAdapterService, autoImportService);
+        LogEntryHandler logHandler = configSnapshot.getLogEntryHandler();
+        EPServicesContext services = new EPServicesContext(optionalURI, eventAdapterService, autoImportService, logHandler);
 
         // New runtime
         EPRuntimeImpl runtime = new EPRuntimeImpl(services);
@@ -219,6 +296,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
         private Map<String, ConfigurationEventTypeLegacy> legacyAliases = new HashMap<String, ConfigurationEventTypeLegacy>();
         private String[] autoImports;
         private Map<String, Properties> mapAliases = new HashMap<String, Properties>();
+        private LogEntryHandler logEntryHandler;
 
         /**
          * Ctor.
@@ -234,6 +312,12 @@ public class EPServiceProviderImpl implements EPServiceProvider
             autoImports = configuration.getImports().toArray(new String[0]);
             mapAliases.putAll(configuration.getEventTypesMapEvents());
             legacyAliases.putAll(configuration.getEventTypesLegacy());
+            this.logEntryHandler = configuration.getLogEntryHandler();
+        }
+
+        public LogEntryHandler getLogEntryHandler()
+        {
+            return logEntryHandler;
         }
 
         /**
@@ -310,4 +394,6 @@ public class EPServiceProviderImpl implements EPServiceProvider
             return admin;
         }
     }
+
+    private static Log log = LogFactory.getLog(EPServiceProviderImpl.class);
 }

@@ -51,6 +51,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
         selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode);
 
+        aggregationService.preState();
+
         if (!oldEvents.isEmpty())
         {
             // apply old data to aggregates
@@ -69,6 +71,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
             }
         }
 
+        aggregationService.postState();
+
         selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
@@ -84,6 +88,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         EventBean[] selectNewEvents = null;
 
         selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode);
+
+        aggregationService.preState();
 
         EventBean[] buffer = new EventBean[1];
         if (oldData != null)
@@ -105,6 +111,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
                 aggregationService.applyEnter(buffer, null);
             }
         }
+
+        aggregationService.postState();
 
         // generate new events using select expressions
         selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode);

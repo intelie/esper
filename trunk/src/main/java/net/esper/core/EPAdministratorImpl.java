@@ -12,8 +12,13 @@ import net.esper.eql.spec.StatementSpec;
 import net.esper.eql.spec.PatternStreamSpec;
 import net.esper.util.DebugFacility;
 import net.esper.pattern.EvalRootNode;
+import net.esper.persist.LogContextNode;
+import net.esper.client.logstate.LogEntryType;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import antlr.TokenStreamException;
 import antlr.RecognitionException;
@@ -32,6 +37,7 @@ public class EPAdministratorImpl implements EPAdministrator
     private static WalkRuleSelector eqlWalkRule;
 
     private EPServicesContext services;
+    private List<EPStatement> statements;
 
     static
     {
@@ -72,7 +78,8 @@ public class EPAdministratorImpl implements EPAdministrator
      */
     public EPAdministratorImpl(EPServicesContext services)
     {
-        this.services = services;        
+        this.services = services;
+        this.statements = new ArrayList<EPStatement>();
     }
 
     public EPStatement createPattern(String expression) throws EPException
@@ -118,8 +125,14 @@ public class EPAdministratorImpl implements EPAdministrator
         Map<String, EventType> eventTypes = patternStreamSpec.getTaggedEventTypes();
         EventType eventType = services.getEventAdapterService().createAnonymousMapTypeUnd(eventTypes);
 
+        // Create statement state context
+        LogContextNode<String> rootEngineContext = services.getLogContext().getRootNode();
+        LogContextNode<String> statementLogContext = rootEngineContext.createChild(LogEntryType.STATEMENT, expression);
+        statementLogContext.update();
+
         EPPatternStatementImpl patternStatement = new EPPatternStatementImpl(expression,
-                eventType, services.getDispatchService(), services.getEventAdapterService(), startMethod);
+                eventType, services.getDispatchService(), services.getEventAdapterService(), statementLogContext,
+                startMethod);
         
         return patternStatement;
     }
@@ -149,12 +162,23 @@ public class EPAdministratorImpl implements EPAdministrator
             DebugFacility.dumpAST(walker.getAST());
         }
 
+        // Create statement state context
+        LogContextNode<String> rootEngineContext = services.getLogContext().getRootNode();
+        LogContextNode<String> statementLogContext = rootEngineContext.createChild(LogEntryType.STATEMENT, eqlStatement);
+        statementLogContext.update();
 
         // Create start method
         StatementSpec statementSpec = walker.getStatementSpec();
-        EPEQLStmtStartMethod startMethod = new EPEQLStmtStartMethod(statementSpec, eqlStatement, services);
+        EPEQLStmtStartMethod startMethod = new EPEQLStmtStartMethod(statementSpec, eqlStatement, services, statementLogContext);
 
-        return new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod);
+        EPStatement statement = new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod, statementLogContext);
+        statements.add(statement);
+        return statement;
+    }
+
+    public List<EPStatement> getStatements()
+    {
+        return Collections.unmodifiableList(statements);
     }
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);

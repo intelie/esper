@@ -3,13 +3,14 @@ package net.esper.collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+import java.io.Serializable;
 
 /**
  * reference-counting set based on a HashMap implementation that stores keys and a reference counter for
  * each unique key value. Each time the same key is added, the reference counter increases.
  * Each time a key is removed, the reference counter decreases.
  */
-public class RefCountedSet<K>
+public class RefCountedSet<K> implements Serializable
 {
     private Map<K, Integer> refSet;
     private int numValues;

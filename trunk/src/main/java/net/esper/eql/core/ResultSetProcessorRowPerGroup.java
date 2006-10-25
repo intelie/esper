@@ -88,6 +88,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         // generate old events
         EventBean[] selectOldEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingExpr, oldEventGroupReps, oldGenerators);
 
+        aggregationService.preState();
+
         // update aggregates
         if (!oldEvents.isEmpty())
         {
@@ -99,6 +101,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                 count++;
             }
         }
+
         if (!newEvents.isEmpty())
         {
             // apply old data to aggregates
@@ -109,6 +112,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                 count++;
             }
         }
+
+        aggregationService.postState();
 
         // generate new events using select expressions
         EventBean[] selectNewEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingExpr, newEventGroupReps, newGenerators);
@@ -130,6 +135,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         // generate old events
         EventBean[] selectOldEvents = generateOutputEventsView(keysAndEvents, optionalHavingExpr, oldEventGroupReps, oldGenerators);
 
+        aggregationService.preState();
+        
         // update aggregates
         EventBean[] eventsPerStream = new EventBean[1];
         if (oldData != null)
@@ -150,6 +157,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                 aggregationService.applyEnter(eventsPerStream, newDataMultiKey[i]);
             }
         }
+
+        aggregationService.postState();
 
         // generate new events using select expressions
         EventBean[] selectNewEvents = generateOutputEventsView(keysAndEvents, optionalHavingExpr, newEventGroupReps, newGenerators);

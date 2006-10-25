@@ -2,8 +2,9 @@ package net.esper.eql.core;
 
 import net.esper.collection.MultiKey;
 import net.esper.event.EventBean;
-import net.esper.eql.core.AggregationServiceBase;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.persist.LogContextNode;
+import net.esper.client.logstate.LogEntryType;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.HashMap;
 public class AggregationServiceGroupByImpl extends AggregationServiceBase
 {
     // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
-    private Map<MultiKey, Aggregator[]> aggregatorsPerGroup;
+    private LogContextNode<Map<MultiKey, Aggregator[]>> aggregatorsPerGroup;
 
     // maintain a current row for random access into the aggregator state table
     // (row=groups, columns=expression nodes that have aggregation functions)
@@ -23,29 +24,41 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
     /**
      * Ctor.
      * @param evaluators - evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))
-     * @param aggregators - collect the aggregation state that evaluators evaluate to, act as factories for new
+     * @param aggregationState - collect the aggregation state that evaluators evaluate to, act as factories for new
      * aggregation states for each group
      */
-    public AggregationServiceGroupByImpl(ExprEvaluator evaluators[], Aggregator aggregators[])
+    public AggregationServiceGroupByImpl(ExprEvaluator evaluators[], LogContextNode<Aggregator[]> aggregationState, LogContextNode<String> statementLogContext)
     {
-        super(evaluators, aggregators);
+        super(evaluators, aggregationState);
 
-        this.aggregatorsPerGroup = new HashMap<MultiKey, Aggregator[]>();
+        Map<MultiKey, Aggregator[]> aggPerGroup = new HashMap<MultiKey, Aggregator[]>();
+        this.aggregatorsPerGroup = statementLogContext.createChild(LogEntryType.GROUP_KEY_AGG_STATE, aggPerGroup);
+    }
+
+    public void preState()
+    {
+        // no action required
+    }
+
+    public void postState()
+    {
+        aggregatorsPerGroup.update();
     }
 
     public void applyEnter(EventBean[] eventsPerStream, MultiKey groupByKey)
     {
-        Aggregator[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
+        Aggregator[] genericAggregators = aggregationState.getState();
+        Aggregator[] groupAggregators = aggregatorsPerGroup.getState().get(groupByKey);
 
         // The aggregators for this group do not exist, need to create them from the prototypes
         if (groupAggregators == null)
         {
-            groupAggregators = new Aggregator[this.aggregators.length];
+            groupAggregators = new Aggregator[genericAggregators.length];
             for (int j = 0; j < groupAggregators.length; j++)
             {
-                groupAggregators[j] = aggregators[j].newAggregator();
+                groupAggregators[j] = genericAggregators[j].newAggregator();
             }
-            aggregatorsPerGroup.put(groupByKey, groupAggregators);
+            aggregatorsPerGroup.getState().put(groupByKey, groupAggregators);
         }
 
         // For this row, evaluate sub-expressions, enter result
@@ -58,17 +71,18 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
 
     public void applyLeave(EventBean[] eventsPerStream, MultiKey groupByKey)
     {
-        Aggregator[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
+        Aggregator[] genericAggregators = aggregationState.getState();
+        Aggregator[] groupAggregators = aggregatorsPerGroup.getState().get(groupByKey);
 
         // The aggregators for this group do not exist, need to create them from the prototypes
         if (groupAggregators == null)
         {
-            groupAggregators = new Aggregator[this.aggregators.length];
+            groupAggregators = new Aggregator[genericAggregators.length];
             for (int j = 0; j < groupAggregators.length; j++)
             {
-                groupAggregators[j] = aggregators[j].newAggregator();
+                groupAggregators[j] = genericAggregators[j].newAggregator();
             }
-            aggregatorsPerGroup.put(groupByKey, groupAggregators);
+            aggregatorsPerGroup.getState().put(groupByKey, groupAggregators);
         }
 
         // For this row, evaluate sub-expressions, enter result
@@ -81,16 +95,17 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
 
     public void setCurrentRow(MultiKey groupByKey)
     {
-        currentAggregatorRow = aggregatorsPerGroup.get(groupByKey);
+        Aggregator[] genericAggregators = aggregationState.getState();
+        currentAggregatorRow = aggregatorsPerGroup.getState().get(groupByKey);
 
         if (currentAggregatorRow == null)
         {
-            currentAggregatorRow = new Aggregator[this.aggregators.length];
+            currentAggregatorRow = new Aggregator[genericAggregators.length];
             for (int j = 0; j < currentAggregatorRow.length; j++)
             {
-                currentAggregatorRow[j] = aggregators[j].newAggregator();
+                currentAggregatorRow[j] = genericAggregators[j].newAggregator();
             }
-            aggregatorsPerGroup.put(groupByKey, currentAggregatorRow);
+            aggregatorsPerGroup.getState().put(groupByKey, currentAggregatorRow);
         }
     }
 

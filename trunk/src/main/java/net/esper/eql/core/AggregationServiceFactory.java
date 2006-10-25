@@ -5,6 +5,8 @@ import net.esper.eql.core.AggregationService;
 import net.esper.eql.expression.ExprAggregateNode;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.persist.*;
+import net.esper.client.logstate.LogEntryType;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -26,7 +28,8 @@ public class AggregationServiceFactory
     public static AggregationService getService(List<ExprAggregateNode> aggregateExprNodes,
                                                 boolean hasGroupByClause,
                                                 ExprNode optionalHavingNode,
-                                                List<ExprNode> sortByNodes)
+                                                List<ExprNode> sortByNodes,
+                                                LogContextNode<String> statementLogContext)
     {
         // No aggregates used, we do not need this service
         if (aggregateExprNodes.size() == 0)
@@ -67,16 +70,18 @@ public class AggregationServiceFactory
             index++;
         }
 
+        LogContextNode<Aggregator[]> aggregationState = statementLogContext.createChild(LogEntryType.GROUP_AGG_STATE, aggregators);
+
         AggregationService service = null;
         if (hasGroupByClause)
         {
             // If there is a group-by clause, then we need to keep aggregators as prototypes
-            service = new AggregationServiceGroupByImpl(evaluators, aggregators);
+            service = new AggregationServiceGroupByImpl(evaluators, aggregationState, statementLogContext);            
         }
         else
         {
             // Without a group-by clause we group all into the same pot, using one set of aggregators
-            service = new AggregationServiceGroupAllImpl(evaluators, aggregators);
+            service = new AggregationServiceGroupAllImpl(evaluators, aggregationState);
         }
 
         // Inspect having clause for aggregation

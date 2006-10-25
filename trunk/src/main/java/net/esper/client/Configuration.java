@@ -11,6 +11,7 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.*;
+import net.esper.client.logstate.LogEntryHandler;
 
 /**
  * An instance of <tt>Configuration</tt> allows the application
@@ -28,7 +29,7 @@ import org.w3c.dom.*;
  */
 public class Configuration {
 
-	private static Log log = LogFactory.getLog( Configuration.class );
+    private static Log log = LogFactory.getLog( Configuration.class );
 
     /**
      * Default name of the configuration file.
@@ -38,34 +39,39 @@ public class Configuration {
     /**
      * Map of event name and fully-qualified Java class name.
      */
-	protected Map<String, String> eventClasses;
+    protected Map<String, String> eventClasses;
 
     /**
      * Map of event type alias and XML DOM configuration.
      */
-	protected Map<String, ConfigurationEventTypeXMLDOM> eventTypesXMLDOM;
+    protected Map<String, ConfigurationEventTypeXMLDOM> eventTypesXMLDOM;
 
     /**
      * Map of event type alias and Legacy-type event configuration.
      */
-	protected Map<String, ConfigurationEventTypeLegacy> eventTypesLegacy;
+    protected Map<String, ConfigurationEventTypeLegacy> eventTypesLegacy;
 
-	/**
-	 * The type aliases for events that result when maps are sent
-	 * into the engine.
-	 */
-	protected Map<String, Properties> mapAliases;
-	
-	/**
-	 * The java-style class and package name imports that
-	 * will be used to resolve partial class names.
-	 */
-	protected List<String> imports;
+    /**
+     * The type aliases for events that result when maps are sent
+     * into the engine.
+     */
+    protected Map<String, Properties> mapAliases;
 
-	/**
-	 * True until the user calls addAutoImport().
-	 */
-	private boolean isUsingDefaultImports = true;
+    /**
+     * The java-style class and package name imports that
+     * will be used to resolve partial class names.
+     */
+    protected List<String> imports;
+
+    /**
+     * True until the user calls addAutoImport().
+     */
+    private boolean isUsingDefaultImports = true;
+
+    /**
+     * Instance to handle log entries. Can be null if following in-memory model.
+     */
+    private LogEntryHandler logEntryHandler;
 
     /**
      * Constructs an empty configuration. The auto import values
@@ -94,9 +100,9 @@ public class Configuration {
      */
     public void addEventTypeAlias(String eventTypeAlias, Properties typeMap)
     {
-    	mapAliases.put(eventTypeAlias, typeMap);
+        mapAliases.put(eventTypeAlias, typeMap);
     }
-    
+
     /**
      * Add an alias for an event type that represents org.w3c.dom.Node events.
      * @param eventTypeAlias is the alias for the event type
@@ -125,12 +131,12 @@ public class Configuration {
      */
     public void addImport(String autoImport)
     {
-		if(isUsingDefaultImports)
-		{
-			isUsingDefaultImports = false;
-			imports.clear();
-		}
-    	imports.add(autoImport);
+        if(isUsingDefaultImports)
+        {
+            isUsingDefaultImports = false;
+            imports.clear();
+        }
+        imports.add(autoImport);
     }
 
     /**
@@ -149,9 +155,9 @@ public class Configuration {
      */
     public Map<String, Properties> getEventTypesMapEvents()
     {
-    	return mapAliases;
+        return mapAliases;
     }
-    
+
     /**
      * Returns the mapping of event type alias to XML DOM event type information.
      * @return event type aliases mapping to XML DOM configs
@@ -174,22 +180,40 @@ public class Configuration {
      * Returns the class and package imports.
      * @return imported names
      */
-	public List<String> getImports()
-	{
-		return imports;
-	}
+    public List<String> getImports()
+    {
+        return imports;
+    }
 
-	/**
-	 * Use the configuration specified in an application
-	 * resource named <tt>esper.cfg.xml</tt>.
+    /**
+     * Return log entry handler.
+     * @return log entry handler
+     */
+    public LogEntryHandler getLogEntryHandler()
+    {
+        return logEntryHandler;
+    }
+
+    /**
+     * Sets log entry handler.
+     * @param logHandler is the engine log entry handler
+     */
+    public void setLogEntryHandler(LogEntryHandler logHandler)
+    {
+        this.logEntryHandler = logHandler;
+    }
+
+    /**
+     * Use the configuration specified in an application
+     * resource named <tt>esper.cfg.xml</tt>.
      * @return Configuration initialized from the resource
      * @throws EPException thrown to indicate error reading configuration
      */
-	public Configuration configure() throws EPException
+    public Configuration configure() throws EPException
     {
-		configure("/" + ESPER_DEFAULT_CONFIG);
-		return this;
-	}
+        configure("/" + ESPER_DEFAULT_CONFIG);
+        return this;
+    }
 
     /**
      * Use the configuration specified in the given application
@@ -229,62 +253,62 @@ public class Configuration {
     }
 
 
-	/**
-	 * Use the configuration specified by the given URL.
-	 * The format of the document obtained from the URL is defined in
-	 * <tt>esper-configuration-1.0.xsd</tt>.
-	 *
-	 * @param url URL from which you wish to load the configuration
-	 * @return A configuration configured via the file
-	 * @throws EPException
-	 */
-	public Configuration configure(URL url) throws EPException
+    /**
+     * Use the configuration specified by the given URL.
+     * The format of the document obtained from the URL is defined in
+     * <tt>esper-configuration-1.0.xsd</tt>.
+     *
+     * @param url URL from which you wish to load the configuration
+     * @return A configuration configured via the file
+     * @throws EPException
+     */
+    public Configuration configure(URL url) throws EPException
     {
-		log.debug( "configuring from url: " + url.toString() );
-		try {
+        log.debug( "configuring from url: " + url.toString() );
+        try {
             ConfigurationParser.doConfigure(this, url.openStream(), url.toString());
             return this;
-		}
-		catch (IOException ioe) {
-			throw new EPException("could not configure from URL: " + url, ioe );
-		}
-	}
+        }
+        catch (IOException ioe) {
+            throw new EPException("could not configure from URL: " + url, ioe );
+        }
+    }
 
-	/**
-	 * Use the configuration specified in the given application
-	 * file. The format of the file is defined in
-	 * <tt>esper-configuration-1.0.xsd</tt>.
-	 *
-	 * @param configFile <tt>File</tt> from which you wish to load the configuration
-	 * @return A configuration configured via the file
-	 * @throws EPException
-	 */
-	public Configuration configure(File configFile) throws EPException
+    /**
+     * Use the configuration specified in the given application
+     * file. The format of the file is defined in
+     * <tt>esper-configuration-1.0.xsd</tt>.
+     *
+     * @param configFile <tt>File</tt> from which you wish to load the configuration
+     * @return A configuration configured via the file
+     * @throws EPException
+     */
+    public Configuration configure(File configFile) throws EPException
     {
-		log.debug( "configuring from file: " + configFile.getName() );
-		try {
+        log.debug( "configuring from file: " + configFile.getName() );
+        try {
             ConfigurationParser.doConfigure(this, new FileInputStream(configFile), configFile.toString());
-		}
-		catch (FileNotFoundException fnfe) {
-			throw new EPException( "could not find file: " + configFile, fnfe );
-		}
+        }
+        catch (FileNotFoundException fnfe) {
+            throw new EPException( "could not find file: " + configFile, fnfe );
+        }
         return this;
     }
 
 
-	/**
-	 * Use the mappings and properties specified in the given XML document.
-	 * The format of the file is defined in
-	 * <tt>esper-configuration-1.0.xsd</tt>.
-	 *
-	 * @param document an XML document from which you wish to load the configuration
-	 * @return A configuration configured via the <tt>Document</tt>
-	 * @throws EPException if there is problem in accessing the document.
-	 */
-	public Configuration configure(Document document) throws EPException
+    /**
+     * Use the mappings and properties specified in the given XML document.
+     * The format of the file is defined in
+     * <tt>esper-configuration-1.0.xsd</tt>.
+     *
+     * @param document an XML document from which you wish to load the configuration
+     * @return A configuration configured via the <tt>Document</tt>
+     * @throws EPException if there is problem in accessing the document.
+     */
+    public Configuration configure(Document document) throws EPException
     {
-		log.debug( "configuring from XML document" );
-		ConfigurationParser.doConfigure(this, document);
+        log.debug( "configuring from XML document" );
+        ConfigurationParser.doConfigure(this, document);
         return this;
     }
 
@@ -351,10 +375,10 @@ public class Configuration {
      */
     private void addDefaultImports()
     {
-    	imports.add("java.lang.*");
-    	imports.add("java.math.*");
-    	imports.add("java.text.*");
-    	imports.add("java.util.*");
+        imports.add("java.lang.*");
+        imports.add("java.math.*");
+        imports.add("java.text.*");
+        imports.add("java.util.*");
     }
 }
 

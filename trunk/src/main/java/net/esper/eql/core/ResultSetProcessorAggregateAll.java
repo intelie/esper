@@ -68,6 +68,8 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
         }
 
+        aggregationService.preState();
+
         if (!oldEvents.isEmpty())
         {
             // apply old data to aggregates
@@ -85,6 +87,8 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
                 aggregationService.applyEnter(events.getArray(), null);
             }
         }
+
+        aggregationService.postState();
 
         if (optionalHavingNode == null)
         {
@@ -118,6 +122,8 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
         }
 
+        aggregationService.preState();
+
         EventBean[] eventsPerStream = new EventBean[1];
         if (oldData != null)
         {
@@ -138,6 +144,8 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
                 aggregationService.applyEnter(eventsPerStream, null);
             }
         }
+
+        aggregationService.postState();        
 
         // generate new events using select expressions
         if (optionalHavingNode == null)

@@ -2,10 +2,11 @@ package net.esper.eql.core;
 
 import net.esper.support.eql.SupportAggregator;
 import net.esper.support.eql.SupportExprNode;
+import net.esper.support.persist.SupportLogContextNodeFactory;
 import net.esper.event.EventBean;
 import net.esper.collection.MultiKey;
-import net.esper.eql.core.AggregationServiceGroupByImpl;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.persist.LogContextNode;
 import junit.framework.TestCase;
 
 public class TestAggregationServiceGroupByImpl extends TestCase
@@ -23,7 +24,12 @@ public class TestAggregationServiceGroupByImpl extends TestCase
         }
         ExprEvaluator evaluators[] = new ExprEvaluator[] { new SupportExprNode(5), new SupportExprNode(2) };
 
-        service = new AggregationServiceGroupByImpl(evaluators, aggregators);
+        Aggregator[] aggregatorsGeneric = new Aggregator[aggregators.length];
+        System.arraycopy(aggregators, 0, aggregatorsGeneric, 0, aggregators.length);
+        LogContextNode<Aggregator[]> contextAgg = SupportLogContextNodeFactory.createChild(aggregatorsGeneric);
+        LogContextNode<String> contextStmt = SupportLogContextNodeFactory.createChild("");
+        
+        service = new AggregationServiceGroupByImpl(evaluators, contextAgg, contextStmt);
 
         groupOneKey = new MultiKey<Object>(new Object[] {"x", "y1"});
         groupTwoKey = new MultiKey<Object>(new Object[] {"x", "y2"});

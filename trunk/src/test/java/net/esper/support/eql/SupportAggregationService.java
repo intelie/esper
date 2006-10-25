@@ -13,6 +13,14 @@ public class SupportAggregationService implements AggregationService
     private List<Pair<EventBean[], MultiKey>> leaveList = new LinkedList<Pair<EventBean[], MultiKey>>();
     private List<Pair<EventBean[], MultiKey>> enterList = new LinkedList<Pair<EventBean[], MultiKey>>();
 
+    public void preState()
+    {
+    }
+
+    public void postState()
+    {
+    }
+
     public void applyLeave(EventBean[] eventsPerStream, MultiKey optionalGroupKeyPerRow)
     {
         leaveList.add(new Pair<EventBean[], MultiKey>(eventsPerStream, optionalGroupKeyPerRow));

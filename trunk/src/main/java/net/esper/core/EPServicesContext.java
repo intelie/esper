@@ -16,6 +16,10 @@ import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
 import net.esper.view.stream.StreamReuseService;
 import net.esper.view.stream.StreamReuseServiceProvider;
+import net.esper.persist.LogContextEngine;
+import net.esper.persist.LogService;
+import net.esper.client.logstate.LogEntryHandler;
+import net.esper.persist.LogContextEngineProvider;
 
 /**
  * Convenience class to instantiate implementations for all services.
@@ -31,6 +35,8 @@ public final class EPServicesContext
     private final StreamReuseService streamReuseService;
     private final EventAdapterService eventAdapterService;
     private final AutoImportService autoImportService;
+    private final LogContextEngine logContextEngine;
+    private final LogService logService;
 
     // Must be set
     private InternalEventRouter internalEventRouter;
@@ -40,7 +46,7 @@ public final class EPServicesContext
      * @param eventAdapterService service to resolve event types
      * @param autoImportService service to resolve partial class names
      */
-    public EPServicesContext(EventAdapterService eventAdapterService, AutoImportService autoImportService)
+    public EPServicesContext(String optionalEngineURI, EventAdapterService eventAdapterService, AutoImportService autoImportService, LogEntryHandler logHandler)
     {
         this.filterService = FilterServiceProvider.newService();
         this.timerService = TimerServiceProvider.newService();
@@ -51,6 +57,18 @@ public final class EPServicesContext
         this.streamReuseService = StreamReuseServiceProvider.newService();
         this.eventAdapterService = eventAdapterService;
         this.autoImportService = autoImportService;
+        this.logService = LogContextEngineProvider.newLogService(logHandler);
+        this.logContextEngine = LogContextEngineProvider.newLogContext(logService, optionalEngineURI);
+    }
+
+    public LogContextEngine getLogContext()
+    {
+        return logContextEngine;
+    }
+
+    public LogService getLogService()
+    {
+        return logService;
     }
 
     /**
@@ -142,14 +160,14 @@ public final class EPServicesContext
     {
         return eventAdapterService;
     }
-    
+
     /**
      * Returns the import and class name resolution service.
      * @return import service
      */
     public AutoImportService getAutoImportService()
     {
-    	return autoImportService;
+        return autoImportService;
     }
 
 }

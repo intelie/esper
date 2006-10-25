@@ -10,6 +10,7 @@ import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.eql.spec.InsertIntoDesc;
 import net.esper.eql.spec.SelectExprElementUnnamedSpec;
 import net.esper.eql.spec.SelectExprElementNamedSpec;
+import net.esper.persist.LogContextNode;
 
 import java.util.*;
 
@@ -67,7 +68,8 @@ public class ResultSetProcessorFactory
                                                	  List<Pair<ExprNode, Boolean>> orderByList,
                                                   StreamTypeService typeService,
                                                   EventAdapterService eventAdapterService,
-                                                  AutoImportService autoImportService)
+                                                  AutoImportService autoImportService,
+                                                  LogContextNode<String> statementContext)
             throws ExprValidationException
     {
         if (log.isDebugEnabled())
@@ -146,7 +148,7 @@ public class ResultSetProcessorFactory
 
         // Construct the appropriate aggregation service
         boolean hasGroupBy = groupByNodes.size() > 0;
-        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, hasGroupBy, optionalHavingNode, orderByNodes);
+        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, hasGroupBy, optionalHavingNode, orderByNodes, statementContext);
 
         // Construct the processor for sorting output events
         OrderByProcessor orderByProcessor = OrderByProcessorFactory.getProcessor(namedSelectionList,

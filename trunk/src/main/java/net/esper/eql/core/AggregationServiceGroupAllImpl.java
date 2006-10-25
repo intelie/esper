@@ -2,8 +2,8 @@ package net.esper.eql.core;
 
 import net.esper.collection.MultiKey;
 import net.esper.event.EventBean;
-import net.esper.eql.core.AggregationServiceBase;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.persist.LogContextNode;
 
 /**
  * Implementation for handling aggregation without any grouping (no group-by).
@@ -13,15 +13,27 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
     /**
      * Ctor.
      * @param evaluators - evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))
-     * @param aggregators - collect the aggregation state that evaluators evaluate to
+     * @param aggregationState - collect the aggregation state that evaluators evaluate to
      */
-    public AggregationServiceGroupAllImpl(ExprEvaluator evaluators[], Aggregator aggregators[])
+    public AggregationServiceGroupAllImpl(ExprEvaluator evaluators[], LogContextNode<Aggregator[]> aggregationState)
     {
-        super(evaluators, aggregators);
+        super(evaluators, aggregationState);
+    }
+
+    public void preState()
+    {
+        // no action required
+    }
+
+    public void postState()
+    {
+        aggregationState.update();
     }
 
     public void applyEnter(EventBean[] eventsPerStream, MultiKey optionalGroupKeyPerRow)
     {
+        Aggregator aggregators[] = aggregationState.getState();
+
         for (int j = 0; j < evaluators.length; j++)
         {
             Object columnResult = evaluators[j].evaluate(eventsPerStream);
@@ -31,6 +43,8 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
 
     public void applyLeave(EventBean[] eventsPerStream, MultiKey optionalGroupKeyPerRow)
     {
+        Aggregator aggregators[] = aggregationState.getState();
+
         for (int j = 0; j < evaluators.length; j++)
         {
             Object columnResult = evaluators[j].evaluate(eventsPerStream);
@@ -45,6 +59,6 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
 
     public Object getValue(int column)
     {
-        return aggregators[column].getValue();
+        return aggregationState.getState()[column].getValue();
     }
 }

@@ -1,13 +1,14 @@
 package net.esper.collection;
 
 import java.util.Vector;
+import java.io.Serializable;
 
 /**
  * Sorted, reference-counting set based on a TreeMap implementation that stores keys and a reference counter for
  * each unique key value. Each time the same key is added, the reference counter increases.
  * Each time a key is removed, the reference counter decreases.
  */
-public class SortedDoubleVector
+public class SortedDoubleVector implements Serializable
 {
     private Vector<Double> values;
 

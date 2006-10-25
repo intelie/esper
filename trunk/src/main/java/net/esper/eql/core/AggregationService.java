@@ -11,6 +11,16 @@ import net.esper.eql.core.AggregationResultFuture;
 public interface AggregationService extends AggregationResultFuture
 {
     /**
+     * Called to indicate start of change to aggregation state via apply methods.
+     */
+    public void preState();
+
+    /**
+     * Called to indicate end of change to aggregation state via apply methods.
+     */
+    public void postState();
+
+    /**
      * Apply events as entering a window (new events).
      * @param eventsPerStream - events for each stream entering window
      * @param optionalGroupKeyPerRow - can be null if grouping without keys is desired, else the keys

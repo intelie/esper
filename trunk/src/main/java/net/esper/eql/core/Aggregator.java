@@ -1,11 +1,13 @@
 package net.esper.eql.core;
 
+import java.io.Serializable;
+
 /**
  * Maintains aggregation state applying values as entering and leaving the state.
  * <P>Implementations must also act as a factory for further independent copies of aggregation states such that
  * new aggregation state holders and be created from a prototype.
  */
-public interface Aggregator
+public interface Aggregator extends Serializable
 {
     /**
      * Apply the value as entering aggregation (entering window).

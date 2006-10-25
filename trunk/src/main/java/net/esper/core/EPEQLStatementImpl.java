@@ -11,6 +11,7 @@ import net.esper.event.EventType;
 import net.esper.view.ViewProcessingException;
 import net.esper.view.Viewable;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.persist.LogContextNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,11 +37,15 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
      * @param dispatchService for dispatching
      * @param startMethod to start the view
      */
-    public EPEQLStatementImpl(String expressionText, DispatchService dispatchService,
-                               EPEQLStmtStartMethod startMethod)
+    public EPEQLStatementImpl(String expressionText,
+                              DispatchService dispatchService,
+                              EPEQLStmtStartMethod startMethod,
+                              LogContextNode<String> statementLogContext)
     {
+        super(statementLogContext);
+
         this.expressionText = expressionText;
-        this.dispatchChildView = new UpdateDispatchView(this.getListeners(), dispatchService);
+        this.dispatchChildView = new UpdateDispatchView(this.getListenerState(), dispatchService);
         this.startMethod = startMethod;
 
         start();

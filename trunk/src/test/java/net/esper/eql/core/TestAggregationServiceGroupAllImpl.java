@@ -2,9 +2,10 @@ package net.esper.eql.core;
 
 import net.esper.support.eql.SupportExprNode;
 import net.esper.support.eql.SupportAggregator;
+import net.esper.support.persist.SupportLogContextNodeFactory;
 import net.esper.event.EventBean;
-import net.esper.eql.core.AggregationServiceGroupAllImpl;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.persist.LogContextNode;
 import junit.framework.TestCase;
 
 public class TestAggregationServiceGroupAllImpl extends TestCase
@@ -14,14 +15,17 @@ public class TestAggregationServiceGroupAllImpl extends TestCase
     public void setUp()
     {
         SupportAggregator aggregators[] = new SupportAggregator[2];
+        Aggregator aggregatorsBase[] = new Aggregator[aggregators.length];
         for (int i = 0; i < aggregators.length; i++)
         {
             aggregators[i] = new SupportAggregator();
+            aggregatorsBase[i] = aggregators[i];
         }
 
         ExprEvaluator evaluators[] = new ExprEvaluator[] { new SupportExprNode(5), new SupportExprNode(2) };
 
-        service = new AggregationServiceGroupAllImpl(evaluators, aggregators);
+        LogContextNode<Aggregator[]> aggLogContext = SupportLogContextNodeFactory.createChild(aggregatorsBase);
+        service = new AggregationServiceGroupAllImpl(evaluators, aggLogContext);
     }
 
     public void testApplyEnter()

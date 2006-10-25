@@ -1,8 +1,8 @@
 package net.esper.core;
 
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Vector;
+import java.util.Set;
 
 import net.esper.client.UpdateListener;
 import net.esper.dispatch.DispatchService;
@@ -12,6 +12,7 @@ import net.esper.event.EventBeanUtility;
 import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
 import net.esper.view.Viewable;
+import net.esper.persist.LogContextNode;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class UpdateDispatchView extends ViewSupport implements Dispatchable
 {
-    private final Set<UpdateListener> updateListeners;
+    private final LogContextNode<Set<UpdateListener>> updateListenerState;
     private final DispatchService dispatchService;
     private boolean isDispatchWaiting;
 
@@ -31,12 +32,12 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
 
     /**
      * Ctor.
-     * @param updateListeners - listeners to update
+     * @param updateListenerState - listeners to update
      * @param dispatchService - for performing the dispatch
      */
-    public UpdateDispatchView(Set<UpdateListener> updateListeners, DispatchService dispatchService)
+    public UpdateDispatchView(LogContextNode<Set<UpdateListener>> updateListenerState, DispatchService dispatchService)
     {
-        this.updateListeners = updateListeners;
+        this.updateListenerState = updateListenerState;
         this.dispatchService = dispatchService;
     }
 
@@ -87,7 +88,7 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
             ViewSupport.dumpUpdateParams(".execute", newEvents, oldEvents);
         }
 
-        for (UpdateListener listener : updateListeners)
+        for (UpdateListener listener : updateListenerState.getState())
         {
             listener.update(newEvents, oldEvents);
         }

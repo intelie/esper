@@ -1,5 +1,7 @@
 package net.esper.client;
 
+import java.util.List;
+
 /**
  * Administrative interface to the event stream processing engine. Includes methods to create patterns and EQL statements.
  */
@@ -20,4 +22,10 @@ public interface EPAdministrator
      * @throws EPException when the expression was not valid
      */
     public EPStatement createEQL(String eqlStatement) throws EPException;
+
+    /**
+     * Returns a list of started and stopped statements.  
+     * @return list of statements
+     */
+    public List<EPStatement> getStatements();
 }

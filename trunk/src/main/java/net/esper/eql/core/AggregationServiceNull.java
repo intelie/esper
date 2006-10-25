@@ -10,6 +10,14 @@ import net.esper.eql.core.AggregationService;
  */
 public class AggregationServiceNull implements AggregationService {
 
+    public void preState()
+    {
+    }
+
+    public void postState()
+    {
+    }
+
     public void applyEnter(EventBean[] eventsPerStream,
                            MultiKey optionalGroupKeyPerRow) {
     }
@@ -24,5 +32,4 @@ public class AggregationServiceNull implements AggregationService {
     public Object getValue(int column) {
         return null;
     }
-
 }

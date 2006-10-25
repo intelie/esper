@@ -94,6 +94,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         log.debug(".processJoinResults creating old output events");
         EventBean[] selectOldEvents = generateOutputEventsJoin(oldEvents, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators);
 
+        aggregationService.preState();
+
         // update aggregates
         if (!oldEvents.isEmpty())
         {
@@ -116,6 +118,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
         }
 
+        aggregationService.postState();
+
         // generate new events using select expressions
         log.debug(".processJoinResults creating new output events");
         EventBean[] selectNewEvents = generateOutputEventsJoin(newEvents, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators);
@@ -137,6 +141,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         log.debug(".processViewResults creating old output events");
         EventBean[] selectOldEvents = generateOutputEventsView(oldData, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators);
 
+        aggregationService.preState();
+
         // update aggregates
         EventBean[] eventsPerStream = new EventBean[1];
         if (oldData != null)
@@ -157,6 +163,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 aggregationService.applyEnter(eventsPerStream, newDataGroupByKeys[i]);
             }
         }
+
+        aggregationService.postState();
 
         // generate new events using select expressions
         log.debug(".processViewResults creating new output events");

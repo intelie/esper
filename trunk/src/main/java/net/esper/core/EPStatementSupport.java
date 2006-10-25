@@ -4,13 +4,31 @@ import java.util.*;
 
 import net.esper.client.EPListenable;
 import net.esper.client.UpdateListener;
+import net.esper.persist.LogContextNode;
+import net.esper.persist.LogContextChangedCallback;
+import net.esper.client.logstate.LogEntryType;
 
 /**
  * Base class for an EPStatement - provides listener registration functions.
  */
-public abstract class EPStatementSupport implements EPListenable
+public abstract class EPStatementSupport implements EPListenable, LogContextChangedCallback
 {
-    private Set<UpdateListener> listeners = new LinkedHashSet<UpdateListener>();
+    private LogContextNode<Set<UpdateListener>> listenerState;
+
+    protected EPStatementSupport(LogContextNode<String> statementLogContext)
+    {
+        Set<UpdateListener> listeners = new LinkedHashSet<UpdateListener>();
+        listenerState = statementLogContext.createChild(LogEntryType.SUBSCRIPTION, listeners);
+        listenerState.setStateChangedCallback(this);
+    }
+
+    public void updated()
+    {
+        if (listenerState.getState().size() > 0)
+        {
+            listenerStart();
+        }
+    }
 
     /**
      * Called when the last listener is removed.
@@ -28,7 +46,7 @@ public abstract class EPStatementSupport implements EPListenable
      */
     public Set<UpdateListener> getListeners()
     {
-        return listeners;
+        return Collections.unmodifiableSet(listenerState.getState());
     }
 
     /**
@@ -42,8 +60,9 @@ public abstract class EPStatementSupport implements EPListenable
             throw new IllegalArgumentException("Null listener reference supplied");
         }
 
-        listeners.add(listener);
-        if (listeners.size() == 1)
+        listenerState.getState().add(listener);
+        listenerState.update();
+        if (listenerState.getState().size() == 1)
         {
             listenerStart();
         }
@@ -60,8 +79,9 @@ public abstract class EPStatementSupport implements EPListenable
             throw new IllegalArgumentException("Null listener reference supplied");
         }
 
-        listeners.remove(listener);
-        if (listeners.size() == 0)
+        listenerState.getState().remove(listener);
+        listenerState.update();
+        if (listenerState.getState().size() == 0)
         {
             listenerStop();
         }
@@ -72,7 +92,13 @@ public abstract class EPStatementSupport implements EPListenable
      */
     public void removeAllListeners()
     {
-        listeners.clear();
+        listenerState.getState().clear();
+        listenerState.update();
         listenerStop();
+    }
+
+    public LogContextNode<Set<UpdateListener>> getListenerState()
+    {
+        return listenerState;
     }
 }
