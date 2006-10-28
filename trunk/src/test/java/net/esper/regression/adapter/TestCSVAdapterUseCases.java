@@ -29,13 +29,13 @@ public class TestCSVAdapterUseCases extends TestCase
     {
         Map<String, Class> type = new HashMap<String, Class>();
         type.put("symbol", String.class);
-        type.put("price", double.class);
+        type.put("price", Double.class);
         type.put("volume", Integer.class);
 
         Configuration configuration = new Configuration();
         configuration.addEventTypeAlias("TypeA", type);
 
-        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService = EPServiceProviderManager.getProvider("useCaseProvider", configuration);
         epService.initialize();
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeA.win:length(100)");

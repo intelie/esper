@@ -44,7 +44,7 @@ public class CSVReader
 			throw new NullPointerException("AdapterInputSource cannot be null");
 		}
 		this.inputSource = adapterInputSource;
-		inputStream = inputSource.openStream();
+		inputStream = inputSource.getStream();
 		reader = new BufferedInputStream(inputStream);
 	}
 	
@@ -129,7 +129,7 @@ public class CSVReader
 			log.debug(".reset");
 			inputStream.close();
 			reader.close();
-			inputStream = inputSource.openStream();
+			inputStream = inputSource.getStream();
 			reader = new BufferedInputStream(inputStream);
 			atEOF = false;
 			if(isUsingTitleRow)

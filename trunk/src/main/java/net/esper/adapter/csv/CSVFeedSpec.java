@@ -58,14 +58,6 @@ public class CSVFeedSpec implements FeedSpec
 	}
 
 	/**
-	 * @param eventTypeAlias - the eventTypeAlias to set
-	 */
-	public void setEventTypeAlias(String eventTypeAlias)
-	{
-		parameters.put("eventTypeAlias", eventTypeAlias);
-	}
-
-	/**
 	 * @param looping - the isLooping value to set
 	 */
 	public void setLooping(boolean looping)

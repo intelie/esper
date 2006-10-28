@@ -24,15 +24,14 @@ public class PropertyOrderHelper
 	 * from the first row of the CSV file.
 	 * @param firstRow - the first record of the CSV file
 	 * @param propertyTypes - describes the event to send into the EPRuntime
-	 * @param timestampColumn - the name of the timestamp column, or null if no timestamp column
 	 * @return the property names in the order in which they occur in the file
 	 */
-	public static String[] resolvePropertyOrder(String[] firstRow, Map<String, Class> propertyTypes, String timestampColumn)
+	public static String[] resolvePropertyOrder(String[] firstRow, Map<String, Class> propertyTypes)
 	{
 		log.debug(".resolvePropertyOrder firstRow==" + Arrays.asList(firstRow));
 		String[] result = null;
 		
-		if(isValidTitleRow(firstRow, propertyTypes, timestampColumn))
+		if(isValidTitleRow(firstRow, propertyTypes))
 		{
 			result = firstRow;
 			log.debug(".resolvePropertyOrder using valid title row, propertyOrder==" + Arrays.asList(result));
@@ -45,7 +44,7 @@ public class PropertyOrderHelper
 		return result;
 	}
 
-	private static boolean isValidTitleRow(String[] row, Map<String, Class> propertyTypes, String timestampColumn)
+	private static boolean isValidTitleRow(String[] row, Map<String, Class> propertyTypes)
 	{
 		if(propertyTypes == null)
 		{
@@ -53,28 +52,14 @@ public class PropertyOrderHelper
 		}
 		else
 		{
-			return isValidRowLength(row, propertyTypes) && columnNamesAreValid(row, propertyTypes, timestampColumn);
+			return isValidRowLength(row, propertyTypes) && eachPropertyNameRepresented(row, propertyTypes);
 		}
 	}
 
-	private static boolean columnNamesAreValid(String[] row, Map<String, Class> propertyTypes, String timestampColumn)
+	private static boolean eachPropertyNameRepresented(String[] row, Map<String, Class> propertyTypes)
 	{
-		log.debug(".columnNamesAreValid");
-		Set<String> properties = new HashSet<String>();
-		for(String property : row)
-		{
-			if(!isValidColumnName(property, propertyTypes, timestampColumn) || !properties.add(property))
-			{
-				log.debug(".columnNamesAreValid invalid name==" + property);
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private static boolean isValidColumnName(String columnName, Map<String, Class> propertyTypes, String timestampColumn)
-	{
-		return propertyTypes.containsKey(columnName) || columnName.equals(timestampColumn);
+		Set<String> rowSet = new HashSet<String>(Arrays.asList(row));
+		return rowSet.containsAll(propertyTypes.keySet());
 	}
 
 	private static boolean isValidRowLength(String[] row, Map<String, Class> propertyTypes)

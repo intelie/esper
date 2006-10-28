@@ -3,6 +3,7 @@ package net.esper.adapter.csv;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.Feed;
 import net.esper.adapter.FeedFactory;
 import net.esper.adapter.FeedSpec;
@@ -52,6 +53,7 @@ public class CSVFeedFactory implements FeedFactory
 		checkAdapterInputSource(feedSpec);
 		checkEventTypeAlias(feedSpec);
 		checkEventsPerSec(feedSpec);
+		checkInputSource(feedSpec);
 
 		String eventTypeAlias = (String)feedSpec.getParameter("eventTypeAlias");
 		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias, (Map)feedSpec.getParameter("propertyTypes"));
@@ -93,6 +95,20 @@ public class CSVFeedFactory implements FeedFactory
 		if(!(isDefault(eventsPerSec) || isValid(eventsPerSec)))
 		{
 			throw new IllegalArgumentException("Illegal value for eventsPerSec: " + eventsPerSec);
+		}
+	}
+	
+	private void checkInputSource(FeedSpec feedSpec)
+	{
+		AdapterInputSource source = (AdapterInputSource)feedSpec.getParameter("adapterInputSource");
+		if(source == null)
+		{
+			throw new NullPointerException("adapterInputSource cannot be null");
+		}
+		boolean looping = feedSpec.getParameter("looping") != null ? (Boolean)feedSpec.getParameter("looping") : false;
+		if(looping && !source.isRenewable())
+		{
+			throw new EPException("Cannot create a CSV adapter that loops from an input source that is not renewable");
 		}
 	}
 

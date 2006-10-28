@@ -4,8 +4,11 @@ package net.esper.adapter.csv;
 import java.io.EOFException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.esper.adapter.AbstractReadableFeed;
 import net.esper.adapter.AdapterInputSource;
@@ -81,7 +84,7 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 
 		log.debug(".ctor propertyTypes==" + mapSpec.getPropertyTypes());
 		this.propertyOrder = feedSpec.getParameter("propertyOrder") == null ?
-				PropertyOrderHelper.resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes(), timestampColumn) :
+				PropertyOrderHelper.resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes()) :
 					(String[])feedSpec.getParameter("propertyOrder");		
 		log.debug(".ctor propertyOrder==" + Arrays.asList(propertyOrder));		
 				
@@ -92,8 +95,8 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 		}
 		this.propertyConstructors = createPropertyConstructors(propertyTypes);
 		
-		boolean isUsingTitleRow = (firstRow == propertyOrder);
-		reader.setIsUsingTitleRow(isUsingTitleRow);
+		log.debug(".ctor isUsingTitleRow==" + isUsingTitleRow(firstRow, propertyOrder));
+		reader.setIsUsingTitleRow(isUsingTitleRow(firstRow, propertyOrder));
 		reader.reset();
 		
 		eventsPerSec = feedSpec.getParameter("eventsPerSec") != null ?
@@ -193,6 +196,7 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 		Class[] parameterTypes = new Class[] { String.class };
 		for(String property : propertyTypes.keySet())
 		{
+			log.debug(".createPropertyConstructors property==" + property + ", type==" + propertyTypes.get(property	));
 			FastClass fastClass = FastClass.create(propertyTypes.get(property));
 			FastConstructor constructor = fastClass.getConstructor(parameterTypes);
 			constructors.put(property, constructor);
@@ -237,7 +241,7 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 			int msecPerEvent = 1000/eventsPerSec;
 			totalDelay += msecPerEvent;
 		}
-		else
+		else if(timestampColumn != null)
 		{
 			Long timestamp = resolveTimestamp(row);
 			if(timestamp == null)
@@ -314,5 +318,16 @@ public class CSVFeed extends AbstractReadableFeed implements Feed
 			result.put(property, String.class);
 		}
 		return result;
+	}
+	
+	private boolean isUsingTitleRow(String[] firstRow, String[] propertyOrder)
+	{
+		if(firstRow == null)
+		{
+			return false;
+		}
+		Set<String> firstRowSet = new HashSet<String>(Arrays.asList(firstRow));
+		Set<String> propertyOrderSet = new HashSet<String>(Arrays.asList(propertyOrder));
+		return firstRowSet.equals(propertyOrderSet);
 	}
 }
