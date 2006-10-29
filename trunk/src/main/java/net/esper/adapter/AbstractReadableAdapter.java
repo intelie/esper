@@ -13,13 +13,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A skeleton implementation of the Player interface.
+ * A skeleton implementation of the ReadableAdapter interface.
  */
-public abstract class AbstractReadableFeed implements ReadableFeed
+public abstract class AbstractReadableAdapter implements ReadableAdapter
 {
-	private static final Log log = LogFactory.getLog(AbstractReadableFeed.class);
+	private static final Log log = LogFactory.getLog(AbstractReadableAdapter.class);
 	
-	protected final FeedStateManager stateManager = new FeedStateManager();
+	protected final AdapterStateManager stateManager = new AdapterStateManager();
 	protected final SortedSet<SendableEvent> eventsToSend = new TreeSet<SendableEvent>(new SendableEventComparator());
 	private final EPRuntime runtime;
 
@@ -32,18 +32,18 @@ public abstract class AbstractReadableFeed implements ReadableFeed
 	 * Ctor.
 	 * @param runtime - the runtime to send events into
 	 * @param schedulingService - used for scheduling callbacks
-	 * @param usingEngineThread - true if the Feed should set time by the scheduling service in the engine, 
+	 * @param usingEngineThread - true if the Adapter should set time by the scheduling service in the engine, 
 	 *                            false if it should set time externally through the calling thread
 	 */
-	public AbstractReadableFeed(EPRuntime runtime, SchedulingService schedulingService, Boolean usingEngineThread)
+	public AbstractReadableAdapter(EPRuntime runtime, SchedulingService schedulingService, Boolean usingEngineThread)
 	{
 		this.runtime = runtime;
 		this.schedulingService = schedulingService;
-		this.usingEngineThread = usingEngineThread != null ? usingEngineThread : true;
+		this.usingEngineThread = usingEngineThread != null ? usingEngineThread : false;
 		log.debug(".ctor usingEngineThread==" + this.usingEngineThread);
 	}
 	
-	public FeedState getState()
+	public AdapterState getState()
 	{
 		return stateManager.getState();
 	}
@@ -84,26 +84,26 @@ public abstract class AbstractReadableFeed implements ReadableFeed
 	}
 	
 	/**
-	 * Perform any actions specific to this Feed that should
-	 * be completed before the Feed is stopped.
+	 * Perform any actions specific to this Adapter that should
+	 * be completed before the Adapter is stopped.
 	 */
 	protected abstract void close();
 
 	/**
 	 * Remove the first member of eventsToSend and insert
 	 * another event chosen in some fashion specific to this 
-	 * Feed.
+	 * Adapter.
 	 */
 	protected abstract void replaceFirstEventToSend();
 
 	/**
-	 * Reset all the changeable state of this Feed, as if it were just created.
+	 * Reset all the changeable state of this Adapter, as if it were just created.
 	 */
 	protected abstract void reset();
 	
 	private void continueSendingEvents()
 	{
-		if(stateManager.getState() == FeedState.STARTED)
+		if(stateManager.getState() == AdapterState.STARTED)
 		{
 			currentTime = getCurrentTime();
 			log.debug(".continueSendingEvents currentTime==" + currentTime);

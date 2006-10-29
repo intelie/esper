@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.FeedSpec;
-import net.esper.adapter.FeedType;
+import net.esper.adapter.AdapterSpec;
+import net.esper.adapter.AdapterType;
 
 /**
- * A FeedSpec for CSVFeeds.
+ * A spec for CSVAdapters.
  */
-public class CSVFeedSpec implements FeedSpec
+public class CSVAdapterSpec implements AdapterSpec
 {
 	public final Map<String, Object> parameters = new HashMap<String, Object>();
 	
@@ -19,22 +19,22 @@ public class CSVFeedSpec implements FeedSpec
 	 * @param adapterInputSource - the source for the CSV data
 	 * @param eventTypeAlias - the alias for the event type created from the CSV data
 	 */
-	public CSVFeedSpec(AdapterInputSource adapterInputSource, String eventTypeAlias)
+	public CSVAdapterSpec(AdapterInputSource adapterInputSource, String eventTypeAlias)
 	{
 		parameters.put("adapterInputSource", adapterInputSource);
 		parameters.put("eventTypeAlias", eventTypeAlias);
 	}
 
 	/* (non-Javadoc)
-	 * @see net.esper.adapter.FeedSpec#getFeedType()
+	 * @see net.esper.adapter.AdapterSpec#getAdapterType()
 	 */
-	public FeedType getFeedType()
+	public AdapterType getAdapterType()
 	{
-		return FeedType.CSV;
+		return AdapterType.CSV;
 	}
 	
 	/* (non-Javadoc)
-	 * @see net.esper.adapter.FeedSpec#getParameter(java.lang.String)
+	 * @see net.esper.adapter.AdapterSpec#getParameter(java.lang.String)
 	 */
 	public Object getParameter(String parameterName)
 	{
@@ -78,7 +78,7 @@ public class CSVFeedSpec implements FeedSpec
 	
 	
 	/* (non-Javadoc)
-	 * @see net.esper.adapter.FeedSpec#setUsingEngineThread(boolean)
+	 * @see net.esper.adapter.AdapterSpec#setUsingEngineThread(boolean)
 	 */
 	public void setUsingEngineThread(boolean usingEngineThread)
 	{

@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 public class TestFeedStateManager extends TestCase
 {
-	private FeedStateManager stateManager;
+	private AdapterStateManager stateManager;
 	
 	public void testValidTransitionsFromOpened()
 	{
@@ -156,36 +156,36 @@ public class TestFeedStateManager extends TestCase
 	private void start()
 	{
 		stateManager.start();
-		assertEquals(FeedState.STARTED, stateManager.getState());
+		assertEquals(AdapterState.STARTED, stateManager.getState());
 	}
 
 	private void open()
 	{
-		stateManager = new FeedStateManager();	
-		assertEquals(FeedState.OPENED, stateManager.getState());
+		stateManager = new AdapterStateManager();	
+		assertEquals(AdapterState.OPENED, stateManager.getState());
 	}
 
 	private void destroy()
 	{
 		stateManager.destroy();
-		assertEquals(FeedState.DESTROYED, stateManager.getState());
+		assertEquals(AdapterState.DESTROYED, stateManager.getState());
 	}
 	
 	private void stop()
 	{
 		stateManager.stop();
-		assertEquals(FeedState.OPENED, stateManager.getState());
+		assertEquals(AdapterState.OPENED, stateManager.getState());
 	}
 	
 	private void pause()
 	{
 		stateManager.pause();
-		assertEquals(FeedState.PAUSED, stateManager.getState());
+		assertEquals(AdapterState.PAUSED, stateManager.getState());
 	}
 	
 	private void resume()
 	{
 		stateManager.resume();
-		assertEquals(FeedState.STARTED, stateManager.getState());
+		assertEquals(AdapterState.STARTED, stateManager.getState());
 	}
 }

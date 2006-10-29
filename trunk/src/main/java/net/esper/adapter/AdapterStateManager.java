@@ -1,16 +1,16 @@
 package net.esper.adapter;
 
 /**
- * The FeedStateManager defines the valid transitions between different FeedStates.
+Adapter
  */
-public class FeedStateManager
+public class AdapterStateManager
 {
-	private FeedState state = FeedState.OPENED;
+	private AdapterState state = AdapterState.OPENED;
 	
 	/**
 	 * @return the state
 	 */
-	public FeedState getState()
+	public AdapterState getState()
 	{
 		return state;
 	}
@@ -21,11 +21,11 @@ public class FeedStateManager
 	 */
 	public void start() throws IllegalStateTransitionException
 	{
-		if(state != FeedState.OPENED)
+		if(state != AdapterState.OPENED)
 		{
 			throw new IllegalStateTransitionException("Cannot start from the " + state + " state");
 		}
-		state = FeedState.STARTED;
+		state = AdapterState.STARTED;
 	}
 	
 	/**
@@ -34,11 +34,11 @@ public class FeedStateManager
 	 */
 	public void stop() throws IllegalStateTransitionException
 	{
-		if(state != FeedState.STARTED && state != FeedState.PAUSED)
+		if(state != AdapterState.STARTED && state != AdapterState.PAUSED)
 		{
 			throw new IllegalStateTransitionException("Cannot stop from the " + state + " state");
 		}
-		state = FeedState.OPENED;
+		state = AdapterState.OPENED;
 	}
 	
 	/**
@@ -47,11 +47,11 @@ public class FeedStateManager
 	 */
 	public void pause() throws IllegalStateTransitionException
 	{
-		if(state != FeedState.STARTED)
+		if(state != AdapterState.STARTED)
 		{
 			throw new IllegalStateTransitionException("Cannot pause from the " + state + " state");
 		}
-		state = FeedState.PAUSED;
+		state = AdapterState.PAUSED;
 	}
 	
 	/**
@@ -60,11 +60,11 @@ public class FeedStateManager
 	 */
 	public void resume() throws IllegalStateTransitionException
 	{
-		if(state != FeedState.PAUSED)
+		if(state != AdapterState.PAUSED)
 		{
 			throw new IllegalStateTransitionException("Cannot resume from the " + state + " state");
 		}
-		state = FeedState.STARTED;
+		state = AdapterState.STARTED;
 	}
 	
 	/**
@@ -73,10 +73,10 @@ public class FeedStateManager
 	 */
 	public void destroy() throws IllegalStateTransitionException
 	{
-		if(state == FeedState.DESTROYED)
+		if(state == AdapterState.DESTROYED)
 		{
 			throw new IllegalStateTransitionException("Cannot destroy from the " + state + " state");
 		}
-		state = FeedState.DESTROYED;
+		state = AdapterState.DESTROYED;
 	}
 }

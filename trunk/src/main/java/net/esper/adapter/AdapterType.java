@@ -1,9 +1,9 @@
 package net.esper.adapter;
 
 /**
- * The type of a Feed.
+ * The type of a Adapter.
  */
-public enum FeedType
+public enum AdapterType
 {
 	CSV;
 }

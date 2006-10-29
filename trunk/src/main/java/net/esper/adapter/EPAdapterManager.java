@@ -1,6 +1,6 @@
 package net.esper.adapter;
 
-import net.esper.adapter.csv.CSVAdapter;
+import net.esper.adapter.csv.CSVAdapterManager;
 
 /** 
  * A manager for different input adapters.
@@ -8,23 +8,23 @@ import net.esper.adapter.csv.CSVAdapter;
 public interface EPAdapterManager
 {
 	/**
-	 * Create a new Feed.
-	 * @param feedSpec - the parameters for this feed
-	 * @return the newly created feed
+	 * Create a new Adapter.
+	 * @param adapterSpec - the parameters for this Adapter
+	 * @return the newly created Adapter
 	 */
-	public Feed createFeed(FeedSpec feedSpec);
+	public Adapter createAdapter(AdapterSpec adapterSpec);
 	
 	/**
-	 * Create an instance of FeedCoordinator.
+	 * Create an instance of AdapterCoordinator.
 	 * @param usingEngineThread - true if the coordinator should set time by the scheduling service in the engine, 
 	 *                            false if it should set time externally through the calling thread 
-	 * @return a new instance of FeedCoordinator
+	 * @return a new instance of AdapterCoordinator
 	 */
-	public FeedCoordinatorImpl createFeedCoordinator(boolean usingEngineThread);
+	public AdapterCoordinatorImpl createAdapterCoordinator(boolean usingEngineThread);
 
 	/**
 	 * Get the adapter for CSV files.
-	 * @return the CSVAdapter
+	 * @return the CSVAdapterManager
 	 */
-	public CSVAdapter getCSVAdapter();
+	public CSVAdapterManager getCSVAdapter();
 }

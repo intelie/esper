@@ -1,18 +1,18 @@
 package net.esper.adapter;
 
 /**
- * A wrapper for the parameters for a Feed.
+ * A wrapper for the parameters for a Adapter.
  */
-public interface FeedSpec
+public interface AdapterSpec
 {
 	/**
-	 * Get the type of the Feed this FeedSpec is specifying.
-	 * @return the FeedType
+	 * Get the type of the Adapter this AdapterSpec is specifying.
+	 * @return the AdapterType
 	 */
-	public FeedType getFeedType();
+	public AdapterType getAdapterType();
 	
 	/**
-	 * Get a specific parameter for this feed.
+	 * Get a specific parameter for this Adapter.
 	 * @param parameterName - the name of the parameter
 	 * @return the parameter value, or null if the parameter wasn't set
 	 */
@@ -20,7 +20,7 @@ public interface FeedSpec
 
 	/**
 	 * Set the usingEngineThread value.
-	 * @param usingEngineThread - true if the Feed should set time by the scheduling service in the engine, 
+	 * @param usingEngineThread - true if the Adapter should set time by the scheduling service in the engine, 
 	 *                            false if it should set time externally through the calling thread
 	 */
 	public void setUsingEngineThread(boolean usingEngineThread);

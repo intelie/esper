@@ -1,9 +1,8 @@
-package net.esper.adapter.csv;
+package net.esper.adapter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import net.esper.adapter.SendableEvent;
 import net.esper.client.EPRuntime;
 import net.esper.schedule.ScheduleSlot;
 

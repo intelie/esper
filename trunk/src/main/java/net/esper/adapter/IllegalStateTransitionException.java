@@ -6,7 +6,7 @@ package net.esper.adapter;
 import net.esper.client.EPException;
 
 /**
- * Thrown when an illegal Feed state transition is attempted.
+ * Thrown when an illegal Adapter state transition is attempted.
  */
 public class IllegalStateTransitionException extends EPException
 {

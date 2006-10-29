@@ -1,9 +1,9 @@
 package net.esper.adapter;
 
 /**
- * The state of a Feed.
+ * The state of a Adapter.
  */
-public enum FeedState
+public enum AdapterState
 {
 	OPENED,
 	STARTED,

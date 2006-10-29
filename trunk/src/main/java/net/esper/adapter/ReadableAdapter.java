@@ -3,9 +3,9 @@ package net.esper.adapter;
 import net.esper.client.EPException;
 
 /** 
- * A Feed that allows the most current events to be pulled by the user.
+ * A Adapter that allows the most current events to be pulled by the user.
  */
-public interface ReadableFeed extends Feed
+public interface ReadableAdapter extends Adapter
 {
 	/**
 	 * Get the next event in line to be sent into the runtime , or null if there is no available event.

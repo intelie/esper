@@ -1,17 +1,14 @@
 package net.esper.regression.adapter;
 
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import net.esper.adapter.AdapterCoordinator;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.FeedCoordinator;
-import net.esper.adapter.SendableEvent;
-import net.esper.adapter.csv.CSVFeedSpec;
-import net.esper.adapter.csv.SendableMapEvent;
+import net.esper.adapter.csv.CSVAdapterSpec;
 import net.esper.client.Configuration;
 import net.esper.client.EPAdministrator;
 import net.esper.client.EPServiceProvider;
@@ -20,8 +17,6 @@ import net.esper.client.EPStatement;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
-import net.esper.schedule.ScheduleSlot;
-import net.esper.support.adapter.SupportReadableFeed;
 import net.esper.support.util.SupportUpdateListener;
 
 import org.apache.commons.logging.Log;
@@ -35,12 +30,11 @@ public class TestFeedCoordinator extends TestCase
 	private String eventTypeAlias;
 	private EPServiceProvider epService;
 	private long currentTime;
-	private FeedCoordinator coordinator;
-	private SupportReadableFeed supportPlayer = new SupportReadableFeed();
-	private CSVFeedSpec timestampsLooping;
-	private CSVFeedSpec noTimestampsLooping;
-	private CSVFeedSpec noTimestampsNotLooping;
-	private CSVFeedSpec timestampsNotLooping;
+	private AdapterCoordinator coordinator;
+	private CSVAdapterSpec timestampsLooping;
+	private CSVAdapterSpec noTimestampsLooping;
+	private CSVAdapterSpec noTimestampsNotLooping;
+	private CSVAdapterSpec timestampsNotLooping;
 	private String[] propertyOrderNoTimestamp;
 	
 	protected void setUp()
@@ -69,32 +63,32 @@ public class TestFeedCoordinator extends TestCase
 		currentTime = 0;
 		sendTimeEvent(0);
 		
-		coordinator = epService.getEPAdapters().createFeedCoordinator(true);
+		coordinator = epService.getEPAdapters().createAdapterCoordinator(true);
 
     	propertyOrderNoTimestamp = new String[] { "myInt", "myDouble", "myString" };
     	String[] propertyOrderTimestamp = new String[] { "timestamp", "myInt", "myDouble", "myString" };
 		
 		// A CSVPlayer for a file with timestamps, not looping
-		timestampsNotLooping = new CSVFeedSpec(new AdapterInputSource("/regression/timestampOne.csv"), eventTypeAlias);
+		timestampsNotLooping = new CSVAdapterSpec(new AdapterInputSource("/regression/timestampOne.csv"), eventTypeAlias);
 		timestampsNotLooping.setUsingEngineThread(true);
 		timestampsNotLooping.setPropertyOrder(propertyOrderTimestamp);
 		timestampsNotLooping.setTimestampColumn("timestamp");
 		
-		// A CSVFeed for a file with timestamps, looping
-		timestampsLooping = new CSVFeedSpec(new AdapterInputSource("/regression/timestampTwo.csv"), eventTypeAlias);
+		// A CSVAdapter for a file with timestamps, looping
+		timestampsLooping = new CSVAdapterSpec(new AdapterInputSource("/regression/timestampTwo.csv"), eventTypeAlias);
 		timestampsLooping.setLooping(true);
 		timestampsLooping.setUsingEngineThread(true);
 		timestampsLooping.setPropertyOrder(propertyOrderTimestamp);
 		timestampsLooping.setTimestampColumn("timestamp");
 		
-		// A CSVFeed that sends 10 events per sec, not looping
-		noTimestampsNotLooping = new CSVFeedSpec(new AdapterInputSource("/regression/noTimestampOne.csv"), eventTypeAlias);
+		// A CSVAdapter that sends 10 events per sec, not looping
+		noTimestampsNotLooping = new CSVAdapterSpec(new AdapterInputSource("/regression/noTimestampOne.csv"), eventTypeAlias);
 		noTimestampsNotLooping.setEventsPerSec(10);
 		noTimestampsNotLooping.setPropertyOrder(propertyOrderNoTimestamp);
 		noTimestampsNotLooping.setUsingEngineThread(true);
 		
-		// A CSVFeed that sends 5 events per sec, looping
-		noTimestampsLooping = new CSVFeedSpec(new AdapterInputSource("/regression/noTimestampTwo.csv"), eventTypeAlias);
+		// A CSVAdapter that sends 5 events per sec, looping
+		noTimestampsLooping = new CSVAdapterSpec(new AdapterInputSource("/regression/noTimestampTwo.csv"), eventTypeAlias);
 		noTimestampsLooping.setEventsPerSec(5);
 		noTimestampsLooping.setLooping(true);
 		noTimestampsLooping.setPropertyOrder(propertyOrderNoTimestamp);
@@ -211,8 +205,6 @@ public class TestFeedCoordinator extends TestCase
 		log.debug(".testRunTillNull time==600");
 		assertFalse(listener.getAndClearIsInvoked());
 		
-		setSupportEvent(800);
-		
 		// Time is 700
 		sendTimeEvent(100);
 		log.debug(".testRunTillNull time==700");
@@ -225,7 +217,7 @@ public class TestFeedCoordinator extends TestCase
 	
 	public void testNotUsingEngineThread()
 	{
-		coordinator = epService.getEPAdapters().createFeedCoordinator(false);
+		coordinator = epService.getEPAdapters().createAdapterCoordinator(false);
 		coordinator.coordinate(noTimestampsNotLooping);
 		coordinator.coordinate(timestampsNotLooping);
 		
@@ -262,17 +254,6 @@ public class TestFeedCoordinator extends TestCase
 		currentTime += timeIncrement;
 	    CurrentTimeEvent event = new CurrentTimeEvent(currentTime);
 	    epService.getEPRuntime().sendEvent(event);                
-	}
-	
-	private void setSupportEvent(long timestamp)
-	{
-		Map<String, Object> mapToSend = new HashMap<String, Object>();
-		mapToSend.put("myInt", 0);
-		mapToSend.put("myDouble", 0D);
-		mapToSend.put("myString", "supportPlayer.zero");
-		ScheduleSlot slot = new ScheduleSlot(10, 10);
-		SendableEvent event = new SendableMapEvent(mapToSend, eventTypeAlias, timestamp, slot);
-		supportPlayer.setEvent(event);
 	}
 	
 	private void assertSizeAndReset(int size)

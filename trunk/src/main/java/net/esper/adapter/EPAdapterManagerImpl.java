@@ -3,9 +3,9 @@ package net.esper.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.esper.adapter.csv.CSVAdapter;
-import net.esper.adapter.csv.CSVAdapterImpl;
-import net.esper.adapter.csv.CSVFeedFactory;
+import net.esper.adapter.csv.CSVAdapterManager;
+import net.esper.adapter.csv.CSVAdapterManagerImpl;
+import net.esper.adapter.csv.CSVAdapterFactory;
 import net.esper.client.EPRuntime;
 import net.esper.event.EventAdapterService;
 import net.esper.schedule.ScheduleBucket;
@@ -19,8 +19,8 @@ public class EPAdapterManagerImpl implements EPAdapterManager
 	private final EPRuntime runtime;
 	private final SchedulingService schedulingService;
 	private final ScheduleBucket scheduleBucket;
-	private final Map<FeedType, FeedFactory> feedFactories = new HashMap<FeedType, FeedFactory>();
-	private final CSVAdapter csvAdapter;
+	private final Map<AdapterType, AdapterFactory> adapterFactories = new HashMap<AdapterType, AdapterFactory>();
+	private final CSVAdapterManager csvAdapter;
 	
 	/**
 	 * Ctor.
@@ -33,34 +33,34 @@ public class EPAdapterManagerImpl implements EPAdapterManager
 		this.runtime = runtime;
 		this.schedulingService = schedulingService;
 		scheduleBucket = schedulingService.allocateBucket();
-		feedFactories.put(FeedType.CSV, new CSVFeedFactory(runtime, eventAdapterService, schedulingService, scheduleBucket));
-		csvAdapter = new CSVAdapterImpl(feedFactories.get(FeedType.CSV));
+		adapterFactories.put(AdapterType.CSV, new CSVAdapterFactory(runtime, eventAdapterService, schedulingService, scheduleBucket));
+		csvAdapter = new CSVAdapterManagerImpl(adapterFactories.get(AdapterType.CSV));
 	}
 	
 	/* (non-Javadoc)
-	 * @see net.esper.adapter.EPAdapterManager#createFeed(net.esper.adapter.FeedSpec)
+	 * @see net.esper.adapter.EPAdapterManager#createFeed(net.esper.adapter.AdapterSpec)
 	 */
-	public Feed createFeed(FeedSpec feedSpec)
+	public Adapter createAdapter(AdapterSpec adapterSpec)
 	{
-		if(feedFactories.get(feedSpec.getFeedType()) == null)
+		if(adapterFactories.get(adapterSpec.getAdapterType()) == null)
 		{
-			throw new IllegalArgumentException("Unknown FeedType: " + feedSpec.getFeedType());
+			throw new IllegalArgumentException("Unknown AdapterType: " + adapterSpec.getAdapterType());
 		}
-		return feedFactories.get(feedSpec.getFeedType()).createFeed(feedSpec);
+		return adapterFactories.get(adapterSpec.getAdapterType()).createAdapter(adapterSpec);
 	}
 
 	/* (non-Javadoc)
 	 * @see net.esper.adapter.EPAdapterManager#createConductor()
 	 */
-	public FeedCoordinatorImpl createFeedCoordinator(boolean usingEngineThread)
+	public AdapterCoordinatorImpl createAdapterCoordinator(boolean usingEngineThread)
 	{
-		return new FeedCoordinatorImpl(this, runtime, schedulingService, usingEngineThread);
+		return new AdapterCoordinatorImpl(this, runtime, schedulingService, usingEngineThread);
 	}
 	
 	/* (non-Javadoc)
 	 * @see net.esper.adapter.EPAdapterManager#getCSVAdapter()
 	 */
-	public CSVAdapter getCSVAdapter()
+	public CSVAdapterManager getCSVAdapter()
 	{
 		return csvAdapter;
 	}

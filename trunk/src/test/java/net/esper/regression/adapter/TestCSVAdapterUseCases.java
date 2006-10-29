@@ -5,8 +5,8 @@ import net.esper.client.EPServiceProviderManager;
 import net.esper.client.Configuration;
 import net.esper.client.EPStatement;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Feed;
-import net.esper.adapter.csv.CSVFeedSpec;
+import net.esper.adapter.Adapter;
+import net.esper.adapter.csv.CSVAdapterSpec;
 import net.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
@@ -29,7 +29,7 @@ public class TestCSVAdapterUseCases extends TestCase
     {
         Map<String, Class> type = new HashMap<String, Class>();
         type.put("symbol", String.class);
-        type.put("price", Double.class);
+        type.put("price", double.class);
         type.put("volume", Integer.class);
 
         Configuration configuration = new Configuration();
@@ -42,7 +42,7 @@ public class TestCSVAdapterUseCases extends TestCase
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
-        epService.getEPAdapters().getCSVAdapter().startFeed(new AdapterInputSource(CSV_FILENAME), "TypeA");
+        epService.getEPAdapters().getCSVAdapter().start(new AdapterInputSource(CSV_FILENAME), "TypeA");
 
         assertEquals(1, listener.getNewDataList().size());
     }
@@ -57,7 +57,7 @@ public class TestCSVAdapterUseCases extends TestCase
 
         // TODO: doesn't compile
         // Would be good if a Reader or InputStream of an existing source could be used
-        // CSVFeedSpec spec = new CSVFeedSpec(new AdapterInputSource(reader), "TypeB");
+        // CSVAdapterSpec spec = new CSVAdapterSpec(new AdapterInputSource(reader), "TypeB");
     }
 
     /**
@@ -65,12 +65,12 @@ public class TestCSVAdapterUseCases extends TestCase
      */
     public void testDynamicType()
     {
-        CSVFeedSpec spec = new CSVFeedSpec(new AdapterInputSource(CSV_FILENAME), "TypeB");
+        CSVAdapterSpec spec = new CSVAdapterSpec(new AdapterInputSource(CSV_FILENAME), "TypeB");
 
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
 
-        Feed feed = epService.getEPAdapters().createFeed(spec);
+        Adapter feed = epService.getEPAdapters().createAdapter(spec);
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeB.win:length(100)");
         SupportUpdateListener listener = new SupportUpdateListener();

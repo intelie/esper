@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Feed;
-import net.esper.adapter.FeedFactory;
-import net.esper.adapter.FeedSpec;
-import net.esper.adapter.FeedType;
+import net.esper.adapter.Adapter;
+import net.esper.adapter.AdapterFactory;
+import net.esper.adapter.AdapterSpec;
+import net.esper.adapter.AdapterType;
 import net.esper.adapter.MapEventSpec;
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
@@ -17,9 +17,9 @@ import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 
 /**
- * A utility for creating CSVFeeds.
+ * A factory for creating CSVAdapters.
  */
-public class CSVFeedFactory implements FeedFactory
+public class CSVAdapterFactory implements AdapterFactory
 {
 	private final EPRuntime runtime;
 	private final EventAdapterService eventAdapterService;
@@ -33,7 +33,7 @@ public class CSVFeedFactory implements FeedFactory
 	 * @param schedulingService - used for making callbacks
 	 * @param scheduleBucket - the scheduling bucket that all adapters use
 	 */
-	public CSVFeedFactory(EPRuntime runtime,
+	public CSVAdapterFactory(EPRuntime runtime,
 					  	  EventAdapterService eventAdapterService, 
 					  	  SchedulingService schedulingService, 
 					  	  ScheduleBucket scheduleBucket)
@@ -45,67 +45,67 @@ public class CSVFeedFactory implements FeedFactory
 	}
 	
 	/* (non-Javadoc)
-	 * @see net.esper.adapter.csv.FeedCreator#createFeed(net.esper.adapter.csv.CSVFeedSpec)
+	 * @see net.esper.adapter.csv.AdapterFactory#createAdapter(net.esper.adapter.csv.CSVAdapterSpec)
 	 */
-	public Feed createFeed(FeedSpec feedSpec) throws EPException
+	public Adapter createAdapter(AdapterSpec adapterSpec) throws EPException
 	{
-		checkFeedType(feedSpec);
-		checkAdapterInputSource(feedSpec);
-		checkEventTypeAlias(feedSpec);
-		checkEventsPerSec(feedSpec);
-		checkInputSource(feedSpec);
+		checkAdapterType(adapterSpec);
+		checkAdapterInputSource(adapterSpec);
+		checkEventTypeAlias(adapterSpec);
+		checkEventsPerSec(adapterSpec);
+		checkInputSource(adapterSpec);
 
-		String eventTypeAlias = (String)feedSpec.getParameter("eventTypeAlias");
-		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias, (Map)feedSpec.getParameter("propertyTypes"));
+		String eventTypeAlias = (String)adapterSpec.getParameter("eventTypeAlias");
+		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias, (Map)adapterSpec.getParameter("propertyTypes"));
 		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypes, runtime);
-		return new CSVFeed(feedSpec, mapSpec, eventAdapterService, schedulingService, scheduleBucket.allocateSlot());
+		return new CSVAdapter(adapterSpec, mapSpec, eventAdapterService, schedulingService, scheduleBucket.allocateSlot());
 	}
 	
-	private void checkFeedType(FeedSpec feedSpec)
+	private void checkAdapterType(AdapterSpec adapterSpec)
 	{
-		if(feedSpec.getFeedType() != FeedType.CSV)
+		if(adapterSpec.getAdapterType() != AdapterType.CSV)
 		{
-			throw new IllegalArgumentException("Invalid FeedType: " + feedSpec.getFeedType());
+			throw new IllegalArgumentException("Invalid AdapterType: " + adapterSpec.getAdapterType());
 		}
 	}
 	
-	private void checkEventTypeAlias(FeedSpec feedSpec)
+	private void checkEventTypeAlias(AdapterSpec adapterSpec)
 	{
-		if(feedSpec.getParameter("eventTypeAlias") == null)
+		if(adapterSpec.getParameter("eventTypeAlias") == null)
 		{
 			throw new NullPointerException("eventTypeAlias cannot be null");
 		}
 	}
 	
-	private void checkAdapterInputSource(FeedSpec feedSpec)
+	private void checkAdapterInputSource(AdapterSpec adapterSpec)
 	{
-		if(feedSpec.getParameter("adapterInputSource") == null)
+		if(adapterSpec.getParameter("adapterInputSource") == null)
 		{
 			throw new NullPointerException("adapterInputSource cannot be null");
 		}
 	}
 	
-	private void checkEventsPerSec(FeedSpec feedSpec)
+	private void checkEventsPerSec(AdapterSpec adapterSpec)
 	{
-		if(feedSpec.getParameter("eventsPerSec") == null)
+		if(adapterSpec.getParameter("eventsPerSec") == null)
 		{
 			return;
 		}
-		int eventsPerSec = (Integer)feedSpec.getParameter("eventsPerSec");
+		int eventsPerSec = (Integer)adapterSpec.getParameter("eventsPerSec");
 		if(!(isDefault(eventsPerSec) || isValid(eventsPerSec)))
 		{
 			throw new IllegalArgumentException("Illegal value for eventsPerSec: " + eventsPerSec);
 		}
 	}
 	
-	private void checkInputSource(FeedSpec feedSpec)
+	private void checkInputSource(AdapterSpec adapterSpec)
 	{
-		AdapterInputSource source = (AdapterInputSource)feedSpec.getParameter("adapterInputSource");
+		AdapterInputSource source = (AdapterInputSource)adapterSpec.getParameter("adapterInputSource");
 		if(source == null)
 		{
 			throw new NullPointerException("adapterInputSource cannot be null");
 		}
-		boolean looping = feedSpec.getParameter("looping") != null ? (Boolean)feedSpec.getParameter("looping") : false;
+		boolean looping = adapterSpec.getParameter("looping") != null ? (Boolean)adapterSpec.getParameter("looping") : false;
 		if(looping && !source.isRenewable())
 		{
 			throw new EPException("Cannot create a CSV adapter that loops from an input source that is not renewable");
