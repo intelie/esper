@@ -171,9 +171,7 @@ betweenExpr
 	;
 
 builtinFunc
-	: 	#(MAX (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )
-	| 	#(MIN (DISTINCT)? valueExpr (valueExpr (valueExpr)*)? )
-	|	#(SUM (DISTINCT)? valueExpr)
+	: 	#(SUM (DISTINCT)? valueExpr)
 	|	#(AVG (DISTINCT)? valueExpr)
 	|	#(COUNT ((DISTINCT)? valueExpr)? )
 	|	#(MEDIAN (DISTINCT)? valueExpr)
@@ -195,7 +193,7 @@ arithmeticExpr
 	;
 	
 libFunc
-	:  #(LIB_FUNCTION CLASS_IDENT IDENT (valueExpr)*)
+	:  #(LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? (valueExpr)*)
 	;
 	
 //----------------------------------------------------------------------------

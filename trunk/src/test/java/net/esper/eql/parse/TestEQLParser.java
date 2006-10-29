@@ -57,7 +57,6 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid(className + "().win:lenght('s\"");
         assertIsInvalid(className + "().win:lenght(\"s')");
 
-        assertIsInvalid("select MAX(intBoxed) from " + className + "().std:win(20)");
         assertIsInvalid("select * from com.xxx().std:win(3) where a not is null");
         assertIsInvalid("select * from com.xxx().std:win(3) where a = not null");
         assertIsInvalid("select * from com.xxx().std:win(3) where not not");
@@ -79,7 +78,6 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select count(*2) from b.win:length(1)");
         assertIsInvalid("select count(distinct *) from b.win:length(1)");
         assertIsInvalid("select max(distinct *) from b.win:length(1)");
-        assertIsInvalid("select min() from b.win:length(1)");
         assertIsInvalid("select median() from b.win:length(1)");
         assertIsInvalid("select stddev() from b.win:length(1)");
         assertIsInvalid("select stddev(distinct) from b.win:length(1)");
@@ -307,6 +305,9 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from x where abc between a and b");
         assertIsValid("select * from x where abc between a*2 and sum(b)");
         assertIsValid("select * from x where abc*3 between a*2 and sum(b)");
+
+        // custom aggregation func
+        assertIsValid("select myfunc(price) from x");
 
         // TODO: like
         /*

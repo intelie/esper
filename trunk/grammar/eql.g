@@ -385,15 +385,14 @@ multiplyExpression
 	
 unaryExpression
 	: MINUS^ {#MINUS.setType(UNARY_MINUS);} eventProperty
-	| eventPropertyOrLibFunction
 	| constant
 	| LPAREN! expression RPAREN!
+	| eventPropertyOrLibFunction
 	| builtinFunc
 	;
 
 builtinFunc
-	: (MAX^ | MIN^) LPAREN! (ALL! | DISTINCT)? expression (COMMA! expression (COMMA! expression)* )? RPAREN!
-	| SUM^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
+	: SUM^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| AVG^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| COUNT^ LPAREN!
 		(
@@ -406,6 +405,12 @@ builtinFunc
 	| STDDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| AVEDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| COALESCE^ LPAREN! expression COMMA! expression (COMMA! expression)* RPAREN!
+	// MIN and MAX can also be "Math.min" static function and "min(price)" aggregation function and "min(a, b, c...)" built-in function
+	// therefore handled in code via libFunction as below
+	;
+	
+maxFunc
+	: (MAX^ | MIN^) LPAREN! expression (COMMA! expression (COMMA! expression)* )? RPAREN!
 	;
 	
 eventPropertyOrLibFunction
@@ -414,7 +419,7 @@ eventPropertyOrLibFunction
 	;
 	
 libFunction
-	: classIdentifierNonGreedy DOT! funcIdent LPAREN! (libFunctionArgs)? RPAREN!
+	: (classIdentifierNonGreedy DOT!)? funcIdent LPAREN! (libFunctionArgs)? RPAREN!
 	{ #libFunction = #([LIB_FUNCTION,"libFunction"], #libFunction); }	
 	;	
 	
@@ -425,7 +430,7 @@ funcIdent
 	;
 	
 libFunctionArgs
-	: expression (COMMA! expression)*
+	: (ALL! | DISTINCT)? expression (COMMA! expression)*
 	;
 	
 betweenList

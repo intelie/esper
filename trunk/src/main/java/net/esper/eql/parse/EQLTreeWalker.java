@@ -149,10 +149,6 @@ public class EQLTreeWalker extends EQLBaseWalker
             case GE:
                 leaveRelationalOp(node);
                 break;
-            case MAX:
-            case MIN:
-                leaveMinMax(node);
-                break;
             case COALESCE:
                 leaveCoalesce(node);
                 break;
@@ -434,12 +430,19 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
     	log.debug(".leaveLibFunction");
 
-    	if(node.getNumberOfChildren() < 2)
+    	if(node.getNumberOfChildren() < 1)
     	{
-    		throw new IllegalArgumentException("Illegal method invocation");
+    		throw new IllegalArgumentException("Illegal number of child nodes for lib function");
     	}
 
-    	AST itor = node.getFirstChild();
+        String childNodeText = node.getFirstChild().getText();
+        if ((childNodeText.equals("max")) || (childNodeText.equals("min")))
+        {
+            handleMinMax(node);
+            return;
+        }
+
+        AST itor = node.getFirstChild();
     	String className = itor.getText();
 
     	itor = itor.getNextSibling();
@@ -515,38 +518,43 @@ public class EQLTreeWalker extends EQLBaseWalker
     }
 
     // Min/Max nodes can be either an aggregate or a per-row function depending on the number or arguments
-    private void leaveMinMax(AST node)
+    private void handleMinMax(AST libNode)
     {
-        log.debug(".leaveMinMax");
+        log.debug(".handleMinMax");
 
+        // Determine min or max
+        AST childNode = libNode.getFirstChild();
         MinMaxTypeEnum minMaxTypeEnum;
-
-        switch (node.getType())
+        if (childNode.getText().equals("min"))
         {
-            case MIN :
-                minMaxTypeEnum = MinMaxTypeEnum.MIN;
-                break;
-            case MAX :
-                minMaxTypeEnum = MinMaxTypeEnum.MAX;
-                break;
-            default :
-                throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized min max node type");
+            minMaxTypeEnum = MinMaxTypeEnum.MIN;
+        }
+        else if (childNode.getText().equals("max"))
+        {
+            minMaxTypeEnum = MinMaxTypeEnum.MAX;
+        }
+        else
+        {
+            throw new IllegalArgumentException("Node type " + childNode.getType() + " " + childNode.getText() + " not a recognized min max node");
         }
 
+        // Determine distinct or not
+        AST nextNode = childNode.getNextSibling();
         boolean isDistinct = false;
-        if (node.getFirstChild().getType() == DISTINCT)
+        if (nextNode.getType() == DISTINCT)
         {
             isDistinct = true;
         }
 
-        if ((node.getNumberOfChildren() > 2) && (isDistinct))
+        // Error if more then 3 nodes with distinct since it's an aggregate function
+        if ((libNode.getNumberOfChildren() > 3) && (isDistinct))
         {
             throw new ASTWalkException("The distinct keyword is not valid in per-row min and max " +
                     "functions with multiple sub-expressions");
         }
 
         ExprNode minMaxNode;
-        if ((!isDistinct) && (node.getNumberOfChildren() > 1))
+        if ((!isDistinct) && (libNode.getNumberOfChildren() > 2))
         {
             // use the row function
             minMaxNode = new ExprMinMaxRowNode(minMaxTypeEnum);
@@ -556,7 +564,7 @@ public class EQLTreeWalker extends EQLBaseWalker
             // use the aggregation function
             minMaxNode = new ExprMinMaxAggrNode(isDistinct, minMaxTypeEnum);
         }
-        astExprNodeMap.put(node, minMaxNode);
+        astExprNodeMap.put(libNode, minMaxNode);
     }
 
     private void leaveCoalesce(AST node)

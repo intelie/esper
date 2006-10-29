@@ -270,7 +270,10 @@ public class TestEQLTreeWalker extends TestCase
     public void testAggregateFunction() throws Exception
     {
         String fromClause = "from " + SupportBean_N.class.getName() + "().win:lenght(10) as win1";
-        String text = "select sum(intPrimitive)," +
+        String text = "select max(distinct intPrimitive) " + fromClause;
+        parseAndWalkEQL(text);
+
+        text = "select sum(intPrimitive)," +
                 "sum(distinct doubleBoxed)," +
                 "avg(doubleBoxed)," +
                 "avg(distinct doubleBoxed)," +
