@@ -12,10 +12,11 @@ import junit.framework.TestCase;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 
 public class TestCSVAdapterUseCases extends TestCase
 {
+    private static String NEW_LINE = System.getProperty("line.separator");
     private static String CSV_FILENAME = "regression/csvtest_tradedata.csv";
 
     private EPServiceProvider epService;
@@ -38,7 +39,7 @@ public class TestCSVAdapterUseCases extends TestCase
         epService = EPServiceProviderManager.getProvider("useCaseProvider", configuration);
         epService.initialize();
 
-        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeA.win:length(100)");
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select symbol, price, volume from TypeA.win:length(100)");
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
@@ -50,14 +51,24 @@ public class TestCSVAdapterUseCases extends TestCase
     /**
      * Play a CSV file that is from memory.
      */
-    public void testPlayFromMemory()
+    public void testPlayFromMemoryInputStream()
     {
-        String myCSV = "IBM, 10.2, 10000";
-        StringReader reader = new StringReader(myCSV);
+        String myCSV = "symbol, price, volume" + NEW_LINE +
+                       "IBM, 10.2, 10000";
 
-        // TODO: doesn't compile
-        // Would be good if a Reader or InputStream of an existing source could be used
-        // CSVAdapterSpec spec = new CSVAdapterSpec(new AdapterInputSource(reader), "TypeB");
+        ByteArrayInputStream inStream = new ByteArrayInputStream(myCSV.getBytes());
+        CSVAdapterSpec spec = new CSVAdapterSpec(new AdapterInputSource(inStream), "TypeC");
+
+        epService = EPServiceProviderManager.getProvider("testPlayFromMemoryInputStream");
+        epService.initialize();
+        Adapter feed = epService.getEPAdapters().createAdapter(spec);
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeC.win:length(100)");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        feed.start();
+        assertEquals(1, listener.getNewDataList().size());
     }
 
     /**
@@ -72,11 +83,15 @@ public class TestCSVAdapterUseCases extends TestCase
 
         Adapter feed = epService.getEPAdapters().createAdapter(spec);
 
-        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeB.win:length(100)");
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select symbol, price, volume from TypeB.win:length(100)");
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
+        assertEquals(String.class, stmt.getEventType().getPropertyType("symbol"));
+        assertEquals(String.class, stmt.getEventType().getPropertyType("price"));
+        assertEquals(String.class, stmt.getEventType().getPropertyType("volume"));
+
         feed.start();
         assertEquals(1, listener.getNewDataList().size());
-    }    
+    }
 }
