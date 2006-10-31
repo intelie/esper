@@ -3,6 +3,7 @@ package net.esper.adapter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.URL;
 
 
@@ -18,6 +19,7 @@ public class AdapterInputSource
 	private final String classpathResource;
 	private final File file;
 	private final InputStream inputStream;
+	private final Reader reader;
 	
 	/**
 	 * Ctor.
@@ -33,6 +35,7 @@ public class AdapterInputSource
 		this.url = null;
 		this.file = null;
 		this.inputStream = null;
+		this.reader = null;
 	}
 	
 	/**
@@ -49,11 +52,12 @@ public class AdapterInputSource
 		this.classpathResource = null;
 		this.file = null;
 		this.inputStream = null;
+		this.reader = null;
 	}
 	
 	/**
 	 * Ctor.
-	 * @param file - the CSV file to use as a source
+	 * @param file - the file to use as a source
 	 */
 	public AdapterInputSource(File file)
 	{
@@ -65,8 +69,13 @@ public class AdapterInputSource
 		this.url = null;
 		this.classpathResource = null;
 		this.inputStream = null;
+		this.reader = null;
 	}
 	
+	/**
+	 * Ctor.
+	 * @param inputStream - the stream to use as a source
+	 */
 	public AdapterInputSource(InputStream inputStream)
 	{
 		if(inputStream == null)
@@ -77,6 +86,20 @@ public class AdapterInputSource
 		this.file = null;
 		this.url = null;
 		this.classpathResource = null;
+		this.reader = null;
+	}
+	
+	public AdapterInputSource(Reader reader)
+	{
+		if(reader == null)
+		{
+			throw new NullPointerException("reader cannot be null");
+		}
+		this.reader = reader;
+		this.url = null;
+		this.classpathResource = null;
+		this.file = null;
+		this.inputStream  = null;
 	}
 	
 	/**

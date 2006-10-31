@@ -12,7 +12,7 @@ import net.esper.adapter.AdapterType;
  */
 public class CSVAdapterSpec implements AdapterSpec
 {
-	public final Map<String, Object> parameters = new HashMap<String, Object>();
+	private final Map<String, Object> parameters = new HashMap<String, Object>();
 	
 	/**
 	 * Ctor.
