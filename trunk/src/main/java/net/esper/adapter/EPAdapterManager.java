@@ -12,7 +12,7 @@ public interface EPAdapterManager
 	 * @param adapterSpec - the parameters for this Adapter
 	 * @return the newly created Adapter
 	 */
-	public Adapter createAdapter(AdapterSpec adapterSpec);
+	public InputAdapter createAdapter(AdapterSpec adapterSpec);
 	
 	/**
 	 * Create an instance of AdapterCoordinator.

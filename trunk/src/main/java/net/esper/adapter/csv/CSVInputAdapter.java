@@ -11,7 +11,7 @@ import java.util.Set;
 
 import net.esper.adapter.AbstractReadableAdapter;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Adapter;
+import net.esper.adapter.InputAdapter;
 import net.esper.adapter.AdapterSpec;
 import net.esper.adapter.AdapterState;
 import net.esper.adapter.MapEventSpec;
@@ -31,9 +31,9 @@ import org.apache.commons.logging.LogFactory;
 /** 
  * An event Adapter that uses a CSV file for a source.
  */
-public class CSVAdapter extends AbstractReadableAdapter implements Adapter
+public class CSVInputAdapter extends AbstractReadableAdapter implements InputAdapter
 {
-	private static final Log log = LogFactory.getLog(CSVAdapter.class);
+	private static final Log log = LogFactory.getLog(CSVInputAdapter.class);
 
 	private final String timestampColumn;
 	private final SchedulingService schedulingService;
@@ -46,6 +46,7 @@ public class CSVAdapter extends AbstractReadableAdapter implements Adapter
 	private long lastTimestamp = 0;
 	private long totalDelay;
 	boolean atEOF = false;
+	String[] firstRow;
 	
 	/**
 	 * Ctor.
@@ -55,7 +56,7 @@ public class CSVAdapter extends AbstractReadableAdapter implements Adapter
 	 * @param schedulingService - used for scheduling callbacks to send events
 	 * @param scheduleSlot - used for ordering this Adapter's place for callbacks
 	 */
-	protected CSVAdapter(AdapterSpec adapterSpec, 
+	protected CSVInputAdapter(AdapterSpec adapterSpec, 
 					  MapEventSpec mapSpec, 
 					  EventAdapterService eventAdapterService, 
 					  SchedulingService schedulingService, 
@@ -98,7 +99,10 @@ public class CSVAdapter extends AbstractReadableAdapter implements Adapter
 		
 		log.debug(".ctor isUsingTitleRow==" + isUsingTitleRow(firstRow, propertyOrder));
 		reader.setIsUsingTitleRow(isUsingTitleRow(firstRow, propertyOrder));
-		reader.reset();
+		if(!isUsingTitleRow(firstRow, propertyOrder))
+		{
+			this.firstRow = firstRow;
+		}
 		
 		eventsPerSec = adapterSpec.getParameter("eventsPerSec") != null ?
 				(Integer)adapterSpec.getParameter("eventsPerSec") :
@@ -180,12 +184,16 @@ public class CSVAdapter extends AbstractReadableAdapter implements Adapter
 		lastTimestamp = 0;
 		totalDelay = 0;
 		atEOF = false;
-		reader.reset();
+		if(reader.isResettable())
+		{
+			reader.reset();
+		}
 	}
 
 	private Map<String, Object> newMapEvent() throws EOFException
 	{
-		String[] row =  reader.getNextRecord();
+		String[] row =  firstRow != null ? firstRow : reader.getNextRecord();
+		firstRow = null;
 		updateTotalDelay(row, reader.getAndClearIsReset());
 		return createMapFromRow(row);
 	}

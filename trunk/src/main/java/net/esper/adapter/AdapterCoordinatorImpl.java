@@ -82,7 +82,7 @@ public class AdapterCoordinatorImpl extends AbstractReadableAdapter implements A
 		}
 		
 		adapterSpec.setUsingEngineThread(usingEngineThread);
-		Adapter adapter = manager.createAdapter(adapterSpec);
+		InputAdapter adapter = manager.createAdapter(adapterSpec);
 		
 		if(!(adapter instanceof ReadableAdapter))
 		{

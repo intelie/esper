@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Adapter;
+import net.esper.adapter.InputAdapter;
 import net.esper.adapter.AdapterFactory;
 import net.esper.adapter.AdapterSpec;
 import net.esper.adapter.AdapterType;
@@ -47,7 +47,7 @@ public class CSVAdapterFactory implements AdapterFactory
 	/* (non-Javadoc)
 	 * @see net.esper.adapter.csv.AdapterFactory#createAdapter(net.esper.adapter.csv.CSVAdapterSpec)
 	 */
-	public Adapter createAdapter(AdapterSpec adapterSpec) throws EPException
+	public InputAdapter createAdapter(AdapterSpec adapterSpec) throws EPException
 	{
 		checkAdapterType(adapterSpec);
 		checkAdapterInputSource(adapterSpec);
@@ -58,7 +58,7 @@ public class CSVAdapterFactory implements AdapterFactory
 		String eventTypeAlias = (String)adapterSpec.getParameter("eventTypeAlias");
 		Map<String, Class> propertyTypes = constructPropertyTypes(eventTypeAlias, (Map)adapterSpec.getParameter("propertyTypes"));
 		MapEventSpec mapSpec = new MapEventSpec(eventTypeAlias, propertyTypes, runtime);
-		return new CSVAdapter(adapterSpec, mapSpec, eventAdapterService, schedulingService, scheduleBucket.allocateSlot());
+		return new CSVInputAdapter(adapterSpec, mapSpec, eventAdapterService, schedulingService, scheduleBucket.allocateSlot());
 	}
 	
 	private void checkAdapterType(AdapterSpec adapterSpec)
@@ -106,7 +106,7 @@ public class CSVAdapterFactory implements AdapterFactory
 			throw new NullPointerException("adapterInputSource cannot be null");
 		}
 		boolean looping = adapterSpec.getParameter("looping") != null ? (Boolean)adapterSpec.getParameter("looping") : false;
-		if(looping && !source.isRenewable())
+		if(looping && !source.isResettable())
 		{
 			throw new EPException("Cannot create a CSV adapter that loops from an input source that is not renewable");
 		}

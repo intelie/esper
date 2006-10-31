@@ -8,7 +8,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 import net.esper.adapter.AdapterCoordinator;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.csv.CSVAdapterSpec;
+import net.esper.adapter.csv.CSVInputAdapterSpec;
 import net.esper.client.Configuration;
 import net.esper.client.EPAdministrator;
 import net.esper.client.EPServiceProvider;
@@ -31,10 +31,10 @@ public class TestFeedCoordinator extends TestCase
 	private EPServiceProvider epService;
 	private long currentTime;
 	private AdapterCoordinator coordinator;
-	private CSVAdapterSpec timestampsLooping;
-	private CSVAdapterSpec noTimestampsLooping;
-	private CSVAdapterSpec noTimestampsNotLooping;
-	private CSVAdapterSpec timestampsNotLooping;
+	private CSVInputAdapterSpec timestampsLooping;
+	private CSVInputAdapterSpec noTimestampsLooping;
+	private CSVInputAdapterSpec noTimestampsNotLooping;
+	private CSVInputAdapterSpec timestampsNotLooping;
 	private String[] propertyOrderNoTimestamp;
 	
 	protected void setUp()
@@ -69,26 +69,26 @@ public class TestFeedCoordinator extends TestCase
     	String[] propertyOrderTimestamp = new String[] { "timestamp", "myInt", "myDouble", "myString" };
 		
 		// A CSVPlayer for a file with timestamps, not looping
-		timestampsNotLooping = new CSVAdapterSpec(new AdapterInputSource("/regression/timestampOne.csv"), eventTypeAlias);
+		timestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource("/regression/timestampOne.csv"), eventTypeAlias);
 		timestampsNotLooping.setUsingEngineThread(true);
 		timestampsNotLooping.setPropertyOrder(propertyOrderTimestamp);
 		timestampsNotLooping.setTimestampColumn("timestamp");
 		
 		// A CSVAdapter for a file with timestamps, looping
-		timestampsLooping = new CSVAdapterSpec(new AdapterInputSource("/regression/timestampTwo.csv"), eventTypeAlias);
+		timestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource("/regression/timestampTwo.csv"), eventTypeAlias);
 		timestampsLooping.setLooping(true);
 		timestampsLooping.setUsingEngineThread(true);
 		timestampsLooping.setPropertyOrder(propertyOrderTimestamp);
 		timestampsLooping.setTimestampColumn("timestamp");
 		
 		// A CSVAdapter that sends 10 events per sec, not looping
-		noTimestampsNotLooping = new CSVAdapterSpec(new AdapterInputSource("/regression/noTimestampOne.csv"), eventTypeAlias);
+		noTimestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource("/regression/noTimestampOne.csv"), eventTypeAlias);
 		noTimestampsNotLooping.setEventsPerSec(10);
 		noTimestampsNotLooping.setPropertyOrder(propertyOrderNoTimestamp);
 		noTimestampsNotLooping.setUsingEngineThread(true);
 		
 		// A CSVAdapter that sends 5 events per sec, looping
-		noTimestampsLooping = new CSVAdapterSpec(new AdapterInputSource("/regression/noTimestampTwo.csv"), eventTypeAlias);
+		noTimestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource("/regression/noTimestampTwo.csv"), eventTypeAlias);
 		noTimestampsLooping.setEventsPerSec(5);
 		noTimestampsLooping.setLooping(true);
 		noTimestampsLooping.setPropertyOrder(propertyOrderNoTimestamp);

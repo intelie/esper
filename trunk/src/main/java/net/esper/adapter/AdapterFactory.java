@@ -13,5 +13,5 @@ public interface AdapterFactory
 	 * @return the created Adapter
 	 * @throws EPException in case of errors creating the Adapter
 	 */
-	public Adapter createAdapter(AdapterSpec adapterSpec) throws EPException;
+	public InputAdapter createAdapter(AdapterSpec adapterSpec) throws EPException;
 }

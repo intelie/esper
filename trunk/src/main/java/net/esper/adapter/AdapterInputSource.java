@@ -105,11 +105,15 @@ public class AdapterInputSource
 	/**
 	 * Get the resource as an input stream. If this resource was specified as an InputStream, 
 	 * return that InputStream, otherwise, create and return a new InputStream from the 
-	 * resource.
+	 * resource. If the source cannot be converted to a stream, return null.
 	 * @return a stream from the resource
 	 */
-	public InputStream getStream()
+	public InputStream getAsStream()
 	{
+		if(reader != null)
+		{
+			return null;
+		}
 		if(inputStream != null)
 		{
 			return inputStream;
@@ -136,10 +140,19 @@ public class AdapterInputSource
 				throw new EPException(e);
 			}
 		}
-		else
+		else 
 		{
 			return resolvePathAsStream(classpathResource);
 		}
+	}
+	
+	/**
+	 * Return the reader if it was set, null otherwise.
+	 * @return the Reader
+	 */
+	public Reader getAsReader()
+	{
+		return reader;
 	}
 	
 	/**
@@ -151,7 +164,7 @@ public class AdapterInputSource
 	 * @return true if each call to getStream() will create a new InputStream from the 
 	 * resource, false if each call will get the same instance of the InputStream
 	 */
-	public boolean isRenewable()
+	public boolean isResettable()
 	{
 		return inputStream == null;
 	}

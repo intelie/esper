@@ -3,7 +3,7 @@ package net.esper.adapter.csv;
 import java.util.Map;
 
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Adapter;
+import net.esper.adapter.InputAdapter;
 import net.esper.adapter.AdapterFactory;
 import net.esper.client.EPException;
 
@@ -27,9 +27,9 @@ Adapter
 	 */
 	public void start(AdapterInputSource adapterInputSource, String eventTypeAlias) throws EPException
 	{
-		CSVAdapterSpec adapterSpec = new CSVAdapterSpec(adapterInputSource, eventTypeAlias);
+		CSVInputAdapterSpec adapterSpec = new CSVInputAdapterSpec(adapterInputSource, eventTypeAlias);
 		adapterSpec.setUsingEngineThread(false);
-		Adapter adapter = adapterFactory.createAdapter(adapterSpec);
+		InputAdapter adapter = adapterFactory.createAdapter(adapterSpec);
 		adapter.start();
 	}
 
@@ -38,10 +38,10 @@ Adapter
 	 */
 	public void start(AdapterInputSource adapterInputSource, String eventTypeAlias, Map<String, Class> propertyTypes) throws EPException
 	{
-		CSVAdapterSpec adapterSpec = new CSVAdapterSpec(adapterInputSource, eventTypeAlias);
+		CSVInputAdapterSpec adapterSpec = new CSVInputAdapterSpec(adapterInputSource, eventTypeAlias);
 		adapterSpec.setPropertyTypes(propertyTypes);
 		adapterSpec.setUsingEngineThread(false);
-		Adapter adapter = adapterFactory.createAdapter(adapterSpec);
+		InputAdapter adapter = adapterFactory.createAdapter(adapterSpec);
 		adapter.start();
 	}
 	

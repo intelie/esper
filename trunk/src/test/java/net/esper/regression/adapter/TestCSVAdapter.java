@@ -9,10 +9,10 @@ import java.util.Map;
 import junit.framework.TestCase;
 import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.EPAdapterManager;
-import net.esper.adapter.Adapter;
+import net.esper.adapter.InputAdapter;
 import net.esper.adapter.AdapterState;
 import net.esper.adapter.csv.CSVAdapterManager;
-import net.esper.adapter.csv.CSVAdapterSpec;
+import net.esper.adapter.csv.CSVInputAdapterSpec;
 import net.esper.client.Configuration;
 import net.esper.client.EPAdministrator;
 import net.esper.client.EPException;
@@ -32,7 +32,7 @@ public class TestCSVAdapter extends TestCase
 	private String eventTypeAlias;
 	private EPServiceProvider epService;
 	private long currentTime;
-	private Adapter feed;
+	private InputAdapter feed;
 	private String[] propertyOrderTimestamps;
 	private String[] propertyOrderNoTimestamps;
 	private Map<String, Class> propertyTypes;
@@ -87,7 +87,7 @@ public class TestCSVAdapter extends TestCase
 	public void testInputStream()
 	{
 		InputStream stream = this.getClass().getClassLoader().getResourceAsStream("regression/noTimestampOne.csv");
-		CSVAdapterSpec feedSpec  = new CSVAdapterSpec(new AdapterInputSource(stream), eventTypeAlias);
+		CSVInputAdapterSpec feedSpec  = new CSVInputAdapterSpec(new AdapterInputSource(stream), eventTypeAlias);
 		feedSpec.setPropertyOrder(propertyOrderNoTimestamps);
 
 		adapter.createAdapter(feedSpec);
@@ -122,7 +122,7 @@ public class TestCSVAdapter extends TestCase
 	
 	public void testConflictingPropertyOrder()
 	{
-		CSVAdapterSpec feedSpec = new CSVAdapterSpec(new AdapterInputSource("regression/intsTitleRow.csv"), "intsTitleRowEvent");
+		CSVInputAdapterSpec feedSpec = new CSVInputAdapterSpec(new AdapterInputSource("regression/intsTitleRow.csv"), "intsTitleRowEvent");
 		feedSpec.setEventsPerSec(10);
 		feedSpec.setPropertyOrder(new String[] { "intTwo", "intOne" });
 		feedSpec.setUsingEngineThread(true);
@@ -171,7 +171,7 @@ public class TestCSVAdapter extends TestCase
 	
 	public void testNoPropertyTypes()
 	{
-		CSVAdapterSpec feedSpec = new CSVAdapterSpec(new AdapterInputSource("regression/noTimestampOne.csv"), "allStringEvent");
+		CSVInputAdapterSpec feedSpec = new CSVInputAdapterSpec(new AdapterInputSource("regression/noTimestampOne.csv"), "allStringEvent");
 		feedSpec.setEventsPerSec(10);
 		feedSpec.setPropertyOrder(new String[] { "myInt", "myDouble", "myString" });
 		feedSpec.setUsingEngineThread(true);
@@ -195,7 +195,7 @@ public class TestCSVAdapter extends TestCase
 	
 	public void testRuntimePropertyTypes()
 	{
-		CSVAdapterSpec feedSpec = new CSVAdapterSpec(new AdapterInputSource("regression/noTimestampOne.csv"), "propertyTypeEvent");
+		CSVInputAdapterSpec feedSpec = new CSVInputAdapterSpec(new AdapterInputSource("regression/noTimestampOne.csv"), "propertyTypeEvent");
 		feedSpec.setEventsPerSec(10);
 		feedSpec.setPropertyOrder(new String[] { "myInt", "myDouble", "myString" });
 		feedSpec.setPropertyTypes(propertyTypes);
@@ -688,7 +688,7 @@ public class TestCSVAdapter extends TestCase
 	
 	private void startFeed(String filename, int eventsPerSec, boolean isLooping, boolean usingEngineThread, String timestampColumn, String[] propertyOrder)
 	{
-		CSVAdapterSpec feedSpec = new CSVAdapterSpec(new AdapterInputSource(filename), eventTypeAlias);
+		CSVInputAdapterSpec feedSpec = new CSVInputAdapterSpec(new AdapterInputSource(filename), eventTypeAlias);
 		if(eventsPerSec != -1)
 		{
 			feedSpec.setEventsPerSec(eventsPerSec);

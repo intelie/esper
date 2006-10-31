@@ -5,8 +5,8 @@ import net.esper.client.EPServiceProviderManager;
 import net.esper.client.Configuration;
 import net.esper.client.EPStatement;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.Adapter;
-import net.esper.adapter.csv.CSVAdapterSpec;
+import net.esper.adapter.InputAdapter;
+import net.esper.adapter.csv.CSVInputAdapterSpec;
 import net.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
@@ -57,11 +57,11 @@ public class TestCSVAdapterUseCases extends TestCase
                        "IBM, 10.2, 10000";
 
         ByteArrayInputStream inStream = new ByteArrayInputStream(myCSV.getBytes());
-        CSVAdapterSpec spec = new CSVAdapterSpec(new AdapterInputSource(inStream), "TypeC");
+        CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(inStream), "TypeC");
 
         epService = EPServiceProviderManager.getProvider("testPlayFromMemoryInputStream");
         epService.initialize();
-        Adapter feed = epService.getEPAdapters().createAdapter(spec);
+        InputAdapter feed = epService.getEPAdapters().createAdapter(spec);
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeC.win:length(100)");
         SupportUpdateListener listener = new SupportUpdateListener();
@@ -76,12 +76,12 @@ public class TestCSVAdapterUseCases extends TestCase
      */
     public void testDynamicType()
     {
-        CSVAdapterSpec spec = new CSVAdapterSpec(new AdapterInputSource(CSV_FILENAME), "TypeB");
+        CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME), "TypeB");
 
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
 
-        Adapter feed = epService.getEPAdapters().createAdapter(spec);
+        InputAdapter feed = epService.getEPAdapters().createAdapter(spec);
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select symbol, price, volume from TypeB.win:length(100)");
         SupportUpdateListener listener = new SupportUpdateListener();

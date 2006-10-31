@@ -40,7 +40,7 @@ public class EPAdapterManagerImpl implements EPAdapterManager
 	/* (non-Javadoc)
 	 * @see net.esper.adapter.EPAdapterManager#createFeed(net.esper.adapter.AdapterSpec)
 	 */
-	public Adapter createAdapter(AdapterSpec adapterSpec)
+	public InputAdapter createAdapter(AdapterSpec adapterSpec)
 	{
 		if(adapterFactories.get(adapterSpec.getAdapterType()) == null)
 		{

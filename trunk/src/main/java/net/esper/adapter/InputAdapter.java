@@ -6,7 +6,7 @@ import net.esper.client.EPException;
  * A Adapter takes some external data, converts it into events, 
  * and sends it into the runtime engine.
  */
-public interface Adapter
+public interface InputAdapter
 {
 	/**
 	 * Start the sending of events into the runtime egine.

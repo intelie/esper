@@ -10,7 +10,7 @@ import net.esper.adapter.AdapterType;
 /**
  * A spec for CSVAdapters.
  */
-public class CSVAdapterSpec implements AdapterSpec
+public class CSVInputAdapterSpec implements AdapterSpec
 {
 	private final Map<String, Object> parameters = new HashMap<String, Object>();
 	
@@ -19,7 +19,7 @@ public class CSVAdapterSpec implements AdapterSpec
 	 * @param adapterInputSource - the source for the CSV data
 	 * @param eventTypeAlias - the alias for the event type created from the CSV data
 	 */
-	public CSVAdapterSpec(AdapterInputSource adapterInputSource, String eventTypeAlias)
+	public CSVInputAdapterSpec(AdapterInputSource adapterInputSource, String eventTypeAlias)
 	{
 		parameters.put("adapterInputSource", adapterInputSource);
 		parameters.put("eventTypeAlias", eventTypeAlias);

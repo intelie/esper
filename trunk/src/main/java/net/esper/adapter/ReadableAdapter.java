@@ -5,7 +5,7 @@ import net.esper.client.EPException;
 /** 
  * A Adapter that allows the most current events to be pulled by the user.
  */
-public interface ReadableAdapter extends Adapter
+public interface ReadableAdapter extends InputAdapter
 {
 	/**
 	 * Get the next event in line to be sent into the runtime , or null if there is no available event.

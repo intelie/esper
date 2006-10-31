@@ -1,9 +1,7 @@
 package net.esper.adapter.csv;
 
-import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,23 +13,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A reader that processes a CSV file and returns CSV records 
+ * A source that processes a CSV file and returns CSV records 
  * from that file.
  */
 public class CSVReader
 {
 	private static final Log log = LogFactory.getLog(CSVReader.class);
 	
-	private final AdapterInputSource inputSource;
 	private boolean looping;
 	private boolean isUsingTitleRow;
+	private final CSVSource source;
 	
 	private final List<String> values = new ArrayList<String>();
-	private InputStream inputStream;
-	private BufferedInputStream reader;
 	private boolean isClosed = false;
 	private boolean atEOF = false;
 	private boolean isReset = true;
+
+	
 	/**
 	 * Ctor.
 	 * @param adapterInputSource - the source of the CSV file
@@ -43,13 +41,11 @@ public class CSVReader
 		{
 			throw new NullPointerException("AdapterInputSource cannot be null");
 		}
-		this.inputSource = adapterInputSource;
-		inputStream = inputSource.getStream();
-		reader = new BufferedInputStream(inputStream);
+		this.source = new CSVSource(adapterInputSource);
 	}
 	
 	/**
-	 * Close the reader and release the input source.
+	 * Close the source and release the input source.
 	 * @throws EPException in case of error in closing resources
 	 */
 	public void close() throws EPException
@@ -61,8 +57,7 @@ public class CSVReader
 		try
 		{
 			isClosed = true;
-			inputStream.close();
-			reader.close();
+			source.close();
 		} 
 		catch (IOException e)
 		{
@@ -84,7 +79,7 @@ public class CSVReader
 			
 			if(atEOF && result == null)
 			{
-				throw new EOFException("In reading CSV file " + inputSource + "reached end-of-file and not looping to the beginning");
+				throw new EOFException("In reading CSV file, reached end-of-file and not looping to the beginning");
 			}
 			
 			log.debug(".getNextRecord record==" + Arrays.asList(result));
@@ -119,18 +114,15 @@ public class CSVReader
 	}
 
     /**
-     * Reset the reader to the beginning of the file.
-     * @throws EPException in case of errors in resetting the reader
+     * Reset the source to the beginning of the file.
+     * @throws EPException in case of errors in resetting the source
      */
 	public void reset() 
 	{
 		try
 		{
 			log.debug(".reset");
-			inputStream.close();
-			reader.close();
-			inputStream = inputSource.getStream();
-			reader = new BufferedInputStream(inputStream);
+			source.reset();
 			atEOF = false;
 			if(isUsingTitleRow)
 			{
@@ -155,6 +147,15 @@ public class CSVReader
 		boolean result = isReset;
 		isReset = false;
 		return result;
+	}
+	
+	/**
+	 * Return true if this CSVReader supports the reset() method.
+	 * @return true if the underlying AdapterInputSource is resettable
+	 */
+	public boolean isResettable()
+	{
+		return source.isResettable();
 	}
 
 	private String[] getNextValidRecord() throws IOException
@@ -209,7 +210,7 @@ public class CSVReader
 			}
 			else
 			{
-				throw unexpectedCharacterException((char)reader.read());
+				throw unexpectedCharacterException((char)source.read());
 			}
 		}
 		
@@ -250,8 +251,8 @@ public class CSVReader
 	{
 		markReader(2, doConsume);
 		
-		char firstChar = (char)reader.read();
-		char secondChar = (char)reader.read();
+		char firstChar = (char)source.read();
+		char secondChar = (char)source.read();
 		boolean result = (firstChar == '\r' && secondChar == '\n');
 		
 		resetReader(doConsume, result);
@@ -262,7 +263,7 @@ public class CSVReader
 	{
 		markReader(1, doConsume);
 		
-		char firstChar = (char)reader.read();
+		char firstChar = (char)source.read();
 		boolean result = (firstChar == character);
 		
 		resetReader(doConsume, result);
@@ -271,24 +272,24 @@ public class CSVReader
 
 	private void resetReader(boolean doConsume, boolean result) throws IOException
 	{
-		// Reset the reader unless in consuming mode and the 
+		// Reset the source unless in consuming mode and the 
 		// matched character was what was expected
 		if(!(doConsume && result))
 		{
-			reader.reset();
+			source.resetToMark();
 		}
 	}
 
 	private void markReader(int markLimit, boolean doConsume) throws IOException
 	{
-			reader.mark(markLimit);
+			source.mark(markLimit);
 	}
 	
 	private boolean atEOF(boolean doConsume) throws IOException
 	{
 		markReader(1, doConsume);
 		
-		int value = reader.read();
+		int value = source.read();
 		atEOF = (value == -1);
 		
 		resetReader(doConsume, atEOF);
@@ -329,7 +330,7 @@ public class CSVReader
 		StringBuffer value = new StringBuffer();
 		while(true)
 		{
-			char currentChar = (char)reader.read();
+			char currentChar = (char)source.read();
 
 			if(currentChar == '"' && !atChar('"', doConsume))
 			{
@@ -365,7 +366,7 @@ public class CSVReader
 				throw unexpectedCharacterException('"');
 			}
 			
-			char currentChar = (char)reader.read();
+			char currentChar = (char)source.read();
 			
 			// Update the count of trailing spaces
 			trailingSpaces = (isWhiteSpace(currentChar)) ?
@@ -387,12 +388,12 @@ public class CSVReader
 	{
 		while(true)
 		{	
-			reader.mark(1);
-			char currentChar = (char)reader.read();
+			source.mark(1);
+			char currentChar = (char)source.read();
 
 			if(!isWhiteSpace(currentChar))
 			{
-				reader.reset();
+				source.resetToMark();
 				break;
 			}
 		}
@@ -434,7 +435,7 @@ public class CSVReader
 		while(!atEOF(doConsume) && !atNewline(doConsume))
 		{
 			// Discard input
-			reader.read();
+			source.read();
 		}
 	}
 }
