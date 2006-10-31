@@ -1,6 +1,11 @@
 Esper Changelog
 ===================
 
+Changes in version 1.3.0
+----------------------
+* (EQL) Added support for regular expressions (regexp) and SQL 'like'
+
+
 Changes in version 1.2.0
 ----------------------
 * (EQL) Added support for 'in' and 'between' standard SQL keywords

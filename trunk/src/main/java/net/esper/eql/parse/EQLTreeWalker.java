@@ -225,6 +225,14 @@ public class EQLTreeWalker extends EQLBaseWalker
             case NOT_BETWEEN:
                 leaveBetween(node);
                 break;
+            case LIKE:
+            case NOT_LIKE:
+                leaveLike(node);
+                break;
+            case REGEXP:
+            case NOT_REGEXP:
+                leaveRegexp(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + "'");
@@ -907,6 +915,24 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         ExprBetweenNode betweenNode = new ExprBetweenNode(node.getType() == NOT_BETWEEN);
         astExprNodeMap.put(node, betweenNode);
+    }
+
+    private void leaveLike(AST node)
+    {
+        log.debug(".leaveLike");
+
+        boolean isNot = node.getType() == NOT_LIKE;
+        ExprLikeNode likeNode = new ExprLikeNode(isNot);
+        astExprNodeMap.put(node, likeNode);
+    }
+
+    private void leaveRegexp(AST node)
+    {
+        log.debug(".leaveRegexp");
+
+        boolean isNot = node.getType() == NOT_REGEXP;
+        ExprRegexpNode regExpNode = new ExprRegexpNode(isNot);
+        astExprNodeMap.put(node, regExpNode);
     }
 
     private void leaveNot(AST node)

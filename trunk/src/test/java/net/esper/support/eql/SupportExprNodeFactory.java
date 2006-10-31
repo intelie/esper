@@ -181,6 +181,30 @@ public class SupportExprNodeFactory
         return inNode;
     }
 
+    public static ExprRegexpNode makeRegexpNode(boolean isNot) throws Exception
+    {
+        // Build :      s0.string regexp "[a-z][a-z]"  (with not)
+        ExprRegexpNode node = new ExprRegexpNode(isNot);
+        node.addChildNode(makeIdentNode("string","s0"));
+        node.addChildNode(new SupportExprNode("[a-z][a-z]"));
+        validate(node);
+        return node;
+    }
+
+    public static ExprLikeNode makeLikeNode(boolean isNot, String optionalEscape) throws Exception
+    {
+        // Build :      s0.string like "%abc__"  (with or witout escape)
+        ExprLikeNode node = new ExprLikeNode(isNot);
+        node.addChildNode(makeIdentNode("string","s0"));
+        node.addChildNode(new SupportExprNode("%abc__"));
+        if (optionalEscape != null)
+        {
+            node.addChildNode(new SupportExprNode(optionalEscape));
+        }
+        validate(node);
+        return node;
+    }
+
     public static ExprCaseNode makeCaseSyntax1Node() throws Exception
     {
         // Build (case 1 expression):

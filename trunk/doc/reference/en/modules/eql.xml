@@ -1336,6 +1336,55 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			<programlisting><![CDATA[]]>select * from StockTickEvent where price between 60 and 55</programlisting>
 		</sect2>		
 
+		<sect2 id="eql-operator-ref-keyword-like">
+			<title>The '<literal>like</literal>' Keyword</title>
+			<para>
+				The <literal>like</literal> keyword provides standard SQL pattern matching. SQL pattern matching allows you to use <literal>'_'</literal> to match any single character and <literal>'%'</literal> to match an arbitrary number of characters (including zero characters). In Esper, SQL patterns are case-sensitive by default. The syntax of <literal>like</literal> is:	
+			</para>
+			
+			<synopsis><emphasis>test_expression</emphasis> [not] like <emphasis>pattern_expression</emphasis> [escape <emphasis>string_literal</emphasis>]</synopsis>
+	
+			<para>
+				The <emphasis>test_expression</emphasis> is any valid expression yielding a String-type or a numeric result. The optional <literal>not</literal> keyword specifies that the result of the predicate be negated. The <literal>like</literal> keyword is followed by any valid standard SQL <emphasis>pattern_expression</emphasis> yielding a String-typed result. The optional <literal>escape</literal> keyword signals the escape character to escape <literal>'_'</literal> and <literal>'%'</literal> values in the pattern.
+			</para>
+				
+			<para>
+				The result of a <literal>like</literal> expression is of type <literal>Boolean</literal>. If the value of <emphasis>test_expression</emphasis> matches the <emphasis>pattern_expression</emphasis>, the result value is <literal>true</literal>. Otherwise, the result value is <literal>false</literal>.
+			</para>
+
+			<para>
+				An example for the <literal>like</literal> keyword is below.
+			</para>
+			<programlisting><![CDATA[select * from PersonLocationEvent where name like '%Jack%']]></programlisting>
+
+			<para>
+				The escape character can be defined as follows. In this example the where-clause matches events where the suffix property is a single <literal>'_'</literal> character.
+			</para>
+			<programlisting><![CDATA[select * from PersonLocationEvent where suffix like '!_' escape '!']]></programlisting>
+		</sect2>		
+
+		<sect2 id="eql-operator-ref-keyword-regexp">
+			<title>The '<literal>regexp</literal>' Keyword</title>
+			<para>
+				The <literal>regexp</literal> keyword is a form of pattern matching based on regular expressions implemented through the Java <literal>java.util.regex</literal> package. The syntax of <literal>regexp</literal> is:	
+			</para>
+			
+			<synopsis><emphasis>test_expression</emphasis> [not] regexp <emphasis>pattern_expression</emphasis></synopsis>
+	
+			<para>
+				The <emphasis>test_expression</emphasis> is any valid expression yielding a String-type or a numeric result. The optional <literal>not</literal> keyword specifies that the result of the predicate be negated. The <literal>regexp</literal> keyword is followed by any valid regular expression <emphasis>pattern_expression</emphasis> yielding a String-typed result.
+			</para>
+				
+			<para>
+				The result of a <literal>regexp</literal> expression is of type <literal>Boolean</literal>. If the value of <emphasis>test_expression</emphasis> matches the regular expression <emphasis>pattern_expression</emphasis>, the result value is <literal>true</literal>. Otherwise, the result value is <literal>false</literal>.
+			</para>
+
+			<para>
+				An example for the <literal>regexp</literal> keyword is below.
+			</para>
+			<programlisting><![CDATA[select * from PersonLocationEvent where name regexp '*Jack*']]></programlisting>
+		</sect2>		
+
 	</sect1>		
 
     <sect1 id="built-in-views">

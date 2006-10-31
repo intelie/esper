@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select 1 from " + className + " where intPrimitive between 1*2 and 5";
+        String expression = "select 1 from " + className + " where string like '%aa%' escape '!'";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -128,11 +128,15 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select * from x where between in and b");
         assertIsInvalid("select * from x where between");
 
-        // TODO: like
-        //assertIsInvalid("select * from x where like");
-        //assertIsInvalid("select * from x where like escape");
-        //assertIsInvalid("select * from x where like a escape");
-        //assertIsInvalid("select * from x where escape");
+        // like and regexp
+        assertIsInvalid("select * from x where like");
+        assertIsInvalid("select * from x where like escape");
+        assertIsInvalid("select * from x where like a escape");
+        assertIsInvalid("select * from x where escape");
+        assertIsInvalid("select * from x where field rlike 'aa' escape '!'");
+        assertIsInvalid("select * from x where field regexp 'aa' escape '!'");
+        assertIsInvalid("select * from x where regexp 'aa'");
+        assertIsInvalid("select * from x where a like b escape c");
     }
 
     public void testValidCases() throws Exception
@@ -309,17 +313,19 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         // custom aggregation func
         assertIsValid("select myfunc(price) from x");
 
-        // TODO: like
-        /*
+        // like and regexp
         assertIsValid("select * from x where abc like 'dog'");
-        assertIsValid("select * from x where abc like '.dog'");
-        assertIsValid("select * from x where abc like '*dog'");
-        assertIsValid("select * from x where abc like '[a-z]dog'");
-        assertIsValid("select * from x where abc like '[a-z]dog' escape 's'");
-        assertIsValid("select * from x where abc like '[a-z]dog' escape 's'");
-        assertIsValid("select * from x where abc like '[a-z]dog' escape \"a\"");
+        assertIsValid("select * from x where abc like '_dog'");
+        assertIsValid("select * from x where abc like '%dog'");
+        assertIsValid("select * from x where abc like null");
+        assertIsValid("select * from x where abc like '%dog' escape '\\\\'");
+        assertIsValid("select * from x where abc like '%dog%' escape '!'");
+        assertIsValid("select * from x where abc like '%dog' escape \"a\"");
         assertIsValid("select * from x where abc||'hairdo' like 'dog'");
-        */
+        assertIsValid("select * from x where abc not like 'dog'");
+        assertIsValid("select * from x where abc not regexp '[a-z]'");
+        assertIsValid("select * from x where abc regexp '[a-z]'");
+        assertIsValid("select * from x where a like b escape 'aa'");
     }
 
     public void testBitWiseCases() throws Exception

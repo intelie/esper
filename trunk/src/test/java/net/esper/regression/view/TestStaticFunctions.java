@@ -75,7 +75,7 @@ public class TestStaticFunctions extends TestCase
 	{
 		Long startTime = System.currentTimeMillis();
 		statementText = "select System.currentTimeMillis() " + stream;
-		Long result = (Long)createStatementAndGetProperty("System.currentTimeMillis()");
+		Long result = (Long)createStatementAndGet("System.currentTimeMillis()");
 		Long finishTime = System.currentTimeMillis();
 		assertTrue(startTime <= result);
 		assertTrue(result <= finishTime);
@@ -193,8 +193,8 @@ public class TestStaticFunctions extends TestCase
 		assertEquals("IBM", newEvents[1].get("symbol"));
 		assertEquals("CAT", newEvents[2].get("symbol"));
 	}
-	
-	private Object createStatementAndGetProperty(String propertyName)
+
+	private Object createStatementAndGet(String propertyName)
 	{
 		statement = epService.getEPAdministrator().createEQL(statementText);
 		listener = new SupportUpdateListener();
@@ -202,7 +202,7 @@ public class TestStaticFunctions extends TestCase
 		epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 10d, 4l, ""));
 		return getProperty(propertyName);
 	}
-	
+
 	private Object getProperty(String propertyName)
 	{
 		EventBean[] newData = listener.getAndResetLastNewData();

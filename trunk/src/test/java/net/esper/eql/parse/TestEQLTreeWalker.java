@@ -675,6 +675,21 @@ public class TestEQLTreeWalker extends TestCase
         assertTrue((Boolean) tryRelationalOp("-1 not between 0 and 2"));
     }
 
+    public void testWalkLikeRegex() throws Exception
+    {
+        assertTrue((Boolean) tryRelationalOp("'abc' like 'a__'"));
+        assertFalse((Boolean) tryRelationalOp("'abcd' like 'a__'"));
+
+        assertFalse((Boolean) tryRelationalOp("'abcde' not like 'a%'"));
+        assertTrue((Boolean) tryRelationalOp("'bcde' not like 'a%'"));
+
+        assertTrue((Boolean) tryRelationalOp("'a_' like 'a!_' escape '!'"));
+        assertFalse((Boolean) tryRelationalOp("'ab' like 'a!_' escape '!'"));
+
+        assertFalse((Boolean) tryRelationalOp("'a' not like 'a'"));
+        assertTrue((Boolean) tryRelationalOp("'a' not like 'ab'"));
+    }
+
     private double tryInterval(String interval) throws Exception
     {
         String text = "select * from " + SupportBean.class.getName() + ".win:time(" + interval + ")";

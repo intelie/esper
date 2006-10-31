@@ -17,7 +17,8 @@ tokens
 {
 	IN_SET="in";
 	BETWEEN="between";
-	//LIKE="like";
+	LIKE="like";
+	REGEXP="regexp";
 	ESCAPE="escape";
 	OR_EXPR="or";
 	AND_EXPR="and";
@@ -120,7 +121,8 @@ tokens
 	MILLISECOND_PART;
 	NOT_IN_SET;
 	NOT_BETWEEN;
-	//NOT_LIKE;
+	NOT_LIKE;
+	NOT_REGEXP;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -157,11 +159,15 @@ constant
 	:	(m:MINUS! | PLUS!)? n:number { #constant.setType(#n.getType()); 
 	                                   #constant.setText( (m == null) ? #n.getText() : "-" + #n.getText()); 
 	                                 }
-	|	STRING_LITERAL { #constant.setType(STRING_TYPE); }
-	|	QUOTED_STRING_LITERAL { #constant.setType(STRING_TYPE); }
+	|   stringconstant
     |   "true" { #constant.setType(BOOL_TYPE); }
     |   "false" { #constant.setType(BOOL_TYPE); }
     |	"null" { #constant.setType(NULL_TYPE); #constant.setText(null); }
+	;
+
+stringconstant
+	:   STRING_LITERAL { #stringconstant.setType(STRING_TYPE); }
+	|	QUOTED_STRING_LITERAL { #stringconstant.setType(STRING_TYPE); }
 	;
 
 //----------------------------------------------------------------------------
@@ -358,12 +364,16 @@ evalRelationalExpression
 						#b.setText( (n == null) ? "between" : "not between");
 					}
 					betweenList )
-// TODO: implement like
-//				| (l:LIKE^ {
-//						#l.setType( (n == null) ? LIKE : NOT_LIKE);
-//						#l.setText( (n == null) ? "like" : "not like");
-//					}
-//					concatenationExpr likeEscape)
+				| (l:LIKE^ {
+					#l.setType( (n == null) ? LIKE : NOT_LIKE);
+						#l.setText( (n == null) ? "like" : "not like");
+					}
+					concatenationExpr (ESCAPE! stringconstant)?)
+				| (r:REGEXP^ {
+					#r.setType( (n == null) ? REGEXP : NOT_REGEXP);
+						#r.setText( (n == null) ? "regexp" : "not regexp");
+					}
+					concatenationExpr)
 			)	
 		)
 	;
@@ -435,10 +445,6 @@ libFunctionArgs
 	
 betweenList
 	: concatenationExpr AND_EXPR! concatenationExpr
-	;
-
-likeEscape
-	: (ESCAPE^ concatenationExpr)?
 	;
 
 //----------------------------------------------------------------------------

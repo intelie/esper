@@ -153,6 +153,8 @@ valueExpr
 	|	cs:caseExpr { leaveNode(#cs); }
 	|	in:inExpr { leaveNode(#in); }
 	|	b:betweenExpr { leaveNode(#b); }
+	|	li:likeExpr { leaveNode(#li); }
+	|	r:regExpExpr { leaveNode(#r); }
 	;
 
 caseExpr
@@ -169,7 +171,17 @@ betweenExpr
 	: #(BETWEEN valueExpr valueExpr valueExpr)
 	| #(NOT_BETWEEN valueExpr valueExpr (valueExpr)*)
 	;
+	
+likeExpr
+	: #(LIKE valueExpr valueExpr (valueExpr)?)
+	| #(NOT_LIKE valueExpr valueExpr (valueExpr)?)
+	;
 
+regExpExpr
+	: #(REGEXP valueExpr valueExpr)
+	| #(NOT_REGEXP valueExpr valueExpr)
+	;
+	
 builtinFunc
 	: 	#(SUM (DISTINCT)? valueExpr)
 	|	#(AVG (DISTINCT)? valueExpr)
