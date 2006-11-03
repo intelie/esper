@@ -2,7 +2,7 @@ package net.esper.util;
 
 import junit.framework.TestCase;
 
-public class TestLikeHelper extends TestCase
+public class TestLikeUtil extends TestCase
 {
     public void testLike()
     {
@@ -57,7 +57,7 @@ public class TestLikeHelper extends TestCase
 
     private void tryMatches(String pattern, char escape, String[] stringMatching, String[] stringNotMatching)
     {
-        LikeHelper helper = new LikeHelper(pattern, escape, false);
+        LikeUtil helper = new LikeUtil(pattern, escape, false);
 
         for (int i = 0; i < stringMatching.length; i++)
         {

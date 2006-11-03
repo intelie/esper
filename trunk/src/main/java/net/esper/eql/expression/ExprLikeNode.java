@@ -3,7 +3,7 @@ package net.esper.eql.expression;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
 import net.esper.util.JavaClassHelper;
-import net.esper.util.LikeHelper;
+import net.esper.util.LikeUtil;
 import net.esper.event.EventBean;
 
 /**
@@ -15,7 +15,7 @@ public class ExprLikeNode extends ExprNode
 
     private boolean isNumericValue;
     private boolean isConstantPattern;
-    private LikeHelper likeHelper;
+    private LikeUtil likeUtil;
 
     public ExprLikeNode(boolean not)
     {
@@ -67,7 +67,7 @@ public class ExprLikeNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream)
     {
-        if (likeHelper == null)
+        if (likeUtil == null)
         {
             String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream);
             if (patternVal == null)
@@ -84,7 +84,7 @@ public class ExprLikeNode extends ExprNode
             {
                 escapeCharacter = escape.charAt(0);
             }
-            likeHelper = new LikeHelper(patternVal, escapeCharacter, false);
+            likeUtil = new LikeUtil(patternVal, escapeCharacter, false);
         }
         else
         {
@@ -95,7 +95,7 @@ public class ExprLikeNode extends ExprNode
                 {
                     return null;
                 }
-                likeHelper.resetPattern(patternVal);
+                likeUtil.resetPattern(patternVal);
             }
         }
 
@@ -110,7 +110,7 @@ public class ExprLikeNode extends ExprNode
             evalValue = evalValue.toString();
         }
 
-        Boolean result = likeHelper.compare( (String) evalValue);
+        Boolean result = likeUtil.compare( (String) evalValue);
 
         if (isNot)
         {

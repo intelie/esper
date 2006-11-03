@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select 1 from " + className + " where string like '%aa%' escape '!'";
+        String expression = "select * from " + className + ", database mydb schema myschema sql [[select a from b where $x.id=c.d]]";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -137,6 +137,12 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select * from x where field regexp 'aa' escape '!'");
         assertIsInvalid("select * from x where regexp 'aa'");
         assertIsInvalid("select * from x where a like b escape c");
+
+        // database join
+        assertIsInvalid("select * from x, database xx ");
+        assertIsInvalid("select * from x, database xx schema yy");
+        assertIsInvalid("select * from x, database xx schema yy [[");
+        assertIsInvalid("select * from x, database xx schema yy ]]");
     }
 
     public void testValidCases() throws Exception
@@ -326,6 +332,9 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from x where abc not regexp '[a-z]'");
         assertIsValid("select * from x where abc regexp '[a-z]'");
         assertIsValid("select * from x where a like b escape 'aa'");
+
+        // database joins
+        assertIsValid("select * from x, database mydb schema myschema [[whetever SQL $x.id google]]");
     }
 
     public void testBitWiseCases() throws Exception

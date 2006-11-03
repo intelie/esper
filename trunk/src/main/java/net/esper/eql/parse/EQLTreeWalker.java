@@ -378,7 +378,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         {
             streamSpec = new FilterStreamSpec(filterSpec, viewSpecs, streamName);
         }
-        else  if (node.getFirstChild().getType() == PATTERN_INCL_EXPR)
+        else if (node.getFirstChild().getType() == PATTERN_INCL_EXPR)
         {
             if ((astPatternNodeMap.size() > 1) || ((astPatternNodeMap.size() == 0)))
             {
@@ -391,6 +391,19 @@ public class EQLTreeWalker extends EQLBaseWalker
             streamSpec = new PatternStreamSpec(evalNode, taggedEventTypes, viewSpecs, streamName);
             taggedEventTypes.clear();
             astPatternNodeMap.clear();
+        }
+        else if (node.getFirstChild().getType() == DATABASE_JOIN_EXPR)
+        {
+            AST dbchildNode = node.getFirstChild().getFirstChild();
+            String dbName = dbchildNode.getText();
+            String schemaName = dbchildNode.getNextSibling().getText();
+            String sqlWithParams = dbchildNode.getNextSibling().getNextSibling().getText().trim();
+            if ((!sqlWithParams.startsWith("[[")) || (!sqlWithParams.endsWith("]]")))
+            {
+                throw new IllegalStateException("SQL string not quoted as expected, unlexed is '" + sqlWithParams + "'");
+            }
+            sqlWithParams = sqlWithParams.substring(2, sqlWithParams.length() - 2);
+            streamSpec = new DBStatementStreamSpec(streamName, new LinkedList<ViewSpec>(), dbName, schemaName, sqlWithParams);
         }
         else
         {

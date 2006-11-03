@@ -69,6 +69,9 @@ tokens
 	RSTREAM="rstream";
 	ISTREAM="istream";
 	PATTERN="pattern";
+	DATABASE="database";
+	SCHEMA="schema";
+	SQL="sql";
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
    	NUMERIC_PARAM_FREQUENCY;   	
@@ -83,6 +86,7 @@ tokens
    	OBSERVER_EXPR;
    	VIEW_EXPR;
    	PATTERN_INCL_EXPR;
+   	DATABASE_JOIN_EXPR;
    	WHERE_EXPR;
    	HAVING_EXPR;
 	EVAL_BITWISE_EXPR;
@@ -123,6 +127,9 @@ tokens
 	NOT_BETWEEN;
 	NOT_LIKE;
 	NOT_REGEXP;
+   	DBSELECT_EXPR;
+   	DBFROM_CLAUSE;
+   	DBWHERE_CLAUSE;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -237,7 +244,7 @@ selectionListElement
 	;
 		
 streamExpression
-	:	(eventFilterExpression | patternInclusionExpression)
+	:	(eventFilterExpression | patternInclusionExpression | databaseJoinExpression)
 		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)?
 		{ #streamExpression = #([STREAM_EXPR,"streamExpression"], #streamExpression); }
 	;
@@ -247,6 +254,11 @@ patternInclusionExpression
 		{ #patternInclusionExpression = #([PATTERN_INCL_EXPR,"patternInclusionExpression"], #patternInclusionExpression); }
 	;
 	
+databaseJoinExpression
+	:	DATABASE! IDENT SCHEMA! IDENT SQL! LLBRACK_TEXT
+		{ #databaseJoinExpression = #([DATABASE_JOIN_EXPR,"databaseJoinExpression"], #databaseJoinExpression); }
+	;	
+
 viewExpression
 	:	IDENT COLON! IDENT LPAREN! (parameterSet)? RPAREN!
 		{ 
@@ -744,6 +756,23 @@ BAND			:	'&'		;
 BAND_ASSIGN		:	"&="	;
 LAND			:	"&&"	;
 SEMI			:	';'		;
+LLBRACK			:	"[["	;
+RRBRACK			:	"]]"	;
+
+LLBRACK_TEXT
+	:	LLBRACK 
+		(	
+			options {
+				generateAmbigWarnings=false;
+			}
+		:
+			'\r' '\n'		{newline();}
+		|	'\r'			{newline();}
+		|	'\n'			{newline();}
+		|	~('*'|'\n'|'\r')
+		)*
+		RRBRACK		
+	;
 
 // Whitespace -- ignored
 WS	:	(	' '
@@ -790,12 +819,6 @@ ML_COMMENT
 		"*/"
 		{$setType(Token.SKIP);}
 	;
-
-
-// character literals - replaced by quoted string
-//CHAR_LITERAL
-//	:	'\'' ( ESC | ~('\''|'\n'|'\r'|'\\') ) '\''
-//	;
 
 // string literals
 STRING_LITERAL

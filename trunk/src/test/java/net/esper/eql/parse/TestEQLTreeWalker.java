@@ -690,6 +690,21 @@ public class TestEQLTreeWalker extends TestCase
         assertTrue((Boolean) tryRelationalOp("'a' not like 'ab'"));
     }
 
+    public void testWalkDBJoinStatement() throws Exception
+    {
+        String className = SupportBean.class.getName();
+        String sql = "select a from b where $x.id=c.d";
+        String expression = "select * from " + className + ", database mydb schema myschema [[" + sql + "]]";
+
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        StatementSpec statementSpec = walker.getStatementSpec();
+        assertEquals(2, statementSpec.getStreamSpecs().size());
+        DBStatementStreamSpec dbSpec = (DBStatementStreamSpec) statementSpec.getStreamSpecs().get(1);
+        assertEquals("mydb", dbSpec.getDatabaseName());
+        assertEquals("myschema", dbSpec.getSchemaName());
+        assertEquals(sql, dbSpec.getSqlWithSubsParams());
+    }
+
     private double tryInterval(String interval) throws Exception
     {
         String text = "select * from " + SupportBean.class.getName() + ".win:time(" + interval + ")";

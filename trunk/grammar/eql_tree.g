@@ -86,13 +86,17 @@ outerJoinIdent
 	;
 
 streamExpression
-	:	#(v:STREAM_EXPR (eventFilterExpr | patternInclusionExpression) (viewListExpr)? (IDENT)? { leaveNode(#v); } )
+	:	#(v:STREAM_EXPR (eventFilterExpr | patternInclusionExpression | databaseJoinExpression) (viewListExpr)? (IDENT)? { leaveNode(#v); } )
 	;
 
 patternInclusionExpression
 	:	#(p:PATTERN_INCL_EXPR { setIsPatternWalk(true); } exprChoice { setIsPatternWalk(false); leaveNode(#p); } )
 	;
-
+	
+databaseJoinExpression
+	:	#(d:DATABASE_JOIN_EXPR IDENT IDENT LLBRACK_TEXT)
+	;
+	
 viewListExpr
 	:	viewExpr (viewExpr)*
 	;

@@ -73,5 +73,9 @@ public class TestConfigurationParser extends TestCase
         assertEquals(1, legacy.getMethodProperties().size());
         assertEquals("myAccessorMethod", legacy.getMethodProperties().get(0).getAccessorMethodName());
         assertEquals("mymethodprop", legacy.getMethodProperties().get(0).getName());
+
+        // assert database reference - connection factory
+        
+
     }
 }

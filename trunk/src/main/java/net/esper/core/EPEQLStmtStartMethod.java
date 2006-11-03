@@ -93,7 +93,7 @@ public class EPEQLStmtStartMethod
                 eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
             }
             // Create stream based on a pattern expression
-            else
+            else if (streamSpec instanceof PatternStreamSpec)
             {
                 PatternStreamSpec patternStreamSpec = (PatternStreamSpec) streamSpec;
                 final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
@@ -114,6 +114,15 @@ public class EPEQLStmtStartMethod
 
                 PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
                 patternStopCallbacks.add(patternStopCallback);
+            }
+            else if (streamSpec instanceof DBStatementStreamSpec)
+            {
+                DBStatementStreamSpec patternStreamSpec = (DBStatementStreamSpec) streamSpec;
+                eventStream = DBStatementViewFactory.create(patternStreamSpec);
+            }
+            else
+            {
+                throw new ExprValidationException("Invalid stream specification submitted");
             }
 
             // Cascade views onto the (filter or pattern) stream
