@@ -70,6 +70,7 @@ class ConfigurationParser {
 
         handleEventTypes(configuration, root);
         handleAutoImports(configuration, root);
+        handleDatabaseRefs(configuration, root);
     }
 
     private static void handleEventTypes(Configuration configuration, Element parentElement)
@@ -225,6 +226,60 @@ class ConfigurationParser {
             String name = importNodes.item(i).getAttributes().getNamedItem("import-name").getTextContent();
             configuration.addImport(name);
         }
+    }
+
+    private static void handleDatabaseRefs(Configuration configuration, Element parentNode)
+    {
+        NodeList dbRefNodes = parentNode.getElementsByTagName("database-reference");
+        for (int i = 0; i < dbRefNodes.getLength(); i++)
+        {
+            String name = dbRefNodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+            ConfigurationDBRef configDBRef = new ConfigurationDBRef();
+            configuration.addDatabaseReference(name, configDBRef);
+
+            ElementIterator nodeIterator = new ElementIterator(dbRefNodes.item(i).getChildNodes());
+            while (nodeIterator.hasNext())
+            {
+                Element subElement = nodeIterator.next();
+                if (subElement.getNodeName().equals("datasource-connection"))
+                {
+                    String lookup = subElement.getAttributes().getNamedItem("context-lookup-name").getTextContent();
+                    Properties properties = handleProperties(subElement, "env-property");
+                    configDBRef.setDataSourceConnection(lookup, properties);
+                }
+                else if (subElement.getNodeName().equals("drivermanager-connection"))
+                {
+                    String className = subElement.getAttributes().getNamedItem("class-name").getTextContent();
+                    String url = subElement.getAttributes().getNamedItem("url").getTextContent();
+                    String userName = subElement.getAttributes().getNamedItem("user").getTextContent();
+                    String password = subElement.getAttributes().getNamedItem("password").getTextContent();
+                    Properties properties = handleProperties(subElement, "connection-arg");
+                    configDBRef.setDriverManagerConnection(className, url, userName, password, properties);
+                }
+                else if (subElement.getNodeName().equals("connection-lifecycle"))
+                {
+                    String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+                    configDBRef.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.valueOf(value.toUpperCase()));
+                }
+            }
+        }
+    }
+
+    private static Properties handleProperties(Element element, String propElementName)
+    {
+        Properties properties = new Properties();
+        ElementIterator nodeIterator = new ElementIterator(element.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals(propElementName))
+            {
+                String name = subElement.getAttributes().getNamedItem("name").getTextContent();
+                String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+                properties.put(name, value);
+            }
+        }
+        return properties;
     }
 
     /**

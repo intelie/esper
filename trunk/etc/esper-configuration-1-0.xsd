@@ -111,29 +111,22 @@
 	</xs:simpleType>
 	<xs:element name="database-reference">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="connection-factory" minOccurs="1" maxOccurs="1"/>
-				<xs:element ref="policy" minOccurs="1" maxOccurs="1"/>
-			</xs:sequence>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="datasource-connection" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="drivermanager-connection" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="connection-lifecycle" minOccurs="1" maxOccurs="1"/>
+				</xs:sequence>				
+			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="connection-factory">
-		<xs:complexType>
-			<xs:choice>
-				<xs:sequence>
-					<xs:element ref="initial-context-datasource" minOccurs="0" maxOccurs="1"/>
-					<xs:element ref="drivermanager" minOccurs="0" maxOccurs="1"/>
-				</xs:sequence>
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="initial-context-datasource">
+	<xs:element name="datasource-connection">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="env-property" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="context-lookup" type="xs:string" use="required"/>
+			<xs:attribute name="context-lookup-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="env-property">
@@ -142,7 +135,7 @@
 			<xs:attribute name="value" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="drivermanager">
+	<xs:element name="drivermanager-connection">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="connection-arg" minOccurs="0" maxOccurs="unbounded"/>
@@ -159,17 +152,15 @@
 			<xs:attribute name="value" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="policy">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="connection-lifecycle" minOccurs="1" maxOccurs="1"/>
-			</xs:sequence>
-			<xs:attribute name="schema" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
 	<xs:element name="connection-lifecycle">
 		<xs:complexType>
-			<xs:attribute name="value" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="connection-lifecycle-enum" use="required"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="connection-lifecycle-enum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="pooled"/>
+			<xs:enumeration value="retain"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

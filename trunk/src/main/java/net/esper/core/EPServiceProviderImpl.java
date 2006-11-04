@@ -3,6 +3,8 @@ package net.esper.core;
 import net.esper.client.*;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.AutoImportServiceImpl;
+import net.esper.eql.core.DatabaseRefService;
+import net.esper.eql.core.DatabaseRefServiceImpl;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
@@ -60,9 +62,10 @@ public class EPServiceProviderImpl implements EPServiceProvider
         // Make services that depend on snapshot config entries
         EventAdapterService eventAdapterService = makeEventAdapterService(configSnapshot);
         AutoImportService autoImportService = makeAutoImportService(configSnapshot);
+        DatabaseRefService databaseRefService = makeDatabaseRefService(configSnapshot);
 
         // New services context
-        EPServicesContext services = new EPServicesContext(eventAdapterService, autoImportService);
+        EPServicesContext services = new EPServicesContext(eventAdapterService, autoImportService, databaseRefService);
 
         // New runtime
         EPRuntimeImpl runtime = new EPRuntimeImpl(services);
@@ -208,6 +211,23 @@ public class EPServiceProviderImpl implements EPServiceProvider
         return autoImportService;
     }
 
+    private static DatabaseRefService makeDatabaseRefService(ConfigurationSnapshot configSnapshot)
+    {
+        DatabaseRefService databaseRefService = null;
+
+        // Add auto-imports
+        try
+        {
+            databaseRefService = new DatabaseRefServiceImpl(configSnapshot.getDatabaseRefs());
+        }
+        catch (IllegalArgumentException ex)
+        {
+            throw new ConfigurationException("Error configuring engine: " + ex.getMessage(), ex);
+        }
+
+        return databaseRefService;
+    }
+
     /**
      * Snapshot of Configuration is held for re-initializing engine state
      * from prior configuration values that may have been muted.
@@ -219,6 +239,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
         private Map<String, ConfigurationEventTypeLegacy> legacyAliases = new HashMap<String, ConfigurationEventTypeLegacy>();
         private String[] autoImports;
         private Map<String, Properties> mapAliases = new HashMap<String, Properties>();
+        private Map<String, ConfigurationDBRef> databaseRefs = new HashMap<String, ConfigurationDBRef>();
 
         /**
          * Ctor.
@@ -234,6 +255,7 @@ public class EPServiceProviderImpl implements EPServiceProvider
             autoImports = configuration.getImports().toArray(new String[0]);
             mapAliases.putAll(configuration.getEventTypesMapEvents());
             legacyAliases.putAll(configuration.getEventTypesLegacy());
+            databaseRefs.putAll(configuration.getDatabaseReferences());
         }
 
         /**
@@ -279,6 +301,11 @@ public class EPServiceProviderImpl implements EPServiceProvider
         public Map<String, ConfigurationEventTypeLegacy> getLegacyAliases()
         {
             return legacyAliases;
+        }
+
+        public Map<String, ConfigurationDBRef> getDatabaseRefs()
+        {
+            return databaseRefs;
         }
     }
 

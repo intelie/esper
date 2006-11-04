@@ -396,14 +396,13 @@ public class EQLTreeWalker extends EQLBaseWalker
         {
             AST dbchildNode = node.getFirstChild().getFirstChild();
             String dbName = dbchildNode.getText();
-            String schemaName = dbchildNode.getNextSibling().getText();
-            String sqlWithParams = dbchildNode.getNextSibling().getNextSibling().getText().trim();
+            String sqlWithParams = dbchildNode.getNextSibling().getText().trim();
             if ((!sqlWithParams.startsWith("[[")) || (!sqlWithParams.endsWith("]]")))
             {
                 throw new IllegalStateException("SQL string not quoted as expected, unlexed is '" + sqlWithParams + "'");
             }
             sqlWithParams = sqlWithParams.substring(2, sqlWithParams.length() - 2);
-            streamSpec = new DBStatementStreamSpec(streamName, new LinkedList<ViewSpec>(), dbName, schemaName, sqlWithParams);
+            streamSpec = new DBStatementStreamSpec(streamName, new LinkedList<ViewSpec>(), dbName, sqlWithParams);
         }
         else
         {

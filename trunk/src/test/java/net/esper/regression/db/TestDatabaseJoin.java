@@ -1,9 +1,7 @@
 package net.esper.regression.db;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
+import net.esper.client.*;
 import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.bean.SupportBean_S1;
 import net.esper.support.bean.SupportBean_S2;
@@ -15,6 +13,7 @@ import javax.naming.*;
 import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Hashtable;
+import java.util.Properties;
 import java.sql.*;
 
 import org.apache.commons.logging.Log;
@@ -22,20 +21,27 @@ import org.apache.commons.logging.LogFactory;
 
 public class TestDatabaseJoin extends TestCase
 {
+    private final static String MYSQL_CLASSNAME = "com.mysql.jdbc.Driver";
+    private final static String MYSQL_URL = "jdbc:mysql://localhost/test?user=root&password=password";
+
     private EPServiceProvider epService;
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        ConfigurationDBRef configDB = new ConfigurationDBRef();
+        configDB.setDriverManagerConnection(MYSQL_CLASSNAME, MYSQL_URL, new Properties());
+        Configuration configuration = new Configuration();
+        configuration.addDatabaseReference("MyDB", configDB);
+
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
     }
 
     public void testSimplJoin()
     {
-        String stmtText = "select id, name, address " +
-                " from " +
+        String stmtText = "select id, name, address from " +
                 SupportBean_S0.class.getName() + " as s0," +
-                " database MyDB schema test [[select name, address from customers where ?s0.id = customers.custid]]";
+                " database MyDB sql [[select name, address from customers where ?s0.id? = customers.custid]]";
 
         System.out.println(stmtText);
         EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
@@ -46,11 +52,11 @@ public class TestDatabaseJoin extends TestCase
 
     public void testMySQLDatabaseConnection() throws Exception
     {
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
+        Class.forName(MYSQL_CLASSNAME).newInstance();
         Connection conn = null;
         try
         {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/test?user=root&password=welcome");
+            conn = DriverManager.getConnection("");
         }
         catch (SQLException ex) {
             // handle any errors

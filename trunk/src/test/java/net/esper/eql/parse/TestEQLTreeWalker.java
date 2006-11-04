@@ -694,14 +694,13 @@ public class TestEQLTreeWalker extends TestCase
     {
         String className = SupportBean.class.getName();
         String sql = "select a from b where $x.id=c.d";
-        String expression = "select * from " + className + ", database mydb schema myschema [[" + sql + "]]";
+        String expression = "select * from " + className + ", database mydb sql [[" + sql + "]]";
 
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         StatementSpec statementSpec = walker.getStatementSpec();
         assertEquals(2, statementSpec.getStreamSpecs().size());
         DBStatementStreamSpec dbSpec = (DBStatementStreamSpec) statementSpec.getStreamSpecs().get(1);
         assertEquals("mydb", dbSpec.getDatabaseName());
-        assertEquals("myschema", dbSpec.getSchemaName());
         assertEquals(sql, dbSpec.getSqlWithSubsParams());
     }
 

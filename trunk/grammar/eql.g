@@ -69,9 +69,6 @@ tokens
 	RSTREAM="rstream";
 	ISTREAM="istream";
 	PATTERN="pattern";
-	DATABASE="database";
-	SCHEMA="schema";
-	SQL="sql";
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
    	NUMERIC_PARAM_FREQUENCY;   	
@@ -255,7 +252,7 @@ patternInclusionExpression
 	;
 	
 databaseJoinExpression
-	:	DATABASE! IDENT SCHEMA! IDENT SQL! LLBRACK_TEXT
+	:	SQL_TEXT
 		{ #databaseJoinExpression = #([DATABASE_JOIN_EXPR,"databaseJoinExpression"], #databaseJoinExpression); }
 	;	
 
@@ -756,11 +753,9 @@ BAND			:	'&'		;
 BAND_ASSIGN		:	"&="	;
 LAND			:	"&&"	;
 SEMI			:	';'		;
-LLBRACK			:	"[["	;
-RRBRACK			:	"]]"	;
 
-LLBRACK_TEXT
-	:	LLBRACK 
+SQL_TEXT
+	:	"sql:" 
 		(	
 			options {
 				generateAmbigWarnings=false;
@@ -771,7 +766,7 @@ LLBRACK_TEXT
 		|	'\n'			{newline();}
 		|	~('*'|'\n'|'\r')
 		)*
-		RRBRACK		
+		RBRACK		
 	;
 
 // Whitespace -- ignored

@@ -118,7 +118,7 @@ public class EPEQLStmtStartMethod
             else if (streamSpec instanceof DBStatementStreamSpec)
             {
                 DBStatementStreamSpec patternStreamSpec = (DBStatementStreamSpec) streamSpec;
-                eventStream = DBStatementViewFactory.create(patternStreamSpec);
+                eventStream = DBStatementViewFactory.createDBEventStream(patternStreamSpec, services.getDatabaseRefService());                
             }
             else
             {

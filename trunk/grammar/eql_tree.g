@@ -94,7 +94,7 @@ patternInclusionExpression
 	;
 	
 databaseJoinExpression
-	:	#(d:DATABASE_JOIN_EXPR IDENT IDENT LLBRACK_TEXT)
+	:	#(d:DATABASE_JOIN_EXPR SQL_TEXT)
 	;
 	
 viewListExpr

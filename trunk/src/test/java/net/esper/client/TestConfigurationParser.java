@@ -74,8 +74,22 @@ public class TestConfigurationParser extends TestCase
         assertEquals("myAccessorMethod", legacy.getMethodProperties().get(0).getAccessorMethodName());
         assertEquals("mymethodprop", legacy.getMethodProperties().get(0).getName());
 
-        // assert database reference - connection factory
-        
+        // assert database reference - data source config
+        assertEquals(2, config.getDatabaseReferences().size());
+        ConfigurationDBRef configDBRef = config.getDatabaseReferences().get("mydb1");
+        ConfigurationDBRef.DataSourceConnection dsDef = (ConfigurationDBRef.DataSourceConnection) configDBRef.getConnectionFactoryDesc();
+        assertEquals("java:comp/env/jdbc/mydb", dsDef.getContextLookupName());
+        assertEquals("{java.naming.provider.url=iiop://localhost:1050, java.naming.factory.initial=com.myclass.CtxFactory}", dsDef.getEnvProperties().toString());
+        assertEquals(ConfigurationDBRef.ConnectionLifecycleEnum.POOLED, configDBRef.getConnectionLifecycleEnum());
 
+        // assert database reference - driver manager config
+        configDBRef = config.getDatabaseReferences().get("mydb2");
+        ConfigurationDBRef.DriverManagerConnection dmDef = (ConfigurationDBRef.DriverManagerConnection) configDBRef.getConnectionFactoryDesc();
+        assertEquals("my.sql.Driver", dmDef.getClassName());
+        assertEquals("jdbc:mysql://localhost", dmDef.getUrl());
+        assertEquals("myuser1", dmDef.getOptionalUserName());
+        assertEquals("mypassword1", dmDef.getOptionalPassword());
+        assertEquals("{user=myuser2, password=mypassword2, somearg=someargvalue}", dmDef.getOptionalProperties().toString());
+        assertEquals(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN, configDBRef.getConnectionLifecycleEnum());
     }
 }
