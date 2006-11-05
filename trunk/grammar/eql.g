@@ -69,6 +69,7 @@ tokens
 	RSTREAM="rstream";
 	ISTREAM="istream";
 	PATTERN="pattern";
+	SQL="sql";
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
    	NUMERIC_PARAM_FREQUENCY;   	
@@ -252,7 +253,7 @@ patternInclusionExpression
 	;
 	
 databaseJoinExpression
-	:	SQL_TEXT
+	:	SQL! COLON! IDENT EMBEDDED_GRAMMAR
 		{ #databaseJoinExpression = #([DATABASE_JOIN_EXPR,"databaseJoinExpression"], #databaseJoinExpression); }
 	;	
 
@@ -754,8 +755,8 @@ BAND_ASSIGN		:	"&="	;
 LAND			:	"&&"	;
 SEMI			:	';'		;
 
-SQL_TEXT
-	:	"sql:" 
+EMBEDDED_GRAMMAR
+	:	"[["
 		(	
 			options {
 				generateAmbigWarnings=false;
@@ -764,9 +765,10 @@ SQL_TEXT
 			'\r' '\n'		{newline();}
 		|	'\r'			{newline();}
 		|	'\n'			{newline();}
-		|	~('*'|'\n'|'\r')
+		|	~('*'|'\n'|'\r'|']')
+		|	{ LA(2)!=']' }? ']'
 		)*
-		RBRACK		
+		"]]"
 	;
 
 // Whitespace -- ignored

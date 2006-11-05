@@ -1,6 +1,7 @@
 package net.esper.eql.join;
 
 import net.esper.eql.expression.ExprNode;
+import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.eql.join.exec.ExecNode;
 import net.esper.eql.join.plan.QueryPlan;
@@ -11,6 +12,8 @@ import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.table.PropertyIndexedEventTable;
 import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.event.EventType;
+import net.esper.view.Viewable;
+import net.esper.view.HistoricalEventViewable;
 
 import java.util.List;
 
@@ -31,41 +34,67 @@ public class JoinSetComposerFactory
      * @param streamNames - names of streams
      * @return composer implementation
      */
-    public static JoinSetComposerImpl makeComposer(List<OuterJoinDesc> outerJoinDescList, 
+    public static JoinSetComposer makeComposer(List<OuterJoinDesc> outerJoinDescList,
                                                    ExprNode optionalFilterNode, 
                                                    EventType[] streamTypes,
-                                                   String[] streamNames)
+                                                   String[] streamNames,
+                                                   Viewable[] streamViews)
+            throws ExprValidationException
     {
-        QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes.length, outerJoinDescList, optionalFilterNode, streamNames);
-
-        // Build indexes
-        QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
-        EventTable[][] indexes = new EventTable[indexSpecs.length][];
-        for (int streamNo = 0; streamNo < indexSpecs.length; streamNo++)
+        // Determine if there is a historical
+        boolean hasHistorical = false;
+        for (int i = 0; i < streamViews.length; i++)
         {
-            String[][] indexProps = indexSpecs[streamNo].getIndexProps();
-            indexes[streamNo] = new EventTable[indexProps.length];
-            for (int indexNo = 0; indexNo < indexProps.length; indexNo++)
+            if (streamViews[i] instanceof HistoricalEventViewable)
             {
-                indexes[streamNo][indexNo] = buildIndex(streamNo, indexProps[indexNo], streamTypes[streamNo]);
+                hasHistorical = true;
+                if (streamTypes.length > 2)
+                {
+                    throw new ExprValidationException("Joins between historical data require a single event stream");
+                }
             }
         }
 
-        // Build strategies
-        QueryPlanNode[] queryExecSpecs = queryPlan.getExecNodeSpecs();
-        QueryStrategy[] queryStrategies = new QueryStrategy[queryExecSpecs.length];
-        for (int i = 0; i < queryExecSpecs.length; i++)
-        {
-            QueryPlanNode planNode = queryExecSpecs[i];
-            ExecNode executionNode = planNode.makeExec(indexes, streamTypes);
 
-            if (log.isInfoEnabled())
+        EventTable[][] indexes = null;
+        QueryStrategy[] queryStrategies = null;
+        if (hasHistorical)
+        {
+
+        }
+        else
+        {
+            QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes.length, outerJoinDescList, optionalFilterNode, streamNames);
+
+            // Build indexes
+            QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
+            indexes = new EventTable[indexSpecs.length][];
+            for (int streamNo = 0; streamNo < indexSpecs.length; streamNo++)
             {
-                log.debug(".makeComposer Execution nodes for stream " + i + " '" + streamNames[i] +
-                    "' : \n" + ExecNode.print(executionNode));
+                String[][] indexProps = indexSpecs[streamNo].getIndexProps();
+                indexes[streamNo] = new EventTable[indexProps.length];
+                for (int indexNo = 0; indexNo < indexProps.length; indexNo++)
+                {
+                    indexes[streamNo][indexNo] = buildIndex(streamNo, indexProps[indexNo], streamTypes[streamNo]);
+                }
             }
 
-            queryStrategies[i] = new ExecNodeQueryStrategy(i, streamTypes.length, executionNode);
+            // Build strategies
+            QueryPlanNode[] queryExecSpecs = queryPlan.getExecNodeSpecs();
+            queryStrategies = new QueryStrategy[queryExecSpecs.length];
+            for (int i = 0; i < queryExecSpecs.length; i++)
+            {
+                QueryPlanNode planNode = queryExecSpecs[i];
+                ExecNode executionNode = planNode.makeExec(indexes, streamTypes);
+
+                if (log.isInfoEnabled())
+                {
+                    log.debug(".makeComposer Execution nodes for stream " + i + " '" + streamNames[i] +
+                        "' : \n" + ExecNode.print(executionNode));
+                }
+
+                queryStrategies[i] = new ExecNodeQueryStrategy(i, streamTypes.length, executionNode);
+            }
         }
 
         return new JoinSetComposerImpl(indexes, queryStrategies);

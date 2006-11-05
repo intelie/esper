@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select * from " + className + ", sql:mydb [select a from b where ${x.id}=c.d]";
+        String expression = "select * from " + className + ", sql:mydb [[select a from b where ${x.id}=c.ddd as jSjs ]] as S0";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -139,10 +139,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select * from x where a like b escape c");
 
         // database join
-        assertIsInvalid("select * from x, database xx ");
-        assertIsInvalid("select * from x, database xx schema yy");
-        assertIsInvalid("select * from x, database xx schema yy [[");
-        assertIsInvalid("select * from x, database xx schema yy ]]");
+        assertIsInvalid("select * from x, sql ");
+        assertIsInvalid("select * from x, sql:xx ");
+        assertIsInvalid("select * from x, sql:xx ");
+        assertIsInvalid("select * from x, sql:xx [[");
+        assertIsInvalid("select * from x, sql:xx ]]");
     }
 
     public void testValidCases() throws Exception
@@ -334,7 +335,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from x where a like b escape 'aa'");
 
         // database joins
-        assertIsValid("select * from x, database mydb schema myschema [[whetever SQL $x.id google]]");
+        assertIsValid("select * from x, sql:mydb [[whetever SQL $x.id google]]");
     }
 
     public void testBitWiseCases() throws Exception

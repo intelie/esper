@@ -12,6 +12,7 @@ import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.exec.TableLookupExecNode;
 import net.esper.eql.spec.OuterJoinDesc;
+import net.esper.view.Viewable;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -19,12 +20,15 @@ import java.util.LinkedList;
 public class TestJoinSetComposerFactory extends TestCase
 {
     private EventType[] streamTypes;
+    private Viewable[] streamViewables;
 
     public void setUp()
     {
         streamTypes = new EventType[2];
         streamTypes[0] = SupportEventTypeFactory.createBeanType(SupportBean.class);
         streamTypes[1] = SupportEventTypeFactory.createBeanType(SupportBean_A.class);
+
+        streamViewables = new Viewable[2];
     }
 
     public void testBuildIndex()
@@ -49,7 +53,7 @@ public class TestJoinSetComposerFactory extends TestCase
     public void testBuildComposer()
     {
         List<OuterJoinDesc> outerJoins = new LinkedList<OuterJoinDesc>();
-        JoinSetComposerImpl composer = (JoinSetComposerImpl) JoinSetComposerFactory.makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"});
+        JoinSetComposerImpl composer = (JoinSetComposerImpl) JoinSetComposerFactory.makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables);
 
         // verify default indexes build
         assertEquals(2, composer.getTables().length);

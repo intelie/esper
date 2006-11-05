@@ -84,13 +84,15 @@ public class EPEQLStmtStartMethod
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpec streamSpec = statementSpec.getStreamSpecs().get(i);
-            EventStream eventStream = null;
 
             // Create stream based on a filter specification
             if (streamSpec instanceof FilterStreamSpec)
             {
                 FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
-                eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
+                EventStream eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
+
+                // Cascade views onto the (filter or pattern) stream
+                streamViews[i] = services.getViewService().createView(eventStream, streamSpec.getViewSpecs(), viewContext);
             }
             // Create stream based on a pattern expression
             else if (streamSpec instanceof PatternStreamSpec)
@@ -98,7 +100,9 @@ public class EPEQLStmtStartMethod
                 PatternStreamSpec patternStreamSpec = (PatternStreamSpec) streamSpec;
                 final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
-                eventStream = sourceEventStream;
+
+                // Cascade views onto the (filter or pattern) stream
+                streamViews[i] = services.getViewService().createView(sourceEventStream, streamSpec.getViewSpecs(), viewContext);
 
                 EvalRootNode rootNode = new EvalRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
@@ -117,16 +121,14 @@ public class EPEQLStmtStartMethod
             }
             else if (streamSpec instanceof DBStatementStreamSpec)
             {
-                DBStatementStreamSpec patternStreamSpec = (DBStatementStreamSpec) streamSpec;
-                eventStream = DBStatementViewFactory.createDBEventStream(patternStreamSpec, services.getDatabaseRefService());                
+                DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
+                streamViews[i] = DBStatementViewFactory.createDBStatementView(sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService());
             }
             else
             {
                 throw new ExprValidationException("Invalid stream specification submitted");
             }
 
-            // Cascade views onto the (filter or pattern) stream
-            streamViews[i] = services.getViewService().createView(eventStream, streamSpec.getViewSpecs(), viewContext);
             streamTypes[i] = streamViews[i].getEventType();
         }
 
@@ -205,9 +207,10 @@ public class EPEQLStmtStartMethod
                                 EventType[] streamTypes,
                                 Viewable[] streamViews,
                                 ResultSetProcessor optionalResultSetProcessor)
+            throws ExprValidationException
     {
         // Handle joins
-        JoinSetComposer composer = JoinSetComposerFactory.makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames);
+        JoinSetComposer composer = JoinSetComposerFactory.makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews);
         JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
         OutputProcessView indicatorView = new OutputProcessView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), viewContext);
 

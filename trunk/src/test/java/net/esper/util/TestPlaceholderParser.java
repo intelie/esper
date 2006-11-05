@@ -17,7 +17,15 @@ public class TestPlaceholderParser extends TestCase
           {"$${lib} c", new Object[] {textF("${lib} c")}},
           {"a$${lib}", new Object[] {textF("a${lib}")}},
           {"sometext ${a} text $${d} ${e} text",
-                  new Object[] {textF("sometext "), paramF("a"), textF(" text ${d} "), paramF("e"), textF(" text")}}
+                  new Object[] {textF("sometext "), paramF("a"), textF(" text ${d} "), paramF("e"), textF(" text")}},
+          {"$${lib} c $${lib}", new Object[] {textF("${lib} c ${lib}")}},
+          {"$${lib}$${lib}", new Object[] {textF("${lib}${lib}")}},
+          {"${xxx}$${lib}", new Object[] {paramF("xxx"), textF("${lib}")}},
+          {"$${xxx}${lib}", new Object[] {textF("${xxx}"), paramF("lib")}},
+          {"${lib} ${lib}", new Object[] {paramF("lib"), textF(" "), paramF("lib")}},
+          {"${lib}${lib}", new Object[] {paramF("lib"), paramF("lib")}},
+          {"$${lib", new Object[] {textF("${lib")}},
+          {"lib}", new Object[] {textF("lib}")}}
             };
 
         for (int i = 0; i < testdata.length; i++)
@@ -43,6 +51,7 @@ public class TestPlaceholderParser extends TestCase
     public void testParseInvalid()
     {
         tryParseInvalid("${lib");
+        tryParseInvalid("${lib} ${aa");
     }
 
     private void tryParseInvalid(String parseString)

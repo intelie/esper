@@ -45,7 +45,10 @@ public class PlaceholderParser
             if (startIndex > 0)
             {
                 String textSoFar = parseString.substring(currOutputIndex, startIndex);
-                result.add(new TextFragment(textSoFar));
+                if (textSoFar.length() != 0)
+                {
+                    result.add(new TextFragment(textSoFar));
+                }
             }
             // check if the parameter is escaped
             if ((startIndex > 0) && (parseString.charAt(startIndex - 1) == '$'))
@@ -106,6 +109,8 @@ public class PlaceholderParser
         {
             return value;
         }
+
+        public abstract boolean isParameter();
     }
 
     public static class TextFragment extends Fragment
@@ -129,6 +134,11 @@ public class PlaceholderParser
         {
             return "text=" + getValue();
         }
+
+        public boolean isParameter()
+        {
+            return false;
+        }
     }
 
     public static class ParameterFragment extends Fragment
@@ -146,6 +156,11 @@ public class PlaceholderParser
             }
             ParameterFragment other = (ParameterFragment) obj;
             return other.getValue().equals(this.getValue());
+        }
+
+        public boolean isParameter()
+        {
+            return true;
         }
 
         public String toString()

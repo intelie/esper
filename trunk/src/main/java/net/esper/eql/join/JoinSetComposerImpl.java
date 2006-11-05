@@ -17,6 +17,7 @@ public class JoinSetComposerImpl implements JoinSetComposer
     private final EventTable[][] repositories;
     private final QueryStrategy[] queryStrategies;
 
+    // Set semantic eliminates duplicates in result set
     private Set<MultiKey<EventBean>> oldResults = new HashSet<MultiKey<EventBean>>();
     private Set<MultiKey<EventBean>> newResults = new HashSet<MultiKey<EventBean>>();
 

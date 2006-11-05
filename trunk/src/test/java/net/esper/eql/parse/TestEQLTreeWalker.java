@@ -694,7 +694,7 @@ public class TestEQLTreeWalker extends TestCase
     {
         String className = SupportBean.class.getName();
         String sql = "select a from b where $x.id=c.d";
-        String expression = "select * from " + className + ", database mydb sql [[" + sql + "]]";
+        String expression = "select * from " + className + ", sql:mydb [[" + sql + "]]";
 
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         StatementSpec statementSpec = walker.getStatementSpec();

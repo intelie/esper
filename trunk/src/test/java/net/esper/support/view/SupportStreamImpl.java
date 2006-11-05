@@ -6,9 +6,7 @@ import java.util.List;
 
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.view.EventStream;
-import net.esper.view.StreamView;
 import net.esper.view.View;
 import net.esper.support.event.SupportEventTypeFactory;
 
@@ -96,26 +94,6 @@ public class SupportStreamImpl implements EventStream
         return events.get((int)index);
     }
 
-    public long getFirstIndex()
-    {
-        return 0;
-    }
-
-    public long getLastIndex()
-    {
-        return events.size();
-    }
-
-    public int getSize()
-    {
-        return events.size();
-    }
-
-    public Iterator iterator(long startIndex, long endIndex)
-    {
-        return null;
-    }
-
     public EventType getEventType()
     {
         return eventType;
@@ -125,21 +103,6 @@ public class SupportStreamImpl implements EventStream
     {
         log.info(".iterator Not yet implemented");
         return null;
-    }
-
-    public void doneWith(StreamView view, long index)
-    {
-        log.info(".doneWith Not yet implemented");
-    }
-
-    public int getDepth()
-    {
-        return Integer.MAX_VALUE;
-    }
-
-    public String getName()
-    {
-        return "SupportStreamImpl";
     }
 
     public View addView(View view)

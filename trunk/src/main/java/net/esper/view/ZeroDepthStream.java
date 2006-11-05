@@ -50,31 +50,6 @@ public final class ZeroDepthStream implements EventStream
         }
     }
 
-    public final Object get(long index)
-    {
-        throw new IllegalArgumentException("Index access not supported by this implementation");
-    }
-
-    public final long getFirstIndex()
-    {
-        throw new IllegalArgumentException("Index access not supported by this implementation");
-    }
-
-    public final long getLastIndex()
-    {
-        throw new IllegalArgumentException("Index access not supported by this implementation");
-    }
-
-    public final int getSize()
-    {
-        return 0;
-    }
-
-    public final Iterator iterator(long startIndex, long endIndex)
-    {
-        return null;
-    }
-
     public final EventType getEventType()
     {
         return eventType;
@@ -83,20 +58,6 @@ public final class ZeroDepthStream implements EventStream
     public final Iterator<EventBean> iterator()
     {
         return null;
-    }
-
-    public final void doneWith(StreamView view, long index)
-    {
-    }
-
-    public final int getDepth()
-    {
-        return 0;
-    }
-
-    public final String getName()
-    {
-        return "ZeroDepthStream";
     }
 
     public final View addView(View view)

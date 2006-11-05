@@ -11,7 +11,7 @@ import java.util.Set;
 public interface QueryStrategy
 {
     /**
-     * Look up events return tuples of joined events.
+     * Look up events returning tuples of joined events.
      * @param lookupEvents - events to use to perform the join
      * @param joinSet - result join tuples of events 
      */
