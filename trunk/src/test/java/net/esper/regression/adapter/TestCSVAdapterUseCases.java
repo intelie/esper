@@ -13,6 +13,7 @@ import junit.framework.TestCase;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 
 public class TestCSVAdapterUseCases extends TestCase
 {
@@ -28,15 +29,7 @@ public class TestCSVAdapterUseCases extends TestCase
      */
     public void testExistingTypeNoOptions()
     {
-        Map<String, Class> type = new HashMap<String, Class>();
-        type.put("symbol", String.class);
-        type.put("price", double.class);
-        type.put("volume", Integer.class);
-
-        Configuration configuration = new Configuration();
-        configuration.addEventTypeAlias("TypeA", type);
-
-        epService = EPServiceProviderManager.getProvider("useCaseProvider", configuration);
+        epService = EPServiceProviderManager.getProvider("testExistingTypeNoOptions", makeConfig("TypeA"));
         epService.initialize();
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select symbol, price, volume from TypeA.win:length(100)");
@@ -51,23 +44,66 @@ public class TestCSVAdapterUseCases extends TestCase
     /**
      * Play a CSV file that is from memory.
      */
-    public void testPlayFromMemoryInputStream()
+    public void testPlayFromInputStream()
     {
-        String myCSV = "symbol, price, volume" + NEW_LINE +
-                       "IBM, 10.2, 10000";
+        String myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(myCSV.getBytes());
+        trySource(new AdapterInputSource(inputStream));
+    }
 
-        ByteArrayInputStream inStream = new ByteArrayInputStream(myCSV.getBytes());
-        CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(inStream), "TypeC");
+    /**
+     * Play a CSV file that is from memory.
+     */
+    public void testPlayFromStringReader()
+    {
+        String myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
+        StringReader reader = new StringReader(myCSV);
+        trySource(new AdapterInputSource(reader));
+    }
 
-        epService = EPServiceProviderManager.getProvider("testPlayFromMemoryInputStream");
+    /**
+     * Play a CSV file using an engine thread
+     */
+    public void testEngineThread() throws Exception
+    {
+        epService = EPServiceProviderManager.getProvider("testExistingTypeNoOptions", makeConfig("TypeA"));
         epService.initialize();
-        InputAdapter feed = epService.getEPAdapters().createAdapter(spec);
 
-        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeC.win:length(100)");
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select symbol, price, volume from TypeA.win:length(100)");
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
-        feed.start();
+        CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME), "TypeA");
+        spec.setEventsPerSec(1000);
+        spec.setLooping(true);
+        spec.setUsingEngineThread(true);
+
+        InputAdapter inputAdapter = epService.getEPAdapters().createAdapter(spec);
+        inputAdapter.start();
+        Thread.sleep(1000);
+        inputAdapter.stop();
+
+        assertEquals(1, listener.getNewDataList().size());
+    }
+
+    /**
+     * Play a CSV file using the application thread
+     */
+    public void testAppThread() throws Exception
+    {
+        epService = EPServiceProviderManager.getProvider("testExistingTypeNoOptions", makeConfig("TypeA"));
+        epService.initialize();
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select symbol, price, volume from TypeA.win:length(100)");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME), "TypeA");
+        spec.setEventsPerSec(1000);
+
+        InputAdapter inputAdapter = epService.getEPAdapters().createAdapter(spec);
+        inputAdapter.start();
+
         assertEquals(1, listener.getNewDataList().size());
     }
 
@@ -90,6 +126,35 @@ public class TestCSVAdapterUseCases extends TestCase
         assertEquals(String.class, stmt.getEventType().getPropertyType("symbol"));
         assertEquals(String.class, stmt.getEventType().getPropertyType("price"));
         assertEquals(String.class, stmt.getEventType().getPropertyType("volume"));
+
+        feed.start();
+        assertEquals(1, listener.getNewDataList().size());
+    }
+
+    private Configuration makeConfig(String typeName)
+    {
+        Map<String, Class> eventProperties = new HashMap<String, Class>();
+        eventProperties.put("symbol", String.class);
+        eventProperties.put("price", double.class);
+        eventProperties.put("volume", Integer.class);
+
+        Configuration configuration = new Configuration();
+        configuration.addEventTypeAlias(typeName, eventProperties);
+
+        return configuration;
+    }
+
+    private void trySource(AdapterInputSource source)
+    {
+        CSVInputAdapterSpec spec = new CSVInputAdapterSpec(source, "TypeC");
+
+        epService = EPServiceProviderManager.getProvider("testPlayFromInputStream", makeConfig("TypeC"));
+        epService.initialize();
+        InputAdapter feed = epService.getEPAdapters().createAdapter(spec);
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeC.win:length(100)");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
 
         feed.start();
         assertEquals(1, listener.getNewDataList().size());
