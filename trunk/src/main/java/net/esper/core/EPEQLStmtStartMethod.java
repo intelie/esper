@@ -19,6 +19,7 @@ import net.esper.eql.view.InternalRouteView;
 import net.esper.eql.view.IStreamRStreamSelectorView;
 import net.esper.eql.spec.*;
 import net.esper.eql.core.*;
+import net.esper.eql.db.DBStatementViewFactory;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.*;

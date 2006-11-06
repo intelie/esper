@@ -7,6 +7,11 @@ public class ConfigurationDBRef
     private ConnectionFactoryDesc connectionFactoryDesc;
     private ConnectionLifecycleEnum connectionLifecycleEnum;
 
+    public ConfigurationDBRef()
+    {
+        connectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
+    }
+
     public void setDataSourceConnection(String contextLookupName, Properties environmentProps)
     {
         connectionFactoryDesc = new DataSourceConnection(contextLookupName, environmentProps);

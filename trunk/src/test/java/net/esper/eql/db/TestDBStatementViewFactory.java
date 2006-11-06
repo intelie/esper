@@ -1,8 +1,11 @@
-package net.esper.view;
+package net.esper.eql.db;
 
 import net.esper.eql.spec.DBStatementStreamSpec;
-import net.esper.support.eql.SupportDatabaseRefServiceFactory;
+import net.esper.eql.db.DBStatementViewFactory;
+import net.esper.support.eql.SupportDatabaseService;
 import net.esper.support.event.SupportEventAdapterService;
+import net.esper.view.ViewSpec;
+import net.esper.view.EventCollection;
 
 import java.util.LinkedList;
 import java.math.BigDecimal;
@@ -17,7 +20,7 @@ public class TestDBStatementViewFactory extends TestCase
                 "mydbOne", "select * from customer where id=${idnum}");
 
         EventCollection eventCollection = DBStatementViewFactory.createDBStatementView(spec,
-                SupportDatabaseRefServiceFactory.makeService(),
+                SupportDatabaseService.makeService(),
                 SupportEventAdapterService.getService());
         assertEquals(Long.class, eventCollection.getEventType().getPropertyType("id"));
         assertEquals(String.class, eventCollection.getEventType().getPropertyType("name"));

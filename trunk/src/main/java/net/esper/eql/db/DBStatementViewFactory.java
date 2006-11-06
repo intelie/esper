@@ -1,13 +1,11 @@
-package net.esper.view;
+package net.esper.eql.db;
 
 import net.esper.eql.spec.DBStatementStreamSpec;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.core.DatabaseRefException;
-import net.esper.eql.core.DatabaseRefService;
 import net.esper.util.PlaceholderParser;
 import net.esper.util.PlaceholderParseException;
 import net.esper.event.EventAdapterService;
-import net.esper.event.EventType;
+import net.esper.view.Viewable;
 
 import java.sql.*;
 import java.util.*;
@@ -17,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class DBStatementViewFactory
 {
-    public static Viewable createDBStatementView(DBStatementStreamSpec databaseStreamSpec, DatabaseRefService databaseRefService, EventAdapterService eventAdapterService)
+    public static Viewable createDBStatementView(DBStatementStreamSpec databaseStreamSpec, DatabaseService databaseService, EventAdapterService eventAdapterService)
             throws ExprValidationException
     {
         // Parse the SQL for placeholders and text fragments
@@ -40,12 +38,26 @@ public class DBStatementViewFactory
 
         // Get a database connection
         String databaseName = databaseStreamSpec.getDatabaseName();
+        DatabaseConnectionFactory databaseConnectionFactory = null;
+        boolean retainConnection;
+        try
+        {
+            databaseConnectionFactory = databaseService.getConnectionFactory(databaseName);
+            retainConnection = databaseService.isRetainConnection(databaseName);
+        }
+        catch (DatabaseException ex)
+        {
+            String text = "Error connecting to database '" + databaseName + "'";
+            log.error(text, ex);
+            throw new ExprValidationException(text + ", reason: " + ex.getMessage());
+        }
+
         Connection connection = null;
         try
         {
-            connection = databaseRefService.getConnection(databaseName);
+            connection = databaseConnectionFactory.getConnection();
         }
-        catch (DatabaseRefException ex)
+        catch (DatabaseException ex)
         {
             String text = "Error connecting to database '" + databaseName + "'";
             log.error(text, ex);
@@ -174,11 +186,8 @@ public class DBStatementViewFactory
             throw new ExprValidationException(text + ", reason: " + e.getMessage());
         }
 
-        // Now we know what the SQL query generates as results, construct an event type
-        Map<String, Class> dbEventType = metaData.getOutputEventType();
-        EventType eventType = eventAdapterService.createAnonymousMapType(dbEventType);
-
-        return new DBHistoricalEventViewable(eventType);
+        return new DBHistoricalEventViewable(eventAdapterService, preparedStatementText,
+                metaData, databaseConnectionFactory, retainConnection);
     }
 
     private static String createPreparedStatement(List<PlaceholderParser.Fragment> parseFragements)

@@ -3,8 +3,8 @@ package net.esper.core;
 import net.esper.client.*;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.AutoImportServiceImpl;
-import net.esper.eql.core.DatabaseRefService;
-import net.esper.eql.core.DatabaseRefServiceImpl;
+import net.esper.eql.db.DatabaseService;
+import net.esper.eql.db.DatabaseServiceImpl;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
@@ -62,10 +62,10 @@ public class EPServiceProviderImpl implements EPServiceProvider
         // Make services that depend on snapshot config entries
         EventAdapterService eventAdapterService = makeEventAdapterService(configSnapshot);
         AutoImportService autoImportService = makeAutoImportService(configSnapshot);
-        DatabaseRefService databaseRefService = makeDatabaseRefService(configSnapshot);
+        DatabaseService databaseService = makeDatabaseRefService(configSnapshot);
 
         // New services context
-        EPServicesContext services = new EPServicesContext(eventAdapterService, autoImportService, databaseRefService);
+        EPServicesContext services = new EPServicesContext(eventAdapterService, autoImportService, databaseService);
 
         // New runtime
         EPRuntimeImpl runtime = new EPRuntimeImpl(services);
@@ -211,21 +211,21 @@ public class EPServiceProviderImpl implements EPServiceProvider
         return autoImportService;
     }
 
-    private static DatabaseRefService makeDatabaseRefService(ConfigurationSnapshot configSnapshot)
+    private static DatabaseService makeDatabaseRefService(ConfigurationSnapshot configSnapshot)
     {
-        DatabaseRefService databaseRefService = null;
+        DatabaseService databaseService = null;
 
         // Add auto-imports
         try
         {
-            databaseRefService = new DatabaseRefServiceImpl(configSnapshot.getDatabaseRefs());
+            databaseService = new DatabaseServiceImpl(configSnapshot.getDatabaseRefs());
         }
         catch (IllegalArgumentException ex)
         {
             throw new ConfigurationException("Error configuring engine: " + ex.getMessage(), ex);
         }
 
-        return databaseRefService;
+        return databaseService;
     }
 
     /**

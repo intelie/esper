@@ -1,10 +1,12 @@
-package net.esper.view;
+package net.esper.eql.db;
 
 import junit.framework.TestCase;
 
 import java.sql.Types;
 import java.util.Map;
 import java.math.BigDecimal;
+
+import net.esper.eql.db.DBStatementMetaData;
 
 public class TestDBStatementMetaData extends TestCase
 {

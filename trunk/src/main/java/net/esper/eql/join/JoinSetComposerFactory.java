@@ -47,6 +47,10 @@ public class JoinSetComposerFactory
         {
             if (streamViews[i] instanceof HistoricalEventViewable)
             {
+                if (hasHistorical)
+                {
+                    throw new ExprValidationException("Joins between purly historical data is not supported");
+                }
                 hasHistorical = true;
                 if (streamTypes.length > 2)
                 {
@@ -55,12 +59,29 @@ public class JoinSetComposerFactory
             }
         }
 
-
         EventTable[][] indexes = null;
         QueryStrategy[] queryStrategies = null;
         if (hasHistorical)
         {
-
+            // No tables for any streams
+            indexes = new EventTable[streamTypes.length][];
+            queryStrategies = new QueryStrategy[streamTypes.length];
+            
+            for (int streamNo = 0; streamNo < streamTypes.length; streamNo++)
+            {
+                indexes[streamNo] = new EventTable[0];
+            }
+            // strategy uses the viewable
+            if (streamViews[0] instanceof HistoricalEventViewable)
+            {
+                HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[0];
+                queryStrategies[1] = new HistoricalDataQueryStrategy(viewable);
+            }
+            else
+            {
+                HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[1];
+                queryStrategies[0] = new HistoricalDataQueryStrategy(viewable);
+            }
         }
         else
         {

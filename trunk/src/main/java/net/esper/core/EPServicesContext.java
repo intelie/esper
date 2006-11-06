@@ -5,7 +5,7 @@ import net.esper.dispatch.DispatchServiceProvider;
 import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.AutoImportService;
-import net.esper.eql.core.DatabaseRefService;
+import net.esper.eql.db.DatabaseService;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
 import net.esper.filter.FilterServiceProvider;
@@ -32,7 +32,7 @@ public final class EPServicesContext
     private final StreamReuseService streamReuseService;
     private final EventAdapterService eventAdapterService;
     private final AutoImportService autoImportService;
-    private final DatabaseRefService databaseRefService;
+    private final DatabaseService databaseService;
 
     // Must be set
     private InternalEventRouter internalEventRouter;
@@ -44,7 +44,7 @@ public final class EPServicesContext
      */
     public EPServicesContext(EventAdapterService eventAdapterService,
                              AutoImportService autoImportService,
-                             DatabaseRefService databaseRefService)
+                             DatabaseService databaseService)
     {
         this.filterService = FilterServiceProvider.newService();
         this.timerService = TimerServiceProvider.newService();
@@ -55,7 +55,7 @@ public final class EPServicesContext
         this.streamReuseService = StreamReuseServiceProvider.newService();
         this.eventAdapterService = eventAdapterService;
         this.autoImportService = autoImportService;
-        this.databaseRefService = databaseRefService;
+        this.databaseService = databaseService;
     }
 
     /**
@@ -157,8 +157,8 @@ public final class EPServicesContext
     	return autoImportService;
     }
 
-    public DatabaseRefService getDatabaseRefService()
+    public DatabaseService getDatabaseRefService()
     {
-        return databaseRefService;
+        return databaseService;
     }
 }

@@ -1,4 +1,4 @@
-package net.esper.view;
+package net.esper.eql.db;
 
 import net.esper.util.SQLTypeMapUtil;
 
@@ -18,6 +18,16 @@ public class DBStatementMetaData
     public void addInputParam(String eventPropertyName, int sqlType)
     {
         inputPropertyTypes.add(new DBInputDesc(eventPropertyName, sqlType));
+    }
+
+    public List<DBInputDesc> getInputPropertyTypes()
+    {
+        return inputPropertyTypes;
+    }
+
+    public Map<String, DBOutputDesc> getPropertiesOut()
+    {
+        return propertiesOut;
     }
 
     public void addOutputParam(String columnName, int sqlType, String className)

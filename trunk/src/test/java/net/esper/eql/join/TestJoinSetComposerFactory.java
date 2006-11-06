@@ -50,7 +50,7 @@ public class TestJoinSetComposerFactory extends TestCase
         }
     }
 
-    public void testBuildComposer()
+    public void testBuildComposer() throws Exception
     {
         List<OuterJoinDesc> outerJoins = new LinkedList<OuterJoinDesc>();
         JoinSetComposerImpl composer = (JoinSetComposerImpl) JoinSetComposerFactory.makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables);
