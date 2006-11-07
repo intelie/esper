@@ -60,6 +60,44 @@ public class StreamTypeServiceImpl implements StreamTypeService
         return findByStreamName(propertyName, streamName);
     }
 
+    public PropertyResolutionDescriptor resolveByStreamAndPropName(String streamAndPropertyName) throws DuplicatePropertyException, PropertyNotFoundException
+    {
+        if (streamAndPropertyName == null)
+        {
+            throw new IllegalArgumentException("Null stream and property name");
+        }
+
+        PropertyResolutionDescriptor desc = null;
+        try
+        {
+            // first try to resolve as a property name
+            desc = findByPropertyName(streamAndPropertyName);
+        }
+        catch (PropertyNotFoundException ex)
+        {
+            // Attempt to resolve by extracting a stream name
+            int index = streamAndPropertyName.indexOf('.');
+            if (index == -1)
+            {
+                throw ex;
+            }
+            String streamName = streamAndPropertyName.substring(0, index);
+            String propertyName = streamAndPropertyName.substring(index + 1, streamAndPropertyName.length());
+            try
+            {
+                // try to resolve a stream and property name
+                desc = findByStreamName(propertyName, streamName);
+            }
+            catch (StreamNotFoundException e)
+            {
+                throw ex;       // throws PropertyNotFoundException
+            }
+            return desc;
+        }
+
+        return desc;
+    }
+
     private PropertyResolutionDescriptor findByPropertyName(String propertyName)
         throws DuplicatePropertyException, PropertyNotFoundException
     {

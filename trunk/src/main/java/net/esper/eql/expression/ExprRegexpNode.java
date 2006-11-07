@@ -20,6 +20,10 @@ public class ExprRegexpNode extends ExprNode
     private boolean isNumericValue;
     private boolean isConstantPattern;
 
+    /**
+     * Ctor.
+     * @param not is true if the it's a "not regexp" expression, of false for regular regexp 
+     */
     public ExprRegexpNode(boolean not)
     {
         this.isNot = not;

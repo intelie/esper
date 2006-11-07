@@ -6,6 +6,7 @@ import net.esper.util.PlaceholderParser;
 import net.esper.util.PlaceholderParseException;
 import net.esper.event.EventAdapterService;
 import net.esper.view.Viewable;
+import net.esper.view.HistoricalEventViewable;
 
 import java.sql.*;
 import java.util.*;
@@ -13,9 +14,25 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class DBStatementViewFactory
+/**
+ * Factory for a view onto historical data via SQL statement.
+ */
+public class DBHistoricalViewableFactory
 {
-    public static Viewable createDBStatementView(DBStatementStreamSpec databaseStreamSpec, DatabaseService databaseService, EventAdapterService eventAdapterService)
+    /**
+     * Creates the viewable for polling via database SQL query.
+     * @param streamNumber is the stream number of the view
+     * @param databaseStreamSpec provides the SQL statement, database name and additional info
+     * @param databaseService for getting database connection and settings
+     * @param eventAdapterService for generating event beans from database information
+     * @return viewable providing poll functionality
+     * @throws ExprValidationException if the validation failed
+     */
+    public static HistoricalEventViewable createDBStatementView(int streamNumber,
+                                                 DBStatementStreamSpec databaseStreamSpec,
+                                                 DatabaseService databaseService,
+                                                 EventAdapterService eventAdapterService
+                                                 )
             throws ExprValidationException
     {
         // Parse the SQL for placeholders and text fragments
@@ -86,14 +103,14 @@ public class DBStatementViewFactory
         }
 
         // Interrogate prepared statement - parameters and result
-        DBStatementMetaData metaData = new DBStatementMetaData();
-
+        List<DBInputParameterDesc> inputParameters = new LinkedList<DBInputParameterDesc>();
         try
         {
             ParameterMetaData parameterMetaData = prepared.getParameterMetaData();
             for (int i = 0; i < parameterMetaData.getParameterCount(); i++)
             {
-                metaData.addInputParam(parameters[i], parameterMetaData.getParameterType(i + 1));
+                DBInputParameterDesc desc = new DBInputParameterDesc(parameters[i], parameterMetaData.getParameterType(i + 1));
+                inputParameters.add(desc);
             }
         }
         catch (Exception ex)
@@ -119,14 +136,17 @@ public class DBStatementViewFactory
             throw new ExprValidationException(text + ", please check the statement, reason: " + ex.getMessage());
         }
 
+        Map<String, DBOutputTypeDesc> outputProperties = new HashMap<String, DBOutputTypeDesc>();
         try
         {
             ResultSetMetaData resultMetaData = prepared.getMetaData();
             for (int i = 0; i < resultMetaData.getColumnCount(); i++)
             {
+                String columnName = resultMetaData.getColumnName(i + 1);
                 int columnType = resultMetaData.getColumnType(i + 1);
                 String javaClass = resultMetaData.getColumnTypeName(i + 1);
-                metaData.addOutputParam(resultMetaData.getColumnName(i + 1), columnType, javaClass);
+                DBOutputTypeDesc outputType = new DBOutputTypeDesc(columnType, javaClass);
+                outputProperties.put(columnName, outputType);
             }
         }
         catch (Exception ex)
@@ -147,12 +167,13 @@ public class DBStatementViewFactory
             {
                 // don't handle
             }
-            String text = "Error obtaining result metadata from prepared statement '" + preparedStatementText + "'";
+            String text = "Error in statement '" + preparedStatementText + "', failed to obtain result metadata";
             log.error(text, ex);
             throw new ExprValidationException(text + ", please check the statement, reason: " + ex.getMessage());
         }
 
-        log.debug(".createDBEventStream metadata=" + metaData.toString());
+        log.debug(".createDBEventStream in=" + inputParameters.toString() +
+                " out=" + outputProperties.toString());
 
         // Close statement
         try
@@ -186,8 +207,8 @@ public class DBStatementViewFactory
             throw new ExprValidationException(text + ", reason: " + e.getMessage());
         }
 
-        return new DBHistoricalEventViewable(eventAdapterService, preparedStatementText,
-                metaData, databaseConnectionFactory, retainConnection);
+        return new DBHistoricalViewable(streamNumber, eventAdapterService, preparedStatementText,
+                inputParameters, outputProperties, databaseConnectionFactory, retainConnection);
     }
 
     private static String createPreparedStatement(List<PlaceholderParser.Fragment> parseFragements)
@@ -220,5 +241,5 @@ public class DBStatementViewFactory
         return eventPropertyParams.toArray(new String[0]);
     }
 
-    private static final Log log = LogFactory.getLog(DBStatementViewFactory.class);
+    private static final Log log = LogFactory.getLog(DBHistoricalViewableFactory.class);
 }

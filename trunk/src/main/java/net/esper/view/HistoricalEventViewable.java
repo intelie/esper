@@ -2,10 +2,15 @@ package net.esper.view;
 
 import net.esper.event.EventBean;
 import net.esper.collection.MultiKey;
+import net.esper.util.StopCallback;
 
 import java.util.Set;
+import java.util.List;
 
-public interface HistoricalEventViewable extends Viewable
+/**
+ * Interface for views that poll data based on information from other streams.
+ */
+public interface HistoricalEventViewable extends Viewable, ValidatedView, StopCallback
 {
-    public void poll(EventBean[] lookupEvents, Set<MultiKey<EventBean>> joinSet);
+    public List<EventBean>[] poll(EventBean[][] lookupEventsPerStream);
 }

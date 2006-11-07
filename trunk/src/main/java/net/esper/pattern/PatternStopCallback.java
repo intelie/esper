@@ -1,12 +1,10 @@
 package net.esper.pattern;
 
+import net.esper.util.StopCallback;
+
 /**
  * Interface for executing a stop on an active event expression.
  */
-public interface PatternStopCallback
+public interface PatternStopCallback extends StopCallback
 {
-    /**
-     * Method to stop the event expression.
-     */
-    public void stop();
 }

@@ -26,6 +26,11 @@ public class SupportStreamTypeSvc1Stream implements StreamTypeService
         return impl.resolveByStreamAndPropName(streamName, propertyName);
     }
 
+    public PropertyResolutionDescriptor resolveByStreamAndPropName(String streamAndPropertyName) throws DuplicatePropertyException, PropertyNotFoundException
+    {
+        return impl.resolveByStreamAndPropName(streamAndPropertyName);
+    }
+
     public String[] getStreamNames()
     {
         return new String[] {"s0"};

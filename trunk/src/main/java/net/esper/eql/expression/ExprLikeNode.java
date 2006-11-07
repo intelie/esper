@@ -17,6 +17,10 @@ public class ExprLikeNode extends ExprNode
     private boolean isConstantPattern;
     private LikeUtil likeUtil;
 
+    /**
+     * Ctor.
+     * @param not is true if this is a "not like", or false if just a like
+     */
     public ExprLikeNode(boolean not)
     {
         this.isNot = not;

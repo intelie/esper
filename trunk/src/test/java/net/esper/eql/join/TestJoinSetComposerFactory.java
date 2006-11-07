@@ -12,6 +12,7 @@ import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.exec.TableLookupExecNode;
 import net.esper.eql.spec.OuterJoinDesc;
+import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.view.Viewable;
 
 import java.util.List;
@@ -53,7 +54,7 @@ public class TestJoinSetComposerFactory extends TestCase
     public void testBuildComposer() throws Exception
     {
         List<OuterJoinDesc> outerJoins = new LinkedList<OuterJoinDesc>();
-        JoinSetComposerImpl composer = (JoinSetComposerImpl) JoinSetComposerFactory.makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables);
+        JoinSetComposerImpl composer = (JoinSetComposerImpl) JoinSetComposerFactory.makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
 
         // verify default indexes build
         assertEquals(2, composer.getTables().length);

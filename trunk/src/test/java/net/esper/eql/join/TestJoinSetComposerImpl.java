@@ -9,6 +9,7 @@ import net.esper.eql.join.exec.FullTableScanLookupStrategy;
 import net.esper.eql.join.exec.TableLookupExecNode;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.table.UnindexedEventTable;
+import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventBeanFactory;
@@ -42,7 +43,7 @@ public class TestJoinSetComposerImpl extends TestCase
         EventTable[][] indexesPerStream = new EventTable[2][1];
         indexesPerStream[0][0] = indexLeft;
         indexesPerStream[1][0] = indexRight;
-        joinSetComposerImpl = new JoinSetComposerImpl(indexesPerStream, queryStrategies);
+        joinSetComposerImpl = new JoinSetComposerImpl(indexesPerStream, queryStrategies, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
     }
 
     public void testJoin()

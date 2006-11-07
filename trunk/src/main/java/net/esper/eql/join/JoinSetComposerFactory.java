@@ -3,6 +3,7 @@ package net.esper.eql.join;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.OuterJoinDesc;
+import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.eql.join.exec.ExecNode;
 import net.esper.eql.join.plan.QueryPlan;
 import net.esper.eql.join.plan.QueryPlanBuilder;
@@ -32,13 +33,16 @@ public class JoinSetComposerFactory
      * @param optionalFilterNode - filter tree for analysis to build indexes for fast access
      * @param streamTypes - types of streams
      * @param streamNames - names of streams
+     * @param streamViews - leaf view per stream
+     * @param selectStreamSelectorEnum - indicator for rstream or istream-only, for optimization
      * @return composer implementation
      */
     public static JoinSetComposer makeComposer(List<OuterJoinDesc> outerJoinDescList,
                                                    ExprNode optionalFilterNode, 
                                                    EventType[] streamTypes,
                                                    String[] streamNames,
-                                                   Viewable[] streamViews)
+                                                   Viewable[] streamViews,
+                                                   SelectClauseStreamSelectorEnum selectStreamSelectorEnum)
             throws ExprValidationException
     {
         // Determine if there is a historical
@@ -49,12 +53,12 @@ public class JoinSetComposerFactory
             {
                 if (hasHistorical)
                 {
-                    throw new ExprValidationException("Joins between purly historical data is not supported");
+                    throw new ExprValidationException("Joins between historical data streams are not supported");
                 }
                 hasHistorical = true;
                 if (streamTypes.length > 2)
                 {
-                    throw new ExprValidationException("Joins between historical data require a single event stream");
+                    throw new ExprValidationException("Joins between historical data require a only one event stream in the join");
                 }
             }
         }
@@ -75,12 +79,12 @@ public class JoinSetComposerFactory
             if (streamViews[0] instanceof HistoricalEventViewable)
             {
                 HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[0];
-                queryStrategies[1] = new HistoricalDataQueryStrategy(viewable);
+                queryStrategies[1] = new HistoricalDataQueryStrategy(1, 0, viewable);
             }
             else
             {
                 HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[1];
-                queryStrategies[0] = new HistoricalDataQueryStrategy(viewable);
+                queryStrategies[0] = new HistoricalDataQueryStrategy(0, 1, viewable);
             }
         }
         else
@@ -118,7 +122,7 @@ public class JoinSetComposerFactory
             }
         }
 
-        return new JoinSetComposerImpl(indexes, queryStrategies);
+        return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
     }
 
     /**

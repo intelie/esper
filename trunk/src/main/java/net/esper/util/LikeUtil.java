@@ -1,5 +1,8 @@
 package net.esper.util;
 
+/**
+ * Utility for performing a SQL Like comparsion.
+ */
 public class LikeUtil
 {
     private final static int UNDERSCORE_CHAR = 1;
@@ -13,25 +16,36 @@ public class LikeUtil
     private boolean isNull;
     private Character escapeChar;
 
+    /**
+     * Ctor.
+     * @param pattern is the SQL-like pattern to
+     * @param escape is the escape character
+     * @param ignorecase is true to ignore the case, or false if not
+     */
     public LikeUtil(String pattern, Character escape, boolean ignorecase) {
         escapeChar = escape;
         isIgnoreCase = ignorecase;
         normalize(pattern);
     }
 
-    public Boolean compare(String s) {
+    /**
+     * Execute the string.
+     * @param compareString is the string to compare
+     * @return true if pattern matches, or false if not
+     */
+    public Boolean compare(String compareString) {
 
-        if (s == null)
+        if (compareString == null)
         {
             return null;
         }
 
         if (isIgnoreCase)
         {
-            s = s.toUpperCase();
+            compareString = compareString.toUpperCase();
         }
 
-        return compareAt(s, 0, 0, s.length()) ? Boolean.TRUE
+        return compareAt(compareString, 0, 0, compareString.length()) ? Boolean.TRUE
                                               : Boolean.FALSE;
     }
 

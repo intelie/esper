@@ -205,6 +205,10 @@ public class Configuration {
 		return imports;
 	}
 
+    /**
+     * Returns a map of string database names to database configuration options.
+     * @return map of database configurations
+     */
     public Map<String, ConfigurationDBRef> getDatabaseReferences()
     {
         return databaseReferences;

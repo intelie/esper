@@ -402,7 +402,7 @@ public class EQLTreeWalker extends EQLBaseWalker
                 throw new IllegalStateException("SQL string not quoted as expected, unlexed is '" + sqlWithParams + "'");
             }
             sqlWithParams = sqlWithParams.substring(2, sqlWithParams.length() - 2);
-            streamSpec = new DBStatementStreamSpec(streamName, new LinkedList<ViewSpec>(), dbName, sqlWithParams);
+            streamSpec = new DBStatementStreamSpec(streamName, viewSpecs, dbName, sqlWithParams);
         }
         else
         {

@@ -303,6 +303,10 @@ public class EPServiceProviderImpl implements EPServiceProvider
             return legacyAliases;
         }
 
+        /**
+         * Returns a map of database name to database configuration.
+         * @return database configs
+         */
         public Map<String, ConfigurationDBRef> getDatabaseRefs()
         {
             return databaseRefs;

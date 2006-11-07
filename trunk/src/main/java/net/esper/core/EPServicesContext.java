@@ -41,6 +41,7 @@ public final class EPServicesContext
      * Constructor - sets up new set of services.
      * @param eventAdapterService service to resolve event types
      * @param autoImportService service to resolve partial class names
+     * @param databaseService service to resolve a database name to database connection factory and configs
      */
     public EPServicesContext(EventAdapterService eventAdapterService,
                              AutoImportService autoImportService,
@@ -157,6 +158,10 @@ public final class EPServicesContext
     	return autoImportService;
     }
 
+    /**
+     * Returns the database settings service.
+     * @return database info service
+     */
     public DatabaseService getDatabaseRefService()
     {
         return databaseService;
