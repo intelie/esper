@@ -166,7 +166,7 @@ public class AdapterInputSource
 	 */
 	public boolean isResettable()
 	{
-		return inputStream == null;
+		return inputStream == null && reader == null;
 	}
 	
 	private InputStream resolvePathAsStream(String path)

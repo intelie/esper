@@ -75,13 +75,13 @@ public class TestCSVAdapterUseCases extends TestCase
 
         CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME), "TypeA");
         spec.setEventsPerSec(1000);
-        spec.setLooping(true);
+//        spec.setLooping(true);
         spec.setUsingEngineThread(true);
 
         InputAdapter inputAdapter = epService.getEPAdapters().createAdapter(spec);
         inputAdapter.start();
         Thread.sleep(1000);
-        inputAdapter.stop();
+//        inputAdapter.stop();
 
         assertEquals(1, listener.getNewDataList().size());
     }
