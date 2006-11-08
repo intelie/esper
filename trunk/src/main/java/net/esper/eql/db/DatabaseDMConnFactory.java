@@ -9,10 +9,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * Database connection factory using {@link DriverManager} to obtain connections.
+ */
 public class DatabaseDMConnFactory implements DatabaseConnectionFactory
 {
     private ConfigurationDBRef.DriverManagerConnection driverConfig;
 
+    /**
+     * Ctor.
+     * @param driverConfig is the driver manager configuration
+     * @throws DatabaseException thrown if the driver class cannot be loaded
+     */
     public DatabaseDMConnFactory(ConfigurationDBRef.DriverManagerConnection driverConfig)
             throws DatabaseException
     {

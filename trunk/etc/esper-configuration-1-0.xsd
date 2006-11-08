@@ -113,10 +113,11 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element ref="datasource-connection" minOccurs="0" maxOccurs="1"/>
-					<xs:element ref="drivermanager-connection" minOccurs="0" maxOccurs="1"/>
-					<xs:element ref="connection-lifecycle" minOccurs="1" maxOccurs="1"/>
-				</xs:sequence>				
+					<xs:element ref="datasource-connection" minOccurs="0"/>
+					<xs:element ref="drivermanager-connection" minOccurs="0"/>
+					<xs:element ref="connection-settings" minOccurs="0"/>
+					<xs:element ref="connection-lifecycle"/>
+				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
@@ -150,6 +151,14 @@
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="connection-settings">
+		<xs:complexType>
+			<xs:attribute name="auto-commit" type="xs:boolean" use="optional"/>
+			<xs:attribute name="catalog" type="xs:string" use="optional"/>
+			<xs:attribute name="read-only" type="xs:boolean" use="optional"/>
+			<xs:attribute name="transaction-isolation" type="xs:int" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="connection-lifecycle">

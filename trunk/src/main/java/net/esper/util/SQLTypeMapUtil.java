@@ -3,12 +3,16 @@ package net.esper.util;
 import java.sql.Types;
 import java.math.BigDecimal;
 
+/**
+ * Utility for mapping SQL types of {@link java.sql.Types} to Java classes.
+ */
 public class SQLTypeMapUtil
 {
 
     /**
      * Mapping as defined by JDBC 3 Spec , page B-177, table B-1 JBDC Types mapped to Java Types.
      * @param sqlType to return Java class for
+     * @param className is the classname that result metadata returns for a column
      * @return Java class for JDBC sql types
      */
     public static Class sqlTypeToClass(int sqlType, String className)

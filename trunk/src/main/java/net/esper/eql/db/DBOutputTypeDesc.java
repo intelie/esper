@@ -11,7 +11,7 @@ public class DBOutputTypeDesc
     /**
      * Ctor.
      * @param sqlType the type of the column
-     * @param className the Java class reflecting column type 
+     * @param className the Java class reflecting column type
      */
     public DBOutputTypeDesc(int sqlType, String className)
     {
@@ -19,11 +19,19 @@ public class DBOutputTypeDesc
         this.className = className;
     }
 
+    /**
+     * Returns the SQL type of the output column.
+     * @return sql type
+     */
     public int getSqlType()
     {
         return sqlType;
     }
 
+    /**
+     * Returns the class name that getObject() on the output column produces.
+     * @return class name from statement metadata
+     */
     public String getClassName()
     {
         return className;

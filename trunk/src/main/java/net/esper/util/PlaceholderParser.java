@@ -5,17 +5,22 @@ import java.util.LinkedList;
 import java.util.ArrayList;
 
 /**
- * Select * from table where myVal =
- *  ${stream.field}
- *  ${field}
- *  ${stream.field.nested}
- *  ${stream.mapped('aa').indexed[1]}
- *
- *  List<String> segments;
- *  List<String> properties;
+ * Parser for strings with substitution parameters of the form ${parameter}.
  */
 public class PlaceholderParser
 {
+    /**
+     * Parses a string to find placeholders of format ${placeholder}.
+     * <p>
+     * Example: "My ${thing} is ${color}"
+     * <p>
+     * The example above parses into 4 fragements: a text fragment of value "My ",
+     * a parameter fragment "thing", a text fragement " is " and a parameter
+     * fragment "color".
+     * @param parseString is the string to parse
+     * @return list of fragements that can be either text fragments or placeholder fragments
+     * @throws PlaceholderParseException if the string cannot be parsed to indicate syntax errors
+     */
     public static List<Fragment> parsePlaceholder(String parseString) throws PlaceholderParseException
     {
         List<Fragment> result = new ArrayList<Fragment>();
@@ -96,25 +101,47 @@ public class PlaceholderParser
         return fragments;
     }
 
+    /**
+     * Fragment is a parse result, a parse results in an ordered list of fragments.
+     */
     public static abstract class Fragment
     {
         private String value;
 
+        /**
+         * Ctor.
+         * @param value is the fragment text
+         */
         protected Fragment(String value)
         {
             this.value = value;
         }
 
+        /**
+         * Returns the string text of the fragment.
+         * @return fragment string
+         */
         public String getValue()
         {
             return value;
         }
 
+        /**
+         * Returns true to indicate this is a parameter and not a text fragment.
+         * @return true if parameter fragement, false if text fragment.
+         */
         public abstract boolean isParameter();
     }
 
+    /**
+     * Represents a piece of text in a parse string with placeholder values.
+     */
     public static class TextFragment extends Fragment
     {
+        /**
+         * Ctor.
+         * @param value is the text
+         */
         public TextFragment(String value)
         {
             super(value);
@@ -141,8 +168,15 @@ public class PlaceholderParser
         }
     }
 
+    /**
+     * Represents a parameter in a parsed string of texts and parameters.
+     */
     public static class ParameterFragment extends Fragment
     {
+        /**
+         * Ctor.
+         * @param value is the parameter name
+         */
         public ParameterFragment(String value)
         {
             super(value);

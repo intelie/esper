@@ -50,10 +50,11 @@ public class LikeUtil
     }
 
     /**
-     * Resets the search pattern;
+     * Resets the search pattern.
+     * @param pattern is the new pattern to match against
      */
-    public void resetPattern(String s) {
-        normalize(s);
+    public void resetPattern(String pattern) {
+        normalize(pattern);
     }
 
     private boolean compareAt(String s, int i, int j, int jLen) {

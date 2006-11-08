@@ -81,6 +81,10 @@ public class TestConfigurationParser extends TestCase
         assertEquals("java:comp/env/jdbc/mydb", dsDef.getContextLookupName());
         assertEquals("{java.naming.provider.url=iiop://localhost:1050, java.naming.factory.initial=com.myclass.CtxFactory}", dsDef.getEnvProperties().toString());
         assertEquals(ConfigurationDBRef.ConnectionLifecycleEnum.POOLED, configDBRef.getConnectionLifecycleEnum());
+        assertNull(configDBRef.getConnectionSettings().getAutoCommit());
+        assertNull(configDBRef.getConnectionSettings().getCatalog());
+        assertNull(configDBRef.getConnectionSettings().getReadOnly());
+        assertNull(configDBRef.getConnectionSettings().getTransactionIsolation());
 
         // assert database reference - driver manager config
         configDBRef = config.getDatabaseReferences().get("mydb2");
@@ -91,5 +95,9 @@ public class TestConfigurationParser extends TestCase
         assertEquals("mypassword1", dmDef.getOptionalPassword());
         assertEquals("{user=myuser2, password=mypassword2, somearg=someargvalue}", dmDef.getOptionalProperties().toString());
         assertEquals(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN, configDBRef.getConnectionLifecycleEnum());
+        assertEquals(false, configDBRef.getConnectionSettings().getAutoCommit().booleanValue());
+        assertEquals("test", configDBRef.getConnectionSettings().getCatalog());
+        assertEquals("true", configDBRef.getConnectionSettings().getReadOnly());
+        assertEquals(3, configDBRef.getConnectionSettings().getTransactionIsolation());
     }
 }

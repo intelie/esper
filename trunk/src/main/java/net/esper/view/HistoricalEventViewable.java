@@ -12,5 +12,14 @@ import java.util.List;
  */
 public interface HistoricalEventViewable extends Viewable, ValidatedView, StopCallback
 {
+    /**
+     * Poll for the historical data using the events per stream and
+     * returing for each event-per-stream row a separate list which events
+     * representing the poll result.
+     * @param lookupEventsPerStream is the events per stream where the
+     * first dimension is a number of rows (often 1 depending on windows used) and
+     * the second dimension is the number of streams participating in a join.
+     * @return array of lists with one list for each event-per-stream row  
+     */
     public List<EventBean>[] poll(EventBean[][] lookupEventsPerStream);
 }

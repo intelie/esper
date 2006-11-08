@@ -9,10 +9,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * Database connection factory using {@link InitialContext} and {@link DataSource} to obtain connections.
+ */
 public class DatabaseDSConnFactory implements DatabaseConnectionFactory
 {
     private ConfigurationDBRef.DataSourceConnection dsConfig;
 
+    /**
+     * Ctor.
+     * @param dsConfig is the datasource object name and initial context properties.
+     */
     public DatabaseDSConnFactory(ConfigurationDBRef.DataSourceConnection dsConfig)
     {
         this.dsConfig = dsConfig;

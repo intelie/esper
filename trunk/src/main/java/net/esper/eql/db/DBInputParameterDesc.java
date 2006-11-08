@@ -19,11 +19,19 @@ public class DBInputParameterDesc
         this.sqlType = sqlType;
     }
 
+    /**
+     * Returns the event property name thats supplying the inpit parameter value.
+     * @return property name
+     */
     public String getEventPropName()
     {
         return eventPropName;
     }
 
+    /**
+     * Returns the sql type of the input parameter.
+     * @return sql type of input parameter
+     */
     public int getSqlType()
     {
         return sqlType;

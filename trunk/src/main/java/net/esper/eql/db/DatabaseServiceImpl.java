@@ -6,11 +6,19 @@ import net.esper.eql.db.DatabaseConnectionFactory;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Implementation provides database instance services such as connection factory and
+ * connection settings.
+ */
 public class DatabaseServiceImpl implements DatabaseService
 {
     private final Map<String, ConfigurationDBRef> mapDatabaseRef;
     private final Map<String, DatabaseConnectionFactory> connectionFactories;
 
+    /**
+     * Ctor.
+     * @param mapDatabaseRef is a map of database name and database configuration entries
+     */
     public DatabaseServiceImpl(Map<String, ConfigurationDBRef> mapDatabaseRef)
     {
         this.mapDatabaseRef = mapDatabaseRef;

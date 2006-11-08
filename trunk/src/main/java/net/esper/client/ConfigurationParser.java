@@ -261,6 +261,12 @@ class ConfigurationParser {
                     String value = subElement.getAttributes().getNamedItem("value").getTextContent();
                     configDBRef.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.valueOf(value.toUpperCase()));
                 }
+                else if (subElement.getNodeName().equals("connection-settings"))
+                {
+                    configDBRef.s
+                    String value = subElement.getAttributes().getNamedItem("auto-commit").getTextContent();
+                    ConfigurationDBRef.ConnectionSettings settings = new ConfigurationDBRef.ConnectionSettings();
+                }
             }
         }
     }

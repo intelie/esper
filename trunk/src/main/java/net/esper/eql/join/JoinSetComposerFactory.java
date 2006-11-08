@@ -36,6 +36,8 @@ public class JoinSetComposerFactory
      * @param streamViews - leaf view per stream
      * @param selectStreamSelectorEnum - indicator for rstream or istream-only, for optimization
      * @return composer implementation
+     * @throws ExprValidationException is thrown to indicate that
+     * validation of view use in joins failed.
      */
     public static JoinSetComposer makeComposer(List<OuterJoinDesc> outerJoinDescList,
                                                    ExprNode optionalFilterNode, 

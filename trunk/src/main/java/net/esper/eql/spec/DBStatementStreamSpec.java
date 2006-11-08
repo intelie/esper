@@ -27,11 +27,19 @@ public class DBStatementStreamSpec extends StreamSpec
         this.sqlWithSubsParams = sqlWithSubsParams;
     }
 
+    /**
+     * Returns the database name.
+     * @return name of database.
+     */
     public String getDatabaseName()
     {
         return databaseName;
     }
 
+    /**
+     * Returns the SQL with substitution parameters.
+     * @return SQL with parameters embedded as ${stream.param}
+     */
     public String getSqlWithSubsParams()
     {
         return sqlWithSubsParams;
