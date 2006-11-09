@@ -14,15 +14,18 @@ import java.util.Properties;
  */
 public class DatabaseDSConnFactory implements DatabaseConnectionFactory
 {
-    private ConfigurationDBRef.DataSourceConnection dsConfig;
+    private final ConfigurationDBRef.DataSourceConnection dsConfig;
+    private final ConfigurationDBRef.ConnectionSettings connectionSettings;
 
     /**
      * Ctor.
      * @param dsConfig is the datasource object name and initial context properties.
      */
-    public DatabaseDSConnFactory(ConfigurationDBRef.DataSourceConnection dsConfig)
+    public DatabaseDSConnFactory(ConfigurationDBRef.DataSourceConnection dsConfig,
+                                 ConfigurationDBRef.ConnectionSettings connectionSettings)
     {
         this.dsConfig = dsConfig;
+        this.connectionSettings = connectionSettings;
     }
 
     public Connection getConnection() throws DatabaseException
@@ -81,6 +84,8 @@ public class DatabaseDSConnFactory implements DatabaseConnectionFactory
                     "with detail " + detail
                     , ex);
         }
+
+        DatabaseDMConnFactory.setConnectionOptions(connection, connectionSettings);
 
         return connection;
     }

@@ -2,6 +2,7 @@ package net.esper.eql.join;
 
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.expression.ExprEqualsNode;
 import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.eql.join.exec.ExecNode;
@@ -15,6 +16,7 @@ import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.event.EventType;
 import net.esper.view.Viewable;
 import net.esper.view.HistoricalEventViewable;
+import net.esper.type.OuterJoinType;
 
 import java.util.List;
 
@@ -77,17 +79,43 @@ public class JoinSetComposerFactory
             {
                 indexes[streamNo] = new EventTable[0];
             }
-            // strategy uses the viewable
-            if (streamViews[0] instanceof HistoricalEventViewable)
+
+            int polledView = 0;
+            int streamView = 1;
+            if (streamViews[1] instanceof HistoricalEventViewable)
             {
-                HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[0];
-                queryStrategies[1] = new HistoricalDataQueryStrategy(1, 0, viewable);
+                streamView = 0;
+                polledView = 1;
             }
-            else
+
+            boolean isOuterJoin = false;
+            ExprEqualsNode equalsNode = null;
+            if (outerJoinDescList.size() > 0)
             {
-                HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[1];
-                queryStrategies[0] = new HistoricalDataQueryStrategy(0, 1, viewable);
+                OuterJoinDesc outerJoinDesc = outerJoinDescList.get(0);
+                if (outerJoinDesc.getOuterJoinType().equals(OuterJoinType.FULL))
+                {
+                    isOuterJoin = true;
+                }
+                else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.LEFT)) &&
+                        (outerJoinDesc.getLeftNode().getStreamId() == polledView))
+                {
+                        isOuterJoin = true;
+                }
+                else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.RIGHT)) &&
+                        (outerJoinDesc.getRightNode().getStreamId() == polledView))
+                {
+                        isOuterJoin = true;                    
+                }
+
+                equalsNode = new ExprEqualsNode(false);
+                equalsNode.addChildNode(outerJoinDesc.getLeftNode());
+                equalsNode.addChildNode(outerJoinDesc.getRightNode());
+                equalsNode.validate(null, null);
             }
+
+            HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[polledView];
+            queryStrategies[streamView] = new HistoricalDataQueryStrategy(streamView, polledView, viewable, isOuterJoin, equalsNode);
         }
         else
         {

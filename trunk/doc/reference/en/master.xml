@@ -12,6 +12,7 @@
 	<!ENTITY adapters SYSTEM "modules/adapters.xml">
 	<!ENTITY indicators SYSTEM "modules/indicators.xml">
 	<!ENTITY references SYSTEM "modules/references.xml">
+	<!ENTITY historical_data_access SYSTEM "modules/historical_data_access.xml">
 ]>
 <book lang="en">
 	<bookinfo>
@@ -75,6 +76,8 @@
     &event_pattern;
 
     &EQL;
+
+    &historical_data_access;
 
     &adapters;
 

@@ -263,9 +263,26 @@ class ConfigurationParser {
                 }
                 else if (subElement.getNodeName().equals("connection-settings"))
                 {
-                    configDBRef.s
-                    String value = subElement.getAttributes().getNamedItem("auto-commit").getTextContent();
-                    ConfigurationDBRef.ConnectionSettings settings = new ConfigurationDBRef.ConnectionSettings();
+                    if (subElement.getAttributes().getNamedItem("auto-commit") != null)
+                    {
+                        String autoCommit = subElement.getAttributes().getNamedItem("auto-commit").getTextContent();
+                        configDBRef.setConnectionAutoCommit(Boolean.parseBoolean(autoCommit));
+                    }
+                    if (subElement.getAttributes().getNamedItem("transaction-isolation") != null)
+                    {
+                        String transactionIsolation = subElement.getAttributes().getNamedItem("transaction-isolation").getTextContent();
+                        configDBRef.setConnectionTransactionIsolation(Integer.parseInt(transactionIsolation));
+                    }
+                    if (subElement.getAttributes().getNamedItem("catalog") != null)
+                    {
+                        String catalog = subElement.getAttributes().getNamedItem("catalog").getTextContent();
+                        configDBRef.setConnectionCatalog(catalog);
+                    }
+                    if (subElement.getAttributes().getNamedItem("read-only") != null)
+                    {
+                        String readOnly = subElement.getAttributes().getNamedItem("read-only").getTextContent();
+                        configDBRef.setConnectionReadOnly(Boolean.parseBoolean(readOnly));
+                    }
                 }
             }
         }

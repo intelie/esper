@@ -526,6 +526,51 @@ select java.lang.Math.max(priceOne, priceTwo)</programlisting>
 ]]></programlisting>
 
 		</sect2>
+
+		<sect2 id="config-database-ref" revision="1">
+			<title>Historical data access</title>
+			
+			<para>
+				Esper has the capability to join event streams against historical data sources, such as a relational database. This section describes the configuration entries for access to data stored in your database. Please see <xref linkend="historical_data_access"/> for information on EQL queries that include historical data sources.
+			</para>
+			
+			<programlisting>select Math.max(priceOne, PriceTwo)
+// via configuration equivalent to
+select java.lang.Math.max(priceOne, priceTwo)</programlisting>
+
+			<para>
+				Esper auto-imports the following Java library packages if no other configuration is supplied.
+				This list is replaced with any configuration specified in a configuration file or through the API.
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						java.lang.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.math.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.text.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.util.*
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				In an XML configuration file the auto-import configuration may look as below. Note that all configuration options are available through the <literal>Configuration</literal> API as well.
+			</para>
+		</sect2>
+
     </sect1>
 </chapter>
 

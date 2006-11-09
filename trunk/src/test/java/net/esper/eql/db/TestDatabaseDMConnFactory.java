@@ -3,7 +3,6 @@ package net.esper.eql.db;
 import junit.framework.TestCase;
 import net.esper.support.eql.SupportDatabaseService;
 import net.esper.client.ConfigurationDBRef;
-import net.esper.eql.db.DatabaseDMConnFactory;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -24,12 +23,16 @@ public class TestDatabaseDMConnFactory extends TestCase
         // driver-manager config 1
         ConfigurationDBRef config = new ConfigurationDBRef();
         config.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.FULLURL, new Properties());
-        databaseDMConnFactoryOne = new DatabaseDMConnFactory((ConfigurationDBRef.DriverManagerConnection) config.getConnectionFactoryDesc());
+        config.setConnectionAutoCommit(true);
+        config.setConnectionCatalog("test");
+        config.setConnectionTransactionIsolation(1);
+        config.setConnectionReadOnly(true);
+        databaseDMConnFactoryOne = new DatabaseDMConnFactory((ConfigurationDBRef.DriverManagerConnection) config.getConnectionFactoryDesc(), config.getConnectionSettings());
 
         // driver-manager config 2
         config = new ConfigurationDBRef();
         config.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.PARTURL, SupportDatabaseService.DBUSER, SupportDatabaseService.DBPWD);
-        databaseDMConnFactoryTwo = new DatabaseDMConnFactory((ConfigurationDBRef.DriverManagerConnection) config.getConnectionFactoryDesc());
+        databaseDMConnFactoryTwo = new DatabaseDMConnFactory((ConfigurationDBRef.DriverManagerConnection) config.getConnectionFactoryDesc(), config.getConnectionSettings());
 
         // driver-manager config 3
         config = new ConfigurationDBRef();
@@ -37,7 +40,7 @@ public class TestDatabaseDMConnFactory extends TestCase
         properties.setProperty("user", SupportDatabaseService.DBUSER);
         properties.setProperty("password", SupportDatabaseService.DBPWD);
         config.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.PARTURL, properties);
-        databaseDMConnFactoryThree = new DatabaseDMConnFactory((ConfigurationDBRef.DriverManagerConnection) config.getConnectionFactoryDesc());
+        databaseDMConnFactoryThree = new DatabaseDMConnFactory((ConfigurationDBRef.DriverManagerConnection) config.getConnectionFactoryDesc(), config.getConnectionSettings());
     }
 
     public void testGetConnection() throws Exception

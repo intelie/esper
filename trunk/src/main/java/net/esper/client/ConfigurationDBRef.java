@@ -76,9 +76,36 @@ public class ConfigurationDBRef
      * Sets the auto-commit connection settings for new connections to this database.
      * @param value is true to set auto-commit to true, or false to set auto-commit to false, or null to accepts the default
      */
-    public void setConnectionSettingAutoCommit(boolean value)
+    public void setConnectionAutoCommit(boolean value)
     {
         this.connectionSettings.setAutoCommit(value);
+    }
+
+    /**
+     * Sets the transaction isolation level on new connections created for this database.
+     * @param value is the transaction isolation level
+     */
+    public void setConnectionTransactionIsolation(int value)
+    {
+        this.connectionSettings.setTransactionIsolation(value);
+    }
+
+    /**
+     * Sets the read-only flag on new connections created for this database.
+     * @param isReadOnly is the read-only flag
+     */
+    public void setConnectionReadOnly(boolean isReadOnly)
+    {
+        this.connectionSettings.setReadOnly(isReadOnly);
+    }
+
+    /**
+     * Sets the catalog name for new connections created for this database.
+     * @param catalog is the catalog name
+     */
+    public void setConnectionCatalog(String catalog)
+    {
+        this.connectionSettings.setCatalog(catalog);
     }
 
     /**
@@ -187,7 +214,7 @@ public class ConfigurationDBRef
          * Returns the connection settings for transaction isolation level.
          * @return transaction isolation level
          */
-        public int getTransactionIsolation()
+        public Integer getTransactionIsolation()
         {
             return transactionIsolation;
         }

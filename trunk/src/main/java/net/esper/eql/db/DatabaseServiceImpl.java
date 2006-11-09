@@ -51,15 +51,16 @@ public class DatabaseServiceImpl implements DatabaseService
             throw new DatabaseException("Cannot locate configuration information for database '" + databaseName + "'");
         }
 
+        ConfigurationDBRef.ConnectionSettings settings = (ConfigurationDBRef.ConnectionSettings) config.getConnectionSettings();
         if (config.getConnectionFactoryDesc() instanceof ConfigurationDBRef.DriverManagerConnection)
         {
             ConfigurationDBRef.DriverManagerConnection dmConfig = (ConfigurationDBRef.DriverManagerConnection) config.getConnectionFactoryDesc();
-            factory = new DatabaseDMConnFactory(dmConfig);
+            factory = new DatabaseDMConnFactory(dmConfig, settings);
         }
         else
         {
             ConfigurationDBRef.DataSourceConnection dsConfig = (ConfigurationDBRef.DataSourceConnection) config.getConnectionFactoryDesc();
-            factory = new DatabaseDSConnFactory(dsConfig);
+            factory = new DatabaseDSConnFactory(dsConfig, settings);
         }
 
         connectionFactories.put(databaseName, factory);

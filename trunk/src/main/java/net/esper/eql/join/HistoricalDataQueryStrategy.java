@@ -3,6 +3,7 @@ package net.esper.eql.join;
 import net.esper.event.EventBean;
 import net.esper.collection.MultiKey;
 import net.esper.view.HistoricalEventViewable;
+import net.esper.eql.expression.ExprEqualsNode;
 
 import java.util.Set;
 import java.util.List;
@@ -17,6 +18,8 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
     private final int historicalStreamNumber;
     private final HistoricalEventViewable historicalEventViewable;
     private final EventBean[][] lookupRows1Event;
+    private final boolean isOuterJoin;
+    private final ExprEqualsNode outerJoinCompareNode;
 
     /**
      * Ctor.
@@ -24,11 +27,17 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
      * @param historicalStreamNumber is the stream number of the view to be polled
      * @param historicalEventViewable is the view to be polled from
      */
-    public HistoricalDataQueryStrategy(int myStreamNumber, int historicalStreamNumber, HistoricalEventViewable historicalEventViewable)
+    public HistoricalDataQueryStrategy(int myStreamNumber,
+                                       int historicalStreamNumber,
+                                       HistoricalEventViewable historicalEventViewable,
+                                       boolean isOuterJoin,
+                                       ExprEqualsNode outerJoinCompareNode)
     {
         this.myStreamNumber = myStreamNumber;
         this.historicalStreamNumber = historicalStreamNumber;
         this.historicalEventViewable = historicalEventViewable;
+        this.isOuterJoin = isOuterJoin;
+        this.outerJoinCompareNode = outerJoinCompareNode;
 
         lookupRows1Event = new EventBean[1][];
         lookupRows1Event[0] = new EventBean[2];
@@ -60,12 +69,35 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
         int count = 0;
         for (List<EventBean> rowsPerLookup : result)
         {
-            for (EventBean resultEvent : rowsPerLookup)
+            // In an outer join 
+            if ((isOuterJoin) && (rowsPerLookup.size() == 0))
             {
                 EventBean[] resultRow = new EventBean[2];
                 resultRow[myStreamNumber] = lookupEvents[count];
-                resultRow[historicalStreamNumber] = resultEvent;
                 joinSet.add(new MultiKey<EventBean>(resultRow));
+            }
+            else
+            {
+                for (EventBean resultEvent : rowsPerLookup)
+                {
+                    EventBean[] resultRow = new EventBean[2];
+                    resultRow[myStreamNumber] = lookupEvents[count];
+                    resultRow[historicalStreamNumber] = resultEvent;
+
+                    // In an outer join compare the on-fields
+                    if (isOuterJoin)
+                    {
+                        Boolean compareResult = (Boolean) outerJoinCompareNode.evaluate(resultRow);
+                        if ((compareResult != null) && (compareResult))
+                        {
+                            joinSet.add(new MultiKey<EventBean>(resultRow));
+                        }
+                    }
+                    else
+                    {
+                        joinSet.add(new MultiKey<EventBean>(resultRow));
+                    }
+                }
             }
             count++;
         }

@@ -1,8 +1,6 @@
 package net.esper.eql.db;
 
 import net.esper.client.ConfigurationDBRef;
-import net.esper.eql.db.DatabaseConnectionFactory;
-import net.esper.eql.db.DatabaseException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,17 +12,20 @@ import java.util.Properties;
  */
 public class DatabaseDMConnFactory implements DatabaseConnectionFactory
 {
-    private ConfigurationDBRef.DriverManagerConnection driverConfig;
+    private final ConfigurationDBRef.DriverManagerConnection driverConfig;
+    private final ConfigurationDBRef.ConnectionSettings connectionSettings;
 
     /**
      * Ctor.
      * @param driverConfig is the driver manager configuration
      * @throws DatabaseException thrown if the driver class cannot be loaded
      */
-    public DatabaseDMConnFactory(ConfigurationDBRef.DriverManagerConnection driverConfig)
+    public DatabaseDMConnFactory(ConfigurationDBRef.DriverManagerConnection driverConfig,
+                                 ConfigurationDBRef.ConnectionSettings connectionSettings)
             throws DatabaseException
     {
         this.driverConfig = driverConfig;
+        this.connectionSettings = connectionSettings;
 
         // load driver class
         String driverClassName = driverConfig.getClassName();
@@ -80,6 +81,72 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
                     , ex);
         }
 
+        setConnectionOptions(connection, connectionSettings);
+
         return connection;
+    }
+
+    protected static void setConnectionOptions(Connection connection,
+                                               ConfigurationDBRef.ConnectionSettings connectionSettings)
+            throws DatabaseException
+    {
+        try
+        {
+            if (connectionSettings.getReadOnly() != null)
+            {
+                connection.setReadOnly(connectionSettings.getReadOnly());
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new DatabaseException("Error setting read-only to " + connectionSettings.getReadOnly() +
+                    " on connection with detail " + getDetail(ex), ex);
+        }
+
+        try
+        {
+            if (connectionSettings.getTransactionIsolation() != null)
+            {
+                connection.setTransactionIsolation(connectionSettings.getTransactionIsolation());
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new DatabaseException("Error setting transaction isolation level to " +
+                    connectionSettings.getTransactionIsolation() + " on connection with detail " + getDetail(ex), ex);
+        }
+
+        try
+        {
+            if (connectionSettings.getCatalog() != null)
+            {
+                connection.setCatalog(connectionSettings.getCatalog());
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new DatabaseException("Error setting catalog to '" + connectionSettings.getCatalog() +
+                    "' on connection with detail " + getDetail(ex), ex);
+        }
+
+        try
+        {
+            if (connectionSettings.getAutoCommit() != null)
+            {
+                connection.setCatalog(connectionSettings.getCatalog());
+            }
+        }
+        catch (SQLException ex)
+        {
+            throw new DatabaseException("Error setting auto-commit to " + connectionSettings.getAutoCommit() +
+                    " on connection with detail " + getDetail(ex), ex);
+        }
+    }
+
+    private static String getDetail(SQLException ex)
+    {
+        return "SQLException: " + ex.getMessage() +
+                " SQLState: " + ex.getSQLState() +
+                " VendorError: " + ex.getErrorCode();
     }
 }

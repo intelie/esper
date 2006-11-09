@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import net.esper.support.eql.SupportInitialContextFactory;
 import net.esper.support.eql.SupportDatabaseService;
 import net.esper.client.ConfigurationDBRef;
-import net.esper.eql.db.DatabaseDSConnFactory;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -34,7 +33,7 @@ public class TestDatabaseDSConnFactory extends TestCase
         properties.put("java.naming.factory.initial", SupportInitialContextFactory.class.getName());
         config.setDataSourceConnection(envName, properties);
 
-        databaseDSConnFactory = new DatabaseDSConnFactory((ConfigurationDBRef.DataSourceConnection)config.getConnectionFactoryDesc());
+        databaseDSConnFactory = new DatabaseDSConnFactory((ConfigurationDBRef.DataSourceConnection)config.getConnectionFactoryDesc(), config.getConnectionSettings());
     }
 
     public void testGetConnection() throws Exception

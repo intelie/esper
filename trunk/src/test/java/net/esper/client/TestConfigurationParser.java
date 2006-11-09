@@ -97,7 +97,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN, configDBRef.getConnectionLifecycleEnum());
         assertEquals(false, configDBRef.getConnectionSettings().getAutoCommit().booleanValue());
         assertEquals("test", configDBRef.getConnectionSettings().getCatalog());
-        assertEquals("true", configDBRef.getConnectionSettings().getReadOnly());
-        assertEquals(3, configDBRef.getConnectionSettings().getTransactionIsolation());
+        assertEquals(Boolean.TRUE, configDBRef.getConnectionSettings().getReadOnly());
+        assertEquals(new Integer(3), configDBRef.getConnectionSettings().getTransactionIsolation());
     }
 }
