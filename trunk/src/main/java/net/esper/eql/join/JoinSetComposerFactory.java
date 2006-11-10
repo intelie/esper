@@ -98,14 +98,14 @@ public class JoinSetComposerFactory
                     isOuterJoin = true;
                 }
                 else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.LEFT)) &&
-                        (outerJoinDesc.getLeftNode().getStreamId() == polledView))
+                        (streamView == 0))
                 {
                         isOuterJoin = true;
                 }
                 else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.RIGHT)) &&
-                        (outerJoinDesc.getRightNode().getStreamId() == polledView))
+                        (streamView == 1))
                 {
-                        isOuterJoin = true;                    
+                        isOuterJoin = true;
                 }
 
                 equalsNode = new ExprEqualsNode(false);

@@ -323,7 +323,7 @@ public class EPEQLStmtStartMethod
             int streamIdRight = outerJoinDesc.getRightNode().getStreamId();
             if (streamIdLeft == streamIdRight)
             {
-                String message = "Outer join ON-clause must cannot refer to properties of the same stream";
+                String message = "Outer join ON-clause cannot refer to properties of the same stream";
                 throw new EPStatementException("Error validating expression: " + message, eqlStatement);
             }
 

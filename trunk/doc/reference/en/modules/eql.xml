@@ -228,6 +228,10 @@ milliseconds-part : <emphasis>number</emphasis> ("milliseconds" | "millisecond" 
 			For joins and outer joins, specify two or more event streams. Joins between pattern-based and filter-based event streams are also supported.
 		</para>
 
+		<para>
+			Esper supports joins against relational databases for access to historical or reference data as explained in <xref linkend="histdata_overview"/>.
+		</para>
+
         <sect2 id="eql-from-clause-filter" >
            <title>Filter-based event streams</title>
 
@@ -286,7 +290,7 @@ milliseconds-part : <emphasis>number</emphasis> ("milliseconds" | "millisecond" 
 			<synopsis>pattern [<emphasis>pattern_expression</emphasis>] [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
 
 			<para>
-				Lets look at a simple example. The next statement specifies an event stream that consists of both stock tick events and trade events. The example tags stock tick events with the name "tick" and trade events with the name "trade".
+				The next statement specifies an event stream that consists of both stock tick events and trade events. The example tags stock tick events with the name "tick" and trade events with the name "trade".
 			</para>			
             <programlisting><![CDATA[select * from pattern [every tick=StockTickEvent or every trade=TradeEvent]]]></programlisting>
 			
@@ -878,7 +882,7 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
         <title>Joining Event Streams</title>
 
 		<para>
-			Two or more event streams can be part of the <literal>from</literal> clause and thus both streams determine the resulting events. The where-clause lists the join conditions that Esper uses to relate events in the two or more streams.
+			Two or more event streams can be part of the <literal>from</literal> clause and thus both streams determine the resulting events. The where-clause lists the join conditions that Esper uses to relate events in the two or more streams. Reference and historical data such as stored in your relational database can also be included in joins. Please see <xref linkend="histdata_overview"/> for details.
 		</para>
 
 		<para>
@@ -899,7 +903,7 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
         <title>Outer Joins</title>
 
 		<para>
-			Esper supports left outer joins, right outer joins and full outer joins between an unlimited number of event streams.
+			Esper supports left outer joins, right outer joins and full outer joins between an unlimited number of event streams. Outer joins can also join reference and historical data as explained in <xref linkend="histdata_overview"/>.
 		</para>
 
 		<para>
@@ -934,6 +938,141 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 		</para>
 
     </sect1>
+
+	<sect1 id="histdata_overview" revision="1">
+		<title>Joining Relational Data via SQL</title>
+		
+		<para>
+			This chapter outlines how reference data and historical data that are stored in a relational database can be queried via SQL within EQL statements. 
+		</para>
+			
+		<para>
+			Esper can join and outer join all types of event streams to stored data. In order for such data sources to become accessible to Esper, some configuration is required. The <xref linkend="config-database-ref"/> explains the required configuration for database access in greater detail.
+		</para>
+		
+		<para>
+			The following restrictions currently apply:
+		</para>
+
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Only one event stream and one SQL query can be joined; Joins of two or more event streams with an SQL query are not yet supported.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Sub-views on an SQL query are not allowed; That is, one cannot create a time or length window on an SQL query. However one can use the <literal>insert into</literal> syntax to make join results available to a further statement.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Your database software must support JDBC prepared statements that provide statement meta data at compilation time. Most major databases provide this function.
+				</para>
+			</listitem>
+		</itemizedlist>
+		
+		<para>
+			The next sections assume basic knowledge of SQL (Structured Query Language).
+		</para>
+
+		<sect2 id="histdata_join" revision="1">
+			<title>Joining SQL Query Results</title>
+			
+			<para>
+				To join an event stream against stored data, specify the <literal>sql</literal> keyword followed by the name of the database and a parameterized SQL query. The syntax to use in the from-clause of an EQL statement is:
+			</para>
+	
+			<synopsis>sql:<emphasis>database_name</emphasis> [[ <emphasis>parameterized_sql_query</emphasis> ]]</synopsis>
+	
+			<para>
+				The engine uses the <emphasis>database_name</emphasis> identifier to obtain configuration information in order to establish a database connection, as well as settings that control connection creation and removal. Please see <xref linkend="config-database-ref"/> to configure an engine for database access.
+			</para>
+				
+			<para>
+				Following the database name is the SQL query to execute. The SQL query can contain one or more substitution parameters. The SQL query is placed in double brackets <literal>[[</literal> and <literal>]]</literal>. The reason for using double brackets versus the single brackets used for patterns is that the SQL query grammer is passed to your database software unchanged, allowing you to write any SQL query syntax that your database understands, including stored procedure calls.
+			</para>
+
+			<para>
+				Substitution parameters in the SQL query string take the form <literal>${<emphasis>event_property_name</emphasis>}</literal>. The engine resolves <emphasis>event_property_name</emphasis> at statement execution time to the actual event property value supplied by the events in the joined event stream.
+			</para>
+
+			<para>
+				The sample EQL statement below joins an event stream consisting of <literal>CustomerCallEvent</literal> events with the results of an SQL query against the database named <literal>MyCustomerDB</literal> and table <literal>Customer</literal>: 
+			</para>
+			
+			<programlisting><![CDATA[select custId, cust_name from CustomerCallEvent,
+  sql:MyCustomerDB [[ select cust_name from Customer where cust_id = ${custId} ]]]]></programlisting>
+
+			<para>
+				The example above assumes that <literal>CustomerCallEvent</literal> supplies an event property named <literal>custId</literal>. The SQL query selects the customer name from the Customer table. The where-clause in the SQL matches the Customer table column <literal>cust_id</literal> with the value of <literal>custId</literal> in each <literal>CustomerCallEvent</literal> event. The engine executes the SQL query for each new <literal>CustomerCallEvent</literal> encountered.
+			</para>
+
+			<para>
+				If the SQL query returns no rows for a given customer id, the engine generates no output event. Else the engine generates one output event for each row returned by the SQL query. An outer join as described in the next section can be used to control whether the engine should generate output events even when the SQL query returns no rows.
+			</para>
+
+			<para>
+				The next example adds a time window of 30 seconds to the event stream <literal>CustomerCallEvent</literal>. It also renames the selected properties to customerName and customerId to demonstrate how the naming of columns in an SQL query can be used in the select clause in the EQL query. And the example uses explicit stream names via the <literal>as</literal> keyword.
+			</para>
+
+			<programlisting><![CDATA[select customerId, customerName from
+  CustomerCallEvent.win:time(30 sec) as cce,
+  sql:MyCustomerDB [[select cust_id as customerId, cust_name as customerName from Customer 
+                  where cust_id = ${cce.custId}]] as cq]]></programlisting>
+
+			<para>
+				Any window, such as the time window, generates insert stream (istream) events as events enter the window, and remove stream (rstream) events as events leave the window. The engine executes the given SQL query for each <literal>CustomerCallEvent</literal> in both the insert stream and the remove stream. As a performance optimization, the <literal>istream</literal> or <literal>rstream</literal> keywords in the select-clause can be used to instruct the engine to only join insert stream or remove stream events, reducing the number of SQL query executions.
+			</para>
+			
+		</sect2>
+
+		<sect2 id="histdata_outerjoin" revision="1">
+			<title>Outer Joins With SQL Queries</title>
+
+			<para>
+				You can use outer joins to join data obtained from an SQL query and control when an event is produced. Use a left outer join, such as in the next statement, if you need an output event for each event regardless of whether or not the SQL query returns rows. If the SQL query returns no rows, the join result populates null values into the selected properties.
+			</para>
+						
+			<programlisting><![CDATA[select custId, custName from
+  CustomerCallEvent as cce
+  left outer join 
+  sql:MyCustomerDB [[select cust_id, cust_name as custName 
+                     from Customer where cust_id = ${cce.custId}]] as cq
+  on cce.custId = cq.cust_id]]></programlisting>
+
+			<para>
+				The statement above always generates at least one output event for each <literal>CustomerCallEvent</literal>, containing all columns selected by the SQL query, even if the SQL query does not return any rows. Note the <literal>on</literal> expression that is required for outer joins. The <literal>on</literal> acts as an additional filter to rows returned by the SQL query.
+			</para>
+		</sect2>
+
+		<sect2 id="histdata_polling" revision="1">
+			<title>Using Patterns to Request (Poll) Data</title>
+			
+			<para>
+				Pattern statements and SQL queries can also be applied together in useful ways. One such use is to poll or request data from a database at regular intervals. The next statement is an example that shows a pattern that fires every 5 seconds to query the NewOrder table for new orders:
+			</para>
+						
+			<programlisting><![CDATA[insert into NewOrders
+select orderId, orderAmount from
+  pattern [every timer:interval(5 sec)],
+  sql:MyCustomerDB [[select orderId, orderAmount from NewOrders]]]]></programlisting>
+			
+		</sect2>
+
+		<sect2 id="histdata_implementation" revision="1">
+			<title>JDBC Implementation Overview</title>
+
+			<para>
+				The engine translates SQL queries into JDBC <literal>java.sql.PreparedStatement</literal> statements by replacing ${name} parameters with '?' placeholders. It obtains name and type of result columns from the compiled <literal>PreparedStatement</literal> meta data when the EQL statement is created.
+			</para>
+
+			<para>
+				The engine supplies parameters to the compiled statement via the <literal>setObject</literal> method on <literal>PreparedStatement</literal>. The engine uses the <literal>getObject</literal> method on the compiled statement <literal>PreparedStatement</literal> to obtain column values.
+			</para>
+		</sect2>
+		
+	</sect1>
 
 	<sect1 id="eql-single-row-function-ref">
 		<title>Single-row Function Reference</title>

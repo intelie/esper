@@ -116,7 +116,7 @@
 					<xs:element ref="datasource-connection" minOccurs="0"/>
 					<xs:element ref="drivermanager-connection" minOccurs="0"/>
 					<xs:element ref="connection-settings" minOccurs="0"/>
-					<xs:element ref="connection-lifecycle"/>
+					<xs:element ref="connection-lifecycle" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required"/>

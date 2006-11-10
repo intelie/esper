@@ -528,49 +528,127 @@ select java.lang.Math.max(priceOne, priceTwo)</programlisting>
 		</sect2>
 
 		<sect2 id="config-database-ref" revision="1">
-			<title>Historical data access</title>
+			<title>Relational Database Access</title>
 			
 			<para>
-				Esper has the capability to join event streams against historical data sources, such as a relational database. This section describes the configuration entries for access to data stored in your database. Please see <xref linkend="historical_data_access"/> for information on EQL queries that include historical data sources.
+				Esper has the capability to join event streams against historical data sources, such as a relational database. This section describes the configuration entries that the engine requires to access data stored in your database. Please see <xref linkend="histdata_overview"/> for information on the use of EQL queries that include historical data sources.
 			</para>
 			
-			<programlisting>select Math.max(priceOne, PriceTwo)
-// via configuration equivalent to
-select java.lang.Math.max(priceOne, priceTwo)</programlisting>
-
 			<para>
-				Esper auto-imports the following Java library packages if no other configuration is supplied.
-				This list is replaced with any configuration specified in a configuration file or through the API.
+					EQL queries that poll data from a relational database specify the name of the database as part of the EQL statement. The engine uses the configuration information described here to resolve the database name in the statement to database settings. The required and optional database settings are summarized below. 
 			</para>
 
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						java.lang.*
+						Database connections can be obtained via JDBC <literal>javax.xml.DataSource</literal> or alternatively via <literal>java.sql.DriverManager</literal>. Either one of these methods to obtain new database connections is a required configuration.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						java.math.*
+						Optionally, JDBC connection-level settings such as auto-commit, transaction isolation level, read-only and the catalog name can be defined.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						java.text.*
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						java.util.*
+						Optionally, a connection lifecycle can be set to indicate to the engine whether the engine must retain connections or must obtain a new connection for each lookup.
 					</para>
 				</listitem>
 			</itemizedlist>
 
 			<para>
-				In an XML configuration file the auto-import configuration may look as below. Note that all configuration options are available through the <literal>Configuration</literal> API as well.
+				Some of the settings can have important performance implications that need to be carefully considered in relationship to your database software, JDBC driver and runtime environment. This section attempts to outline such implications where appropriate.
 			</para>
+
+			<para>
+				The sample XML configuration file in the "etc" folder can be used as a template for configuring database settings. All settings are also available by means of the configuration API through the classes <literal>Configuration</literal> and <literal>ConfigurationDBRef</literal>.
+			</para>
+						
+			<sect3 id="config-database-datasource" revision="1">
+				<title>Connections obtained via DataSource</title>
+
+				<para>
+				The snippet of XML below configures a database named <literal>mydb1</literal> to obtain connections via a <literal>javax.sql.DataSource</literal>. The <literal>datasource-connection</literal> element instructs the engine to obtain new connections to the database <literal>mydb1</literal> by performing a lookup via <literal>javax.naming.InitialContext</literal> for the given object lookup name. Optional environment properties for the <literal>InitialContext</literal> are also shown in the example.
+				</para>
+
+				<programlisting><![CDATA[<database-reference name="mydb1">
+  <datasource-connection context-lookup-name="java:comp/env/jdbc/mydb">
+    <env-property name="java.naming.factory.initial" value ="com.myclass.CtxFactory"/>
+    <env-property name="java.naming.provider.url" value ="iiop://localhost:1050"/>
+  </datasource-connection>
+</database-reference>]]></programlisting>
+
+				<para>
+					To help you better understand how the engine uses this information to obtain connections, we have included the logic below.
+				</para>
+				<programlisting><![CDATA[if (envProperties.size() > 0) {
+  initialContext = new InitialContext(envProperties);
+}
+else {
+  initialContext = new InitialContext();
+}
+DataSource dataSource = (DataSource) initialContext.lookup(lookupName);
+Connection connection = dataSource.getConnection();]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-database-drivermanager" revision="1">
+				<title>Connections obtained via DriverManager</title>
+
+				<para>
+				The next snippet of XML configures a database named <literal>mydb2</literal> to obtain connections via <literal>java.sql.DriverManager</literal>. The <literal>drivermanager-connection</literal> element instructs the engine to obtain new connections to the database <literal>mydb2</literal> by means of <literal>Class.forName</literal> and <literal>DriverManager.getConnection</literal> using the class name, URL and optional username, password and connection arguments.
+				</para>
+
+				<programlisting><![CDATA[<database-reference name="mydb2">
+  <drivermanager-connection class-name="my.sql.Driver" 
+        url="jdbc:mysql://localhost/test?user=root&amp;password=welcome" 
+        user="myuser" password="mypassword">
+    <connection-arg name="user" value ="myuser"/>
+    <connection-arg name="password" value ="mypassword"/>
+    <connection-arg name="somearg" value ="someargvalue"/>
+  </drivermanager-connection>
+</database-reference>]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-database-connections" revision="1">
+				<title>Connections-level settings</title>
+
+				<para>
+					Additional connection-level settings can optionally be provided to the engine which the engine will apply to new connections. When the engine obtains a new connection, it applies only those settings to the connection that are explicitly configured. The engine leaves all other connection settings at default values.
+				</para>
+
+				<para>
+					The below XML is a sample of all available configuration settings. Please refer to the Java API JavaDocs for <literal>java.sql.Connection</literal> for more information to each option or check the documentation of your JDBC driver and database software.
+				</para>
+				
+				<programlisting><![CDATA[<database-reference name="mydb2">
+... configure data source or driver manager settings...
+  <connection-settings auto-commit="true" catalog="mycatalog" 
+      read-only="true" transaction-isolation="1" />
+</database-reference>]]></programlisting>
+
+				<para>
+					The <literal>read-only</literal> setting can be used to indicate to your database engine that SQL statements are read-only. The <literal>transaction-isolation</literal> and <literal>auto-commit</literal> help you database software perform the right level of locking and lock release. Consider setting these values to reduce transactional overhead in your database queries.
+				</para>
+			</sect3>
+
+			<sect3 id="config-database-connections-lifecycle" revision="1">
+				<title>Connections lifecycle settings</title>
+
+				<para>
+					By default the engine retains a separate database connection for each started EQL statement. However, it is possible to override this behavior and require the engine to obtain a new database connection for each lookup, and to close that database connection after the lookup is completed. This often makes sense when you have a large number of EQL statements and require pooling of connections via a connection pool. If your runtime environment includes an application server, the connection pool may be exposed as a <literal>DataSource</literal>.
+				</para>
+
+				<para>
+					The XML for this option is below. The connection lifecycle allows the following values: <literal>pooled</literal> and <literal>retain</literal>.
+				</para>
+				
+				<programlisting><![CDATA[<database-reference name="mydb2">
+... configure data source or driver manager settings...
+    <connection-lifecycle value="pooled"/>
+</database-reference>]]></programlisting>
+			</sect3>
+
 		</sect2>
 
     </sect1>
 </chapter>
-
