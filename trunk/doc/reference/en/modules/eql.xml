@@ -983,14 +983,14 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 				To join an event stream against stored data, specify the <literal>sql</literal> keyword followed by the name of the database and a parameterized SQL query. The syntax to use in the from-clause of an EQL statement is:
 			</para>
 	
-			<synopsis>sql:<emphasis>database_name</emphasis> [[ <emphasis>parameterized_sql_query</emphasis> ]]</synopsis>
+			<synopsis>sql:<emphasis>database_name</emphasis> [" <emphasis>parameterized_sql_query</emphasis> "]</synopsis>
 	
 			<para>
 				The engine uses the <emphasis>database_name</emphasis> identifier to obtain configuration information in order to establish a database connection, as well as settings that control connection creation and removal. Please see <xref linkend="config-database-ref"/> to configure an engine for database access.
 			</para>
 				
 			<para>
-				Following the database name is the SQL query to execute. The SQL query can contain one or more substitution parameters. The SQL query is placed in double brackets <literal>[[</literal> and <literal>]]</literal>. The reason for using double brackets versus the single brackets used for patterns is that the SQL query grammer is passed to your database software unchanged, allowing you to write any SQL query syntax that your database understands, including stored procedure calls.
+				Following the database name is the SQL query to execute. The SQL query can contain one or more substitution parameters. The SQL query string is placed in single brackets <literal>[</literal> and <literal>]</literal>. The SQL query can be placed in either single quotes (') or double quotes ("). The SQL query grammer is passed to your database software unchanged, allowing you to write any SQL query syntax that your database understands, including stored procedure calls.
 			</para>
 
 			<para>
@@ -1002,7 +1002,7 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 			</para>
 			
 			<programlisting><![CDATA[select custId, cust_name from CustomerCallEvent,
-  sql:MyCustomerDB [[ select cust_name from Customer where cust_id = ${custId} ]]]]></programlisting>
+  sql:MyCustomerDB [' select cust_name from Customer where cust_id = ${custId} ']]]></programlisting>
 
 			<para>
 				The example above assumes that <literal>CustomerCallEvent</literal> supplies an event property named <literal>custId</literal>. The SQL query selects the customer name from the Customer table. The where-clause in the SQL matches the Customer table column <literal>cust_id</literal> with the value of <literal>custId</literal> in each <literal>CustomerCallEvent</literal> event. The engine executes the SQL query for each new <literal>CustomerCallEvent</literal> encountered.
@@ -1018,8 +1018,8 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 
 			<programlisting><![CDATA[select customerId, customerName from
   CustomerCallEvent.win:time(30 sec) as cce,
-  sql:MyCustomerDB [[select cust_id as customerId, cust_name as customerName from Customer 
-                  where cust_id = ${cce.custId}]] as cq]]></programlisting>
+  sql:MyCustomerDB ["select cust_id as customerId, cust_name as customerName from Customer 
+                  where cust_id = ${cce.custId}"] as cq]]></programlisting>
 
 			<para>
 				Any window, such as the time window, generates insert stream (istream) events as events enter the window, and remove stream (rstream) events as events leave the window. The engine executes the given SQL query for each <literal>CustomerCallEvent</literal> in both the insert stream and the remove stream. As a performance optimization, the <literal>istream</literal> or <literal>rstream</literal> keywords in the select-clause can be used to instruct the engine to only join insert stream or remove stream events, reducing the number of SQL query executions.
@@ -1037,8 +1037,8 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 			<programlisting><![CDATA[select custId, custName from
   CustomerCallEvent as cce
   left outer join 
-  sql:MyCustomerDB [[select cust_id, cust_name as custName 
-                     from Customer where cust_id = ${cce.custId}]] as cq
+  sql:MyCustomerDB ["select cust_id, cust_name as custName 
+                     from Customer where cust_id = ${cce.custId}"] as cq
   on cce.custId = cq.cust_id]]></programlisting>
 
 			<para>
@@ -1056,7 +1056,7 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 			<programlisting><![CDATA[insert into NewOrders
 select orderId, orderAmount from
   pattern [every timer:interval(5 sec)],
-  sql:MyCustomerDB [[select orderId, orderAmount from NewOrders]]]]></programlisting>
+  sql:MyCustomerDB ['select orderId, orderAmount from NewOrders']]]></programlisting>
 			
 		</sect2>
 

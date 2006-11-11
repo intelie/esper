@@ -253,7 +253,7 @@ patternInclusionExpression
 	;
 	
 databaseJoinExpression
-	:	SQL! COLON! IDENT EMBEDDED_GRAMMAR
+	:	SQL! COLON! IDENT LBRACK! (STRING_LITERAL | QUOTED_STRING_LITERAL) RBRACK!
 		{ #databaseJoinExpression = #([DATABASE_JOIN_EXPR,"databaseJoinExpression"], #databaseJoinExpression); }
 	;	
 
@@ -754,22 +754,6 @@ BAND			:	'&'		;
 BAND_ASSIGN		:	"&="	;
 LAND			:	"&&"	;
 SEMI			:	';'		;
-
-EMBEDDED_GRAMMAR
-	:	"[["
-		(	
-			options {
-				generateAmbigWarnings=false;
-			}
-		:
-			'\r' '\n'		{newline();}
-		|	'\r'			{newline();}
-		|	'\n'			{newline();}
-		|	~('*'|'\n'|'\r'|']')
-		|	{ LA(2)!=']' }? ']'
-		)*
-		"]]"
-	;
 
 // Whitespace -- ignored
 WS	:	(	' '

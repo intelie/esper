@@ -94,7 +94,7 @@ patternInclusionExpression
 	;
 	
 databaseJoinExpression
-	:	#(d:DATABASE_JOIN_EXPR IDENT EMBEDDED_GRAMMAR)
+	:	#(d:DATABASE_JOIN_EXPR IDENT (STRING_LITERAL | QUOTED_STRING_LITERAL))
 	;
 	
 viewListExpr
