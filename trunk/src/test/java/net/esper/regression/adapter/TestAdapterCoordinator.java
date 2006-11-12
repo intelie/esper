@@ -7,7 +7,9 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.esper.adapter.AdapterCoordinator;
+import net.esper.adapter.AdapterCoordinatorImpl;
 import net.esper.adapter.AdapterInputSource;
+import net.esper.adapter.csv.CSVInputAdapter;
 import net.esper.adapter.csv.CSVInputAdapterSpec;
 import net.esper.client.Configuration;
 import net.esper.client.EPAdministrator;
@@ -22,9 +24,9 @@ import net.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TestFeedCoordinator extends TestCase
+public class TestAdapterCoordinator extends TestCase
 {
-	private static final Log log = LogFactory.getLog(TestFeedCoordinator.class);
+	private static final Log log = LogFactory.getLog(TestAdapterCoordinator.class);
 	
 	private SupportUpdateListener listener;
 	private String eventTypeAlias;
@@ -63,7 +65,7 @@ public class TestFeedCoordinator extends TestCase
 		currentTime = 0;
 		sendTimeEvent(0);
 		
-		coordinator = epService.getEPAdapters().createAdapterCoordinator(true);
+		coordinator = new AdapterCoordinatorImpl(epService, true);
 
     	propertyOrderNoTimestamp = new String[] { "myInt", "myDouble", "myString" };
     	String[] propertyOrderTimestamp = new String[] { "timestamp", "myInt", "myDouble", "myString" };
@@ -97,10 +99,10 @@ public class TestFeedCoordinator extends TestCase
 	
 	public void testRun()
 	{		
-		coordinator.coordinate(timestampsNotLooping);
-		coordinator.coordinate(timestampsLooping);
-		coordinator.coordinate(noTimestampsNotLooping);
-		coordinator.coordinate(noTimestampsLooping);
+		coordinator.coordinate(new CSVInputAdapter(timestampsNotLooping));
+		coordinator.coordinate(new CSVInputAdapter(timestampsLooping));
+		coordinator.coordinate(new CSVInputAdapter(noTimestampsNotLooping));
+		coordinator.coordinate(new CSVInputAdapter(noTimestampsLooping));
 		
 		// Time is 0
 		assertFalse(listener.getAndClearIsInvoked());
@@ -179,7 +181,7 @@ public class TestFeedCoordinator extends TestCase
 	
 	public void testRunTillNull()
 	{
-		coordinator.coordinate(timestampsNotLooping);
+		coordinator.coordinate(new CSVInputAdapter(epService, timestampsNotLooping));
 		coordinator.start();
 		
 		// Time is 100
@@ -217,9 +219,9 @@ public class TestFeedCoordinator extends TestCase
 	
 	public void testNotUsingEngineThread()
 	{
-		coordinator = epService.getEPAdapters().createAdapterCoordinator(false);
-		coordinator.coordinate(noTimestampsNotLooping);
-		coordinator.coordinate(timestampsNotLooping);
+		coordinator = new AdapterCoordinatorImpl(epService, false);
+		coordinator.coordinate(new CSVInputAdapter(epService, noTimestampsNotLooping));
+		coordinator.coordinate(new CSVInputAdapter(epService, timestampsNotLooping));
 		
 		long startTime = System.currentTimeMillis();
 		coordinator.start();

@@ -1,11 +1,12 @@
 package net.esper.adapter;
 
 /**
-Adapter
+ * A utility to manage the state transitions for an InputAdapter.
  */
 public class AdapterStateManager
 {
 	private AdapterState state = AdapterState.OPENED;
+	private boolean stateTransitionsAllowed = true;
 	
 	/**
 	 * @return the state
@@ -21,6 +22,7 @@ public class AdapterStateManager
 	 */
 	public void start() throws IllegalStateTransitionException
 	{
+		assertStateTransitionsAllowed();
 		if(state != AdapterState.OPENED)
 		{
 			throw new IllegalStateTransitionException("Cannot start from the " + state + " state");
@@ -34,6 +36,7 @@ public class AdapterStateManager
 	 */
 	public void stop() throws IllegalStateTransitionException
 	{
+		assertStateTransitionsAllowed();
 		if(state != AdapterState.STARTED && state != AdapterState.PAUSED)
 		{
 			throw new IllegalStateTransitionException("Cannot stop from the " + state + " state");
@@ -47,6 +50,7 @@ public class AdapterStateManager
 	 */
 	public void pause() throws IllegalStateTransitionException
 	{
+		assertStateTransitionsAllowed();
 		if(state != AdapterState.STARTED)
 		{
 			throw new IllegalStateTransitionException("Cannot pause from the " + state + " state");
@@ -60,6 +64,7 @@ public class AdapterStateManager
 	 */
 	public void resume() throws IllegalStateTransitionException
 	{
+		assertStateTransitionsAllowed();
 		if(state != AdapterState.PAUSED)
 		{
 			throw new IllegalStateTransitionException("Cannot resume from the " + state + " state");
@@ -78,5 +83,22 @@ public class AdapterStateManager
 			throw new IllegalStateTransitionException("Cannot destroy from the " + state + " state");
 		}
 		state = AdapterState.DESTROYED;
+	}
+	
+	/**
+	 * Disallow future state changes, and throw an IllegalStateTransitionException if they
+	 * are attempted.
+	 */
+	public void disallowStateTransitions()
+	{
+		stateTransitionsAllowed = false;
+	}
+	
+	private void assertStateTransitionsAllowed()
+	{
+		if(!stateTransitionsAllowed)
+		{
+			throw new IllegalStateTransitionException("State transitions have been disallowed");
+		}
 	}
 }

@@ -5,6 +5,8 @@ import java.util.TreeSet;
 
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderSPI;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.schedule.SchedulingService;
@@ -15,32 +17,41 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A skeleton implementation of the ReadableAdapter interface.
  */
-public abstract class AbstractReadableAdapter implements ReadableAdapter
+public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 {
-	private static final Log log = LogFactory.getLog(AbstractReadableAdapter.class);
+	private static final Log log = LogFactory.getLog(AbstractCoordinatedAdapter.class);
 	
 	protected final AdapterStateManager stateManager = new AdapterStateManager();
 	protected final SortedSet<SendableEvent> eventsToSend = new TreeSet<SendableEvent>(new SendableEventComparator());
-	private final EPRuntime runtime;
-
-	private final SchedulingService schedulingService;
-	private final boolean usingEngineThread;
+	protected ScheduleSlot scheduleSlot;
+	
+	private EPRuntime runtime;
+	private SchedulingService schedulingService;	
+	private boolean usingEngineThread;
 	private long currentTime = 0;
 	private long startTime;
 	
+	
 	/**
 	 * Ctor.
-	 * @param runtime - the runtime to send events into
-	 * @param schedulingService - used for scheduling callbacks
+	 * @param epService - the EPServiceProvider for the engine runtime and services
 	 * @param usingEngineThread - true if the Adapter should set time by the scheduling service in the engine, 
 	 *                            false if it should set time externally through the calling thread
 	 */
-	public AbstractReadableAdapter(EPRuntime runtime, SchedulingService schedulingService, Boolean usingEngineThread)
+	public AbstractCoordinatedAdapter(EPServiceProvider epService, boolean usingEngineThread)
 	{
-		this.runtime = runtime;
-		this.schedulingService = schedulingService;
-		this.usingEngineThread = usingEngineThread != null ? usingEngineThread : false;
-		log.debug(".ctor usingEngineThread==" + this.usingEngineThread);
+		this.usingEngineThread = usingEngineThread;
+		
+		if(epService == null)
+		{
+			return;
+		}
+		if(!(epService instanceof EPServiceProviderSPI))
+		{
+			throw new IllegalArgumentException("Invalid epService provided");
+		}
+		this.runtime = ((EPServiceProviderSPI)epService).getEPRuntime();
+		this.schedulingService = ((EPServiceProviderSPI)epService).getSchedulingService();
 	}
 	
 	public AdapterState getState()
@@ -51,6 +62,10 @@ public abstract class AbstractReadableAdapter implements ReadableAdapter
 	public void start() throws EPException
 	{
 		log.debug(".start");
+		if(runtime == null)
+		{
+			throw new EPException("Attempting to start an Adapter that hasn't had the epService provided");
+		}
 		startTime = getCurrentTime();
 		log.debug(".start startTime==" + startTime);
 		stateManager.start();
@@ -83,6 +98,48 @@ public abstract class AbstractReadableAdapter implements ReadableAdapter
 		reset();
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.ReadableAdapter#disallowStateChanges()
+	 */
+	public void disallowStateTransitions()
+	{
+		stateManager.disallowStateTransitions();
+	}
+
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.ReadableAdapter#setUsingEngineThread(boolean)
+	 */
+	public void setUsingEngineThread(boolean usingEngineThread)
+	{
+		this.usingEngineThread = usingEngineThread;
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.CoordinatedAdapter#setScheduleSlot(net.esper.schedule.ScheduleSlot)
+	 */
+	public void setScheduleSlot(ScheduleSlot scheduleSlot)
+	{
+		this.scheduleSlot = scheduleSlot;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.CoordinatedAdapter#setEPService(net.esper.client.EPServiceProvider)
+	 */
+	public void setEPService(EPServiceProvider epService)
+	{
+		if(epService == null)
+		{
+			throw new NullPointerException("epService cannot be null");
+		}
+		if(!(epService instanceof EPServiceProviderSPI))
+		{
+			throw new IllegalArgumentException("Invalid type of EPServiceProvider");
+		}
+		EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;	
+		runtime = spi.getEPRuntime();
+		schedulingService = spi.getSchedulingService();
+	}
+
 	/**
 	 * Perform any actions specific to this Adapter that should
 	 * be completed before the Adapter is stopped.

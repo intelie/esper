@@ -1,18 +1,22 @@
 package net.esper.adapter.csv;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.AdapterSpec;
-import net.esper.adapter.AdapterType;
 
 /**
  * A spec for CSVAdapters.
  */
-public class CSVInputAdapterSpec implements AdapterSpec
+public class CSVInputAdapterSpec
 {
-	private final Map<String, Object> parameters = new HashMap<String, Object>();
+	private boolean usingEngineThread;
+	private String timestampColumn;
+	private String eventTypeAlias;
+	private AdapterInputSource adapterInputSource;
+	private Integer eventsPerSec;
+	private String[] propertyOrder;
+	private boolean looping;
+	private Map<String, Class> propertyTypes;
 	
 	/**
 	 * Ctor.
@@ -21,32 +25,16 @@ public class CSVInputAdapterSpec implements AdapterSpec
 	 */
 	public CSVInputAdapterSpec(AdapterInputSource adapterInputSource, String eventTypeAlias)
 	{
-		parameters.put("adapterInputSource", adapterInputSource);
-		parameters.put("eventTypeAlias", eventTypeAlias);
+		this.adapterInputSource = adapterInputSource;
+		this.eventTypeAlias = eventTypeAlias;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.esper.adapter.AdapterSpec#getAdapterType()
-	 */
-	public AdapterType getAdapterType()
-	{
-		return AdapterType.CSV;
-	}
-	
-	/* (non-Javadoc)
-	 * @see net.esper.adapter.AdapterSpec#getParameter(java.lang.String)
-	 */
-	public Object getParameter(String parameterName)
-	{
-		return parameters.get(parameterName);
-	}
-	
 	/**
 	 * @param eventsPerSec
 	 */
 	public void setEventsPerSec(int eventsPerSec)
 	{
-		parameters.put("eventsPerSec", eventsPerSec);
+		this.eventsPerSec = eventsPerSec;
 	}
 
 	/**
@@ -54,7 +42,7 @@ public class CSVInputAdapterSpec implements AdapterSpec
 	 */
 	public void setPropertyOrder(String[] propertyOrder)
 	{
-		parameters.put("propertyOrder", propertyOrder);
+		this.propertyOrder = propertyOrder;
 	}
 
 	/**
@@ -62,7 +50,7 @@ public class CSVInputAdapterSpec implements AdapterSpec
 	 */
 	public void setLooping(boolean looping)
 	{
-		parameters.put("looping", looping);
+		this.looping = looping;
 	}
 	
 	/**
@@ -73,7 +61,7 @@ public class CSVInputAdapterSpec implements AdapterSpec
 	 */
 	public void setPropertyTypes(Map<String, Class> propertyTypes)
 	{
-		parameters.put("propertyTypes", propertyTypes);
+		this.propertyTypes = propertyTypes;
 	}
 	
 	
@@ -82,15 +70,95 @@ public class CSVInputAdapterSpec implements AdapterSpec
 	 */
 	public void setUsingEngineThread(boolean usingEngineThread)
 	{
-		parameters.put("usingEngineThread", usingEngineThread);
+		this.usingEngineThread = usingEngineThread;
 	}
 	
+	/**
+	 * @return the usingEngineThread
+	 */
+	public boolean isUsingEngineThread()
+	{
+		return usingEngineThread;
+	}
+
 	/**
 	 * Set the timestamp column name.
 	 * @param timestampColumn - the name of the column to use for timestamps
 	 */
 	public void setTimestampColumn(String timestampColumn)
 	{
-		parameters.put("timestampColumn", timestampColumn);
+		this.timestampColumn = timestampColumn;
+	}
+
+	/**
+	 * @return the timestampColumn
+	 */
+	public String getTimestampColumn()
+	{
+		return timestampColumn;
+	}
+
+	/**
+	 * @return the adapterInputSource
+	 */
+	public AdapterInputSource getAdapterInputSource()
+	{
+		return adapterInputSource;
+	}
+
+	/**
+	 * @param adapterInputSource the adapterInputSource to set
+	 */
+	public void setAdapterInputSource(AdapterInputSource adapterInputSource)
+	{
+		this.adapterInputSource = adapterInputSource;
+	}
+
+	/**
+	 * @return the eventTypeAlias
+	 */
+	public String getEventTypeAlias()
+	{
+		return eventTypeAlias;
+	}
+
+	/**
+	 * @param eventTypeAlias the eventTypeAlias to set
+	 */
+	public void setEventTypeAlias(String eventTypeAlias)
+	{
+		this.eventTypeAlias = eventTypeAlias;
+	}
+
+	/**
+	 * @return the eventsPerSec
+	 */
+	public Integer getEventsPerSec()
+	{
+		return eventsPerSec;
+	}
+
+	/**
+	 * @return the looping
+	 */
+	public boolean isLooping()
+	{
+		return looping;
+	}
+
+	/**
+	 * @return the propertyOrder
+	 */
+	public String[] getPropertyOrder()
+	{
+		return propertyOrder;
+	}
+
+	/**
+	 * @return the propertyTypes
+	 */
+	public Map<String, Class> getPropertyTypes()
+	{
+		return propertyTypes;
 	}
 }

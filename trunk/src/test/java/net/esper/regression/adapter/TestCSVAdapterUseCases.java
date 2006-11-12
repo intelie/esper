@@ -6,6 +6,7 @@ import net.esper.client.Configuration;
 import net.esper.client.EPStatement;
 import net.esper.adapter.AdapterInputSource;
 import net.esper.adapter.InputAdapter;
+import net.esper.adapter.csv.CSVInputAdapter;
 import net.esper.adapter.csv.CSVInputAdapterSpec;
 import net.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
@@ -36,7 +37,7 @@ public class TestCSVAdapterUseCases extends TestCase
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
-        epService.getEPAdapters().getCSVAdapter().start(new AdapterInputSource(CSV_FILENAME), "TypeA");
+        (new CSVInputAdapter(epService, new AdapterInputSource(CSV_FILENAME), "TypeA")).start();
 
         assertEquals(1, listener.getNewDataList().size());
     }
@@ -78,7 +79,7 @@ public class TestCSVAdapterUseCases extends TestCase
 //        spec.setLooping(true);
         spec.setUsingEngineThread(true);
 
-        InputAdapter inputAdapter = epService.getEPAdapters().createAdapter(spec);
+        InputAdapter inputAdapter = new CSVInputAdapter(epService, spec);
         inputAdapter.start();
         Thread.sleep(1000);
 //        inputAdapter.stop();
@@ -101,7 +102,7 @@ public class TestCSVAdapterUseCases extends TestCase
         CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME), "TypeA");
         spec.setEventsPerSec(1000);
 
-        InputAdapter inputAdapter = epService.getEPAdapters().createAdapter(spec);
+        InputAdapter inputAdapter = new CSVInputAdapter(epService, spec);
         inputAdapter.start();
 
         assertEquals(1, listener.getNewDataList().size());
@@ -117,7 +118,7 @@ public class TestCSVAdapterUseCases extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
 
-        InputAdapter feed = epService.getEPAdapters().createAdapter(spec);
+        InputAdapter feed = new CSVInputAdapter(epService, spec);
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select symbol, price, volume from TypeB.win:length(100)");
         SupportUpdateListener listener = new SupportUpdateListener();
@@ -150,7 +151,7 @@ public class TestCSVAdapterUseCases extends TestCase
 
         epService = EPServiceProviderManager.getProvider("testPlayFromInputStream", makeConfig("TypeC"));
         epService.initialize();
-        InputAdapter feed = epService.getEPAdapters().createAdapter(spec);
+        InputAdapter feed = new CSVInputAdapter(epService, spec);
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select * from TypeC.win:length(100)");
         SupportUpdateListener listener = new SupportUpdateListener();

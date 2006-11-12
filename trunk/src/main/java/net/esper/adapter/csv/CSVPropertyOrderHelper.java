@@ -15,9 +15,9 @@ import net.esper.client.EPException;
  * propertyTypes map and the first record of a CSV file (which 
  * might represent the title row).
  */
-public class PropertyOrderHelper
+public class CSVPropertyOrderHelper
 {
-	private static final Log log = LogFactory.getLog(PropertyOrderHelper.class);
+	private static final Log log = LogFactory.getLog(CSVPropertyOrderHelper.class);
 
 	/**
 	 * Resolve the order of the properties that appear in the CSV file, 

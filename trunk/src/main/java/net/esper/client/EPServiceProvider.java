@@ -1,6 +1,5 @@
 package net.esper.client;
 
-import net.esper.adapter.EPAdapterManager;
 
 
 /**
@@ -20,12 +19,6 @@ public interface EPServiceProvider
      */
     public EPAdministrator getEPAdministrator();
     
-    /**
-     * Get the manager for input and output adapters
-     * @return an instance of EPAdapterManager
-     */
-    public EPAdapterManager getEPAdapters();
-
     /**
      * Frees any resources associated with this runtime instance.
      * Stops and destroys any event filters, patterns, expressions, views.

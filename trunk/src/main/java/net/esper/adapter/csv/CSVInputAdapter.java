@@ -9,18 +9,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.esper.adapter.AbstractReadableAdapter;
+import net.esper.adapter.AbstractCoordinatedAdapter;
 import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.InputAdapter;
-import net.esper.adapter.AdapterSpec;
 import net.esper.adapter.AdapterState;
-import net.esper.adapter.MapEventSpec;
+import net.esper.adapter.InputAdapter;
 import net.esper.adapter.SendableEvent;
 import net.esper.adapter.SendableMapEvent;
 import net.esper.client.EPException;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderSPI;
 import net.esper.event.EventAdapterService;
-import net.esper.schedule.ScheduleSlot;
-import net.esper.schedule.SchedulingService;
+import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastConstructor;
@@ -31,18 +30,17 @@ import org.apache.commons.logging.LogFactory;
 /** 
  * An event Adapter that uses a CSV file for a source.
  */
-public class CSVInputAdapter extends AbstractReadableAdapter implements InputAdapter
+public class CSVInputAdapter extends AbstractCoordinatedAdapter implements InputAdapter
 {
 	private static final Log log = LogFactory.getLog(CSVInputAdapter.class);
 
-	private final String timestampColumn;
-	private final SchedulingService schedulingService;
-	private final ScheduleSlot scheduleSlot;
-	private final MapEventSpec mapEventSpec;	
-	private int eventsPerSec = -1;
-	private final CSVReader reader;
-	private final Map<String, FastConstructor>propertyConstructors;
-	private final String[] propertyOrder;
+	private Integer eventsPerSec;
+	private CSVReader reader;
+	private Map<String, FastConstructor>propertyConstructors;
+	private String[] propertyOrder;
+	private CSVInputAdapterSpec adapterSpec;
+	private Map<String, Class> propertyTypes;
+	private String eventTypeAlias;
 	private long lastTimestamp = 0;
 	private long totalDelay;
 	boolean atEOF = false;
@@ -50,69 +48,53 @@ public class CSVInputAdapter extends AbstractReadableAdapter implements InputAda
 	
 	/**
 	 * Ctor.
-	 * @param adapterSpec - the parameters for this Adapter
-	 * @param mapSpec - the specifications for the map event type to create
-	 * @param eventAdapterService - used for declaring new map types
-	 * @param schedulingService - used for scheduling callbacks to send events
-	 * @param scheduleSlot - used for ordering this Adapter's place for callbacks
+	 * @param epService - provides the engine runtime and services
+	 * @param spec - the parameters for this adapter
 	 */
-	protected CSVInputAdapter(AdapterSpec adapterSpec, 
-					  MapEventSpec mapSpec, 
-					  EventAdapterService eventAdapterService, 
-					  SchedulingService schedulingService, 
-					  ScheduleSlot scheduleSlot)
+	public CSVInputAdapter(EPServiceProvider epService, CSVInputAdapterSpec spec)
 	{
-		super(mapSpec.getEpRuntime(), schedulingService, (Boolean)adapterSpec.getParameter("usingEngineThread"));
+		super(epService, spec.isUsingEngineThread());
 		
-		this.scheduleSlot = scheduleSlot;
-		this.mapEventSpec = mapSpec;
-		this.schedulingService = schedulingService;
-		this.timestampColumn = (String)adapterSpec.getParameter("timestampColumn");
-
-		reader = new CSVReader((AdapterInputSource)adapterSpec.getParameter("adapterInputSource"));
+		adapterSpec = spec;
+		eventTypeAlias = adapterSpec.getEventTypeAlias();
+		eventsPerSec = spec.getEventsPerSec();
 		
-		// Resolve the order of properties in the CSV file
-		String[] firstRow;
-		try
+		if(epService != null)
 		{
-			firstRow = reader.getNextRecord();
-		} 
-		catch (EOFException e)
-		{
-			atEOF = true;
-			firstRow = null;
-		}		
-		
-
-		log.debug(".ctor propertyTypes==" + mapSpec.getPropertyTypes());
-		this.propertyOrder = adapterSpec.getParameter("propertyOrder") == null ?
-				PropertyOrderHelper.resolvePropertyOrder(firstRow, mapSpec.getPropertyTypes()) :
-					(String[])adapterSpec.getParameter("propertyOrder");		
-		log.debug(".ctor propertyOrder==" + Arrays.asList(propertyOrder));		
-				
-		Map<String, Class> propertyTypes = resolvePropertyTypes(mapEventSpec.getPropertyTypes());
-		if(mapEventSpec.getPropertyTypes() == null)
-		{
-			eventAdapterService.addMapType(mapEventSpec.getEventTypeAlias(), propertyTypes);
+			finishInitialization(epService, spec);
 		}
-		this.propertyConstructors = createPropertyConstructors(propertyTypes);
-		
-		log.debug(".ctor isUsingTitleRow==" + isUsingTitleRow(firstRow, propertyOrder));
-		reader.setIsUsingTitleRow(isUsingTitleRow(firstRow, propertyOrder));
-		if(!isUsingTitleRow(firstRow, propertyOrder))
-		{
-			this.firstRow = firstRow;
-		}
-		
-		eventsPerSec = adapterSpec.getParameter("eventsPerSec") != null ?
-				(Integer)adapterSpec.getParameter("eventsPerSec") :
-					-1 ;
-				
-		boolean looping = adapterSpec.getParameter("looping") != null ?
-				(Boolean) adapterSpec.getParameter("looping") :
-					false;
-		reader.setLooping(looping);
 	}
+
+	/**
+	 * Ctor.
+	 * @param epService - provides the engine runtime and services
+	 * @param adapterInputSource - the source of the CSV file
+	 * @param eventTypeAlias - the alias of the Map event to create from the CSV data
+	 */
+	public CSVInputAdapter(EPServiceProvider epService, AdapterInputSource adapterInputSource, String eventTypeAlias)
+	{
+		this(epService, new CSVInputAdapterSpec(adapterInputSource, eventTypeAlias));
+	}
+	
+	/**
+	 * Ctor for adapters that will be passed to an AdapterCoordinator.
+	 * @param adapterSpec
+	 */
+	public CSVInputAdapter(CSVInputAdapterSpec adapterSpec)
+	{
+		this(null, adapterSpec);
+	}
+	
+	/**
+	 * Ctor for adapters that will be passed to an AdapterCoordinator.
+	 * @param adapterInputSource - the parameters for this adapter
+	 * @param eventTypeAlias
+	 */
+	public CSVInputAdapter(AdapterInputSource adapterInputSource, String eventTypeAlias)
+	{
+		this(null, adapterInputSource, eventTypeAlias);
+	}
+	
 	
 	/* (non-Javadoc)
 	 * @see net.esper.adapter.ReadableAdapter#read()
@@ -128,7 +110,7 @@ public class CSVInputAdapter extends AbstractReadableAdapter implements InputAda
 		{
 			if(eventsToSend.isEmpty())
 			{
-				return new SendableMapEvent(newMapEvent(), mapEventSpec.getEventTypeAlias(), totalDelay, scheduleSlot);
+				return new SendableMapEvent(newMapEvent(), eventTypeAlias, totalDelay, scheduleSlot);
 			}
 			else
 			{
@@ -151,6 +133,18 @@ public class CSVInputAdapter extends AbstractReadableAdapter implements InputAda
 			}
 			return null;
 		}
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see net.esper.adapter.AbstractCoordinatedAdapter#setEPService(net.esper.client.EPServiceProvider)
+	 */
+	@Override
+	public void setEPService(EPServiceProvider epService)
+	{
+		super.setEPService(epService);
+		finishInitialization(epService, adapterSpec);
 	}
 
 	/**
@@ -190,6 +184,40 @@ public class CSVInputAdapter extends AbstractReadableAdapter implements InputAda
 		}
 	}
 
+	private void finishInitialization(EPServiceProvider epService, CSVInputAdapterSpec spec)
+	{
+		assertValidParameters(epService, spec);
+		
+		EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;
+		
+		scheduleSlot = spi.getSchedulingService().allocateBucket().allocateSlot();
+		
+		reader = new CSVReader(spec.getAdapterInputSource());
+		reader.setLooping(spec.isLooping());
+		
+		String[] firstRow = getFirstRow();		
+		
+		Map<String, Class> givenPropertyTypes = constructPropertyTypes(spec.getEventTypeAlias(), spec.getPropertyTypes(), spi.getEventAdapterService());
+		
+		propertyOrder = spec.getPropertyOrder() != null ?
+				spec.getPropertyOrder() :
+					CSVPropertyOrderHelper.resolvePropertyOrder(firstRow, givenPropertyTypes);
+	
+		reader.setIsUsingTitleRow(isUsingTitleRow(firstRow, propertyOrder));
+		if(!isUsingTitleRow(firstRow, propertyOrder))
+		{
+			this.firstRow = firstRow;
+		}
+				
+		propertyTypes = resolvePropertyTypes(givenPropertyTypes);
+		if(givenPropertyTypes == null)
+		{
+			spi.getEventAdapterService().addMapType(eventTypeAlias, propertyTypes);
+		}
+		
+		this.propertyConstructors = createPropertyConstructors(propertyTypes);
+	}
+
 	private Map<String, Object> newMapEvent() throws EOFException
 	{
 		String[] row =  firstRow != null ? firstRow : reader.getNextRecord();
@@ -225,8 +253,7 @@ public class CSVInputAdapter extends AbstractReadableAdapter implements InputAda
 			{
 				// Skip properties that are in the title row but not
 				// part of the map to send
-				if(mapEventSpec.getPropertyTypes() != null &&
-				   !mapEventSpec.getPropertyTypes().containsKey(property))
+				if(propertyTypes != null && !propertyTypes.containsKey(property))
 				{
 					count++;
 					continue;
@@ -243,14 +270,50 @@ public class CSVInputAdapter extends AbstractReadableAdapter implements InputAda
 		return map;
 	}
 	
+	private Map<String, Class> constructPropertyTypes(String eventTypeAlias, Map<String, Class> propertyTypesGiven, EventAdapterService eventAdapterService) 
+	{
+		Map<String, Class> propertyTypes = new HashMap<String, Class>();
+		EventType eventType = eventAdapterService.getEventType(eventTypeAlias);
+		if(eventType == null)
+		{
+			if(propertyTypesGiven != null)
+			{
+				eventAdapterService.addMapType(eventTypeAlias, propertyTypesGiven);
+			}
+			return propertyTypesGiven;
+		}
+		if(!eventType.getUnderlyingType().equals(Map.class))
+		{
+			throw new EPException("Alias " + eventTypeAlias + " does not correspond to a map event");
+		}
+		if(propertyTypesGiven != null && eventType.getPropertyNames().length != propertyTypesGiven.size())
+		{
+			throw new EPException("Event type " + eventTypeAlias + " has already been declared with a different number of parameters");
+		}
+		for(String property : eventType.getPropertyNames())
+		{
+			Class type = eventType.getPropertyType(property);
+			if(propertyTypesGiven != null && propertyTypesGiven.get(property) == null)
+			{
+				throw new EPException("Event type " + eventTypeAlias + "has already been declared with different parameters");
+			}
+			if(propertyTypesGiven != null && !propertyTypesGiven.get(property).equals(type))
+			{
+				throw new EPException("Event type " + eventTypeAlias + "has already been declared with a different type for property " + property);
+			}
+			propertyTypes.put(property, type);
+		}
+		return propertyTypes;
+	}
+
 	private void updateTotalDelay(String[] row, boolean isFirstRow)
 	{
-		if(eventsPerSec != -1)
+		if(eventsPerSec != null)
 		{
 			int msecPerEvent = 1000/eventsPerSec;
 			totalDelay += msecPerEvent;
 		}
-		else if(timestampColumn != null)
+		else if(adapterSpec.getTimestampColumn() != null)
 		{
 			Long timestamp = resolveTimestamp(row);
 			if(timestamp == null)
@@ -301,11 +364,11 @@ public class CSVInputAdapter extends AbstractReadableAdapter implements InputAda
 	
 	private int getTimestampIndex(String[] row)
 	{
-		if(timestampColumn != null)
+		if(adapterSpec.getTimestampColumn() != null)
 		{
 			for(int i = 0; i < propertyOrder.length; i++)
 			{
-				if(propertyOrder[i].equals(timestampColumn))
+				if(propertyOrder[i].equals(adapterSpec.getTimestampColumn()))
 				{
 					return i;
 				}
@@ -338,5 +401,56 @@ public class CSVInputAdapter extends AbstractReadableAdapter implements InputAda
 		Set<String> firstRowSet = new HashSet<String>(Arrays.asList(firstRow));
 		Set<String> propertyOrderSet = new HashSet<String>(Arrays.asList(propertyOrder));
 		return firstRowSet.equals(propertyOrderSet);
+	}
+	
+	private String[] getFirstRow()
+	{
+		String[] firstRow;
+		try
+		{
+			firstRow = reader.getNextRecord();
+		} 
+		catch (EOFException e)
+		{
+			atEOF = true;
+			firstRow = null;
+		}
+		return firstRow;
+	}
+
+	private void assertValidEventsPerSec(Integer eventsPerSec)
+	{
+		if(eventsPerSec != null)
+		{
+			if(eventsPerSec < 1 || eventsPerSec > 1000)
+			{
+				throw new IllegalArgumentException("Illegal value of eventsPerSec:" + eventsPerSec);
+			}
+		}
+	}
+	
+	private void assertValidParameters(EPServiceProvider epService, CSVInputAdapterSpec adapterSpec)
+	{
+		if(!(epService instanceof EPServiceProviderSPI))
+		{
+			throw new IllegalArgumentException("Invalid type of EPServiceProvider");
+		}
+		
+		if(adapterSpec.getEventTypeAlias() == null)
+		{
+			throw new NullPointerException("eventTypeAlias cannot be null");
+		}
+		
+		if(adapterSpec.getAdapterInputSource() == null)
+		{
+			throw new NullPointerException("adapterInputSource cannot be null");
+		}
+		
+		assertValidEventsPerSec(adapterSpec.getEventsPerSec());
+		
+		if(adapterSpec.isLooping() && !adapterSpec.getAdapterInputSource().isResettable())
+		{
+			throw new EPException("Cannot loop on a non-resettable input source");
+		}
 	}
 }

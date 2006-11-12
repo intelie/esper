@@ -2,29 +2,27 @@ package net.esper.core;
 
 import java.util.Map;
 
-import net.esper.adapter.EPAdapterManager;
-import net.esper.adapter.EPAdapterManagerImpl;
 import net.esper.client.Configuration;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.ConfigurationException;
 import net.esper.client.EPAdministrator;
 import net.esper.client.EPRuntime;
-import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderSPI;
 import net.esper.eql.expression.AutoImportService;
 import net.esper.eql.expression.AutoImportServiceImpl;
 import net.esper.event.EventAdapterException;
+import net.esper.event.EventAdapterService;
 import net.esper.event.EventAdapterServiceImpl;
+import net.esper.schedule.SchedulingService;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
  */
-public class EPServiceProviderImpl implements EPServiceProvider
+public class EPServiceProviderImpl implements EPServiceProviderSPI
 {
     private EPServicesContext services;
     private EPRuntimeImpl runtime;
     private EPAdministratorImpl admin;
-    private EPAdapterManager adapters;
-
     private final EventAdapterServiceImpl eventAdapterService;
     private final AutoImportService autoImportService;
 
@@ -104,11 +102,6 @@ public class EPServiceProviderImpl implements EPServiceProvider
         return admin;
     }
     
-    public EPAdapterManager getEPAdapters()
-    {
-    	return adapters;
-    }
-
     public void initialize()
     {
         if (services != null)
@@ -131,9 +124,6 @@ public class EPServiceProviderImpl implements EPServiceProvider
         // New runtime
         runtime = new EPRuntimeImpl(services);
         
-        // New adapter manager
-        adapters = new EPAdapterManagerImpl(runtime, eventAdapterService, services.getSchedulingService());
-
         // Configure services
         services.setInternalEventRouter(runtime);
         services.getTimerService().setCallback(runtime);
@@ -144,4 +134,22 @@ public class EPServiceProviderImpl implements EPServiceProvider
         // Start clocking
         services.getTimerService().startInternalClock();
     }
+
+	/* (non-Javadoc)
+	 * @see net.esper.client.EPServiceProviderSPI#getEventAdapterService()
+	 */
+	public EventAdapterService getEventAdapterService()
+	{
+		return services.getEventAdapterService();
+	}
+
+	/* (non-Javadoc)
+	 * @see net.esper.client.EPServiceProviderSPI#getSchedulingService()
+	 */
+	public SchedulingService getSchedulingService()
+	{
+		return services.getSchedulingService();
+	}
+    
+    
 }

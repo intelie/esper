@@ -8,8 +8,8 @@ package net.esper.adapter;
 public interface AdapterCoordinator extends InputAdapter
 {
 	/**
-	 * Coordinate a new Adapter.
-	 * @param adapterSpec - the parameters for the Adapter
+	 * Coordinate an InputAdapter.
+	 * @param adapter - the InputAdapter to coordinate
 	 */
-	public void coordinate(AdapterSpec adapterSpec);
+	public void coordinate(InputAdapter adapter);
 }
