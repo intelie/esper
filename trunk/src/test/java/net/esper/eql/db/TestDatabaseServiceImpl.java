@@ -34,7 +34,7 @@ public class TestDatabaseServiceImpl extends TestCase
         configs.put("name3", config);
         config.setExpiryTimeCache(1, 99999);
 
-        databaseServiceImpl = new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl());
+        databaseServiceImpl = new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl(), null);
     }
 
     public void testGetConnection() throws Exception
@@ -54,7 +54,7 @@ public class TestDatabaseServiceImpl extends TestCase
         assertEquals(10000, lru.getCacheSize());
 
         DataCacheExpiringImpl exp = (DataCacheExpiringImpl) databaseServiceImpl.getDataCache("name3");
-        assertEquals(1, exp.getMaxAgeSec());
+        assertEquals(1, exp.getMaxAgeMSec());
     }
 
     public void testInvalid()

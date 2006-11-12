@@ -8,6 +8,7 @@ import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * Implements the function to determine a join result set using tables/indexes and query strategy
@@ -19,9 +20,9 @@ public class JoinSetComposerImpl implements JoinSetComposer
     private final QueryStrategy[] queryStrategies;
     private final SelectClauseStreamSelectorEnum selectStreamSelectorEnum;
 
-    // Set semantic eliminates duplicates in result set
-    private Set<MultiKey<EventBean>> oldResults = new HashSet<MultiKey<EventBean>>();
-    private Set<MultiKey<EventBean>> newResults = new HashSet<MultiKey<EventBean>>();
+    // Set semantic eliminates duplicates in result set, use Linked set to preserve order
+    private Set<MultiKey<EventBean>> oldResults = new LinkedHashSet<MultiKey<EventBean>>();
+    private Set<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
 
     /**
      * Ctor.

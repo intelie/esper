@@ -11,6 +11,7 @@ import net.esper.event.EventAdapterService;
 import net.esper.util.JavaClassHelper;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
+import net.esper.schedule.ScheduleBucket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -223,7 +224,8 @@ public class EPServiceProviderImpl implements EPServiceProvider
         // Add auto-imports
         try
         {
-            databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.getDatabaseRefs(), schedulingService);
+            ScheduleBucket allStatementsBucket = schedulingService.allocateBucket();
+            databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.getDatabaseRefs(), schedulingService, allStatementsBucket);
         }
         catch (IllegalArgumentException ex)
         {

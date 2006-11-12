@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 /**
  * Viewable providing historical data from a database.
  */
-public class DatabasePollExecStrategy implements PollExecStrategy
+public class PollExecStrategyDBQuery implements PollExecStrategy
 {
     private final EventAdapterService eventAdapterService;
     private final String preparedStatementText;
@@ -33,11 +33,11 @@ public class DatabasePollExecStrategy implements PollExecStrategy
      * @param eventType is the event type that this poll generates
      * @param connectionCache caches Connection and PreparedStatement
      */
-    public DatabasePollExecStrategy(EventAdapterService eventAdapterService,
-                                    EventType eventType,
-                                    ConnectionCache connectionCache,
-                                    String preparedStatementText,
-                                    Map<String, DBOutputTypeDesc> outputTypes)
+    public PollExecStrategyDBQuery(EventAdapterService eventAdapterService,
+                                   EventType eventType,
+                                   ConnectionCache connectionCache,
+                                   String preparedStatementText,
+                                   Map<String, DBOutputTypeDesc> outputTypes)
     {
         this.eventAdapterService = eventAdapterService;
         this.eventType = eventType;

@@ -113,7 +113,7 @@ public class PollingViewable implements HistoricalEventViewable
             {
                 resultPerInputRow[row] = result;
             }
-            else        // not found in cache
+            else        // not found in cache, get from actual polling (db query)
             {
                 try
                 {

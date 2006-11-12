@@ -605,13 +605,18 @@ Connection connection = dataSource.getConnection();]]></programlisting>
 
 				<programlisting><![CDATA[<database-reference name="mydb2">
   <drivermanager-connection class-name="my.sql.Driver" 
-        url="jdbc:mysql://localhost/test?user=root&amp;password=welcome" 
+        url="jdbc:mysql://localhost/test?user=root&amp;password=mypassword" 
         user="myuser" password="mypassword">
     <connection-arg name="user" value ="myuser"/>
     <connection-arg name="password" value ="mypassword"/>
     <connection-arg name="somearg" value ="someargvalue"/>
   </drivermanager-connection>
 </database-reference>]]></programlisting>
+
+				<para>
+					The username and password are shown in multiple places in the XML only as an example. Please check with your database software on the required information in
+					URL and connection arguments.
+				</para>
 			</sect3>
 
 			<sect3 id="config-database-connections" revision="1">

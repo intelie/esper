@@ -2,6 +2,7 @@ package net.esper.eql.db;
 
 import net.esper.event.EventBean;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
+import net.esper.schedule.SchedulingServiceImpl;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -16,16 +17,52 @@ public class TestDataCacheExpiringImpl extends TestCase
 
     public void setUp()
     {
-        scheduler = new SupportSchedulingServiceImpl();
-        cache = new DataCacheExpiringImpl(10, 1000, scheduler);   // age 10 sec
         for (int i = 0; i < lists.length; i++)
         {
             lists[i] = new LinkedList<EventBean>();
         }
     }
 
+    public void testPurgeInterval()
+    {
+        SchedulingServiceImpl scheduler = new SchedulingServiceImpl();
+        cache = new DataCacheExpiringImpl(10, 20, scheduler, null);   // age 10 sec, purge 1000 seconds
+
+        // test single entry in cache
+        scheduler.setTime(5000);
+        cache.put(make("a"), lists[0]); // a at 5 sec
+        assertSame(lists[0], cache.getCached(make("a")));
+
+        scheduler.setTime(26000);
+        scheduler.evaluate();
+        assertEquals(0, cache.getSize());
+
+        // test 4 entries in cache
+        scheduler.setTime(30000);
+        cache.put(make("b"), lists[1]);  // b at 30 sec
+
+        scheduler.setTime(35000);
+        cache.put(make("c"), lists[2]);  // c at 35 sec
+
+        scheduler.setTime(40000);
+        cache.put(make("d"), lists[3]);  // d at 40 sec
+
+        scheduler.setTime(45000);
+        cache.put(make("e"), lists[4]);  // d at 40 sec
+
+        scheduler.setTime(50000);
+        scheduler.evaluate();
+        assertEquals(2, cache.getSize());   // only d and e
+
+        assertSame(lists[3], cache.getCached(make("d")));
+        assertSame(lists[4], cache.getCached(make("e")));
+    }
+
     public void testGet()
     {
+        scheduler = new SupportSchedulingServiceImpl();
+        cache = new DataCacheExpiringImpl(10, 1000, scheduler, null);   // age 10 sec, purge 1000 seconds
+
         assertNull(cache.getCached(make("a")));
 
         scheduler.setTime(5000);

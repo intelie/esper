@@ -13,9 +13,9 @@ import net.esper.support.event.SupportEventAdapterService;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 
-public class TestDatabasePollExecStrategy extends TestCase
+public class TestPollExecStrategyDBQuery extends TestCase
 {
-    private DatabasePollExecStrategy dbPollExecStrategy;
+    private PollExecStrategyDBQuery dbPollExecStrategy;
 
     public void setUp() throws Exception
     {
@@ -31,7 +31,7 @@ public class TestDatabasePollExecStrategy extends TestCase
         Map<String, DBOutputTypeDesc> propertiesOut = new HashMap<String, DBOutputTypeDesc>();
         propertiesOut.put("myvarchar", new DBOutputTypeDesc(Types.VARCHAR, null));
 
-        dbPollExecStrategy = new DatabasePollExecStrategy(SupportEventAdapterService.getService(),
+        dbPollExecStrategy = new PollExecStrategyDBQuery(SupportEventAdapterService.getService(),
                 resultEventType, connectionCache, sql, propertiesOut);
     }
 

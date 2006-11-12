@@ -34,6 +34,6 @@ public class SupportDatabaseService
         config.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.PARTURL, properties);
         configs.put(DBNAME_PARTURL, config);
 
-        return new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl());
+        return new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl(), null);
     }
 }

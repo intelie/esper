@@ -1,8 +1,8 @@
 package net.esper.eql.db;
 
 import net.esper.client.ConfigurationDBRef;
-import net.esper.eql.db.DatabaseConnectionFactory;
 import net.esper.schedule.SchedulingService;
+import net.esper.schedule.ScheduleBucket;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
     private final Map<String, ConfigurationDBRef> mapDatabaseRef;
     private final Map<String, DatabaseConnectionFactory> connectionFactories;
     private final SchedulingService schedulingService;
+    private final ScheduleBucket scheduleBucket;
 
     /**
      * Ctor.
@@ -23,11 +24,13 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
      * @param schedulingService is for scheduling callbacks for a cache
      */
     public DatabaseConfigServiceImpl(Map<String, ConfigurationDBRef> mapDatabaseRef,
-                                     SchedulingService schedulingService)
+                                     SchedulingService schedulingService,
+                                     ScheduleBucket scheduleBucket)
     {
         this.mapDatabaseRef = mapDatabaseRef;
         this.connectionFactories = new HashMap<String, DatabaseConnectionFactory>();
         this.schedulingService = schedulingService;
+        this.scheduleBucket = scheduleBucket;
     }
 
     public ConnectionCache getConnectionCache(String databaseName, String preparedStatementText) throws DatabaseConfigException
@@ -106,7 +109,8 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
         if (config.getDataCacheDesc() instanceof ConfigurationDBRef.ExpiryTimeCacheDesc)
         {
             ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) config.getDataCacheDesc();
-            return new DataCacheExpiringImpl(expCache.getMaxAgeSeconds(), expCache.getPurgeIntervalSeconds(), schedulingService);
+            return new DataCacheExpiringImpl(expCache.getMaxAgeSeconds(), expCache.getPurgeIntervalSeconds(), schedulingService,
+                    scheduleBucket.allocateSlot());
         }
 
         throw new IllegalStateException("Cache implementation class not configured");

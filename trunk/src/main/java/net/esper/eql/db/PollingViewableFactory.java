@@ -231,7 +231,7 @@ public class PollingViewableFactory
             throw new ExprValidationException(text + ", reason: " + e.getMessage());
         }
 
-        DatabasePollExecStrategy dbPollStrategy = new DatabasePollExecStrategy(eventAdapterService,
+        PollExecStrategyDBQuery dbPollStrategy = new PollExecStrategyDBQuery(eventAdapterService,
                 eventType, connectionCache, preparedStatementText, outputProperties);
 
         return new PollingViewable(streamNumber, inputParameters, dbPollStrategy, dataCache, eventType);
