@@ -5,12 +5,11 @@ import net.esper.dispatch.DispatchServiceProvider;
 import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.AutoImportService;
-import net.esper.eql.db.DatabaseService;
+import net.esper.eql.db.DatabaseConfigService;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
 import net.esper.filter.FilterServiceProvider;
 import net.esper.schedule.SchedulingService;
-import net.esper.schedule.SchedulingServiceProvider;
 import net.esper.timer.TimerService;
 import net.esper.timer.TimerServiceProvider;
 import net.esper.view.ViewService;
@@ -32,31 +31,34 @@ public final class EPServicesContext
     private final StreamReuseService streamReuseService;
     private final EventAdapterService eventAdapterService;
     private final AutoImportService autoImportService;
-    private final DatabaseService databaseService;
+    private final DatabaseConfigService databaseConfigService;
 
     // Must be set
     private InternalEventRouter internalEventRouter;
 
     /**
      * Constructor - sets up new set of services.
+     * @param schedulingService service to get time and schedule callbacks
      * @param eventAdapterService service to resolve event types
      * @param autoImportService service to resolve partial class names
-     * @param databaseService service to resolve a database name to database connection factory and configs
+     * @param databaseConfigService service to resolve a database name to database connection factory and configs
      */
-    public EPServicesContext(EventAdapterService eventAdapterService,
+    public EPServicesContext(SchedulingService schedulingService,
+                             EventAdapterService eventAdapterService,
                              AutoImportService autoImportService,
-                             DatabaseService databaseService)
+                             DatabaseConfigService databaseConfigService)
     {
+        this.schedulingService = schedulingService;
+        this.eventAdapterService = eventAdapterService;
+        this.autoImportService = autoImportService;
+        this.databaseConfigService = databaseConfigService;
+
         this.filterService = FilterServiceProvider.newService();
         this.timerService = TimerServiceProvider.newService();
-        this.schedulingService = SchedulingServiceProvider.newService();
         this.emitService = EmitServiceProvider.newService();
         this.dispatchService = DispatchServiceProvider.newService();
         this.viewService = ViewServiceProvider.newService();
         this.streamReuseService = StreamReuseServiceProvider.newService();
-        this.eventAdapterService = eventAdapterService;
-        this.autoImportService = autoImportService;
-        this.databaseService = databaseService;
     }
 
     /**
@@ -162,8 +164,8 @@ public final class EPServicesContext
      * Returns the database settings service.
      * @return database info service
      */
-    public DatabaseService getDatabaseRefService()
+    public DatabaseConfigService getDatabaseRefService()
     {
-        return databaseService;
+        return databaseConfigService;
     }
 }

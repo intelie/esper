@@ -3,13 +3,13 @@ package net.esper.eql.db;
 /**
  * Exception to indicate that a stream name could not be resolved.
  */
-public class DatabaseException extends Exception
+public class DatabaseConfigException extends Exception
 {
     /**
      * Ctor.
      * @param msg - message
      */
-    public DatabaseException(String msg)
+    public DatabaseConfigException(String msg)
     {
         super(msg);
     }
@@ -19,7 +19,7 @@ public class DatabaseException extends Exception
      * @param message - error message
      * @param cause - cause is the inner exception
      */
-    public DatabaseException(String message, Throwable cause)
+    public DatabaseConfigException(String message, Throwable cause)
     {
         super(message, cause);
     }

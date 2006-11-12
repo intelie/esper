@@ -1,0 +1,92 @@
+package net.esper.eql.db;
+
+import net.esper.event.EventBean;
+import net.esper.schedule.SchedulingService;
+import net.esper.collection.MultiKey;
+
+import java.util.List;
+import java.util.WeakHashMap;
+
+/**
+ * Implements an expiry-time cache that evicts data when data becomes stale
+ * after a given number of seconds.
+ */
+public class DataCacheExpiringImpl implements DataCache,
+{
+    private final long maxAgeMSec;
+    private final long purgeIntervalMSec;
+    private final SchedulingService schedulingService;
+    private final WeakHashMap<MultiKey<Object>, Item> cache;
+
+    /**
+     * Ctor.
+     * @param maxAgeSec is the maximum age in seconds
+     * @param purgeIntervalSec is the purge interval in seconds
+     * @param schedulingService is a service for call backs at a scheduled time, for purging
+     */
+    public DataCacheExpiringImpl(double maxAgeSec, double purgeIntervalSec, SchedulingService schedulingService)
+    {
+        this.maxAgeMSec = (long) maxAgeSec * 1000;
+        this.purgeIntervalMSec = (long) purgeIntervalSec * 1000;
+        this.schedulingService = schedulingService;
+        this.cache = new WeakHashMap<MultiKey<Object>, Item>();
+    }
+
+    public List<EventBean> getCached(Object[] lookupKeys)
+    {
+        MultiKey key = new MultiKey<Object>(lookupKeys);
+        Item item = cache.get(key);
+        if (item == null)
+        {
+            return null;
+        }
+
+        long now = schedulingService.getTime();
+        if ((now - item.getTime()) > maxAgeMSec)
+        {
+            cache.remove(key);
+            return null;
+        }
+
+        return item.getData();
+    }
+
+    public void put(Object[] lookupKeys, List<EventBean> rows)
+    {
+        MultiKey key = new MultiKey<Object>(lookupKeys);
+        long now = schedulingService.getTime();
+        Item item = new Item(rows, now);
+        cache.put(key, item);
+    }
+
+    /**
+     * Returns the maximum age in milliseconds.
+     * @return millisecon max age
+     */
+    protected long getMaxAgeMSec()
+    {
+        return  maxAgeMSec;
+    }
+
+    private class Item
+    {
+        private List<EventBean> data;
+        private long time;
+
+        public Item(List<EventBean> data, long time)
+        {
+            this.data = data;
+            this.time = time;
+        }
+
+        public List<EventBean> getData()
+        {
+            return data;
+        }
+
+        public long getTime()
+        {
+            return time;
+        }
+    }
+}

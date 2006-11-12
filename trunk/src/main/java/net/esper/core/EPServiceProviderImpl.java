@@ -3,12 +3,14 @@ package net.esper.core;
 import net.esper.client.*;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.AutoImportServiceImpl;
-import net.esper.eql.db.DatabaseService;
-import net.esper.eql.db.DatabaseServiceImpl;
+import net.esper.eql.db.DatabaseConfigService;
+import net.esper.eql.db.DatabaseConfigServiceImpl;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
 import net.esper.util.JavaClassHelper;
+import net.esper.schedule.SchedulingService;
+import net.esper.schedule.SchedulingServiceProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,12 +62,14 @@ public class EPServiceProviderImpl implements EPServiceProvider
         }
 
         // Make services that depend on snapshot config entries
+        SchedulingService schedulingService = SchedulingServiceProvider.newService();
         EventAdapterService eventAdapterService = makeEventAdapterService(configSnapshot);
         AutoImportService autoImportService = makeAutoImportService(configSnapshot);
-        DatabaseService databaseService = makeDatabaseRefService(configSnapshot);
+        DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
 
         // New services context
-        EPServicesContext services = new EPServicesContext(eventAdapterService, autoImportService, databaseService);
+        EPServicesContext services = new EPServicesContext(schedulingService,
+                eventAdapterService, autoImportService, databaseConfigService);
 
         // New runtime
         EPRuntimeImpl runtime = new EPRuntimeImpl(services);
@@ -211,21 +215,22 @@ public class EPServiceProviderImpl implements EPServiceProvider
         return autoImportService;
     }
 
-    private static DatabaseService makeDatabaseRefService(ConfigurationSnapshot configSnapshot)
+    private static DatabaseConfigService makeDatabaseRefService(ConfigurationSnapshot configSnapshot,
+                                                          SchedulingService schedulingService)
     {
-        DatabaseService databaseService = null;
+        DatabaseConfigService databaseConfigService = null;
 
         // Add auto-imports
         try
         {
-            databaseService = new DatabaseServiceImpl(configSnapshot.getDatabaseRefs());
+            databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.getDatabaseRefs(), schedulingService);
         }
         catch (IllegalArgumentException ex)
         {
             throw new ConfigurationException("Error configuring engine: " + ex.getMessage(), ex);
         }
 
-        return databaseService;
+        return databaseConfigService;
     }
 
     /**

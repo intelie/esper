@@ -554,6 +554,11 @@ select java.lang.Math.max(priceOne, priceTwo)</programlisting>
 						Optionally, a connection lifecycle can be set to indicate to the engine whether the engine must retain connections or must obtain a new connection for each lookup.
 					</para>
 				</listitem>
+				<listitem>
+					<para>
+						Optionally, define a cache policy to allow the engine to retrieve data from a query cache, reducing the number of query executions.
+					</para>
+				</listitem>
 			</itemizedlist>
 
 			<para>
@@ -646,6 +651,54 @@ Connection connection = dataSource.getConnection();]]></programlisting>
 ... configure data source or driver manager settings...
     <connection-lifecycle value="pooled"/>
 </database-reference>]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-database-cache" revision="1">
+				<title>Cache settings</title>
+
+				<para>
+					Cache settings can dramatically reduce the number of database queries that the engine executes for EQL statements. If no cache setting is specified, the engine does not cache query results and executes a separate database query for every event.
+				</para>
+	
+				<para>
+					Caches store the results of database queries and make these results available to subsequent queries using the exact same query parameters as the query for which
+					the result was stored. If your query returns one or more rows, the cache keep the result rows of the query keyed to the parameters of the query. If your query returns no rows, the cache also keeps the empty result. Query results are held by a cache until the cache entry is evicted. The strategies available for evicting cached 
+					query results are listed next.
+				</para>
+
+				<sect4 id="config-database-cache-lru" revision="1">
+					<title>LRU Cache</title>
+					
+					<para>
+						The least-recently-used (LRU) cache is configured by a maximum size. The cache discards the least recently used query results first once the cache reaches the maximum size.
+					</para>
+					
+					<para>
+						The XML configuration entry for a LRU cache is as below. This entry configures an LRU cache holding up to 1000 query results.
+					</para>
+
+					<programlisting><![CDATA[<database-reference name="mydb">
+... configure data source or driver manager settings...
+    <lru-cache size="1000"/>
+</database-reference>]]></programlisting>
+				</sect4>
+
+				<sect4 id="config-database-cache-expiry" revision="1">
+					<title>Expiry-time Cache</title>
+					
+					<para>
+						The expiry time cache is configured by a maximum age in seconds and a purge interval. The cache discards (on the get operation) any query results that are older then the maximum age so that stale data is not used. If the cache is not empty, then every purge interval number of seconds the engine purges any expired entries from the cache.
+					</para>
+					
+					<para>
+						The XML configuration entry for an expiry-time cache is as follows. The example configures an expiry time cache in which prior query results are valid for 60 seconds and which the engine inspects every 2 minutes to remove query results older then 60 seconds.
+					</para>
+
+					<programlisting><![CDATA[<database-reference name="mydb">
+... configure data source or driver manager settings...
+    <expiry-time-cache max-age-seconds="60" purge-interval-seconds="120"/>
+</database-reference>]]></programlisting>
+				</sect4>
 			</sect3>
 
 		</sect2>

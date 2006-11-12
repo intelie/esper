@@ -18,11 +18,12 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
     /**
      * Ctor.
      * @param driverConfig is the driver manager configuration
-     * @throws DatabaseException thrown if the driver class cannot be loaded
+     * @param connectionSettings are connection-level settings
+     * @throws DatabaseConfigException thrown if the driver class cannot be loaded
      */
     public DatabaseDMConnFactory(ConfigurationDBRef.DriverManagerConnection driverConfig,
                                  ConfigurationDBRef.ConnectionSettings connectionSettings)
-            throws DatabaseException
+            throws DatabaseConfigException
     {
         this.driverConfig = driverConfig;
         this.connectionSettings = connectionSettings;
@@ -35,15 +36,15 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
         }
         catch (ClassNotFoundException ex)
         {
-            throw new DatabaseException("Error loading driver class '" + driverClassName + "'", ex);
+            throw new DatabaseConfigException("Error loading driver class '" + driverClassName + "'", ex);
         }
         catch (RuntimeException ex)
         {
-            throw new DatabaseException("Error loading driver class '" + driverClassName + "'", ex);
+            throw new DatabaseConfigException("Error loading driver class '" + driverClassName + "'", ex);
         }
     }
 
-    public Connection getConnection() throws DatabaseException
+    public Connection getConnection() throws DatabaseConfigException
     {
         // use driver manager to get a connection
         Connection connection = null;
@@ -76,7 +77,7 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
                     " SQLState: " + ex.getSQLState() +
                     " VendorError: " + ex.getErrorCode();
 
-            throw new DatabaseException("Error obtaining database connection using url '" + url +
+            throw new DatabaseConfigException("Error obtaining database connection using url '" + url +
                     "' with detail " + detail
                     , ex);
         }
@@ -86,9 +87,15 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
         return connection;
     }
 
+    /**
+     * Method to set connection-level configuration settings.
+     * @param connection is the connection to set on
+     * @param connectionSettings are the settings to apply
+     * @throws DatabaseConfigException is thrown if an SQLException is thrown
+     */
     protected static void setConnectionOptions(Connection connection,
                                                ConfigurationDBRef.ConnectionSettings connectionSettings)
-            throws DatabaseException
+            throws DatabaseConfigException
     {
         try
         {
@@ -99,7 +106,7 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
         }
         catch (SQLException ex)
         {
-            throw new DatabaseException("Error setting read-only to " + connectionSettings.getReadOnly() +
+            throw new DatabaseConfigException("Error setting read-only to " + connectionSettings.getReadOnly() +
                     " on connection with detail " + getDetail(ex), ex);
         }
 
@@ -112,7 +119,7 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
         }
         catch (SQLException ex)
         {
-            throw new DatabaseException("Error setting transaction isolation level to " +
+            throw new DatabaseConfigException("Error setting transaction isolation level to " +
                     connectionSettings.getTransactionIsolation() + " on connection with detail " + getDetail(ex), ex);
         }
 
@@ -125,7 +132,7 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
         }
         catch (SQLException ex)
         {
-            throw new DatabaseException("Error setting catalog to '" + connectionSettings.getCatalog() +
+            throw new DatabaseConfigException("Error setting catalog to '" + connectionSettings.getCatalog() +
                     "' on connection with detail " + getDetail(ex), ex);
         }
 
@@ -138,7 +145,7 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
         }
         catch (SQLException ex)
         {
-            throw new DatabaseException("Error setting auto-commit to " + connectionSettings.getAutoCommit() +
+            throw new DatabaseConfigException("Error setting auto-commit to " + connectionSettings.getAutoCommit() +
                     " on connection with detail " + getDetail(ex), ex);
         }
     }

@@ -20,6 +20,7 @@ public class DatabaseDSConnFactory implements DatabaseConnectionFactory
     /**
      * Ctor.
      * @param dsConfig is the datasource object name and initial context properties.
+     * @param connectionSettings are the connection-level settings
      */
     public DatabaseDSConnFactory(ConfigurationDBRef.DataSourceConnection dsConfig,
                                  ConfigurationDBRef.ConnectionSettings connectionSettings)
@@ -28,7 +29,7 @@ public class DatabaseDSConnFactory implements DatabaseConnectionFactory
         this.connectionSettings = connectionSettings;
     }
 
-    public Connection getConnection() throws DatabaseException
+    public Connection getConnection() throws DatabaseConfigException
     {
         Properties envProps = dsConfig.getEnvProperties();
         if (envProps == null)
@@ -50,7 +51,7 @@ public class DatabaseDSConnFactory implements DatabaseConnectionFactory
         }
         catch (NamingException ex)
         {
-            throw new DatabaseException("Error instantiating initial context", ex);
+            throw new DatabaseConfigException("Error instantiating initial context", ex);
         }
 
         DataSource ds = null;
@@ -61,12 +62,12 @@ public class DatabaseDSConnFactory implements DatabaseConnectionFactory
         }
         catch (NamingException ex)
         {
-            throw new DatabaseException("Error looking up data source in context using name '" + lookupName + "'", ex);
+            throw new DatabaseConfigException("Error looking up data source in context using name '" + lookupName + "'", ex);
         }
 
         if (ds == null)
         {
-            throw new DatabaseException("Null data source obtained through context using name '" + lookupName + "'");
+            throw new DatabaseConfigException("Null data source obtained through context using name '" + lookupName + "'");
         }
 
         Connection connection = null;
@@ -80,7 +81,7 @@ public class DatabaseDSConnFactory implements DatabaseConnectionFactory
                     " SQLState: " + ex.getSQLState() +
                     " VendorError: " + ex.getErrorCode();
 
-            throw new DatabaseException("Error obtaining database connection using datasource " +
+            throw new DatabaseConfigException("Error obtaining database connection using datasource " +
                     "with detail " + detail
                     , ex);
         }

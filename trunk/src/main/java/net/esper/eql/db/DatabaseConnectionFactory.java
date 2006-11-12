@@ -10,7 +10,7 @@ public interface DatabaseConnectionFactory
     /**
      * Creates a new database connection.
      * @return new connection
-     * @throws DatabaseException throws to indicate a problem getting a new connection
+     * @throws DatabaseConfigException throws to indicate a problem getting a new connection
      */
-    public Connection getConnection() throws DatabaseException;
+    public Connection getConnection() throws DatabaseConfigException;
 }

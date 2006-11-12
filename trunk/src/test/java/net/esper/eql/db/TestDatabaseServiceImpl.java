@@ -2,6 +2,7 @@ package net.esper.eql.db;
 
 import net.esper.client.ConfigurationDBRef;
 import net.esper.support.eql.SupportDatabaseService;
+import net.esper.support.schedule.SupportSchedulingServiceImpl;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class TestDatabaseServiceImpl extends TestCase
 {
-    private DatabaseServiceImpl databaseServiceImpl;
+    private DatabaseConfigServiceImpl databaseServiceImpl;
 
     public void setUp()
     {
@@ -26,8 +27,14 @@ public class TestDatabaseServiceImpl extends TestCase
         config = new ConfigurationDBRef();
         config.setDataSourceConnection("context", new Properties());
         configs.put("name2", config);
+        config.setLRUCache(10000);
 
-        databaseServiceImpl = new DatabaseServiceImpl(configs);
+        config = new ConfigurationDBRef();
+        config.setDataSourceConnection("context", new Properties());
+        configs.put("name3", config);
+        config.setExpiryTimeCache(1, 99999);
+
+        databaseServiceImpl = new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl());
     }
 
     public void testGetConnection() throws Exception
@@ -39,6 +46,17 @@ public class TestDatabaseServiceImpl extends TestCase
         assertTrue(factory instanceof DatabaseDSConnFactory);
     }
 
+    public void testGetCache() throws Exception
+    {
+        assertTrue(databaseServiceImpl.getDataCache("name1") instanceof DataCacheNullImpl);
+
+        DataCacheLRUImpl lru = (DataCacheLRUImpl) databaseServiceImpl.getDataCache("name2");
+        assertEquals(10000, lru.getCacheSize());
+
+        DataCacheExpiringImpl exp = (DataCacheExpiringImpl) databaseServiceImpl.getDataCache("name3");
+        assertEquals(1, exp.getMaxAgeSec());
+    }
+
     public void testInvalid()
     {
         try
@@ -46,7 +64,7 @@ public class TestDatabaseServiceImpl extends TestCase
             databaseServiceImpl.getConnectionFactory("xxx");
             fail();
         }
-        catch (DatabaseException ex)
+        catch (DatabaseConfigException ex)
         {
             log.debug(ex);
             // expected

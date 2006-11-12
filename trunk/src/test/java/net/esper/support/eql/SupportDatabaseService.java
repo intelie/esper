@@ -1,7 +1,8 @@
 package net.esper.support.eql;
 
 import net.esper.client.ConfigurationDBRef;
-import net.esper.eql.db.DatabaseServiceImpl;
+import net.esper.eql.db.DatabaseConfigServiceImpl;
+import net.esper.support.schedule.SupportSchedulingServiceImpl;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ public class SupportDatabaseService
     public final static String FULLURL = "jdbc:mysql://localhost/test?user=root&password=password";
     public final static String PARTURL = "jdbc:mysql://localhost/test";
 
-    public static DatabaseServiceImpl makeService()
+    public static DatabaseConfigServiceImpl makeService()
     {
         Map<String, ConfigurationDBRef> configs = new HashMap<String, ConfigurationDBRef>();
 
@@ -33,6 +34,6 @@ public class SupportDatabaseService
         config.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.PARTURL, properties);
         configs.put(DBNAME_PARTURL, config);
 
-        return new DatabaseServiceImpl(configs);
+        return new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl());
     }
 }

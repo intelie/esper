@@ -947,7 +947,7 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 		</para>
 			
 		<para>
-			Esper can join and outer join all types of event streams to stored data. In order for such data sources to become accessible to Esper, some configuration is required. The <xref linkend="config-database-ref"/> explains the required configuration for database access in greater detail.
+			Esper can join and outer join all types of event streams to stored data. In order for such data sources to become accessible to Esper, some configuration is required. The <xref linkend="config-database-ref"/> explains the required configuration for database access in greater detail, and includes information of configuring a query result cache.
 		</para>
 		
 		<para>

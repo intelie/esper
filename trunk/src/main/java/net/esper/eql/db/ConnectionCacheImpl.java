@@ -5,6 +5,9 @@ import net.esper.collection.Pair;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Caches the Connection and PreparedStatement instance for reuse.
  */

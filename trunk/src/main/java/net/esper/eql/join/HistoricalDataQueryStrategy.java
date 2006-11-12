@@ -26,6 +26,8 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
      * @param myStreamNumber is the strategy's stream number
      * @param historicalStreamNumber is the stream number of the view to be polled
      * @param historicalEventViewable is the view to be polled from
+     * @param isOuterJoin is this is an outer join
+     * @param outerJoinCompareNode is the node to perform the on-comparison for outer joins
      */
     public HistoricalDataQueryStrategy(int myStreamNumber,
                                        int historicalStreamNumber,

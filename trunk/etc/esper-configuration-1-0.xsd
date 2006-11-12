@@ -117,6 +117,8 @@
 					<xs:element ref="drivermanager-connection" minOccurs="0"/>
 					<xs:element ref="connection-settings" minOccurs="0"/>
 					<xs:element ref="connection-lifecycle" minOccurs="0"/>
+					<xs:element ref="lru-cache" minOccurs="0"/>
+					<xs:element ref="expiry-time-cache" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -172,4 +174,15 @@
 			<xs:enumeration value="retain"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:element name="lru-cache">
+		<xs:complexType>
+			<xs:attribute name="size" type="xs:int" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="expiry-time-cache">
+		<xs:complexType>
+			<xs:attribute name="max-age-seconds" type="xs:double" use="required"/>
+			<xs:attribute name="purge-interval-seconds" type="xs:double" use="required"/>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

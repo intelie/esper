@@ -19,7 +19,7 @@ import net.esper.eql.view.InternalRouteView;
 import net.esper.eql.view.IStreamRStreamSelectorView;
 import net.esper.eql.spec.*;
 import net.esper.eql.core.*;
-import net.esper.eql.db.DBHistoricalViewableFactory;
+import net.esper.eql.db.PollingViewableFactory;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.*;
@@ -124,7 +124,7 @@ public class EPEQLStmtStartMethod
             else if (streamSpec instanceof DBStatementStreamSpec)
             {
                 DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
-                HistoricalEventViewable historicalEventViewable = DBHistoricalViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService());
+                HistoricalEventViewable historicalEventViewable = PollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService());
                 streamViews[i] = historicalEventViewable;
                 if (streamSpec.getViewSpecs().size() > 0)
                 {

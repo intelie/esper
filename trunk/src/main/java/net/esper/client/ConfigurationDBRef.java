@@ -12,6 +12,7 @@ public class ConfigurationDBRef
     private ConnectionFactoryDesc connectionFactoryDesc;
     private ConnectionSettings connectionSettings;
     private ConnectionLifecycleEnum connectionLifecycleEnum;
+    private DataCacheDesc dataCacheDesc;
 
     /**
      * Ctor.
@@ -147,6 +148,34 @@ public class ConfigurationDBRef
     }
 
     /**
+     * Configures a LRU cache of the given size for the database.
+     * @param size is the maximum number of entries before query results are evicted using.
+     */
+    public void setLRUCache(int size)
+    {
+        dataCacheDesc = new LRUCacheDesc(size);
+    }
+
+    /**
+     * Configures an expiry-time cache of the given maximum age in seconds and pruge interval in seconds.
+     * @param maxAgeSeconds is the maximum number of seconds before a query result is considered stale (also known as time-to-live)
+     * @param purgeIntervalSeconds is the interval at which the engine purges stale data from the cache
+     */
+    public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
+    {
+        dataCacheDesc = new ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds);
+    }
+
+    /**
+     * Return a query result data cache descriptor.
+     * @return cache descriptor
+     */
+    public DataCacheDesc getDataCacheDesc()
+    {
+        return dataCacheDesc;
+    }
+
+    /**
      * Supplies connectioon-level settings for a given database name.
      */
     public class ConnectionSettings
@@ -157,7 +186,7 @@ public class ConfigurationDBRef
         private Integer transactionIsolation;
 
         /**
-         * Returns a boolean indicating auto-commit, or null if not set and default accepted
+         * Returns a boolean indicating auto-commit, or null if not set and default accepted.
          * @return true for auto-commit on, false for auto-commit off, or null to accept the default
          */
         public Boolean getAutoCommit()
@@ -391,4 +420,82 @@ public class ConfigurationDBRef
         }
     }
 
+    /**
+     * Marker for different cache settings.
+     */
+    public interface DataCacheDesc{}
+
+    /**
+     * LRU cache settings.
+     */
+    public class LRUCacheDesc implements DataCacheDesc
+    {
+        private int size;
+
+        /**
+         * Ctor.
+         * @param size is the maximum cache size
+         */
+        public LRUCacheDesc(int size)
+        {
+            this.size = size;
+        }
+
+        /**
+         * Returns the maximum cache size.
+         * @return max cache size
+         */
+        public int getSize()
+        {
+            return size;
+        }
+
+        public String toString()
+        {
+            return "LRUCacheDesc size=" + size;
+        }
+    }
+
+    /**
+     * Expiring cache settings.
+     */
+    public class ExpiryTimeCacheDesc implements DataCacheDesc
+    {
+        private double maxAgeSeconds;
+        private double purgeIntervalSeconds;
+
+        /**
+         * Ctor.
+         * @param maxAgeSeconds is the maximum age in seconds
+         * @param purgeIntervalSeconds is the purge interval
+         */
+        public ExpiryTimeCacheDesc(double maxAgeSeconds, double purgeIntervalSeconds)
+        {
+            this.maxAgeSeconds = maxAgeSeconds;
+            this.purgeIntervalSeconds = purgeIntervalSeconds;
+        }
+
+        /**
+         * Returns the maximum age in seconds.
+         * @return number of seconds
+         */
+        public double getMaxAgeSeconds()
+        {
+            return maxAgeSeconds;
+        }
+
+        /**
+         * Returns the purge interval length.
+         * @return purge interval in seconds
+         */
+        public double getPurgeIntervalSeconds()
+        {
+            return purgeIntervalSeconds;
+        }
+
+        public String toString()
+        {
+            return "ExpiryTimeCacheDesc maxAgeSeconds=" + maxAgeSeconds + " purgeIntervalSeconds=" + purgeIntervalSeconds;
+        }
+    }
 }

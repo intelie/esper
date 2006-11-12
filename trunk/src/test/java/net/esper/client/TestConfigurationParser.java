@@ -85,6 +85,8 @@ public class TestConfigurationParser extends TestCase
         assertNull(configDBRef.getConnectionSettings().getCatalog());
         assertNull(configDBRef.getConnectionSettings().getReadOnly());
         assertNull(configDBRef.getConnectionSettings().getTransactionIsolation());
+        ConfigurationDBRef.LRUCacheDesc lruCache = (ConfigurationDBRef.LRUCacheDesc) configDBRef.getDataCacheDesc();
+        assertEquals(10, lruCache.getSize());
 
         // assert database reference - driver manager config
         configDBRef = config.getDatabaseReferences().get("mydb2");
@@ -99,5 +101,8 @@ public class TestConfigurationParser extends TestCase
         assertEquals("test", configDBRef.getConnectionSettings().getCatalog());
         assertEquals(Boolean.TRUE, configDBRef.getConnectionSettings().getReadOnly());
         assertEquals(new Integer(3), configDBRef.getConnectionSettings().getTransactionIsolation());
+        ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) configDBRef.getDataCacheDesc();
+        assertEquals(60.5, expCache.getMaxAgeSeconds());
+        assertEquals(120.1, expCache.getPurgeIntervalSeconds());
     }
 }

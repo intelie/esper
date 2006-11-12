@@ -7,6 +7,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Base class for a Connection and PreparedStatement cache.
  * <p>
@@ -55,6 +58,7 @@ public abstract class ConnectionCache
      */
     protected void close(Pair<Connection, PreparedStatement> pair)
     {
+        log.info(".close Closing statement and connection");
         try
         {
             pair.getSecond().close();
@@ -85,12 +89,13 @@ public abstract class ConnectionCache
      */
     protected Pair<Connection, PreparedStatement> makeNew()
     {
+        log.info(".makeNew Obtaining new connection and statement");
         Connection connection = null;
         try
         {
             connection = databaseConnectionFactory.getConnection();
         }
-        catch (DatabaseException ex)
+        catch (DatabaseConfigException ex)
         {
             throw new EPException("Error obtaining connection", ex);
         }
@@ -107,4 +112,6 @@ public abstract class ConnectionCache
 
         return new Pair<Connection, PreparedStatement>(connection, preparedStatement);
     }
+
+    private static Log log = LogFactory.getLog(ConnectionCache.class);
 }

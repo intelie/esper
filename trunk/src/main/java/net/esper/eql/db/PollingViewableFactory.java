@@ -4,8 +4,9 @@ import net.esper.eql.spec.DBStatementStreamSpec;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.util.PlaceholderParser;
 import net.esper.util.PlaceholderParseException;
+import net.esper.util.SQLTypeMapUtil;
 import net.esper.event.EventAdapterService;
-import net.esper.view.Viewable;
+import net.esper.event.EventType;
 import net.esper.view.HistoricalEventViewable;
 
 import java.sql.*;
@@ -17,20 +18,20 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Factory for a view onto historical data via SQL statement.
  */
-public class DBHistoricalViewableFactory
+public class PollingViewableFactory
 {
     /**
      * Creates the viewable for polling via database SQL query.
      * @param streamNumber is the stream number of the view
      * @param databaseStreamSpec provides the SQL statement, database name and additional info
-     * @param databaseService for getting database connection and settings
+     * @param databaseConfigService for getting database connection and settings
      * @param eventAdapterService for generating event beans from database information
      * @return viewable providing poll functionality
      * @throws ExprValidationException if the validation failed
      */
     public static HistoricalEventViewable createDBStatementView(int streamNumber,
                                                  DBStatementStreamSpec databaseStreamSpec,
-                                                 DatabaseService databaseService,
+                                                 DatabaseConfigService databaseConfigService,
                                                  EventAdapterService eventAdapterService
                                                  )
             throws ExprValidationException
@@ -56,13 +57,11 @@ public class DBHistoricalViewableFactory
         // Get a database connection
         String databaseName = databaseStreamSpec.getDatabaseName();
         DatabaseConnectionFactory databaseConnectionFactory = null;
-        boolean retainConnection;
         try
         {
-            databaseConnectionFactory = databaseService.getConnectionFactory(databaseName);
-            retainConnection = databaseService.isRetainConnection(databaseName);
+            databaseConnectionFactory = databaseConfigService.getConnectionFactory(databaseName);
         }
-        catch (DatabaseException ex)
+        catch (DatabaseConfigException ex)
         {
             String text = "Error connecting to database '" + databaseName + "'";
             log.error(text, ex);
@@ -74,7 +73,7 @@ public class DBHistoricalViewableFactory
         {
             connection = databaseConnectionFactory.getConnection();
         }
-        catch (DatabaseException ex)
+        catch (DatabaseConfigException ex)
         {
             String text = "Error connecting to database '" + databaseName + "'";
             log.error(text, ex);
@@ -103,14 +102,13 @@ public class DBHistoricalViewableFactory
         }
 
         // Interrogate prepared statement - parameters and result
-        List<DBInputParameterDesc> inputParameters = new LinkedList<DBInputParameterDesc>();
+        List<String> inputParameters = new LinkedList<String>();
         try
         {
             ParameterMetaData parameterMetaData = prepared.getParameterMetaData();
             for (int i = 0; i < parameterMetaData.getParameterCount(); i++)
             {
-                DBInputParameterDesc desc = new DBInputParameterDesc(parameters[i], parameterMetaData.getParameterType(i + 1));
-                inputParameters.add(desc);
+                inputParameters.add(parameters[i]);
             }
         }
         catch (Exception ex)
@@ -207,8 +205,36 @@ public class DBHistoricalViewableFactory
             throw new ExprValidationException(text + ", reason: " + e.getMessage());
         }
 
-        return new DBHistoricalViewable(streamNumber, eventAdapterService, preparedStatementText,
-                inputParameters, outputProperties, databaseConnectionFactory, retainConnection);
+        // Create event type
+        // Construct an event type from SQL query result metadata
+        Map<String, Class> eventTypeFields = new HashMap<String, Class>();
+        for (String name : outputProperties.keySet())
+        {
+            DBOutputTypeDesc dbOutputDesc = outputProperties.get(name);
+            Class clazz = SQLTypeMapUtil.sqlTypeToClass(dbOutputDesc.getSqlType(), dbOutputDesc.getClassName());
+            eventTypeFields.put(name, clazz);
+        }
+        EventType eventType = eventAdapterService.createAnonymousMapType(eventTypeFields);
+
+        // Get a proper connection and data cache
+        ConnectionCache connectionCache = null;
+        DataCache dataCache = null;
+        try
+        {
+            connectionCache = databaseConfigService.getConnectionCache(databaseName, preparedStatementText);
+            dataCache = databaseConfigService.getDataCache(databaseName);
+        }
+        catch (DatabaseConfigException e)
+        {
+            String text = "Error obtaining cache configuration";
+            log.error(text, e);
+            throw new ExprValidationException(text + ", reason: " + e.getMessage());
+        }
+
+        DatabasePollExecStrategy dbPollStrategy = new DatabasePollExecStrategy(eventAdapterService,
+                eventType, connectionCache, preparedStatementText, outputProperties);
+
+        return new PollingViewable(streamNumber, inputParameters, dbPollStrategy, dataCache, eventType);
     }
 
     private static String createPreparedStatement(List<PlaceholderParser.Fragment> parseFragements)
@@ -241,5 +267,5 @@ public class DBHistoricalViewableFactory
         return eventPropertyParams.toArray(new String[0]);
     }
 
-    private static final Log log = LogFactory.getLog(DBHistoricalViewableFactory.class);
+    private static final Log log = LogFactory.getLog(PollingViewableFactory.class);
 }
