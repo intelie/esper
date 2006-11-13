@@ -457,14 +457,17 @@ public class EQLTreeWalker extends EQLBaseWalker
             return;
         }
 
-        AST itor = node.getFirstChild();
-    	String className = itor.getText();
-
-    	itor = itor.getNextSibling();
-    	String methodName = itor.getText();
-
-    	astExprNodeMap.put(node, new ExprStaticMethodNode(className, methodName));
-	}
+        if (node.getFirstChild().getType() == CLASS_IDENT)
+        {
+            String className = node.getFirstChild().getText();
+            String methodName = node.getFirstChild().getNextSibling().getText();
+            astExprNodeMap.put(node, new ExprStaticMethodNode(className, methodName));
+        }
+        else
+        {
+            throw new IllegalStateException("Unknown method named '" + node.getFirstChild().getText() + "' could not be resolved"); 
+        }
+    }
 
     private void leaveJoinEqualsExpr(AST node)
     {

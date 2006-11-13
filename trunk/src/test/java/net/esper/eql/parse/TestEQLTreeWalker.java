@@ -690,6 +690,17 @@ public class TestEQLTreeWalker extends TestCase
         assertTrue((Boolean) tryRelationalOp("'a' not like 'ab'"));
     }
 
+    public void testWalkStaticFunc() throws Exception
+    {
+        String text = "select MyClass.someFunc(1) from SupportBean_N";
+        EQLTreeWalker walker = parseAndWalkEQL(text);
+
+        SelectExprElementUnnamedSpec spec = walker.getStatementSpec().getSelectListExpressions().get(0);
+        ExprStaticMethodNode staticMethod = (ExprStaticMethodNode) spec.getSelectExpression();
+        assertEquals("MyClass", staticMethod.getClassName());
+        assertEquals("someFunc", staticMethod.getMethodName());
+    }
+
     public void testWalkDBJoinStatement() throws Exception
     {
         String className = SupportBean.class.getName();

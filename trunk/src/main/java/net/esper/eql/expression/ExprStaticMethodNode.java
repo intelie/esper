@@ -55,7 +55,7 @@ public class ExprStaticMethodNode extends ExprNode
      * Returns the class name.
 	 * @return the class that declared the static method
 	 */
-	protected String getClassName() {
+	public String getClassName() {
 		return className;
 	}
 
@@ -63,7 +63,7 @@ public class ExprStaticMethodNode extends ExprNode
      * Returns the method name.
 	 * @return the name of the method
 	 */
-	protected String getMethodName() {
+	public String getMethodName() {
 		return methodName;
 	}
 

@@ -2,7 +2,8 @@ package net.esper.eql.db;
 
 import net.esper.client.ConfigurationDBRef;
 import net.esper.support.eql.SupportDatabaseService;
-import net.esper.support.schedule.SupportSchedulingServiceImpl;
+import net.esper.schedule.SchedulingServiceImpl;
+import net.esper.schedule.SchedulingService;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -26,15 +27,16 @@ public class TestDatabaseServiceImpl extends TestCase
 
         config = new ConfigurationDBRef();
         config.setDataSourceConnection("context", new Properties());
-        configs.put("name2", config);
         config.setLRUCache(10000);
+        configs.put("name2", config);
 
         config = new ConfigurationDBRef();
         config.setDataSourceConnection("context", new Properties());
+        config.setExpiryTimeCache(1, 3);
         configs.put("name3", config);
-        config.setExpiryTimeCache(1, 99999);
 
-        databaseServiceImpl = new DatabaseConfigServiceImpl(configs, new SupportSchedulingServiceImpl(), null);
+        SchedulingService schedulingService = new SchedulingServiceImpl();
+        databaseServiceImpl = new DatabaseConfigServiceImpl(configs, schedulingService, schedulingService.allocateBucket());
     }
 
     public void testGetConnection() throws Exception
@@ -54,7 +56,8 @@ public class TestDatabaseServiceImpl extends TestCase
         assertEquals(10000, lru.getCacheSize());
 
         DataCacheExpiringImpl exp = (DataCacheExpiringImpl) databaseServiceImpl.getDataCache("name3");
-        assertEquals(1, exp.getMaxAgeMSec());
+        assertEquals(1000, exp.getMaxAgeMSec());
+        assertEquals(3000, exp.getPurgeIntervalMSec());
     }
 
     public void testInvalid()

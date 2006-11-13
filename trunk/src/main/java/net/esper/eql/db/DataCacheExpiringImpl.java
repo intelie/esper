@@ -83,6 +83,15 @@ public class DataCacheExpiringImpl implements DataCache, ScheduleCallback
         return maxAgeMSec;
     }
 
+    /**
+     * Returns the purge interval in milliseconds
+     * @return millisecond purge interval
+     */
+    protected long getPurgeIntervalMSec()
+    {
+        return purgeIntervalMSec;
+    }
+
     protected long getSize()
     {
         return cache.size();

@@ -14,7 +14,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select * from " + className + ", sql:mydb ['select a from b where ${x.id}=c.ddd as jSjs'] as S0";
+        String expression = "select myclass.googlex(1) from " + className;
+        //String expression = "select googlex(1) from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);

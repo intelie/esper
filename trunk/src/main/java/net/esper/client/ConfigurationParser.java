@@ -284,7 +284,7 @@ class ConfigurationParser {
                         configDBRef.setConnectionReadOnly(Boolean.parseBoolean(readOnly));
                     }
                 }
-                else if (subElement.getNodeName().equals("expiring-cache"))
+                else if (subElement.getNodeName().equals("expiry-time-cache"))
                 {
                     String maxAge = subElement.getAttributes().getNamedItem("max-age-seconds").getTextContent();
                     String purgeInterval = subElement.getAttributes().getNamedItem("purge-interval-seconds").getTextContent();

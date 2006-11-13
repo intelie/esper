@@ -134,7 +134,7 @@ public class TestInvalidView extends TestCase
         // invalid outer join - same properties
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length(1) as aStr " +
                 "left outer join " + EVENT_ALLTYPES + ".win:length(1) on string=string");
-        assertEquals("Error validating expression: Outer join ON-clause must cannot refer to properties of the same stream [select * from net.esper.support.bean.SupportBean_N.win:length(1) as aStr left outer join net.esper.support.bean.SupportBean.win:length(1) on string=string]", exceptionText);
+        assertEquals("Error validating expression: Outer join ON-clause cannot refer to properties of the same stream [select * from net.esper.support.bean.SupportBean_N.win:length(1) as aStr left outer join net.esper.support.bean.SupportBean.win:length(1) on string=string]", exceptionText);
 
         // invalid order by
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length(1) as aStr order by X");
@@ -167,6 +167,10 @@ public class TestInvalidView extends TestCase
         // case expression not returning bool
         exceptionText = getStatementExceptionView("select case when 3 then 1 end from " + SupportBean.class.getName() + ".win:length(1) as aStr");
         assertEquals("Error starting view: Case node 'when' expressions must return a boolean value [select case when 3 then 1 end from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+
+        // function not known
+        exceptionText = getStatementExceptionView("select gogglex(1) from " + EVENT_NUM + ".win:length(1)");
+        assertEquals("Unknown method named 'gogglex' could not be resolved [select gogglex(1) from net.esper.support.bean.SupportBean_N.win:length(1)]", exceptionText);
     }
 
     public void testInvalidView()
