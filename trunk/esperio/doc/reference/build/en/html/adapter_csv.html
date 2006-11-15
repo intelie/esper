@@ -1,0 +1,53 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;2.&nbsp;The CSV Input Adapter</title><link rel="stylesheet" href="../shared/css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="Esper Adapters - Java Event Stream Processor "><link rel="up" href="index.html" title="Esper Adapters - Java Event Stream Processor "><link rel="previous" href="adapter_overview.html" title="Chapter&nbsp;1.&nbsp;Adapter Overview"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;2.&nbsp;The CSV Input Adapter</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="adapter_overview.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;</td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_csv"></a>Chapter&nbsp;2.&nbsp;The CSV Input Adapter</h2></div></div><div></div></div><p>
+        This chapter discusses the CSV input adapter. CSV is an abbreviation that stands for comma-separated values. CSV files are simple text files in which each line
+        is a comma-separated list of values. CSV formatted text can also be read from other input sources via <tt class="literal">net.esper.adapter.AdapterInputSource</tt>.
+    </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="csv-intro"></a>2.1.&nbsp;Introduction</h2></div></div><div></div></div><p>
+            In summary the CSV input adapter API can perform the following functions. Please consult the JavaDoc for additional information.
+        </p><div class="itemizedlist"><ul type="disc" compact><li><p>
+					Read events from a CSV file and send the events to an Esper engine instance
+				</p><div class="itemizedlist"><ul type="circle" compact><li><p>
+							Read from different input sources
+						</p></li><li><p>
+							Use a timestamp column to schedule events being sent into the engine							
+						</p></li><li><p>
+							Define a column ordering
+						</p></li><li><p>
+							Playback with options such as file looping, presence of a header row TODO
+						</p></li><li><p>
+							Use the Esper engine timer thread to read the CSV file
+						</p></li></ul></div></li><li><p>
+					Read multiple CSV files using a timestamp column to simulate events coming from different streams
+				</p></li></ul></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="csv-step-1"></a>2.2.&nbsp;Playback of CSV-formatted Events</h2></div></div><div></div></div><p>
+				The adapter reads events from a CSV input source and sends events to an engine using the class <tt class="literal">net.esper.adapter.csv.CSVInputAdapter</tt>.
+        </p><pre class="synopsis">AdapterInputSource source = new AdapterInputSource("simulation.csv");
+ (new CSVInputAdapter(epServiceProvider, source, "MyEventType")).start();</pre><p>
+				This example reads the file "simulation.csv" from classpath. The <tt class="literal">AdapterInputSource</tt> class can also take other input sources.
+        </p><p>
+				The event type <tt class="literal">MyEventType</tt> and it's property names and value types must be known to the engine:
+        </p><div class="itemizedlist"><ul type="disc" compact><li><p>
+					Configure the engine instance for a Map-based event type
+				</p></li><li><p>
+					Place a header record in your CSV file that names each column as specified in the event type
+				</p></li></ul></div><p>
+				The sample application code below shows how to configures via the configuration API a Map-based event type.
+        </p><pre class="programlisting">Map&lt;String, Class&gt; eventProperties = new HashMap&lt;String, Class&gt;();
+  eventProperties.put("symbol", String.class);
+  eventProperties.put("price", double.class);
+  eventProperties.put("volume", Integer.class);
+
+  Configuration configuration = new Configuration();
+  configuration.addEventTypeAlias("MyEventType", eventProperties);
+  
+  epService = EPServiceProviderManager.getDefaultProvider(configuration);
+
+  EPStatement stmt = epService.getEPAdministrator().createEQL(
+       "select symbol, price, volume from MyEventTypeA.win:length(100)");
+
+  (new CSVInputAdapter(epService, new AdapterInputSource(filename), "MyEventType")).start();</pre><p>
+				A sample CSV file is shown next.
+        </p><pre class="programlisting">symbol,price,volume
+IBM,55.5,1000</pre></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="csv-step-2"></a>2.3.&nbsp;CSV Playback Options</h2></div></div><div></div></div><p>
+				
+        </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="adapter_overview.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;</td></tr><tr><td width="40%" align="left" valign="top">Chapter&nbsp;1.&nbsp;Adapter Overview&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;</td></tr></table></div></body></html>
