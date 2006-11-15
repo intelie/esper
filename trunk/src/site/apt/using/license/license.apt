@@ -1,0 +1,19 @@
+License
+~~~~~~~~~~~~~~
+
+	Esper is free software available under the {{{http://www.opensource.org/licenses/gpl-license.php}GNU General Public License (GPL)}}
+
+	The GPL license is sufficiently flexible to allow the use of Esper in both open source and your own projects.
+	The GPL guarantees that Esper and any modifications made to Esper will stay open source, protecting our and your work. 
+
+	Using Esper (by importing Esper's public interfaces in your Java code), and extending Esper 
+	(by subclassing or implementation of an extension interface) is considered by the authors of Esper to be dynamic linking. 
+	Hence our interpretation of the GPL is that the use of the unmodified Esper source does not affect the license of your 
+	application code.
+
+	The use of the unmodified Esper binary of course never affects the license of your application or distribution. 
+	The GPL also forbids distribution for profit, so you will never have to pay money to any commercial entity for 
+	using or integrating Esper.
+
+	If you modify Esper and redistribute your modifications, the GPL applies. 
+	Please submit any modifications to the issue tracking system.

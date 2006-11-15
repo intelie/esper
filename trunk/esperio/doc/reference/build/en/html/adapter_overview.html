@@ -1,0 +1,21 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Chapter&nbsp;1.&nbsp;Adapter Overview</title><link rel="stylesheet" href="../shared/css/html.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="Esper Adapters - Java Event Stream Processor "><link rel="up" href="index.html" title="Esper Adapters - Java Event Stream Processor "><link rel="previous" href="preface.html" title="Preface"><link rel="next" href="adapter_csv.html" title="Chapter&nbsp;2.&nbsp;The CSV Input Adapter"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter&nbsp;1.&nbsp;Adapter Overview</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="preface.html">Prev</a>&nbsp;</td><th width="60%" align="center">&nbsp;</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="adapter_csv.html">Next</a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="adapter_overview"></a>Chapter&nbsp;1.&nbsp;Adapter Overview</h2></div></div><div></div></div><p>
+        Input and output adapters to Esper provide the means of accepting events from various sources, and for making available events to destinations.
+    </p><p>
+        The following input adapters are available. There are currently no output adapters available.
+    </p><div class="table"><a name="adapter-available"></a><p class="title"><b>Table&nbsp;1.1.&nbsp;Input and Output Adapters</b></p><table summary="Input and Output Adapters" border="1"><colgroup><col><col></colgroup><thead><tr><th>Adapter</th><th>Description</th></tr></thead><tbody><tr><td>CSV Input Adapter</td><td><p>
+							The CSV input adapter can read one or more CSV files, transform the textual values into events, and play the events into the engine. The CSV adapter also makes it possible to run complete simulations of events arriving in time-order from different input streams.
+						</p></td></tr></tbody></table></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="adapter-shared"></a>1.1.&nbsp;Adapter Library Classes</h2></div></div><div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="adapter-inputsource"></a>1.1.1.&nbsp;Using AdapterInputSource</h3></div></div><div></div></div><p>
+					The <tt class="literal">net.esper.adapter.AdapterInputSource</tt> encapsulates information about an input source. Input adapters use the <tt class="literal">AdapterInputSource</tt> to determine how to read input. The class provides constructors for use with different input sources:
+			</p><div class="itemizedlist"><ul type="disc" compact><li><p>
+						<tt class="literal">java.io.Reader</tt> to read character streams
+					</p></li><li><p>
+						<tt class="literal">java.io.InputStream</tt> to read byte streams
+					</p></li><li><p>
+						URL
+					</p></li><li><p>
+						Classpath resource
+					</p></li><li><p>
+						<tt class="literal">java.io.File</tt>
+					</p></li></ul></div></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="preface.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="index.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="adapter_csv.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Preface&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Chapter&nbsp;2.&nbsp;The CSV Input Adapter</td></tr></table></div></body></html>

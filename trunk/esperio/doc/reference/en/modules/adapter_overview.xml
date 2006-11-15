@@ -1,0 +1,79 @@
+<chapter id="adapter_overview">
+    <title>Adapter Overview</title>
+    
+    <para>
+        Input and output adapters to Esper provide the means of accepting events from various sources, and for making available events to destinations.
+    </para>
+    
+    <para>
+        The following input adapters are available. There are currently no output adapters available.
+    </para>
+
+	<table frame="topbot" id="adapter-available" revision="2">
+		<title>Input and Output Adapters</title>
+		<tgroup cols="2">
+			<colspec colwidth="2.0*"/>
+			<colspec colwidth="1.5*"/>
+			<thead>
+				<row>
+					<entry>Adapter</entry>
+					<entry>Description</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>CSV Input Adapter</entry>
+					<entry>
+						<para>
+							The CSV input adapter can read one or more CSV files, transform the textual values into events, and play the events into the engine. The CSV adapter also makes it possible to run complete simulations of events arriving in time-order from different input streams.
+						</para>
+					</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</table>
+	
+    <sect1 id="adapter-shared">
+        <title>Adapter Library Classes</title>
+
+		<sect2 id="adapter-inputsource">
+			<title>Using AdapterInputSource</title>
+	
+			<para>
+					The <literal>net.esper.adapter.AdapterInputSource</literal> encapsulates information about an input source. Input adapters use the <literal>AdapterInputSource</literal> to determine how to read input. The class provides constructors for use with different input sources:
+			</para>	
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						<literal>java.io.Reader</literal> to read character streams
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>java.io.InputStream</literal> to read byte streams
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						URL
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Classpath resource
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>java.io.File</literal>
+					</para>
+				</listitem>
+			</itemizedlist>
+
+		</sect2>
+		
+    </sect1>
+
+</chapter>
+
