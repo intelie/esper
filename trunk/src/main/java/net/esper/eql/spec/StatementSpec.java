@@ -14,7 +14,7 @@ public class StatementSpec
 {
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
-    private List<SelectExprElementUnnamedSpec> selectListExpressions = new LinkedList<SelectExprElementUnnamedSpec>();
+    private SelectClauseSpec selectClauseSpec = new SelectClauseSpec();
     private List<StreamSpec> streamSpecs = new LinkedList<StreamSpec>();
     private List<OuterJoinDesc> outerJoinDescList = new LinkedList<OuterJoinDesc>();
     private ExprNode filterExprRootNode;
@@ -22,7 +22,6 @@ public class StatementSpec
     private ExprNode havingExprRootNode;
     private OutputLimitSpec outputLimitSpec;
     private List<Pair<ExprNode, Boolean>> orderByList = new LinkedList<Pair<ExprNode, Boolean>>();
-
     /**
      * Returns the FROM-clause stream definitions.
      * @return list of stream specifications
@@ -36,9 +35,9 @@ public class StatementSpec
      * Returns SELECT-clause list of expressions.
      * @return list of expressions and optional name
      */
-    public List<SelectExprElementUnnamedSpec> getSelectListExpressions()
+    public SelectClauseSpec getSelectClauseSpec()
     {
-        return selectListExpressions;
+        return selectClauseSpec;
     }
 
     /**
@@ -120,7 +119,7 @@ public class StatementSpec
     {
         this.outputLimitSpec = outputLimitSpec;
     }
-
+    
     /**
      * Sets the where clause filter expression node.
      * @param filterExprRootNode the where clause expression

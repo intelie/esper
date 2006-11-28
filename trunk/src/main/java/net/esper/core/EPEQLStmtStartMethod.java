@@ -180,7 +180,7 @@ public class EPEQLStmtStartMethod
         // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
         // May return null if we don't need to post-process results posted by views or joins.
         ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                statementSpec.getSelectListExpressions(),
+                statementSpec.getSelectClauseSpec(),
                 statementSpec.getInsertIntoDesc(),
                 statementSpec.getGroupByExpressions(),
                 statementSpec.getHavingExprRootNode(),

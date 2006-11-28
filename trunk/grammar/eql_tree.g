@@ -59,8 +59,7 @@ insertIntoExprCol
 	;
 
 selectClause
-	:	#(s:SELECTION_EXPR (RSTREAM | ISTREAM)? (STAR | selectionList) { leaveNode(#s); })
-	|	STAR
+	:	#(s:SELECTION_EXPR (RSTREAM | ISTREAM)? selectionList { leaveNode(#s); })
 	;
 
 fromClause
@@ -72,7 +71,8 @@ selectionList
 	;
 	
 selectionListElement
-	:	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
+	:	w:WILDCARD_SELECT { leaveNode(#w); }
+	|	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
 	;
 		
 outerJoin

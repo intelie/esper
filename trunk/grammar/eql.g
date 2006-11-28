@@ -128,6 +128,7 @@ tokens
    	DBSELECT_EXPR;
    	DBFROM_CLAUSE;
    	DBWHERE_CLAUSE;
+   	WILDCARD_SELECT;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -228,8 +229,8 @@ whereClause
 	;
 	
 selectClause
-	:	(r:RSTREAM! | i:ISTREAM!)? (s:STAR | l:selectionList)
-		{ #selectClause = #([SELECTION_EXPR,"selectClause"], #r, #i, #s, #l); }
+	:	(r:RSTREAM! | i:ISTREAM!)? l:selectionList
+		{ #selectClause = #([SELECTION_EXPR,"selectClause"], #r, #i, #l); }
 	;
 
 selectionList 	
@@ -237,7 +238,9 @@ selectionList
 	;
 
 selectionListElement
-	:	expression (AS! IDENT)?
+	:   STAR 
+		{ #selectionListElement = #[WILDCARD_SELECT]; }
+	|	expression (AS! IDENT)?
 		{ #selectionListElement = #([SELECTION_ELEMENT_EXPR,"selectionListElement"], #selectionListElement); }
 	;
 		

@@ -141,8 +141,8 @@ public class TestInvalidView extends TestCase
         assertEquals("Error starting view: Property named 'X' is not valid in any stream [select * from net.esper.support.bean.SupportBean_N.win:length(1) as aStr order by X]", exceptionText);
 
         // insert into with wildcard - not allowed
-        exceptionText = getStatementExceptionView("insert into Google select * from " + EVENT_NUM + ".win:length(1) as aStr");
-        assertEquals("Error starting view: Wildcard not allowed in combination with insert-into [insert into Google select * from net.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
+        exceptionText = getStatementExceptionView("insert into Google (a, b) select * from " + EVENT_NUM + ".win:length(1) as aStr");
+        assertEquals("Error starting view: Wildcard not allowed when insert-into specifies column order [insert into Google (a, b) select * from net.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
 
         // insert into with duplicate column names
         exceptionText = getStatementExceptionView("insert into Google (a, b, a) select boolBoxed, boolPrimitive, intBoxed from " + EVENT_NUM + ".win:length(1) as aStr");

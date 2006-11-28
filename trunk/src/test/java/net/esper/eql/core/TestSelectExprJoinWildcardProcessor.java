@@ -5,17 +5,18 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.event.EventBean;
 import net.esper.eql.core.SelectExprJoinWildcardProcessor;
+import net.esper.eql.expression.ExprValidationException;
 import junit.framework.TestCase;
 
 public class TestSelectExprJoinWildcardProcessor extends TestCase
 {
     private SelectExprJoinWildcardProcessor processor;
 
-    public void setUp()
+    public void setUp() throws ExprValidationException
     {
         SupportStreamTypeSvc3Stream supportTypes = new SupportStreamTypeSvc3Stream();
         processor = new SelectExprJoinWildcardProcessor(supportTypes.getStreamNames(), supportTypes.getEventTypes(),
-                SupportEventAdapterService.getService());
+                SupportEventAdapterService.getService(), null);
     }
 
     public void testProcess()

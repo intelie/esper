@@ -39,6 +39,21 @@ public class TestInsertInto extends TestCase
 
         runAsserts(stmtText);
     }
+    
+    public void testVariantOneWildcard()
+    {
+        String stmtText = "insert into Event_1 (delta, product) " +
+        "select * from " + SupportBean.class.getName() + ".win:length(100)";
+
+        try{
+        	epService.getEPAdministrator().createEQL(stmtText);
+        	fail();
+        }
+        catch(EPStatementException ex)
+        {
+        	// Expected
+        }
+    }
 
     public void testVariantOneJoin()
     {
@@ -50,6 +65,24 @@ public class TestInsertInto extends TestCase
 
         runAsserts(stmtText);
     }
+    
+    public void testVariantOneJoinWildcard()
+    {
+        String stmtText = "insert into Event_1 (delta, product) " +
+        "select * " +
+        "from " + SupportBean.class.getName() + ".win:length(100) as s0," +
+                  SupportBean_A.class.getName() + ".win:length(100) as s1 " +
+        " where s0.string = s1.id";
+        
+        try{
+        	epService.getEPAdministrator().createEQL(stmtText);
+        	fail();
+        }
+        catch(EPStatementException ex)
+        {
+        	// Expected
+        }
+    }
 
     public void testVariantTwo()
     {
@@ -58,6 +91,33 @@ public class TestInsertInto extends TestCase
                       "from " + SupportBean.class.getName() + ".win:length(100)";
 
         runAsserts(stmtText);
+    }
+    
+    public void testVariantTwoWildcard() throws InterruptedException
+    {
+        String stmtText = "insert into event1 select * from " + SupportBean.class.getName() + ".win:length(100)";
+        String otherText = "select * from event1.win:length(10)";
+        
+        // Attach listener to feed
+        EPStatement stmtOne = epService.getEPAdministrator().createEQL(stmtText);
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        stmtOne.addListener(listenerOne);
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(otherText);
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        stmtTwo.addListener(listenerTwo);
+        
+        sendEvent(10, 11);
+        assertTrue(listenerOne.getAndClearIsInvoked());
+        assertEquals(1, listenerOne.getLastNewData().length);
+        assertEquals(10, listenerOne.getLastNewData()[0].get("intPrimitive"));
+        assertEquals(11, listenerOne.getLastNewData()[0].get("intBoxed"));
+        assertEquals(18, listenerOne.getLastNewData()[0].getEventType().getPropertyNames().length);
+ 
+        assertTrue(listenerTwo.getAndClearIsInvoked());
+        assertEquals(1, listenerTwo.getLastNewData().length);
+        assertEquals(10, listenerTwo.getLastNewData()[0].get("intPrimitive"));
+        assertEquals(11, listenerTwo.getLastNewData()[0].get("intBoxed"));
+        assertEquals(18, listenerTwo.getLastNewData()[0].getEventType().getPropertyNames().length);
     }
 
     public void testVariantTwoJoin()
@@ -69,6 +129,39 @@ public class TestInsertInto extends TestCase
                         " where s0.string = s1.id";
 
         runAsserts(stmtText);
+    }
+    
+    public void testVariantTwoJoinWildcard()
+    {
+        String textOne = "insert into event2 select * " +
+        		          "from " + SupportBean.class.getName() + ".win:length(100) as s0, " +
+        		          SupportBean_A.class.getName() + ".win:length(5) as s1 " + 
+        		          "where s0.string = s1.id";
+        String textTwo = "select * from event2.win:length(10)";
+        
+        // Attach listener to feed
+        EPStatement stmtOne = epService.getEPAdministrator().createEQL(textOne);
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        stmtOne.addListener(listenerOne);
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(textTwo);
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        stmtTwo.addListener(listenerTwo);
+        
+        // send event for joins to match on
+        epService.getEPRuntime().sendEvent(new SupportBean_A("myId"));
+        
+        sendEvent(10, 11);
+        assertTrue(listenerOne.getAndClearIsInvoked());
+        assertEquals(1, listenerOne.getLastNewData().length);
+        assertEquals(2, listenerOne.getLastNewData()[0].getEventType().getPropertyNames().length);
+        assertTrue(listenerOne.getLastNewData()[0].getEventType().isProperty("s0"));
+        assertTrue(listenerOne.getLastNewData()[0].getEventType().isProperty("s1"));
+        
+        assertTrue(listenerTwo.getAndClearIsInvoked());
+        assertEquals(1, listenerTwo.getLastNewData().length);
+        assertEquals(2, listenerTwo.getLastNewData()[0].getEventType().getPropertyNames().length);
+        assertTrue(listenerTwo.getLastNewData()[0].getEventType().isProperty("s0"));
+        assertTrue(listenerTwo.getLastNewData()[0].getEventType().isProperty("s1"));
     }
 
     public void testInvalidStreamUsed()
@@ -159,13 +252,13 @@ public class TestInsertInto extends TestCase
 
         // Attach delta statement to statement and add listener
         stmtText = "select min(delta) as minD, max(delta) as maxD " +
-                   "from Event_1.win:time(60 seconds)";
+                   "from Event_1.win:time(60)";
         stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(resultListenerDelta);
 
         // Attach prodict statement to statement and add listener
         stmtText = "select min(product) as minP, max(product) as maxP " +
-                   "from Event_1.win:time(60 seconds)";
+                   "from Event_1.win:time(60)";
         stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(resultListenerProduct);
 
