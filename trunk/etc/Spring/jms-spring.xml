@@ -56,17 +56,46 @@
         </property>
     </bean>
 
-	<bean id="jmsSender" class="net.esper.example.jmsoutputadapter.JmsSpringSender">
-    	<property name="jmsTemplate">
-        	<ref bean="jmsTemplate"/>
-        </property>
-	</bean>
+    <bean id="defaultJMSMarshaler" class="net.esper.adapter.jms.DefaultJMSMarshaler">
+    </bean>
+
     
- 	<bean id="jmsReceiver" class="net.esper.example.jmsoutputadapter.JmsSpringReceiver">
-   	 	<property name="jmsTemplate">
-   		   <ref bean="jmsTemplate"/>
-   	     </property>
-   	</bean>
-      
+    <bean id="jmsInputAdapterEventType" class="net.esper.adapter.jms.JMSMapEventType">
+    	<constructor-arg type="java.util.Map">
+    		<map>
+			<entry key="myInt" value="java.lang.Integer"/>
+			<entry key="myDouble" value="java.lang.Double"/>
+			<entry key="myString" value="java.lang.String"/>
+		</map>
+	</constructor-arg>
+    </bean>
+    
+    <bean id="jmsOuputAdapter" class="net.esper.adapter.jms.JMSAdapter2">
+    	<property name="role" value="Sender"/>
+    	<property name="defaultJmsTemplate">
+        	<ref bean="jmsTemplate"/>
+        </property>        
+        <property name="outputStreamAlias">
+        	<value>myOutputStream</value>
+        </property>                
+        <property name="defaultJMSMarshaler">
+        	<ref bean="defaultJMSMarshaler"/>
+        </property>                        
+     </bean>
+    
+
+    <bean id="jmsInputAdapter" class="net.esper.adapter.jms.JMSAdapter2">
+    	<property name="role" value="Receiver"/>
+    	<property name="defaultJmsTemplate">
+        	<ref bean="jmsTemplate"/>
+        </property>        
+        <property name="defaultJMSMarshaler">
+        	<ref bean="defaultJMSMarshaler"/>
+        </property>                        
+        <property name="defaultInputEventType">
+        	<ref bean="jmsInputAdapterEventType"/>
+        </property>                                
+     </bean>
+          
 </beans>
 
