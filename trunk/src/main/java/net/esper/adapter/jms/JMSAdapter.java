@@ -10,7 +10,7 @@ import java.util.*;
 import net.esper.event.*;
 import net.esper.client.UpdateListener;
 import net.esper.client.EPException;
-import net.esper.adapter.OutputAdapter;
+import net.esper.adapter.*;
 
 import javax.jms.Message;
 import javax.jms.Session;
@@ -231,6 +231,14 @@ public class JMSAdapter implements UpdateListener, OutputAdapter
     public UpdateListener getEventBeanListener()
     {
         return this;
+    }
+
+    /**
+     * close not relevant for JMS adapter?
+     */
+    protected void close()
+    {
+
     }
 
 
