@@ -37,6 +37,11 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         this.size = size;
     }
 
+    public boolean isEmpty()
+    {
+        return events.size() == 0;
+    }
+
     /**
      * Returns the size of the length window.
      * @return size of length window

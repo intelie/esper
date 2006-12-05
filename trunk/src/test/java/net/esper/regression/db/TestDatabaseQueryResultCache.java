@@ -1,0 +1,118 @@
+package net.esper.regression.db;
+
+import junit.framework.TestCase;
+import net.esper.client.*;
+import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.eql.SupportDatabaseService;
+import net.esper.support.bean.SupportBean_S0;
+import net.esper.event.EventBean;
+
+import java.util.Properties;
+import java.util.Random;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class TestDatabaseQueryResultCache extends TestCase
+{
+    private EPServiceProvider epService;
+    private SupportUpdateListener listener;
+
+    public void testExpireCacheNoPurge()
+    {
+        ConfigurationDBRef configDB = getDefaultConfig();
+        configDB.setExpiryTimeCache(1.0d, Double.MAX_VALUE);
+        tryCache(configDB, 2000, 1000, false);
+    }
+
+    public void testLRUCache()
+    {
+        ConfigurationDBRef configDB = getDefaultConfig();
+        configDB.setLRUCache(100);
+        tryCache(configDB, 1500, 1000, false);
+    }
+
+    public void testLRUCache100k()
+    {
+        ConfigurationDBRef configDB = getDefaultConfig();
+        configDB.setLRUCache(100);
+        tryCache(configDB, 5000, 100000, false);
+    }
+
+    public void testExpireCache100k()
+    {
+        ConfigurationDBRef configDB = getDefaultConfig();
+        configDB.setExpiryTimeCache(2, 2);
+        tryCache(configDB, 5000, 100000, false);
+    }
+
+    public void testExpireRandomKeys()
+    {
+        ConfigurationDBRef configDB = getDefaultConfig();
+        configDB.setExpiryTimeCache(1, 1);
+        tryCache(configDB, 5000, 50000, true);
+    }
+
+    public void tryCache(ConfigurationDBRef configDB, long assertMaximumTime, int numEvents, boolean useRandomLookupKey)
+    {
+        Configuration configuration = new Configuration();
+        configuration.addDatabaseReference("MyDB", configDB);
+
+        epService = EPServiceProviderManager.getProvider("TestDatabaseQueryResultCache", configuration);
+        epService.initialize();
+
+        long startTime = System.currentTimeMillis();
+        trySendEvents(epService, numEvents, useRandomLookupKey);
+        long endTime = System.currentTimeMillis();
+        log.info(".tryCache " + configDB.getDataCacheDesc() + " delta=" + (endTime - startTime));
+        assertTrue(endTime - startTime < assertMaximumTime);
+    }
+
+    private void trySendEvents(EPServiceProvider engine, int numEvents, boolean useRandomLookupKey)
+    {
+        Random random = new Random();
+        String stmtText = "select myint from " +
+                SupportBean_S0.class.getName() + " as s0," +
+                " sql:MyDB ['select myint from mytesttable where ${id} = mytesttable.mybigint'] as s1";
+
+        EPStatement statement = engine.getEPAdministrator().createEQL(stmtText);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        log.debug(".trySendEvents Sending " + numEvents + " events");
+        for (int i = 0; i < numEvents; i++)
+        {
+            int id = 0;
+            if (useRandomLookupKey)
+            {
+                id = random.nextInt(1000);
+            }
+            else
+            {
+                id = i % 10 + 1;
+            }
+
+            SupportBean_S0 bean = new SupportBean_S0(id);
+            engine.getEPRuntime().sendEvent(bean);
+
+            if ((!useRandomLookupKey) || ((id >= 1) && (id <= 10)))
+            {
+                EventBean received = listener.assertOneGetNewAndReset();
+                assertEquals(id * 10, received.get("myint"));
+            }
+        }
+
+        log.debug(".trySendEvents Stopping statement");
+        statement.stop();
+    }
+
+    private ConfigurationDBRef getDefaultConfig()
+    {
+        ConfigurationDBRef configDB = new ConfigurationDBRef();
+        configDB.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.FULLURL, new Properties());
+        configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN);
+        return configDB;
+    }
+
+    private static final Log log = LogFactory.getLog(TestDatabaseQueryResultCache.class);
+}

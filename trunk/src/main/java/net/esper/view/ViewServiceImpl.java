@@ -3,31 +3,103 @@ package net.esper.view;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 import net.esper.collection.Pair;
+import net.esper.view.factory.ViewFactory;
+import net.esper.view.factory.ViewAttachException;
+import net.esper.event.EventType;
 
 /**
  * Implementation of the view evaluation service business interface.
  */
 public final class ViewServiceImpl implements ViewService
 {
-    private Map<EventStream, Map<View, ViewSpec>> streams;
-
     /**
      * Ctor.
      */
     public ViewServiceImpl()
     {
-        streams = new HashMap<EventStream, Map<View, ViewSpec>>();
     }
 
+    public ViewFactoryChain createFactories(EventStream eventStream,
+                                            List<ViewSpec> viewSpecDefinitions,
+                                            ViewServiceContext context)
+            throws ViewProcessingException
+    {
+        // Clone the view spec list to prevent parameter modification
+        List<ViewSpec> viewSpecList = new ArrayList<ViewSpec>(viewSpecDefinitions);
+
+        // Inspect views and add merge views if required
+        ViewServiceHelper.addMergeViews(viewSpecList);
+
+        // Instantiate factories, not making them aware of each other yet
+        List<ViewFactory> viewFactories = ViewServiceHelper.instantiateFactoryChain(viewSpecList, context);
+
+        ViewFactory parentViewFactory = null;
+        EventType parentEventType = eventStream.getEventType();
+        for (int i = 0; i < viewFactories.size(); i++)
+        {
+            try
+            {
+                viewFactories.get(i).attach(parentEventType, context, parentViewFactory);
+            }
+            catch (ViewAttachException ex)
+            {
+                String text = "Error attaching view to parent view";
+                if (i == 0)
+                {
+                    text = "Error attaching view to event stream";
+                }
+                throw new ViewProcessingException(text + ": " + ex.getMessage(), ex); 
+            }
+        }
+
+        return new ViewFactoryChain(eventStream.getEventType(), viewFactories);
+    }
+
+    public Viewable createViews(EventStream eventStream,
+                                ViewFactoryChain viewFactoryChain,
+                                ViewServiceContext context)
+    {
+        List<ViewFactory> viewFactories = viewFactoryChain.getViewFactoryChain();
+
+        // Attempt to find existing views under the stream that match specs.
+        // The viewSpecList may have been changed by this method.
+        Pair<Viewable, List<View>> resultPair = ViewServiceHelper.matchExistingViews(eventStream, viewFactories);
+
+        Viewable parentViewable = resultPair.getFirst();
+        List<View> existingParentViews = resultPair.getSecond();
+
+        if (viewFactories.size() == 0)
+        {
+            if (log.isDebugEnabled())
+            {
+                log.debug(".createView No new views created, dumping stream ... " + eventStream);
+                ViewSupport.dumpChildViews("EventStream ", eventStream);
+            }
+
+            return parentViewable;   // we know its a view here since the factory list is empty
+        }
+
+        // Instantiate remaining chain of views from the remaining factories which didn't match to existing views.
+        List<View> views = ViewServiceHelper.instantiateChain(existingParentViews, parentViewable, viewFactories, context);
+
+        if (log.isDebugEnabled())
+        {
+            log.debug(".createView New views created for stream, all views ... " + eventStream);
+            ViewSupport.dumpChildViews("EventStream ", eventStream);
+        }
+
+        View lastView = views.get(views.size() - 1);
+
+        return lastView;
+    }
+
+    /*
     public Viewable createView(EventStream eventStream,
-                           List<ViewSpec> viewSpecDefinitions,
-                           ViewServiceContext context) throws ViewProcessingException
+                               List<ViewSpec> viewSpecDefinitions,
+                               ViewServiceContext context) throws ViewProcessingException
     {
         // Clone the view spec list to prevent parameter modification
         List<ViewSpec> viewSpecList = new LinkedList<ViewSpec>(viewSpecDefinitions);
@@ -91,23 +163,14 @@ public final class ViewServiceImpl implements ViewService
 
         return lastView;
     }
+    */
 
     public void remove(EventStream eventStream, Viewable viewToRemove)
     {
-        // If the viewToRemove to remove has child viewToRemove, don't disconnect - the child viewToRemove(s) need this viewToRemove
+        // If the viewToRemove to remove has child viewToRemove, don't disconnect - the child viewToRemove(s) need this
         if (viewToRemove.hasViews())
         {
             return;
-        }
-
-        // Get view specifications kept for this stream
-        Map<View, ViewSpec> existingViewSpecs = streams.get(eventStream);
-
-        if (existingViewSpecs == null)
-        {
-            String message = "Stream information not found for event stream " + eventStream;
-            log.fatal(".remove " + message);
-            throw new IllegalArgumentException(message);
         }
 
         if (log.isDebugEnabled())
@@ -117,11 +180,7 @@ public final class ViewServiceImpl implements ViewService
         }
 
         // Remove views in chain leaving only non-empty parent views to the child view to be removed
-        List<View> removedViews = ViewServiceHelper.removeChainLeafView(eventStream, viewToRemove);
-        for (View view : removedViews)
-        {
-            existingViewSpecs.remove(view);
-        }
+        ViewServiceHelper.removeChainLeafView(eventStream, viewToRemove);
 
         if (log.isDebugEnabled())
         {

@@ -87,31 +87,8 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
      * @param derivedMeasures is an array of ViewFieldEnum names defining the measures to derive
      * @param measureField defines the field supplying measures
      * @param columnField defines the field supplying column dimension members
-     */
-    public MultiDimStatsView(String[] derivedMeasures, String measureField, String columnField)
-    {
-        this(derivedMeasures, measureField, columnField, null, null);
-    }
-
-    /**
-     * Constructor.
-     * @param derivedMeasures is an array of ViewFieldEnum names defining the measures to derive
-     * @param measureField defines the field supplying measures
-     * @param columnField defines the field supplying column dimension members
-     * @param rowField defines the field supplying row dimension members
-     */
-    public MultiDimStatsView(String[] derivedMeasures, String measureField, String columnField, String rowField)
-    {
-        this(derivedMeasures, measureField, columnField, rowField, null);
-    }
-
-    /**
-     * Constructor.
-     * @param derivedMeasures is an array of ViewFieldEnum names defining the measures to derive
-     * @param measureField defines the field supplying measures
-     * @param columnField defines the field supplying column dimension members
-     * @param rowField defines the field supplying row dimension members
-     * @param pageField defines the field supplying page dimension members
+     * @param rowField defines an optional field supplying row dimension members
+     * @param pageField defines an optional field supplying page dimension members
      */
     public MultiDimStatsView(String[] derivedMeasures, String measureField, String columnField, String rowField, String pageField)
     {

@@ -80,7 +80,7 @@ public class TestMergeView extends TestCase
     public void testEventType()
     {
         SupportBeanClassView topView = new SupportBeanClassView(SupportBean.class);
-        GroupByView groupByView = new GroupByView("intPrimitive");
+        GroupByView groupByView = new GroupByView(new String[] {"intPrimitive"});
 
         SizeView sizeView = new SizeView();
         sizeView.setViewServiceContext(SupportViewContextFactory.makeContext());

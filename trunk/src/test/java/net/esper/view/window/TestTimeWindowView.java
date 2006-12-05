@@ -24,7 +24,7 @@ public class TestTimeWindowView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new TimeWindowView(TEST_WINDOW_MSEC / 1000d);
+        myView = new TimeWindowView(TEST_WINDOW_MSEC);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
 

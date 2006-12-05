@@ -46,7 +46,7 @@ public class TestInvalidView extends TestCase
 
         // invalid view parameter
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length('s')");
-        assertEquals("Error starting view: Error invoking constructor for view 'length', the view parameter list is not valid for the view [select * from net.esper.support.bean.SupportBean_N.win:length('s')]", exceptionText);
+        assertEquals("Error starting view: Error in view 'win:length', Length window view requires a single integer-type parameter [select * from net.esper.support.bean.SupportBean_N.win:length('s')]", exceptionText);
 
         // where-clause equals has invalid type compare
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length(1) where doublePrimitive=true");

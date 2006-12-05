@@ -14,80 +14,15 @@ public class TestSortWindowView extends TestCase
 {
     private SortWindowView myView;
     private SupportBeanClassView childView;
-    private Object[] propertiesAndDirections;
 
     public void setUp()
     {
         // Set up length window view and a test child view
-    	propertiesAndDirections = new Object[] {"volume", false };
-        myView = new SortWindowView(propertiesAndDirections, 5);
+        myView = new SortWindowView(new String[]{"volume"}, new Boolean[] {false}, 5);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
     
-    public void testConstructor()
-    {
-    	propertiesAndDirections = new Object[] {"volume", false, "mother", true};
-        myView = new SortWindowView(propertiesAndDirections, 5);
-
-        assertEquals(2, myView.getSortFieldNames().length);
-        assertEquals("volume", myView.getSortFieldNames()[0]);
-        assertEquals("mother", myView.getSortFieldNames()[1]);
-        
-        assertEquals(2, myView.getIsDescendingValues().length);
-        assertEquals(new Boolean(false), myView.getIsDescendingValues()[0]);
-        assertEquals(new Boolean(true), myView.getIsDescendingValues()[1]);
-        
-        assertEquals(5, myView.getSortWindowSize());
-    }
-
-    public void testIncorrectUse()
-    {
-        try
-        {
-        	propertiesAndDirections = new Object[] {"volume", false };
-            myView = new SortWindowView(propertiesAndDirections, -1);
-            fail();
-        }
-        catch (IllegalArgumentException ex)
-        {
-            // Expected exception
-        }
-        
-        try
-        {
-        	propertiesAndDirections = new Object[0];
-            myView = new SortWindowView(propertiesAndDirections, 2);
-            fail();
-        }
-        catch (IllegalArgumentException ex)
-        {
-            // Expected exception
-        }
-        
-        try
-        {
-        	propertiesAndDirections = new Object[] {"volume"};
-            myView = new SortWindowView(propertiesAndDirections, 2);
-            fail();
-        }
-        catch (IllegalArgumentException ex)
-        {
-            // Expected exception
-        }
-        
-        try
-        {
-        	propertiesAndDirections = new Object[] {"volume", "name"};
-            myView = new SortWindowView(propertiesAndDirections, 2);
-            fail();
-        }
-        catch (ClassCastException ex)
-        {
-            // Expected exception
-        }
-    }
-
     public void testViewOneProperty()
     {
         // Set up a feed for the view under test - the depth is 10 events so bean[10] will cause bean[0] to go old
@@ -142,8 +77,7 @@ public class TestSortWindowView extends TestCase
     public void testViewTwoProperties()
     {
     	// Set up a sort windows that sorts on two properties
-    	propertiesAndDirections = new Object[] {"volume", false, "price", true};
-    	myView = new SortWindowView(propertiesAndDirections, 5);
+    	myView = new SortWindowView(new String[]{"volume", "price"}, new Boolean[] {false, true}, 5);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
         
@@ -201,11 +135,11 @@ public class TestSortWindowView extends TestCase
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
 
         Object[] newPropertiesAndDirections = new Object[] {"dummy", true};
-        SortWindowView view = new SortWindowView(newPropertiesAndDirections, 1);
+        SortWindowView view = new SortWindowView(new String[]{"dummy"}, new Boolean[] {true}, 1);
         assertTrue(view.attachesTo(parent) != null);
 
         newPropertiesAndDirections = new Object[] {"symbol", true};
-        view = new SortWindowView(newPropertiesAndDirections, 100);
+        view = new SortWindowView(new String[]{"symbol"}, new Boolean[] {true}, 100);
         assertTrue(view.attachesTo(parent) == null);
 
         parent.addView(view);

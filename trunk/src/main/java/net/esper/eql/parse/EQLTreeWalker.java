@@ -237,6 +237,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case NOT_REGEXP:
                 leaveRegexp(node);
                 break;
+            case PREVIOUS:
+                leavePrevious(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + "'");
@@ -283,6 +286,14 @@ public class EQLTreeWalker extends EQLBaseWalker
             }
         }
         while (childNode != null);
+    }
+
+    private void leavePrevious(AST node)
+    {
+        log.debug(".leavePrevious");
+
+        ExprPreviousNode previousNode = new ExprPreviousNode();
+        astExprNodeMap.put(node, previousNode);
     }
 
     /**

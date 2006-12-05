@@ -15,7 +15,6 @@ import net.esper.view.ViewServiceContext;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.client.EPException;
-import net.esper.eql.parse.TimePeriodParameter;
 
 /**
  * A data view that aggregates events in a stream and releases them in one batch at every specified time interval.
@@ -57,69 +56,14 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
 
     /**
      * Constructor.
-     * @param secIntervalSize is the number of seconds to batch events for.
+     * @param msecIntervalSize is the number of milliseconds to batch events for
+     * @param referencePoint is the reference point onto which to base intervals, or null if
+     * there is no such reference point supplied
      */
-    public TimeBatchView(int secIntervalSize)
+    public TimeBatchView(long msecIntervalSize, Long referencePoint)
     {
-        if (secIntervalSize < 1)
-        {
-            throw new IllegalArgumentException("Time batch view requires a millisecond interval size of at least 100 msec");
-        }
-        this.msecIntervalSize = 1000 * secIntervalSize;
-    }
-
-    /**
-     * Constructor.
-     * @param secIntervalSize is the number of milliseconds to batch events for
-     * @param referencePoint is the reference point onto which to base intervals.
-     */
-    public TimeBatchView(int secIntervalSize, Long referencePoint)
-    {
-        this(secIntervalSize);
+        this.msecIntervalSize = msecIntervalSize;
         this.initialReferencePoint = referencePoint;
-    }
-
-    /**
-     * Constructor.
-     * @param secIntervalSize is the number of seconds to batch events for.
-     */
-    public TimeBatchView(double secIntervalSize)
-    {
-        if (secIntervalSize < 0.1)
-        {
-            throw new IllegalArgumentException("Time batch view requires a millisecond interval size of at least 100 msec");
-        }
-        this.msecIntervalSize = Math.round(1000 * secIntervalSize);
-    }
-
-    /**
-     * Constructor.
-     * @param timeTimePeriod is the number of seconds to batch events for.
-     */
-    public TimeBatchView(TimePeriodParameter timeTimePeriod)
-    {
-        this(timeTimePeriod.getNumSeconds());
-    }
-
-    /**
-     * Constructor.
-     * @param secIntervalSize is the number of seconds to batch events for
-     * @param referencePoint is the reference point onto which to base intervals.
-     */
-    public TimeBatchView(double secIntervalSize, Long referencePoint)
-    {
-        this(secIntervalSize);
-        this.initialReferencePoint = referencePoint;
-    }
-
-    /**
-     * Constructor.
-     * @param timeTimePeriod is the number of seconds to batch events for
-     * @param referencePoint is the reference point onto which to base intervals.
-     */
-    public TimeBatchView(TimePeriodParameter timeTimePeriod, Long referencePoint)
-    {
-        this(timeTimePeriod.getNumSeconds(), referencePoint);
     }
 
     /**
@@ -288,7 +232,17 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
         currentBatch = new LinkedList<EventBean>();
     }
 
-
+    public boolean isEmpty()
+    {
+        if (lastBatch != null)
+        {
+            if (lastBatch.size() != 0)
+            {
+                return false;
+            }
+        }
+        return currentBatch.size() == 0;
+    }
 
     public final Iterator<EventBean> iterator()
     {

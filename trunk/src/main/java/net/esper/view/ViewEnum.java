@@ -2,10 +2,7 @@ package net.esper.view;
 
 import net.esper.view.std.*;
 import net.esper.view.ext.*;
-import net.esper.view.window.LengthWindowView;
-import net.esper.view.window.TimeWindowView;
-import net.esper.view.window.ExternallyTimedWindowView;
-import net.esper.view.window.TimeBatchView;
+import net.esper.view.window.*;
 import net.esper.view.stat.*;
 
 /**
@@ -16,90 +13,92 @@ public enum ViewEnum
     /**
      * Length window.
      */
-    LENGTH_WINDOW("win", "length", LengthWindowView.class, true, null),
+    LENGTH_WINDOW("win", "length", LengthWindowView.class, LengthWindowViewFactory.class, true, null),
 
     /**
      * Time window.
      */
-    TIME_WINDOW("win", "time", TimeWindowView.class, true, null),
+    TIME_WINDOW("win", "time", TimeWindowView.class, TimeWindowViewFactory.class, true, null),
 
     /**
      * Time batch.
      */
-    TIME_BATCH("win","time_batch", TimeBatchView.class, true, null),
+    TIME_BATCH("win","time_batch", TimeBatchView.class, TimeBatchViewFactory.class, true, null),
 
     /**
      * Externally timed window.
      */
-    EXT_TIMED_WINDOW("win", "ext_timed", ExternallyTimedWindowView.class, true, null),
+    EXT_TIMED_WINDOW("win", "ext_timed", ExternallyTimedWindowView.class, ExternallyTimedWindowViewFactory.class, true, null),
 
     /**
      * Size view.
      */
-    SIZE("std", "size", SizeView.class, false, null),
+    SIZE("std", "size", SizeView.class, SizeViewFactory.class, false, null),
 
     /**
      * Last event.
      */
-    LAST_EVENT("std", "lastevent", LastElementView.class, false, null),
+    LAST_EVENT("std", "lastevent", LastElementView.class, LastElementViewFactory.class, false, null),
 
     /**
      * Unique.
      */
-    UNIQUE_BY_PROPERTY("std", "unique", UniqueByPropertyView.class, true, null),
+    UNIQUE_BY_PROPERTY("std", "unique", UniqueByPropertyView.class, UniqueByPropertyViewFactory.class, true, null),
 
     /**
      * Group-by merge.
      */
-    GROUP_MERGE("std", "merge", MergeView.class, true, null),
+    GROUP_MERGE("std", "merge", MergeView.class, MergeViewFactory.class, true, null),
 
     /**
      * Group-by.
      */
-    GROUP_PROPERTY("std", "groupby", GroupByView.class, true, GROUP_MERGE),
+    GROUP_PROPERTY("std", "groupby", GroupByView.class, GroupByViewFactory.class, true, GROUP_MERGE),
 
     /**
      * Univariate statistics.
      */
-    UNIVARIATE_STATISTICS("stat", "uni", UnivariateStatisticsView.class, true, null),
+    UNIVARIATE_STATISTICS("stat", "uni", UnivariateStatisticsView.class, UnivariateStatisticsViewFactory.class, true, null),
 
     /**
      * Weighted avg.
      */
-    WEIGHTED_AVERAGE("stat", "weighted_avg", WeightedAverageView.class, true, null),
+    WEIGHTED_AVERAGE("stat", "weighted_avg", WeightedAverageView.class, WeightedAverageViewFactory.class, true, null),
 
     /**
      * Correlation.
      */
-    CORRELATION("stat", "correl", CorrelationView.class, true, null),
+    CORRELATION("stat", "correl", CorrelationView.class, CorrelationViewFactory.class, true, null),
 
     /**
      * Linest.
      */
-    REGRESSION_LINEST("stat", "linest", RegressionLinestView.class, true, null),
+    REGRESSION_LINEST("stat", "linest", RegressionLinestView.class, RegressionLinestViewFactory.class, true, null),
 
     /**
      * Cubes.
      */
-    MULTIDIM_VIEW("stat", "cube", MultiDimStatsView.class, true, null),
+    MULTIDIM_VIEW("stat", "cube", MultiDimStatsView.class, MultiDimStatsViewFactory.class, true, null),
 
     /**
      * Sorted window.
      */
-    SORT_WINDOW("ext", "sort", SortWindowView.class, true, null);
+    SORT_WINDOW("ext", "sort", SortWindowView.class, SortWindowViewFactory.class, true, null);
 
 
     private final String namespace;
     private final String name;
     private final Class clazz;
+    private final Class factoryClass;
     private final boolean isRequiresParameters;
     private final ViewEnum mergeView;
 
-    ViewEnum(String namespace, String name, Class clazz, boolean isRequiresParameters, ViewEnum mergeView)
+    ViewEnum(String namespace, String name, Class clazz, Class factoryClass, boolean isRequiresParameters, ViewEnum mergeView)
     {
         this.namespace = namespace;
         this.name = name;
         this.clazz = clazz;
+        this.factoryClass = factoryClass;
         this.isRequiresParameters = isRequiresParameters;
         this.mergeView = mergeView;
     }
@@ -147,6 +146,15 @@ public enum ViewEnum
     public ViewEnum getMergeView()
     {
         return mergeView;
+    }
+
+    /**
+     * Returns a view's factory class.
+     * @return class of view factory
+     */
+    public Class getFactoryClass()
+    {
+        return factoryClass;
     }
 
     /**

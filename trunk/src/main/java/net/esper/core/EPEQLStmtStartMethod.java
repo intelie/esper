@@ -78,9 +78,13 @@ public class EPEQLStmtStartMethod
     {
         // Determine stream names for each stream - some streams may not have a name given
         String[] streamNames = determineStreamNames(statementSpec.getStreamSpecs());
+
+        int numStreams = streamNames.length;
         EventType[] streamTypes = new EventType[statementSpec.getStreamSpecs().size()];
-        Viewable[] streamViews = new Viewable[streamTypes.length];
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
+        EventStream[] eventStreams = new EventStream[numStreams];
+
+        ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[streamTypes.length];
 
         // Create streams and views
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
@@ -91,10 +95,10 @@ public class EPEQLStmtStartMethod
             if (streamSpec instanceof FilterStreamSpec)
             {
                 FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
-                EventStream eventStream = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
+                eventStreams[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
 
                 // Cascade views onto the (filter or pattern) stream
-                streamViews[i] = services.getViewService().createView(eventStream, streamSpec.getViewSpecs(), viewContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(eventStreams[i], streamSpec.getViewSpecs(), viewContext);
             }
             // Create stream based on a pattern expression
             else if (streamSpec instanceof PatternStreamSpec)
@@ -102,9 +106,9 @@ public class EPEQLStmtStartMethod
                 PatternStreamSpec patternStreamSpec = (PatternStreamSpec) streamSpec;
                 final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
+                eventStreams[i] = sourceEventStream;
 
-                // Cascade views onto the (filter or pattern) stream
-                streamViews[i] = services.getViewService().createView(sourceEventStream, streamSpec.getViewSpecs(), viewContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(sourceEventStream, streamSpec.getViewSpecs(), viewContext);
 
                 EvalRootNode rootNode = new EvalRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
@@ -125,7 +129,7 @@ public class EPEQLStmtStartMethod
             {
                 DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
                 HistoricalEventViewable historicalEventViewable = PollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService());
-                streamViews[i] = historicalEventViewable;
+                unmaterializedViewChain[i] = null;
                 if (streamSpec.getViewSpecs().size() > 0)
                 {
                     throw new ExprValidationException("Historical data joins do not allow views onto the data, view '"
@@ -138,7 +142,7 @@ public class EPEQLStmtStartMethod
                 throw new ExprValidationException("Unknown stream specification");
             }
 
-            streamTypes[i] = streamViews[i].getEventType();
+            streamTypes[i] = unmaterializedViewChain[i].getEventType();
         }
 
         // create stop method
@@ -164,6 +168,16 @@ public class EPEQLStmtStartMethod
         // Construct type information per stream
         StreamTypeService typeService = new StreamTypeServiceImpl(streamTypes, streamNames);
 
+        // Materialize views
+        Viewable[] streamViews = new Viewable[streamTypes.length];
+        for (int i = 0; i < streamViews.length; i++)
+        {
+            if (eventStreams[i] != null)
+            {
+                streamViews[i] = services.getViewService().createViews(eventStreams[i], unmaterializedViewChain[i], viewContext);
+            }
+        }
+
         // Validate any views that require validation
         for (Viewable viewable : streamViews)
         {
@@ -174,7 +188,7 @@ public class EPEQLStmtStartMethod
             }
         }
 
-        // Get the service for resolving class names 
+        // Get the service for resolving class names
         AutoImportService autoImportService = services.getAutoImportService();
         
         // Construct a processor for results posted by views and joins, which takes care of aggregation if required.

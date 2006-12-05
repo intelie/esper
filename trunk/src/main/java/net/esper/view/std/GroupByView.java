@@ -50,15 +50,6 @@ public final class GroupByView extends ViewSupport implements ContextAwareView
 
     /**
      * Constructor.
-     * @param groupFieldName is the field from which to pull the value to group by
-     */
-    public GroupByView(String groupFieldName)
-    {
-        this.groupFieldNames = new String[] { groupFieldName };
-    }
-
-    /**
-     * Constructor.
      * @param groupFieldNames is the fields from which to pull the values to group by
      */
     public GroupByView(String[] groupFieldNames)

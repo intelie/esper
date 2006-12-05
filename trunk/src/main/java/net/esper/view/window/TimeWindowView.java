@@ -16,7 +16,6 @@ import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.collection.TimeWindow;
 import net.esper.client.EPException;
-import net.esper.eql.parse.TimePeriodParameter;
 
 /**
  * This view is a moving timeWindow extending the specified amount of milliseconds into the past.
@@ -48,42 +47,12 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
 
     /**
      * Constructor.
-     * @param secondsBeforeExpiry is the number of seconds before events gets pushed
+     * @param millisecondsBeforeExpiry is the number of milliseconds before events gets pushed
      * out of the timeWindow as oldData in the update method.
      */
-    public TimeWindowView(int secondsBeforeExpiry)
+    public TimeWindowView(long millisecondsBeforeExpiry)
     {
-        if (secondsBeforeExpiry < 1)
-        {
-            throw new IllegalArgumentException("Time window view requires a millisecond size of at least 100 msec");
-        }
-
-        this.millisecondsBeforeExpiry = 1000 * secondsBeforeExpiry;
-    }
-
-    /**
-     * Constructor.
-     * @param secondsBeforeExpiry is the number of seconds before events gets pushed
-     * out of the timeWindow as oldData in the update method.
-     */
-    public TimeWindowView(double secondsBeforeExpiry)
-    {
-        if (secondsBeforeExpiry <= 0.1)
-        {
-            throw new IllegalArgumentException("Time window view requires a millisecond size of at least 100 msec");
-        }
-
-        this.millisecondsBeforeExpiry = Math.round(1000d * secondsBeforeExpiry);
-    }
-
-    /**
-     * Constructor.
-     * @param timePeriod is the number of seconds before events gets pushed
-     * out of the timeWindow as oldData in the update method.
-     */
-    public TimeWindowView(TimePeriodParameter timePeriod)
-    {
-        this(timePeriod.getNumSeconds());
+        this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
     }
 
     /**
@@ -237,6 +206,11 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         this.viewServiceContext = viewServiceContext;
         this.scheduleSlot = viewServiceContext.getScheduleBucket().allocateSlot();
     }
+
+    public boolean isEmpty()
+    {
+        return timeWindow.isEmpty();
+    }    
 
     private static final Log log = LogFactory.getLog(TimeWindowView.class);
 }

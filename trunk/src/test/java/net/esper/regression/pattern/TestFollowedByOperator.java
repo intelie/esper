@@ -222,6 +222,96 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
         }
     }
 
+    public void testRFIDZoneExit()
+    {
+        Configuration config = new Configuration();
+        config.addEventTypeAlias("LR", SupportRFIDEvent.class.getName());
+        EPServiceProvider epService = EPServiceProviderManager.getProvider("testRFIDZoneExit", config);
+        epService.initialize();
+
+        /**
+         * Every LR event with a zone of '1' activates a new sub-expression after
+         * the followed-by operator. The sub-expression instance can end two different ways:
+         * It ends when a LR for the same mac and a different exit-zone comes in, or
+         * it ends when a LR for the same max and the same zone come in. The latter also starts the
+         * sub-expression again.
+         */
+        String expression =
+            "select * " +
+            "from pattern [" +
+                "every a=LR(zoneID='1') -> (b=LR(mac=a.mac,zoneID!='1') and not LR(mac=a.mac,zoneID='1'))" +
+            "]";
+
+        EPStatement statement = epService.getEPAdministrator().createEQL(expression);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        SupportRFIDEvent event = new SupportRFIDEvent("a", "1");
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.isInvoked());
+
+        event = new SupportRFIDEvent("a", "2");
+        epService.getEPRuntime().sendEvent(event);
+        assertEquals(event, listener.assertOneGetNewAndReset().get("b"));
+
+        event = new SupportRFIDEvent("b", "1");
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.isInvoked());
+
+        event = new SupportRFIDEvent("b", "1");
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.isInvoked());
+
+        event = new SupportRFIDEvent("b", "2");
+        epService.getEPRuntime().sendEvent(event);
+        assertEquals(event, listener.assertOneGetNewAndReset().get("b"));
+    }
+
+    public void testRFIDZoneEnter()
+    {
+        Configuration config = new Configuration();
+        config.addEventTypeAlias("LR", SupportRFIDEvent.class.getName());
+        EPServiceProvider epService = EPServiceProviderManager.getProvider("testRFIDZoneEnter", config);
+        epService.initialize();
+
+        /**
+         * Every LR event with a zone other then '1' activates a new sub-expression after
+         * the followed-by operator. The sub-expression instance can end two different ways:
+         * It ends when a LR for the same mac and the enter-zone comes in, or
+         * it ends when a LR for the same max and the same zone come in. The latter also starts the
+         * sub-expression again.
+         */
+        String expression =
+            "select * " +
+            "from pattern [" +
+                "every a=LR(zoneID!='1') -> (b=LR(mac=a.mac,zoneID='1') and not LR(mac=a.mac,zoneID=a.zoneID))" +
+            "]";
+
+        EPStatement statement = epService.getEPAdministrator().createEQL(expression);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        SupportRFIDEvent event = new SupportRFIDEvent("a", "2");
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.isInvoked());
+
+        event = new SupportRFIDEvent("a", "1");
+        epService.getEPRuntime().sendEvent(event);
+        assertEquals(event, listener.assertOneGetNewAndReset().get("b"));
+
+        event = new SupportRFIDEvent("b", "2");
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.isInvoked());
+
+        event = new SupportRFIDEvent("b", "2");
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.isInvoked());
+
+        event = new SupportRFIDEvent("b", "1");
+        epService.getEPRuntime().sendEvent(event);
+        assertEquals(event, listener.assertOneGetNewAndReset().get("b"));
+    }
+
     private long dateToLong(String dateText) throws ParseException
     {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

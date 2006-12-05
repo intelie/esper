@@ -15,7 +15,7 @@ import net.esper.view.ViewFieldEnum;
 import net.esper.view.ViewSupport;
 import net.esper.view.ViewServiceContext;
 
-public class TestSinglePointStatisticsView extends TestCase
+public class TestUnivariateStatisticsView extends TestCase
 {
     UnivariateStatisticsView myView;
     SupportBeanClassView childView;

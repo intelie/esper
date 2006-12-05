@@ -98,11 +98,11 @@ public class TestGroupByView extends TestCase
     public void testViewAttachesTo()
     {
         // Should attach to anything as long as the field exists
-        GroupByView view = new GroupByView("dummy");
+        GroupByView view = new GroupByView(new String[] {"dummy"});
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
         assertTrue(view.attachesTo(parent) != null);
 
-        view = new GroupByView("symbol");
+        view = new GroupByView(new String[] {"symbol"});
         assertTrue(view.attachesTo(parent) == null);
 
         parent.addView(view);
@@ -125,7 +125,7 @@ public class TestGroupByView extends TestCase
     public void testMakeSubviews()
     {
         EventStream eventStream = new SupportStreamImpl(SupportMarketDataBean.class, 4);
-        GroupByView groupView = new GroupByView("symbol");
+        GroupByView groupView = new GroupByView(new String[] {"symbol"});
         eventStream.addView(groupView);
 
         Object[] groupByValue = new Object[] {"IBM"};
@@ -155,7 +155,7 @@ public class TestGroupByView extends TestCase
         }
 
         // Add a size view parent of merge view
-        groupView = new GroupByView("symbol");
+        groupView = new GroupByView(new String[] {"symbol"});
         groupView.setViewServiceContext(SupportViewContextFactory.makeContext());
 
         SizeView sizeView_1 = new SizeView();

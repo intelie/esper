@@ -24,6 +24,28 @@ public class TestViewStartStop extends TestCase
         sizeView = epService.getEPAdministrator().createEQL(viewExpr);
     }
 
+    public void testSameWindowReuse()
+    {
+        String viewExpr = "select * from " + SupportBean.class.getName() + ".win:length(3)";
+        EPStatement stmtOne = epService.getEPAdministrator().createEQL(viewExpr);
+        stmtOne.addListener(testListener);
+
+        // send a couple of events
+        sendEvent(1);
+        sendEvent(2);
+        sendEvent(3);
+        sendEvent(4);
+
+        // create same statement again
+        SupportUpdateListener testListenerTwo = new SupportUpdateListener();
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(viewExpr);
+        stmtTwo.addListener(testListenerTwo);
+
+        // Send event, no old data should be received
+        sendEvent(5);
+        assertNull(testListenerTwo.getLastOldData());
+    }
+
     public void testStartStop()
     {
         // View created is automatically started
@@ -97,6 +119,13 @@ public class TestViewStartStop extends TestCase
 
     private void sendEvent()
     {
-        epService.getEPRuntime().sendEvent(new SupportBean());
+        sendEvent(-1);
+    }
+
+    private void sendEvent(int intPrimitive)
+    {
+        SupportBean bean = new SupportBean();
+        bean.setIntPrimitive(intPrimitive);
+        epService.getEPRuntime().sendEvent(bean);
     }
 }

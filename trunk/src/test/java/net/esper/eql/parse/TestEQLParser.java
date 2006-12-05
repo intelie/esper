@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select myclass.googlex(1) from " + className;
+        String expression = "select previous(1, price) from " + className;
         //String expression = "select googlex(1) from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
@@ -145,6 +145,10 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select * from x, sql:xx ");
         assertIsInvalid("select * from x, sql:xx [' dsfsdf \"]");
         assertIsInvalid("select * from x, sql:xx [\"sfsf ']");
+
+        // Previous function
+        assertIsInvalid("select previous(10) from x");
+        assertIsInvalid("select previous(price) from x");
     }
 
     public void testValidCases() throws Exception
@@ -340,6 +344,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from x, sql:mydb ['whetever SQL $x.id google']");
         assertIsValid("select * from x, sql:mydb ['']");
         assertIsValid("select * from x, sql:mydb ['   ']");
+
+        // Previous function
+        assertIsValid("select previous(10, price) from x");
+        assertIsValid("select previous(0, price) from x");
+        assertIsValid("select previous(1000, price) from x");
     }
 
     public void testBitWiseCases() throws Exception

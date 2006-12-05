@@ -70,6 +70,8 @@ tokens
 	ISTREAM="istream";
 	PATTERN="pattern";
 	SQL="sql";
+	PREVIOUS="previous";
+	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
    	NUMERIC_PARAM_FREQUENCY;   	
@@ -425,6 +427,7 @@ builtinFunc
 	| STDDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| AVEDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| COALESCE^ LPAREN! expression COMMA! expression (COMMA! expression)* RPAREN!
+	| PREVIOUS^ LPAREN! expression COMMA! eventProperty RPAREN!
 	// MIN and MAX can also be "Math.min" static function and "min(price)" aggregation function and "min(a, b, c...)" built-in function
 	// therefore handled in code via libFunction as below
 	;

@@ -10,9 +10,7 @@ import net.esper.support.view.SupportViewContextFactory;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportEnum;
 import net.esper.support.event.SupportEventBeanFactory;
-import net.esper.support.event.SupportEventAdapterService;
 import net.esper.view.ViewFieldEnum;
-import net.esper.view.ViewServiceContext;
 import net.esper.view.stat.olap.Cube;
 import net.esper.view.stat.olap.MultidimCube;
 import net.esper.event.EventBean;
@@ -32,7 +30,7 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testOneDim()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "enumValue");
+        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "enumValue", null, null);
         parentStream.addView(olapView);
         olapView.addView(childView);
         olapView.setViewServiceContext(SupportViewContextFactory.makeContext());
@@ -59,7 +57,7 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testTwoDim()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "enumValue");
+        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "enumValue", null);
         parentStream.addView(olapView);
         olapView.addView(childView);
         olapView.setViewServiceContext(SupportViewContextFactory.makeContext());
@@ -112,16 +110,16 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testAttachesTo()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "dummy");
+        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "dummy", null, null);
         assertTrue(olapView.attachesTo(parentStream) != null);
 
-        olapView = new MultiDimStatsView(derivedFields, "dummy", "intPrimitive");
+        olapView = new MultiDimStatsView(derivedFields, "dummy", "intPrimitive", null, null);
         assertTrue(olapView.attachesTo(parentStream) != null);
 
-        olapView = new MultiDimStatsView(derivedFields, "string", "intPrimitive");
+        olapView = new MultiDimStatsView(derivedFields, "string", "intPrimitive", null, null);
         assertTrue(olapView.attachesTo(parentStream) != null);
 
-        olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "dummy");
+        olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "dummy", null);
         assertTrue(olapView.attachesTo(parentStream) != null);
 
         olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "doublePrimitive", "dummy");
@@ -131,10 +129,10 @@ public class TestMultiDimStatsView extends TestCase
         assertTrue(olapView.attachesTo(parentStream) == null);
 
         // Try invalid derived fields
-        olapView = new MultiDimStatsView(new String[] {"goodie"}, "intPrimitive", "string");
+        olapView = new MultiDimStatsView(new String[] {"goodie"}, "intPrimitive", "string", null, null);
         assertTrue(olapView.attachesTo(parentStream) != null);
 
-        olapView = new MultiDimStatsView(new String[] {"count", "goodie"}, "intPrimitive", "string");
+        olapView = new MultiDimStatsView(new String[] {"count", "goodie"}, "intPrimitive", "string", null, null);
         assertTrue(olapView.attachesTo(parentStream) != null);
     }
 

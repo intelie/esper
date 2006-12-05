@@ -1,13 +1,12 @@
 package net.esper.view;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.collection.Pair;
+import net.esper.view.factory.ViewFactory;
+import net.esper.view.factory.ViewParameterException;
 
 /**
  * Utility methods to deal with chains of views, and for merge/group-by views.
@@ -64,24 +63,22 @@ public class ViewServiceHelper
      * Instantiate a chain of views.
      * @param existingParentViews - parent views
      * @param parentViewable - parent view to add the chain to
-     * @param specifications - view specification, one for each chain element
      * @param context - dependent services
      * @return chain of views instantiated
-     * @throws ViewProcessingException is throw to indicate an error instantiating the chain
      */
     protected static List<View> instantiateChain(List<View> existingParentViews,
                                                  Viewable parentViewable,
-                                                 List<ViewSpec> specifications,
+                                                 List<ViewFactory> viewFactories,
                                                  ViewServiceContext context)
-        throws ViewProcessingException
     {
         List<View> newViews = new LinkedList<View>();
         Viewable parent = parentViewable;
 
-        for (ViewSpec spec : specifications)
+        for (ViewFactory viewFactory : viewFactories)
         {
             // Create the new view object
-            View currentView = ViewFactory.create(parent, spec);
+            View currentView = viewFactory.makeView(context);
+
             newViews.add(currentView);
             parent.addView(currentView);
 
@@ -114,7 +111,7 @@ public class ViewServiceHelper
      * @return chain of orphaned views
      */
     protected static List<View> removeChainLeafView(Viewable parentViewable,
-                                            Viewable viewToRemove)
+                                                    Viewable viewToRemove)
     {
         List<View> removedViews = new LinkedList<View>();
 
@@ -197,15 +194,12 @@ public class ViewServiceHelper
      * The method will then attempt to determine if any child views of that view also match
      * specifications.
      * @param rootViewable is the top rootViewable event stream to which all views are attached as child views
-     * @param specificationRepository is a map of view and specification that enables view specification comparison
-     * @param specifications is the non-empty list of specifications describing the new chain of views to create.
      * This parameter is changed by this method, ie. specifications are removed if they match existing views.
      * @return a pair of (A) the stream if no views matched, or the last child view that matched (B) the full list
      * of parent views
      */
     protected static Pair<Viewable, List<View>> matchExistingViews(Viewable rootViewable,
-                                                 Map<View, ViewSpec> specificationRepository,
-                                                 List<ViewSpec> specifications)
+                                                                   List<ViewFactory> viewFactories)
     {
         Viewable currentParent = rootViewable;
         List<View> matchedViewList = new LinkedList<View>();
@@ -218,31 +212,50 @@ public class ViewServiceHelper
 
             for (View childView : currentParent.getViews())
             {
-                ViewSpec spec = specificationRepository.get(childView);
+                ViewFactory currentFactory = viewFactories.get(0);
 
-                // It's possible that a child view is not known to this service since the
-                // child view may not be reusable, such as a stateless filter (where-clause),
-                // output rate limiting view, or such.
-                // Continue and ignore that child view if it's view specification is not known.
-                if (spec == null)
+                if (!(currentFactory.canReuse(childView)))
                 {
-                    continue;
+                     continue;
                 }
 
-                // If the specification is found equal, remove
-                if (spec.equals(specifications.get(0)))
-                {
-                    specifications.remove(0);
-                    currentParent = childView;
-                    foundMatch = true;
-                    matchedViewList.add(childView);
-                    break;
-                }
+                // The specifications match, check current data window size
+                viewFactories.remove(0);
+                currentParent = childView;
+                foundMatch = true;
+                matchedViewList.add(childView);
+                break;
             }
         }
-        while ((foundMatch) && (specifications.size() > 0));
+        while ((foundMatch) && (viewFactories.size() > 0));
 
         return new Pair<Viewable, List<View>>(currentParent, matchedViewList);
+    }
+
+    public static List<ViewFactory> instantiateFactoryChain(List<ViewSpec> viewSpecList, ViewServiceContext context)
+            throws ViewProcessingException
+    {
+        List<ViewFactory> factoryChain = new ArrayList<ViewFactory>();
+
+        for (ViewSpec spec : viewSpecList)
+        {
+            // Create the new view factory
+            ViewFactory viewFactory = ViewFactoryOld.create(spec);
+            factoryChain.add(viewFactory);
+
+            // Set view factory parameters
+            try
+            {
+                viewFactory.setViewParameters(spec.getObjectParameters());
+            }
+            catch (ViewParameterException e)
+            {
+                throw new ViewProcessingException("Error in view '" + spec.getObjectNamespace() + ":" + spec.getObjectName() +
+                        "', " + e.getMessage());
+            }
+        }
+        
+        return factoryChain;
     }
 
     private static final Log log = LogFactory.getLog(ViewServiceHelper.class);

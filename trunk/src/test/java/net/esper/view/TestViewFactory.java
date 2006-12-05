@@ -7,7 +7,6 @@ import junit.framework.TestCase;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportViewContextFactory;
-import net.esper.support.event.SupportEventAdapterService;
 import net.esper.type.StringValue;
 
 import org.apache.commons.logging.Log;
@@ -23,7 +22,7 @@ public class TestViewFactory extends TestCase
         parameters.add("price");
         ViewSpec spec = new ViewSpec(ViewEnum.UNIVARIATE_STATISTICS.getNamespace(), ViewEnum.UNIVARIATE_STATISTICS.getName(), parameters);
 
-        Viewable view = ViewFactory.create(parentViewable, spec);
+        Viewable view = ViewFactoryOld.create(parentViewable, spec);
         if (view instanceof ContextAwareView)
         {
             ContextAwareView contextAwareView = (ContextAwareView) view;
@@ -41,7 +40,7 @@ public class TestViewFactory extends TestCase
 
         try
         {
-            ViewFactory.create(parentViewable, spec);
+            ViewFactoryOld.create(parentViewable, spec);
             assertFalse(true);
         }
         catch (ViewProcessingException ex)
@@ -58,7 +57,7 @@ public class TestViewFactory extends TestCase
 
         try
         {
-            ViewFactory.create(parentViewable, spec);
+            ViewFactoryOld.create(parentViewable, spec);
             assertFalse(true);
         }
         catch (ViewProcessingException ex)
@@ -76,7 +75,7 @@ public class TestViewFactory extends TestCase
 
         try
         {
-            ViewFactory.create(parentViewable, spec);
+            ViewFactoryOld.create(parentViewable, spec);
             assertFalse(true);
         }
         catch (ViewProcessingException ex)
