@@ -5,8 +5,6 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.collection.Pair;
-import net.esper.view.factory.ViewFactory;
-import net.esper.view.factory.ViewParameterException;
 
 /**
  * Utility methods to deal with chains of views, and for merge/group-by views.
@@ -206,6 +204,11 @@ public class ViewServiceHelper
 
         boolean foundMatch = false;
 
+        if (viewFactories.size() == 0)
+        {
+            return new Pair<Viewable, List<View>>(rootViewable, new LinkedList<View>());
+        }
+
         do      // while ((foundMatch) && (specifications.size() > 0));
         {
             foundMatch = false;
@@ -240,7 +243,7 @@ public class ViewServiceHelper
         for (ViewSpec spec : viewSpecList)
         {
             // Create the new view factory
-            ViewFactory viewFactory = ViewFactoryOld.create(spec);
+            ViewFactory viewFactory = ViewFactoryFactory.create(spec);
             factoryChain.add(viewFactory);
 
             // Set view factory parameters
@@ -254,7 +257,7 @@ public class ViewServiceHelper
                         "', " + e.getMessage());
             }
         }
-        
+
         return factoryChain;
     }
 

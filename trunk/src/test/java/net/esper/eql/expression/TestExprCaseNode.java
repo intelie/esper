@@ -28,10 +28,10 @@ public class TestExprCaseNode extends TestCase
     public void testValidate() throws Exception
     {
         ExprCaseNode caseNode = SupportExprNodeFactory.makeCaseSyntax1Node();
-        caseNode.validate(null, null);
+        caseNode.validate(null, null, null);
 
         caseNode = SupportExprNodeFactory.makeCaseSyntax2Node();
-        caseNode.validate(null, null);
+        caseNode.validate(null, null, null);
 
         // No subnodes: Exception is thrown.
         tryInvalidValidate(new ExprCaseNode(false));
@@ -57,18 +57,18 @@ public class TestExprCaseNode extends TestCase
     public void testEvaluate() throws Exception
     {
         ExprCaseNode caseNode = SupportExprNodeFactory.makeCaseSyntax1Node();
-        caseNode.validate(null, null);
+        caseNode.validate(null, null, null);
 
-        assertEquals("a", caseNode.evaluate(makeEvent(1)));
-        assertEquals("b", caseNode.evaluate(makeEvent(2)));
-        assertEquals("c", caseNode.evaluate(makeEvent(3)));
+        assertEquals("a", caseNode.evaluate(makeEvent(1), false));
+        assertEquals("b", caseNode.evaluate(makeEvent(2), false));
+        assertEquals("c", caseNode.evaluate(makeEvent(3), false));
 
         caseNode = SupportExprNodeFactory.makeCaseSyntax2Node();
-        caseNode.validate(null, null);
+        caseNode.validate(null, null, null);
 
-        assertEquals("a", caseNode.evaluate(makeEvent(1)));
-        assertEquals("b", caseNode.evaluate(makeEvent(2)));
-        assertEquals("c", caseNode.evaluate(makeEvent(3)));
+        assertEquals("a", caseNode.evaluate(makeEvent(1), false));
+        assertEquals("b", caseNode.evaluate(makeEvent(2), false));
+        assertEquals("c", caseNode.evaluate(makeEvent(3), false));
     }
 
     public void testEquals()  throws Exception
@@ -97,7 +97,7 @@ public class TestExprCaseNode extends TestCase
     private void tryInvalidValidate(ExprCaseNode exprCaseNode) throws Exception
     {
         try {
-            exprCaseNode.validate(null, null);
+            exprCaseNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

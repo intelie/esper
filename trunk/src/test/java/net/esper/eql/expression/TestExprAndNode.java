@@ -23,13 +23,13 @@ public class TestExprAndNode extends TestCase
         // test success
         andNode.addChildNode(new SupportExprNode(Boolean.class));
         andNode.addChildNode(new SupportExprNode(Boolean.class));
-        andNode.validate(null, null);
+        andNode.validate(null, null, null);
 
         // test failure, type mismatch
         andNode.addChildNode(new SupportExprNode(String.class));
         try
         {
-            andNode.validate(null, null);
+            andNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -42,7 +42,7 @@ public class TestExprAndNode extends TestCase
         andNode.addChildNode(new SupportExprNode(Boolean.class));
         try
         {
-            andNode.validate(null, null);
+            andNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -55,12 +55,12 @@ public class TestExprAndNode extends TestCase
     {
         andNode.addChildNode(new SupportBoolExprNode(true));
         andNode.addChildNode(new SupportBoolExprNode(true));
-        assertTrue( (Boolean) andNode.evaluate(null));
+        assertTrue( (Boolean) andNode.evaluate(null, false));
 
         andNode = new ExprAndNode();
         andNode.addChildNode(new SupportBoolExprNode(true));
         andNode.addChildNode(new SupportBoolExprNode(false));
-        assertFalse( (Boolean) andNode.evaluate(null));
+        assertFalse( (Boolean) andNode.evaluate(null, false));
     }
 
     public void testToExpressionString() throws Exception

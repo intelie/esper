@@ -62,19 +62,6 @@ public class TestRegressionLinestView extends TestCase
         checkNew(877.5510204, -60443.877555);
     }
 
-    public void testViewAttachesTo()
-    {
-        RegressionLinestView view = new RegressionLinestView("symbol", "price");
-
-        // The symbol field in the parent is not a number, expect an error on attach
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) != null);
-
-        // Try a non-existing field name
-        view = new RegressionLinestView("price", "dummy");
-        assertTrue(view.attachesTo(parent) != null);
-    }
-
     public void testGetSchema()
     {
         assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.REGRESSION__SLOPE.getName()) == double.class);

@@ -29,11 +29,6 @@ public class InternalRouteView extends ViewSupport
         this.internalEventRouter = internalEventRouter;
     }
 
-    public String attachesTo(Viewable parentViewable)
-    {
-        return null;
-    }
-
     public void update(EventBean[] newData, EventBean[] oldData)
     {
         if ((newData != null) && (isIStream))

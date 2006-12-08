@@ -3,6 +3,7 @@ package net.esper.eql.expression;
 import net.esper.event.EventBean;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 /**
  * Represents a constant in a filter expressiun tree.
@@ -20,7 +21,7 @@ public class ExprConstantNode extends ExprNode
         this.value = value;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
     }
 
@@ -33,7 +34,7 @@ public class ExprConstantNode extends ExprNode
         return value.getClass();
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         return value;
     }

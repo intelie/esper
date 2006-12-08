@@ -51,7 +51,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         // For this row, evaluate sub-expressions, enter result
         for (int j = 0; j < evaluators.length; j++)
         {
-            Object columnResult = evaluators[j].evaluate(eventsPerStream);
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, true);
             groupAggregators[j].enter(columnResult);
         }
     }
@@ -74,7 +74,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         // For this row, evaluate sub-expressions, enter result
         for (int j = 0; j < evaluators.length; j++)
         {
-            Object columnResult = evaluators[j].evaluate(eventsPerStream);
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, false);
             groupAggregators[j].leave(columnResult);
         }
     }

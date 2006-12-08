@@ -50,7 +50,7 @@ public class TestExprAvgNode extends TestExprAggregateNodeAdapter
     {
         ExprAvgNode avgNode = new ExprAvgNode(isDistinct);
         avgNode.addChildNode(new SupportExprNode(value, type));
-        avgNode.validate(null, null);
+        avgNode.validate(null, null, null);
         return avgNode;
     }
 }

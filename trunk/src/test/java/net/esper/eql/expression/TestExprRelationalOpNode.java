@@ -3,7 +3,6 @@ package net.esper.eql.expression;
 import junit.framework.TestCase;
 import net.esper.support.eql.SupportExprNode;
 import net.esper.type.RelationalOpEnum;
-import net.esper.type.MinMaxTypeEnum;
 
 public class TestExprRelationalOpNode extends TestCase
 {
@@ -26,7 +25,7 @@ public class TestExprRelationalOpNode extends TestCase
         // Test success
         opNode.addChildNode(new SupportExprNode(String.class));
         opNode.addChildNode(new SupportExprNode(String.class));
-        opNode.validate(null, null);
+        opNode.validate(null, null, null);
 
         opNode.getChildNodes().clear();
         opNode.addChildNode(new SupportExprNode(String.class));
@@ -34,7 +33,7 @@ public class TestExprRelationalOpNode extends TestCase
         // Test too few nodes under this node
         try
         {
-            opNode.validate(null, null);
+            opNode.validate(null, null, null);
             fail();
         }
         catch (IllegalStateException ex)
@@ -46,7 +45,7 @@ public class TestExprRelationalOpNode extends TestCase
         opNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            opNode.validate(null, null);
+            opNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -61,7 +60,7 @@ public class TestExprRelationalOpNode extends TestCase
 
         try
         {
-            opNode.validate(null, null);
+            opNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -76,22 +75,22 @@ public class TestExprRelationalOpNode extends TestCase
         SupportExprNode childTwo = new SupportExprNode("c");
         opNode.addChildNode(childOne);
         opNode.addChildNode(childTwo);
-        opNode.validate(null, null);       // Type initialization
+        opNode.validate(null, null, null);       // Type initialization
 
-        assertEquals(true, opNode.evaluate(null));
+        assertEquals(true, opNode.evaluate(null, false));
 
         childOne.setValue("c");
-        assertEquals(true, opNode.evaluate(null));
+        assertEquals(true, opNode.evaluate(null, false));
 
         childOne.setValue("b");
-        assertEquals(false, opNode.evaluate(null));
+        assertEquals(false, opNode.evaluate(null, false));
 
         opNode = makeNode(null, Integer.class, 2, Integer.class);
-        assertEquals(false, opNode.evaluate(null));
+        assertEquals(false, opNode.evaluate(null, false));
         opNode = makeNode(1, Integer.class, null, Integer.class);
-        assertEquals(false, opNode.evaluate(null));
+        assertEquals(false, opNode.evaluate(null, false));
         opNode = makeNode(null, Integer.class, null, Integer.class);
-        assertEquals(false, opNode.evaluate(null));
+        assertEquals(false, opNode.evaluate(null, false));
     }
 
     public void testToExpressionString() throws Exception

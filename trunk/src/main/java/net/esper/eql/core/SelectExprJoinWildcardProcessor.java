@@ -39,7 +39,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
         resultEventType = eventAdapterService.createAnonymousMapType(eventTypeMap);
     }
 
-    public EventBean process(EventBean[] eventsPerStream)
+    public EventBean process(EventBean[] eventsPerStream, boolean isNewData)
     {
         Map<String, Object> tuple = new HashMap<String, Object>();
         for (int i = 0; i < streamNames.length; i++)

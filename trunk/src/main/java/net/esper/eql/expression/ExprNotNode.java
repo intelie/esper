@@ -4,13 +4,14 @@ import net.esper.util.JavaClassHelper;
 import net.esper.event.EventBean;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 /**
  * Represents a NOT expression in an expression tree.
  */
 public class ExprNotNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         // Must have a single child node
         if (this.getChildNodes().size() != 1)
@@ -30,9 +31,9 @@ public class ExprNotNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        Boolean evaluated = (Boolean) this.getChildNodes().get(0).evaluate(eventsPerStream);
+        Boolean evaluated = (Boolean) this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
 
         return !evaluated;
     }

@@ -68,11 +68,6 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport implements
         }
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        return PropertyCheckHelper.checkNumeric(parentView.getEventType(), fieldNameX, fieldNameY);
-    }
-
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
         // If we have child views, keep a reference to the old values, so we can fire them as old data event.

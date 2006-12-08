@@ -107,12 +107,12 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         }
     }
 
-    public EventBean process(EventBean[] eventsPerStream)
+    public EventBean process(EventBean[] eventsPerStream, boolean isNewData)
     {
         Map<String, Object> props = new HashMap<String, Object>();
         for (int i = 0; i < expressionNodes.length; i++)
         {
-            Object evalResult = expressionNodes[i].evaluate(eventsPerStream);
+            Object evalResult = expressionNodes[i].evaluate(eventsPerStream, isNewData);
             props.put(columnNames[i], evalResult);
         }
 

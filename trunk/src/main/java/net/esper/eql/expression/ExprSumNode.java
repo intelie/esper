@@ -3,6 +3,7 @@ package net.esper.eql.expression;
 import net.esper.eql.core.Aggregator;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 /**
  * Represents the sum(...) aggregate function is an expression tree.
@@ -20,7 +21,7 @@ public class ExprSumNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         Class childType = super.validateSingleNumericChild(streamTypeService);
 

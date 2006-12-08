@@ -80,12 +80,6 @@ public final class UniqueByPropertyView extends ViewSupport
         this.uniqueFieldName = uniqueFieldName;
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        // Attaches to just about anything as long as the field exists
-        return PropertyCheckHelper.exists(parentView.getEventType(), uniqueFieldName);
-    }
-
     public final EventType getEventType()
     {
         // The schema is the parent view's schema

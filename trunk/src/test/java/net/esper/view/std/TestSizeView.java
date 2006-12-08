@@ -85,14 +85,6 @@ public class TestSizeView extends TestCase
         assertNull(childView.getLastOldData());
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything
-        SizeView view = new SizeView();
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) == null);
-    }
-
     public void testSchema()
     {
         SizeView view = new SizeView();

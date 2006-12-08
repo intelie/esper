@@ -50,11 +50,11 @@ public class TestSelectExprEvalProcessor extends TestCase
     {
         EventBean[] events = new EventBean[] {makeEvent(8.8, 3, 4)};
 
-        EventBean result = methodOne.process(events);
+        EventBean result = methodOne.process(events, true);
         assertEquals(8.8d, result.get("resultOne"));
         assertEquals(12, result.get("resultTwo"));
 
-        result = methodTwo.process(events);
+        result = methodTwo.process(events, true);
         assertEquals(8.8d, result.get("a"));
         assertEquals(12, result.get("b"));
         assertSame(result.getEventType(), methodTwo.getResultEventType());

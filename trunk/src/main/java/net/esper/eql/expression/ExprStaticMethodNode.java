@@ -9,6 +9,7 @@ import net.esper.event.EventBean;
 import net.esper.util.StaticMethodResolver;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -113,7 +114,7 @@ public class ExprStaticMethodNode extends ExprNode
 		}
 	}
 
-	public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+	public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
 	{
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();
@@ -146,7 +147,7 @@ public class ExprStaticMethodNode extends ExprNode
 		return staticMethod.getReturnType();
 	}
 
-	public Object evaluate(EventBean[] eventsPerStream) 
+	public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
 	{
 		List<ExprNode> childNodes = this.getChildNodes();
 
@@ -154,7 +155,7 @@ public class ExprStaticMethodNode extends ExprNode
 		int count = 0;
 		for(ExprNode childNode : childNodes)
 		{
-			args[count++] = childNode.evaluate(eventsPerStream);
+			args[count++] = childNode.evaluate(eventsPerStream, isNewData);
 		}
 		
 		// The method is static so the object it is invoked on

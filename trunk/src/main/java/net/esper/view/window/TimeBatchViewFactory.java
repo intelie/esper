@@ -1,12 +1,11 @@
 package net.esper.view.window;
 
-import net.esper.view.factory.ViewFactory;
-import net.esper.view.factory.ViewParameterException;
-import net.esper.view.factory.ViewAttachException;
-import net.esper.view.ViewServiceContext;
-import net.esper.view.View;
+import net.esper.view.ViewParameterException;
+import net.esper.view.ViewFactory;
+import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.util.JavaClassHelper;
 
 import java.util.List;
@@ -74,7 +73,7 @@ public class TimeBatchViewFactory implements ViewFactory
         return false;
     }
 
-    public void setProvideCapability(Class capabilityInterfaceClass)
+    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback)
     {
         throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
     }
@@ -104,7 +103,7 @@ public class TimeBatchViewFactory implements ViewFactory
 
         if ((myView.getInitialReferencePoint() != null) && (optionalReferencePoint != null))
         {
-            if (myView.getInitialReferencePoint() != optionalReferencePoint)
+            if (!myView.getInitialReferencePoint().equals(optionalReferencePoint.longValue()))
             {
                 return false;
             }

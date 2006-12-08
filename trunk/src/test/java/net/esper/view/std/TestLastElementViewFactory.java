@@ -4,15 +4,29 @@ import junit.framework.TestCase;
 
 import java.util.Arrays;
 
-import net.esper.view.factory.ViewParameterException;
+import net.esper.view.ViewParameterException;
+import net.esper.view.window.TimeWindowView;
 import net.esper.support.view.SupportViewContextFactory;
 
 public class TestLastElementViewFactory extends TestCase
 {
+    private LastElementViewFactory factory;
+
+    public void setUp()
+    {
+        factory = new LastElementViewFactory();
+    }
+
     public void testSetParameters() throws Exception
     {
         tryParameter(new Object[] {});
         tryInvalidParameter(1.1d);
+    }
+
+    public void testCanReuse() throws Exception
+    {
+        assertFalse(factory.canReuse(new SizeView()));
+        assertTrue(factory.canReuse(new LastElementView()));
     }
 
     private void tryInvalidParameter(Object param) throws Exception

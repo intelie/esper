@@ -39,12 +39,6 @@ public abstract class SupportBaseView extends ViewSupport
         this.eventType = eventType;
     }
 
-    public String attachesTo(Viewable object)
-    {
-        log.info(".attachesTo Not implemented");
-        return null;
-    }
-
     public Iterator<EventBean> iterator()
     {
         log.info(".iterator Not implemented");

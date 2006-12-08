@@ -6,8 +6,9 @@ import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.view.SupportViewContextFactory;
 import net.esper.view.ViewFieldEnum;
-import net.esper.view.factory.ViewAttachException;
-import net.esper.view.factory.ViewParameterException;
+import net.esper.view.ViewAttachException;
+import net.esper.view.ViewParameterException;
+import net.esper.view.std.SizeView;
 
 import java.util.Arrays;
 
@@ -30,7 +31,15 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
         tryInvalidParameter(new Object[] {"a", "b", "c"});
     }
 
-    public void testAttachesTo() throws Exception
+    public void testCanReuse() throws Exception
+    {
+        factory.setViewParameters(Arrays.asList(new Object[] {"a"}));
+        assertFalse(factory.canReuse(new SizeView()));
+        assertFalse(factory.canReuse(new UnivariateStatisticsView("x")));
+        assertTrue(factory.canReuse(new UnivariateStatisticsView("a")));
+    }
+
+    public void testAttaches() throws Exception
     {
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);

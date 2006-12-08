@@ -2,6 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.CoercionException;
@@ -29,7 +30,7 @@ public class ExprInNode extends ExprNode
         this.isNotIn = isNotIn;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {
@@ -70,17 +71,17 @@ public class ExprInNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         // Evaluate first child which is the base value to compare to
         Iterator<ExprNode> it = this.getChildNodes().iterator();
-        Object inPropResult = it.next().evaluate(eventsPerStream);
+        Object inPropResult = it.next().evaluate(eventsPerStream, isNewData);
 
         boolean matched = false;
         do
         {
             ExprNode inSetValueExpr = it.next();
-            Object subExprResult = inSetValueExpr.evaluate(eventsPerStream);
+            Object subExprResult = inSetValueExpr.evaluate(eventsPerStream, isNewData);
 
             if (compare(inPropResult, subExprResult)) {
                 matched = true;

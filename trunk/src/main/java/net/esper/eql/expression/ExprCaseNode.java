@@ -6,6 +6,7 @@ import net.esper.event.EventBean;
 import net.esper.collection.UniformPair;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -38,7 +39,7 @@ public class ExprCaseNode extends ExprNode
         this.isCase2 = isCase2;
     }
 
-    public void validate(StreamTypeService streamTypeService_, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService_, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if (isCase2)
         {
@@ -79,15 +80,15 @@ public class ExprCaseNode extends ExprNode
         return resultType;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         if (!isCase2)
         {
-            return evaluateCaseSyntax1(eventsPerStream);
+            return evaluateCaseSyntax1(eventsPerStream, isNewData);
         }
         else
         {
-            return evaluateCaseSyntax2(eventsPerStream);
+            return evaluateCaseSyntax2(eventsPerStream, isNewData);
         }
     }
 
@@ -211,7 +212,7 @@ public class ExprCaseNode extends ExprNode
         }
     }
 
-    private Object evaluateCaseSyntax1(EventBean[] eventsPerStream)
+    private Object evaluateCaseSyntax1(EventBean[] eventsPerStream, boolean isNewData)
     {
         // Case 1 expression example:
         //      case when a=b then x [when c=d then y...] [else y]
@@ -220,12 +221,12 @@ public class ExprCaseNode extends ExprNode
         boolean matched = false;
         for (UniformPair<ExprNode> p : whenThenNodeList)
         {
-            Boolean whenResult = (Boolean) p.getFirst().evaluate(eventsPerStream);
+            Boolean whenResult = (Boolean) p.getFirst().evaluate(eventsPerStream, isNewData);
 
             // If the 'when'-expression returns true
             if (whenResult)
             {
-                caseResult = p.getSecond().evaluate(eventsPerStream);
+                caseResult = p.getSecond().evaluate(eventsPerStream, isNewData);
                 matched = true;
                 break;
             }
@@ -233,7 +234,7 @@ public class ExprCaseNode extends ExprNode
 
         if ((!matched) && (optionalElseExprNode != null))
         {
-            caseResult = optionalElseExprNode.evaluate(eventsPerStream);
+            caseResult = optionalElseExprNode.evaluate(eventsPerStream, isNewData);
         }
 
         if (caseResult == null)
@@ -248,20 +249,20 @@ public class ExprCaseNode extends ExprNode
         return caseResult;
     }
 
-    private Object evaluateCaseSyntax2(EventBean[] eventsPerStream)
+    private Object evaluateCaseSyntax2(EventBean[] eventsPerStream, boolean isNewData)
     {
         // Case 2 expression example:
         //      case p when p1 then x [when p2 then y...] [else z]
 
-        Object checkResult = optionalCompareExprNode.evaluate(eventsPerStream);
+        Object checkResult = optionalCompareExprNode.evaluate(eventsPerStream, isNewData);
         Object caseResult = null;
         boolean matched = false;
         for (UniformPair<ExprNode> p : whenThenNodeList)
         {
-            Object whenResult = p.getFirst().evaluate(eventsPerStream);
+            Object whenResult = p.getFirst().evaluate(eventsPerStream, isNewData);
 
             if (compare(checkResult, whenResult)) {
-                caseResult = p.getSecond().evaluate(eventsPerStream);
+                caseResult = p.getSecond().evaluate(eventsPerStream, isNewData);
                 matched = true;
                 break;
             }
@@ -269,7 +270,7 @@ public class ExprCaseNode extends ExprNode
 
         if ((!matched) && (optionalElseExprNode != null))
         {
-            caseResult = optionalElseExprNode.evaluate(eventsPerStream);
+            caseResult = optionalElseExprNode.evaluate(eventsPerStream, isNewData);
         }
 
         if (caseResult == null)

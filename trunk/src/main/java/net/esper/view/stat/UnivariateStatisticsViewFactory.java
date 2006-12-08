@@ -1,10 +1,11 @@
 package net.esper.view.stat;
 
-import net.esper.view.factory.ViewFactory;
-import net.esper.view.factory.ViewParameterException;
-import net.esper.view.factory.ViewAttachException;
+import net.esper.view.ViewFactory;
+import net.esper.view.ViewParameterException;
+import net.esper.view.ViewAttachException;
 import net.esper.view.*;
 import net.esper.event.EventType;
+import net.esper.eql.core.ViewFactoryCallback;
 
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
         return false;
     }
 
-    public void setProvideCapability(Class capabilityInterfaceClass)
+    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback)
     {
         throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
     }

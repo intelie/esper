@@ -40,11 +40,6 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
         this.dispatchService = dispatchService;
     }
 
-    public String attachesTo(Viewable parentViewable)
-    {
-        return null;
-    }
-
     public void update(EventBean[] newData, EventBean[] oldData)
     {
         if (log.isDebugEnabled())

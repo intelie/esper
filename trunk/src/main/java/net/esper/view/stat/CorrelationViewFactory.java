@@ -1,12 +1,10 @@
 package net.esper.view.stat;
 
-import net.esper.view.factory.ViewFactory;
-import net.esper.view.factory.ViewParameterException;
-import net.esper.view.factory.ViewAttachException;
-import net.esper.view.ViewServiceContext;
-import net.esper.view.PropertyCheckHelper;
-import net.esper.view.View;
+import net.esper.view.ViewFactory;
+import net.esper.view.ViewParameterException;
+import net.esper.view.*;
 import net.esper.event.EventType;
+import net.esper.eql.core.ViewFactoryCallback;
 
 import java.util.List;
 
@@ -50,7 +48,7 @@ public class CorrelationViewFactory implements ViewFactory
         return false;
     }
 
-    public void setProvideCapability(Class capabilityInterfaceClass)
+    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback)
     {
         throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
     }
@@ -74,7 +72,7 @@ public class CorrelationViewFactory implements ViewFactory
 
         CorrelationView other = (CorrelationView) view;
         if ((!other.getFieldNameX().equals(fieldNameX)) ||
-            (!other.getFieldNameX().equals(fieldNameY)))
+            (!other.getFieldNameY().equals(fieldNameY)))
         {
             return false;
         }

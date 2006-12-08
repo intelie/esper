@@ -5,7 +5,7 @@ import net.esper.event.EventBean;
 
 public class SupportExprEvaluator implements ExprEvaluator
 {
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         return eventsPerStream[0].get("boolPrimitive");
     }

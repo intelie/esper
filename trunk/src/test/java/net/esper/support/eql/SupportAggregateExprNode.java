@@ -4,6 +4,7 @@ import net.esper.eql.expression.*;
 import net.esper.eql.core.Aggregator;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.event.EventBean;
 
 public class SupportAggregateExprNode extends ExprAggregateNode
@@ -40,7 +41,7 @@ public class SupportAggregateExprNode extends ExprAggregateNode
         this.type = type;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         // Keep a count for if and when this was validated
         validateCount++;

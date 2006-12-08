@@ -7,7 +7,6 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 
 import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
 import net.esper.view.ContextAwareView;
 import net.esper.view.ViewServiceContext;
 import net.esper.event.EventType;
@@ -15,6 +14,7 @@ import net.esper.event.EventBean;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.collection.TimeWindow;
+import net.esper.collection.DataWindowRandomAccessImpl;
 import net.esper.client.EPException;
 
 /**
@@ -33,8 +33,9 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
     private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     private long millisecondsBeforeExpiry;
+    private TimeWindow timeWindow = new TimeWindow();
+    private DataWindowRandomAccessImpl optionalRandomAccess;
 
-    private final TimeWindow timeWindow = new TimeWindow();
     private ViewServiceContext viewServiceContext;
     private ScheduleSlot scheduleSlot;
 
@@ -50,9 +51,10 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
      * @param millisecondsBeforeExpiry is the number of milliseconds before events gets pushed
      * out of the timeWindow as oldData in the update method.
      */
-    public TimeWindowView(long millisecondsBeforeExpiry)
+    public TimeWindowView(long millisecondsBeforeExpiry, DataWindowRandomAccessImpl optionalRandomAccess)
     {
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
+        this.optionalRandomAccess = optionalRandomAccess;
     }
 
     /**
@@ -73,10 +75,14 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
     }
 
-    public final String attachesTo(Viewable parentView)
+    public DataWindowRandomAccessImpl getOptionalRandomAccess()
     {
-        // Attaches to any parent view
-        return null;
+        return optionalRandomAccess;
+    }
+
+    public void setOptionalRandomAccess(DataWindowRandomAccessImpl optionalRandomAccess)
+    {
+        this.optionalRandomAccess = optionalRandomAccess;
     }
 
     public final EventType getEventType()
@@ -91,6 +97,14 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
             String message = "View context has not been supplied, cannot schedule callback";
             log.fatal(".update " + message);
             throw new EPException(message);
+        }
+
+        if (optionalRandomAccess != null)
+        {
+            for (int i = 0; i < newData.length; i++)
+            {
+                optionalRandomAccess.enter(newData[i]);
+            }
         }
 
         long timestamp = viewServiceContext.getSchedulingService().getTime();
@@ -145,6 +159,10 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         {
             if ((expired != null) && (expired.size() > 0))
             {
+                if (optionalRandomAccess != null)
+                {
+                    optionalRandomAccess.remove(expired);
+                }
                 updateChildren(null, expired.toArray(new EventBean[0]));
             }
         }

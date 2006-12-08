@@ -121,22 +121,6 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
 		this.sortWindowSize = sortWindowSize;
 	}
 
-	public final String attachesTo(Viewable parentView)
-    {
-        // Attaches to parent views where the sort fields exist and implement Comparable
-    	String result = null;
-    	for(String name : sortFieldNames)
-    	{
-    		result = PropertyCheckHelper.exists(parentView.getEventType(), name);
-
-    		if(result != null)
-    		{
-    			break;
-    		}
-    	}
-    	return result;
-    }
-
     public final EventType getEventType()
     {
         // The schema is the parent view's schema
@@ -275,7 +259,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
 
     public boolean isEmpty()
     {
-        return sortWindowSize == 0;
+        return sortedEvents.size() == 0;
     }
 
     private static final Log log = LogFactory.getLog(SortWindowView.class);

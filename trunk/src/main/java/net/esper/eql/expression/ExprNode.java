@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 /**
  * Superclass for filter nodes in a filter expression tree. Allow
@@ -50,18 +51,19 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
      * @return the root node of the validated subtree, possibly 
      *         different than the root node of the unvalidated subtree 
      */
-    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService, AutoImportService autoImportService,
+                                        ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         ExprNode result = this;
 
         for (int i = 0; i < childNodes.size(); i++)
         {
-            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, autoImportService));
+            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, autoImportService, viewFactoryDelegate));
         }
 
         try
         {
-            validate(streamTypeService, autoImportService);
+            validate(streamTypeService, autoImportService, viewFactoryDelegate);
         }
         catch(ExprValidationException e)
         {
@@ -198,7 +200,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator
         // Validate
         try
         {
-            result.validate(streamTypeService, autoImportService);
+            result.validate(streamTypeService, autoImportService, null);
         }
         catch(ExprValidationException e)
         {

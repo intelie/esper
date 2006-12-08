@@ -2,6 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.LikeUtil;
 import net.esper.event.EventBean;
@@ -26,7 +27,7 @@ public class ExprLikeNode extends ExprNode
         this.isNot = not;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if ((this.getChildNodes().size() != 2) && (this.getChildNodes().size() != 3))
         {
@@ -69,11 +70,11 @@ public class ExprLikeNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         if (likeUtil == null)
         {
-            String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream);
+            String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
             if (patternVal == null)
             {
                 return null;
@@ -82,7 +83,7 @@ public class ExprLikeNode extends ExprNode
             Character escapeCharacter = null;
             if (this.getChildNodes().size() == 3)
             {
-                escape = (String) this.getChildNodes().get(2).evaluate(eventsPerStream);
+                escape = (String) this.getChildNodes().get(2).evaluate(eventsPerStream, isNewData);
             }
             if (escape.length() > 0)
             {
@@ -94,7 +95,7 @@ public class ExprLikeNode extends ExprNode
         {
             if (!isConstantPattern)
             {
-                String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream);
+                String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
                 if (patternVal == null)
                 {
                     return null;
@@ -103,7 +104,7 @@ public class ExprLikeNode extends ExprNode
             }
         }
 
-        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream);
+        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
         if (evalValue == null)
         {
             return null;

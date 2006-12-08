@@ -65,19 +65,6 @@ public class TestUnivariateStatisticsView extends TestCase
         checkNew(3, 30.5, 10.16666667, 1.312334646, 1.607275127, 2.583333333);
     }
 
-    public void testViewAttachesTo()
-    {
-        UnivariateStatisticsView view = new UnivariateStatisticsView("symbol");
-
-        // The symbol field in the parent is not a number, expect an error on attach
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) != null);
-
-        // Try a non-existing field name
-        view = new UnivariateStatisticsView("dummy");
-        assertTrue(view.attachesTo(parent) != null);
-    }
-
     public void testGetSchema()
     {
         assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.UNIVARIATE_STATISTICS__COUNT.getName()) == long.class);

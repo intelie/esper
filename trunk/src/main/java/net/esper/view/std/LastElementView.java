@@ -43,12 +43,6 @@ public class LastElementView extends ViewSupport
     {
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        // Attaches to just about anything
-        return null;
-    }
-
     public final EventType getEventType()
     {
         // The schema is the parent view's schema

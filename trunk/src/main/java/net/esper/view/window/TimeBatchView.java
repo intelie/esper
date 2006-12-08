@@ -102,12 +102,6 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
         this.initialReferencePoint = initialReferencePoint;
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        // Attaches to any parent view
-        return null;
-    }
-
     public final EventType getEventType()
     {
         return parent.getEventType();

@@ -66,16 +66,6 @@ public class TestLastElementView extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(), new EventBean[] { events.get("e0") });
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything
-        LastElementView view = new LastElementView();
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) == null);
-        parent.addView(view);
-        assertTrue(view.getEventType() == parent.getEventType());
-    }
-
     public void testCopyView() throws Exception
     {
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);

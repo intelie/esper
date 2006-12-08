@@ -5,13 +5,14 @@ import net.esper.event.EventBean;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 /**
  * Represents an OR expression in a filter expression tree.
  */
 public class ExprOrNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean
         for (ExprNode child : this.getChildNodes())
@@ -34,12 +35,12 @@ public class ExprOrNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         // At least one child must evaluate to true
         for (ExprNode child : this.getChildNodes())
         {
-            Boolean evaluated = (Boolean) child.evaluate(eventsPerStream);
+            Boolean evaluated = (Boolean) child.evaluate(eventsPerStream, isNewData);
             if (evaluated)
             {
                 return true;

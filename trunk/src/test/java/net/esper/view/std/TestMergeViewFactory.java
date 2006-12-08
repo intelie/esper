@@ -4,12 +4,20 @@ import junit.framework.TestCase;
 
 import java.util.Arrays;
 
-import net.esper.view.factory.ViewParameterException;
+import net.esper.view.ViewParameterException;
+import net.esper.view.window.TimeWindowView;
 import net.esper.support.view.SupportViewContextFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 
 public class TestMergeViewFactory extends TestCase
 {
+    private MergeViewFactory factory;
+
+    public void setUp()
+    {
+        factory = new MergeViewFactory();
+    }
+
     public void testSetParameters() throws Exception
     {
         tryParameter(new Object[] {"price"}, new String[] {"price"});
@@ -21,6 +29,18 @@ public class TestMergeViewFactory extends TestCase
         tryInvalidParameter(new Object[] {1.1d});
         tryInvalidParameter(new Object[] {new String[] {}});
         tryInvalidParameter(new Object[] {new String[] {}, new String[] {}});
+    }
+
+    public void testCanReuse() throws Exception
+    {
+        factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
+        assertFalse(factory.canReuse(new SizeView()));
+        assertFalse(factory.canReuse(new MergeView(new String[] {"a"})));
+        assertTrue(factory.canReuse(new MergeView(new String[] {"a", "b"})));
+
+        factory.setViewParameters(Arrays.asList(new Object[] {new String[] {"a", "b"}}));
+        assertFalse(factory.canReuse(new MergeView(new String[] {"a"})));
+        assertTrue(factory.canReuse(new MergeView(new String[] {"a", "b"})));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception

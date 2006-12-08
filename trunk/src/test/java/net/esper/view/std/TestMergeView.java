@@ -57,14 +57,6 @@ public class TestMergeView extends TestCase
         SupportViewDataChecker.checkNewData(childView, new EventBean[] { tradeBeans[1], tradeBeans[2] });
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything event if the field does not exists
-        MergeView view = new MergeView(new String[]{"dummy"});
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) == null);
-    }
-
     public void testCopyView() throws Exception
     {
         EventType someEventType = SupportEventTypeFactory.createBeanType(SupportBean.class);

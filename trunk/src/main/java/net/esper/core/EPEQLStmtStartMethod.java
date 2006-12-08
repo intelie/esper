@@ -23,6 +23,7 @@ import net.esper.eql.db.PollingViewableFactory;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.*;
+import net.esper.view.ViewFactory;
 import net.esper.view.internal.BufferView;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.pattern.PatternContext;
@@ -80,35 +81,30 @@ public class EPEQLStmtStartMethod
         String[] streamNames = determineStreamNames(statementSpec.getStreamSpecs());
 
         int numStreams = streamNames.length;
-        EventType[] streamTypes = new EventType[statementSpec.getStreamSpecs().size()];
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
-        EventStream[] eventStreams = new EventStream[numStreams];
-
-        ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[streamTypes.length];
+        Viewable[] eventStreamParentViewable = new Viewable[numStreams];
+        ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
 
         // Create streams and views
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpec streamSpec = statementSpec.getStreamSpecs().get(i);
 
-            // Create stream based on a filter specification
+            // Create view factories and parent view based on a filter specification
             if (streamSpec instanceof FilterStreamSpec)
             {
                 FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
-                eventStreams[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
-
-                // Cascade views onto the (filter or pattern) stream
-                unmaterializedViewChain[i] = services.getViewService().createFactories(eventStreams[i], streamSpec.getViewSpecs(), viewContext);
+                eventStreamParentViewable[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
+                unmaterializedViewChain[i] = services.getViewService().createFactories(eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), viewContext);
             }
-            // Create stream based on a pattern expression
+            // Create view factories and parent view based on a pattern expression
             else if (streamSpec instanceof PatternStreamSpec)
             {
                 PatternStreamSpec patternStreamSpec = (PatternStreamSpec) streamSpec;
                 final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
-                eventStreams[i] = sourceEventStream;
-
-                unmaterializedViewChain[i] = services.getViewService().createFactories(sourceEventStream, streamSpec.getViewSpecs(), viewContext);
+                eventStreamParentViewable[i] = sourceEventStream;
+                unmaterializedViewChain[i] = services.getViewService().createFactories(sourceEventStream.getEventType(), streamSpec.getViewSpecs(), viewContext);
 
                 EvalRootNode rootNode = new EvalRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
@@ -125,24 +121,32 @@ public class EPEQLStmtStartMethod
                 PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
                 stopCallbacks.add(patternStopCallback);
             }
+            // Create view factories and parent view based on a database SQL statement
             else if (streamSpec instanceof DBStatementStreamSpec)
             {
-                DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
-                HistoricalEventViewable historicalEventViewable = PollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService());
-                unmaterializedViewChain[i] = null;
                 if (streamSpec.getViewSpecs().size() > 0)
                 {
                     throw new ExprValidationException("Historical data joins do not allow views onto the data, view '"
                             + streamSpec.getViewSpecs().get(0).getObjectNamespace() + ":" + streamSpec.getViewSpecs().get(0).getObjectName() + "' is not valid in this context");
                 }
+
+                DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
+                HistoricalEventViewable historicalEventViewable = PollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService());
+                unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.getEventType(), new LinkedList<ViewFactory>());
+                eventStreamParentViewable[i] = historicalEventViewable;
                 stopCallbacks.add(historicalEventViewable);
             }
             else
             {
-                throw new ExprValidationException("Unknown stream specification");
+                throw new ExprValidationException("Unknown stream specification type: " + streamSpec);
             }
+        }
 
-            streamTypes[i] = unmaterializedViewChain[i].getEventType();
+        // Obtain event types from ViewFactoryChains
+        EventType[] streamEventTypes = new EventType[statementSpec.getStreamSpecs().size()];
+        for (int i = 0; i < unmaterializedViewChain.length; i++)
+        {
+            streamEventTypes[i] = unmaterializedViewChain[i].getEventType();
         }
 
         // create stop method
@@ -166,20 +170,12 @@ public class EPEQLStmtStartMethod
         };
 
         // Construct type information per stream
-        StreamTypeService typeService = new StreamTypeServiceImpl(streamTypes, streamNames);
+        StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames);
+        ViewFactoryDelegate viewFactoryDelegate = new ViewFactoryDelegateImpl(unmaterializedViewChain);
 
-        // Materialize views
-        Viewable[] streamViews = new Viewable[streamTypes.length];
-        for (int i = 0; i < streamViews.length; i++)
-        {
-            if (eventStreams[i] != null)
-            {
-                streamViews[i] = services.getViewService().createViews(eventStreams[i], unmaterializedViewChain[i], viewContext);
-            }
-        }
-
-        // Validate any views that require validation
-        for (Viewable viewable : streamViews)
+        // Validate views that require validation, specifically streams that don't have
+        // sub-views such as DB SQL joins
+        for (Viewable viewable : eventStreamParentViewable)
         {
             if (viewable instanceof ValidatedView)
             {
@@ -187,9 +183,6 @@ public class EPEQLStmtStartMethod
                 validatedView.validate(typeService);
             }
         }
-
-        // Get the service for resolving class names
-        AutoImportService autoImportService = services.getAutoImportService();
         
         // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
         // May return null if we don't need to post-process results posted by views or joins.
@@ -202,10 +195,18 @@ public class EPEQLStmtStartMethod
                 statementSpec.getOrderByList(),
                 typeService,
                 services.getEventAdapterService(),
-                autoImportService);
+                services.getAutoImportService(),
+                viewFactoryDelegate);
 
         // Validate where-clause filter tree and outer join clause
-        validateNodes(typeService, autoImportService);
+        validateNodes(typeService, services.getAutoImportService(), viewFactoryDelegate);
+
+        // Materialize views
+        Viewable[] streamViews = new Viewable[streamEventTypes.length];
+        for (int i = 0; i < streamViews.length; i++)
+        {
+            streamViews[i] = services.getViewService().createViews(eventStreamParentViewable[i], unmaterializedViewChain[i].getViewFactoryChain(), viewContext);
+        }
 
         // For just 1 event stream without joins, handle the one-table process separatly.
         Viewable finalView = null;
@@ -215,7 +216,7 @@ public class EPEQLStmtStartMethod
         }
         else
         {
-            finalView = handleJoin(streamNames, streamTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum());
+            finalView = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum());
         }
 
         // Hook up internal event route for insert-into if required
@@ -285,7 +286,7 @@ public class EPEQLStmtStartMethod
         return streamNames;
     }
 
-    private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService)
+    private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate)
     {
         if (statementSpec.getFilterRootNode() != null)
         {
@@ -294,7 +295,7 @@ public class EPEQLStmtStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, autoImportService);
+                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, autoImportService, viewFactoryDelegate);
                 statementSpec.setFilterExprRootNode(optionalFilterNode);
 
                 // Make sure there is no aggregation in the where clause
@@ -324,7 +325,7 @@ public class EPEQLStmtStartMethod
             equalsNode.addChildNode(outerJoinDesc.getRightNode());
             try
             {
-                equalsNode = equalsNode.getValidatedSubtree(typeService, autoImportService);
+                equalsNode = equalsNode.getValidatedSubtree(typeService, autoImportService, viewFactoryDelegate);
             }
             catch (ExprValidationException ex)
             {

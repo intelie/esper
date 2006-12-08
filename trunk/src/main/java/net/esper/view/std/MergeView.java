@@ -108,12 +108,6 @@ public final class MergeView extends ViewSupport implements ParentAwareView, Con
         parentViews.add(parentView);
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        // Attaches to just about anything
-        return null;
-    }
-
     public void setParentAware(List<View> parentViews)
     {
         // Find the group by view matching the merge view

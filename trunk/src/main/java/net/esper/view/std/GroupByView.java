@@ -101,20 +101,6 @@ public final class GroupByView extends ViewSupport implements ContextAwareView
         this.groupFieldNames = groupFieldNames;
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        // Attaches to just about anything as long as all the fields exists
-        for (int i = 0; i < groupFieldNames.length; i++)
-        {
-            String message = PropertyCheckHelper.exists(parentView.getEventType(), groupFieldNames[i]);
-            if (message != null)
-            {
-                return message;
-            }
-        }
-        return null;
-    }
-
     public final EventType getEventType()
     {
         // The schema is the parent view's schema

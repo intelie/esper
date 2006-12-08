@@ -22,13 +22,13 @@ public class TestSelectExprJoinWildcardProcessor extends TestCase
     {
         EventBean[] testEvents = SupportStreamTypeSvc3Stream.getSampleEvents();
 
-        EventBean result = processor.process(testEvents);
+        EventBean result = processor.process(testEvents, true);
         assertEquals(testEvents[0].getUnderlying(), result.get("s0"));
         assertEquals(testEvents[1].getUnderlying(), result.get("s1"));
 
         // Test null events, such as in an outer join
         testEvents[1] = null;
-        result = processor.process(testEvents);
+        result = processor.process(testEvents, true);
         assertEquals(testEvents[0].getUnderlying(), result.get("s0"));
         assertNull(result.get("s1"));
     }

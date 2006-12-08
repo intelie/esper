@@ -6,6 +6,10 @@ import java.util.List;
 import net.esper.type.PrimitiveValue;
 import net.esper.type.PrimitiveValueFactory;
 import net.esper.view.ViewSpec;
+import net.esper.view.ViewServiceImpl;
+import net.esper.view.ViewFactoryChain;
+import net.esper.view.ViewFactory;
+import net.esper.event.EventType;
 
 /**
  * Convenience class for making view specifications from class and string arrays.
@@ -29,6 +33,11 @@ public class SupportViewSpecFactory
         return specifications;
     }
 
+    public static List<ViewFactory> makeFactoryListOne(EventType parentEventType) throws Exception
+    {
+        return makeFactories(parentEventType, makeSpecListOne());
+    }
+
     public static List<ViewSpec> makeSpecListTwo()
     {
         List<ViewSpec> specifications = new LinkedList<ViewSpec>();
@@ -39,6 +48,11 @@ public class SupportViewSpecFactory
         specifications.add(specOne);
 
         return specifications;
+    }
+
+    public static List<ViewFactory> makeFactoryListTwo(EventType parentEventType) throws Exception
+    {
+        return makeFactories(parentEventType, makeSpecListTwo());
     }
 
     public static List<ViewSpec> makeSpecListThree()
@@ -54,6 +68,11 @@ public class SupportViewSpecFactory
         specifications.add(specTwo);
 
         return specifications;
+    }
+
+    public static List<ViewFactory> makeFactoryListThree(EventType parentEventType) throws Exception
+    {
+        return makeFactories(parentEventType, makeSpecListThree());
     }
 
     public static List<ViewSpec> makeSpecListFour()
@@ -73,6 +92,11 @@ public class SupportViewSpecFactory
         return specifications;
     }
 
+    public static List<ViewFactory> makeFactoryListFour(EventType parentEventType) throws Exception
+    {
+        return makeFactories(parentEventType, makeSpecListFour());
+    }
+
     public static List<ViewSpec> makeSpecListFive()
     {
         List<ViewSpec> specifications = new LinkedList<ViewSpec>();
@@ -82,6 +106,11 @@ public class SupportViewSpecFactory
         specifications.add(specOne);
 
         return specifications;
+    }
+
+    public static List<ViewFactory> makeFactoryListFive(EventType parentEventType) throws Exception
+    {
+        return makeFactories(parentEventType, makeSpecListFive());
     }
 
     public static ViewSpec makeSpec(String namespace, String viewName, Class[] paramTypes, String[] paramValues)
@@ -107,5 +136,12 @@ public class SupportViewSpecFactory
         }
 
         return params;
+    }
+
+    private static List<ViewFactory> makeFactories(EventType parentEventType, List<ViewSpec> viewSpecs) throws Exception
+    {
+        ViewServiceImpl svc = new ViewServiceImpl();
+        ViewFactoryChain viewFactories = svc.createFactories(parentEventType, viewSpecs, SupportViewContextFactory.makeContext());
+        return viewFactories.getViewFactoryChain();
     }
 }

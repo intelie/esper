@@ -17,7 +17,7 @@ public interface OrderByProcessor {
 	 * @param generatingEvents - the events that generated the output events (each event has a corresponding array of generating events per different event streams)
 	 * @return an array containing the output events in sorted order
 	 */
-	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents);
+	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData);
 
 	/**
 	 * Sort the output events, using the provided group-by keys for 
@@ -28,5 +28,5 @@ public interface OrderByProcessor {
 	 * @param groupByKeys - the keys to use for determining the group-by group of output events 
 	 * @return an array containing the output events in sorted order
 	 */
-	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKey[] groupByKeys);
+	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKey[] groupByKeys, boolean isNewData);
 }	

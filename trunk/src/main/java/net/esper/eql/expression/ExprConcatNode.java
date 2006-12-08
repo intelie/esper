@@ -3,6 +3,7 @@ package net.esper.eql.expression;
 import net.esper.event.EventBean;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
@@ -19,7 +20,7 @@ public class ExprConcatNode extends ExprNode
         buffer = new StringBuffer();
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {
@@ -43,12 +44,12 @@ public class ExprConcatNode extends ExprNode
         return String.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         buffer.delete(0, buffer.length());
         for (ExprNode child : this.getChildNodes())
         {
-            String result = (String) child.evaluate(eventsPerStream);
+            String result = (String) child.evaluate(eventsPerStream, isNewData);
             if (result == null)
             {
                 return null;

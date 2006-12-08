@@ -6,7 +6,6 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.view.SupportStreamImpl;
 import net.esper.support.view.SupportViewSpecFactory;
 import net.esper.support.view.SupportViewContextFactory;
-import net.esper.support.event.SupportEventAdapterService;
 
 public class TestViewServiceImpl extends TestCase
 {
@@ -30,14 +29,11 @@ public class TestViewServiceImpl extends TestCase
 
         ViewServiceContext context = SupportViewContextFactory.makeContext();
 
-        /**
-         * TODO: fix test
-        viewOne = viewService.createView(streamOne, SupportViewSpecFactory.makeSpecListOne(), context);
-        viewTwo = viewService.createView(streamOne, SupportViewSpecFactory.makeSpecListTwo(), context);
-        viewThree = viewService.createView(streamOne, SupportViewSpecFactory.makeSpecListThree(), context);
-        viewFour = viewService.createView(streamOne, SupportViewSpecFactory.makeSpecListFour(), context);
-        viewFive = viewService.createView(streamTwo, SupportViewSpecFactory.makeSpecListFive(), context);
-         */
+        viewOne = viewService.createViews(streamOne, SupportViewSpecFactory.makeFactoryListOne(streamOne.getEventType()), context);
+        viewTwo = viewService.createViews(streamOne, SupportViewSpecFactory.makeFactoryListTwo(streamOne.getEventType()), context);
+        viewThree = viewService.createViews(streamOne, SupportViewSpecFactory.makeFactoryListThree(streamOne.getEventType()), context);
+        viewFour = viewService.createViews(streamOne, SupportViewSpecFactory.makeFactoryListFour(streamOne.getEventType()), context);
+        viewFive = viewService.createViews(streamTwo, SupportViewSpecFactory.makeFactoryListFive(streamTwo.getEventType()), context);
     }
 
     public void testCheckChainReuse()
@@ -93,22 +89,5 @@ public class TestViewServiceImpl extends TestCase
         {
             // Expected
         }
-    }
-
-    public void testInvalid()
-    {
-        /**
-         * TODO: fix test
-        try
-        {
-            // Event doesn't have the right property
-            viewFive = viewService.createView(streamTwo, SupportViewSpecFactory.makeSpecListOne(), null);
-            TestCase.fail();
-        }
-        catch (ViewProcessingException ex)
-        {
-            // Expected
-        }
-         */
     }
 }

@@ -21,12 +21,12 @@ public class TestExprConstantNode extends TestCase
 
     public void testValidate() throws Exception
     {
-        constantNode.validate(null, null);
+        constantNode.validate(null, null, null);
     }
 
     public void testEvaluate()
     {
-        assertEquals("5", constantNode.evaluate(null));
+        assertEquals("5", constantNode.evaluate(null, false));
     }
 
     public void testToExpressionString() throws Exception

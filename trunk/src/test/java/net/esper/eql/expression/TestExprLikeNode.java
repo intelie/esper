@@ -58,10 +58,10 @@ public class TestExprLikeNode extends TestCase
     public void testEvaluate() throws Exception
     {
         // Build :      s0.string like "%abc__"  (with or witout escape)
-        assertFalse((Boolean) likeNodeNormal.evaluate(makeEvent("abcx")));
-        assertTrue((Boolean) likeNodeNormal.evaluate(makeEvent("dskfsljkdfabcxx")));
-        assertTrue((Boolean) likeNodeNot.evaluate(makeEvent("abcx")));
-        assertFalse((Boolean) likeNodeNot.evaluate(makeEvent("dskfsljkdfabcxx")));
+        assertFalse((Boolean) likeNodeNormal.evaluate(makeEvent("abcx"), false));
+        assertTrue((Boolean) likeNodeNormal.evaluate(makeEvent("dskfsljkdfabcxx"), false));
+        assertTrue((Boolean) likeNodeNot.evaluate(makeEvent("abcx"), false));
+        assertFalse((Boolean) likeNodeNot.evaluate(makeEvent("dskfsljkdfabcxx"), false));
     }
 
     public void testEquals()  throws Exception
@@ -91,7 +91,7 @@ public class TestExprLikeNode extends TestCase
     private void tryInvalidValidate(ExprLikeNode exprLikeRegexpNode) throws Exception
     {
         try {
-            exprLikeRegexpNode.validate(null, null);
+            exprLikeRegexpNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

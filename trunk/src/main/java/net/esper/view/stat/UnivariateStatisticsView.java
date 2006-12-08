@@ -85,11 +85,6 @@ public final class UnivariateStatisticsView extends ViewSupport implements Conte
         this.fieldName = fieldName;
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        return PropertyCheckHelper.checkNumeric(parentView.getEventType(), fieldName);
-    }
-
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
         // If we have child views, keep a reference to the old values, so we can fire them as old data event.

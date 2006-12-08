@@ -25,11 +25,6 @@ public class IStreamRStreamSelectorView extends ViewSupport
         this.selectStreamDirEnum = selectStreamDirEnum;
     }
 
-    public String attachesTo(Viewable parentViewable)
-    {
-        return null;
-    }
-
     public void update(EventBean[] newData, EventBean[] oldData)
     {
         if (selectStreamDirEnum == SelectClauseStreamSelectorEnum.RSTREAM_ONLY)

@@ -107,11 +107,6 @@ public final class WeightedAverageView extends ViewSupport implements ContextAwa
         this.fieldNameWeight = fieldNameWeight;
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        return PropertyCheckHelper.checkNumeric(parentView.getEventType(), fieldNameX, fieldNameWeight);
-    }
-
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
         double oldValue = currentValue;

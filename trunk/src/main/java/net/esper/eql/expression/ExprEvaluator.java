@@ -12,5 +12,5 @@ public interface ExprEvaluator
      * @param eventsPerStream - event tuple
      * @return evaluation result, a boolean value for OR/AND-type evalution nodes.
      */
-    public Object evaluate(EventBean[] eventsPerStream);
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData);
 }

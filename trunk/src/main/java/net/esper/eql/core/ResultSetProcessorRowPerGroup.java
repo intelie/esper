@@ -10,9 +10,6 @@ import net.esper.collection.MultiKey;
 import net.esper.collection.Pair;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.eql.core.AggregationService;
-import net.esper.eql.core.OrderByProcessor;
-import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.expression.ExprNode;
 
 /**
@@ -82,11 +79,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     {
         // Generate group-by keys for all events, collect all keys in a set for later event generation
         Map<MultiKey, EventBean[]> keysAndEvents = new HashMap<MultiKey, EventBean[]>();
-        MultiKey[] newDataMultiKey = generateGroupKeys(newEvents, keysAndEvents);
-        MultiKey[] oldDataMultiKey = generateGroupKeys(oldEvents, keysAndEvents);
+        MultiKey[] newDataMultiKey = generateGroupKeys(newEvents, keysAndEvents, true);
+        MultiKey[] oldDataMultiKey = generateGroupKeys(oldEvents, keysAndEvents, false);
 
         // generate old events
-        EventBean[] selectOldEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingExpr, oldEventGroupReps, oldGenerators);
+        EventBean[] selectOldEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingExpr, oldEventGroupReps, oldGenerators, false);
 
         // update aggregates
         if (!oldEvents.isEmpty())
@@ -111,7 +108,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         }
 
         // generate new events using select expressions
-        EventBean[] selectNewEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingExpr, newEventGroupReps, newGenerators);
+        EventBean[] selectNewEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingExpr, newEventGroupReps, newGenerators, true);
 
         if ((selectNewEvents != null) || (selectOldEvents != null))
         {
@@ -124,11 +121,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     {
         // Generate group-by keys for all events, collect all keys in a set for later event generation
         Map<MultiKey, EventBean> keysAndEvents = new HashMap<MultiKey, EventBean>();
-        MultiKey[] newDataMultiKey = generateGroupKeys(newData, keysAndEvents);
-        MultiKey[] oldDataMultiKey = generateGroupKeys(oldData, keysAndEvents);
+        MultiKey[] newDataMultiKey = generateGroupKeys(newData, keysAndEvents, true);
+        MultiKey[] oldDataMultiKey = generateGroupKeys(oldData, keysAndEvents, false);
 
         // generate old events
-        EventBean[] selectOldEvents = generateOutputEventsView(keysAndEvents, optionalHavingExpr, oldEventGroupReps, oldGenerators);
+        EventBean[] selectOldEvents = generateOutputEventsView(keysAndEvents, optionalHavingExpr, oldEventGroupReps, oldGenerators, false);
 
         // update aggregates
         EventBean[] eventsPerStream = new EventBean[1];
@@ -152,7 +149,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         }
 
         // generate new events using select expressions
-        EventBean[] selectNewEvents = generateOutputEventsView(keysAndEvents, optionalHavingExpr, newEventGroupReps, newGenerators);
+        EventBean[] selectNewEvents = generateOutputEventsView(keysAndEvents, optionalHavingExpr, newEventGroupReps, newGenerators, true);
 
         if ((selectNewEvents != null) || (selectOldEvents != null))
         {
@@ -161,7 +158,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         return null;
     }
 
-    private EventBean[] generateOutputEventsView(Map<MultiKey, EventBean> keysAndEvents, ExprNode optionalHavingExpr, Map<MultiKey, EventBean> groupReps, Map<MultiKey, EventBean[]> generators)
+    private EventBean[] generateOutputEventsView(Map<MultiKey, EventBean> keysAndEvents, ExprNode optionalHavingExpr, Map<MultiKey, EventBean> groupReps, Map<MultiKey, EventBean[]> generators, boolean isNewData)
     {
         EventBean[] eventsPerStream = new EventBean[1];
         EventBean[] events = new EventBean[keysAndEvents.size()];
@@ -183,14 +180,14 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             // Filter the having clause
             if (optionalHavingExpr != null)
             {
-                Boolean result = (Boolean) optionalHavingExpr.evaluate(eventsPerStream);
+                Boolean result = (Boolean) optionalHavingExpr.evaluate(eventsPerStream, isNewData);
                 if (!result)
                 {
                     continue;
                 }
             }
 
-            events[count] = selectExprProcessor.process(eventsPerStream);
+            events[count] = selectExprProcessor.process(eventsPerStream, isNewData);
             keys[count] = entry.getKey();
             if(isSorting)
             {
@@ -228,10 +225,10 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             }
         }
 
-        return applyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators);
+        return applyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators, isNewData);
     }
 
-    private EventBean[] generateOutputEventsJoin(Map<MultiKey, EventBean[]> keysAndEvents, ExprNode optionalHavingExpr, Map<MultiKey, EventBean> groupReps, Map<MultiKey, EventBean[]> generators)
+    private EventBean[] generateOutputEventsJoin(Map<MultiKey, EventBean[]> keysAndEvents, ExprNode optionalHavingExpr, Map<MultiKey, EventBean> groupReps, Map<MultiKey, EventBean[]> generators, boolean isNewData)
     {
         EventBean[] events = new EventBean[keysAndEvents.size()];
         MultiKey[] keys = new MultiKey[keysAndEvents.size()];
@@ -250,14 +247,14 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             // Filter the having clause
             if (optionalHavingExpr != null)
             {
-                Boolean result = (Boolean) optionalHavingExpr.evaluate(eventsPerStream);
+                Boolean result = (Boolean) optionalHavingExpr.evaluate(eventsPerStream, isNewData);
                 if (!result)
                 {
                     continue;
                 }
             }
 
-            events[count] = selectExprProcessor.process(eventsPerStream);
+            events[count] = selectExprProcessor.process(eventsPerStream, isNewData);
             keys[count] = entry.getKey();
             if(isSorting)
             {
@@ -294,10 +291,10 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             }
         }
 
-        return applyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators);
+        return applyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators, isNewData);
     }
 
-    private EventBean[] applyOutputLimitAndOrderBy(EventBean[] events, EventBean[][] currentGenerators, MultiKey[] keys, Map<MultiKey, EventBean> groupReps, Map<MultiKey, EventBean[]> generators)
+    private EventBean[] applyOutputLimitAndOrderBy(EventBean[] events, EventBean[][] currentGenerators, MultiKey[] keys, Map<MultiKey, EventBean> groupReps, Map<MultiKey, EventBean[]> generators, boolean isNewData)
     {
         if(isOutputLimiting && !isOutputLimitLastOnly)
         {
@@ -321,14 +318,14 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
         if(isSorting)
         {
-            events =  orderByProcessor.sort(events, currentGenerators, keys);
+            events =  orderByProcessor.sort(events, currentGenerators, keys, isNewData);
         }
 
         return events;
     }
 
 
-    private MultiKey[] generateGroupKeys(EventBean[] events, Map<MultiKey, EventBean> eventPerKey)
+    private MultiKey[] generateGroupKeys(EventBean[] events, Map<MultiKey, EventBean> eventPerKey, boolean isNewData)
     {
         if (events == null)
         {
@@ -341,7 +338,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         for (int i = 0; i < events.length; i++)
         {
             eventsPerStream[0] = events[i];
-            keys[i] = generateGroupKey(eventsPerStream);
+            keys[i] = generateGroupKey(eventsPerStream, isNewData);
 
             if (!eventPerKey.containsKey(keys[i]))
             {
@@ -352,7 +349,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         return keys;
     }
 
-    private MultiKey[] generateGroupKeys(Set<MultiKey<EventBean>> resultSet, Map<MultiKey, EventBean[]> eventPerKey)
+    private MultiKey[] generateGroupKeys(Set<MultiKey<EventBean>> resultSet, Map<MultiKey, EventBean[]> eventPerKey, boolean isNewData)
     {
         if (resultSet.isEmpty())
         {
@@ -364,7 +361,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         int count = 0;
         for (MultiKey<EventBean> eventsPerStream : resultSet)
         {
-            keys[count] = generateGroupKey(eventsPerStream.getArray());
+            keys[count] = generateGroupKey(eventsPerStream.getArray(), isNewData);
 
             if (!eventPerKey.containsKey(keys[count]))
             {
@@ -377,14 +374,14 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         return keys;
     }
 
-    private MultiKey generateGroupKey(EventBean[] eventsPerStream)
+    private MultiKey generateGroupKey(EventBean[] eventsPerStream, boolean isNewData)
     {
         Object[] keys = new Object[groupKeyNodes.size()];
 
         int count = 0;
         for (ExprNode exprNode : groupKeyNodes)
         {
-            keys[count] = exprNode.evaluate(eventsPerStream);
+            keys[count] = exprNode.evaluate(eventsPerStream, isNewData);
             count++;
         }
 

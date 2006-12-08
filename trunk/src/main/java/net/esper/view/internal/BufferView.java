@@ -50,12 +50,6 @@ public final class BufferView extends ViewSupport
         return parent.iterator();
     }
 
-    public final String attachesTo(Viewable object)
-    {
-        // This view attaches to any parent view
-        return null;
-    }
-
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
         newDataBuffer.add(newData);

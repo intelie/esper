@@ -4,7 +4,6 @@ import net.esper.eql.expression.ExprEvaluator;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
 import java.util.Iterator;
 
 /**
@@ -33,15 +32,10 @@ public class FilterExprView extends ViewSupport
         return parent.iterator();
     }
 
-    public String attachesTo(Viewable parentViewable)
-    {
-        return null;
-    }
-
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        EventBean[] filteredNewData = filterEvents(exprEvaluator, newData);
-        EventBean[] filteredOldData = filterEvents(exprEvaluator, oldData);
+        EventBean[] filteredNewData = filterEvents(exprEvaluator, newData, true);
+        EventBean[] filteredOldData = filterEvents(exprEvaluator, oldData, false);
 
         if ((filteredNewData != null) || (filteredOldData != null))
         {
@@ -55,7 +49,7 @@ public class FilterExprView extends ViewSupport
      * @param events - events to filter
      * @return filtered events, or null if no events got through the filter 
      */
-    protected static EventBean[] filterEvents(ExprEvaluator exprEvaluator, EventBean[] events)
+    protected static EventBean[] filterEvents(ExprEvaluator exprEvaluator, EventBean[] events, boolean isNewData)
     {
         if (events == null)
         {
@@ -69,7 +63,7 @@ public class FilterExprView extends ViewSupport
         for (int i = 0; i < events.length; i++)
         {
             evalEventArr[0] = events[i];
-            boolean pass = (Boolean) exprEvaluator.evaluate(evalEventArr);
+            boolean pass = (Boolean) exprEvaluator.evaluate(evalEventArr, isNewData);
             if (pass)
             {
                 passResult[i] = true;

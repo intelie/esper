@@ -1,6 +1,5 @@
 package net.esper.view;
 
-import net.esper.view.factory.ViewFactory;
 import net.esper.event.EventType;
 
 import java.util.List;

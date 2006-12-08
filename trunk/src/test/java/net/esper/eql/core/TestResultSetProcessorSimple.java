@@ -44,7 +44,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void testUpdateAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -75,7 +75,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void testProcessAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -124,7 +124,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
 	public void testProcessLast() throws Exception
 	{
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -151,7 +151,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
 	public void testUpdateLast() throws Exception
 	{
-	       assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false));
+	       assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true));
 
 	        EventBean testEvent1 = makeEvent(10, 5, 6);
 		    EventBean testEvent2 = makeEvent(11, 6, 7);

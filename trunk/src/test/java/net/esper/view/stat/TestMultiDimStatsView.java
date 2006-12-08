@@ -108,34 +108,6 @@ public class TestMultiDimStatsView extends TestCase
         checkZero(cube.getCells(), new int[] {1 + 0 * 2 + 2 * 8,  0 + 3 * 2 + 2 * 8, 1 + 2 * 2 + 0 * 8});
     }
 
-    public void testAttachesTo()
-    {
-        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "dummy", null, null);
-        assertTrue(olapView.attachesTo(parentStream) != null);
-
-        olapView = new MultiDimStatsView(derivedFields, "dummy", "intPrimitive", null, null);
-        assertTrue(olapView.attachesTo(parentStream) != null);
-
-        olapView = new MultiDimStatsView(derivedFields, "string", "intPrimitive", null, null);
-        assertTrue(olapView.attachesTo(parentStream) != null);
-
-        olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "dummy", null);
-        assertTrue(olapView.attachesTo(parentStream) != null);
-
-        olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "doublePrimitive", "dummy");
-        assertTrue(olapView.attachesTo(parentStream) != null);
-
-        olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "doubleBoxed", "doublePrimitive");
-        assertTrue(olapView.attachesTo(parentStream) == null);
-
-        // Try invalid derived fields
-        olapView = new MultiDimStatsView(new String[] {"goodie"}, "intPrimitive", "string", null, null);
-        assertTrue(olapView.attachesTo(parentStream) != null);
-
-        olapView = new MultiDimStatsView(new String[] {"count", "goodie"}, "intPrimitive", "string", null, null);
-        assertTrue(olapView.attachesTo(parentStream) != null);
-    }
-
     private void checkZero (BaseStatisticsBean[] facts, int[] exceptions)
     {
         Arrays.sort(exceptions);

@@ -1,8 +1,10 @@
 package net.esper.view.ext;
 
 import junit.framework.TestCase;
-import net.esper.view.factory.ViewAttachException;
-import net.esper.view.factory.ViewParameterException;
+import net.esper.view.ViewAttachException;
+import net.esper.view.ViewParameterException;
+import net.esper.view.std.SizeView;
+import net.esper.view.window.TimeWindowView;
 import net.esper.event.EventType;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.bean.SupportMarketDataBean;
@@ -35,7 +37,7 @@ public class TestSortWindowViewFactory extends TestCase
         tryInvalidParameter(new Object[] {"price", true, "x"});
     }
 
-    public void testAttachesTo() throws Exception
+    public void testAttaches() throws Exception
     {
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
@@ -53,6 +55,20 @@ public class TestSortWindowViewFactory extends TestCase
         {
             // expected;
         }
+    }
+
+    public void testCanReuse() throws Exception
+    {
+        factory.setViewParameters(Arrays.asList(new Object[] {"price", true, 100}));
+        assertFalse(factory.canReuse(new SizeView()));
+        assertTrue(factory.canReuse(new SortWindowView(new String[] {"price"}, new Boolean[] {true}, 100)));
+        assertFalse(factory.canReuse(new SortWindowView(new String[] {"volume"}, new Boolean[] {true}, 100)));
+        assertFalse(factory.canReuse(new SortWindowView(new String[] {"price"}, new Boolean[] {false}, 100)));
+        assertFalse(factory.canReuse(new SortWindowView(new String[] {"price"}, new Boolean[] {true}, 99)));
+
+        factory.setViewParameters(Arrays.asList(new Object[] {new Object[] {"price", true, "volume", false}, 100}));
+        assertTrue(factory.canReuse(new SortWindowView(new String[] {"price", "volume"}, new Boolean[] {true, false}, 100)));
+        assertFalse(factory.canReuse(new SortWindowView(new String[] {"price", "xxx"}, new Boolean[] {true, false}, 100)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception

@@ -56,7 +56,7 @@ public class AggregationServiceFactory
             else
             {
                 evaluators[index] = new ExprEvaluator() {
-                    public Object evaluate(EventBean[] eventsPerStream)
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
                     {
                         return null;
                     }

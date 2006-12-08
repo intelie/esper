@@ -49,11 +49,6 @@ public class SupportShallowCopyView extends ViewSupport
         this.someWriteOnlyValue = someWriteOnlyValue;
     }
 
-    public String attachesTo(Viewable parentViewable)
-    {
-        return null;
-    }
-
     public void setParent()
     {
         throw new UnsupportedOperationException();

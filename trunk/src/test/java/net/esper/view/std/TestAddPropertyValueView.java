@@ -72,14 +72,6 @@ public class TestAddPropertyValueView extends TestCase
         assertEquals(99999, oldData[0].get("STDDEV"));
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything event if the field does not exists
-        AddPropertyValueView view = new AddPropertyValueView(new String[] {"dummy"}, new Object[] {"s"});
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) == null);
-    }
-
     public void testCopyView() throws Exception
     {
         AddPropertyValueView copied = (AddPropertyValueView) ViewSupport.shallowCopyView(myView);

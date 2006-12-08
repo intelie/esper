@@ -7,7 +7,6 @@ import net.esper.view.Viewable;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
-import net.esper.view.PropertyCheckHelper;
 import net.esper.collection.TimeWindow;
 
 /**
@@ -102,11 +101,6 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     public final void setMillisecondsBeforeExpiry(long millisecondsBeforeExpiry)
     {
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
-    }
-
-    public final String attachesTo(Viewable parentView)
-    {
-        return PropertyCheckHelper.checkLong(parentView.getEventType(), timestampFieldName);
     }
 
     public final EventType getEventType()

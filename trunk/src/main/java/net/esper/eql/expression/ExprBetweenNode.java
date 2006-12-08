@@ -2,6 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.util.JavaClassHelper;
 import net.esper.event.EventBean;
 
@@ -26,7 +27,7 @@ public class ExprBetweenNode extends ExprNode
         this.isNotBetween = isNotBetween;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 3)
         {
@@ -82,7 +83,7 @@ public class ExprBetweenNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         if (isAlwaysFalse)
         {
@@ -91,13 +92,13 @@ public class ExprBetweenNode extends ExprNode
 
         // Evaluate first child which is the base value to compare to
         Iterator<ExprNode> it = this.getChildNodes().iterator();
-        Object value = it.next().evaluate(eventsPerStream);
+        Object value = it.next().evaluate(eventsPerStream, isNewData);
         if (value == null)
         {
             return false;
         }
-        Object lower = it.next().evaluate(eventsPerStream);
-        Object higher = it.next().evaluate(eventsPerStream);
+        Object lower = it.next().evaluate(eventsPerStream, isNewData);
+        Object higher = it.next().evaluate(eventsPerStream, isNewData);
 
         boolean result = computer.isBetween(value, lower, higher);
         if (isNotBetween)

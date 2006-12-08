@@ -40,11 +40,6 @@ public class TestBufferView extends TestCase
         assertTrue(observer.getAndResetHasNewData());
     }
 
-    public void testViewAttachesTo()
-    {
-        assertNull(bufferView.attachesTo(null));
-    }
-
     private EventBean[] makeBeans(String id, int numTrades)
     {
         EventBean[] trades = new EventBean[numTrades];

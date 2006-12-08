@@ -89,7 +89,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
                     // In an outer join compare the on-fields
                     if (isOuterJoin)
                     {
-                        Boolean compareResult = (Boolean) outerJoinCompareNode.evaluate(resultRow);
+                        Boolean compareResult = (Boolean) outerJoinCompareNode.evaluate(resultRow, true);
                         if ((compareResult != null) && (compareResult))
                         {
                             joinSet.add(new MultiKey<EventBean>(resultRow));

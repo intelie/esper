@@ -69,20 +69,6 @@ public class TestUniqueByPropertyView extends TestCase
         SupportViewDataChecker.checkNewData(childView, null);
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything as long as the field exists
-        UniqueByPropertyView view = new UniqueByPropertyView("dummy");
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) != null);
-
-        view = new UniqueByPropertyView("symbol");
-        assertTrue(view.attachesTo(parent) == null);
-
-        parent.addView(view);
-        assertTrue(view.getEventType() == parent.getEventType());
-    }
-
     public void testCopyView() throws Exception
     {
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);

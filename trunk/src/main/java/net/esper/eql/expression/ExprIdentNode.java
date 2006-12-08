@@ -4,10 +4,7 @@ import net.esper.event.EventBean;
 import net.esper.event.PropertyAccessException;
 import net.esper.event.EventPropertyGetter;
 import net.esper.collection.Pair;
-import net.esper.eql.core.AutoImportService;
-import net.esper.eql.core.PropertyResolutionDescriptor;
-import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.StreamTypesException;
+import net.esper.eql.core.*;
 
 /**
  * Represents an stream property identifier in a filter expressiun tree.
@@ -79,7 +76,7 @@ public class ExprIdentNode extends ExprNode
         return streamOrPropertyName;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
         resolvedStreamName = propertyInfoPair.getSecond();
@@ -211,7 +208,7 @@ public class ExprIdentNode extends ExprNode
                 " propertyInfo.type=" + propertyType;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         EventBean event = eventsPerStream[streamNum];
         if (event == null)

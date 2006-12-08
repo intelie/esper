@@ -103,16 +103,6 @@ public class TestLengthWindowView extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(),makeArray(events, new String[]{ "h3", "h4", "h5", "h6", "i0" }));
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything
-        LengthWindowView view = new LengthWindowView(20);
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) == null);
-        parent.addView(view);
-        assertTrue(view.getEventType() == parent.getEventType());
-    }
-
     public void testCopyView() throws Exception
     {
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);

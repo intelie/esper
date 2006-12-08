@@ -1,7 +1,6 @@
 package net.esper.view;
 
 import net.esper.event.EventBean;
-import net.esper.view.EventCollection;
 
 /**
  * The View interface provides a way for a stream, data provider, or another view,
@@ -48,13 +47,6 @@ public interface View extends EventCollection, Viewable
      * @param parent is the parent that this view is a child of
      */
     public void setParent(Viewable parent);
-
-    /**
-     * Return null if the view will accept being attached to a particular object.
-     * @param parentViewable is the potential parent for this view
-     * @return null if this view can successfully attach to the parent, an error message if it cannot.
-     */
-    public String attachesTo(Viewable parentViewable);
 
     /**
      * Notify that data has been added or removed from the Viewable parent.

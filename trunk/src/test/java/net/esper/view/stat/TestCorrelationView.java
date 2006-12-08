@@ -60,19 +60,6 @@ public class TestCorrelationView extends TestCase
         checkNew(0.70463404);
     }
 
-    public void testViewAttachesTo()
-    {
-        CorrelationView view = new CorrelationView("symbol", "price");
-
-        // The symbol field in the parent is not a number, expect an error on attach
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) != null);
-
-        // Try a non-existing field name
-        view = new CorrelationView("price", "dummy");
-        assertTrue(view.attachesTo(parent) != null);
-    }
-
     public void testGetSchema()
     {
         assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.CORRELATION__CORRELATION.getName()) == double.class);

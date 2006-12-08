@@ -1,4 +1,4 @@
-package net.esper.view.factory;
+package net.esper.view;
 
 /**
  * Thrown to indicate a validation error in view parameterization.

@@ -89,7 +89,7 @@ public abstract class ExprAggregateNode extends ExprNode
         this.column = column;
     }
 
-	public final Object evaluate(EventBean[] events)
+	public final Object evaluate(EventBean[] events, boolean isNewData)
 	{
 		return aggregationResultFuture.getValue(column);
 	}

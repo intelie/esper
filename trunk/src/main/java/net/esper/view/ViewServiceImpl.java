@@ -6,8 +6,6 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 
 import net.esper.collection.Pair;
-import net.esper.view.factory.ViewFactory;
-import net.esper.view.factory.ViewAttachException;
 import net.esper.event.EventType;
 
 /**
@@ -22,7 +20,7 @@ public final class ViewServiceImpl implements ViewService
     {
     }
 
-    public ViewFactoryChain createFactories(EventStream eventStream,
+    public ViewFactoryChain createFactories(EventType parentEventType,
                                             List<ViewSpec> viewSpecDefinitions,
                                             ViewServiceContext context)
             throws ViewProcessingException
@@ -37,7 +35,6 @@ public final class ViewServiceImpl implements ViewService
         List<ViewFactory> viewFactories = ViewServiceHelper.instantiateFactoryChain(viewSpecList, context);
 
         ViewFactory parentViewFactory = null;
-        EventType parentEventType = eventStream.getEventType();
         for (int i = 0; i < viewFactories.size(); i++)
         {
             try
@@ -55,18 +52,16 @@ public final class ViewServiceImpl implements ViewService
             }
         }
 
-        return new ViewFactoryChain(eventStream.getEventType(), viewFactories);
+        return new ViewFactoryChain(parentEventType, viewFactories);
     }
 
-    public Viewable createViews(EventStream eventStream,
-                                ViewFactoryChain viewFactoryChain,
+    public Viewable createViews(Viewable eventStreamViewable,
+                                List<ViewFactory> viewFactories,
                                 ViewServiceContext context)
     {
-        List<ViewFactory> viewFactories = viewFactoryChain.getViewFactoryChain();
-
         // Attempt to find existing views under the stream that match specs.
         // The viewSpecList may have been changed by this method.
-        Pair<Viewable, List<View>> resultPair = ViewServiceHelper.matchExistingViews(eventStream, viewFactories);
+        Pair<Viewable, List<View>> resultPair = ViewServiceHelper.matchExistingViews(eventStreamViewable, viewFactories);
 
         Viewable parentViewable = resultPair.getFirst();
         List<View> existingParentViews = resultPair.getSecond();
@@ -75,8 +70,8 @@ public final class ViewServiceImpl implements ViewService
         {
             if (log.isDebugEnabled())
             {
-                log.debug(".createView No new views created, dumping stream ... " + eventStream);
-                ViewSupport.dumpChildViews("EventStream ", eventStream);
+                log.debug(".createView No new views created, dumping stream ... " + eventStreamViewable);
+                ViewSupport.dumpChildViews("EventStream ", eventStreamViewable);
             }
 
             return parentViewable;   // we know its a view here since the factory list is empty
@@ -87,8 +82,8 @@ public final class ViewServiceImpl implements ViewService
 
         if (log.isDebugEnabled())
         {
-            log.debug(".createView New views created for stream, all views ... " + eventStream);
-            ViewSupport.dumpChildViews("EventStream ", eventStream);
+            log.debug(".createView New views created for stream, all views ... " + eventStreamViewable);
+            ViewSupport.dumpChildViews("EventStream ", eventStreamViewable);
         }
 
         View lastView = views.get(views.size() - 1);

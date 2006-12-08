@@ -2,29 +2,31 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.event.EventBean;
 import net.esper.collection.DataWindowRandomAccess;
 
 /**
- * Represents Previous-function.
+ * Represents the 'prev' previous event function in an expression node tree.
  */
-public class ExprPreviousNode extends ExprNode
+public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
 {
     private Class resultType;
     private DataWindowRandomAccess dataWindowRandomAccess;
     private int streamNumber;
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
-        // get the stream number of the ExprIdentNode which must be the second child node
-        // get a ViewResourceService.getDataWindowRandomAccess(stream)
-        // first child must return int value
-        // TODO
-
-        resultType = this.getChildNodes().get(1).getType();
-
         ExprIdentNode identNode = (ExprIdentNode) this.getChildNodes().get(1);
         streamNumber = identNode.getStreamId();
+
+        if (!viewFactoryDelegate.requestCapability(streamNumber, DataWindowRandomAccess.class, this))
+        {
+            throw new ExprValidationException("Prior expression node requires a view that provides data window access");
+        }
+
+        resultType = this.getChildNodes().get(1).getType();
     }
 
     public Class getType()
@@ -32,12 +34,12 @@ public class ExprPreviousNode extends ExprNode
         return resultType;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         // evaluate first child, returns the index (if null, then null)
         // use DataWindowRandomAccess to get(index)
         // TODO
-        Object indexResult = this.getChildNodes().get(0).evaluate(eventsPerStream);
+        Object indexResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
         Integer index = (Integer) indexResult;
 
         EventBean substituteEvent = null;
@@ -61,7 +63,7 @@ public class ExprPreviousNode extends ExprNode
         EventBean originalEvent = eventsPerStream[streamNumber];
 
         eventsPerStream[streamNumber] = substituteEvent;
-        Object evalResult = this.getChildNodes().get(1).evaluate(eventsPerStream);
+        Object evalResult = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
         eventsPerStream[streamNumber] = originalEvent;
 
         return evalResult;
@@ -86,5 +88,10 @@ public class ExprPreviousNode extends ExprNode
         }
 
         return true;
+    }
+
+    public void setViewResource(Object resource)
+    {
+        dataWindowRandomAccess = (DataWindowRandomAccess) resource;
     }
 }

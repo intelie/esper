@@ -49,7 +49,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents = null;
 
-        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode);
+        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
 
         if (!oldEvents.isEmpty())
         {
@@ -69,7 +69,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
             }
         }
 
-        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode);
+        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
         {
@@ -83,7 +83,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents = null;
 
-        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode);
+        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
 
         EventBean[] buffer = new EventBean[1];
         if (oldData != null)
@@ -107,7 +107,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         }
 
         // generate new events using select expressions
-        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode);
+        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
         {
@@ -117,14 +117,14 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
-    private static EventBean[] getSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode)
+    private static EventBean[] getSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode, boolean isNewData)
     {
         // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-        EventBean event = exprProcessor.process(null);
+        EventBean event = exprProcessor.process(null, isNewData);
 
         if (optionalHavingNode != null)
         {
-            Boolean result = (Boolean) optionalHavingNode.evaluate(null);
+            Boolean result = (Boolean) optionalHavingNode.evaluate(null, isNewData);
             if (!result)
             {
                 return null;

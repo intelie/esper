@@ -1,20 +1,27 @@
 package net.esper.view.window;
 
-import net.esper.view.factory.ViewFactory;
-import net.esper.view.factory.ViewParameterException;
-import net.esper.view.factory.ViewAttachException;
+import net.esper.view.ViewFactory;
+import net.esper.view.ViewParameterException;
+import net.esper.view.ViewAttachException;
 import net.esper.view.ViewServiceContext;
 import net.esper.view.View;
 import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
+import net.esper.collection.DataWindowRandomAccess;
+import net.esper.collection.DataWindowRandomAccessImpl;
 
 import java.util.List;
+import java.util.LinkedList;
 
 public class TimeWindowViewFactory implements ViewFactory
 {
     private long millisecondsBeforeExpiry;
+    private boolean isRequiresRandomAccess;
+
     private EventType eventType;
+    private List<ViewFactoryCallback> factoryCallbacks = new LinkedList<ViewFactoryCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -60,17 +67,40 @@ public class TimeWindowViewFactory implements ViewFactory
 
     public boolean canProvideCapability(Class capabilityInterfaceClass)
     {
-        return false;
+        if (capabilityInterfaceClass == DataWindowRandomAccess.class)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public void setProvideCapability(Class capabilityInterfaceClass)
+    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback)
     {
-        throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
+        if (!canProvideCapability(capabilityInterfaceClass))
+        {
+            throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
+        }
+        isRequiresRandomAccess = true;
+        factoryCallbacks.add(factoryCallback);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new TimeWindowView(millisecondsBeforeExpiry);
+        DataWindowRandomAccessImpl randomAccess = null;
+
+        if (isRequiresRandomAccess)
+        {
+            randomAccess = new DataWindowRandomAccessImpl();
+            for (ViewFactoryCallback factoryCallback : factoryCallbacks)
+            {
+                factoryCallback.setViewResource(randomAccess);
+            }
+        }
+        
+        return new TimeWindowView(millisecondsBeforeExpiry, randomAccess);
     }
 
     public EventType getEventType()
@@ -80,7 +110,7 @@ public class TimeWindowViewFactory implements ViewFactory
 
     public boolean canReuse(View view)
     {
-        if (!(view instanceof TimeBatchView))
+        if (!(view instanceof TimeWindowView))
         {
             return false;
         }

@@ -1,13 +1,14 @@
 package net.esper.view.window;
 
-import net.esper.view.factory.ViewFactory;
-import net.esper.view.factory.ViewParameterException;
-import net.esper.view.factory.ViewAttachException;
+import net.esper.view.ViewFactory;
+import net.esper.view.ViewParameterException;
+import net.esper.view.ViewAttachException;
 import net.esper.view.ViewServiceContext;
 import net.esper.view.PropertyCheckHelper;
 import net.esper.view.View;
 import net.esper.event.EventType;
 import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.util.JavaClassHelper;
 
 import java.util.List;
@@ -71,7 +72,7 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
         return false;
     }
 
-    public void setProvideCapability(Class capabilityInterfaceClass)
+    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback)
     {
         throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
     }

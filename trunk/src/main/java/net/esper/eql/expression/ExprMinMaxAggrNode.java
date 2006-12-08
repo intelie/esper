@@ -5,6 +5,7 @@ import net.esper.collection.SortedRefCountedSet;
 import net.esper.eql.core.Aggregator;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 /**
  * Represents the min/max(distinct? ...) aggregate function is an expression tree.
@@ -25,7 +26,7 @@ public class ExprMinMaxAggrNode extends ExprAggregateNode
         this.minMaxTypeEnum = minMaxTypeEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
         {

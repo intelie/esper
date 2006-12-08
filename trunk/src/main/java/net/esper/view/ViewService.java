@@ -1,5 +1,7 @@
 package net.esper.view;
 
+import net.esper.event.EventType;
+
 import java.util.List;
 
 /**
@@ -8,7 +10,7 @@ import java.util.List;
 public interface ViewService
 {
     /**
-     * ViewFactoryOld responsibilities:
+     * ViewFactoryFactory responsibilities:
      * (1) return event type of resulting view
      *      --> now expressions can resolve, allowing expression to indicate additional view requirements
      * (2) check if an existing view satisfies view requirements (view spec plus additional view requirements)
@@ -17,7 +19,7 @@ public interface ViewService
      *
      * public UnmaterializedViewable (EventStream eventStream, List<ViewSpec> viewSpecList)
      *      UnmaterializedView.getEventType();
-     *      Unmaterialized: List<ViewFactoryOld>
+     *      Unmaterialized: List<ViewFactoryFactory>
      *
      * public Viewable materialize (UnmaterializedViewable unmaterialized, ViewServiceContext context)
      *
@@ -33,7 +35,7 @@ public interface ViewService
      *
      *      public ViewFactoryImpl(List<Object> viewParameters, EventType parentEventType)     // Ctor
      *
-     * interface ViewFactoryOld
+     * interface ViewFactoryFactory
      *      public EventType getEventType()
      *
      *      public boolean providesCapability(Class capability);
@@ -65,11 +67,11 @@ public interface ViewService
         throws ViewProcessingException;
      */
 
-    public ViewFactoryChain createFactories(EventStream eventStream, List<ViewSpec> viewSpecList, ViewServiceContext context)
+    public ViewFactoryChain createFactories(EventType parentEventType, List<ViewSpec> viewSpecList, ViewServiceContext context)
             throws ViewProcessingException;
 
-    public Viewable createViews(EventStream eventStream,
-                                ViewFactoryChain viewFactoryChain,
+    public Viewable createViews(Viewable eventStreamViewable,
+                                List<ViewFactory> viewFactoryChain,
                                 ViewServiceContext context);
 
     /**

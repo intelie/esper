@@ -130,22 +130,6 @@ public class TestSortWindowView extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(), new EventBean[] { bean[8], bean[7], bean[4], bean[10], bean[11] });
     }
 
-    public void testViewAttachesTo()
-    {
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-
-        Object[] newPropertiesAndDirections = new Object[] {"dummy", true};
-        SortWindowView view = new SortWindowView(new String[]{"dummy"}, new Boolean[] {true}, 1);
-        assertTrue(view.attachesTo(parent) != null);
-
-        newPropertiesAndDirections = new Object[] {"symbol", true};
-        view = new SortWindowView(new String[]{"symbol"}, new Boolean[] {true}, 100);
-        assertTrue(view.attachesTo(parent) == null);
-
-        parent.addView(view);
-        assertTrue(view.getEventType() == parent.getEventType());
-    }
-
     public void testCopyView() throws Exception
     {
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);

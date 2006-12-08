@@ -2,6 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.CoercionException;
 import net.esper.event.EventBean;
@@ -14,7 +15,7 @@ public class ExprCoalesceNode extends ExprNode
     private Class resultType;
     private boolean[] isNumericCoercion;
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {
@@ -64,7 +65,7 @@ public class ExprCoalesceNode extends ExprNode
         return resultType;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         Object value = null;
 
@@ -72,7 +73,7 @@ public class ExprCoalesceNode extends ExprNode
         int count = 0;
         for (ExprNode childNode : this.getChildNodes())
         {
-            value = childNode.evaluate(eventsPerStream);
+            value = childNode.evaluate(eventsPerStream, isNewData);
 
             if (value != null)
             {

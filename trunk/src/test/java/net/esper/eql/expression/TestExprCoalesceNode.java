@@ -39,7 +39,7 @@ public class TestExprCoalesceNode extends TestCase
     {
         for (int i = 0; i < coalesceNodes.length; i++)
         {
-            coalesceNodes[i].validate(null, null);
+            coalesceNodes[i].validate(null, null, null);
         }
 
         assertEquals(Long.class, coalesceNodes[0].getType());
@@ -57,7 +57,7 @@ public class TestExprCoalesceNode extends TestCase
         // Test too few nodes under this node
         try
         {
-            coalesceNode.validate(null, null);
+            coalesceNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -69,7 +69,7 @@ public class TestExprCoalesceNode extends TestCase
         coalesceNode.addChildNode(new SupportExprNode("s"));
         try
         {
-            coalesceNode.validate(null, null);
+            coalesceNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -82,14 +82,14 @@ public class TestExprCoalesceNode extends TestCase
     {
         for (int i = 0; i < coalesceNodes.length; i++)
         {
-            coalesceNodes[i].validate(null, null);
+            coalesceNodes[i].validate(null, null, null);
         }
 
-        assertEquals(4L, coalesceNodes[0].evaluate(null));
-        assertEquals("a", coalesceNodes[1].evaluate(null));
-        assertEquals(true, coalesceNodes[2].evaluate(null));
-        assertEquals('b', coalesceNodes[3].evaluate(null));
-        assertEquals(5D, coalesceNodes[4].evaluate(null));
+        assertEquals(4L, coalesceNodes[0].evaluate(null, false));
+        assertEquals("a", coalesceNodes[1].evaluate(null, false));
+        assertEquals(true, coalesceNodes[2].evaluate(null, false));
+        assertEquals('b', coalesceNodes[3].evaluate(null, false));
+        assertEquals(5D, coalesceNodes[4].evaluate(null, false));
     }
 
     public void testEquals() throws Exception

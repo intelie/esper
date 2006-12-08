@@ -141,7 +141,7 @@ public class PollingViewable implements HistoricalEventViewable
 
     public List<View> getViews()
     {
-        throw new UnsupportedOperationException("Subviews not supported");
+        return new LinkedList<View>();
     }
 
     public boolean removeView(View view)

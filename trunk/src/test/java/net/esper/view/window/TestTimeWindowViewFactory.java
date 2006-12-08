@@ -2,7 +2,8 @@ package net.esper.view.window;
 
 import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.support.view.SupportViewContextFactory;
-import net.esper.view.factory.ViewParameterException;
+import net.esper.view.ViewParameterException;
+import net.esper.view.std.SizeView;
 
 import java.util.Arrays;
 
@@ -10,6 +11,13 @@ import junit.framework.TestCase;
 
 public class TestTimeWindowViewFactory extends TestCase
 {
+    private TimeWindowViewFactory factory;
+
+    public void setUp()
+    {
+        factory = new TimeWindowViewFactory();
+    }
+
     public void testSetParameters() throws Exception
     {
         tryParameter(new TimePeriodParameter(2d), 2000);
@@ -19,6 +27,16 @@ public class TestTimeWindowViewFactory extends TestCase
 
         tryInvalidParameter("price");
         tryInvalidParameter(true);
+    }
+
+    public void testCanReuse() throws Exception
+    {
+        factory.setViewParameters(Arrays.asList(new Object[] {1000}));
+        assertFalse(factory.canReuse(new SizeView()));
+        assertFalse(factory.canReuse(new TimeBatchView(1000, null)));
+        assertTrue(factory.canReuse(new TimeWindowView(1000000, null)));
+
+        // TODO: test data window random
     }
 
     private void tryInvalidParameter(Object param) throws Exception

@@ -8,6 +8,7 @@ import net.esper.type.BitWiseOpEnum;
 import net.esper.util.JavaClassHelper;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 /**
  * Represents the bit-wise operators in an expression tree.
@@ -27,7 +28,7 @@ public class ExprBitWiseNode extends ExprNode {
         _bitWiseOpEnum = bitWiseOpEnum_;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {
@@ -72,10 +73,10 @@ public class ExprBitWiseNode extends ExprNode {
         return _resultType;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        Object valueChildOne = this.getChildNodes().get(0).evaluate(eventsPerStream);
-        Object valueChildTwo = this.getChildNodes().get(1).evaluate(eventsPerStream);
+        Object valueChildOne = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+        Object valueChildTwo = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
 
         if ((valueChildOne == null) || (valueChildTwo == null))
         {

@@ -176,16 +176,6 @@ public class TestTimeBatchView extends TestCase
         assertTrue(schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC) != null);
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything
-        TimeBatchView view = new TimeBatchView(200000, null);
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) == null);
-        parent.addView(view);
-        assertTrue(view.getEventType() == parent.getEventType());
-    }
-
     public void testComputeWaitMSec()
     {
         // With current=2300, ref=1000, and interval=500, expect 2500 as next interval and 200 as solution

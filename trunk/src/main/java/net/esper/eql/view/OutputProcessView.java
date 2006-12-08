@@ -235,12 +235,6 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
     	}
     }
 
-
-    public String attachesTo(Viewable parentViewable)
-    {
-        return null;
-    }
-
     private OutputCallback getCallbackToLocal(int streamCount)
     {
         // single stream means no join

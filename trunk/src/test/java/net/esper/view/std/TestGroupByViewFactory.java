@@ -4,8 +4,9 @@ import junit.framework.TestCase;
 
 import java.util.Arrays;
 
-import net.esper.view.factory.ViewParameterException;
-import net.esper.view.factory.ViewAttachException;
+import net.esper.view.ViewParameterException;
+import net.esper.view.ViewAttachException;
+import net.esper.view.window.TimeWindowView;
 import net.esper.support.view.SupportViewContextFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.bean.SupportMarketDataBean;
@@ -14,6 +15,13 @@ import net.esper.event.EventType;
 
 public class TestGroupByViewFactory extends TestCase
 {
+    private GroupByViewFactory factory;
+
+    public void setUp()
+    {
+        factory = new GroupByViewFactory();
+    }
+
     public void testSetParameters() throws Exception
     {
         tryParameter(new Object[] {"price"}, new String[] {"price"});
@@ -27,10 +35,20 @@ public class TestGroupByViewFactory extends TestCase
         tryInvalidParameter(new Object[] {new String[] {}, new String[] {}});
     }
 
-    public void testAttachesTo() throws Exception
+    public void testCanReuse() throws Exception
     {
-        GroupByViewFactory factory = new GroupByViewFactory();
+        factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
+        assertFalse(factory.canReuse(new SizeView()));
+        assertFalse(factory.canReuse(new GroupByView(new String[] {"a"})));
+        assertTrue(factory.canReuse(new GroupByView(new String[] {"a", "b"})));
 
+        factory.setViewParameters(Arrays.asList(new Object[] {new String[] {"a", "b"}}));
+        assertFalse(factory.canReuse(new GroupByView(new String[] {"a"})));
+        assertTrue(factory.canReuse(new GroupByView(new String[] {"a", "b"})));
+    }
+
+    public void testAttaches() throws Exception
+    {
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 

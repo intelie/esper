@@ -4,6 +4,7 @@ import net.esper.eql.core.AutoImportService;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.event.EventBean;
 
 public class SupportBoolExprNode extends ExprNode
@@ -15,7 +16,7 @@ public class SupportBoolExprNode extends ExprNode
         this.evaluateResult = evaluateResult;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
     }
 
@@ -24,7 +25,7 @@ public class SupportBoolExprNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         return evaluateResult;
     }

@@ -104,7 +104,7 @@ public class SupportSelectExprFactory
         top.addChildNode(c2);
         c1.addChildNode(c1_1);
 
-        top.getValidatedSubtree(null, null);
+        top.getValidatedSubtree(null, null, null);
 
         List<SelectExprElementUnnamedSpec> selectionList = new LinkedList<SelectExprElementUnnamedSpec>();
         selectionList.add(new SelectExprElementUnnamedSpec(top, null));

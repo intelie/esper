@@ -62,23 +62,6 @@ public class TestWeightedAverageView extends TestCase
         checkNew(10.59756098);
     }
 
-    public void testViewAttachesTo()
-    {
-        WeightedAverageView view = new WeightedAverageView("symbol", "price");
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-
-        // The symbol field in the parent is not a number, expect an error on attach
-        assertTrue(view.attachesTo(parent) != null);
-
-        // Try a non-existing field name
-        view = new WeightedAverageView("dummy", "price");
-        assertTrue(view.attachesTo(parent) != null);
-
-        // Try a success
-        view = new WeightedAverageView("price", "volume");
-        assertTrue(view.attachesTo(parent) == null);
-    }
-
     public void testGetSchema()
     {
         assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName()) == double.class);

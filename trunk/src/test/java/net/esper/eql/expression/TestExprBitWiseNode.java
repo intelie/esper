@@ -21,7 +21,7 @@ public class TestExprBitWiseNode extends TestCase {
         // Must have exactly 2 subnodes
         try
         {
-        	_bitWiseNode.validate(null, null);
+        	_bitWiseNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -35,7 +35,7 @@ public class TestExprBitWiseNode extends TestCase {
         _bitWiseNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-        	_bitWiseNode.validate(null, null);
+        	_bitWiseNode.validate(null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -52,7 +52,7 @@ public class TestExprBitWiseNode extends TestCase {
     	_bitWiseNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-        	_bitWiseNode.validate(null, null);
+        	_bitWiseNode.validate(null, null, null);
         	fail();
         }
         catch (ExprValidationException ex)
@@ -62,7 +62,7 @@ public class TestExprBitWiseNode extends TestCase {
         _bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
         _bitWiseNode.addChildNode(new SupportExprNode(Long.class));
         _bitWiseNode.addChildNode(new SupportExprNode(Long.class));
-    	_bitWiseNode.getValidatedSubtree(null, null);
+    	_bitWiseNode.getValidatedSubtree(null, null, null);
         assertEquals(Long.class, _bitWiseNode.getType());
     }
 
@@ -71,8 +71,8 @@ public class TestExprBitWiseNode extends TestCase {
     	log.debug(".testEvaluate");
     	_bitWiseNode.addChildNode(new SupportExprNode(new Integer(10)));
     	_bitWiseNode.addChildNode(new SupportExprNode(new Integer(12)));
-    	_bitWiseNode.getValidatedSubtree(null, null);
-        assertEquals(8, _bitWiseNode.evaluate(null));
+    	_bitWiseNode.getValidatedSubtree(null, null, null);
+        assertEquals(8, _bitWiseNode.evaluate(null, false));
     }
 
     public void testEqualsNode() throws Exception

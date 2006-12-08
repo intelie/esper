@@ -2,6 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.client.EPException;
@@ -29,7 +30,7 @@ public class ExprRegexpNode extends ExprNode
         this.isNot = not;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {
@@ -62,11 +63,11 @@ public class ExprRegexpNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         if (pattern == null)
         {
-            String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream);
+            String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
             if (patternText == null)
             {
                 return null;
@@ -84,7 +85,7 @@ public class ExprRegexpNode extends ExprNode
         {
             if (!isConstantPattern)
             {
-                String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream);
+                String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
                 if (patternText == null)
                 {
                     return null;
@@ -100,7 +101,7 @@ public class ExprRegexpNode extends ExprNode
             }
         }
 
-        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream);
+        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
         if (evalValue == null)
         {
             return null;

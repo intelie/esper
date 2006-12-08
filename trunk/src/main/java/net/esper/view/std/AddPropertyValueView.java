@@ -90,12 +90,6 @@ public final class AddPropertyValueView extends ViewSupport implements ContextAw
         this.propertyValues = mergeValues;
     }
 
-    public final String attachesTo(Viewable object)
-    {
-        // Attaches to all views
-        return null;
-    }
-
     /**
      * Returns field name for which to set the merge value for.
      * @return field name to use to set value

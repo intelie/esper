@@ -24,7 +24,7 @@ public class TestTimeWindowView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new TimeWindowView(TEST_WINDOW_MSEC);
+        myView = new TimeWindowView(TEST_WINDOW_MSEC, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
 
@@ -148,16 +148,6 @@ public class TestTimeWindowView extends TestCase
         SupportViewDataChecker.checkNewData(childView, null);
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(),null);
         assertTrue(schedulingServiceStub.getAdded().size() == 0);
-    }
-
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything
-        TimeWindowView view = new TimeWindowView(5000);
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) == null);
-        parent.addView(view);
-        assertTrue(view.getEventType() == parent.getEventType());
     }
 
     public void testCopyView() throws Exception

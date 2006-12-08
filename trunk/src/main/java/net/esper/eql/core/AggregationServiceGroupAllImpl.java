@@ -24,7 +24,7 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
     {
         for (int j = 0; j < evaluators.length; j++)
         {
-            Object columnResult = evaluators[j].evaluate(eventsPerStream);
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, true);
             aggregators[j].enter(columnResult);
         }
     }
@@ -33,7 +33,7 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
     {
         for (int j = 0; j < evaluators.length; j++)
         {
-            Object columnResult = evaluators[j].evaluate(eventsPerStream);
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, false);
             aggregators[j].leave(columnResult);
         }
     }

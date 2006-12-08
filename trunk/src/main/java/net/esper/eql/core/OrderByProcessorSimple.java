@@ -15,8 +15,6 @@ import net.esper.collection.MultiKey;
 import net.esper.collection.Pair;
 import net.esper.event.EventBean;
 import net.esper.util.MultiKeyComparator;
-import net.esper.eql.core.AggregationService;
-import net.esper.eql.core.OrderByProcessor;
 import net.esper.eql.expression.ExprNode;
 
 import org.apache.commons.logging.Log;
@@ -63,9 +61,8 @@ public class OrderByProcessorSimple implements OrderByProcessor {
         
 		this.comparator = new MultiKeyComparator(getIsDescendingValues());
 	}
-	
 
-	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents) 
+	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData)
 	{
 		if (outgoingEvents == null || outgoingEvents.length < 2) 
 		{
@@ -76,13 +73,13 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 		MultiKey[] groupByKeys = null;
 		if (needsGroupByKeys) 
 		{
-			groupByKeys = generateGroupKeys(generatingEvents);
+			groupByKeys = generateGroupKeys(generatingEvents, isNewData);
 		}
 
-		return sort(outgoingEvents, generatingEvents, groupByKeys);
+		return sort(outgoingEvents, generatingEvents, groupByKeys, isNewData);
 	}
 
-	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKey[] groupByKeys) 
+	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKey[] groupByKeys, boolean isNewData)
 	{
 		log.debug(".sort");
 		if (outgoingEvents == null || outgoingEvents.length < 2) 
@@ -91,7 +88,7 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 		}
 
 		// Create the multikeys of sort values
-		List<MultiKey> sortValuesMultiKeys = createSortProperties(generatingEvents, groupByKeys);
+		List<MultiKey> sortValuesMultiKeys = createSortProperties(generatingEvents, groupByKeys, isNewData);
 
 		// Map the sort values to the corresponding outgoing events
 		Map<MultiKey, List<EventBean>> sortToOutgoing = new HashMap<MultiKey, List<EventBean>>();
@@ -170,7 +167,7 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 		return comparable1.compareTo(valueTwo);
 	}
 	
-	private List<MultiKey> createSortProperties(EventBean[][] generatingEvents, MultiKey[] groupByKeys) 
+	private List<MultiKey> createSortProperties(EventBean[][] generatingEvents, MultiKey[] groupByKeys, boolean isNewData)
 	{
 		MultiKey[] sortProperties = new MultiKey[generatingEvents.length];
 
@@ -188,7 +185,7 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 			for (Pair<ExprNode, Boolean> sortPair : orderByList) 
 			{
 				ExprNode sortNode = sortPair.getFirst();
-				values[countTwo++] = sortNode.evaluate(eventsPerStream);
+				values[countTwo++] = sortNode.evaluate(eventsPerStream, isNewData);
 			}
 
 			sortProperties[count] = new MultiKey<Object>(values);
@@ -197,28 +194,28 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 		return Arrays.asList(sortProperties);
 	}
 
-	private MultiKey generateGroupKey(EventBean[] eventsPerStream) 
+	private MultiKey generateGroupKey(EventBean[] eventsPerStream, boolean isNewData)
 	{
 		Object[] keys = new Object[groupByNodes.size()];
 
 		int count = 0;
 		for (ExprNode exprNode : groupByNodes) 
 		{
-			keys[count] = exprNode.evaluate(eventsPerStream);
+			keys[count] = exprNode.evaluate(eventsPerStream, isNewData);
 			count++;
 		}
 
 		return new MultiKey<Object>(keys);
 	}
 
-	private MultiKey[] generateGroupKeys(EventBean[][] generatingEvents) 
+	private MultiKey[] generateGroupKeys(EventBean[][] generatingEvents, boolean isNewData)
 	{
 		MultiKey keys[] = new MultiKey[generatingEvents.length];
 
 		int count = 0;
 		for (EventBean[] eventsPerStream : generatingEvents) 
 		{
-			keys[count++] = generateGroupKey(eventsPerStream);
+			keys[count++] = generateGroupKey(eventsPerStream, isNewData);
 		}
 
 		return keys;

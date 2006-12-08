@@ -6,8 +6,11 @@ import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.view.SupportViewContextFactory;
 import net.esper.view.ViewFieldEnum;
-import net.esper.view.factory.ViewAttachException;
-import net.esper.view.factory.ViewParameterException;
+import net.esper.view.ViewAttachException;
+import net.esper.view.ViewParameterException;
+import net.esper.view.std.UniqueByPropertyView;
+import net.esper.view.std.SizeView;
+import net.esper.view.window.TimeWindowView;
 
 import java.util.Arrays;
 
@@ -31,7 +34,16 @@ public class TestCorrelationViewFactory extends TestCase
         tryInvalidParameter(new Object[] {new String[] {"a", "b"}});
     }
 
-    public void testAttachesTo() throws Exception
+    public void testCanReuse() throws Exception
+    {
+        factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
+        assertFalse(factory.canReuse(new SizeView()));
+        assertFalse(factory.canReuse(new CorrelationView("a", "c")));
+        assertFalse(factory.canReuse(new CorrelationView("x", "b")));
+        assertTrue(factory.canReuse(new CorrelationView("a", "b")));
+    }
+
+    public void testAttaches() throws Exception
     {
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);

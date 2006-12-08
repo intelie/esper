@@ -198,45 +198,6 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
         return multidimCube;
     }
 
-    public final String attachesTo(Viewable parentViewable)
-    {
-        String message = PropertyCheckHelper.checkNumeric(parentViewable.getEventType(), measureField);
-        if (message != null)
-        {
-            return message;
-        }
-
-        message = PropertyCheckHelper.exists(parentViewable.getEventType(), columnField);
-        if (message != null)
-        {
-            return message;
-        }
-
-        if (rowField != null)
-        {
-            message = PropertyCheckHelper.exists(parentViewable.getEventType(), rowField);
-            if (message != null)
-            {
-                return message;
-            }
-        }
-
-        if (pageField != null)
-        {
-            return PropertyCheckHelper.exists(parentViewable.getEventType(), pageField);
-        }
-
-        for (String measureName : derivedMeasures)
-        {
-            if (Arrays.binarySearch(ViewFieldEnum.MULTIDIM_OLAP__MEASURES, measureName) < 0)
-            {
-                return "Derived measure named '" + measureName + "' is not a valid measure";
-            }
-        }
-
-        return null;
-    }
-
     public final void setParent(Viewable parent)
     {
         super.setParent(parent);

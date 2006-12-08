@@ -97,26 +97,6 @@ public class TestExternallyTimedWindowView extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(),new EventBean[] { i[0] });
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything as long as the field name is a long value
-        ExternallyTimedWindowView view = new ExternallyTimedWindowView("dummy", 20);
-        SupportBeanClassView parent = new SupportBeanClassView(SupportBean.class);
-        assertTrue(view.attachesTo(parent) != null);
-
-        view = new ExternallyTimedWindowView("intPrimitive", 20);
-        assertTrue(view.attachesTo(parent) != null);
-        view = new ExternallyTimedWindowView("string", 20);
-        assertTrue(view.attachesTo(parent) != null);
-        view = new ExternallyTimedWindowView("boolean", 20);
-        assertTrue(view.attachesTo(parent) != null);
-        view = new ExternallyTimedWindowView("longPrimitive", 20);
-        assertTrue(view.attachesTo(parent) == null);
-
-        parent.addView(view);
-        assertTrue(view.getEventType() == parent.getEventType());
-    }
-
     public void testCopyView() throws Exception
     {
         SupportStreamImpl stream = new SupportStreamImpl(SupportBeanTimestamp.class, 3);

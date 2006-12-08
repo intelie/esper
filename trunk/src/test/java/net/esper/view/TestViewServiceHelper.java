@@ -1,16 +1,18 @@
 package net.esper.view;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
-import net.esper.collection.Pair;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.view.*;
-import net.esper.support.event.SupportEventAdapterService;
 import net.esper.view.window.TimeWindowView;
+import net.esper.view.window.LengthWindowView;
+import net.esper.view.ViewFactory;
+import net.esper.view.std.SizeView;
+import net.esper.view.std.LastElementView;
+import net.esper.view.stat.UnivariateStatisticsView;
+import net.esper.collection.Pair;
 
 public class TestViewServiceHelper extends TestCase
 {
@@ -49,16 +51,14 @@ public class TestViewServiceHelper extends TestCase
 
     public void testInstantiateChain() throws Exception
     {
-        /**
-         * TODO: FIX test
         LinkedList<View> existingParentViews = new LinkedList<View>();
 
         SupportBeanClassView topView = new SupportBeanClassView(TEST_CLASS);
-        List<ViewSpec> specifications = SupportViewSpecFactory.makeSpecListOne();
+        List<ViewFactory> viewFactories = SupportViewSpecFactory.makeFactoryListOne(topView.getEventType());
         ViewServiceContext context = SupportViewContextFactory.makeContext();
 
         // Check correct views created
-        List<View> views = ViewServiceHelper.instantiateChain(existingParentViews, topView, specifications, context);
+        List<View> views = ViewServiceHelper.instantiateChain(existingParentViews, topView, viewFactories, context);
 
         assertEquals(3, views.size());
         assertEquals(ViewEnum.LENGTH_WINDOW.getClazz(), views.get(0).getClass());
@@ -66,90 +66,78 @@ public class TestViewServiceHelper extends TestCase
         assertEquals(ViewEnum.LAST_EVENT.getClazz(), views.get(2).getClass());
 
         // Check that the context is set
-        specifications = SupportViewSpecFactory.makeSpecListFive();
-        views = ViewServiceHelper.instantiateChain(existingParentViews, topView, specifications, context);
+        viewFactories = SupportViewSpecFactory.makeFactoryListFive(topView.getEventType());
+        views = ViewServiceHelper.instantiateChain(existingParentViews, topView, viewFactories, context);
         TimeWindowView timeWindow = (TimeWindowView) views.get(0);
         assertEquals(context, timeWindow.getViewServiceContext());
-         */
     }
 
     public void testMatch() throws Exception
     {
-        /**
-         * TODO: fix test
         SupportStreamImpl stream = new SupportStreamImpl(TEST_CLASS, 10);
-        List<ViewSpec> specifications = SupportViewSpecFactory.makeSpecListOne();
-        Map<View, ViewSpec> repository = new HashMap<View, ViewSpec>();
+        List<ViewFactory> viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
 
         // No views under stream, no matches
-        Pair<Viewable, List<View>> result = ViewServiceHelper.matchExistingViews(stream, repository, specifications);
+        Pair<Viewable, List<View>> result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
         assertEquals(stream, result.getFirst());
-        assertEquals(3, specifications.size());
+        assertEquals(3, viewFactories.size());
         assertEquals(0, result.getSecond().size());
 
         // One top view under the stream that doesn't match
         SupportBeanClassView testView = new SupportBeanClassView(TEST_CLASS);
-        repository.put(testView, SupportViewSpecFactory.makeSpec("std", "size", null, null));
-        stream.addView(testView);
-        result = ViewServiceHelper.matchExistingViews(stream, repository, specifications);
+        stream.addView(new SizeView());
+        result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
         assertEquals(stream, result.getFirst());
-        assertEquals(3, specifications.size());
+        assertEquals(3, viewFactories.size());
         assertEquals(0, result.getSecond().size());
 
-        // Another top view under the stream that doesn't matches again
+        // Another top view under the stream that doesn't matche again
         testView = new SupportBeanClassView(TEST_CLASS);
-        repository.put(testView, specifications.get(1));
-        stream.addView(testView);
-        result = ViewServiceHelper.matchExistingViews(stream, repository, specifications);
+        stream.addView(new LengthWindowView(999));
+        result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
         assertEquals(stream, result.getFirst());
-        assertEquals(3, specifications.size());
+        assertEquals(3, viewFactories.size());
         assertEquals(0, result.getSecond().size());
 
         // One top view under the stream that does actually match
-        SupportBeanClassView matchViewOne = new SupportBeanClassView(TEST_CLASS);
-        repository.put(matchViewOne, specifications.get(0));
-        stream.addView(matchViewOne);
-        result = ViewServiceHelper.matchExistingViews(stream, repository, specifications);
+        LengthWindowView myLengthWindowView = new LengthWindowView(1000);
+        stream.addView(myLengthWindowView);
+        result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
-        assertEquals(matchViewOne, result.getFirst());
-        assertEquals(2, specifications.size());
+        assertEquals(myLengthWindowView, result.getFirst());
+        assertEquals(2, viewFactories.size());
         assertEquals(1, result.getSecond().size());
-        assertEquals(matchViewOne, result.getSecond().get(0));
+        assertEquals(myLengthWindowView, result.getSecond().get(0));
 
-        // One child view under the top veiew that does not match
+        // One child view under the top view that does not match
         testView = new SupportBeanClassView(TEST_CLASS);
-        specifications = SupportViewSpecFactory.makeSpecListOne();
-        repository.put(testView, specifications.get(2));
-        matchViewOne.addView(testView);
-        result = ViewServiceHelper.matchExistingViews(stream, repository, specifications);
+        viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
+        myLengthWindowView.addView(new UnivariateStatisticsView("volume"));
+        result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
         assertEquals(1, result.getSecond().size());
-        assertEquals(matchViewOne, result.getSecond().get(0));
+        assertEquals(myLengthWindowView, result.getSecond().get(0));
+        assertEquals(myLengthWindowView, result.getFirst());
+        assertEquals(2, viewFactories.size());
 
-        assertEquals(matchViewOne, result.getFirst());
-        assertEquals(2, specifications.size());
+        // Add child view under the top view that does match
+        viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
+        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView("price");
+        myLengthWindowView.addView(myUnivarView);
+        result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
-        // Add child view under the top veiw that does match
-        SupportBeanClassView matchViewTwo = new SupportBeanClassView(TEST_CLASS);
-        specifications = SupportViewSpecFactory.makeSpecListOne();
-        repository.put(matchViewTwo, specifications.get(1));
-        matchViewOne.addView(matchViewTwo);
-        result = ViewServiceHelper.matchExistingViews(stream, repository, specifications);
-
-        assertEquals(matchViewTwo, result.getFirst());
-        assertEquals(1, specifications.size());
+        assertEquals(myUnivarView, result.getFirst());
+        assertEquals(1, viewFactories.size());
 
         // Add ultimate child view under the child view that does match
-        SupportBeanClassView matchViewThree = new SupportBeanClassView(TEST_CLASS);
-        specifications = SupportViewSpecFactory.makeSpecListOne();
-        repository.put(matchViewThree, specifications.get(2));
-        matchViewTwo.addView(matchViewThree);
-        result = ViewServiceHelper.matchExistingViews(stream, repository, specifications);
+        viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
+        LastElementView lastElementView = new LastElementView();
+        myUnivarView.addView(lastElementView);
+        result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
-        assertEquals(matchViewThree, result.getFirst());
-        assertEquals(0, specifications.size());
-         */
+        assertEquals(lastElementView, result.getFirst());
+        assertEquals(0, viewFactories.size());
     }
 
     public void testAddMergeViews()

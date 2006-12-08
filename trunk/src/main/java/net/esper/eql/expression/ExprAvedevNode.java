@@ -4,6 +4,7 @@ import net.esper.collection.RefCountedSet;
 import net.esper.eql.core.Aggregator;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewFactoryDelegate;
 
 import java.util.Map;
 import java.util.Iterator;
@@ -24,7 +25,7 @@ public class ExprAvedevNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
         super.validateSingleNumericChild(streamTypeService);
         computer = new DoubleAvedev();

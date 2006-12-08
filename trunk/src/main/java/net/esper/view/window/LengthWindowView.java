@@ -60,12 +60,6 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         this.size = size;
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        // Attaches to just about anything
-        return null;
-    }
-
     public final EventType getEventType()
     {
         // The event type is the parent view's event type

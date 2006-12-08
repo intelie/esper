@@ -41,12 +41,6 @@ public final class SizeView extends ViewSupport implements ContextAwareView
         eventType = viewServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
     }
 
-    public final String attachesTo(Viewable parentView)
-    {
-        // Attaches to just about anything
-        return null;
-    }
-
     public final EventType getEventType()
     {
         return eventType;

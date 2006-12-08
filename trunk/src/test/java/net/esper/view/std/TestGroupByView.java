@@ -95,20 +95,6 @@ public class TestGroupByView extends TestCase
         SupportViewDataChecker.checkNewData(child_2, new EventBean[] { newEvents[1] });
     }
 
-    public void testViewAttachesTo()
-    {
-        // Should attach to anything as long as the field exists
-        GroupByView view = new GroupByView(new String[] {"dummy"});
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        assertTrue(view.attachesTo(parent) != null);
-
-        view = new GroupByView(new String[] {"symbol"});
-        assertTrue(view.attachesTo(parent) == null);
-
-        parent.addView(view);
-        assertTrue(view.getEventType() == parent.getEventType());
-    }
-
     public void testInvalid()
     {
         try

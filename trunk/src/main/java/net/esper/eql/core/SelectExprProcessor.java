@@ -20,5 +20,5 @@ public interface SelectExprProcessor
      * @param eventsPerStream
      * @return event with properties containing selected items
      */
-    public EventBean process(EventBean[] eventsPerStream);
+    public EventBean process(EventBean[] eventsPerStream, boolean isNewData);
 }

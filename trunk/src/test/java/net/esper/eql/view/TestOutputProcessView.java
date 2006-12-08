@@ -32,11 +32,6 @@ public class TestOutputProcessView extends TestCase
         outputProcessViewProcess.addView(childViewJoin);        
     }
 
-    public void testAttachesTo()
-    {
-        assertNull(outputProcessViewUpdate.attachesTo(null));
-    }
-
     public void testGetEventType()
     {
         assertSame(resultSetProcessor.getResultEventType(), outputProcessViewUpdate.getEventType());
