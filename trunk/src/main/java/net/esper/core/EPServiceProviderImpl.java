@@ -12,6 +12,7 @@ import net.esper.util.JavaClassHelper;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
 import net.esper.schedule.ScheduleBucket;
+import net.esper.adapter.OutputAdapterService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +55,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     public SchedulingService getSchedulingService()
     {
         return engine.getServices().getSchedulingService();
+    }
+
+    public void setOuputAdapterService(OutputAdapterService outputAdapterService)
+    {
+        engine.getServices().setOutputAdapterService(outputAdapterService);
     }
 
     public void initialize()

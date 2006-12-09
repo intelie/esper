@@ -6,6 +6,7 @@ import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.db.DatabaseConfigService;
+import net.esper.eql.spec.InsertIntoDesc;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
 import net.esper.filter.FilterServiceProvider;
@@ -16,6 +17,12 @@ import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
 import net.esper.view.stream.StreamReuseService;
 import net.esper.view.stream.StreamReuseServiceProvider;
+import net.esper.client.EPStatement;
+import net.esper.client.UpdateListener;
+import net.esper.adapter.OutputAdapterService;
+
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * Convenience class to instantiate implementations for all services.
@@ -33,6 +40,9 @@ public final class EPServicesContext
     private final AutoImportService autoImportService;
     private final DatabaseConfigService databaseConfigService;
 
+    // For yves Test
+    private OutputAdapterService outputAdapterService;
+    
     // Must be set
     private InternalEventRouter internalEventRouter;
 
@@ -168,4 +178,34 @@ public final class EPServicesContext
     {
         return databaseConfigService;
     }
+
+    public void setOutputAdapterService(OutputAdapterService adapterService)
+    {
+       this.outputAdapterService = adapterService;
+    }
+
+    public void addOuputAdapter(InsertIntoDesc insertIntoDesc, EPStatement epStatement)
+    {
+        if (outputAdapterService == null)
+        {
+            return;
+        }
+
+        if (!insertIntoDesc.isIStream())
+        {
+            return;
+        }
+
+        String insertStream = insertIntoDesc.getEventTypeAlias();
+        List<UpdateListener> adapterList =  outputAdapterService.getMatchingOutputAdapter(insertStream);
+        if (adapterList != null)
+        {
+            Iterator itAdapter =  adapterList.iterator();
+            while (itAdapter.hasNext())
+            {
+                epStatement.addListener((UpdateListener) itAdapter.next());
+            }
+        }
+    }
+    
 }

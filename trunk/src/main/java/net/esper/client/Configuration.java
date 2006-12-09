@@ -80,6 +80,7 @@ public class Configuration {
 	 */
 	private boolean isUsingDefaultImports = true;
 
+
     /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
@@ -419,5 +420,6 @@ public class Configuration {
     	imports.add("java.text.*");
     	imports.add("java.util.*");
     }
+
 }
 
