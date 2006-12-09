@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//Spring//DTD Bean//EN" 
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- Application Context -->
+<beans>
+
+    <!-- ####################################### -->
+    <!--          JMS Spring Beans               -->
+    <!-- ####################################### -->
+
+    <!-- JNDI Environment Template -->
+    <bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+        <property name="environment">
+            <props>
+                <prop key="java.naming.factory.initial">org.jnp.interfaces.NamingContextFactory</prop>
+                <prop key="java.naming.provider.url">localhost</prop>
+                <prop key="java.naming.factory.url.pkgs">org.jnp.interfaces:org.jboss.naming</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- JMS Queue Connection Factory -->
+    <bean id="internalJmsQueueConnectionFactory"
+        	class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiTemplate">
+            <ref bean="jndiTemplate"/>
+        </property>
+        <property name="jndiName">
+            <value>UIL2ConnectionFactory</value>
+        </property>
+    </bean>
+
+    <!-- JMS Default Destination -->
+    <bean id="destination"
+        class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiTemplate">
+            <ref bean="jndiTemplate"/>
+        </property>
+        <property name="jndiName">
+            <value>queue/A</value>
+        </property>
+    </bean>
+
+    <!-- JMS Queue Template -->
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">    
+    <!-- bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate102" -->
+        <property name="connectionFactory">
+            <ref bean="internalJmsQueueConnectionFactory"/>
+        </property>
+        <property name="defaultDestination">
+            <ref bean="destination"/>
+        </property>
+        <property name="receiveTimeout">
+            <value>30000</value>
+        </property>
+    </bean>
+
+    <bean id="defaultJMSMarshaler" class="net.esper.adapter.jms.DefaultJMSMarshaler">
+    </bean>
+
+    
+    <bean id="jmsInputAdapterEventType" class="net.esper.adapter.jms.JMSMapEventType">
+    	<constructor-arg type="java.util.Map">
+    		<map>
+			<entry key="myInt" value="java.lang.Integer"/>
+			<entry key="myDouble" value="java.lang.Double"/>
+			<entry key="myString" value="java.lang.String"/>
+		</map>
+	</constructor-arg>
+    </bean>
+    
+    <bean id="jmsOuputAdapter" class="net.esper.adapter.jms.JMSAdapter">
+    	<property name="role" value="Sender"/>
+    	<property name="defaultJmsTemplate">
+        	<ref bean="jmsTemplate"/>
+        </property>        
+        <property name="outputStreamAlias">
+        	<value>myOutputStream</value>
+        </property>                
+        <property name="defaultJMSMarshaler">
+        	<ref bean="defaultJMSMarshaler"/>
+        </property>                        
+     </bean>
+    
+
+    <bean id="jmsInputAdapter" class="net.esper.adapter.jms.JMSAdapter">
+    	<property name="role" value="Receiver"/>
+    	<property name="defaultJmsTemplate">
+        	<ref bean="jmsTemplate"/>
+        </property>        
+        <property name="defaultJMSMarshaler">
+        	<ref bean="defaultJMSMarshaler"/>
+        </property>                        
+        <property name="defaultInputEventType">
+        	<ref bean="jmsInputAdapterEventType"/>
+        </property>                                
+     </bean>
+          
+</beans>
+
