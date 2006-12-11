@@ -9,8 +9,8 @@ public interface ViewFactory
 {
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException;
     public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory) throws ViewAttachException;
-    public boolean canProvideCapability(Class capabilityInterfaceClass);
-    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback);
+    public boolean canProvideCapability(ViewCapability viewCapability);
+    public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback);
     public View makeView(ViewServiceContext viewServiceContext);
     public EventType getEventType();
     public boolean canReuse(View view);

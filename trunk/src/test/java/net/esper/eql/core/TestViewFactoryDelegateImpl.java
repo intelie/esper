@@ -2,14 +2,14 @@ package net.esper.eql.core;
 
 import net.esper.view.ViewFactoryChain;
 import net.esper.view.ViewFactory;
+import net.esper.view.ViewCapability;
+import net.esper.view.ViewCapabilityRandomAccess;
 import net.esper.view.std.SizeViewFactory;
 import net.esper.view.window.TimeWindowViewFactory;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.bean.SupportBean;
-import net.esper.collection.DataWindowRandomAccess;
 
 import java.util.Arrays;
-import java.io.Serializable;
 
 import junit.framework.TestCase;
 
@@ -31,7 +31,10 @@ public class TestViewFactoryDelegateImpl extends TestCase
 
     public void testRequest()
     {
-        assertFalse(delegate.requestCapability(1, Serializable.class, null));
-        assertTrue(delegate.requestCapability(1, DataWindowRandomAccess.class, null));
+        assertFalse(delegate.requestCapability(1, new SupportViewCapability(), null));
+        assertTrue(delegate.requestCapability(1, new ViewCapabilityRandomAccess(1), null));
     }
+
+    private class SupportViewCapability implements ViewCapability {}
 }
+

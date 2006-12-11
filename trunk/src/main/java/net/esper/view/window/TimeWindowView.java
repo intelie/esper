@@ -14,7 +14,7 @@ import net.esper.event.EventBean;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.collection.TimeWindow;
-import net.esper.collection.DataWindowRandomAccessImpl;
+import net.esper.collection.RandomAccessIStreamImpl;
 import net.esper.client.EPException;
 
 /**
@@ -34,7 +34,7 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
 
     private long millisecondsBeforeExpiry;
     private TimeWindow timeWindow = new TimeWindow();
-    private DataWindowRandomAccessImpl optionalRandomAccess;
+    private RandomAccessIStreamImpl optionalRandomAccess;
 
     private ViewServiceContext viewServiceContext;
     private ScheduleSlot scheduleSlot;
@@ -51,7 +51,7 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
      * @param millisecondsBeforeExpiry is the number of milliseconds before events gets pushed
      * out of the timeWindow as oldData in the update method.
      */
-    public TimeWindowView(long millisecondsBeforeExpiry, DataWindowRandomAccessImpl optionalRandomAccess)
+    public TimeWindowView(long millisecondsBeforeExpiry, RandomAccessIStreamImpl optionalRandomAccess)
     {
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
         this.optionalRandomAccess = optionalRandomAccess;
@@ -75,12 +75,12 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
     }
 
-    public DataWindowRandomAccessImpl getOptionalRandomAccess()
+    public RandomAccessIStreamImpl getOptionalRandomAccess()
     {
         return optionalRandomAccess;
     }
 
-    public void setOptionalRandomAccess(DataWindowRandomAccessImpl optionalRandomAccess)
+    public void setOptionalRandomAccess(RandomAccessIStreamImpl optionalRandomAccess)
     {
         this.optionalRandomAccess = optionalRandomAccess;
     }
@@ -97,14 +97,6 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
             String message = "View context has not been supplied, cannot schedule callback";
             log.fatal(".update " + message);
             throw new EPException(message);
-        }
-
-        if (optionalRandomAccess != null)
-        {
-            for (int i = 0; i < newData.length; i++)
-            {
-                optionalRandomAccess.enter(newData[i]);
-            }
         }
 
         long timestamp = viewServiceContext.getSchedulingService().getTime();
@@ -126,6 +118,11 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         for (int i = 0; i < newData.length; i++)
         {
             timeWindow.add(timestamp, newData[i]);
+        }
+
+        if (optionalRandomAccess != null)
+        {
+            optionalRandomAccess.update(newData, null);
         }
 
         // update child views
@@ -159,11 +156,12 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         {
             if ((expired != null) && (expired.size() > 0))
             {
+                EventBean[] oldEvents = expired.toArray(new EventBean[0]);
                 if (optionalRandomAccess != null)
                 {
-                    optionalRandomAccess.remove(expired);
+                    optionalRandomAccess.update(null, oldEvents);
                 }
-                updateChildren(null, expired.toArray(new EventBean[0]));
+                updateChildren(null, oldEvents);
             }
         }
 

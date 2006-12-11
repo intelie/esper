@@ -5,7 +5,9 @@ import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.event.EventBean;
-import net.esper.collection.DataWindowRandomAccess;
+import net.esper.collection.RandomAccess;
+import net.esper.view.ViewCapabilityRandomAccess;
+import net.esper.util.JavaClassHelper;
 
 /**
  * Represents the 'prev' previous event function in an expression node tree.
@@ -13,20 +15,44 @@ import net.esper.collection.DataWindowRandomAccess;
 public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
 {
     private Class resultType;
-    private DataWindowRandomAccess dataWindowRandomAccess;
+    private RandomAccess randomAccess;
     private int streamNumber;
+    private Integer constantIndexNumber;
+    private boolean isConstantIndex;
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
-        ExprIdentNode identNode = (ExprIdentNode) this.getChildNodes().get(1);
-        streamNumber = identNode.getStreamId();
-
-        if (!viewFactoryDelegate.requestCapability(streamNumber, DataWindowRandomAccess.class, this))
+        // Determine if the index is a constant value or an expression to evaluate
+        if (this.getChildNodes().get(0) instanceof ExprConstantNode)
         {
-            throw new ExprValidationException("Prior expression node requires a view that provides data window access");
+            ExprConstantNode constantNode = (ExprConstantNode) this.getChildNodes().get(0);
+            Object value = constantNode.evaluate(null, false);
+            if (!(value instanceof Number))
+            {
+                throw new ExprValidationException("Previous function requires an integer index parameter or expression");
+            }
+
+            Number valueNumber = (Number) value;
+            if ( (JavaClassHelper.isFloatingPointNumber(valueNumber)) ||
+                 (valueNumber instanceof Long))
+            {
+                throw new ExprValidationException("Previous function requires an integer index parameter or expression");
+            }
+
+            constantIndexNumber = valueNumber.intValue();
+            isConstantIndex = true;
         }
 
+        // Determine stream number
+        ExprIdentNode identNode = (ExprIdentNode) this.getChildNodes().get(1);
+        streamNumber = identNode.getStreamId();
         resultType = this.getChildNodes().get(1).getType();
+
+        // Request a callback that provides the required access
+        if (!viewFactoryDelegate.requestCapability(streamNumber, new ViewCapabilityRandomAccess(constantIndexNumber), this))
+        {
+            throw new ExprValidationException("Previous function requires a view that provides a data window");
+        }
     }
 
     public Class getType()
@@ -36,32 +62,41 @@ public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        // evaluate first child, returns the index (if null, then null)
-        // use DataWindowRandomAccess to get(index)
-        // TODO
-        Object indexResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-        Integer index = (Integer) indexResult;
+        Integer index = null;
 
+        // Use constant if supplied
+        if (isConstantIndex)
+        {
+            index = constantIndexNumber;
+        }
+        else
+        {
+            // evaluate first child, which returns the index
+            Object indexResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+            if (indexResult == null)
+            {
+                return null;
+            }
+            index = (Integer) indexResult;
+        }
+
+        // access based on index returned
         EventBean substituteEvent = null;
-        //if (isNewData)
+        if (isNewData)
         {
-            if (dataWindowRandomAccess.getNewDataSize() <= index)
-            {
-                return null;
-            }
-            substituteEvent = dataWindowRandomAccess.getNewData(index);
+            substituteEvent = randomAccess.getNewData(index);
         }
-        //else
+        else
         {
-            if (dataWindowRandomAccess.getOldDataSize() <= index)
-            {
-                return null;
-            }
-            substituteEvent = dataWindowRandomAccess.getOldData(index);
+            substituteEvent = randomAccess.getOldData(index);
         }
-        
-        EventBean originalEvent = eventsPerStream[streamNumber];
+        if (substituteEvent == null)
+        {
+            return null;
+        }
 
+        // Substitute original event with prior event, evaluate inner expression
+        EventBean originalEvent = eventsPerStream[streamNumber];
         eventsPerStream[streamNumber] = substituteEvent;
         Object evalResult = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
         eventsPerStream[streamNumber] = originalEvent;
@@ -92,6 +127,6 @@ public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
 
     public void setViewResource(Object resource)
     {
-        dataWindowRandomAccess = (DataWindowRandomAccess) resource;
+        randomAccess = (RandomAccess) resource;
     }
 }

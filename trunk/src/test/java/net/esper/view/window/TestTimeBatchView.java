@@ -25,7 +25,7 @@ public class TestTimeBatchView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new TimeBatchView(TEST_INTERVAL_MSEC, null);
+        myView = new TimeBatchView(TEST_INTERVAL_MSEC, null, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
 
@@ -149,7 +149,7 @@ public class TestTimeBatchView extends TestCase
         long startTime = 50000;
         schedulingServiceStub.setTime(startTime);
 
-        myView = new TimeBatchView(TEST_INTERVAL_MSEC, 1505L);
+        myView = new TimeBatchView(TEST_INTERVAL_MSEC, 1505L, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
         myView.setViewServiceContext(SupportViewContextFactory.makeContext(schedulingServiceStub));
@@ -218,7 +218,7 @@ public class TestTimeBatchView extends TestCase
 
     public void testCopyView() throws Exception
     {
-        myView = new TimeBatchView(TEST_INTERVAL_MSEC, null);
+        myView = new TimeBatchView(TEST_INTERVAL_MSEC, null, null);
 
         ViewServiceContext context = SupportViewContextFactory.makeContext();
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);

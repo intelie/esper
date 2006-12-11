@@ -7,14 +7,18 @@ import net.esper.event.EventType;
 import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.util.JavaClassHelper;
+import net.esper.collection.RandomAccessIStreamImpl;
 
 import java.util.List;
+import java.util.LinkedList;
 
 public class TimeBatchViewFactory implements ViewFactory
 {
     private long millisecondsBeforeExpiry;
     private Long optionalReferencePoint;
+    private boolean isRequiresRandomAccess;
     private EventType eventType;
+    private List<ViewFactoryCallback> factoryCallbacks = new LinkedList<ViewFactoryCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -55,7 +59,7 @@ public class TimeBatchViewFactory implements ViewFactory
         if (viewParameters.size() == 2)
         {
             Object paramRef = viewParameters.get(1);
-            if ((!(paramRef instanceof Number)) || (JavaClassHelper.isFloatingPointNumber((Number)paramRef))) 
+            if ((!(paramRef instanceof Number)) || (JavaClassHelper.isFloatingPointNumber((Number)paramRef)))
             {
                 throw new ViewParameterException("Time batch view requires a Long-typed reference point in msec as a second parameter");
             }
@@ -68,19 +72,42 @@ public class TimeBatchViewFactory implements ViewFactory
         this.eventType = parentEventType;
     }
 
-    public boolean canProvideCapability(Class capabilityInterfaceClass)
+    public boolean canProvideCapability(ViewCapability viewCapability)
     {
-        return false;
+        if (viewCapability instanceof ViewCapabilityRandomAccess)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback)
+    public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback)
     {
-        throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
+        if (!canProvideCapability(viewCapability))
+        {
+            throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
+        }
+        isRequiresRandomAccess = true;
+        factoryCallbacks.add(factoryCallback);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new TimeBatchView(millisecondsBeforeExpiry, optionalReferencePoint);
+        RandomAccessIStreamImpl randomAccess = null;
+
+        if (isRequiresRandomAccess)
+        {
+            randomAccess = new RandomAccessIStreamImpl();
+            for (ViewFactoryCallback factoryCallback : factoryCallbacks)
+            {
+                factoryCallback.setViewResource(randomAccess);
+            }
+        }
+
+        return new TimeBatchView(millisecondsBeforeExpiry, optionalReferencePoint, randomAccess);
     }
 
     public EventType getEventType()

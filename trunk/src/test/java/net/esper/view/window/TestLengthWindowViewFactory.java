@@ -30,8 +30,8 @@ public class TestLengthWindowViewFactory extends TestCase
     {
         factory.setViewParameters(Arrays.asList(new Object[] {1000}));
         assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new LengthWindowView(1)));
-        assertTrue(factory.canReuse(new LengthWindowView(1000)));
+        assertFalse(factory.canReuse(new LengthWindowView(1, null)));
+        assertTrue(factory.canReuse(new LengthWindowView(1000, null)));
     }
 
     private void tryInvalidParameter(Object param) throws Exception

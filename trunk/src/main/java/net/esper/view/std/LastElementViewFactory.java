@@ -1,10 +1,6 @@
 package net.esper.view.std;
 
-import net.esper.view.ViewFactory;
-import net.esper.view.ViewParameterException;
-import net.esper.view.ViewAttachException;
-import net.esper.view.ViewServiceContext;
-import net.esper.view.View;
+import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewFactoryCallback;
 
@@ -28,14 +24,14 @@ public class LastElementViewFactory implements ViewFactory
         this.eventType = parentEventType;
     }
 
-    public boolean canProvideCapability(Class capabilityInterfaceClass)
+    public boolean canProvideCapability(ViewCapability viewCapability)
     {
         return false;
     }
 
-    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback)
+    public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback)
     {
-        throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
+        throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
     public View makeView(ViewServiceContext viewServiceContext)

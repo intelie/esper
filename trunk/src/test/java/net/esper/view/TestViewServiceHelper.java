@@ -94,7 +94,7 @@ public class TestViewServiceHelper extends TestCase
 
         // Another top view under the stream that doesn't matche again
         testView = new SupportBeanClassView(TEST_CLASS);
-        stream.addView(new LengthWindowView(999));
+        stream.addView(new LengthWindowView(999, null));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
         assertEquals(stream, result.getFirst());
@@ -102,7 +102,7 @@ public class TestViewServiceHelper extends TestCase
         assertEquals(0, result.getSecond().size());
 
         // One top view under the stream that does actually match
-        LengthWindowView myLengthWindowView = new LengthWindowView(1000);
+        LengthWindowView myLengthWindowView = new LengthWindowView(1000, null);
         stream.addView(myLengthWindowView);
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
+import net.esper.collection.RandomAccessIStreamImpl;
 
 /**
  * This view is a moving window extending the specified number of elements into the past.
@@ -14,6 +14,7 @@ import net.esper.view.Viewable;
 public final class LengthWindowView extends ViewSupport implements DataWindowView
 {
     private int size = 0;
+    private RandomAccessIStreamImpl optionalRandomAccess;
     private final LinkedList<EventBean> events = new LinkedList<EventBean>();
 
     /**
@@ -27,7 +28,7 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
      * Constructor creates a moving window extending the specified number of elements into the past.
      * @param size is the specified number of elements into the past
      */
-    public LengthWindowView(int size)
+    public LengthWindowView(int size, RandomAccessIStreamImpl optionalRandomAccess)
     {
         if (size < 1)
         {
@@ -35,6 +36,7 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         }
 
         this.size = size;
+        this.optionalRandomAccess = optionalRandomAccess;
     }
 
     public boolean isEmpty()
@@ -58,6 +60,16 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
     public final void setSize(int size)
     {
         this.size = size;
+    }
+
+    public RandomAccessIStreamImpl getOptionalRandomAccess()
+    {
+        return optionalRandomAccess;
+    }
+
+    public void setOptionalRandomAccess(RandomAccessIStreamImpl optionalRandomAccess)
+    {
+        this.optionalRandomAccess = optionalRandomAccess;
     }
 
     public final EventType getEventType()
@@ -91,6 +103,10 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         }
 
         // If there are child views, fire update method
+        if (optionalRandomAccess != null)
+        {
+            optionalRandomAccess.update(newData, oldData);
+        }
         if (this.hasViews())
         {
             updateChildren(newData, expiredArr);

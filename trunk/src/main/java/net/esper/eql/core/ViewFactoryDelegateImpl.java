@@ -2,6 +2,7 @@ package net.esper.eql.core;
 
 import net.esper.view.ViewFactoryChain;
 import net.esper.view.ViewFactory;
+import net.esper.view.ViewCapability;
 
 public class ViewFactoryDelegateImpl implements ViewFactoryDelegate
 {
@@ -12,7 +13,7 @@ public class ViewFactoryDelegateImpl implements ViewFactoryDelegate
         this.viewFactories = viewFactories;
     }
 
-    public boolean requestCapability(int streamNumber, Class requestedCabability, ViewFactoryCallback factoryCallback)
+    public boolean requestCapability(int streamNumber, ViewCapability requestedCabability, ViewFactoryCallback factoryCallback)
     {
         ViewFactoryChain factories = viewFactories[streamNumber];
 

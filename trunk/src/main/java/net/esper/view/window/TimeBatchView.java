@@ -8,13 +8,13 @@ import java.text.SimpleDateFormat;
 
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
-import net.esper.view.Viewable;
 import net.esper.view.ViewSupport;
 import net.esper.view.ContextAwareView;
 import net.esper.view.ViewServiceContext;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.client.EPException;
+import net.esper.collection.RandomAccessIStreamImpl;
 
 /**
  * A data view that aggregates events in a stream and releases them in one batch at every specified time interval.
@@ -38,6 +38,7 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
     // View parameters
     private long msecIntervalSize;
     private Long initialReferencePoint;
+    private RandomAccessIStreamImpl optionalRandomAccess;
 
     // Current running parameters
     private Long currentReferencePoint;
@@ -60,10 +61,11 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
      * @param referencePoint is the reference point onto which to base intervals, or null if
      * there is no such reference point supplied
      */
-    public TimeBatchView(long msecIntervalSize, Long referencePoint)
+    public TimeBatchView(long msecIntervalSize, Long referencePoint, RandomAccessIStreamImpl optionalRandomAccess)
     {
         this.msecIntervalSize = msecIntervalSize;
         this.initialReferencePoint = referencePoint;
+        this.optionalRandomAccess = optionalRandomAccess;
     }
 
     /**
@@ -91,6 +93,16 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
     public final Long getInitialReferencePoint()
     {
         return initialReferencePoint;
+    }
+
+    public RandomAccessIStreamImpl getOptionalRandomAccess()
+    {
+        return optionalRandomAccess;
+    }
+
+    public void setOptionalRandomAccess(RandomAccessIStreamImpl optionalRandomAccess)
+    {
+        this.optionalRandomAccess = optionalRandomAccess;
     }
 
     /**
@@ -199,6 +211,10 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
             }
 
             // Post new data (current batch) and old data (prior batch)
+            if (optionalRandomAccess != null)
+            {
+                optionalRandomAccess.update(newData, oldData);
+            }
             if ((newData != null) || (oldData != null))
             {
                 updateChildren(newData, oldData);

@@ -21,7 +21,7 @@ public class TestLengthWindowView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new LengthWindowView(5);
+        myView = new LengthWindowView(5, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -30,7 +30,7 @@ public class TestLengthWindowView extends TestCase
     {
         try
         {
-            myView = new LengthWindowView(0);
+            myView = new LengthWindowView(0, null);
         }
         catch (IllegalArgumentException ex)
         {

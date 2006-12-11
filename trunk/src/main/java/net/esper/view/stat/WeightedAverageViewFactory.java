@@ -48,14 +48,14 @@ public class WeightedAverageViewFactory implements ViewFactory
         eventType = viewServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
     }
 
-    public boolean canProvideCapability(Class capabilityInterfaceClass)
+    public boolean canProvideCapability(ViewCapability viewCapability)
     {
         return false;
     }
 
-    public void setProvideCapability(Class capabilityInterfaceClass, ViewFactoryCallback factoryCallback)
+    public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback)
     {
-        throw new UnsupportedOperationException("View capability " + capabilityInterfaceClass.getSimpleName() + " not supported");
+        throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
     public View makeView(ViewServiceContext viewServiceContext)

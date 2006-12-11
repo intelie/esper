@@ -9,7 +9,6 @@ import net.esper.util.MultiKeyComparator;
 import net.esper.view.ViewSupport;
 import net.esper.view.Viewable;
 import net.esper.view.window.DataWindowView;
-import net.esper.view.PropertyCheckHelper;
 import net.esper.collection.MultiKey;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
