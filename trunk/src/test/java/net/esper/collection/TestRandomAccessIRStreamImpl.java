@@ -5,7 +5,7 @@ import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.bean.SupportBean;
 import junit.framework.TestCase;
 
-public class TestDataWindowRandomAccessImpl extends TestCase
+public class TestRandomAccessIRStreamImpl extends TestCase
 {
     private RandomAccessIRStreamImpl access;
     private EventBean[] events;

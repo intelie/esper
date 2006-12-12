@@ -8,6 +8,7 @@ import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.collection.TimeWindow;
+import net.esper.collection.ViewUpdatedCollection;
 
 /**
  * View for a moving window extending the specified amount of time into the past, driven entirely by external timing
@@ -34,6 +35,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     private EventPropertyGetter timestampFieldGetter;
 
     private final TimeWindow timeWindow = new TimeWindow();
+    private ViewUpdatedCollection viewUpdatedCollection;
 
     /**
      * Default constructor - required by all views to adhere to the Java bean specification.
@@ -52,10 +54,11 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * each events timestamp against the newest event timestamp and those with a delta
      * greater then secondsBeforeExpiry are pushed out of the window.
      */
-    public ExternallyTimedWindowView(String timestampFieldName, long msecBeforeExpiry)
+    public ExternallyTimedWindowView(String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
     {
         this.timestampFieldName = timestampFieldName;
         this.millisecondsBeforeExpiry = msecBeforeExpiry;
+        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     /**
@@ -128,20 +131,24 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
         List<EventBean> expired = null;
         if (timestamp != -1)
         {
-            expired = timeWindow.expireEvents(timestamp - millisecondsBeforeExpiry);
+            expired = timeWindow.expireEvents(timestamp - millisecondsBeforeExpiry + 1);
+        }
+
+        EventBean[] oldDataUpdate = null;
+        if ((expired != null) && (expired.size() > 0))
+        {
+            oldDataUpdate = expired.toArray(new EventBean[0]);
+        }
+
+        if (viewUpdatedCollection != null)
+        {
+            viewUpdatedCollection.update(newData, oldDataUpdate);
         }
 
         // If there are child views, fire update method
         if (this.hasViews())
         {
-            if ((expired != null) && (expired.size() > 0))
-            {
-                updateChildren(newData, expired.toArray(new EventBean[0]));
-            }
-            else
-            {
-                updateChildren(newData, null);
-            }
+            updateChildren(newData, oldDataUpdate);
         }
     }
 

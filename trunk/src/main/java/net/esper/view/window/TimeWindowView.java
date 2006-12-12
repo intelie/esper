@@ -15,6 +15,7 @@ import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.collection.TimeWindow;
 import net.esper.collection.RandomAccessIStreamImpl;
+import net.esper.collection.ViewUpdatedCollection;
 import net.esper.client.EPException;
 
 /**
@@ -34,7 +35,7 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
 
     private long millisecondsBeforeExpiry;
     private TimeWindow timeWindow = new TimeWindow();
-    private RandomAccessIStreamImpl optionalRandomAccess;
+    private ViewUpdatedCollection viewUpdatedCollection;
 
     private ViewServiceContext viewServiceContext;
     private ScheduleSlot scheduleSlot;
@@ -51,10 +52,10 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
      * @param millisecondsBeforeExpiry is the number of milliseconds before events gets pushed
      * out of the timeWindow as oldData in the update method.
      */
-    public TimeWindowView(long millisecondsBeforeExpiry, RandomAccessIStreamImpl optionalRandomAccess)
+    public TimeWindowView(long millisecondsBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
     {
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
-        this.optionalRandomAccess = optionalRandomAccess;
+        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     /**
@@ -75,14 +76,14 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
     }
 
-    public RandomAccessIStreamImpl getOptionalRandomAccess()
+    public ViewUpdatedCollection getViewUpdatedCollection()
     {
-        return optionalRandomAccess;
+        return viewUpdatedCollection;
     }
 
-    public void setOptionalRandomAccess(RandomAccessIStreamImpl optionalRandomAccess)
+    public void setViewUpdatedCollection(RandomAccessIStreamImpl viewUpdatedCollection)
     {
-        this.optionalRandomAccess = optionalRandomAccess;
+        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     public final EventType getEventType()
@@ -120,9 +121,9 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
             timeWindow.add(timestamp, newData[i]);
         }
 
-        if (optionalRandomAccess != null)
+        if (viewUpdatedCollection != null)
         {
-            optionalRandomAccess.update(newData, null);
+            viewUpdatedCollection.update(newData, null);
         }
 
         // update child views
@@ -157,9 +158,9 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
             if ((expired != null) && (expired.size() > 0))
             {
                 EventBean[] oldEvents = expired.toArray(new EventBean[0]);
-                if (optionalRandomAccess != null)
+                if (viewUpdatedCollection != null)
                 {
-                    optionalRandomAccess.update(null, oldEvents);
+                    viewUpdatedCollection.update(null, oldEvents);
                 }
                 updateChildren(null, oldEvents);
             }

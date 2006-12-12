@@ -5,14 +5,18 @@ import net.esper.event.EventType;
 import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.util.JavaClassHelper;
+import net.esper.collection.RandomAccessIStreamImpl;
 
 import java.util.List;
+import java.util.LinkedList;
 
 public class ExternallyTimedWindowViewFactory implements ViewFactory
 {
     private String timestampFieldName;
     private long millisecondsBeforeExpiry;
     private EventType eventType;
+    private boolean isRequiresRandomAccess;
+    private List<ViewFactoryCallback> factoryCallbacks = new LinkedList<ViewFactoryCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -64,17 +68,40 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
-        return false;
+        if (viewCapability instanceof ViewCapabilityRandomAccess)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback)
     {
-        throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
+        if (!canProvideCapability(viewCapability))
+        {
+            throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
+        }
+        isRequiresRandomAccess = true;
+        factoryCallbacks.add(factoryCallback);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new ExternallyTimedWindowView(timestampFieldName, millisecondsBeforeExpiry);
+        RandomAccessIStreamImpl randomAccess = null;
+
+        if (isRequiresRandomAccess)
+        {
+            randomAccess = new RandomAccessIStreamImpl();
+            for (ViewFactoryCallback factoryCallback : factoryCallbacks)
+            {
+                factoryCallback.setViewResource(randomAccess);
+            }
+        }
+
+        return new ExternallyTimedWindowView(timestampFieldName, millisecondsBeforeExpiry, randomAccess);
     }
 
     public EventType getEventType()

@@ -7,6 +7,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
 import net.esper.collection.RandomAccessIStreamImpl;
+import net.esper.collection.ViewUpdatedCollection;
 
 /**
  * This view is a moving window extending the specified number of elements into the past.
@@ -14,7 +15,7 @@ import net.esper.collection.RandomAccessIStreamImpl;
 public final class LengthWindowView extends ViewSupport implements DataWindowView
 {
     private int size = 0;
-    private RandomAccessIStreamImpl optionalRandomAccess;
+    private ViewUpdatedCollection viewUpdatedCollection;
     private final LinkedList<EventBean> events = new LinkedList<EventBean>();
 
     /**
@@ -28,7 +29,7 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
      * Constructor creates a moving window extending the specified number of elements into the past.
      * @param size is the specified number of elements into the past
      */
-    public LengthWindowView(int size, RandomAccessIStreamImpl optionalRandomAccess)
+    public LengthWindowView(int size, ViewUpdatedCollection viewUpdatedCollection)
     {
         if (size < 1)
         {
@@ -36,7 +37,7 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         }
 
         this.size = size;
-        this.optionalRandomAccess = optionalRandomAccess;
+        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     public boolean isEmpty()
@@ -62,14 +63,14 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         this.size = size;
     }
 
-    public RandomAccessIStreamImpl getOptionalRandomAccess()
+    public ViewUpdatedCollection getViewUpdatedCollection()
     {
-        return optionalRandomAccess;
+        return viewUpdatedCollection;
     }
 
-    public void setOptionalRandomAccess(RandomAccessIStreamImpl optionalRandomAccess)
+    public void setViewUpdatedCollection(RandomAccessIStreamImpl viewUpdatedCollection)
     {
-        this.optionalRandomAccess = optionalRandomAccess;
+        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     public final EventType getEventType()
@@ -103,9 +104,9 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         }
 
         // If there are child views, fire update method
-        if (optionalRandomAccess != null)
+        if (viewUpdatedCollection != null)
         {
-            optionalRandomAccess.update(newData, oldData);
+            viewUpdatedCollection.update(newData, oldData);
         }
         if (this.hasViews())
         {

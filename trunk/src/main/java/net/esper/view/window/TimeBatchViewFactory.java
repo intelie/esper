@@ -7,7 +7,7 @@ import net.esper.event.EventType;
 import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.util.JavaClassHelper;
-import net.esper.collection.RandomAccessIStreamImpl;
+import net.esper.collection.RelativeAccessByEventImpl;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -96,18 +96,18 @@ public class TimeBatchViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        RandomAccessIStreamImpl randomAccess = null;
+        RelativeAccessByEventImpl relativeAccessByEvent = null;
 
         if (isRequiresRandomAccess)
         {
-            randomAccess = new RandomAccessIStreamImpl();
+            relativeAccessByEvent = new RelativeAccessByEventImpl();
             for (ViewFactoryCallback factoryCallback : factoryCallbacks)
             {
-                factoryCallback.setViewResource(randomAccess);
+                factoryCallback.setViewResource(relativeAccessByEvent);
             }
         }
 
-        return new TimeBatchView(millisecondsBeforeExpiry, optionalReferencePoint, randomAccess);
+        return new TimeBatchView(millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);
     }
 
     public EventType getEventType()

@@ -9,7 +9,7 @@ import net.esper.util.MultiKeyComparator;
 import net.esper.view.ViewSupport;
 import net.esper.view.Viewable;
 import net.esper.view.window.DataWindowView;
-import net.esper.collection.MultiKey;
+import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
@@ -35,8 +35,9 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
     private Boolean[] isDescendingValues;
     private int sortWindowSize = 0;
 
-    private TreeMap<MultiKey, LinkedList<EventBean>> sortedEvents;
+    private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
     private int eventCount;
+    private SortedRandomAccess optionalSortedRandomAccess;
 
     /**
      * Default constructor - required by all views to adhere to the Java bean specification.
@@ -45,14 +46,16 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
     {
     }
 
-    public SortWindowView(String[] sortFieldNames, Boolean[] descendingValues, int sortWindowSize)
+    public SortWindowView(String[] sortFieldNames, Boolean[] descendingValues, int sortWindowSize,
+                          SortedRandomAccess optionalSortedRandomAccess)
     {
         this.sortFieldNames = sortFieldNames;
         this.isDescendingValues = descendingValues;
         this.sortWindowSize = sortWindowSize;
+        this.optionalSortedRandomAccess = optionalSortedRandomAccess;
 
-        Comparator<MultiKey> comparator = new MultiKeyComparator(isDescendingValues);
-        sortedEvents = new TreeMap<MultiKey, LinkedList<EventBean>>(comparator);
+        Comparator<MultiKeyUntyped> comparator = new MultiKeyComparator(isDescendingValues);
+        sortedEvents = new TreeMap<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
     }
     
     public void setParent(Viewable parent)
@@ -96,7 +99,17 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
         return sortWindowSize;
     }
 
-   /**
+    public SortedRandomAccess getOptionalSortedRandomAccess()
+    {
+        return optionalSortedRandomAccess;
+    }
+
+    public void setOptionalSortedRandomAccess(SortedRandomAccess optionalSortedRandomAccess)
+    {
+        this.optionalSortedRandomAccess = optionalSortedRandomAccess;
+    }
+
+    /**
     * Set the sort order for the sort properties.
     * @param isDescendingValues - the direction to sort in for each sort property
     */
@@ -141,7 +154,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
         {
             for (int i = 0; i < oldData.length; i++)
             {
-                MultiKey sortValues = getSortValues(oldData[i]);
+                MultiKeyUntyped sortValues = getSortValues(oldData[i]);
                 boolean result = remove(sortValues, oldData[i]);
                 if (result)
                 {
@@ -156,7 +169,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
         {
             for (int i = 0; i < newData.length; i++)
             {
-                MultiKey sortValues = getSortValues(newData[i]);
+                MultiKeyUntyped sortValues = getSortValues(newData[i]);
                 add(sortValues, newData[i]);
                 eventCount++;
             }
@@ -169,7 +182,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
             for (int i = 0; i < removeCount; i++)
             {
                 // Remove the last element of the last key - sort order is key and then natural order of arrival
-                MultiKey lastKey = sortedEvents.lastKey();
+                MultiKeyUntyped lastKey = sortedEvents.lastKey();
                 LinkedList<EventBean> events = sortedEvents.get(lastKey);
                 EventBean event = events.removeLast();
                 eventCount--;
@@ -190,6 +203,10 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
         }
 
         // If there are child views, fire update method
+        if (optionalSortedRandomAccess != null)
+        {
+            optionalSortedRandomAccess.refresh(sortedEvents, eventCount, sortWindowSize);
+        }
         if (this.hasViews())
         {
             EventBean[] expiredArr = null;
@@ -215,7 +232,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
                 " sortWindowSize=" + sortWindowSize;
     }
 
-    private void add(MultiKey key, EventBean bean)
+    private void add(MultiKeyUntyped key, EventBean bean)
     {
         LinkedList<EventBean> listOfBeans = sortedEvents.get(key);
         if (listOfBeans != null)
@@ -229,7 +246,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
         sortedEvents.put(key, listOfBeans);
     }
 
-    private boolean remove(MultiKey key, EventBean bean)
+    private boolean remove(MultiKeyUntyped key, EventBean bean)
     {
         LinkedList<EventBean> listOfBeans = sortedEvents.get(key);
         if (listOfBeans == null)
@@ -245,7 +262,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
         return result;
     }
 
-    private MultiKey<Object> getSortValues(EventBean event)
+    private MultiKeyUntyped getSortValues(EventBean event)
     {
     	Object[] result = new Object[sortFieldGetters.length];
     	int count = 0;
@@ -253,7 +270,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
     	{
     		result[count++] = getter.get(event);
     	}
-    	return new MultiKey<Object>(result);
+    	return new MultiKeyUntyped(result);
     }
 
     public boolean isEmpty()

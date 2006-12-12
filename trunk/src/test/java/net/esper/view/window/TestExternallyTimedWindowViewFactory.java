@@ -36,9 +36,9 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
     {
         factory.setViewParameters(Arrays.asList(new Object[] {"price", 1000}));
         assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new ExternallyTimedWindowView("volume", 1000)));
-        assertFalse(factory.canReuse(new ExternallyTimedWindowView("price", 999)));
-        assertTrue(factory.canReuse(new ExternallyTimedWindowView("price", 1000000)));
+        assertFalse(factory.canReuse(new ExternallyTimedWindowView("volume", 1000, null)));
+        assertFalse(factory.canReuse(new ExternallyTimedWindowView("price", 999, null)));
+        assertTrue(factory.canReuse(new ExternallyTimedWindowView("price", 1000000, null)));
     }
 
     public void testAttach() throws Exception

@@ -15,6 +15,7 @@ import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.client.EPException;
 import net.esper.collection.RandomAccessIStreamImpl;
+import net.esper.collection.ViewUpdatedCollection;
 
 /**
  * A data view that aggregates events in a stream and releases them in one batch at every specified time interval.
@@ -31,14 +32,14 @@ import net.esper.collection.RandomAccessIStreamImpl;
  * If there are no events in the current and prior batch, the view will not invoke the update method of child views.
  * In that case also, no next callback is scheduled with the scheduling service until the next event arrives.
  */
-public final class TimeBatchView extends ViewSupport implements ContextAwareView
+public final class TimeBatchView extends ViewSupport implements ContextAwareView, DataWindowView
 {
     private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     // View parameters
     private long msecIntervalSize;
     private Long initialReferencePoint;
-    private RandomAccessIStreamImpl optionalRandomAccess;
+    private ViewUpdatedCollection viewUpdatedCollection;
 
     // Current running parameters
     private Long currentReferencePoint;
@@ -61,11 +62,11 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
      * @param referencePoint is the reference point onto which to base intervals, or null if
      * there is no such reference point supplied
      */
-    public TimeBatchView(long msecIntervalSize, Long referencePoint, RandomAccessIStreamImpl optionalRandomAccess)
+    public TimeBatchView(long msecIntervalSize, Long referencePoint, ViewUpdatedCollection optionalRandomAccess)
     {
         this.msecIntervalSize = msecIntervalSize;
         this.initialReferencePoint = referencePoint;
-        this.optionalRandomAccess = optionalRandomAccess;
+        this.viewUpdatedCollection = optionalRandomAccess;
     }
 
     /**
@@ -95,14 +96,14 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
         return initialReferencePoint;
     }
 
-    public RandomAccessIStreamImpl getOptionalRandomAccess()
+    public ViewUpdatedCollection getViewUpdatedCollection()
     {
-        return optionalRandomAccess;
+        return viewUpdatedCollection;
     }
 
-    public void setOptionalRandomAccess(RandomAccessIStreamImpl optionalRandomAccess)
+    public void setViewUpdatedCollection(RandomAccessIStreamImpl viewUpdatedCollection)
     {
-        this.optionalRandomAccess = optionalRandomAccess;
+        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     /**
@@ -211,9 +212,9 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
             }
 
             // Post new data (current batch) and old data (prior batch)
-            if (optionalRandomAccess != null)
+            if (viewUpdatedCollection != null)
             {
-                optionalRandomAccess.update(newData, oldData);
+                viewUpdatedCollection.update(newData, oldData);
             }
             if ((newData != null) || (oldData != null))
             {

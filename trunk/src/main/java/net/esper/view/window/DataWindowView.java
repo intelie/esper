@@ -21,9 +21,4 @@ import net.esper.view.View;
  */
 public interface DataWindowView extends View
 {
-    /**
-     * Returns true if the data window is currently empty, or false if it contains one or more events.
-     * @return true if empty window, false if not empty
-     */
-    public boolean isEmpty();
 }

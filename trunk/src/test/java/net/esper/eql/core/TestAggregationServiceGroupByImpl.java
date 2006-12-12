@@ -3,16 +3,15 @@ package net.esper.eql.core;
 import net.esper.support.eql.SupportAggregator;
 import net.esper.support.eql.SupportExprNode;
 import net.esper.event.EventBean;
-import net.esper.collection.MultiKey;
-import net.esper.eql.core.AggregationServiceGroupByImpl;
+import net.esper.collection.MultiKeyUntyped;
 import net.esper.eql.expression.ExprEvaluator;
 import junit.framework.TestCase;
 
 public class TestAggregationServiceGroupByImpl extends TestCase
 {
     private AggregationServiceGroupByImpl service;
-    private MultiKey<Object> groupOneKey;
-    private MultiKey<Object> groupTwoKey;
+    private MultiKeyUntyped groupOneKey;
+    private MultiKeyUntyped groupTwoKey;
 
     public void setUp()
     {
@@ -25,8 +24,8 @@ public class TestAggregationServiceGroupByImpl extends TestCase
 
         service = new AggregationServiceGroupByImpl(evaluators, aggregators);
 
-        groupOneKey = new MultiKey<Object>(new Object[] {"x", "y1"});
-        groupTwoKey = new MultiKey<Object>(new Object[] {"x", "y2"});
+        groupOneKey = new MultiKeyUntyped(new Object[] {"x", "y1"});
+        groupTwoKey = new MultiKeyUntyped(new Object[] {"x", "y2"});
     }
 
     public void testGetValue()

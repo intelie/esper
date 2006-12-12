@@ -4,7 +4,7 @@ import net.esper.event.EventBean;
 
 import java.util.ArrayList;
 
-public class RandomAccessIStreamImpl implements RandomAccess
+public class RandomAccessIStreamImpl implements RandomAccessByIndex, ViewUpdatedCollection
 {
     private ArrayList<EventBean> arrayList;
 

@@ -5,7 +5,8 @@ import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.ViewFactoryDelegate;
 import net.esper.eql.core.ViewFactoryCallback;
 import net.esper.event.EventBean;
-import net.esper.collection.RandomAccess;
+import net.esper.collection.RandomAccessByIndex;
+import net.esper.collection.RelativeAccessByEvent;
 import net.esper.view.ViewCapabilityRandomAccess;
 import net.esper.util.JavaClassHelper;
 
@@ -15,10 +16,12 @@ import net.esper.util.JavaClassHelper;
 public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
 {
     private Class resultType;
-    private RandomAccess randomAccess;
     private int streamNumber;
     private Integer constantIndexNumber;
     private boolean isConstantIndex;
+
+    private RandomAccessByIndex randomAccess;
+    private RelativeAccessByEvent relativeAccessEvent;
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
     {
@@ -51,7 +54,7 @@ public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
         // Request a callback that provides the required access
         if (!viewFactoryDelegate.requestCapability(streamNumber, new ViewCapabilityRandomAccess(constantIndexNumber), this))
         {
-            throw new ExprValidationException("Previous function requires a view that provides a data window");
+            throw new ExprValidationException("Previous function requires a single data window view onto the stream");
         }
     }
 
@@ -82,13 +85,20 @@ public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
 
         // access based on index returned
         EventBean substituteEvent = null;
-        if (isNewData)
+        if (randomAccess != null)
         {
-            substituteEvent = randomAccess.getNewData(index);
+            if (isNewData)
+            {
+                substituteEvent = randomAccess.getNewData(index);
+            }
+            else
+            {
+                substituteEvent = randomAccess.getOldData(index);
+            }
         }
         else
         {
-            substituteEvent = randomAccess.getOldData(index);
+            substituteEvent = relativeAccessEvent.getRelativeToEvent(eventsPerStream[streamNumber], index);
         }
         if (substituteEvent == null)
         {
@@ -108,9 +118,9 @@ public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
     {
         StringBuffer buffer = new StringBuffer();
         buffer.append("previous (");
-        buffer.append(this.getChildNodes().get(0));
+        buffer.append(this.getChildNodes().get(0).toExpressionString());
         buffer.append(",");
-        buffer.append(this.getChildNodes().get(1));
+        buffer.append(this.getChildNodes().get(1).toExpressionString());
         buffer.append(")");
         return buffer.toString();
     }
@@ -127,6 +137,17 @@ public class ExprPreviousNode extends ExprNode implements ViewFactoryCallback
 
     public void setViewResource(Object resource)
     {
-        randomAccess = (RandomAccess) resource;
+        if (resource instanceof RandomAccessByIndex)
+        {
+            randomAccess = (RandomAccessByIndex) resource;
+        }
+        else if (resource instanceof RelativeAccessByEvent)
+        {
+            relativeAccessEvent = (RelativeAccessByEvent) resource;
+        }
+        else
+        {
+            throw new IllegalArgumentException("View resource " + resource.getClass() + " not recognized by expression node");
+        }
     }
 }

@@ -1,8 +1,7 @@
 package net.esper.eql.core;
 
-import net.esper.collection.MultiKey;
+import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
-import net.esper.eql.core.AggregationServiceBase;
 import net.esper.eql.expression.ExprEvaluator;
 
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.HashMap;
 public class AggregationServiceGroupByImpl extends AggregationServiceBase
 {
     // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
-    private Map<MultiKey, Aggregator[]> aggregatorsPerGroup;
+    private Map<MultiKeyUntyped, Aggregator[]> aggregatorsPerGroup;
 
     // maintain a current row for random access into the aggregator state table
     // (row=groups, columns=expression nodes that have aggregation functions)
@@ -30,10 +29,10 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
     {
         super(evaluators, aggregators);
 
-        this.aggregatorsPerGroup = new HashMap<MultiKey, Aggregator[]>();
+        this.aggregatorsPerGroup = new HashMap<MultiKeyUntyped, Aggregator[]>();
     }
 
-    public void applyEnter(EventBean[] eventsPerStream, MultiKey groupByKey)
+    public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
     {
         Aggregator[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
 
@@ -56,7 +55,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         }
     }
 
-    public void applyLeave(EventBean[] eventsPerStream, MultiKey groupByKey)
+    public void applyLeave(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
     {
         Aggregator[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
 
@@ -79,7 +78,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         }
     }
 
-    public void setCurrentRow(MultiKey groupByKey)
+    public void setCurrentRow(MultiKeyUntyped groupByKey)
     {
         currentAggregatorRow = aggregatorsPerGroup.get(groupByKey);
 

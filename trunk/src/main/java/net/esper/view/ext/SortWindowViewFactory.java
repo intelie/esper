@@ -10,6 +10,7 @@ import net.esper.eql.core.ViewFactoryCallback;
 
 import java.util.List;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 public class SortWindowViewFactory implements ViewFactory
 {
@@ -17,6 +18,8 @@ public class SortWindowViewFactory implements ViewFactory
     private Boolean[] isDescendingValues;
     private int sortWindowSize;
     private EventType eventType;
+    private boolean isRequiresRandomAccess;
+    private List<ViewFactoryCallback> factoryCallbacks = new LinkedList<ViewFactoryCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -96,17 +99,39 @@ public class SortWindowViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
-        return false;
+        if (viewCapability instanceof ViewCapabilityRandomAccess)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback)
     {
-        throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
+        if (!canProvideCapability(viewCapability))
+        {
+            throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
+        }
+        isRequiresRandomAccess = true;
+        factoryCallbacks.add(factoryCallback);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new SortWindowView(sortFieldNames, isDescendingValues, sortWindowSize);
+        SortedRandomAccess sortedRandomAccess = null;
+
+        if (isRequiresRandomAccess)
+        {
+            sortedRandomAccess = new SortedRandomAccess();
+            for (ViewFactoryCallback factoryCallback : factoryCallbacks)
+            {
+                factoryCallback.setViewResource(sortedRandomAccess);
+            }
+        }
+        return new SortWindowView(sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess);
     }
 
     public EventType getEventType()

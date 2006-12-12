@@ -5,7 +5,7 @@ import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.bean.SupportBean;
 
-public class TestIStreamRandomAccessImpl extends TestCase
+public class TestRandomAccessIStreamImpl extends TestCase
 {
     private RandomAccessIStreamImpl access;
     private EventBean[] events;

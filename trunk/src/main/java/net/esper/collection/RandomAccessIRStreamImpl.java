@@ -4,7 +4,7 @@ import net.esper.event.EventBean;
 
 import java.util.ArrayList;
 
-public class RandomAccessIRStreamImpl implements RandomAccess
+public class RandomAccessIRStreamImpl implements RandomAccessByIndex
 {
     private ArrayList<EventBean> arrayList;
     private EventBean[] lastOldEvents;

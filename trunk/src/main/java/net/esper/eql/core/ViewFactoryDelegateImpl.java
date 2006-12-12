@@ -17,6 +17,11 @@ public class ViewFactoryDelegateImpl implements ViewFactoryDelegate
     {
         ViewFactoryChain factories = viewFactories[streamNumber];
 
+        if (requestedCabability.veto(factories.getViewFactoryChain()))
+        {
+            return false;
+        }
+
         for (ViewFactory factory : factories.getViewFactoryChain())
         {
             if (factory.canProvideCapability(requestedCabability))

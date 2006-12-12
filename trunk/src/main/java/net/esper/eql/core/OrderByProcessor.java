@@ -1,6 +1,7 @@
 package net.esper.eql.core;
 
 import net.esper.collection.MultiKey;
+import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
 
 /**
@@ -28,5 +29,5 @@ public interface OrderByProcessor {
 	 * @param groupByKeys - the keys to use for determining the group-by group of output events 
 	 * @return an array containing the output events in sorted order
 	 */
-	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKey[] groupByKeys, boolean isNewData);
+	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData);
 }	

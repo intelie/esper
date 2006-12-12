@@ -75,7 +75,7 @@ public final class MultiKey<T>
 
     public final String toString()
     {
-        return "MultiKeyUntyped" + Arrays.asList(keys).toString();
+        return "MultiKey" + Arrays.asList(keys).toString();
     }
 
     /**

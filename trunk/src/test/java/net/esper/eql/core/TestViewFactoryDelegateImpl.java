@@ -10,6 +10,7 @@ import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.bean.SupportBean;
 
 import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -35,6 +36,12 @@ public class TestViewFactoryDelegateImpl extends TestCase
         assertTrue(delegate.requestCapability(1, new ViewCapabilityRandomAccess(1), null));
     }
 
-    private class SupportViewCapability implements ViewCapability {}
+    private class SupportViewCapability implements ViewCapability
+    {
+        public boolean veto(List<ViewFactory> viewFactories)
+        {
+            return false;
+        }
+    }
 }
 
