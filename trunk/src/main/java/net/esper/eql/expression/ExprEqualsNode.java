@@ -4,7 +4,7 @@ import net.esper.util.JavaClassHelper;
 import net.esper.event.EventBean;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 
 /**
  * Represents an equals (=) comparator in a filter expressiun tree.
@@ -34,7 +34,7 @@ public class ExprEqualsNode extends ExprNode
         return isNotEquals;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         // Must have 2 child nodes
         if (this.getChildNodes().size() != 2)

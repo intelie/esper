@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface ViewCapability
 {
-    public boolean veto(List<ViewFactory> viewFactories);
+    public boolean inspect(List<ViewFactory> viewFactories);
 }

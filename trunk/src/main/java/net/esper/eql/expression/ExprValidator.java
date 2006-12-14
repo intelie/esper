@@ -2,7 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 
 /**
  * Validation interface for expression nodes.
@@ -17,7 +17,7 @@ public interface ExprValidator
      */
     public void validate(StreamTypeService streamTypeService,
                          AutoImportService autoImportService,
-                         ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException;
+                         ViewResourceDelegate viewResourceDelegate) throws ExprValidationException;
 
     /**
      * Returns the type that the node's evaluate method returns an instance of.

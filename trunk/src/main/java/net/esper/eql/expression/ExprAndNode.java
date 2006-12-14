@@ -4,14 +4,14 @@ import net.esper.util.JavaClassHelper;
 import net.esper.event.EventBean;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 
 /**
  * Represents And-condition.
  */
 public class ExprAndNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean
         for (ExprNode child : this.getChildNodes())

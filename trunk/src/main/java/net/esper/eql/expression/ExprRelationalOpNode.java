@@ -5,7 +5,7 @@ import net.esper.util.JavaClassHelper;
 import net.esper.type.RelationalOpEnum;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 
 /**
  * Represents a lesser or greater then (</<=/>/>=) expression in a filter expression tree.
@@ -24,7 +24,7 @@ public class ExprRelationalOpNode extends ExprNode
         this.relationalOpEnum = relationalOpEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         // Must have 2 child nodes
         if (this.getChildNodes().size() != 2)

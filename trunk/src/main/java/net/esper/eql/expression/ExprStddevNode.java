@@ -3,7 +3,7 @@ package net.esper.eql.expression;
 import net.esper.eql.core.Aggregator;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 
 /**
  * Represents the stddev(...) aggregate function is an expression tree.
@@ -21,7 +21,7 @@ public class ExprStddevNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         super.validateSingleNumericChild(streamTypeService);
         computer = new DoubleStddev();

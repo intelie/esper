@@ -17,8 +17,9 @@ public class TestPreviousFunction extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener testListener;
 
-    // TODO: test for ExprPreviousNode class
-    
+    // TODO: test ExprPreviousNode class itself
+    // TODO: test joins
+
     public void setUp()
     {
         testListener = new SupportUpdateListener();

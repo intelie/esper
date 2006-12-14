@@ -2,7 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.CoercionException;
 import net.esper.event.EventBean;
@@ -15,7 +15,7 @@ public class ExprCoalesceNode extends ExprNode
     private Class resultType;
     private boolean[] isNumericCoercion;
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {

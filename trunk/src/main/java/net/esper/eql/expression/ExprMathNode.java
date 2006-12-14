@@ -5,7 +5,7 @@ import net.esper.util.JavaClassHelper;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
@@ -26,7 +26,7 @@ public class ExprMathNode extends ExprNode
         this.mathArithTypeEnum = mathArithTypeEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

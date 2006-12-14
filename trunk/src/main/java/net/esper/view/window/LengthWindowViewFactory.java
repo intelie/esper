@@ -5,7 +5,7 @@ import net.esper.view.ViewAttachException;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
-import net.esper.eql.core.ViewFactoryCallback;
+import net.esper.eql.core.ViewResourceCallback;
 import net.esper.collection.RandomAccessIStreamImpl;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class LengthWindowViewFactory implements ViewFactory
     private int size;
     private boolean isRequiresRandomAccess;
     private EventType eventType;
-    private List<ViewFactoryCallback> factoryCallbacks = new LinkedList<ViewFactoryCallback>();
+    private List<ViewResourceCallback> factoryCallbacks = new LinkedList<ViewResourceCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -52,7 +52,7 @@ public class LengthWindowViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
-        if (viewCapability instanceof ViewCapabilityRandomAccess)
+        if (viewCapability instanceof ViewCapDataWindowAccess)
         {
             return true;
         }
@@ -62,14 +62,14 @@ public class LengthWindowViewFactory implements ViewFactory
         }
     }
 
-    public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback)
+    public void setProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
     {
         if (!canProvideCapability(viewCapability))
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
         isRequiresRandomAccess = true;
-        factoryCallbacks.add(factoryCallback);
+        factoryCallbacks.add(resourceCallback);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
@@ -79,9 +79,9 @@ public class LengthWindowViewFactory implements ViewFactory
         if (isRequiresRandomAccess)
         {
             randomAccess = new RandomAccessIStreamImpl();
-            for (ViewFactoryCallback factoryCallback : factoryCallbacks)
+            for (ViewResourceCallback resourceCallback : factoryCallbacks)
             {
-                factoryCallback.setViewResource(randomAccess);
+                resourceCallback.setViewResource(randomAccess);
             }
         }
 

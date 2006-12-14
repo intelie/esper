@@ -6,7 +6,7 @@ import net.esper.view.ViewAttachException;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
-import net.esper.eql.core.ViewFactoryCallback;
+import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ public class SortWindowViewFactory implements ViewFactory
     private int sortWindowSize;
     private EventType eventType;
     private boolean isRequiresRandomAccess;
-    private List<ViewFactoryCallback> factoryCallbacks = new LinkedList<ViewFactoryCallback>();
+    private List<ViewResourceCallback> factoryCallbacks = new LinkedList<ViewResourceCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -99,7 +99,7 @@ public class SortWindowViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
-        if (viewCapability instanceof ViewCapabilityRandomAccess)
+        if (viewCapability instanceof ViewCapDataWindowAccess)
         {
             return true;
         }
@@ -109,14 +109,14 @@ public class SortWindowViewFactory implements ViewFactory
         }
     }
 
-    public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback)
+    public void setProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
     {
         if (!canProvideCapability(viewCapability))
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
         isRequiresRandomAccess = true;
-        factoryCallbacks.add(factoryCallback);
+        factoryCallbacks.add(resourceCallback);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
@@ -126,9 +126,9 @@ public class SortWindowViewFactory implements ViewFactory
         if (isRequiresRandomAccess)
         {
             sortedRandomAccess = new SortedRandomAccess();
-            for (ViewFactoryCallback factoryCallback : factoryCallbacks)
+            for (ViewResourceCallback resourceCallback : factoryCallbacks)
             {
-                factoryCallback.setViewResource(sortedRandomAccess);
+                resourceCallback.setViewResource(sortedRandomAccess);
             }
         }
         return new SortWindowView(sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess);

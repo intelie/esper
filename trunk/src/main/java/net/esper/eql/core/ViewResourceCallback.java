@@ -1,6 +1,6 @@
 package net.esper.eql.core;
 
-public interface ViewFactoryCallback
+public interface ViewResourceCallback
 {
     public void setViewResource(Object resource);
 }

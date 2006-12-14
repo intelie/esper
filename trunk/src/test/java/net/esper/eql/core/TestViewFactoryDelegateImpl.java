@@ -3,7 +3,7 @@ package net.esper.eql.core;
 import net.esper.view.ViewFactoryChain;
 import net.esper.view.ViewFactory;
 import net.esper.view.ViewCapability;
-import net.esper.view.ViewCapabilityRandomAccess;
+import net.esper.view.ViewCapDataWindowAccess;
 import net.esper.view.std.SizeViewFactory;
 import net.esper.view.window.TimeWindowViewFactory;
 import net.esper.support.event.SupportEventTypeFactory;
@@ -16,7 +16,7 @@ import junit.framework.TestCase;
 
 public class TestViewFactoryDelegateImpl extends TestCase
 {
-    private ViewFactoryDelegate delegate;
+    private ViewResourceDelegate delegate;
 
     public void setUp()
     {
@@ -27,18 +27,18 @@ public class TestViewFactoryDelegateImpl extends TestCase
         factories[1] = new ViewFactoryChain(SupportEventTypeFactory.createBeanType(SupportBean.class),
                 Arrays.asList(new ViewFactory[] {factory1, factory2}));
 
-        delegate = new ViewFactoryDelegateImpl(factories);
+        delegate = new ViewResourceDelegateImpl(factories);
     }
 
     public void testRequest()
     {
         assertFalse(delegate.requestCapability(1, new SupportViewCapability(), null));
-        assertTrue(delegate.requestCapability(1, new ViewCapabilityRandomAccess(1), null));
+        assertTrue(delegate.requestCapability(1, new ViewCapDataWindowAccess(1), null));
     }
 
     private class SupportViewCapability implements ViewCapability
     {
-        public boolean veto(List<ViewFactory> viewFactories)
+        public boolean inspect(List<ViewFactory> viewFactories)
         {
             return false;
         }

@@ -2,16 +2,16 @@ package net.esper.view;
 
 import java.util.List;
 
-public class ViewCapabilityRandomAccess implements ViewCapability
+public class ViewCapDataWindowAccess implements ViewCapability
 {
     private Integer optionalIndexConstant;
 
-    public ViewCapabilityRandomAccess(Integer optionalIndexConstant)
+    public ViewCapDataWindowAccess(Integer optionalIndexConstant)
     {
         this.optionalIndexConstant = optionalIndexConstant;
     }
 
-    public boolean veto(List<ViewFactory> viewFactories)
+    public boolean inspect(List<ViewFactory> viewFactories)
     {
         if (viewFactories.size() > 1)
         {

@@ -8,7 +8,7 @@ import java.util.Vector;
 /**
  * Buffer for events - accumulates events until flushed.
  */
-public class EventBuffer
+public class FlushedEventBuffer
 {
     private Vector<EventBean[]> remainEvents = new Vector<EventBean[]>();
 

@@ -3,10 +3,9 @@ package net.esper.view.internal;
 import java.util.Iterator;
 
 import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
-import net.esper.collection.EventBuffer;
+import net.esper.collection.FlushedEventBuffer;
 
 /**
  * A view that acts as an adapter between views and update listeners.
@@ -19,8 +18,8 @@ public final class BufferView extends ViewSupport
     private final int streamId;
 
     private BufferObserver observer;
-    private EventBuffer newDataBuffer = new EventBuffer();
-    private EventBuffer oldDataBuffer = new EventBuffer();
+    private FlushedEventBuffer newDataBuffer = new FlushedEventBuffer();
+    private FlushedEventBuffer oldDataBuffer = new FlushedEventBuffer();
 
     /**
      * Ctor.

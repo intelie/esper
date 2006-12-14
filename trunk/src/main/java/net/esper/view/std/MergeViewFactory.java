@@ -2,7 +2,7 @@ package net.esper.view.std;
 
 import net.esper.view.*;
 import net.esper.event.EventType;
-import net.esper.eql.core.ViewFactoryCallback;
+import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class MergeViewFactory implements ViewFactory
         return false;
     }
 
-    public void setProvideCapability(ViewCapability viewCapability, ViewFactoryCallback factoryCallback)
+    public void setProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
     {
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }

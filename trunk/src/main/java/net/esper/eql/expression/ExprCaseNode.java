@@ -6,7 +6,7 @@ import net.esper.event.EventBean;
 import net.esper.collection.UniformPair;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -39,7 +39,7 @@ public class ExprCaseNode extends ExprNode
         this.isCase2 = isCase2;
     }
 
-    public void validate(StreamTypeService streamTypeService_, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService_, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (isCase2)
         {

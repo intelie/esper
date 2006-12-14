@@ -171,7 +171,7 @@ public class EPEQLStmtStartMethod
 
         // Construct type information per stream
         StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames);
-        ViewFactoryDelegate viewFactoryDelegate = new ViewFactoryDelegateImpl(unmaterializedViewChain);
+        ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain);
 
         // Validate views that require validation, specifically streams that don't have
         // sub-views such as DB SQL joins
@@ -196,10 +196,10 @@ public class EPEQLStmtStartMethod
                 typeService,
                 services.getEventAdapterService(),
                 services.getAutoImportService(),
-                viewFactoryDelegate);
+                viewResourceDelegate);
 
         // Validate where-clause filter tree and outer join clause
-        validateNodes(typeService, services.getAutoImportService(), viewFactoryDelegate);
+        validateNodes(typeService, services.getAutoImportService(), viewResourceDelegate);
 
         // Materialize views
         Viewable[] streamViews = new Viewable[streamEventTypes.length];
@@ -286,7 +286,7 @@ public class EPEQLStmtStartMethod
         return streamNames;
     }
 
-    private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate)
+    private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate)
     {
         if (statementSpec.getFilterRootNode() != null)
         {
@@ -295,7 +295,7 @@ public class EPEQLStmtStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, autoImportService, viewFactoryDelegate);
+                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, autoImportService, viewResourceDelegate);
                 statementSpec.setFilterExprRootNode(optionalFilterNode);
 
                 // Make sure there is no aggregation in the where clause
@@ -325,7 +325,7 @@ public class EPEQLStmtStartMethod
             equalsNode.addChildNode(outerJoinDesc.getRightNode());
             try
             {
-                equalsNode = equalsNode.getValidatedSubtree(typeService, autoImportService, viewFactoryDelegate);
+                equalsNode = equalsNode.getValidatedSubtree(typeService, autoImportService, viewResourceDelegate);
             }
             catch (ExprValidationException ex)
             {

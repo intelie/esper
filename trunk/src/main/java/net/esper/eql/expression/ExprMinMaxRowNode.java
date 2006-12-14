@@ -5,7 +5,7 @@ import net.esper.util.JavaClassHelper;
 import net.esper.type.MinMaxTypeEnum;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewFactoryDelegate;
+import net.esper.eql.core.ViewResourceDelegate;
 
 /**
  * Represents the MAX(a,b) and MIN(a,b) functions is an expression tree.
@@ -24,7 +24,7 @@ public class ExprMinMaxRowNode extends ExprNode
         this.minMaxTypeEnum = minMaxTypeEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewFactoryDelegate viewFactoryDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {

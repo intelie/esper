@@ -1,14 +1,14 @@
 package net.esper.support.view;
 
 import net.esper.view.internal.BufferObserver;
-import net.esper.collection.EventBuffer;
+import net.esper.collection.FlushedEventBuffer;
 
 public class SupportBufferObserver implements BufferObserver
 {
     private boolean hasNewData;
     private int streamId;
-    private EventBuffer newEventBuffer;
-    private EventBuffer oldEventBuffer;
+    private FlushedEventBuffer newEventBuffer;
+    private FlushedEventBuffer oldEventBuffer;
 
     public boolean getAndResetHasNewData()
     {
@@ -17,7 +17,7 @@ public class SupportBufferObserver implements BufferObserver
         return result;
     }
 
-    public void newData(int streamId, EventBuffer newEventBuffer, EventBuffer oldEventBuffer)
+    public void newData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer)
     {
         if (hasNewData == true)
         {
@@ -37,16 +37,16 @@ public class SupportBufferObserver implements BufferObserver
         return id;
     }
 
-    public EventBuffer getAndResetNewEventBuffer()
+    public FlushedEventBuffer getAndResetNewEventBuffer()
     {
-        EventBuffer buf = newEventBuffer;
+        FlushedEventBuffer buf = newEventBuffer;
         newEventBuffer = null;
         return buf;
     }
 
-    public EventBuffer getAndResetOldEventBuffer()
+    public FlushedEventBuffer getAndResetOldEventBuffer()
     {
-        EventBuffer buf = oldEventBuffer;
+        FlushedEventBuffer buf = oldEventBuffer;
         oldEventBuffer = null;
         return buf;
     }

@@ -194,7 +194,8 @@ builtinFunc
 	|	#(STDDEV (DISTINCT)? valueExpr)
 	|	#(AVEDEV (DISTINCT)? valueExpr)
 	| 	#(COALESCE valueExpr valueExpr (valueExpr)* )
-	| 	#(PREVIOUS valueExpr eventPropertyExpr )
+	| 	#(PREVIOUS valueExpr eventPropertyExpr)
+	| 	#(PRIOR NUM_INT eventPropertyExpr)
 	;
 	
 arithmeticExpr

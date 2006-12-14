@@ -4,7 +4,7 @@ import net.esper.dispatch.Dispatchable;
 import net.esper.dispatch.DispatchService;
 import net.esper.view.internal.BufferObserver;
 import net.esper.event.EventBean;
-import net.esper.collection.EventBuffer;
+import net.esper.collection.FlushedEventBuffer;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -16,8 +16,8 @@ public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserve
 {
     private final DispatchService dispatchService;
     private final JoinExecutionStrategy joinExecutionStrategy;
-    private final Map<Integer, EventBuffer> oldStreamBuffer;
-    private final Map<Integer, EventBuffer> newStreamBuffer;
+    private final Map<Integer, FlushedEventBuffer> oldStreamBuffer;
+    private final Map<Integer, FlushedEventBuffer> newStreamBuffer;
     private final int numStreams;
 
     private boolean isDispatchRegistered;
@@ -34,8 +34,8 @@ public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserve
         this.joinExecutionStrategy = joinExecutionStrategy;
         this.numStreams = numStreams;
 
-        oldStreamBuffer = new HashMap<Integer, EventBuffer>();
-        newStreamBuffer = new HashMap<Integer, EventBuffer>();
+        oldStreamBuffer = new HashMap<Integer, FlushedEventBuffer>();
+        newStreamBuffer = new HashMap<Integer, FlushedEventBuffer>();
     }
 
     public void execute()
@@ -54,7 +54,7 @@ public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserve
         joinExecutionStrategy.join(newDataPerStream, oldDataPerStream);
     }
 
-    private EventBean[] getBufferData(EventBuffer buffer)
+    private EventBean[] getBufferData(FlushedEventBuffer buffer)
     {
         if (buffer == null)
         {
@@ -64,7 +64,7 @@ public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserve
         return events;
     }
 
-    public void newData(int streamId, EventBuffer newEventBuffer, EventBuffer oldEventBuffer)
+    public void newData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer)
     {
         if (!isDispatchRegistered)
         {

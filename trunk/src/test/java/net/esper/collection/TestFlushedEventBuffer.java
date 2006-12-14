@@ -4,14 +4,14 @@ import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventBeanFactory;
 
-public class TestEventBuffer extends TestCase
+public class TestFlushedEventBuffer extends TestCase
 {
-    private EventBuffer buffer;
+    private FlushedEventBuffer buffer;
     private EventBean[] events;
 
     public void setUp()
     {
-        buffer = new EventBuffer();
+        buffer = new FlushedEventBuffer();
         events = new EventBean[10];
 
         for (int i = 0; i < events.length; i++)
