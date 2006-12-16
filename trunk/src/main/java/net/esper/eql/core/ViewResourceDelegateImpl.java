@@ -17,7 +17,7 @@ public class ViewResourceDelegateImpl implements ViewResourceDelegate
     {
         ViewFactoryChain factories = viewFactories[streamNumber];
 
-        if (requestedCabability.inspect(factories.getViewFactoryChain()))
+        if (!(requestedCabability.inspect(factories.getViewFactoryChain())))
         {
             return false;
         }

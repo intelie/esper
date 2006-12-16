@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
-import net.esper.collection.RandomAccessIStreamImpl;
 import net.esper.collection.ViewUpdatedCollection;
 
 /**
@@ -68,7 +67,7 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         return viewUpdatedCollection;
     }
 
-    public void setViewUpdatedCollection(RandomAccessIStreamImpl viewUpdatedCollection)
+    public void setViewUpdatedCollection(IStreamRandomAccess viewUpdatedCollection)
     {
         this.viewUpdatedCollection = viewUpdatedCollection;
     }

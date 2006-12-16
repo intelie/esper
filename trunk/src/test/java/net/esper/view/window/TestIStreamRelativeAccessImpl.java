@@ -1,18 +1,19 @@
-package net.esper.collection;
+package net.esper.view.window;
 
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.bean.SupportBean;
+import net.esper.view.window.IStreamRelativeAccess;
 
-public class TestRelativeAccessByEventImpl extends TestCase
+public class TestIStreamRelativeAccessImpl extends TestCase
 {
-    private RelativeAccessByEventImpl access;
+    private IStreamRelativeAccess access;
     private EventBean[] events;
 
     public void setUp()
     {
-        access = new RelativeAccessByEventImpl();
+        access = new IStreamRelativeAccess();
 
         events = new EventBean[100];
         for (int i = 0; i < events.length; i++)

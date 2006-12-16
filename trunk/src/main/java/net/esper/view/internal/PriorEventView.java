@@ -3,27 +3,28 @@ package net.esper.view.internal;
 import net.esper.view.ViewSupport;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.collection.RollingEventBuffer;
+import net.esper.collection.ViewUpdatedCollection;
 
 import java.util.Iterator;
 
 public class PriorEventView extends ViewSupport
 {
-    private int size;
-    private RollingEventBuffer newDataBuf;
-    private RollingEventBuffer oldDataBuf;
+    private ViewUpdatedCollection buffer;
 
-    public PriorEventView(int size)
+    public PriorEventView(ViewUpdatedCollection buffer)
     {
-        this.size = size;
-        newDataBuf = new RollingEventBuffer(size);
-        oldDataBuf = new RollingEventBuffer(size);
+        this.buffer = buffer;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        newDataBuf.add(newData);
-        oldDataBuf.add(oldData);
+        buffer.update(newData, oldData);
+        this.updateChildren(newData, oldData);
+    }
+
+    protected ViewUpdatedCollection getBuffer()
+    {
+        return buffer;
     }
 
     public EventType getEventType()

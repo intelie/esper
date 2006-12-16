@@ -4,6 +4,9 @@ import net.esper.event.EventType;
 
 import java.util.List;
 
+/**
+ * Holder for the logical chain of view fact 
+ */
 public class ViewFactoryChain
 {
     private List<ViewFactory> viewFactoryChain;

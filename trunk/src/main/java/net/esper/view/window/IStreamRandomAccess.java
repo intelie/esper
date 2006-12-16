@@ -1,14 +1,19 @@
-package net.esper.collection;
+package net.esper.view.window;
 
 import net.esper.event.EventBean;
+import net.esper.collection.ViewUpdatedCollection;
 
 import java.util.ArrayList;
 
-public class RandomAccessIStreamImpl implements RandomAccessByIndex, ViewUpdatedCollection
+/**
+ * For use with length and time window views that must provide random access into data window contents
+ * provided for the "previous" expression if used.
+ */
+public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedCollection
 {
     private ArrayList<EventBean> arrayList;
 
-    public RandomAccessIStreamImpl()
+    public IStreamRandomAccess()
     {
         this.arrayList = new ArrayList<EventBean>();
     }

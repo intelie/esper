@@ -14,7 +14,6 @@ import net.esper.view.ViewServiceContext;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.client.EPException;
-import net.esper.collection.RandomAccessIStreamImpl;
 import net.esper.collection.ViewUpdatedCollection;
 
 /**
@@ -101,7 +100,7 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
         return viewUpdatedCollection;
     }
 
-    public void setViewUpdatedCollection(RandomAccessIStreamImpl viewUpdatedCollection)
+    public void setViewUpdatedCollection(IStreamRandomAccess viewUpdatedCollection)
     {
         this.viewUpdatedCollection = viewUpdatedCollection;
     }

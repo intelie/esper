@@ -4,8 +4,9 @@ import net.esper.eql.core.ViewResourceCallback;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.ViewResourceDelegate;
-import net.esper.collection.RandomAccessByIndex;
-import net.esper.view.ViewCapDataWindowAccess;
+import net.esper.view.window.RandomAccessByIndex;
+import net.esper.view.window.RelativeAccessByEventNIndex;
+import net.esper.view.ViewCapPriorEventAccess;
 import net.esper.event.EventBean;
 
 /**
@@ -16,6 +17,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
     private Class resultType;
     private int streamNumber;
     private int constantIndexNumber;
+    private RelativeAccessByEventNIndex relativeAccess;
     private RandomAccessByIndex randomAccess;
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
@@ -39,7 +41,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
         resultType = this.getChildNodes().get(1).getType();
 
         // Request a callback that provides the required access
-        if (!viewResourceDelegate.requestCapability(streamNumber, new ViewCapDataWindowAccess(constantIndexNumber), this))
+        if (!viewResourceDelegate.requestCapability(streamNumber, new ViewCapPriorEventAccess(constantIndexNumber), this))
         {
             throw new ExprValidationException("Previous function requires a single data window view onto the stream");
         }
@@ -52,19 +54,26 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        // access based on index returned
+        EventBean originalEvent = eventsPerStream[streamNumber];
         EventBean substituteEvent = null;
-        if (isNewData)
+
+        if (randomAccess != null)
         {
-            substituteEvent = randomAccess.getNewData(constantIndexNumber);
+            if (isNewData)
+            {
+                substituteEvent = randomAccess.getNewData(constantIndexNumber);
+            }
+            else
+            {
+                substituteEvent = randomAccess.getOldData(constantIndexNumber);
+            }
         }
         else
         {
-            substituteEvent = randomAccess.getOldData(constantIndexNumber);
+            substituteEvent = relativeAccess.getRelativeToEvent(originalEvent, constantIndexNumber);
         }
 
         // Substitute original event with prior event, evaluate inner expression
-        EventBean originalEvent = eventsPerStream[streamNumber];
         eventsPerStream[streamNumber] = substituteEvent;
         Object evalResult = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
         eventsPerStream[streamNumber] = originalEvent;
@@ -95,7 +104,11 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
 
     public void setViewResource(Object resource)
     {
-        if (resource instanceof RandomAccessByIndex)
+        if (resource instanceof RelativeAccessByEventNIndex)
+        {
+            relativeAccess = (RelativeAccessByEventNIndex) resource;
+        }
+        else if (resource instanceof RandomAccessByIndex)
         {
             randomAccess = (RandomAccessByIndex) resource;
         }

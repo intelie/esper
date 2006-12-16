@@ -88,6 +88,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * @param events - input events
      * @param isOutputLimiting - true to indicate that we limit output
      * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
+     * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData)
@@ -187,6 +188,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * @param events - input events
      * @param isOutputLimiting - true to indicate that we limit output
      * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
+     * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData)
@@ -242,6 +244,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * @param optionalHavingNode - supplies the having-clause expression
      * @param isOutputLimiting - true to indicate that we limit output
      * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
+     * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData)
@@ -309,6 +312,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * @param optionalHavingNode - supplies the having-clause expression
      * @param isOutputLimiting - true to indicate that we limit output
      * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
+     * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData)

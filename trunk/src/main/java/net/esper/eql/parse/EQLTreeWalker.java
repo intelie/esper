@@ -126,6 +126,7 @@ public class EQLTreeWalker extends EQLBaseWalker
             case WHERE_EXPR:
                 leaveWhereClause();
                 break;
+            case NUM_INT:
             case INT_TYPE:
             case LONG_TYPE:
             case BOOL_TYPE:

@@ -14,7 +14,6 @@ import net.esper.event.EventBean;
 import net.esper.schedule.ScheduleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.collection.TimeWindow;
-import net.esper.collection.RandomAccessIStreamImpl;
 import net.esper.collection.ViewUpdatedCollection;
 import net.esper.client.EPException;
 
@@ -81,7 +80,7 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         return viewUpdatedCollection;
     }
 
-    public void setViewUpdatedCollection(RandomAccessIStreamImpl viewUpdatedCollection)
+    public void setViewUpdatedCollection(IStreamRandomAccess viewUpdatedCollection)
     {
         this.viewUpdatedCollection = viewUpdatedCollection;
     }

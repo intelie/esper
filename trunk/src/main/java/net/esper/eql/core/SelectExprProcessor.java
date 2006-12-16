@@ -17,7 +17,8 @@ public interface SelectExprProcessor
     /**
      * Computes the select-clause results and returns an event of the result event type that contains, in it's
      * properties, the selected items.
-     * @param eventsPerStream
+     * @param eventsPerStream - is per stream the event
+     * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return event with properties containing selected items
      */
     public EventBean process(EventBean[] eventsPerStream, boolean isNewData);

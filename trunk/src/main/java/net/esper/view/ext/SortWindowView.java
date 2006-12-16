@@ -37,7 +37,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
 
     private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
     private int eventCount;
-    private SortedRandomAccess optionalSortedRandomAccess;
+    private IStreamSortedRandomAccess optionalSortedRandomAccess;
 
     /**
      * Default constructor - required by all views to adhere to the Java bean specification.
@@ -47,7 +47,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
     }
 
     public SortWindowView(String[] sortFieldNames, Boolean[] descendingValues, int sortWindowSize,
-                          SortedRandomAccess optionalSortedRandomAccess)
+                          IStreamSortedRandomAccess optionalSortedRandomAccess)
     {
         this.sortFieldNames = sortFieldNames;
         this.isDescendingValues = descendingValues;
@@ -99,12 +99,12 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
         return sortWindowSize;
     }
 
-    public SortedRandomAccess getOptionalSortedRandomAccess()
+    public IStreamSortedRandomAccess getOptionalSortedRandomAccess()
     {
         return optionalSortedRandomAccess;
     }
 
-    public void setOptionalSortedRandomAccess(SortedRandomAccess optionalSortedRandomAccess)
+    public void setOptionalSortedRandomAccess(IStreamSortedRandomAccess optionalSortedRandomAccess)
     {
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
     }

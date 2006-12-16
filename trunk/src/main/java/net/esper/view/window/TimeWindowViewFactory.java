@@ -5,7 +5,6 @@ import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
-import net.esper.collection.RandomAccessIStreamImpl;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -84,11 +83,11 @@ public class TimeWindowViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        RandomAccessIStreamImpl randomAccess = null;
+        IStreamRandomAccess randomAccess = null;
 
         if (isRequiresRandomAccess)
         {
-            randomAccess = new RandomAccessIStreamImpl();
+            randomAccess = new IStreamRandomAccess();
             for (ViewResourceCallback resourceCallback : factoryCallbacks)
             {
                 resourceCallback.setViewResource(randomAccess);

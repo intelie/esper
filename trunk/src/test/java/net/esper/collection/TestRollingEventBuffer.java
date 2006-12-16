@@ -21,7 +21,7 @@ public class TestRollingEventBuffer extends TestCase
 
     public void testFlowSizeOne()
     {
-        bufferOne.add(null);
+        bufferOne.add((EventBean[])null);
         assertNull(bufferOne.get(0));
 
         EventBean[] set1 = make(2);

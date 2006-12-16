@@ -121,11 +121,11 @@ public class SortWindowViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        SortedRandomAccess sortedRandomAccess = null;
+        IStreamSortedRandomAccess sortedRandomAccess = null;
 
         if (isRequiresRandomAccess)
         {
-            sortedRandomAccess = new SortedRandomAccess();
+            sortedRandomAccess = new IStreamSortedRandomAccess();
             for (ViewResourceCallback resourceCallback : factoryCallbacks)
             {
                 resourceCallback.setViewResource(sortedRandomAccess);

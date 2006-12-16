@@ -47,6 +47,7 @@ public class FilterExprView extends ViewSupport
      * Filters events using the supplied evaluator.
      * @param exprEvaluator - evaluator to use
      * @param events - events to filter
+     * @param isNewData - true to indicate filter new data (istream) and not old data (rstream)
      * @return filtered events, or null if no events got through the filter 
      */
     protected static EventBean[] filterEvents(ExprEvaluator exprEvaluator, EventBean[] events, boolean isNewData)

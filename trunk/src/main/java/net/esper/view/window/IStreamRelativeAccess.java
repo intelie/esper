@@ -1,16 +1,17 @@
-package net.esper.collection;
+package net.esper.view.window;
 
 import net.esper.event.EventBean;
+import net.esper.collection.ViewUpdatedCollection;
 
 import java.util.Map;
 import java.util.HashMap;
 
-public class RelativeAccessByEventImpl implements RelativeAccessByEvent, ViewUpdatedCollection
+public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewUpdatedCollection
 {
     private Map<EventBean, Integer> indexPerEvent;
     private EventBean[] lastNewData;
 
-    public RelativeAccessByEventImpl()
+    public IStreamRelativeAccess()
     {
         indexPerEvent = new HashMap<EventBean, Integer>();
     }

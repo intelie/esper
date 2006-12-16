@@ -1,6 +1,6 @@
 package net.esper.view.ext;
 
-import net.esper.collection.RandomAccessByIndex;
+import net.esper.view.window.RandomAccessByIndex;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
 
@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.Iterator;
 
-public class SortedRandomAccess implements RandomAccessByIndex
+public class IStreamSortedRandomAccess implements RandomAccessByIndex
 {
     private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
     private int currentSize;

@@ -195,7 +195,7 @@ builtinFunc
 	|	#(AVEDEV (DISTINCT)? valueExpr)
 	| 	#(COALESCE valueExpr valueExpr (valueExpr)* )
 	| 	#(PREVIOUS valueExpr eventPropertyExpr)
-	| 	#(PRIOR NUM_INT eventPropertyExpr)
+	| 	#(PRIOR c:NUM_INT eventPropertyExpr) {leaveNode(#c);}
 	;
 	
 arithmeticExpr

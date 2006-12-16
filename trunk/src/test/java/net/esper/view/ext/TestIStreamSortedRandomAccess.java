@@ -1,6 +1,5 @@
 package net.esper.view.ext;
 
-import net.esper.collection.MultiKey;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventBeanFactory;
@@ -12,15 +11,15 @@ import java.util.TreeMap;
 
 import junit.framework.TestCase;
 
-public class TestSortedRandomAccess extends TestCase
+public class TestIStreamSortedRandomAccess extends TestCase
 {
-    private SortedRandomAccess access;
+    private IStreamSortedRandomAccess access;
     private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
     private EventBean[] events;
 
     public void setUp()
     {
-        access = new SortedRandomAccess();
+        access = new IStreamSortedRandomAccess();
         sortedEvents = new TreeMap<MultiKeyUntyped, LinkedList<EventBean>>(new MultiKeyComparator(new Boolean[] {false}));
 
         events = new EventBean[100];

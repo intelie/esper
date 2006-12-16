@@ -5,8 +5,8 @@ import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventBean;
-import net.esper.collection.RandomAccessByIndex;
-import net.esper.collection.RelativeAccessByEvent;
+import net.esper.view.window.RandomAccessByIndex;
+import net.esper.view.window.RelativeAccessByEventNIndex;
 import net.esper.view.ViewCapDataWindowAccess;
 import net.esper.util.JavaClassHelper;
 
@@ -21,7 +21,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
     private boolean isConstantIndex;
 
     private RandomAccessByIndex randomAccess;
-    private RelativeAccessByEvent relativeAccessEvent;
+    private RelativeAccessByEventNIndex relativeAccessEvent;
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
@@ -141,9 +141,9 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         {
             randomAccess = (RandomAccessByIndex) resource;
         }
-        else if (resource instanceof RelativeAccessByEvent)
+        else if (resource instanceof RelativeAccessByEventNIndex)
         {
-            relativeAccessEvent = (RelativeAccessByEvent) resource;
+            relativeAccessEvent = (RelativeAccessByEventNIndex) resource;
         }
         else
         {

@@ -3,11 +3,11 @@ package net.esper.collection;
 import net.esper.event.EventBean;
 
 /**
- * Event buffer that rolls and provides a random access API
- *
- * Implemented as a forwards-filling array:
- *      |   |   |   |   |   |
- *
+ * Event buffer of a given size provides a random access API into the most current event to prior events
+ * up to the given size. Oldest events roll out of the buffer first.
+ * <p>
+ * Backed by a fixed-size array that is filled forward, then rolls back to the beginning
+ * keeping track of the current position.
  */
 public class RollingEventBuffer
 {
@@ -15,6 +15,10 @@ public class RollingEventBuffer
     private EventBean[] buffer;
     private int nextFreeIndex;
 
+    /**
+     * Ctor.
+     * @param size is the maximum number of events in buffer
+     */
     public RollingEventBuffer(int size)
     {
         if (size <= 0)
@@ -27,6 +31,10 @@ public class RollingEventBuffer
         buffer = new EventBean[size];
     }
 
+    /**
+     * Add events to the buffer.
+     * @param events to add
+     */
     public void add(EventBean[] events)
     {
         if (events == null)
@@ -36,16 +44,33 @@ public class RollingEventBuffer
 
         for (int i = 0; i < events.length; i++)
         {
-            buffer[nextFreeIndex] = events[i];
-            nextFreeIndex++;
-
-            if (nextFreeIndex == size)
-            {
-                nextFreeIndex = 0;
-            }
+            add(events[i]);
         }
     }
 
+    /**
+     * Add an event to the buffer.
+     * @param event to add
+     */
+    public void add(EventBean event)
+    {
+        buffer[nextFreeIndex] = event;
+        nextFreeIndex++;
+
+        if (nextFreeIndex == size)
+        {
+            nextFreeIndex = 0;
+        }
+    }
+
+    /**
+     * Get an event prior to the last event posted given a number of events before the last.
+     * <p>
+     * Thus index 0 returns the last event added, index 1 returns the prior to the last event added
+     * up to the maximum buffer size.
+     * @param index prior event index from zero to max size
+     * @return prior event at given index
+     */
     public EventBean get(int index)
     {
         if (index >= size)

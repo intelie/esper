@@ -13,6 +13,7 @@ public interface ExprValidator
      * Validate node.
      * @param streamTypeService serves stream event type info
      * @param autoImportService - for resolving class names in library method invocations
+     * @param viewResourceDelegate - delegates for view resources to expression nodes
      * @throws ExprValidationException thrown when validation failed
      */
     public void validate(StreamTypeService streamTypeService,
