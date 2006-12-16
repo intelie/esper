@@ -17,9 +17,6 @@ public class TestPreviousFunction extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener testListener;
 
-    // TODO: test ExprPreviousNode class itself
-    // TODO: test joins
-
     public void setUp()
     {
         testListener = new SupportUpdateListener();
@@ -45,37 +42,37 @@ public class TestPreviousFunction extends TestCase
         sendTimer(0);
         assertFalse(testListener.isInvoked());
 
-        sendEvent("D1", 1);
+        sendMarketEvent("D1", 1);
         assertNewEvents("D1", null, null);
 
         sendTimer(1000);
         assertFalse(testListener.isInvoked());
 
-        sendEvent("D2", 2);
+        sendMarketEvent("D2", 2);
         assertNewEvents("D2", null, null);
 
         sendTimer(2000);
         assertFalse(testListener.isInvoked());
 
-        sendEvent("D3", 3);
+        sendMarketEvent("D3", 3);
         assertNewEvents("D3", "D1", 1d);
 
         sendTimer(3000);
         assertFalse(testListener.isInvoked());
 
-        sendEvent("D4", 4);
+        sendMarketEvent("D4", 4);
         assertNewEvents("D4", "D2", 2d);
 
         sendTimer(4000);
         assertFalse(testListener.isInvoked());
 
-        sendEvent("D5", 5);
+        sendMarketEvent("D5", 5);
         assertNewEvents("D5", "D3", 3d);
 
         sendTimer(30000);
         assertFalse(testListener.isInvoked());
 
-        sendEvent("D6", 6);
+        sendMarketEvent("D6", 6);
         assertNewEvents("D6", "D4", 4d);
 
         // Test remove stream, always returns null as previous function
@@ -108,30 +105,30 @@ public class TestPreviousFunction extends TestCase
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prevSymbol"));
         assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
 
-        sendEvent("D1", 1, 0);
+        sendMarketEvent("D1", 1, 0);
         assertNewEvents("D1", null, null);
 
-        sendEvent("D2", 2, 1000);
+        sendMarketEvent("D2", 2, 1000);
         assertNewEvents("D2", null, null);
 
-        sendEvent("D3", 3, 3000);
+        sendMarketEvent("D3", 3, 3000);
         assertNewEvents("D3", "D1", 1d);
 
-        sendEvent("D4", 4, 4000);
+        sendMarketEvent("D4", 4, 4000);
         assertNewEvents("D4", "D2", 2d);
 
-        sendEvent("D5", 5, 5000);
+        sendMarketEvent("D5", 5, 5000);
         assertNewEvents("D5", "D3", 3d);
 
-        sendEvent("D6", 6, 30000);
+        sendMarketEvent("D6", 6, 30000);
         assertNewEvents("D6", "D4", 4d);
 
-        sendEvent("D7", 7, 60000);
+        sendMarketEvent("D7", 7, 60000);
         assertEvent(testListener.getLastNewData()[0], "D7", "D5", 5d);
         assertEvent(testListener.getLastOldData()[0], "D1", null, null);
         testListener.reset();
 
-        sendEvent("D8", 8, 61000);
+        sendMarketEvent("D8", 8, 61000);
         assertEvent(testListener.getLastNewData()[0], "D8", "D6", 6d);
         assertEvent(testListener.getLastOldData()[0], "D2", null, null);
         testListener.reset();
@@ -154,8 +151,8 @@ public class TestPreviousFunction extends TestCase
         sendTimer(0);
         assertFalse(testListener.isInvoked());
 
-        sendEvent("A", 1);
-        sendEvent("B", 2);
+        sendMarketEvent("A", 1);
+        sendMarketEvent("B", 2);
         assertFalse(testListener.isInvoked());
 
         sendTimer(60000);
@@ -166,7 +163,7 @@ public class TestPreviousFunction extends TestCase
         testListener.reset();
 
         sendTimer(80000);
-        sendEvent("C", 3);
+        sendMarketEvent("C", 3);
         assertFalse(testListener.isInvoked());
 
         sendTimer(120000);
@@ -177,16 +174,58 @@ public class TestPreviousFunction extends TestCase
         testListener.reset();
 
         sendTimer(300000);
-        sendEvent("D", 4);
-        sendEvent("E", 5);
-        sendEvent("F", 6);
-        sendEvent("G", 7);
+        sendMarketEvent("D", 4);
+        sendMarketEvent("E", 5);
+        sendMarketEvent("F", 6);
+        sendMarketEvent("G", 7);
         sendTimer(360000);
         assertEquals(4, testListener.getLastNewData().length);
         assertEvent(testListener.getLastNewData()[0], "D", null, null);
         assertEvent(testListener.getLastNewData()[1], "E", null, null);
         assertEvent(testListener.getLastNewData()[2], "F", "D", 4d);
         assertEvent(testListener.getLastNewData()[3], "G", "E", 5d);
+    }
+
+    public void testPreviousTimeBatchWindowJoin()
+    {
+        String viewExpr = "select string as currSymbol, " +
+                          " previous(2, symbol) as prevSymbol, " +
+                          " previous(1, price) as prevPrice " +
+                          "from " + SupportBean.class.getName() + ", " +
+                          SupportMarketDataBean.class.getName() + ".win:time_batch(1 min)";
+
+        EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
+        selectTestView.addListener(testListener);
+
+        // assert select result type
+        assertEquals(String.class, selectTestView.getEventType().getPropertyType("prevSymbol"));
+        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+
+        sendTimer(0);
+        assertFalse(testListener.isInvoked());
+
+        sendMarketEvent("A", 1);
+        sendMarketEvent("B", 2);
+        sendBeanEvent("X1");
+        assertFalse(testListener.isInvoked());
+
+        sendTimer(60000);
+        assertEquals(2, testListener.getLastNewData().length);
+        assertEvent(testListener.getLastNewData()[0], "X1", null, null);
+        assertEvent(testListener.getLastNewData()[1], "X1", null, 1d);
+        assertNull(testListener.getLastOldData());
+        testListener.reset();
+
+        sendMarketEvent("C1", 11);
+        sendMarketEvent("C2", 12);
+        sendMarketEvent("C3", 13);
+        assertFalse(testListener.isInvoked());
+
+        sendTimer(120000);
+        assertEquals(3, testListener.getLastNewData().length);
+        assertEvent(testListener.getLastNewData()[0], "X1", null, null);
+        assertEvent(testListener.getLastNewData()[1], "X1", null, 11d);
+        assertEvent(testListener.getLastNewData()[2], "X1", "C1", 12d);
     }
 
     public void testPreviousLengthWindow()
@@ -207,13 +246,13 @@ public class TestPreviousFunction extends TestCase
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prev0Symbol"));
         assertEquals(double.class, selectTestView.getEventType().getPropertyType("prev0Price"));
 
-        sendEvent("A", 1);
+        sendMarketEvent("A", 1);
         assertNewEvents("A", "A", 1d, null, null, null, null);
-        sendEvent("B", 2);
+        sendMarketEvent("B", 2);
         assertNewEvents("B", "B", 2d, "A", 1d, null, null);
-        sendEvent("C", 3);
+        sendMarketEvent("C", 3);
         assertNewEvents("C", "C", 3d, "B", 2d, "A", 1d);
-        sendEvent("D", 4);
+        sendMarketEvent("D", 4);
         EventBean newEvent = testListener.getLastNewData()[0];
         EventBean oldEvent = testListener.getLastOldData()[0];
         assertEventProps(newEvent, "D", "D", 4d, "C", 3d, "B", 2d);
@@ -229,11 +268,11 @@ public class TestPreviousFunction extends TestCase
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
 
-        sendEvent("A", 1);
-        sendEvent("B", 130);
-        sendEvent("C", 10);
+        sendMarketEvent("A", 1);
+        sendMarketEvent("B", 130);
+        sendMarketEvent("C", 10);
         assertFalse(testListener.isInvoked());
-        sendEvent("D", 5);
+        sendMarketEvent("D", 5);
         assertEquals("B", testListener.assertOneGetNewAndReset().get("currSymbol"));
     }
 
@@ -283,25 +322,25 @@ public class TestPreviousFunction extends TestCase
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prev0Symbol"));
         assertEquals(double.class, selectTestView.getEventType().getPropertyType("prev0Price"));
 
-        sendEvent("COX", 30);
+        sendMarketEvent("COX", 30);
         assertNewEvents("COX", "COX", 30d, null, null, null, null);
 
-        sendEvent("IBM", 45);
+        sendMarketEvent("IBM", 45);
         assertNewEvents("IBM", "COX", 30d, "IBM", 45d, null, null);
 
-        sendEvent("MSFT", 33);
+        sendMarketEvent("MSFT", 33);
         assertNewEvents("MSFT", "COX", 30d, "IBM", 45d, "MSFT", 33d);
 
-        sendEvent("XXX", 55);
+        sendMarketEvent("XXX", 55);
         assertNewEvents("XXX", "COX", 30d, "IBM", 45d, "MSFT", 33d);
 
-        sendEvent("CXX", 56);
+        sendMarketEvent("CXX", 56);
         assertNewEvents("CXX", "COX", 30d, "CXX", 56d, "IBM", 45d);
 
-        sendEvent("GE", 1);
+        sendMarketEvent("GE", 1);
         assertNewEvents("GE", "COX", 30d, "CXX", 56d, "GE", 1d);
 
-        sendEvent("AAA", 1);
+        sendMarketEvent("AAA", 1);
         assertNewEvents("AAA", "AAA", 1d, "COX", 30d, "CXX", 56d);
     }
 
@@ -395,15 +434,22 @@ public class TestPreviousFunction extends TestCase
         epService.getEPRuntime().sendEvent(event);
     }
 
-    private void sendEvent(String symbol, double price)
+    private void sendMarketEvent(String symbol, double price)
     {
         SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
         epService.getEPRuntime().sendEvent(bean);
     }
 
-    private void sendEvent(String symbol, double price, long volume)
+    private void sendMarketEvent(String symbol, double price, long volume)
     {
         SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, volume, null);
+        epService.getEPRuntime().sendEvent(bean);
+    }
+
+    private void sendBeanEvent(String string)
+    {
+        SupportBean bean = new SupportBean();
+        bean.setString(string);
         epService.getEPRuntime().sendEvent(bean);
     }
 

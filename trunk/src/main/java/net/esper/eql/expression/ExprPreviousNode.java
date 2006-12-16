@@ -25,6 +25,11 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
+        if (this.getChildNodes().size() != 2)
+        {
+            throw new ExprValidationException("Previous node must have 2 child nodes");
+        }
+
         // Determine if the index is a constant value or an expression to evaluate
         if (this.getChildNodes().get(0) instanceof ExprConstantNode)
         {
@@ -117,7 +122,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
     public String toExpressionString()
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("previous (");
+        buffer.append("previous(");
         buffer.append(this.getChildNodes().get(0).toExpressionString());
         buffer.append(",");
         buffer.append(this.getChildNodes().get(1).toExpressionString());

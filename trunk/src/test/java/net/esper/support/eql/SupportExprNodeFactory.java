@@ -2,8 +2,16 @@ package net.esper.support.eql;
 
 import net.esper.eql.expression.*;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.core.ViewResourceDelegateImpl;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.RelationalOpEnum;
+import net.esper.view.ViewFactoryChain;
+import net.esper.view.ViewFactory;
+import net.esper.view.window.LengthWindowViewFactory;
+
+import java.util.List;
+import java.util.LinkedList;
 
 public class SupportExprNodeFactory
 {
@@ -18,6 +26,32 @@ public class SupportExprNodeFactory
         validate(topNode);
 
         return topNode;
+    }
+
+    public static ExprPreviousNode makePreviousNode() throws Exception
+    {
+        ExprPreviousNode prevNode = new ExprPreviousNode();
+        ExprNode indexNode = new ExprIdentNode("intPrimitive", "s1");
+        prevNode.addChildNode(indexNode);
+        ExprNode propNode = new ExprIdentNode("doublePrimitive", "s1");
+        prevNode.addChildNode(propNode);
+
+        validate(prevNode);
+
+        return prevNode;
+    }
+
+    public static ExprPriorNode makePriorNode() throws Exception
+    {
+        ExprPriorNode priorNode = new ExprPriorNode();
+        ExprNode indexNode = new ExprConstantNode(1);
+        priorNode.addChildNode(indexNode);
+        ExprNode propNode = new ExprIdentNode("doublePrimitive", "s1");
+        priorNode.addChildNode(propNode);
+
+        validate(priorNode);
+
+        return priorNode;
     }
 
     public static ExprAndNode make2SubNodeAnd() throws Exception
@@ -263,7 +297,17 @@ public class SupportExprNodeFactory
 
     private static void validate(ExprNode topNode) throws Exception
     {
-        StreamTypeService streamTypeService = new SupportStreamTypeSvc3Stream();
-        topNode.getValidatedSubtree(streamTypeService, null, null);
+        SupportStreamTypeSvc3Stream streamTypeService = new SupportStreamTypeSvc3Stream();
+
+        ViewFactoryChain[] factoriesPerStream = new ViewFactoryChain[3];
+        for (int i = 0; i < factoriesPerStream.length; i++)
+        {
+            List<ViewFactory> factories = new LinkedList<ViewFactory>();
+            factories.add(new LengthWindowViewFactory());
+            factoriesPerStream[i] = new ViewFactoryChain(streamTypeService.getEventTypes()[i], factories);
+        }
+        ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream);
+
+        topNode.getValidatedSubtree(streamTypeService, null, viewResources);
     }
 }

@@ -19,7 +19,7 @@ public class SortWindowViewFactory implements ViewFactory
     private int sortWindowSize;
     private EventType eventType;
     private boolean isRequiresRandomAccess;
-    private List<ViewResourceCallback> factoryCallbacks = new LinkedList<ViewResourceCallback>();
+    private List<ViewResourceCallback> resourceCallbacks = new LinkedList<ViewResourceCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -116,7 +116,7 @@ public class SortWindowViewFactory implements ViewFactory
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
         isRequiresRandomAccess = true;
-        factoryCallbacks.add(resourceCallback);
+        resourceCallbacks.add(resourceCallback);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
@@ -126,7 +126,7 @@ public class SortWindowViewFactory implements ViewFactory
         if (isRequiresRandomAccess)
         {
             sortedRandomAccess = new IStreamSortedRandomAccess();
-            for (ViewResourceCallback resourceCallback : factoryCallbacks)
+            for (ViewResourceCallback resourceCallback : resourceCallbacks)
             {
                 resourceCallback.setViewResource(sortedRandomAccess);
             }

@@ -22,6 +22,10 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
+        if (this.getChildNodes().size() != 2)
+        {
+            throw new ExprValidationException("Prior node must have 2 child nodes");
+        }
         if (!(this.getChildNodes().get(0) instanceof ExprConstantNode))
         {
             throw new ExprValidationException("Prior function requires an integer index parameter");

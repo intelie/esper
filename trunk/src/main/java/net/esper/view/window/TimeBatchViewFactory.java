@@ -17,7 +17,7 @@ public class TimeBatchViewFactory implements ViewFactory
     private Long optionalReferencePoint;
     private boolean isRequiresRandomAccess;
     private EventType eventType;
-    private List<ViewResourceCallback> factoryCallbacks = new LinkedList<ViewResourceCallback>();
+    private List<ViewResourceCallback> resourceCallbacks = new LinkedList<ViewResourceCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -90,7 +90,7 @@ public class TimeBatchViewFactory implements ViewFactory
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
         isRequiresRandomAccess = true;
-        factoryCallbacks.add(resourceCallback);
+        resourceCallbacks.add(resourceCallback);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
@@ -100,7 +100,7 @@ public class TimeBatchViewFactory implements ViewFactory
         if (isRequiresRandomAccess)
         {
             relativeAccessByEvent = new IStreamRelativeAccess();
-            for (ViewResourceCallback resourceCallback : factoryCallbacks)
+            for (ViewResourceCallback resourceCallback : resourceCallbacks)
             {
                 resourceCallback.setViewResource(relativeAccessByEvent);
             }
