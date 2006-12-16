@@ -27,7 +27,7 @@ class ConfigurationParser {
      * @param configuration is the configuration object to populate
      * @param stream	   Inputstream to be read from
      * @param resourceName The name to use in warning/error messages
-     * @throws net.esper.client.EPException
+     * @throws EPException is thrown when the configuration could not be parsed
      */
     protected static void doConfigure(Configuration configuration, InputStream stream, String resourceName) throws EPException
     {
@@ -69,7 +69,7 @@ class ConfigurationParser {
      * Parse the W3C DOM document.
      * @param configuration is the configuration object to populate
      * @param doc to parse
-     * @throws net.esper.client.EPException
+     * @throws EPException to indicate parse errors
      */
     protected static void doConfigure(Configuration configuration, Document doc) throws EPException
     {

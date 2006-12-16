@@ -114,8 +114,8 @@ public class StaticMethodResolver
 	 * @param paramTypes - the parameter types for the method
 	 * @param autoImportService - for resolving the class name
 	 * @return - the Method object for this method
-	 * @throws ClassNotFoundException
-	 * @throws NoSuchMethodException
+	 * @throws ClassNotFoundException if the class could not be found/loaded
+	 * @throws NoSuchMethodException if the method could not be found
 	 */
 	public static Method resolveMethod(String className, String methodName, Class[] paramTypes, AutoImportService autoImportService)
 	throws ClassNotFoundException, NoSuchMethodException

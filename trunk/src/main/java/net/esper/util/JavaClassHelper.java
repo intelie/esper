@@ -123,8 +123,8 @@ public class JavaClassHelper
     /**
      * Returns the coercion type for the 2 numeric types for use in arithmatic.
      * Note: byte and short types always result in integer.
-     * @param typeOne
-     * @param typeTwo
+     * @param typeOne is the first type
+     * @param typeTwo is the second type
      * @return coerced type
      * @throws CoercionException if types don't allow coercion
      */
@@ -231,8 +231,8 @@ public class JavaClassHelper
      * common comparison. The output is always Long.class, Double.class, String.class or Boolean.class
      * depending on whether the passed types are numeric and floating-point.
      * Accepts primitive as well as boxed types.
-     * @param typeOne
-     * @param typeTwo
+     * @param typeOne is the first type
+     * @param typeTwo is the second type
      * @return One of Long.class, Double.class or String.class
      * @throws IllegalArgumentException if the types cannot be compared
      */
@@ -347,7 +347,7 @@ public class JavaClassHelper
      * @param types is an array of one or more types, which can be Java built-in (primitive or wrapper)
      * or user types
      * @return common denominator type if any can be found, for use in comparison
-     * @throws CoercionException
+     * @throws CoercionException when no coercion type could be determined
      */
     public static Class getCommonCoercionType(Class[] types)
             throws CoercionException

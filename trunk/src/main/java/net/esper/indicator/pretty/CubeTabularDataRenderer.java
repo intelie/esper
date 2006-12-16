@@ -46,7 +46,7 @@ public final class CubeTabularDataRenderer
     /**
      * Render the Cube as a collection of OpenMBean TabularData tables, each table carries a string key
      * that contains the page dimension member, if present, else just the string TABLE_NAME.
-     * @param cube
+     * @param cube is the cube to render
      * @return map of rendered page dimension member as key and TabularData containing table as value
      */
     public static Map<String, TabularData> renderCube(Cube cube)

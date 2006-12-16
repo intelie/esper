@@ -28,7 +28,7 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
 {
     /**
      * Returns the name tag for the event in the filter spec, if any, else null.
-     * @param filterAST
+     * @param filterAST is the filter expression AST node
      * @return event name tag or null if none specified
      */
     public static String getEventNameTag(AST filterAST)

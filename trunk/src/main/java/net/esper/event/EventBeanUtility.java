@@ -64,7 +64,7 @@ public class EventBeanUtility
 
     /**
      * Convert list of events to array, returning null for empty or null lists.
-     * @param eventList
+     * @param eventList is a list of events to convert
      * @return array of events
      */
     public static EventBean[] toArray(List<EventBean> eventList)

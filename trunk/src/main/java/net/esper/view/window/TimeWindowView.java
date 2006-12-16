@@ -50,6 +50,7 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
      * Constructor.
      * @param millisecondsBeforeExpiry is the number of milliseconds before events gets pushed
      * out of the timeWindow as oldData in the update method.
+     * @param viewUpdatedCollection is a collection the view must update when receiving events
      */
     public TimeWindowView(long millisecondsBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
     {

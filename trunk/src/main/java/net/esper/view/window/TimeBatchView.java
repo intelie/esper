@@ -60,12 +60,13 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
      * @param msecIntervalSize is the number of milliseconds to batch events for
      * @param referencePoint is the reference point onto which to base intervals, or null if
      * there is no such reference point supplied
+     * @param viewUpdatedCollection is a collection that the view must update when receiving events
      */
-    public TimeBatchView(long msecIntervalSize, Long referencePoint, ViewUpdatedCollection optionalRandomAccess)
+    public TimeBatchView(long msecIntervalSize, Long referencePoint, ViewUpdatedCollection viewUpdatedCollection)
     {
         this.msecIntervalSize = msecIntervalSize;
         this.initialReferencePoint = referencePoint;
-        this.viewUpdatedCollection = optionalRandomAccess;
+        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     /**

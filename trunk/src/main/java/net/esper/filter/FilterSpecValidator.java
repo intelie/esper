@@ -18,6 +18,7 @@ public class FilterSpecValidator
      * @param optionalTaggedEventTypes is a optional list of result events and event types for filter specifications that
      * contain references to result events
      * @throws IllegalArgumentException to indicate validation errors
+     * @throws ASTFilterSpecValidationException to indicate filter validation problem
      */
     public static void validate(FilterSpec filterSpec, Map<String, EventType> optionalTaggedEventTypes)
         throws ASTFilterSpecValidationException

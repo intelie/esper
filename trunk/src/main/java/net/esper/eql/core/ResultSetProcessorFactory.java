@@ -58,7 +58,7 @@ public class ResultSetProcessorFactory
      * @param autoImportService - for resolving class names
      * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
      * @return result set processor instance
-     * @throws net.esper.eql.expression.ExprValidationException
+     * @throws ExprValidationException when any of the expressions is invalid
      */
     public static ResultSetProcessor getProcessor(List<SelectExprElementUnnamedSpec> selectionList,
                                                   InsertIntoDesc insertIntoDesc,

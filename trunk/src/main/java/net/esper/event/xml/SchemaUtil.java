@@ -25,7 +25,7 @@ public class SchemaUtil {
 
     /**
      * Returns the XPathConstants type for a given Xerces type definition.
-     * @param definition
+     * @param definition is the schema element definition
      * @return XPathConstants type
      */
     public static QName simpleTypeToQName(XSSimpleTypeDecl definition)

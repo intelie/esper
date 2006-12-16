@@ -103,7 +103,7 @@ public enum FilterOperator
 
     /**
      * Parse the comparison operator returning null if not a valid operator.
-     * @param operator
+     * @param operator is the lesser then or other compare op
      * @return FilterOperator or null if not valid
      */
     public static FilterOperator parseComparisonOperator(String operator)

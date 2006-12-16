@@ -32,7 +32,7 @@ public class SimpleXMLPropertyParser implements EqlTokenTypes
      * @param xPathFactory for compiling an XPath expression
      * @param rootElementName is the name of the root element for generating the XPath expression
      * @return xpath expression
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException when the XPath expression is invalid
      */
     public static XPathExpression parse(String propertyName, XPathFactory xPathFactory, String rootElementName) throws XPathExpressionException
     {

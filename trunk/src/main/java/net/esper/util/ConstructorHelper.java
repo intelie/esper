@@ -20,10 +20,10 @@ public class ConstructorHelper
      * @param clazz is the class of instance to construct
      * @param arguments is the arguments for the constructor to match in number and type
      * @return instance of class
-     * @throws IllegalAccessException
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws InstantiationException
+     * @throws IllegalAccessException thrown if no access to class
+     * @throws NoSuchMethodException thrown when the constructor is not found
+     * @throws InvocationTargetException thrown when the ctor throws and exception
+     * @throws InstantiationException thrown when the class cannot be loaded
      */
     public static Object invokeConstructor(Class clazz, Object[] arguments) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException
     {

@@ -27,6 +27,7 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
     /**
      * Constructor creates a moving window extending the specified number of elements into the past.
      * @param size is the specified number of elements into the past
+     * @param viewUpdatedCollection is a collection that the view must update when receiving events  
      */
     public LengthWindowView(int size, ViewUpdatedCollection viewUpdatedCollection)
     {

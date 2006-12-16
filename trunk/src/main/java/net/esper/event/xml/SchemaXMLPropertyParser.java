@@ -39,7 +39,7 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
      * @param xPathFactory is the xpath factory instance to use
      * @param rootElementName is the name of the root element
      * @return xpath expression
-     * @throws XPathExpressionException
+     * @throws XPathExpressionException when the XPath expression is invalid
      */
     public static TypedEventPropertyGetter parse(String propertyName, XPathFactory xPathFactory, String rootElementName, String namespace, XSModel xsModel) throws XPathExpressionException
     {

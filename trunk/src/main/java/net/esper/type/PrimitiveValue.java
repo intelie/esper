@@ -34,56 +34,56 @@ public interface PrimitiveValue
     /**
      * Set a boolean value.
      * @param x is the value to set
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException to indicate that the value cannot convert from boolean
      */
     public void setBoolean(boolean x) throws UnsupportedOperationException;
 
     /**
      * Set a byte value.
      * @param x is the value to set
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException to indicate that the value cannot convert from boolean
      */
     public void setByte(byte x) throws UnsupportedOperationException;
 
     /**
      * Set a double value.
      * @param x is the value to set
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException to indicate that the value cannot convert from boolean
      */
     public void setDouble(double x) throws UnsupportedOperationException;
 
     /**
      * Set a float value.
      * @param x is the value to set
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException to indicate that the value cannot convert from boolean
      */
     public void setFloat(float x) throws UnsupportedOperationException;
 
     /**
      * Set an int value.
      * @param x is the value to set
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException to indicate that the value cannot convert from boolean
      */
     public void setInt(int x) throws UnsupportedOperationException;
 
     /**
      * Set a long value.
      * @param x is the value to set
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException to indicate that the value cannot convert from boolean
      */
     public void setLong(long x) throws UnsupportedOperationException;
 
     /**
      * Set a short value.
      * @param x is the value to set
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException to indicate that the value cannot convert from boolean
      */
     public void setShort(short x) throws UnsupportedOperationException;
 
     /**
      * Set a string value.
      * @param x is the value to set
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException to indicate that the value cannot convert from boolean
      */
     public void setString(String x) throws UnsupportedOperationException;
 }

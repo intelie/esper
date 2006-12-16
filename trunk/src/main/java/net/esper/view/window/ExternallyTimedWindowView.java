@@ -53,6 +53,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * out of the window as oldData in the update method. The view compares
      * each events timestamp against the newest event timestamp and those with a delta
      * greater then secondsBeforeExpiry are pushed out of the window.
+     * @param viewUpdatedCollection is a collection that the view must update when receiving events
      */
     public ExternallyTimedWindowView(String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
     {

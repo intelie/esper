@@ -23,8 +23,10 @@ public interface ViewFactory
      * attach requirements and determine an event type for resulting views.
      * @param parentEventType is the parent event stream's or view factory's event type
      * @param viewServiceContext contains the services needed for creating a new event type
-     * @param optionalParentFactory
-     * @throws ViewAttachException
+     * @param optionalParentFactory is null when there is no parent view factory, or contains the
+     * parent view factory
+     * @throws ViewAttachException is thrown to indicate that this view factories's view would not play
+     * with the parent view factories view
      */
     public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory) throws ViewAttachException;
 

@@ -56,7 +56,7 @@ public class ParseHelper
      * @param expression - text to parse
      * @param parseRuleSelector - parse rule to select
      * @return AST - syntax tree
-     * @throws EPException
+     * @throws EPException when the AST could not be parsed
      */
     public static AST parse(String expression, ParseRuleSelector parseRuleSelector) throws EPException
     {

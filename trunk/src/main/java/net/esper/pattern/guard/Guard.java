@@ -19,7 +19,7 @@ public interface Guard
 
     /**
      * Returns true if inspection shows that the match events can pass, or false to not pass.
-     * @param matchEvent
+     * @param matchEvent is the map of matching events
      * @return true to pass, false to not pass
      */
     public boolean inspect(MatchedEventMap matchEvent);

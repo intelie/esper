@@ -9,83 +9,35 @@ import java.util.List;
  */
 public interface ViewService
 {
-    /**
-     * ViewFactoryFactory responsibilities:
-     * (1) return event type of resulting view
-     *      --> now expressions can resolve, allowing expression to indicate additional view requirements
-     * (2) check if an existing view satisfies view requirements (view spec plus additional view requirements)
-     *      --> this can now be a bit more flexible in determining if a re-use is possible
-     * (3) create new view instance
-     *
-     * public UnmaterializedViewable (EventStream eventStream, List<ViewSpec> viewSpecList)
-     *      UnmaterializedView.getEventType();
-     *      Unmaterialized: List<ViewFactoryFactory>
-     *
-     * public Viewable materialize (UnmaterializedViewable unmaterialized, ViewServiceContext context)
-     *
-     * interface ExprValidator
-     *      public void validate(StreamTypeService, AutoImportService, ViewResourceReqBlackboard)
-     *
-     *      public ViewResourceReqBlackboard(UnmaterializedViewable[])    // Ctor
-     * interface ViewResourceReqBlackboard
-     *      public boolean requestFinalView(int stream, RandomAccessViewResource.class, ViewResourceCallback)
-     *
-     * interface ViewResourceCallback
-     *      public void setResource(ViewResource viewResource)
-     *
-     *      public ViewFactoryImpl(List<Object> viewParameters, EventType parentEventType)     // Ctor
-     *
-     * interface ViewFactoryFactory
-     *      public EventType getEventType()
-     *
-     *      public boolean providesCapability(Class capability);
-     *      public boolean addCapability(Class capability, ViewResourceCallback);
-     *
-     *      public boolean equals(...);
-     *      public boolean canReuse(View view)
-     *
-     *      public Viewable makeView();
-     *
-     *
-     *
-     * Returns the final view's event type in a chain of views defined by the given event stream and
-     * view specifications for each view in the chain.
+    /*
+     * Returns a chain of view factories that can be used to obtain the final event type,
+     * and that can later be used to actually create the chain of views or reuse existing views.
      * <p>
-     * Does not actually hook up the views against the event stream, but creates views
-     * to determine if views can hook up with each other, and returns the final view's event type.
-     * <p>
-     * Since views are expected to be lazy-init, view construction is not considered
-     * an expensive operation.
-     * @param eventStream - the event stream that originates the raw events
-     * @param viewSpecList - the specification for the chain to be created
+     * Does not actually hook up the view factories or views against the event stream, but creates view
+     * factories and sets parameters on each view factory as supplied. Determines if
+     * view factories are compatible in the chain via the attach method.
+     * @param parentEventType - is the event type of the event stream that originates the raw events
+     * @param viewSpecList - the specification for each view factory in the chain to be created
      * @param context - dependent services
-     * @return event type of last view in chain
-     * @throws ViewProcessingException thrown if a view cannot be, or views refuse to hook onto each other
-    public EventType createUnmaterialized(EventStream eventStream,
-                           List<ViewSpec> viewSpecList,
-                           ViewServiceContext context)
-        throws ViewProcessingException;
+     * @throws ViewProcessingException thrown if a view factory doesn't take parameters as supplied,
+     * or cannot hook onto it's parent view or event stream
      */
-
     public ViewFactoryChain createFactories(EventType parentEventType, List<ViewSpec> viewSpecList, ViewServiceContext context)
             throws ViewProcessingException;
 
+    /**
+     * Creates the views given a chain of view factories.
+     * <p>
+     * Attempts to reuse compatible views under then parent event stream viewable as
+     * indicated by each view factories reuse method.
+     * @param eventStreamViewable is the event stream to hook into
+     * @param viewFactoryChain defines the list of view factorys to call makeView or canReuse on
+     * @param context provides services
+     * @return last viewable in chain, or the eventStreamViewable if no view factories are supplied
+     */
     public Viewable createViews(Viewable eventStreamViewable,
                                 List<ViewFactory> viewFactoryChain,
                                 ViewServiceContext context);
-
-    /**
-     * Creates a chain of views returning the last view in the chain.
-     * @param eventStream - the event stream that originates the raw events
-     * @param viewSpecList - the specification for the chain to be created
-     * @param context - dependent services
-     * @return last view in chain
-     * @throws ViewProcessingException thrown if a view cannot be created
-    public Viewable createView(EventStream eventStream,
-                           List<ViewSpec> viewSpecList,
-                           ViewServiceContext context)
-        throws ViewProcessingException;
-     */
 
     /**
      * Removes a view discoupling the view and any of it's parent views up the tree to the last shared parent view.

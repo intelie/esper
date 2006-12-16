@@ -298,7 +298,7 @@ public class Configuration {
 	 *
 	 * @param url URL from which you wish to load the configuration
 	 * @return A configuration configured via the file
-	 * @throws EPException
+	 * @throws EPException is thrown when the URL could not be access
 	 */
 	public Configuration configure(URL url) throws EPException
     {
@@ -319,7 +319,7 @@ public class Configuration {
 	 *
 	 * @param configFile <tt>File</tt> from which you wish to load the configuration
 	 * @return A configuration configured via the file
-	 * @throws EPException
+	 * @throws EPException when the file could not be found
 	 */
 	public Configuration configure(File configFile) throws EPException
     {
