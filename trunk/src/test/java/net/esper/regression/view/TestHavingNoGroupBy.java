@@ -3,9 +3,11 @@ package net.esper.regression.view;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.UpdateListener;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBeanString;
+import net.esper.support.bean.SupportBean;
 import net.esper.event.EventBean;
 
 import org.apache.commons.logging.Log;
@@ -190,6 +192,40 @@ public class TestHavingNoGroupBy extends TestCase
         assertOldEvents(SYMBOL_DELL, 5d, 8.8d);
     }
 
+    public void testHavingSum()
+    {
+        String stmt = "select sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=" + SupportBean.class.getName() +
+                "] having sum(myEvent.intPrimitive) = 2";        
+        selectTestView = epService.getEPAdministrator().createEQL(stmt);
+        selectTestView.addListener(testListener);
+
+        sendEvent(1);
+        assertFalse(testListener.isInvoked());
+
+        sendEvent(1);
+        assertEquals(2, testListener.assertOneGetNewAndReset().get("mysum"));
+
+        sendEvent(1);
+        assertEquals(2, testListener.assertOneGetOldAndReset().get("mysum"));
+    }
+
+    public void testHavingSumIStream()
+    {
+        String stmt = "select istream sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=" + SupportBean.class.getName() +
+                "] having sum(myEvent.intPrimitive) = 2";
+        selectTestView = epService.getEPAdministrator().createEQL(stmt);
+        selectTestView.addListener(testListener);
+
+        sendEvent(1);
+        assertFalse(testListener.isInvoked());
+
+        sendEvent(1);
+        assertEquals(2, testListener.assertOneGetNewAndReset().get("mysum"));
+
+        sendEvent(1);
+        assertFalse(testListener.isInvoked());
+    }
+
     private void assertNewEvents(String symbol,
                                  Double newPrice, Double newAvgPrice
                               )
@@ -224,27 +260,11 @@ public class TestHavingNoGroupBy extends TestCase
         testListener.reset();
     }
 
-    private void assertEvents(String symbol,
-                              Double oldPrice, Double oldAvgPrice,
-                              Double newPrice, Double newAvgPrice
-                              )
+    private void sendEvent(int intPrimitive)
     {
-        EventBean[] oldData = testListener.getLastOldData();
-        EventBean[] newData = testListener.getLastNewData();
-
-        assertEquals(1, oldData.length);
-        assertEquals(1, newData.length);
-
-        assertEquals(symbol, oldData[0].get("symbol"));
-        assertEquals(oldPrice, oldData[0].get("price"));
-        assertEquals(oldAvgPrice, oldData[0].get("avgPrice"));
-
-        assertEquals(symbol, newData[0].get("symbol"));
-        assertEquals(newPrice, newData[0].get("price"));
-        assertEquals(newAvgPrice, newData[0].get("avgPrice"));
-
-        testListener.reset();
-        assertFalse(testListener.isInvoked());
+        SupportBean bean = new SupportBean();
+        bean.setIntPrimitive(intPrimitive);
+        epService.getEPRuntime().sendEvent(bean);
     }
 
     private void sendEvent(String symbol, double price)
