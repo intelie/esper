@@ -3,6 +3,7 @@ package net.esper.adapter.jms;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.client.EPException;
+import net.esper.schedule.ScheduleSlot;
 
 import javax.jms.Message;
 import javax.jms.JMSException;
@@ -23,7 +24,7 @@ public interface JMSMarshaler
      * property.
      */
 
-    public EventBean marshal(EventType eventType, Message message) throws EPException;
+    public JMSEventBean marshal(EventType eventType, Message message, long totalDelay, ScheduleSlot scheduleSlot) throws EPException;
 
     /**
      * Unmarshals the response out of the event bean.

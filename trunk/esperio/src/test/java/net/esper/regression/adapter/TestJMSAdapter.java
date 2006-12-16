@@ -12,7 +12,11 @@ import net.esper.client.time.CurrentTimeEvent;
 import net.esper.adapter.jms.JMSAdapter;
 import net.esper.adapter.OutputAdapterServiceProvider;
 import net.esper.adapter.OutputAdapterService;
+import net.esper.adapter.OutputAdapterServiceImpl;
+import net.esper.adapter.AdapterRole;
 import net.esper.core.EPServiceProviderSPI;
+import net.esper.support.util.SupportUpdateListener;
+import net.esper.event.EventType;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,17 +32,17 @@ public class TestJMSAdapter extends TestCase
     EPAdministrator administrator;
     String statementText;
     private EPStatement statement;
+    private SupportUpdateListener listener;
     private Configuration config = new Configuration();
     private long currentTime;
     private static final String ESPER_TEST_CONFIG = "esper.yves.test.readconfig.cfg.xml";
 
     protected void setUp()
     {
-    }
-
-    public void testEvent()
-    {
-        Configuration configuration = new Configuration();
+        URL urlEsperConfig = this.getClass().getClassLoader().getResource(net.esper.regression.adapter.TestJMSAdapter.ESPER_TEST_CONFIG);
+        config.configure(urlEsperConfig);
+        epService = (EPServiceProviderSPI) EPServiceProviderManager.getProvider("testJMSAdapter", config);
+        administrator = epService.getEPAdministrator();
         // Set the clock to 0
         currentTime = 0;
         sendTimeEvent(0);
@@ -46,20 +50,50 @@ public class TestJMSAdapter extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
+    public void testEPService()
+    {
+        /* Map<String, Class> propertyTypes = new HashMap<String, Class>();
+        propertyTypes.put("myInt", Integer.class);
+        propertyTypes.put("myDouble", Double.class);
+        propertyTypes.put("myString", String.class);
+        String eventTypeAlias = "MyMapEvent";
+        config.addEventTypeAlias(eventTypeAlias, propertyTypes); */
+
+        statementText = "select * from MyMapEvent.win:length(5)";
+        EPStatement statement = administrator.createEQL(statementText);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+        sendEvent(1,1.1,"some string");
+    }
+
     public void testInsert()
     {
-        URL urlEsperConfig = this.getClass().getClassLoader().getResource(net.esper.regression.adapter.TestJMSAdapter.ESPER_TEST_CONFIG);
-        config.configure(urlEsperConfig);
+        statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:length(1)";
+        EPStatement stmt = administrator.createEQL(statementText);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        sendEvent(1,1.1,"some string");
+    }
+
+    public void testAdapter()
+    {
         URL urlAdapterConfig = getClass().getClassLoader().getResource("Spring/jms-spring.xml");
         OutputAdapterService adapterService = OutputAdapterServiceProvider.newService(urlAdapterConfig.toString());
-        epService = (EPServiceProviderSPI) EPServiceProviderManager.getProvider("testInsert", config);
         epService.setOuputAdapterService(adapterService);
-        administrator = epService.getEPAdministrator();
-        statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time_batch(2).std:lastevent()";
-        statement = administrator.createEQL(statementText);
+        JMSAdapter inputAdapter = ((OutputAdapterServiceImpl) adapterService).getJMSAdapter("jmsInputAdapter", AdapterRole.RECEIVER);
+        inputAdapter.setUsingEngineThread(true);
+        inputAdapter.setEPService(epService);
+        inputAdapter.start();
+        EventType eventType = ((OutputAdapterServiceImpl)adapterService).getEventType("jmsInputAdapterEventType");
+        config.addEventTypeAlias("testInputAdapter", buildPropertyMap(eventType));
+        //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time_batch(2).std:lastevent()";
+        statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time(10 sec)";
+        //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:length(5)";
+        administrator.createEQL(statementText);
+        //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time_batch(2).std:lastevent()";
+        //administrator.createEQL(statementText);
         sendEvent(1,1.1,"some string");
-        sendEvent(2,2.1,"some string 2");
-        sleep(40000);
+        //sleep(100);
     }
 
     private void sendTimeEvent(int timeIncrement){
@@ -75,6 +109,16 @@ public class TestJMSAdapter extends TestCase
         map.put("myDouble", myDouble);
         map.put("myString", myString);
         epService.getEPRuntime().sendEvent(map, "MyMapEvent");
+    }
+
+    private Map buildPropertyMap(EventType eventType)
+    {
+        Map<String, Class> mapType = new HashMap<String, Class>();
+        for (String prop :eventType.getPropertyNames())
+        {
+            mapType.put(prop, eventType.getPropertyType(prop));
+        }
+        return mapType;
     }
 
     private void sleep(int msec)

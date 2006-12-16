@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import net.esper.client.UpdateListener;
 import net.esper.adapter.OutputAdapterService;
 import net.esper.adapter.jms.JMSAdapter;
+import net.esper.event.EventType;
 
 import java.util.*;
 
@@ -21,6 +22,7 @@ public class OutputAdapterServiceImpl implements OutputAdapterService
 {
     private AbstractXmlApplicationContext adapterContext;
     private ClassPathXmlApplicationContext appContext;
+    private Map<String, EventType> eventTypeMap = new HashMap<String, EventType>();    
     private Map<String, JMSAdapter> adapterMap = new HashMap<String, JMSAdapter>();
     private Map<String, String> adapterStreamMap = new HashMap<String, String>();
     private static final Log log = LogFactory.getLog(OutputAdapterService.class);
@@ -33,6 +35,11 @@ public class OutputAdapterServiceImpl implements OutputAdapterService
         for (String beanName: beanNames)
         {
             Object o = getBean(beanName);
+            if (o instanceof EventType)
+            {
+                EventType evenType = (EventType)o;
+                eventTypeMap.put(beanName, evenType);
+            }
             if (o instanceof JMSAdapter)
             {
                JMSAdapter adapter = (JMSAdapter) o;
@@ -74,13 +81,31 @@ public class OutputAdapterServiceImpl implements OutputAdapterService
         return adapter;
     }
 
-    public JMSAdapter getJMSAdapter(String outputStreamAlias, String adapterName)
+    public EventType getEventType(String eventTypeAlias)
+    {
+        if (eventTypeMap == null)
+        {
+            return null;
+        }
+        return eventTypeMap.get(eventTypeAlias);
+    }
+
+    public JMSAdapter getJMSAdapter(String adapterName)
     {
         if (adapterMap == null)
         {
             return null;
         }
         return adapterMap.get(adapterName);
+    }
+
+    public JMSAdapter getJMSAdapter(String adapterName, AdapterRole role)
+    {
+        if (adapterMap == null)
+        {
+            return null;
+        }
+        return (adapterMap.get(adapterName).getRole() == role)?adapterMap.get(adapterName): null;
     }
 
     public List<UpdateListener> getMatchingOutputAdapter(String outputStreamAlias)
@@ -103,7 +128,7 @@ public class OutputAdapterServiceImpl implements OutputAdapterService
             if (outputStreamAlias.equalsIgnoreCase(streamAlias))
             {
                 JMSAdapter adapter = adapterMap.get(adapterName);
-                if (adapter.getRole().equalsIgnoreCase("Sender"))
+                if ((adapter.getRole() == AdapterRole.SENDER) || (adapter.getRole() == AdapterRole.BOTH))
                 {
                     list.add(adapter);
                 }

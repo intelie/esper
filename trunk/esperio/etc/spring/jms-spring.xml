@@ -56,6 +56,19 @@
         </property>
     </bean>
 
+    <bean id="synchronousJmsTemplate" class="org.springframework.jms.core.JmsTemplate">    
+    <!-- bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate102" -->
+        <property name="connectionFactory">
+            <ref bean="internalJmsQueueConnectionFactory"/>
+        </property>
+        <property name="defaultDestination">
+            <ref bean="destination"/>
+        </property>
+        <property name="receiveTimeout">
+            <value>1</value>
+        </property>
+    </bean>
+
     <bean id="defaultJMSMarshaler" class="net.esper.adapter.jms.DefaultJMSMarshaler">
     </bean>
 
@@ -71,7 +84,7 @@
     </bean>
     
     <bean id="jmsOuputAdapter" class="net.esper.adapter.jms.JMSAdapter">
-    	<property name="role" value="Sender"/>
+    	<property name="role" value="SENDER"/>
     	<property name="defaultJmsTemplate">
         	<ref bean="jmsTemplate"/>
         </property>        
@@ -85,9 +98,10 @@
     
 
     <bean id="jmsInputAdapter" class="net.esper.adapter.jms.JMSAdapter">
-    	<property name="role" value="Receiver"/>
+    	<property name="role" value="RECEIVER"/>
+    	<property name="eventsPerSec" value="1000"/>    	    	
     	<property name="defaultJmsTemplate">
-        	<ref bean="jmsTemplate"/>
+        	<ref bean="synchronousJmsTemplate"/>
         </property>        
         <property name="defaultJMSMarshaler">
         	<ref bean="defaultJMSMarshaler"/>

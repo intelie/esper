@@ -4,6 +4,8 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.client.EPException;
 import net.esper.util.JavaClassHelper;
+import net.esper.schedule.ScheduleSlot;
+import net.esper.adapter.SendableEvent;
 
 import javax.jms.Message;
 import javax.jms.JMSException;
@@ -33,12 +35,12 @@ public class DefaultJMSMarshaler implements JMSMarshaler
      * property.
      */
 
-    public EventBean marshal(EventType eventType, Message message) throws EPException
+    public JMSEventBean marshal(EventType eventType, Message message, long totalDelay, ScheduleSlot scheduleSlot) throws EPException
     {
         JMSEventBean eventBean = null;
         try
         {
-            if (message instanceof MapMessage)
+            if ((message != null) && (message instanceof MapMessage))
             {
                 Map<String, Object> eventTypeMap = new HashMap<String, Object>();
                 MapMessage mapMsg = (MapMessage) message;
@@ -49,7 +51,7 @@ public class DefaultJMSMarshaler implements JMSMarshaler
                     String property = (String) en.nextElement();
                     eventTypeMap.put(property, mapMsg.getObject(property));
                 }
-                eventBean = new JMSEventBean(eventTypeMap, eventType);
+                eventBean = new JMSEventBean(eventTypeMap, eventType, totalDelay, scheduleSlot);
             }
         }
         catch (JMSException ex)

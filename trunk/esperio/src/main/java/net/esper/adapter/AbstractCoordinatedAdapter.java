@@ -31,8 +31,14 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 	private long currentTime = 0;
 	private long startTime;
 
+    /**
+     * Ctor.
+     */
+    public AbstractCoordinatedAdapter()
+    {
+    }
 
-	/**
+    /**
 	 * Ctor.
 	 * @param epService - the EPServiceProvider for the engine runtime and services
 	 * @param usingEngineThread - true if the Adapter should set time by the scheduling service in the engine,
@@ -202,7 +208,8 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	private long getCurrentTime()
 	{
-		return usingEngineThread ? schedulingService.getTime() : System.currentTimeMillis();
+        if (schedulingService == null) return System.currentTimeMillis();
+        return usingEngineThread ? schedulingService.getTime() : System.currentTimeMillis();
 	}
 
 	private void fillEventsToSend()
@@ -233,7 +240,12 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 		ScheduleCallback nextScheduleCallback = new ScheduleCallback() { public void scheduledTrigger() { continueSendingEvents(); } };
 		ScheduleSlot nextScheduleSlot;
 
-		if(eventsToSend.isEmpty())
+        if (schedulingService == null)
+        {
+            return;
+        }
+
+        if(eventsToSend.isEmpty())
 		{
 			log.debug(".scheduleNextCallback no events to send, scheduling callback in 100 ms");
 			nextScheduleSlot = new ScheduleSlot(0,0);

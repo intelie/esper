@@ -10,7 +10,9 @@ import java.util.*;
 import net.esper.event.*;
 import net.esper.client.UpdateListener;
 import net.esper.client.EPException;
+import net.esper.client.EPServiceProvider;
 import net.esper.adapter.*;
+import net.esper.core.EPServiceProviderSPI;
 
 import javax.jms.Message;
 import javax.jms.Session;
@@ -22,9 +24,9 @@ import javax.jms.Session;
  * Time: 10:53:15 AM
  * To change this template use File | Settings | File Templates.
  */
-public class JMSAdapter implements UpdateListener, OutputAdapter
+public class JMSAdapter extends AbstractCoordinatedAdapter implements UpdateListener, OutputAdapter
 {
-    private String role;
+    private AdapterRole role;
     private String outputStreamAlias;
     private EventType defaultInputEventType;
     private EventType inputEventType;
@@ -37,6 +39,8 @@ public class JMSAdapter implements UpdateListener, OutputAdapter
     private EventBean[] lastNewData;
     private EventBean[] lastOldData;
     private boolean isInvoked;
+    private int eventsPerSec = -1;
+    private long totalDelay;
 
     private static final Log log = LogFactory.getLog(JMSAdapter.class);
 
@@ -46,12 +50,12 @@ public class JMSAdapter implements UpdateListener, OutputAdapter
         oldDataList = new LinkedList<EventBean[]>();
     }
 
-    public String getRole()
+    public AdapterRole getRole()
     {
         return role;
     }
 
-    public void setRole(String role)
+    public void setRole(AdapterRole role)
     {
         this.role = role;
     }
@@ -126,7 +130,31 @@ public class JMSAdapter implements UpdateListener, OutputAdapter
         return inputEventType;
     }
 
-    
+    public int getEventsPerSec()
+    {
+        return eventsPerSec;
+    }
+
+    public void setEventsPerSec(int eventsPerSec)
+    {
+        this.eventsPerSec = eventsPerSec;
+    }
+
+    /* (non-Javadoc)
+     * @see net.esper.adapter.AbstractCoordinatedAdapter#setEPService(net.esper.client.EPServiceProvider)
+     */
+    @Override
+    public void setEPService(EPServiceProvider epService)
+    {
+        assertValidParameters(epService);
+
+        EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;
+
+        scheduleSlot = spi.getSchedulingService().allocateBucket().allocateSlot();
+
+        super.setEPService(epService);
+    }
+
     public void update(EventBean[] newData, EventBean[] oldData)
     {
         this.oldDataList.add(oldData);
@@ -137,8 +165,6 @@ public class JMSAdapter implements UpdateListener, OutputAdapter
         for (EventBean event: lastNewData)
         {
             send(event);
-            EventBean readEvent = read();
-            log.info("Event Received " + readEvent.toString());
         }
     }
 
@@ -172,21 +198,6 @@ public class JMSAdapter implements UpdateListener, OutputAdapter
         }
     }
 
-    public EventBean read() throws EPException
-    {
-        EventBean evBean;
-        if ((jmsTemplate != null) && (inputEventType != null))
-        {
-            evBean = jmsMarshaler.marshal(inputEventType, jmsTemplate.receive());
-        }
-        else
-        {
-            evBean = defaultJMSMarshaler.marshal(defaultInputEventType, defaultJmsTemplate.receive());
-        }
-        return evBean;
-        //return new Object[]{evBean};
-    }
-
     public List<EventBean[]> getNewDataList()
     {
         return newDataList;
@@ -212,15 +223,6 @@ public class JMSAdapter implements UpdateListener, OutputAdapter
         return isInvoked;
     }
 
-    public void reset()
-    {
-        this.oldDataList.clear();
-        this.newDataList.clear();
-        this.lastNewData = null;
-        this.lastOldData = null;
-        isInvoked = false;
-    }
-
     public EventBean[] getAndResetLastNewData()
     {
         EventBean[] lastNew = lastNewData;
@@ -233,12 +235,108 @@ public class JMSAdapter implements UpdateListener, OutputAdapter
         return this;
     }
 
+    public SendableEvent read()
+    {
+        JMSEventBean evBean;
+
+        if(stateManager.getState() == AdapterState.DESTROYED)
+        {
+            return null;
+        }
+
+        try
+        {
+            if(eventsToSend.isEmpty())
+            {
+                if ((jmsTemplate != null) && (inputEventType != null))
+                {
+                    evBean = jmsMarshaler.marshal(inputEventType, jmsTemplate.receive(), totalDelay, scheduleSlot);
+                }
+                else
+                {
+                    evBean = defaultJMSMarshaler.marshal(defaultInputEventType, defaultJmsTemplate.receive(), totalDelay, scheduleSlot);
+                }
+                updateTotalDelay();
+                return evBean;
+            }
+            else
+            {
+                SendableEvent event = eventsToSend.first();
+                eventsToSend.remove(event);
+                return event;
+            }
+        }
+        catch (EPException ex)
+        {
+            log.debug(".Marshalling exception");
+            if(stateManager.getState() == AdapterState.STARTED)
+            {
+                stop();
+            }
+            else
+            {
+                destroy();
+            }
+            return null;
+        }
+
+    }
+
+    private void updateTotalDelay()
+    {
+        if(eventsPerSec > -1)
+        {
+            totalDelay += 1000/eventsPerSec;
+        }
+    }
+
+    /**
+     * Remove the first member of eventsToSend.
+     */
+    protected void replaceFirstEventToSend()
+    {
+        eventsToSend.remove(eventsToSend.first());
+        SendableEvent event = read();
+        if(event != null)
+        {
+            eventsToSend.add(event);
+        }
+    }
+
+    /**
+     * Reset all the changeable state of this Adapter, as if it were just created.
+     */
+    protected void reset()
+    {
+        if ((role == AdapterRole.RECEIVER) || (role == AdapterRole.BOTH))
+        {
+            totalDelay = 0;
+        }
+        // Sender
+        else
+        {
+            this.oldDataList.clear();
+            this.newDataList.clear();
+            this.lastNewData = null;
+            this.lastOldData = null;
+            isInvoked = false;
+        }
+    }
+
     /**
      * close not relevant for JMS adapter?
      */
     protected void close()
     {
 
+    }
+
+    private void assertValidParameters(EPServiceProvider epService)
+    {
+        if(!(epService instanceof EPServiceProviderSPI))
+        {
+            throw new IllegalArgumentException("Invalid type of EPServiceProvider");
+        }
     }
 
 
