@@ -18,22 +18,54 @@ public class TestViewLengthWindowStats extends TestCase
             
     private EPServiceProvider epService;
     private SupportUpdateListener testListener;
-    private EPStatement priceStatsView;
+    private EPStatement statement;
 
     public void setUp()
     {
         testListener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
-
-        String viewExpr = "select * from " + SupportMarketDataBean.class.getName() +
-                "(symbol='" + SYMBOL + "').win:length(3).stat:uni('price')";
-        priceStatsView = epService.getEPAdministrator().createEQL(viewExpr);
-        priceStatsView.addListener(testListener);
     }
     
+    public void testIterator()
+    {
+        String viewExpr = "select symbol, price from " + SupportMarketDataBean.class.getName() + ".win:length(2)";
+        statement = epService.getEPAdministrator().createEQL(viewExpr);
+        statement.addListener(testListener);
+
+        sendEvent("ABC", 20);
+        sendEvent("DEF", 100);
+
+        // check iterator results
+        Iterator<EventBean> events = statement.iterator();
+        EventBean event = events.next();
+        assertEquals("ABC", event.get("symbol"));
+        assertEquals(20d, event.get("price"));
+
+        event = events.next();
+        assertEquals("DEF", event.get("symbol"));
+        assertEquals(100d, event.get("price"));
+        assertFalse(events.hasNext());
+
+        sendEvent("EFG", 50);
+
+        // check iterator results
+        events = statement.iterator();
+        event = events.next();
+        assertEquals("DEF", event.get("symbol"));
+        assertEquals(100d, event.get("price"));
+
+        event = events.next();
+        assertEquals("EFG", event.get("symbol"));
+        assertEquals(50d, event.get("price"));
+    }
+
     public void testWindowStats()
     {
+        String viewExpr = "select * from " + SupportMarketDataBean.class.getName() +
+                "(symbol='" + SYMBOL + "').win:length(3).stat:uni('price')";
+        statement = epService.getEPAdministrator().createEQL(viewExpr);
+        statement.addListener(testListener);
         testListener.reset();
 
         sendEvent(SYMBOL, 100);
@@ -69,7 +101,7 @@ public class TestViewLengthWindowStats extends TestCase
 
     private void checkNew(long countE, double sumE, double avgE, double stdevpaE, double stdevE, double varianceE)
     {
-        Iterator<EventBean> iterator = priceStatsView.iterator();
+        Iterator<EventBean> iterator = statement.iterator();
         checkValues(iterator.next(), countE, sumE, avgE, stdevpaE, stdevE, varianceE);
         assertTrue(iterator.hasNext() == false);
 
