@@ -1195,6 +1195,22 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 							</para>
 						</entry>
 					</row>
+					<row>
+						<entry><synopsis>previous(<emphasis>expression</emphasis>, <emphasis>event_property)</emphasis></synopsis></entry>
+						<entry>
+							<para>
+								Returns a property value of a previous event, relative to the event order within a data window 
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><synopsis>prior(<emphasis>integer</emphasis>, <emphasis>event_property)</emphasis></synopsis></entry>
+						<entry>
+							<para>
+								Returns a property value of a prior event, relative to the natural order of arrival of events
+							</para>
+						</entry>
+					</row>
 				</tbody>
 			</tgroup>
 		</table>
@@ -1257,6 +1273,104 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			<programlisting>select case when 1>0 then true else false end from ...</programlisting>
 		</sect2>
 		
+		<sect2 id="eql-single-row-function-ref-previous">
+			<title>The <literal>Previous</literal> Function</title>
+
+			<para>
+				The <literal>previous</literal> function returns the property value of a previous event. The first parameter denotes the i-th previous event in the order established by the data window. 
+				The second parameter is a property name for which the function returns the value for the previous event.
+			</para>
+
+			<para>
+				This example selects the value of the <literal>price</literal> property of the 2nd-previous event from the current Trade event.
+			</para>
+			<programlisting>select previous(2, price) from Trade.win:length(10)</programlisting>
+
+			<para>
+				Since the <literal>previous</literal> function takes the order established by the data window into account, the function works well with sorted windows. In the following example the statement
+				selects the symbol of the 3 Trade events that had the largest, second-largest and third-largest volume.
+			</para>
+			<programlisting>select previous(0, symbol), previous(1, symbol), previous(2, symbol)
+  from Trade.ext:sort(volume, true, 10)</programlisting>
+
+			<para>
+				The i-th previous event parameter can also be an expression returning an Integer-type value. The next statement joins the Trade data window with an <literal>RankSelectionEvent</literal> event that provides a <literal>rank</literal> property used to look up a certain position in the sorted Trade data window:
+			</para>
+			<programlisting>select previous(rank, symbol) from Trade.ext:sort(volume, true, 10), RankSelectionEvent</programlisting>
+
+			<para>
+				The <literal>previous</literal> function returns a <literal>null</literal> value if the data window does not currently hold the i-th previous event. The example below illustrates this using a time batch window. Here the <literal>previous</literal>  
+				function returns a null value for any events in which the previous event is not in the same batch of events. Note that the <literal>prior</literal> function as discussed below can be used if a null value is not the desired result.
+			</para>
+			<programlisting>select previous(1, symbol) from Trade.win:time_batch(1 min)</programlisting>			
+
+			<para>
+					The following restrictions apply to the <literal>previous</literal> functions and it's results:
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						The function always returns a <literal>null</literal> value for remove stream (old data) events
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The function requires a data window view with no subviews. Data window views are: length window, time and time batch window and sorted window
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The <literal>previous</literal> function is similar to the <literal>prior</literal> function. The key differences between the two functions are as follows:				 
+			</para>						
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						The <literal>previous</literal> function returns previous events in the order provided by the data window, while the <literal>prior</literal> function returns prior events in the order of arrival.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The <literal>previous</literal> function requires a data window view while the <literal>prior</literal> function does not have any view requirements.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The <literal>previous</literal> function returns a <literal>null</literal> value for remove stream events, i.e. for events leaving a data window. 
+						The <literal>prior</literal> function does not have this restriction.
+					</para>
+				</listitem>
+			</itemizedlist>
+	
+		</sect2>
+
+		<sect2 id="eql-single-row-function-ref-prior">
+			<title>The <literal>Prior</literal> Function</title>
+
+			<para>
+				The <literal>prior</literal> function returns the property value of a prior event. The first parameter is an integer value that denotes the i-th prior event in the natural order of arrival. 
+				The second parameter is a property name for which the function returns the value for the prior event.
+			</para>
+
+			<para>
+				This example selects the value of the <literal>price</literal> property of the 2nd-prior event to the current Trade event.
+			</para>
+			<programlisting>select prior(2, price) from Trade</programlisting>
+
+			<para>
+				The <literal>prior</literal> function can be used on any event stream or view and does not have any specific view requirements.  The function operates on the order of arrival of events by the event stream or view that provides the events.
+			</para>
+
+			<para>
+				The next statement uses a time batch window to compute an average volume for 1 minute of Trade events, posting results every minute. The select-clause 
+				employs the <literal>prior</literal> function to select the current average and the average before the current average:
+			</para>
+			<programlisting>select average, prior(1, average) 
+    from TradeAverages.win:time_batch(1 min).stat:uni('volume')</programlisting>
+	
+		</sect2>
 	</sect1>		
 
 	<sect1 id="eql-operator-ref">
