@@ -51,7 +51,7 @@ public class TestExprPreviousNode extends TestCase {
 
     public void testToExpressionString() throws Exception
     {
-        assertEquals("previous(s1.intPrimitive,s1.doublePrimitive)", prevNode.toExpressionString());
+        assertEquals("prev(s1.intPrimitive,s1.doublePrimitive)", prevNode.toExpressionString());
     }
 
     private EventBean[] makeEvent(int intPrimitive, double doublePrimitive)

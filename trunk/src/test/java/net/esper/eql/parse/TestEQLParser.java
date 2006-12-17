@@ -147,8 +147,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select * from x, sql:xx [\"sfsf ']");
 
         // Previous and prior function
-        assertIsInvalid("select previous(10, a*b) from x");
-        assertIsInvalid("select previous(price, a*b) from x");
+        assertIsInvalid("select prev(10, a*b) from x");
+        assertIsInvalid("select prev(price, a*b) from x");
         assertIsInvalid("select prior(10) from x");
         assertIsInvalid("select prior(price, a*b) from x");
     }
@@ -348,10 +348,10 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from x, sql:mydb ['   ']");
 
         // Previous and prior function
-        assertIsValid("select previous(10, price) from x");
-        assertIsValid("select previous(0, price) from x");
-        assertIsValid("select previous(1000, price) from x");
-        assertIsValid("select previous(index, price) from x");
+        assertIsValid("select prev(10, price) from x");
+        assertIsValid("select prev(0, price) from x");
+        assertIsValid("select prev(1000, price) from x");
+        assertIsValid("select prev(index, price) from x");
         assertIsValid("select prior(10, price) from x");
         assertIsValid("select prior(0, price) from x");
         assertIsValid("select prior(1000, price) from x");

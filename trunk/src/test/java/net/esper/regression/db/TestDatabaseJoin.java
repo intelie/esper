@@ -353,7 +353,7 @@ public class TestDatabaseJoin extends TestCase
             throw ex;
         }
         Statement stmt = conn.createStatement( );
-        ResultSet rs = stmt.executeQuery( "SELECT * FROM tomtest");
+        ResultSet rs = stmt.executeQuery( "SELECT * FROM mytesttable");
         rs.close();
         stmt.close();
         conn.close();

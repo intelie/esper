@@ -32,15 +32,15 @@ public class TestViewFactoryDelegateImpl extends TestCase
 
     public void testRequest()
     {
-        assertFalse(delegate.requestCapability(1, new SupportViewCapability(), null));
-        assertTrue(delegate.requestCapability(1, new ViewCapDataWindowAccess(1), null));
+        assertTrue(delegate.requestCapability(1, new SupportViewCapability(), null));
+        assertFalse(delegate.requestCapability(1, new ViewCapDataWindowAccess(1), null));
     }
 
     private class SupportViewCapability implements ViewCapability
     {
         public boolean inspect(List<ViewFactory> viewFactories)
         {
-            return false;
+            return true;
         }
     }
 }

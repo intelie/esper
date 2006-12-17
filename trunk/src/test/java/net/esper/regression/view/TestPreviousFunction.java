@@ -28,8 +28,8 @@ public class TestPreviousFunction extends TestCase
     public void testPreviousTimeWindow()
     {
         String viewExpr = "select symbol as currSymbol, " +
-                          " previous(2, symbol) as prevSymbol, " +
-                          " previous(2, price) as prevPrice " +
+                          " prev(2, symbol) as prevSymbol, " +
+                          " prev(2, price) as prevPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:time(1 min) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -94,8 +94,8 @@ public class TestPreviousFunction extends TestCase
     public void testPreviousExtTimedWindow()
     {
         String viewExpr = "select symbol as currSymbol, " +
-                          " previous(2, symbol) as prevSymbol, " +
-                          " previous(2, price) as prevPrice " +
+                          " prev(2, symbol) as prevSymbol, " +
+                          " prev(2, price) as prevPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:ext_timed('volume', 1 min) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -137,8 +137,8 @@ public class TestPreviousFunction extends TestCase
     public void testPreviousTimeBatchWindow()
     {
         String viewExpr = "select symbol as currSymbol, " +
-                          " previous(2, symbol) as prevSymbol, " +
-                          " previous(2, price) as prevPrice " +
+                          " prev(2, symbol) as prevSymbol, " +
+                          " prev(2, price) as prevPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:time_batch(1 min) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -189,8 +189,8 @@ public class TestPreviousFunction extends TestCase
     public void testPreviousTimeBatchWindowJoin()
     {
         String viewExpr = "select string as currSymbol, " +
-                          " previous(2, symbol) as prevSymbol, " +
-                          " previous(1, price) as prevPrice " +
+                          " prev(2, symbol) as prevSymbol, " +
+                          " prev(1, price) as prevPrice " +
                           "from " + SupportBean.class.getName() + ", " +
                           SupportMarketDataBean.class.getName() + ".win:time_batch(1 min)";
 
@@ -231,12 +231,12 @@ public class TestPreviousFunction extends TestCase
     public void testPreviousLengthWindow()
     {
         String viewExpr =   "select symbol as currSymbol, " +
-                            "previous(0, symbol) as prev0Symbol, " +
-                            "previous(1, symbol) as prev1Symbol, " +
-                            "previous(2, symbol) as prev2Symbol, " +
-                            "previous(0, price) as prev0Price, " +
-                            "previous(1, price) as prev1Price, " +
-                            "previous(2, price) as prev2Price " +
+                            "prev(0, symbol) as prev0Symbol, " +
+                            "prev(1, symbol) as prev1Symbol, " +
+                            "prev(2, symbol) as prev2Symbol, " +
+                            "prev(0, price) as prev0Price, " +
+                            "prev(1, price) as prev1Price, " +
+                            "prev(2, price) as prev2Price " +
                             "from " + SupportMarketDataBean.class.getName() + ".win:length(3) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -261,9 +261,9 @@ public class TestPreviousFunction extends TestCase
 
     public void testPreviousLengthWindowWhere()
     {
-        String viewExpr =   "select previous(2, symbol) as currSymbol " +
+        String viewExpr =   "select prev(2, symbol) as currSymbol " +
                             "from " + SupportMarketDataBean.class.getName() + ".win:length(100) " +
-                            "where previous(2, price) > 100";
+                            "where prev(2, price) > 100";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
@@ -278,7 +278,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testPreviousLengthWindowDynamic()
     {
-        String viewExpr =   "select previous(intPrimitive, string) as sPrev " +
+        String viewExpr =   "select prev(intPrimitive, string) as sPrev " +
                             "from " + SupportBean.class.getName() + ".win:length(100)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -308,12 +308,12 @@ public class TestPreviousFunction extends TestCase
     public void testPreviousSortWindow()
     {
         String viewExpr = "select symbol as currSymbol, " +
-                          " previous(0, symbol) as prev0Symbol, " +
-                          " previous(1, symbol) as prev1Symbol, " +
-                          " previous(2, symbol) as prev2Symbol, " +
-                          " previous(0, price) as prev0Price, " +
-                          " previous(1, price) as prev1Price, " +
-                          " previous(2, price) as prev2Price " +
+                          " prev(0, symbol) as prev0Symbol, " +
+                          " prev(1, symbol) as prev1Symbol, " +
+                          " prev(2, symbol) as prev2Symbol, " +
+                          " prev(0, price) as prev0Price, " +
+                          " prev(1, price) as prev1Price, " +
+                          " prev(2, price) as prev2Price " +
                           "from " + SupportMarketDataBean.class.getName() + ".ext:sort('symbol', false, 100)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -346,9 +346,9 @@ public class TestPreviousFunction extends TestCase
 
     public void testInvalid()
     {
-        tryInvalid("select previous(0, average) " +
+        tryInvalid("select prev(0, average) " +
                 "from " + SupportMarketDataBean.class.getName() + ".win:length(100).stat:uni('price')",
-                "Error starting view: Previous function requires a single data window view onto the stream [select previous(0, average) from net.esper.support.bean.SupportMarketDataBean.win:length(100).stat:uni('price')]");
+                "Error starting view: Previous function requires a single data window view onto the stream [select prev(0, average) from net.esper.support.bean.SupportMarketDataBean.win:length(100).stat:uni('price')]");
     }
 
     private void tryInvalid(String statement, String expectedError)

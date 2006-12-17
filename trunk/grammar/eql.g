@@ -70,7 +70,7 @@ tokens
 	ISTREAM="istream";
 	PATTERN="pattern";
 	SQL="sql";
-	PREVIOUS="previous";
+	PREVIOUS="prev";
 	PRIOR="prior";
 	
    	NUMERIC_PARAM_RANGE;
