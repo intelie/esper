@@ -52,13 +52,6 @@ public class TestJMSAdapter extends TestCase
 
     public void testEPService()
     {
-        /* Map<String, Class> propertyTypes = new HashMap<String, Class>();
-        propertyTypes.put("myInt", Integer.class);
-        propertyTypes.put("myDouble", Double.class);
-        propertyTypes.put("myString", String.class);
-        String eventTypeAlias = "MyMapEvent";
-        config.addEventTypeAlias(eventTypeAlias, propertyTypes); */
-
         statementText = "select * from MyMapEvent.win:length(5)";
         EPStatement statement = administrator.createEQL(statementText);
         listener = new SupportUpdateListener();
@@ -87,13 +80,16 @@ public class TestJMSAdapter extends TestCase
         EventType eventType = ((OutputAdapterServiceImpl)adapterService).getEventType("jmsInputAdapterEventType");
         config.addEventTypeAlias("testInputAdapter", buildPropertyMap(eventType));
         //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time_batch(2).std:lastevent()";
-        statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time(10 sec)";
+        //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time(10 sec)";
+        statementText  = "insert into myOutputStream select intPrimitive, doublePrimitive " +
+                         "from " + SupportBean.class.getName() + ".win:length(100)";
         //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:length(5)";
         administrator.createEQL(statementText);
         //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time_batch(2).std:lastevent()";
         //administrator.createEQL(statementText);
-        sendEvent(1,1.1,"some string");
-        //sleep(100);
+        //sendEvent(1,1.1,"some string");
+        sendEvent(1,1.1);
+        sleep(10000);
     }
 
     private void sendTimeEvent(int timeIncrement){
@@ -109,6 +105,14 @@ public class TestJMSAdapter extends TestCase
         map.put("myDouble", myDouble);
         map.put("myString", myString);
         epService.getEPRuntime().sendEvent(map, "MyMapEvent");
+    }
+
+    private void sendEvent(int intPrimitive, double doublePrimitive)
+    {
+        SupportBean bean = new SupportBean();
+        bean.setIntPrimitive(intPrimitive);
+        bean.setDoublePrimitive(doublePrimitive);
+        epService.getEPRuntime().sendEvent(bean);
     }
 
     private Map buildPropertyMap(EventType eventType)
@@ -130,6 +134,234 @@ public class TestJMSAdapter extends TestCase
         catch (InterruptedException e)
         {
         }
+    }
+
+    private class SupportBean
+    {
+        private String string;
+
+        private boolean boolPrimitive;
+        private int intPrimitive;
+        private long longPrimitive;
+        private char charPrimitive;
+        private short shortPrimitive;
+        private byte bytePrimitive;
+        private float floatPrimitive;
+        private double doublePrimitive;
+
+        private Boolean boolBoxed;
+        private Integer intBoxed;
+        private Long longBoxed;
+        private Character charBoxed;
+        private Short shortBoxed;
+        private Byte byteBoxed;
+        private Float floatBoxed;
+        private Double doubleBoxed;
+
+        private SupportEnum enumValue;
+
+        public SupportBean()
+        {
+        }
+
+        public SupportBean(String string, int intPrimitive)
+        {
+            this.string = string;
+            this.intPrimitive = intPrimitive;
+        }
+
+        public String getString()
+        {
+            return string;
+        }
+
+        public boolean isBoolPrimitive()
+        {
+            return boolPrimitive;
+        }
+
+        public int getIntPrimitive()
+        {
+            return intPrimitive;
+        }
+
+        public long getLongPrimitive()
+        {
+            return longPrimitive;
+        }
+
+        public char getCharPrimitive()
+        {
+            return charPrimitive;
+        }
+
+        public short getShortPrimitive()
+        {
+            return shortPrimitive;
+        }
+
+        public byte getBytePrimitive()
+        {
+            return bytePrimitive;
+        }
+
+        public float getFloatPrimitive()
+        {
+            return floatPrimitive;
+        }
+
+        public double getDoublePrimitive()
+        {
+            return doublePrimitive;
+        }
+
+        public Boolean getBoolBoxed()
+        {
+            return boolBoxed;
+        }
+
+        public Integer getIntBoxed()
+        {
+            return intBoxed;
+        }
+
+        public Long getLongBoxed()
+        {
+            return longBoxed;
+        }
+
+        public Character getCharBoxed()
+        {
+            return charBoxed;
+        }
+
+        public Short getShortBoxed()
+        {
+            return shortBoxed;
+        }
+
+        public Byte getByteBoxed()
+        {
+            return byteBoxed;
+        }
+
+        public Float getFloatBoxed()
+        {
+            return floatBoxed;
+        }
+
+        public Double getDoubleBoxed()
+        {
+            return doubleBoxed;
+        }
+
+        public void setString(String string)
+        {
+            this.string = string;
+        }
+
+        public void setBoolPrimitive(boolean boolPrimitive)
+        {
+            this.boolPrimitive = boolPrimitive;
+        }
+
+        public void setIntPrimitive(int intPrimitive)
+        {
+            this.intPrimitive = intPrimitive;
+        }
+
+        public void setLongPrimitive(long longPrimitive)
+        {
+            this.longPrimitive = longPrimitive;
+        }
+
+        public void setCharPrimitive(char charPrimitive)
+        {
+            this.charPrimitive = charPrimitive;
+        }
+
+        public void setShortPrimitive(short shortPrimitive)
+        {
+            this.shortPrimitive = shortPrimitive;
+        }
+
+        public void setBytePrimitive(byte bytePrimitive)
+        {
+            this.bytePrimitive = bytePrimitive;
+        }
+
+        public void setFloatPrimitive(float floatPrimitive)
+        {
+            this.floatPrimitive = floatPrimitive;
+        }
+
+        public void setDoublePrimitive(double doublePrimitive)
+        {
+            this.doublePrimitive = doublePrimitive;
+        }
+
+        public void setBoolBoxed(Boolean boolBoxed)
+        {
+            this.boolBoxed = boolBoxed;
+        }
+
+        public void setIntBoxed(Integer intBoxed)
+        {
+            this.intBoxed = intBoxed;
+        }
+
+        public void setLongBoxed(Long longBoxed)
+        {
+            this.longBoxed = longBoxed;
+        }
+
+        public void setCharBoxed(Character charBoxed)
+        {
+            this.charBoxed = charBoxed;
+        }
+
+        public void setShortBoxed(Short shortBoxed)
+        {
+            this.shortBoxed = shortBoxed;
+        }
+
+        public void setByteBoxed(Byte byteBoxed)
+        {
+            this.byteBoxed = byteBoxed;
+        }
+
+        public void setFloatBoxed(Float floatBoxed)
+        {
+            this.floatBoxed = floatBoxed;
+        }
+
+        public void setDoubleBoxed(Double doubleBoxed)
+        {
+            this.doubleBoxed = doubleBoxed;
+        }
+
+        public SupportEnum getEnumValue()
+        {
+            return enumValue;
+        }
+
+        public void setEnumValue(SupportEnum enumValue)
+        {
+            this.enumValue = enumValue;
+        }
+    }
+
+    private enum SupportEnum
+    {
+        ENUM_VALUE_1,
+        ENUM_VALUE_2,
+        ENUM_VALUE_3;
+
+        public static SupportEnum getValueForEnum(int count)
+        {
+            return SupportEnum.values()[count];
+        }
+
     }
 
 }
