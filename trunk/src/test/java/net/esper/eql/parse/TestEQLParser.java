@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select prior(1, price) from " + className;
+        String expression = "select * from " + className + "(intPrimitive in [1:2])";
         //String expression = "select googlex(1) from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
@@ -159,6 +159,14 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         String preFill = "select * from " + className;
 
         assertIsValid(preFill + "(string='test',intPrimitive=20).win:lenght(100)");
+        assertIsValid(preFill + "(string in ('b', 'a'))");
+        assertIsValid(preFill + "(string in ('b'))");
+        assertIsValid(preFill + "(string in ('b', 'c', 'x'))");
+        assertIsValid(preFill + "(string in [1:2))");
+        assertIsValid(preFill + "(string in [1:2])");
+        assertIsValid(preFill + "(string in (1:2))");
+        assertIsValid(preFill + "(string in (1:2])");
+        assertIsValid(preFill + "(intPrimitive between 1 and 2)");
         assertIsValid(preFill + "().win:lenght()");
         assertIsValid(preFill + "().win:lenght(4,5)");
         assertIsValid(preFill + "().win:lenght(4)");

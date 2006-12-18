@@ -82,6 +82,9 @@ tokens
    	EVENT_FILTER_NAME_TAG;
    	EVENT_FILTER_IDENT;
    	EVENT_FILTER_PARAM;
+   	EVENT_FILTER_RANGE;
+   	EVENT_FILTER_IN;
+   	EVENT_FILTER_BETWEEN;
    	CLASS_IDENT;
    	GUARD_EXPR;
    	OBSERVER_EXPR;
@@ -618,7 +621,7 @@ filterParamSet
     ;
    
 filterParameter
-	:	eventProperty (filterParamConstant | filterParamRange)
+	:	eventProperty (filterParamConstant | filterParamBetween | filterParamRangeAndIn)
 		{ #filterParameter = #([EVENT_FILTER_PARAM,"filterParameter"], #filterParameter); }
 	;
 	
@@ -626,9 +629,34 @@ filterParamConstant
 	:	(EQUALS^ | NOT_EQUAL^ | LT^ | LE^ | GE^ | GT^) (constant | filterIdentifier)
 	;
 
-filterParamRange 
-	: 	IN_SET^ (l1:LPAREN! | l2:LBRACK!) (c:constant | f1:filterIdentifier) COLON! (constant | filterIdentifier) (r1:RPAREN! | r2:RBRACK!)
-       { #filterParamRange = #(IN_SET, #l1, #l2, #c, #f1, #r1, #r2); }
+// the 'in' can be a range - such as "in (a:b)" or "in [a:b]" or "in (a:b]" or "in [a:b)" (inclusive/exclusive)
+// the 'in' can be a set list-of-values such as "in (a, b, c)"
+filterParamRangeAndIn
+	: 	IN_SET! (LPAREN | LBRACK) (constant | filterIdentifier)	// brackets are for inclusive/exclusive
+		(
+			( col:COLON! (constant | filterIdentifier) )		// range
+			|
+			( (COMMA! (constant | filterIdentifier))* )			// list of values
+		)
+		(RPAREN | RBRACK)			
+		{ 
+			if (col != null)
+				#filterParamRangeAndIn = #([EVENT_FILTER_RANGE,"filterParamRange"], #filterParamRangeAndIn); 
+			else
+				#filterParamRangeAndIn = #([EVENT_FILTER_IN,"filterParamIn"], #filterParamRangeAndIn);
+		}
+	;    
+	
+filterParamBetween	// between being the same RANGE_CLOSED as "in [low:high] range as above with hard brackets 
+	: 	BETWEEN! (constant | filterIdentifier) AND_EXPR! (constant | filterIdentifier)
+		{ #filterParamBetween = #([EVENT_FILTER_BETWEEN,"filterParamBetween"], #filterParamBetween); }
+	;    
+
+// change syntax to (a between (a:4))
+// more complex parsing logic
+
+filterParamInList
+	: 	(c:constant | f1:filterIdentifier) (COMMA! (constant | filterIdentifier))*
 	;    
 
 filterIdentifier

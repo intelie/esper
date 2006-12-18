@@ -114,6 +114,31 @@ public class TestASTFilterSpecHelper extends TestCase
         assertEquals("myname", getEventNameTag(expression));
     }
 
+    public void testValidBetween() throws Exception
+    {
+        String expression = SupportBean.class.getName() + "(intPrimitive between 4 and 6)";
+
+        FilterSpec spec = getFilterSpec(expression, null);
+        FilterSpecParam param = spec.getParameters().get(0);
+        assertEquals("intPrimitive", param.getPropertyName());
+        assertEquals(FilterOperator.RANGE_CLOSED, param.getFilterOperator());
+    }
+
+    public void testValidInListOfValues() throws Exception
+    {
+        String expression = SupportBean.class.getName() + "(intPrimitive in (3, 5, 7))";
+
+        FilterSpec spec = getFilterSpec(expression, null);
+        FilterSpecParam param = spec.getParameters().get(0);
+        assertEquals("intPrimitive", param.getPropertyName());
+        assertEquals(FilterOperator.IN_LIST_OF_VALUES, param.getFilterOperator());
+        FilterSpecParamListOfValues vparam = (FilterSpecParamListOfValues) param;
+        assertEquals(3, vparam.getListofValues().size());
+        assertEquals(3, vparam.getListofValues().get(0));
+        assertEquals(5, vparam.getListofValues().get(1));
+        assertEquals(7, vparam.getListofValues().get(2));
+    }
+
     public void testValidRangeUseResult() throws Exception
     {
         String expression = "myname=" + SupportBean.class.getName() + "(intPrimitive in (asName.intPrimitive:asName.intBoxed))";

@@ -5,6 +5,8 @@ Esper Changelog
 Changes in version 1.4.0
 ----------------------
 * (EQL) Support for 'prior' and 'prev' (previous) operator (Enhancement request ESPER-25)
+* Added CSV file reader and simulator (ESPER-6 Input Adapter for reading CSV files)
+* fixed issue ESPER-69 "Pull throws UnsupportedOperationException for statement not selecting wildcard"
 
 
 Changes in version 1.3.0

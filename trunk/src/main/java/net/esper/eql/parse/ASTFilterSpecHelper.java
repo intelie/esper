@@ -8,9 +8,6 @@ import net.esper.type.PrimitiveValueFactory;
 import net.esper.type.PrimitiveValueType;
 import net.esper.eql.generated.EqlTokenTypes;
 import net.esper.event.EventAdapterService;
-import net.esper.event.EventAdapterException;
-import net.esper.event.EventAdapterService;
-import net.esper.core.EPAdministratorImpl;
 import net.esper.util.JavaClassHelper;
 import antlr.collections.AST;
 
@@ -136,7 +133,15 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
 
         AST filterCompareNode = filterParamNode.getFirstChild().getNextSibling();
         int nodeType = filterCompareNode.getType();
-        if (nodeType == IN_SET)
+
+        // According to the comparison node type, create the parameter representing the type of compare to do
+        // Regular compare functions
+        if ((nodeType == EQUALS) || (nodeType == NOT_EQUAL) || (nodeType == LT) || (nodeType == LE) ||
+                 (nodeType == GT) || (nodeType == GE))
+        {
+            return createRelationalOpParam(propertyName, primitiveValue, filterCompareNode);
+        }
+        else if (nodeType == EVENT_FILTER_RANGE)
         {
             if (!JavaClassHelper.isNumeric(propertyType))
             {
@@ -147,10 +152,20 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
             }
             return createRangeParam(propertyName, primitiveValue, filterCompareNode);
         }
-        else if ((nodeType == EQUALS) || (nodeType == NOT_EQUAL) || (nodeType == LT) || (nodeType == LE) ||
-                 (nodeType == GT) || (nodeType == GE))
+        else if (nodeType == EVENT_FILTER_BETWEEN)
         {
-            return createNonRangeParam(propertyName, primitiveValue, filterCompareNode);
+            if (!JavaClassHelper.isNumeric(propertyType))
+            {
+                throw new ASTFilterSpecValidationException("Property named '" + propertyName
+                        + "' of type '" +
+                        propertyType.getName() +
+                        "' not numeric as required for ranges");
+            }
+            return createBetweenParam(propertyName, primitiveValue, filterCompareNode);
+        }
+        else if (nodeType == EVENT_FILTER_IN)
+        {
+            return createInParam(propertyName, primitiveValue, filterCompareNode);
         }
         else
         {
@@ -201,7 +216,7 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
         return buffer.toString();
     }
 
-    private static FilterSpecParam createNonRangeParam(String propertyName, PrimitiveValue primitiveValue, AST filterParamNode)
+    private static FilterSpecParam createRelationalOpParam(String propertyName, PrimitiveValue primitiveValue, AST filterParamNode)
         throws ASTFilterSpecValidationException
     {
         FilterOperator operator = FilterOperator.parseComparisonOperator(filterParamNode.getText());
@@ -239,7 +254,7 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
                     "' for property '" +
                     propertyName +
                     "' failed with error:" + ex.getMessage();
-            log.debug(".createNonRangeParam " + message, ex);
+            log.debug(".createRelationalOpParam " + message, ex);
             throw new ASTFilterSpecValidationException(ex.getMessage());
         }
         Object value = primitiveValue.getValueObject();
@@ -278,6 +293,79 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
         FilterOperator operator = FilterOperator.parseRangeOperator(lowInclusive, highInclusive);
         
         return new FilterSpecParamRange(propertyName, operator, valueMin, valueMax);
+    }
+
+    private static FilterSpecParam createBetweenParam(String propertyName, PrimitiveValue primitiveValue, AST filterParamNode)
+        throws ASTFilterSpecValidationException
+    {
+        // Deal with Between (closed range)
+        AST ast = filterParamNode.getFirstChild();
+
+        if  ((ast.getType() != EVENT_FILTER_IDENT) &&
+             (!ASTConstantHelper.canConvert(ast.getType(), primitiveValue.getType())) )
+        {
+            String message = getConversionErrorMsg(ast.getType(), primitiveValue.getType(), propertyName);
+            throw new ASTFilterSpecValidationException(message);
+        }
+        FilterSpecParamRangeValue valueMin = getRangePoint(ast, primitiveValue);
+
+        ast = ast.getNextSibling();
+        if ((ast.getType() != EVENT_FILTER_IDENT) &&
+            (!ASTConstantHelper.canConvert(ast.getType(), primitiveValue.getType())) )
+        {
+            String message = getConversionErrorMsg(ast.getType(), primitiveValue.getType(), propertyName);
+            throw new ASTFilterSpecValidationException(message);
+        }
+        FilterSpecParamRangeValue valueMax = getRangePoint(ast, primitiveValue);
+
+        return new FilterSpecParamRange(propertyName, FilterOperator.RANGE_CLOSED, valueMin, valueMax);
+    }
+
+    private static FilterSpecParam createInParam(String propertyName, PrimitiveValue primitiveValue, AST filterParamNode)
+        throws ASTFilterSpecValidationException
+    {
+        // Deal with an 'in' list of values
+        AST ast = filterParamNode.getFirstChild();
+
+        do
+        {
+            // Skipping brackets
+            if ((ast.getType() == LBRACK) || (ast.getType() == LPAREN) ||
+                (ast.getType() == RPAREN) || (ast.getType() == RPAREN))
+            {
+                ast = ast.getNextSibling();
+                continue;
+            }
+
+            // attempt to see if a constant matches types
+            if  ((ast.getType() != EVENT_FILTER_IDENT) &&
+                 (!ASTConstantHelper.canConvert(ast.getType(), primitiveValue.getType())) )
+            {
+                String message = getConversionErrorMsg(ast.getType(), primitiveValue.getType(), propertyName);
+                throw new ASTFilterSpecValidationException(message);
+            }
+
+            if (ast.getType() == EVENT_FILTER_IDENT)
+            {
+                String eventAsName = ast.getFirstChild().getText();
+                AST propertyRoot = ast.getFirstChild().getNextSibling().getFirstChild();
+                String eventProperty = getPropertyName(propertyRoot);
+                //return new RangeValueEventProp(eventAsName, eventProperty);
+            }
+            else
+            {
+                // Parse text node
+                String value = ast.getText();
+                primitiveValue.parse(value);
+                double dbl = ((Number) primitiveValue.getValueObject()).doubleValue();
+                //return new RangeValueDouble(dbl);
+            }
+
+            ast = ast.getNextSibling();
+        }
+        while (ast != null);
+
+        return new FilterSpecParamListOfValues(propertyName, FilterOperator.IN_LIST_OF_VALUES, null);
     }
 
     private static FilterSpecParamRangeValue getRangePoint(AST ast, PrimitiveValue primitiveValue)

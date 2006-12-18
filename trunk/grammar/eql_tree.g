@@ -255,7 +255,9 @@ filterParamComparator
 	|	#(LE filterAtom)
 	|	#(GT filterAtom)
 	|	#(GE filterAtom)
-	|	#(IN_SET (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
+	|	#(EVENT_FILTER_RANGE (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
+	|	#(EVENT_FILTER_IN (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier)* (RPAREN|RBRACK))
+	|	#(EVENT_FILTER_BETWEEN (constant|filterIdentifier) (constant|filterIdentifier))
 	;
 	
 filterAtom

@@ -715,6 +715,13 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals(sql, dbSpec.getSqlWithSubsParams());
     }
 
+    public void testRangeBetweenAndIn() throws Exception
+    {
+        String className = SupportBean.class.getName();
+        String expression = "select * from " + className + "(intPrimitive in [1:2], intBoxed in (1,2), doubleBoxed between 2 and 3)";
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+    }
+
     private double tryInterval(String interval) throws Exception
     {
         String text = "select * from " + SupportBean.class.getName() + ".win:time(" + interval + ")";
