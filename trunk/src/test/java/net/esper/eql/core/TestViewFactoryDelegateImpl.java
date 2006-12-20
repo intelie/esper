@@ -24,16 +24,19 @@ public class TestViewFactoryDelegateImpl extends TestCase
 
         ViewFactory factory1 = new TimeWindowViewFactory();
         ViewFactory factory2 = new SizeViewFactory();
-        factories[1] = new ViewFactoryChain(SupportEventTypeFactory.createBeanType(SupportBean.class),
+        factories[0] = new ViewFactoryChain(SupportEventTypeFactory.createBeanType(SupportBean.class),
                 Arrays.asList(new ViewFactory[] {factory1, factory2}));
+        factories[1] = new ViewFactoryChain(SupportEventTypeFactory.createBeanType(SupportBean.class),
+                Arrays.asList(new ViewFactory[] {factory1}));
 
         delegate = new ViewResourceDelegateImpl(factories);
     }
 
     public void testRequest()
     {
-        assertTrue(delegate.requestCapability(1, new SupportViewCapability(), null));
-        assertFalse(delegate.requestCapability(1, new ViewCapDataWindowAccess(1), null));
+        assertFalse(delegate.requestCapability(1, new SupportViewCapability(), null));
+        assertFalse(delegate.requestCapability(0, new ViewCapDataWindowAccess(1), null));
+        assertTrue(delegate.requestCapability(1, new ViewCapDataWindowAccess(1), null));
     }
 
     private class SupportViewCapability implements ViewCapability

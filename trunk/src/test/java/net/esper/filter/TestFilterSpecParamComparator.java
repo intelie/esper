@@ -28,6 +28,7 @@ public class TestFilterSpecParamComparator extends TestCase
         FilterValueSetParamImpl param6 = new FilterValueSetParamImpl("e", FilterOperator.RANGE_CLOSED, null);
         FilterValueSetParamImpl param7 = new FilterValueSetParamImpl("f", FilterOperator.GREATER, null);
         FilterValueSetParamImpl param8 = new FilterValueSetParamImpl("g", FilterOperator.NOT_EQUAL, null);
+        FilterValueSetParamImpl param9 = new FilterValueSetParamImpl("h", FilterOperator.IN_LIST_OF_VALUES, null);
 
         // Compare same comparison types
         assertTrue(comparator.compare(param1, param2) == -1);
@@ -51,6 +52,11 @@ public class TestFilterSpecParamComparator extends TestCase
 
         assertTrue(comparator.compare(param4, param1) == 1);
         assertTrue(comparator.compare(param1, param4) == -1);
+
+        // 'in' is before all but after equals
+        assertTrue(comparator.compare(param9, param4) == -1);
+        assertTrue(comparator.compare(param9, param9) == 0);
+        assertTrue(comparator.compare(param9, param1) == 1);
     }
 
     public void testCompareAll()

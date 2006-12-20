@@ -51,6 +51,13 @@ public class IndexFactory
             return index;
         }
 
+        // Handle all IN comparisons
+        if (filterOperator == FilterOperator.IN_LIST_OF_VALUES)
+        {
+            index = new FilterParamIndexIn(propertyName, eventType);
+            return index;
+        }
+
         throw new IllegalArgumentException("Cannot create filter index instance for filter operator " + filterOperator);
     }
 }

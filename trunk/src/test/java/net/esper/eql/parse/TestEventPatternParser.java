@@ -19,6 +19,7 @@ public class TestEventPatternParser extends TestCase implements EqlTokenTypes
         SupportParserHelper.displayAST(ast);
     }
 
+    // TODO
     public void testInvalidCases() throws Exception
     {
         // Base vocabulary
@@ -51,7 +52,7 @@ public class TestEventPatternParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("e(a in ((:5)))");
         assertIsInvalid("e(a in [[:5)");
         assertIsInvalid("e(a in [1:5:8]");
-        assertIsInvalid("e(a in [1,2])");
+        assertIsInvalid("e(a in [1,,2])");
         assertIsInvalid("e(a in [1:2]");
         assertIsInvalid("e(a in [1:2] b=3)");
 

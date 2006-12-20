@@ -86,7 +86,7 @@ public class ASTConstantHelper implements EqlEvalTokenTypes
             case STRING_TYPE:   return StringValue.parseString(node.getText());
             case NULL_TYPE:     return null;
             default:
-                throw new IllegalArgumentException("Unexpected constant of type " + node.getType() + " encountered, this class supports only primitgive types");
+                throw new IllegalArgumentException("Unexpected constant of non-primitve type " + node.getType() + " encountered");
         }
     }
 }

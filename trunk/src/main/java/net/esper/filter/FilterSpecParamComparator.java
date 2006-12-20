@@ -16,6 +16,7 @@ public class FilterSpecParamComparator implements Comparator<FilterValueSetParam
     private static final FilterOperator[] FilterOperator_SortOrder =
             {
             FilterOperator.EQUAL,
+            FilterOperator.IN_LIST_OF_VALUES,
             FilterOperator.RANGE_OPEN,
             FilterOperator.RANGE_HALF_OPEN,
             FilterOperator.RANGE_HALF_CLOSED,
@@ -23,7 +24,7 @@ public class FilterSpecParamComparator implements Comparator<FilterValueSetParam
             FilterOperator.LESS,
             FilterOperator.LESS_OR_EQUAL,
             FilterOperator.GREATER_OR_EQUAL,
-            FilterOperator.GREATER
+            FilterOperator.GREATER,
      };
 
     private static int[] filterSortOrder;

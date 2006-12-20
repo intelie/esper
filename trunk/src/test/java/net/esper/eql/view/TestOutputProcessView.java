@@ -23,8 +23,7 @@ public class TestOutputProcessView extends TestCase
     {
         resultSetProcessor = new SupportResultSetProcessor();
         outputProcessViewUpdate = new OutputProcessView(resultSetProcessor, 1, null, null);
-        outputProcessViewProcess = new OutputProcessView(resultSetProcessor, 2, null, null);
-        
+        outputProcessViewProcess = new OutputProcessView(resultSetProcessor, 2, null, null);        
         
         childViewNoJoin = new SupportSchemaNeutralView();
         outputProcessViewUpdate.addView(childViewNoJoin);
@@ -48,19 +47,6 @@ public class TestOutputProcessView extends TestCase
 
         assertSame(newData[0], childViewNoJoin.getLastNewData()[0]);
         assertSame(oldData[0], childViewNoJoin.getLastOldData()[0]);
-    }
-
-    public void testIterator()
-    {
-        try
-        {
-            outputProcessViewUpdate.iterator();
-            fail();
-        }
-        catch (UnsupportedOperationException ex)
-        {
-            // expected
-        }
     }
 
     public void testProcess()

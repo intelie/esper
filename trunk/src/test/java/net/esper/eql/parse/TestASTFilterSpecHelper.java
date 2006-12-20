@@ -8,7 +8,6 @@ import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.filter.*;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.util.DebugFacility;
 
 import org.apache.commons.logging.Log;
@@ -30,6 +29,9 @@ public class TestASTFilterSpecHelper extends TestCase
         assertIsInvalid(classname + "(intPrimitive=false)");
         assertIsInvalid(classname + "(string in [2:2])");
         assertIsInvalid(classname + "(string=\"a\", string=\"b\")");        // Same attribute twice should be a problem
+        assertIsInvalid(classname + "(string in (true, false))");
+        assertIsInvalid(classname + "(string in (1,2,3))");
+        assertIsInvalid(classname + "(boolean in ('a', 'x'))");
     }
 
     public void testValidNoParams() throws Exception
@@ -126,17 +128,23 @@ public class TestASTFilterSpecHelper extends TestCase
 
     public void testValidInListOfValues() throws Exception
     {
-        String expression = SupportBean.class.getName() + "(intPrimitive in (3, 5, 7))";
+        String expression = SupportBean.class.getName() + "(intPrimitive in (3, 5, asName.intBoxed))";
 
-        FilterSpec spec = getFilterSpec(expression, null);
+        Map<String, EventType> taggedEventTypes = new HashMap<String, EventType>();
+        taggedEventTypes.put("asName", SupportEventTypeFactory.createBeanType(SupportBean.class));
+
+        FilterSpec spec = getFilterSpec(expression, taggedEventTypes);
         FilterSpecParam param = spec.getParameters().get(0);
         assertEquals("intPrimitive", param.getPropertyName());
         assertEquals(FilterOperator.IN_LIST_OF_VALUES, param.getFilterOperator());
-        FilterSpecParamListOfValues vparam = (FilterSpecParamListOfValues) param;
-        assertEquals(3, vparam.getListofValues().size());
-        assertEquals(3, vparam.getListofValues().get(0));
-        assertEquals(5, vparam.getListofValues().get(1));
-        assertEquals(7, vparam.getListofValues().get(2));
+        FilterSpecParamIn vparam = (FilterSpecParamIn) param;
+        assertEquals(3, vparam.getListOfValues().size());
+        assertEquals(3, vparam.getListOfValues().get(0).getFilterValue(null));
+        assertEquals(5, vparam.getListOfValues().get(1).getFilterValue(null));
+        
+        InSetOfValuesEventProp propValue = (InSetOfValuesEventProp) vparam.getListOfValues().get(2);
+        assertEquals("asName", propValue.getResultEventAsName());
+        assertEquals("intBoxed", propValue.getResultEventProperty());
     }
 
     public void testValidRangeUseResult() throws Exception
