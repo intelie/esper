@@ -1,0 +1,67 @@
+<project name="esperio" default="" basedir=".">
+
+	<!-- Name of project and version, used to create filenames -->
+	<property name="Name" value="Esperio"/>
+	<property name="name" value="esperio"/>
+	<property name="version" value="1.3.0"/>
+	<property name="patchlevel" value=""/>
+	<property name="fullversion" value="${version}${patchlevel}"/>
+	<property name="fullname" value="${name}-${fullversion}"/>
+
+	<property name="dist.dir" value=".."/>
+	<property name="lib.dir" value="../lib"/>
+	<property name="src.dir" value="src/main/java"/>
+	<property name="doc.dir" value="doc"/>
+	<property name="doc.api.dir" value="${doc.dir}/api"/>
+	<property name="dist.api.dir" value="doc/javadoc/api"/>
+	<property name="javadoc_link" value="http://java.sun.com/j2se/1.5.0/docs/api"/>
+
+	<property name="dist_excludes" value="$target/site/**, target/*classes*/**, target/*reports*/**, eg/target/**, intellij/**, doc/reference/support/**, eg/terminalsvc/terminalsvc-ear/target/example-terminalsvc-ear-1.0/**"/>
+
+	<path id="lib.class.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="../">
+			<include name="**/esper*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="source_zip" description="Zip up dev artifacts">
+		<echo message="Building a zip of the development artifacts" />
+		<zip zipfile="${dist.dir}/${fullname}-dev-artifacts.zip" basedir="." excludes="target/**, eg/target/**, lib/**, doc/javadoc/**, doc/build/**, doc/reference/support/**,doc/reference/build/**, **/esper*.jar, **/*.ear, **/*.war" />
+	</target>
+	
+	<target name="touch_all" description="Update timestamp all artifacts">
+		<touch>
+			<fileset dir="src">
+				<include name="**/*.java"/>
+			</fileset>
+		</touch>
+	</target>
+
+	<target name="javadoc" description="Generate JavaDoc - Maven Plug-in not working yet">
+			<javadoc
+			classpathref="lib.class.path"
+			destdir="${dist.api.dir}"
+			use="true"
+			protected="true"
+			version="true"
+			windowtitle="${Name} API Documentation"
+			Overview="${doc.api.dir}/package.html"
+			stylesheetfile="${doc.api.dir}/jdstyle.css"
+			doctitle="${Name} API Documentation"
+			link="${javadoc_link}">
+
+			<packageset dir="${src.dir}" defaultexcludes="yes">
+				<include name="net/esper/**"/>
+			</packageset>
+
+			<group title="Esper Adapter API"
+				packages="net.esper.adapter,net.esper.adapter.csv"/>
+						
+		</javadoc>
+		<copy file="${doc.api.dir}/package.html" todir="${dist.api.dir}"/>
+	</target>
+	
+</project>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+                      "../support/docbook-dtd/docbookx.dtd" [
+	<!ENTITY adapter_overview SYSTEM "modules/adapter_overview.xml">
+	<!ENTITY adapter_csv SYSTEM "modules/adapter_csv.xml">
+]>
+<book lang="en">
+	<bookinfo>
+		<title>Esper Adapters - Java Event Stream Processor </title>
+		<subtitle>Esper Adapter Reference Documentation</subtitle>
+		<releaseinfo>1.3.0</releaseinfo>
+	</bookinfo>
+	<toc/>
+	<preface id="preface" revision="1">
+		<title>Preface</title>
+		<para>
+			Esper Adapters contains all input and output adapters for the Esper Java event stream processor.
+        </para>
+        
+		<para>
+			If you are new to Esper, the Esper reference manual should be your first stop. If you are looking for 
+		</para>
+			
+		<para>
+			If you are looking for information on a specific adapter, you are at the right spot.
+		</para>
+
+	</preface>
+
+    &adapter_overview;
+    
+    &adapter_csv;
+
+</book>
