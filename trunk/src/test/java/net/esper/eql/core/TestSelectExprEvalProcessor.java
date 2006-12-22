@@ -9,6 +9,7 @@ import net.esper.event.EventType;
 import net.esper.event.EventAdapterService;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.SupportSelectExprFactory;
+import net.esper.support.eql.SupportStreamTypeSvc1Stream;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.eql.spec.InsertIntoDesc;
@@ -24,13 +25,13 @@ public class TestSelectExprEvalProcessor extends TestCase
         List<SelectExprElementNamedSpec> selectList = SupportSelectExprFactory.makeNoAggregateSelectList();
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
 
-        methodOne = new SelectExprEvalProcessor(selectList, null, eventAdapterService);
+        methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService);
 
         InsertIntoDesc insertIntoDesc = new InsertIntoDesc(true, "Hello");
         insertIntoDesc.add("a");
         insertIntoDesc.add("b");
 
-        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, eventAdapterService);
+        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService);
     }
 
     public void testGetResultEventType()

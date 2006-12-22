@@ -1,16 +1,16 @@
 package net.esper.event;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Implementation of the {@link EventType} interface for handling plain Maps containing name value pairs.
  */
 class MapEventType implements EventType
 {
-    private final String[] propertyNames;       // Cache an array of property names so not to construct one frequently
+	private final String[] propertyNames;       // Cache an array of property names so not to construct one frequently
     private final Map<String, Class> types;     // Mapping of property name and type
     private Map<String, EventPropertyGetter> propertyGetters;   // Mapping of property name and getters
     private int hashCode;

@@ -1,10 +1,8 @@
 package net.esper.event;
 
-import org.w3c.dom.Node;
-
 import java.util.Map;
 
-import net.esper.client.ConfigurationEventTypeLegacy;
+import org.w3c.dom.Node;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -33,7 +31,19 @@ public interface EventAdapterService
      * @throws EventAdapterException if alias already exists and doesn't match property type info
      */
     public EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes) throws EventAdapterException;
-
+    
+    
+    /**
+     * Add an event type with the given alias and the given underlying event type, 
+     * as well as the additional given properties.
+     * @param eventTypeAlias is the alias name for the event type
+     * @param underlyingEventType is the event type for the event type that this wrapper wraps
+     * @param propertyTypes is the names and types of any additional properties 
+     * @return eventType is the type added
+     * @throws EventAdapterException if alias already exists and doesn't match this type's info
+     */
+    public EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Class> propertyTypes) throws EventAdapterException;
+    
     /**
      * Creates a new anonymous EventType instance for an event type that contains a map of name value pairs.
      * The method accepts a Map that contains the property names as keys and Class objects as the values.
@@ -64,6 +74,15 @@ public interface EventAdapterService
      * @return EventBean instance
      */
     public EventBean createMapFromValues(Map<String, Object> properties, EventType eventType);
+    
+    /**
+     * Creata a wrapper around an event and some additional properties
+     * @param event is the underlying event
+     * @param properties are the additional properties
+     * @param eventType os the type metadata for any wrappers of this type
+     * @return
+     */
+    public EventBean createWrapper(Object event, Map<String, Object> properties, EventType eventType);
 
     /**
      * Create an aggregate event wrapper bean from a set of named events stored in a Map.
@@ -153,4 +172,14 @@ public interface EventAdapterService
      * @return wrapper for composite event
      */
     public EventBean adapterForCompositeEvent(EventType eventType, Map<String, EventBean> taggedEvents);
+
+    /**
+     * Create a new anonymous event type with the given underlying event type, 
+     * as well as the additional given properties.
+     * @param underlyingEventType is the event type for the event type that this wrapper wraps
+     * @param propertyTypes is the names and types of any additional properties 
+     * @return eventType is the type created
+     * @throws EventAdapterException if alias already exists and doesn't match this type's info
+     */
+    public EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Class> propertyTypes) throws EventAdapterException;
 }

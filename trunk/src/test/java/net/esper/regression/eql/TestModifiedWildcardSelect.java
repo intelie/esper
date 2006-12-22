@@ -1,6 +1,8 @@
 package net.esper.regression.eql;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -20,7 +22,7 @@ public class TestModifiedWildcardSelect extends TestCase
 	private EPServiceProvider epService;
 	private SupportUpdateListener listener;
 	private SupportUpdateListener insertListener;
-	private Set<String> propertyNames;
+	private Map<String, Object> properties;
 
 	protected void setUp()
 	{
@@ -28,7 +30,7 @@ public class TestModifiedWildcardSelect extends TestCase
 		epService.initialize();
 		listener = new SupportUpdateListener();
 		insertListener = new SupportUpdateListener();
-		propertyNames = new HashSet<String>();
+		properties = new HashMap<String, Object>();
 	}
 	
 	public void testSingle() throws Exception
@@ -54,7 +56,7 @@ public class TestModifiedWildcardSelect extends TestCase
 		statement = epService.getEPAdministrator().createEQL(textTwo);
 		statement.addListener(insertListener);
 		assertSimple();
-		assertPropertyNames(insertListener);
+		assertProperties(insertListener);
 	}
 	
 	public void testJoinInsertInto() throws InterruptedException
@@ -73,7 +75,7 @@ public class TestModifiedWildcardSelect extends TestCase
 		statement.addListener(insertListener);
 		
 		assertNoCommonProperties();
-		assertPropertyNames(insertListener);
+		assertProperties(insertListener);
 	}
 
 	public void testJoinNoCommonProperties() throws Exception
@@ -136,15 +138,11 @@ public class TestModifiedWildcardSelect extends TestCase
 		sendSimpleEvent("string");
 		sendMarketEvent("string");
 		Thread.sleep(50);
-		propertyNames.add("concat");
-		propertyNames.add("eventOne.myString");
-		propertyNames.add("eventOne.myInt");
-		propertyNames.add("eventTwo.symbol");
-		propertyNames.add("eventTwo.price");
-		propertyNames.add("eventTwo.volume");
-		propertyNames.add("eventTwo.feed");
-		assertPropertyNames(listener);
-		assertEquals("stringstring", listener.getLastNewData()[0].get("concat"));
+		EventBean event = listener.getLastNewData()[0];
+		properties.put("concat", "stringstring");
+		assertProperties(listener);
+		assertNotNull(event.get("eventOne"));
+		assertNotNull(event.get("eventTwo"));
 	}
 	
 	private void assertSimple() throws InterruptedException
@@ -152,27 +150,30 @@ public class TestModifiedWildcardSelect extends TestCase
 		sendSimpleEvent("string");
 		Thread.sleep(50);
 		assertEquals("stringstring", listener.getLastNewData()[0].get("concat"));
-		propertyNames.add("concat");
-		propertyNames.add("myString");
-		propertyNames.add("myInt");
-		assertPropertyNames(listener);
+		properties.put("concat", "stringstring");
+		properties.put("myString", "string");
+		properties.put("myInt", 0);
+		assertProperties(listener);
 	}
 
 	private void assertCommonProperties() throws InterruptedException
 	{
 		sendABEvents("string");
 		Thread.sleep(50);
-		propertyNames.add("concat");
-		propertyNames.add("eventOne.id");
-		propertyNames.add("eventTwo.id");
-		assertPropertyNames(listener);
-		assertEquals("stringstring", listener.getLastNewData()[0].get("concat"));
+		EventBean event = listener.getLastNewData()[0];
+		properties.put("concat", "stringstring");
+		assertProperties(listener);
+		assertNotNull(event.get("eventOne"));
+		assertNotNull(event.get("eventTwo"));
 	}
 
-	private void assertPropertyNames(SupportUpdateListener listener)
+	private void assertProperties(SupportUpdateListener listener)
 	{
 		EventBean event = listener.getLastNewData()[0];
-		assertEquals(propertyNames, new HashSet<String>(Arrays.asList(event.getEventType().getPropertyNames())));
+		for(String property : properties.keySet())
+		{
+			assertEquals(properties.get(property), event.get(property));
+		}
 	}
 	
 	private void sendSimpleEvent(String s)

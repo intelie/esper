@@ -10,6 +10,7 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.SupportAggregationService;
 import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.support.eql.SupportSelectExprFactory;
+import net.esper.support.eql.SupportStreamTypeSvc1Stream;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.eql.core.ResultSetProcessorRowPerGroup;
@@ -25,7 +26,7 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
     public void setUp() throws Exception
     {
         SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"),
-                null, SupportEventAdapterService.getService());
+        		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService());
         supportAggregationService = new SupportAggregationService();
 
         List<ExprNode> groupKeyNodes = new LinkedList<ExprNode>();

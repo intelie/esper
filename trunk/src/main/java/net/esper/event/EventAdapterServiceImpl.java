@@ -115,6 +115,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
     {
         return new MapEventType(propertyTypes, this);
     }
+    
+    public EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Class> propertyTypes) throws EventAdapterException
+    {
+    	return new WrapperEventType(underlyingEventType, propertyTypes, this);
+    }
 
     public EventBean adapterForBean(Object event)
     {
@@ -223,7 +228,35 @@ public class EventAdapterServiceImpl implements EventAdapterService
         xmldomRootElementNames.put(configurationEventTypeXMLDOM.getRootElementName(), type);
     }
 
-    public EventType createAnonymousMapTypeUnd(Map<String, EventType> propertyTypes)
+    public EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Class> propertyTypes) throws EventAdapterException 
+	{
+	    WrapperEventType newEventType = new WrapperEventType(underlyingEventType, propertyTypes, this);
+	
+	    EventType existingType = eventTypes.get(eventTypeAlias);
+	    if (existingType != null)
+	    {
+	        // The existing type must be the same as the type created
+	        if (!newEventType.equals(existingType))
+	        {
+	            throw new EventAdapterException("Event type named '" + eventTypeAlias +
+	                    "' has already been declared with differing type information");
+	        }
+	
+	        // Since it's the same, return the existing type
+	        return existingType;
+	    }
+	
+	    eventTypes.put(eventTypeAlias, newEventType);
+	
+	    return newEventType;
+	}
+
+	public EventBean createWrapper(Object event, Map<String, Object> properties, EventType eventType) 
+	{
+		return new WrapperEventBean(event, properties, eventType);
+	}
+
+	public EventType createAnonymousMapTypeUnd(Map<String, EventType> propertyTypes)
     {
         Map<String, Class> underlyingTypes = getUnderlyingTypes(propertyTypes);
         return this.createAnonymousMapType(underlyingTypes);

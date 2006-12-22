@@ -16,6 +16,7 @@ import net.esper.eql.core.SelectExprProcessor;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.SupportSelectExprFactory;
+import net.esper.support.eql.SupportStreamTypeSvc1Stream;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.event.SupportEventBeanFactory;
 
@@ -30,7 +31,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void setUp() throws Exception
     {
-        selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, SupportEventAdapterService.getService());
+        selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService());
         orderByProcessor = null;
 
 		outputLimitSpecAll = new OutputLimitSpec(1, DisplayLimit.ALL);

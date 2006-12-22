@@ -30,7 +30,8 @@ public class SelectExprProcessorFactory
     public static SelectExprProcessor getProcessor(List<SelectExprElementNamedSpec> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
-                                                   StreamTypeService typeService, EventAdapterService eventAdapterService)
+                                                   StreamTypeService typeService, 
+                                                   EventAdapterService eventAdapterService)
         throws ExprValidationException
     {
     	// Wildcard not allowed when insert into specifies column order
@@ -48,10 +49,11 @@ public class SelectExprProcessorFactory
                 log.debug(".getProcessor Using SelectExprJoinWildcardProcessor");
                 return new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc);
             }
-            // Single-table selects don't need extra processing
-            else
+            // Single-table selects with no insert-into 
+            // don't need extra processing
+            else if (insertIntoDesc == null)
             {
-                log.debug(".getProcessor Using no select expr processor");
+            	log.debug(".getProcessor Using no select expr processor");
                 return null;
             }
         }
@@ -61,7 +63,7 @@ public class SelectExprProcessorFactory
 
         // Construct processor
         log.debug(".getProcessor Using SelectExprEvalProcessor");
-        return new SelectExprEvalProcessor(selectionList, insertIntoDesc, eventAdapterService);
+        return new SelectExprEvalProcessor(selectionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService);
     }
 
     /**

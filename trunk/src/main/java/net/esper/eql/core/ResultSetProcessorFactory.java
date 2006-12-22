@@ -1,20 +1,24 @@
 package net.esper.eql.core;
 
-import net.esper.collection.Pair;
-import net.esper.event.EventAdapterService;
-import net.esper.event.EventType;
-import net.esper.eql.expression.ExprIdentNode;
-import net.esper.eql.expression.ExprNode;
-import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.expression.ExprNodeIdentifierVisitor;
-import net.esper.eql.expression.ExprAggregateNode;
-import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectClauseSpec;
-import net.esper.eql.spec.SelectExprElementUnnamedSpec;
-import net.esper.eql.spec.SelectExprElementNamedSpec;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
-import java.util.*;
+import net.esper.collection.Pair;
+import net.esper.eql.expression.ExprAggregateNode;
+import net.esper.eql.expression.ExprNode;
+import net.esper.eql.expression.ExprNodeIdentifierVisitor;
+import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.spec.InsertIntoDesc;
+import net.esper.eql.spec.OutputLimitSpec;
+import net.esper.eql.spec.SelectClauseSpec;
+import net.esper.eql.spec.SelectExprElementNamedSpec;
+import net.esper.eql.spec.SelectExprElementUnnamedSpec;
+import net.esper.event.EventAdapterService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,24 +89,6 @@ public class ResultSetProcessorFactory
         // Expand any instances of select-clause aliases in the
         // order-by clause with the full expression
         expandAliases(selectClauseSpec.getSelectList(), orderByList);
-        
-        // Expand the wildcard 
-        if(wildcardExpandRequired(selectClauseSpec, insertIntoDesc, typeService))
-        {
-        	log.debug(".getProcessor expanding wildcard select");
-        	for(int i = 0; i < typeService.getEventTypes().length; i++)
-        	{
-        		EventType eventType = typeService.getEventTypes()[i];
-        		String streamName = typeService.getStreamNames()[i];
-        		for(String propertyName : eventType.getPropertyNames())
-        		{
-        			ExprIdentNode exprNode = streamName != null ?
-        					new ExprIdentNode(propertyName, streamName) :
-        						new ExprIdentNode(propertyName);
-        			selectClauseSpec.getSelectList().add(new SelectExprElementUnnamedSpec(exprNode, null));
-        		}
-        	}
-        }
 
         // Validate selection expressions, if any (could be wildcard i.e. empty list)
         List<SelectExprElementNamedSpec> namedSelectionList = new LinkedList<SelectExprElementNamedSpec>();
@@ -458,16 +444,5 @@ public class ResultSetProcessorFactory
     	}
     }
 
-    private static boolean wildcardExpandRequired(SelectClauseSpec selectClause, InsertIntoDesc insertIntoDesc, StreamTypeService typeService)
-    {
-    	// The wildcard needs to be expanded in two cases:
-    	// 1. if there are other properties in the select, 
-    	// 2. there is an insert-into and only one stream (normally, this doesn't require
-    	//    a StreamExprProcessor, but with an insert-into, the result event type must
-    	//    be the one specified in the insert-into).
-    	return (selectClause.isUsingWildcard() && !selectClause.getSelectList().isEmpty()) ||
-    		   (selectClause.isUsingWildcard() && insertIntoDesc != null && typeService.getEventTypes().length == 1);
-    }
-    
     private static final Log log = LogFactory.getLog(ResultSetProcessorFactory.class);
 }
