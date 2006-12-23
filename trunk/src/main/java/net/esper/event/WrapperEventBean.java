@@ -40,6 +40,13 @@ public class WrapperEventBean implements EventBean {
 		return event;
 	}
 	
+	/**
+	 * Determine whether getUnderlying returns the event or
+	 * the map of additional properties.
+	 * @param underlyingIsMap - true if the next invocation of 
+	 * getUnderlying should return the map of additional properties
+	 * instead of the EventBean itself.
+	 */
 	public void setUnderlyingIsMap(boolean underlyingIsMap)
 	{
 		this.underlyingIsMap = underlyingIsMap;

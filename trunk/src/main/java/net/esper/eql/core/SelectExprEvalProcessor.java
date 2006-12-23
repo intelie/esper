@@ -24,6 +24,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private EventType resultEventType;
     private final EventAdapterService eventAdapterService;
     private final boolean isUsingWildcard;
+    private boolean singleStreamWrapper;
     private SelectExprJoinWildcardProcessor joinWildcardProcessor;
 
     /**
@@ -80,10 +81,15 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         	else
         	{
         		underlyingType = typeService.getEventTypes()[0];
+        		if(underlyingType instanceof WrapperEventType)
+        		{
+        			singleStreamWrapper = true;
+        		}
         	}
         	log.debug(".ctor underlyingType==" + underlyingType);
         }
-
+        log.debug(".ctor singleStreamWrapper=" + singleStreamWrapper);
+        
         // This function may modify
         init(selectionList, insertIntoDesc, underlyingType, eventAdapterService);
     }
@@ -157,6 +163,20 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
 
         if(isUsingWildcard)
         {
+        	// In case of a wildcard and single stream that is itself a 
+        	// wrapper bean, we also need to add the map properties
+        	if(singleStreamWrapper)
+        	{
+        		WrapperEventBean wrapper = (WrapperEventBean)eventsPerStream[0];
+        		if(wrapper != null)
+        		{
+        			wrapper.setUnderlyingIsMap(true);
+        			Map<String, Object> map = (Map<String, Object>)wrapper.getUnderlying();
+        			log.debug(".process additional properties=" + map);
+        			props.putAll(map);
+        			wrapper.setUnderlyingIsMap(false);
+        		}
+        	}
         	return eventAdapterService.createWrapper(createUnderlying(eventsPerStream), props, resultEventType);
         }
         else

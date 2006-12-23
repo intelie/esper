@@ -5,10 +5,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import net.esper.client.EPException;
 
 public class WrapperEventType implements EventType 
 {
+	private final Log log = LogFactory.getLog(WrapperEventType.class);
+	
 	private final EventType underlyingEventType;
 	private final EventType underlyingMapType;
 	private final String[] propertyNames;
@@ -118,6 +123,8 @@ public class WrapperEventType implements EventType
 	
 	public boolean equals(Object obj)
 	{
+		log.debug(".equals");
+		
         if (this == obj)
         {
             return true;
@@ -125,20 +132,23 @@ public class WrapperEventType implements EventType
 
         if (!(obj instanceof WrapperEventType))
         {
+        	log.debug(".equals other isn't a WrapperEventType");
             return false;
         }
 
         WrapperEventType other = (WrapperEventType) obj;
-
+        
         // The underlying event should be the same
-        if (!other.getUnderlyingType().getName().equals(underlyingEventType.getClass().getName()))
+        if (!other.underlyingEventType.getUnderlyingType().getName().equals(underlyingEventType.getUnderlyingType().getName()))
         {
+        	log.debug(".equals underlying event isn't the same");
         	return false;
         }
         
         // Should have the same number of properties
         if (other.underlyingMapType.getPropertyNames().length != underlyingMapType.getPropertyNames().length)
         {
+        	log.debug(".equals number of properties is different");
             return false;
         }
 
@@ -148,6 +158,7 @@ public class WrapperEventType implements EventType
         	Class thisType = underlyingMapType.getPropertyType(property);
         	if(!(other.isProperty(property) && other.getPropertyType(property).equals(thisType)))
         	{
+        		log.debug(".equals property " + property + "either doesn't exist in the other or is declared with a different type");
         		return false;
         	}
         }

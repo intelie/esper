@@ -1,15 +1,15 @@
 package net.esper.regression.eql;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import junit.framework.TestCase;
+import net.esper.client.Configuration;
+import net.esper.client.EPException;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.event.EventBean;
+import net.esper.support.bean.SupportBeanCombinedProps;
 import net.esper.support.bean.SupportBeanSimple;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.bean.SupportBean_B;
@@ -132,6 +132,59 @@ public class TestModifiedWildcardSelect extends TestCase
 		assertCommonProperties();
 	}
 	
+	public void testCombinedProperties() throws InterruptedException
+	{
+		String eventName = SupportBeanCombinedProps.class.getName();  
+		String text = "select *, indexed[0].mapped('0ma').value||indexed[0].mapped('0mb').value as concat from " + eventName + ".win:length(5)";
+		
+		EPStatement statement = epService.getEPAdministrator().createEQL(text);
+		statement.addListener(listener);
+		assertCombinedProps();
+	}
+	
+	public void testMapEvents()
+	{
+		Configuration configuration = new Configuration();
+		Map<String, Class> typeMap = new HashMap<String, Class>();
+		typeMap.put("int", Integer.class);
+		typeMap.put("string", String.class);
+		configuration.addEventTypeAlias("mapEvent", typeMap);
+		epService = EPServiceProviderManager.getProvider("wildcard map event", configuration);
+		
+		String text = "select *, string||string as concat from mapEvent.win:length(5)";
+		
+		EPStatement statement = epService.getEPAdministrator().createEQL(text);
+		statement.addListener(listener);
+		
+		// The map to send into the runtime
+		Map<String, Object> props = new HashMap<String, Object>();
+		props.put("int", 1);
+		props.put("string", "xx");
+		epService.getEPRuntime().sendEvent(props, "mapEvent");
+		
+		// The map of expected results
+		properties.put("int", 1);
+		properties.put("string", "xx");
+		properties.put("concat", "xxxx");
+
+		assertProperties(listener);
+	}
+	
+	public void testInvalidRepeatedProperties() throws InterruptedException
+	{
+		String eventName = SupportBeanSimple.class.getName();  
+		String text = "select *, myString||myString as myString from " + eventName + ".win:length(5)";
+		
+		try
+		{
+			epService.getEPAdministrator().createEQL(text);
+			fail();	
+		}
+		catch(EPException ex)
+		{
+			//Expected
+		}
+	}
 	
 	private void assertNoCommonProperties() throws InterruptedException
 	{
@@ -166,6 +219,23 @@ public class TestModifiedWildcardSelect extends TestCase
 		assertNotNull(event.get("eventOne"));
 		assertNotNull(event.get("eventTwo"));
 	}
+	
+	private void assertCombinedProps() throws InterruptedException
+	{
+		sendCombinedProps();
+		Thread.sleep(50);
+		EventBean eventBean = listener.getLastNewData()[0];
+		
+        assertEquals("0ma0", eventBean.get("indexed[0].mapped('0ma').value"));
+        assertEquals("0ma1", eventBean.get("indexed[0].mapped('0mb').value"));
+        assertEquals("1ma0", eventBean.get("indexed[1].mapped('1ma').value"));
+        assertEquals("1ma1", eventBean.get("indexed[1].mapped('1mb').value"));
+
+        assertEquals("0ma0", eventBean.get("array[0].mapped('0ma').value"));
+        assertEquals("1ma1", eventBean.get("array[1].mapped('1mb').value"));
+        
+        assertEquals("0ma00ma1", eventBean.get("concat"));
+	}
 
 	private void assertProperties(SupportUpdateListener listener)
 	{
@@ -194,5 +264,10 @@ public class TestModifiedWildcardSelect extends TestCase
 		SupportBean_B beanTwo = new SupportBean_B(id);
 		epService.getEPRuntime().sendEvent(beanOne);
 		epService.getEPRuntime().sendEvent(beanTwo);
+	}
+	
+	private void sendCombinedProps()
+	{
+		epService.getEPRuntime().sendEvent(SupportBeanCombinedProps.makeDefaultBean());
 	}
 }
