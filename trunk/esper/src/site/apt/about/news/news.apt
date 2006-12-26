@@ -1,0 +1,194 @@
+News
+
+* December 26, 2006  -  Esper 1.4.0  and  EsperIO 1.4.0
+
+    * New Esper Input Adapter API named EsperIO for reading CSV (comma-separated value format) files 
+      and running event simulations from timestamped CSV files (ESPER-6 Input Adapter for reading CSV files)
+    
+    * Added support for 'prior' and 'prev' (previous) operator (Enhancement request ESPER-25)
+    
+    * Added support for 'in' and 'not in' list-of-value matching in filter expressions, 
+      and for 'between' and 'not between' keywords, and 'not in' ranges (Enhancement request ESPER-66)
+      
+    * Added support for modifying events in a stream, i.e. wildcard and expressions combined in a select-clause and insert into (Enhancement request ESPER-67)
+    	    
+    * Fixed issue ESPER-69 "Pull throws UnsupportedOperationException for statement not selecting wildcard"
+    
+    * Fixed issue ESPER-68 "Followed-by operator not releasing memory for dead sub-expressions"
+
+    * Various documentation enhancements and performance tuning changes
+
+
+* November 14, 2006  -  Esper 1.3.0 
+
+    * Added support for SQL queries within EQL (Enhancement request ESPER-30)
+      Also provides a LRU and expiry-time-based caches for your SQL queries.     
+
+    * Added support for regular expressions (regexp) and SQL 'like' (Enhancement request ESPER-65)
+
+
+* October 26, 2006  -  Esper 1.2.0 
+
+	Esper has change it's license and is now available under {{{http://www.opensource.org/licenses/gpl-license.php}GNU General Public License (GPL)}}
+	(prior releases remain available under the LGPL license).
+
+
+* October 26, 2006  -  Esper 1.2.0 update
+
+    * NOTE: The following pattern elements now take seconds (not milliseconds) as a parameter (fixes ESPER-52) : 
+               timer:within, timer:interval, win:ext_time
+
+    * Added new syntax for specifying time periods; Example: <<<timer:within(1 min 5 sec)>>> is equivalent to <<<timer:within(65)>>>
+
+    * Added support for 'in' and 'between' standard SQL keywords	
+    
+    * Added support EventType adaptors for legacy Java classes (Enhancement request ESPER-55)
+    
+    * Added support for != (not equals) in filter expressions (Enhancement request ESPER-63)
+    
+    * Added support for select-clause istream and rstream keywords (Enhancement request ESPER-54)
+	
+    * Fixed issue ESPER-52 "EQL windows take seconds parameter while patterns take milliseconds parameter"
+    
+    * Fixed issue ESPER-58 "IllegalMonitorStateException logged by engine"
+    
+    * Added J2EE example (Enhancement request ESPER-64)
+    
+    * Added docs for "How does one use emit" (Enhancement request ESPER-62)
+	
+    []
+
+* September 19, 2006  -  Esper 1.1.0 update
+
+    * Added support for pattern expressions in EQL statements (Enhancement request ESPER-53 Consuming pattern-generated events in EQL)
+
+    * Added 'case' control flow function
+
+    * Added 'coalesce' comparison function
+
+    * Bug fixes to reported issues (see history)
+	
+    []
+    
+
+* August 21, 2006  -  Esper 1.0.5 update
+
+    * Added support for the "first" keyword in output rate limiting for outputting only the first matching event for an interval
+    
+    * Added support for XML events represented by a document object model (DOM) instances of org.w3c.dom.Node
+    
+    * Added support for Map events represented by a java.util.Map including object values
+
+    * New AutoId RFID example for XML event processing, includes simulator for running from the command line 
+
+    * New reference manual chapter on Event Representations
+	
+    []
+    
+
+* July 24, 2006  -  Esper 1.0.0 final production
+
+    * Added support for invoking Java library static methods, invoking user-defined static methods, and defining an auto-import list
+    
+    * Sort view ext:sort now also allowing multiple columns to sort on
+    
+    * Added NOT, modulo (%) and SQL string concatention operator (||)
+
+    * New example 'Market Feed Monitor' which showcases rate calculation and fall-off detection. With a simulator to run from a command line. 
+
+    * Build scripts now build Linux tarball; Shell scripts for compiling and running examples reworked.
+	
+    []
+
+
+* July 3, 2006  -  Esper 0.9.5 Beta
+
+    * Completed move to the Codehaus open-source repository, see {{{http://esper.codehaus.org/}Esper at Codehaus}}
+	
+    * Support for "insert into" clause allowing chains of EQL statements and merging of event streams (continuous insertion)
+	
+    * Capability added to sort output using an "order-by" clause
+	
+    * Support for bit-wise AND (&), OR (|) and XOR(^) operators
+	
+    * Bug fix for allowing boolean expression in select clauses, such as "select a and b from MyEvent..."
+	
+    * New 10-minute tutorial; Transaction example simplified
+	
+	[]
+
+* June 10, 2006  -  Esper 0.9.1 Beta
+
+    * Beta bug fix release
+		
+    * Moving to the {{{http://www.codehaus.org/}Codehaus}} open-source repository
+	
+    * New cool example 'Transaction 3-event challenge' which shows EQL in use for detecting missing events and
+computing latency totals overall and grouped. Added scripts for compiling and executing the example.
+
+    * Bug fix for statements that contain only aggregation functions in the select clause that incorrectly posted 
+      too many events
+    
+    * Bug fix for group-by without output rate limiting that incorrectly posted events for past groups
+	
+	[]
+
+* June 4, 2006  -  Esper 0.9.0 Beta
+
+    * Third beta release
+		
+    * Planning to move to the {{{http://www.codehaus.org/}Codehaus}} open-source repository
+	
+    * Added support for output rate limiting based on number of events and time-based, and choice of last or all events
+
+    * Now supporting outer joins for an unlimited number of event streams (was limited to 2 streams)
+	
+	[]
+
+* April 22, 2006  -  Esper 0.8.5 Beta
+
+    * Second beta release
+		
+    * Added support for group-by and having
+	
+    * Added support for aggregation functions max, min, sum, avg, count, median, stddev, avedev;
+	  The "distinct" keyword is also supported for each; The "count(*)" syntax is supported.
+	  
+    * New developers onboarded
+	
+	[]
+
+* March 23, 2006  -  Esper 0.8.0 Beta
+
+	* Event inheritance and interface implementation support; Added support for interfaces, 
+abstract classes, superclasses. E.g. select * from IMyEvent  --- where IMyEvent is an interface or superclass, and event classes that 
+implement this interface or extend the superclass match the criteria. Polymorphism of event properties is now also supported.
+
+	* Support for simple, mapped, indexed, nested and any combination of these anywhere where
+and event property name is expected. E.g. subordinate[3].address(home).city
+
+	* Refined exception texts to better indicate reason
+	
+	* Improved documentation
+	
+	[]
+
+* Feb. 21, 2006 Esper 0.7.5 Alpha
+
+	* Second Alpha release
+	
+	* Outer joins and IS NULL support in EQL
+	
+	* Patterns: Use of results in filters, such as "every a=EventX -> every b=EventY(objectID=a.objectID)"
+	
+	* See history for more detail
+		
+	[]
+
+* Jan. 16, 2006 Esper 0.7.0 Alpha released
+
+	* Provides early-access to upcoming beta release, for evaluation only
+	
+	* Full-featured and supported as by current feature list and documentation
+	
+	[]
