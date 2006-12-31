@@ -3,6 +3,7 @@ package net.esper.event.property;
 import net.esper.eql.generated.EQLStatementLexer;
 import net.esper.eql.generated.EQLStatementParser;
 import net.esper.eql.generated.EqlTokenTypes;
+import net.esper.eql.parse.PositionTrackingAST;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
 import net.esper.event.PropertyAccessException;
@@ -32,7 +33,8 @@ public class PropertyParser implements EqlTokenTypes
     {
         EQLStatementLexer lexer = new EQLStatementLexer(new StringReader(propertyName));
         EQLStatementParser parser = new EQLStatementParser(lexer);
-
+        parser.getASTFactory().setASTNodeClass(PositionTrackingAST.class);
+        
         try
         {
             parser.startEventPropertyRule();

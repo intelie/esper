@@ -173,7 +173,7 @@ public class SupportExprNodeFactory
     public static ExprInNode makeInSetNode(boolean isNotIn) throws Exception
     {
         // Build :      s0.intPrimitive in (1, 2)
-        ExprInNode inNode = new ExprInNode(isNotIn);
+        ExprInNode inNode = new ExprInSetNode(isNotIn);
         inNode.addChildNode(makeIdentNode("intPrimitive","s0"));
         inNode.addChildNode(new SupportExprNode(1));
         inNode.addChildNode(new SupportExprNode(2));

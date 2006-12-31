@@ -6,6 +6,8 @@ import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.expression.*;
 import net.esper.eql.spec.*;
 import net.esper.type.*;
+import net.esper.client.EPAdministrator;
+import net.esper.client.EPStatement;
 import net.esper.collection.Pair;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
@@ -28,6 +30,8 @@ import java.util.*;
  */
 public class EQLTreeWalker extends EQLBaseWalker
 {
+	private final String eqlStatement;
+	private final EPAdministrator epAdmin;
     // services required
     private final EventAdapterService eventAdapterService;
 
@@ -46,12 +50,17 @@ public class EQLTreeWalker extends EQLBaseWalker
 
     /**
      * Ctor.
+     * @param eqlStatement - the text of the eql statement 
+     * @param epAdministrator - the administrator that invoked this walker
      * @param eventAdapterService for resolving event names
      */
-    public EQLTreeWalker(EventAdapterService eventAdapterService)
+    public EQLTreeWalker(String eqlStatement, EPAdministrator epAdministrator, EventAdapterService eventAdapterService)
     {
+    	this.eqlStatement = eqlStatement;
+    	this.epAdmin = epAdministrator;
         this.eventAdapterService = eventAdapterService;
         statementSpec = new StatementSpec();
+        astFactory.setASTNodeClass(PositionTrackingAST.class);
     }
 
     /**
@@ -918,9 +927,37 @@ public class EQLTreeWalker extends EQLBaseWalker
     private void leaveIn(AST node)
     {
         log.debug(".leaveIn");
+        
+        if(node.getNumberOfChildren() < 2)
+        {
+        	throw new IllegalStateException("In expression with fewer than 2 child nodes");
+        }
+        
+        AST secondChild = node.getFirstChild().getNextSibling();
 
-        ExprInNode inNode = new ExprInNode(node.getType() == NOT_IN_SET);
-        astExprNodeMap.put(node, inNode);
+        if(secondChild.getType() == STMT_ROOT)
+        {
+            if (node.getNumberOfChildren() != 4)
+            {
+                throw new IllegalStateException("In-statement expression not with 4 child nodes");
+            }
+        	int begin = secondChild.getNextSibling().getColumn();
+        	int end = secondChild.getNextSibling().getNextSibling().getColumn() - 1;
+        	String subquery = eqlStatement.substring(begin, end);
+        	EPStatement statement = epAdmin.createEQL(subquery);
+        	statementSpec.setSubquery(statement);
+        	ExprInNode inNode = new ExprInStmtNode(node.getType() == NOT_IN_SET, statement);
+        	astExprNodeMap.put(node, inNode);
+        }
+        else
+        {
+            if (astExprNodeMap.size() < 2)
+            {
+                throw new IllegalStateException("In-set expression generated fewer than 2 child nodes");
+            }
+        	ExprInNode inNode = new ExprInSetNode(node.getType() == NOT_IN_SET);
+        	astExprNodeMap.put(node, inNode);
+        }
     }
 
     private void leaveBetween(AST node)

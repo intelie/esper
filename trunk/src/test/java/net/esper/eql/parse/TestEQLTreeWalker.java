@@ -746,8 +746,9 @@ public class TestEQLTreeWalker extends TestCase
         AST ast = SupportParserHelper.parsePattern(expression);
         log.debug(".parseAndWalk success, tree walking...");
         SupportParserHelper.displayAST(ast);
+        
 
-        EQLTreeWalker walker = new EQLTreeWalker(SupportEventAdapterService.getService());
+        EQLTreeWalker walker = new EQLTreeWalker(null, null, SupportEventAdapterService.getService());
         walker.startPatternExpressionRule(ast);
         return walker;
     }
@@ -762,7 +763,7 @@ public class TestEQLTreeWalker extends TestCase
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
         eventAdapterService.addBeanType("SupportBean_N", SupportBean_N.class);
 
-        EQLTreeWalker walker = new EQLTreeWalker(eventAdapterService);
+        EQLTreeWalker walker = new EQLTreeWalker(null, null, eventAdapterService);
         walker.startEQLExpressionRule(ast);
         return walker;
     }

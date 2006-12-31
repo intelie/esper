@@ -79,7 +79,7 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         // Parse and walk
         AST ast = ParseHelper.parse(expression, patternParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEventAdapterService());
+        EQLTreeWalker walker = new EQLTreeWalker(expression, this, services.getEventAdapterService());
 
         try
         {
@@ -127,7 +127,7 @@ public class EPAdministratorImpl implements EPAdministrator
     public EPStatement createEQL(String eqlStatement) throws EPException
     {
         AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEventAdapterService());
+        EQLTreeWalker walker = new EQLTreeWalker(eqlStatement, this, services.getEventAdapterService());
 
         try
         {

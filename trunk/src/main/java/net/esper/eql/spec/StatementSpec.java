@@ -1,5 +1,6 @@
 package net.esper.eql.spec;
 
+import net.esper.client.EPStatement;
 import net.esper.collection.Pair;
 import net.esper.eql.spec.StreamSpec;
 import net.esper.eql.expression.ExprNode;
@@ -22,7 +23,8 @@ public class StatementSpec
     private ExprNode havingExprRootNode;
     private OutputLimitSpec outputLimitSpec;
     private List<Pair<ExprNode, Boolean>> orderByList = new LinkedList<Pair<ExprNode, Boolean>>();
-
+    private EPStatement subquery;
+    
     /**
      * Returns the FROM-clause stream definitions.
      * @return list of stream specifications
@@ -156,4 +158,22 @@ public class StatementSpec
     {
         this.selectStreamDirEnum = selectStreamDirEnum;
     }
+
+	/**
+	 * Get the subquery statement.
+	 * @return the subquery statement
+	 */
+	public EPStatement getSubquery()
+	{
+		return subquery;
+	}
+
+	/**
+	 * Set the subquery.
+	 * @param subquery - the subquery statement
+	 */
+	public void setSubquery(EPStatement subquery)
+	{
+		this.subquery = subquery;
+	}
 }

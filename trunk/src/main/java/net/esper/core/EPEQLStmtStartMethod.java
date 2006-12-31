@@ -218,7 +218,7 @@ public class EPEQLStmtStartMethod
             finalView.addView(streamSelectorView);
             finalView = streamSelectorView;
         }
-
+        
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
     }
 

@@ -1,6 +1,8 @@
 header
 {
   package net.esper.eql.generated;
+  
+  import net.esper.eql.parse.PositionTrackingAST;
 }
 
 class EQLStatementParser extends Parser;
@@ -9,6 +11,7 @@ options
 	k = 3;                           // lookahead
 	exportVocab=Eql;
 	buildAST = true;
+	ASTLabelType = "net.esper.eql.parse.PositionTrackingAST";
     defaultErrorHandler=false;
 }
 
@@ -128,6 +131,9 @@ tokens
    	DBSELECT_EXPR;
    	DBFROM_CLAUSE;
    	DBWHERE_CLAUSE;
+   	STMT_ROOT;
+   	SUBQRY_START;
+   	SUBQRY_END;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -187,6 +193,7 @@ eqlExpression
 		(HAVING! havingClause)?
 		(OUTPUT! outputLimit)?
 		(ORDER! BY! orderByListExpr)?
+		{ #eqlExpression = #([STMT_ROOT,"stmtRoot"], #eqlExpression); }
 	;
 	
 insertIntoExpr
@@ -368,7 +375,18 @@ evalRelationalExpression
 						#i.setType( (n == null) ? IN_SET : NOT_IN_SET);
 						#i.setText( (n == null) ? "in" : "not in");
 					}
-					(LPAREN! expression (COMMA! expression)* RPAREN!))
+					(lp:LPAREN! ie:inExpr rp:RPAREN!))
+					{
+					  	if(#ie.getType()==STMT_ROOT)
+					  	{
+					  		PositionTrackingAST start =  #[SUBQRY_START, "subqueryStart"];
+					  		start.setColumn(lp.getColumn());
+							#i.addChild(start);
+					  		PositionTrackingAST end =  #[SUBQRY_END, "subqueryEnd"];
+					  		end.setColumn(rp.getColumn());
+							#i.addChild(end);
+						}  
+					}
 				| (b:BETWEEN^ {
 						#b.setType( (n == null) ? BETWEEN : NOT_BETWEEN);
 						#b.setText( (n == null) ? "between" : "not between");
@@ -386,6 +404,14 @@ evalRelationalExpression
 					concatenationExpr)
 			)	
 		)
+	;
+
+inExpr
+	: expression (COMMA! expression)*
+	| eqlExpression!
+	{
+		#inExpr = #[STMT_ROOT, "stmtRoot"];
+	}
 	;
 		
 concatenationExpr

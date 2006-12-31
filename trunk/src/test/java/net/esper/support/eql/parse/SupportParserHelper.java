@@ -7,6 +7,7 @@ import java.io.StringReader;
 import net.esper.eql.generated.EQLStatementLexer;
 import net.esper.eql.generated.EQLStatementParser;
 import net.esper.eql.parse.ParseRuleSelector;
+import net.esper.eql.parse.PositionTrackingAST;
 import net.esper.util.DebugFacility;
 
 import org.apache.commons.logging.Log;
@@ -95,6 +96,7 @@ public class SupportParserHelper
     {
         EQLStatementLexer lexer = new EQLStatementLexer(new StringReader(text));
         EQLStatementParser parser = new EQLStatementParser(lexer);
+        parser.getASTFactory().setASTNodeClass(PositionTrackingAST.class);
         parseRuleSelector.invokeParseRule(parser);
         return parser.getAST();
     }

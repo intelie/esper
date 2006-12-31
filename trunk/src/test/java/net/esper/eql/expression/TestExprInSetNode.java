@@ -7,7 +7,7 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.event.EventBean;
 
-public class TestExprInNode extends TestCase
+public class TestExprInSetNode extends TestCase
 {
     private ExprInNode inNodeNormal;
     private ExprInNode inNodeNotIn;
@@ -30,15 +30,15 @@ public class TestExprInNode extends TestCase
         inNodeNormal.validate(null, null);
 
         // No subnodes: Exception is thrown.
-        tryInvalidValidate(new ExprInNode(true));
+        tryInvalidValidate(new ExprInSetNode(true));
 
         // singe child node not possible, must be 2 at least
-        inNodeNormal = new ExprInNode(true);
+        inNodeNormal = new ExprInSetNode(true);
         inNodeNormal.addChildNode(new SupportExprNode(new Integer(4)));
         tryInvalidValidate(inNodeNormal);
 
         // test a type mismatch
-        inNodeNormal = new ExprInNode(true);
+        inNodeNormal = new ExprInSetNode(true);
         inNodeNormal.addChildNode(new SupportExprNode("sx"));
         inNodeNormal.addChildNode(new SupportExprNode(4));
         tryInvalidValidate(inNodeNormal);

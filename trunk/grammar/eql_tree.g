@@ -14,6 +14,7 @@ options
 	importVocab=Eql;        	// import definitions
 	exportVocab=EqlEval;     	// Call the resulting definitions something new
 	buildAST=true;
+	ASTLabelType = "net.esper.eql.parse.PositionTrackingAST";
     defaultErrorHandler=false;
 }
 
@@ -39,14 +40,17 @@ tokens
 // EQL expression
 //----------------------------------------------------------------------------
 startEQLExpressionRule
-	:	(insertIntoExpr)?
-		selectClause 
-		fromClause
-		(whereClause)?
-		(groupByClause)?
-		(havingClause)?
-		(outputLimitExpr)?
-		(orderByClause)?
+	:	#(
+		   	STMT_ROOT
+			(insertIntoExpr)?
+			selectClause 
+			fromClause
+			(whereClause)?
+			(groupByClause)?
+			(havingClause)?
+			(outputLimitExpr)?
+			(orderByClause)?
+		)
 		{ end(); }
 	;
 	
@@ -167,8 +171,13 @@ caseExpr
 	;
 	
 inExpr
-	: #(IN_SET valueExpr valueExpr (valueExpr)*)
-	| #(NOT_IN_SET valueExpr valueExpr (valueExpr)*)
+	: #(IN_SET valueExpr inSet)
+	| #(NOT_IN_SET valueExpr inSet)
+	;
+
+inSet
+	: valueExpr (valueExpr)*
+	| STMT_ROOT SUBQRY_START SUBQRY_END
 	;
 	
 betweenExpr

@@ -67,7 +67,8 @@ public class ParseHelper
 
         EQLStatementLexer lexer = new EQLStatementLexer(new StringReader(expression));
         EQLStatementParser parser = new EQLStatementParser(lexer);
-
+        parser.getASTFactory().setASTNodeClass(PositionTrackingAST.class);
+        
         try
         {
             parseRuleSelector.invokeParseRule(parser);

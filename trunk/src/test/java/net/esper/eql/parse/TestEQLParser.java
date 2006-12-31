@@ -22,7 +22,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         SupportParserHelper.displayAST(ast);
 
         log.debug(".testDisplayAST walking...");
-        EQLTreeWalker walker = new EQLTreeWalker(SupportEventAdapterService.getService());
+        EQLTreeWalker walker = new EQLTreeWalker(null, null, SupportEventAdapterService.getService());
         walker.startEQLExpressionRule(ast);
     }
 
@@ -122,6 +122,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select * from x where a in(,a)");
         assertIsInvalid("select * from x where a in(, ,)");
         assertIsInvalid("select * from x where a in not(1,2)");
+        assertIsInvalid("select * from x where a in (select from)");
+        assertIsInvalid("select * from x where a in (select x where)");
 
         // between
         assertIsInvalid("select * from x where between a");
@@ -309,6 +311,10 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from x where abc not in (1)");
         assertIsValid("select * from x where abc not in (1, 2, 3)");
         assertIsValid("select * from x where abc*2/dog not in (1, 2, 3)");
+        assertIsValid("select * from x where a in (select b from y)");
+        assertIsValid("select * from x where a not in (select b from y)");
+        assertIsValid("select * from x where a*2/3 in (select b from y)");
+        assertIsValid("select * from x where a*2/3 not in (select b from y)");
 
         // between
         assertIsValid("select * from x where abc between 1 and 10");
@@ -353,7 +359,12 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(eqlSmt + "().win:some_view({})");
     }
 
-    public void testIfThenElseCase() throws Exception
+    public void testSubquery() throws Exception
+	{
+	    assertIsValid("select * from x where a in (select b from y)");
+	}
+
+	public void testIfThenElseCase() throws Exception
      {
          String className = SupportBean.class.getName();
          String eqlSmt = "select case when 1 then (a + 1) when 2 then (a*2) end from " + className;
@@ -371,7 +382,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
          eqlSmt = "select case (a+b) when (a*b) then count(a+b) when false then a ^ b end as p1 from " +  className;
          assertIsValid(eqlSmt + ".win:lenght()");
      }
-
+    
     private void tryJoin(String joinType) throws Exception
     {
         String className = SupportBean.class.getName();
