@@ -40,15 +40,17 @@ public class TestSubquery extends TestCase
 		statement.addListener(listener);
 		runAssertion("myInt", "myInt");
 		
+		epService.initialize();
+		
 		text = "select * from " + enclosing  + " where 2*myInt - myInt in (select intPrimitive as int from " + subquery + ".win:length(3))";
 		statement = epService.getEPAdministrator().createEQL(text);
 		statement.addListener(listener);	
-		runAssertion("(2*myInt-myInt)", "int");
+		runAssertion("myInt", "int");
 	}
 	
 	public void testSameEventType()
 	{
-		String text = "select * from " + enclosing  + " where myInt in (select myInt as int from " + enclosing + ".win:length(3))";
+		String text = "select * from " + enclosing  + ".win:length(1) where myInt in (select myInt as int from " + enclosing + ".win:length(3))";
 		statement = epService.getEPAdministrator().createEQL(text);
 		statement.addListener(listener);
 		
@@ -106,9 +108,9 @@ public class TestSubquery extends TestCase
 
 		statement.start();
 
-		// Events sent while the statement was stopped have no effect
+		// The state of the statement has been lost
 		sendEnclosingEvent(3);
-		assertAccepted(outsideProperty, 3);
+		assertNotAccepted();
 
 		sendEnclosingEvent(6);
 		assertNotAccepted();
@@ -116,9 +118,6 @@ public class TestSubquery extends TestCase
 		// The subquery should be active once again
 		sendSubqueryEvent(6);
 
-		sendEnclosingEvent(3);
-		assertNotAccepted();
-		
 		sendEnclosingEvent(6);
 		assertAccepted(outsideProperty, 6);
 	}

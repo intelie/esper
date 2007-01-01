@@ -133,6 +133,11 @@ public class EPPatternStatementImpl extends EPStatementSupport implements Patter
     {
         return expressionText;
     }
+    
+    public boolean isStarted()
+    {
+    	return stopMethod != null;
+    }
 
     private static final Log log = LogFactory.getLog(EPPatternStatementImpl.class);
 }

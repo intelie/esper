@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.esper.client.EPStatement;
 import net.esper.client.EPStatementException;
 import net.esper.collection.Pair;
 import net.esper.eql.expression.*;
@@ -76,6 +77,17 @@ public class EPEQLStmtStartMethod
     public Pair<Viewable, EPStatementStopMethod> start()
         throws ExprValidationException, ViewProcessingException
     {
+    	// Start the subquery
+        EPStatement subquery = statementSpec.getSubquery();
+        if(subquery != null)
+        {
+        	if(subquery.isStarted())
+        	{
+        		subquery.stop();
+        	}
+        	subquery.start();
+        }
+    	
         // Determine stream names for each stream - some streams may not have a name given
         String[] streamNames = determineStreamNames(statementSpec.getStreamSpecs());
         EventType[] streamTypes = new EventType[statementSpec.getStreamSpecs().size()];
@@ -157,6 +169,12 @@ public class EPEQLStmtStartMethod
                 for (StopCallback stopCallback : stopCallbacks)
                 {
                     stopCallback.stop();
+                }
+                
+                EPStatement subquery = statementSpec.getSubquery();
+                if(subquery != null && subquery.isStarted())
+                {
+                	subquery.stop();
                 }
             }
         };

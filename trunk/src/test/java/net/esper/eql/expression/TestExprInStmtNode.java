@@ -47,7 +47,7 @@ public class TestExprInStmtNode extends TestCase
 		invalidStatement = epService.getEPAdministrator().createEQL(invalidText);
 	}
 	
-	public void testValid() 
+	public void testValid() throws ExprValidationException 
 	{	
 		runAssertIdent(false, beanStatement);
 		runAssertIdent(true, beanStatement);
@@ -138,10 +138,11 @@ public class TestExprInStmtNode extends TestCase
 		assertEquals("s0.intPrimitive not in (" + beanStatement.getText() + ")", inNode.toExpressionString());
 	}
 
-	private void runAssertMath(boolean isNotIn, EPStatement statement) 
+	private void runAssertMath(boolean isNotIn, EPStatement statement) throws ExprValidationException 
 	{
 		inNode = new ExprInStmtNode(isNotIn, statement);
 		inNode.addChildNode(mathChildNode);
+		inNode.validate(null, null);
 		
 		sendEvent(1, statement);
 		assertFalse(isNotIn ^ (Boolean) inNode.evaluate(createEvent(0, 1)));
@@ -163,10 +164,11 @@ public class TestExprInStmtNode extends TestCase
 		assertFalse(isNotIn ^ (Boolean) inNode.evaluate(createEvent(4, 1)));
 	}
 
-	private void runAssertIdent(boolean isNotIn, EPStatement statement) 
+	private void runAssertIdent(boolean isNotIn, EPStatement statement) throws ExprValidationException 
 	{
 		inNode = new ExprInStmtNode(isNotIn, statement);
 		inNode.addChildNode(identChildNode);
+		inNode.validate(null, null);
 		
 		sendEvent(1, statement);
 		assertFalse(isNotIn ^ (Boolean) inNode.evaluate(createEvent(0)));

@@ -114,6 +114,11 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
     {
         return parentView.getEventType();
     }
+    
+    public boolean isStarted()
+    {
+    	return stopMethod != null;
+    }
 
     public void listenerStop()
     {

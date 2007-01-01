@@ -19,20 +19,20 @@ public class ExprInStmtNode extends ExprInNode
 {
 	private final static Log log = LogFactory.getLog(ExprInStmtNode.class);
 	
-	private final PropertyIndexedEventTable indexTable;
+	private PropertyIndexedEventTable indexTable;
 	private final EPStatement statement;
+
+	private EventType eventType;
 	
 	public ExprInStmtNode(boolean isNotIn, EPStatement statement)
 	{
 		super(isNotIn);
 		this.statement = statement;
-		EventType eventType = statement.getEventType();
+		eventType = statement.getEventType();
 		if(eventType.getPropertyNames().length != 1)
 		{
 			throw new IllegalArgumentException("ExprInStmtNode requires an EPStatement with only one selected property");
 		}
-		indexTable = new PropertyIndexedEventTable(-1, eventType, eventType.getPropertyNames());
-		statement.addListener(getListenerToLocal());
 	}
 
 	public boolean equalsNode(ExprNode node)
@@ -75,6 +75,9 @@ public class ExprInStmtNode extends ExprInNode
             throw new ExprValidationException("The IN operator used with an EPStatement requires exactly 1 child expression");
         }
         
+		indexTable = new PropertyIndexedEventTable(-1, eventType, eventType.getPropertyNames(), false);
+		statement.addListener(getListenerToLocal());
+        
         List<Class> comparedTypes = new LinkedList<Class>();
         comparedTypes.add(getChildNodes().get(0).getType());
         String selectProperty = statement.getEventType().getPropertyNames()[0];
@@ -87,6 +90,7 @@ public class ExprInStmtNode extends ExprInNode
 	{
 		log.debug(".evaluate");
 		Object value = getChildNodes().get(0).evaluate(eventsPerStream);
+		log.debug(".evaluate indexTable=" + indexTable);
 		Set<EventBean> events = indexTable.lookup(new Object[] { value });
 		return applyIsNotIn(events != null && events.size() > 0);
 	}

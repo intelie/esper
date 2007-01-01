@@ -24,17 +24,20 @@ public class PropertyIndexedEventTable implements EventTable
     private final String[] propertyNames;
     private final EventPropertyGetter[] propertyGetters;
     private final Map<MultiKeyUntyped, Set<EventBean>> propertyIndex;
+	private final boolean repeatElementsDisallowed;
 
     /**
      * Ctor.
      * @param streamNum - the stream number that is indexed
      * @param eventType - types of events indexed
      * @param propertyNames - property names to use for indexing
+     * @param repeatElementsDisallowed - true if the table should throw an exception if the same event is entered twice
      */
-    public PropertyIndexedEventTable(int streamNum, EventType eventType, String[] propertyNames)
+    public PropertyIndexedEventTable(int streamNum, EventType eventType, String[] propertyNames, boolean repeatElementsDisallowed)
     {
         this.streamNum = streamNum;
         this.propertyNames = propertyNames;
+        this.repeatElementsDisallowed = repeatElementsDisallowed;
 
         // Init getters
         propertyGetters = new EventPropertyGetter[propertyNames.length];
@@ -104,7 +107,7 @@ public class PropertyIndexedEventTable implements EventTable
             propertyIndex.put(key, events);
         }
 
-        if (events.contains(event))
+        if (repeatElementsDisallowed && events.contains(event))
         {
             throw new IllegalArgumentException("Event already in index, event=" + event);
         }

@@ -171,7 +171,7 @@ public class JoinSetComposerFactory
         }
         else
         {
-            table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps);
+            table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps, true);
         }
         return table;
     }

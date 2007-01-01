@@ -27,5 +27,11 @@ public interface EPStatement extends EPListenable, EPIterable
      * @return expression text
      */
     public String getText();
+    
+    /**
+     * Returns the state of the statement.
+     * @return true if the statement is started, false if stopped
+     */
+    public boolean isStarted();
 }
 
