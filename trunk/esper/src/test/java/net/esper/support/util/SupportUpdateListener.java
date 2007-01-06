@@ -120,4 +120,35 @@ public class SupportUpdateListener implements UpdateListener
     {
         this.lastOldData = lastOldData;
     }
+
+    public EventBean[] getNewDataListFlattened()
+    {
+        return flatten(newDataList);
+    }
+
+    private EventBean[] flatten(List<EventBean[]> list)
+    {
+        int count = 0;
+        for (EventBean[] events : list)
+        {
+            if (events != null)
+            {
+                count += events.length;
+            }
+        }
+
+        EventBean[] array = new EventBean[count];
+        count = 0;
+        for (EventBean[] events : list)
+        {
+            if (events != null)
+            {
+                for (int i = 0; i < events.length; i++)
+                {
+                    array[count++] = events[i];
+                }
+            }
+        }
+        return array;
+    }
 }

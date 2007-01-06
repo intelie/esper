@@ -3,13 +3,20 @@ package net.esper.view.stream;
 import net.esper.view.EventStream;
 import net.esper.filter.FilterSpec;
 import net.esper.filter.FilterService;
+import net.esper.util.ManagedLock;
+import net.esper.core.EPStatementHandle;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Service on top of the filter service for reuseing filter callbacks and their associated EventStream instances.
  * Same filter specifications (equal) do not need to be added to the filter service twice and the
  * EventStream instance that is the stream of events for that filter can be reused.
+ * <p>
+ * We are re-using streams such that views under such streams can be reused for efficient resource use.
  */
-public interface StreamReuseService
+public interface StreamFactoryService
 {
     /**
      * Create or reuse existing EventStream instance representing that event filter.
@@ -18,7 +25,7 @@ public interface StreamReuseService
      * @param filterService filter service to activate filter if not already active
      * @return event stream representing active filter
      */
-    public EventStream createStream(FilterSpec filterSpec, FilterService filterService);
+    public EventStream createStream(FilterSpec filterSpec, FilterService filterService, EPStatementHandle epStatementHandle);
 
     /**
      * Drop the event stream associated with the filter passed in.

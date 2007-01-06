@@ -2,15 +2,15 @@ package net.esper.support.filter;
 
 import net.esper.filter.FilterParamIndex;
 import net.esper.filter.EventEvaluator;
-import net.esper.filter.FilterCallback;
+import net.esper.filter.FilterHandle;
 import net.esper.filter.FilterOperator;
 import net.esper.event.EventBean;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventTypeFactory;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.List;
+import java.util.Collection;
 
 public class SupportFilterParamIndex extends FilterParamIndex
 {
@@ -43,7 +43,7 @@ public class SupportFilterParamIndex extends FilterParamIndex
         return null;
     }
 
-    public void matchEvent(EventBean event, List<FilterCallback> matches)
+    public void matchEvent(EventBean event, Collection<FilterHandle> matches)
     {
     }
 }

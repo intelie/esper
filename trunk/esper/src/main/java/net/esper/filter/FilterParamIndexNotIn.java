@@ -96,7 +96,7 @@ public final class FilterParamIndexNotIn extends FilterParamIndex
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, List<FilterCallback> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
     {
         Object attributeValue = this.getGetter().get(eventBean);
 

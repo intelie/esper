@@ -1,7 +1,6 @@
 package net.esper.collection;
 
 import java.util.*;
-import net.esper.collection.Pair;
 import net.esper.event.EventBean;
 
 /**

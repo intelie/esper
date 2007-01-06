@@ -8,8 +8,6 @@ import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanString;
-import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.event.EventBean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

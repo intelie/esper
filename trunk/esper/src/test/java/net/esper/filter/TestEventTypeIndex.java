@@ -6,13 +6,12 @@ import java.util.List;
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.ISupportA;
 import net.esper.support.bean.ISupportABCImpl;
 import net.esper.support.bean.ISupportAImplSuperGImplPlus;
 import net.esper.support.bean.ISupportBaseAB;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.filter.SupportFilterCallback;
+import net.esper.support.filter.SupportFilterHandle;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventTypeFactory;
 
@@ -23,8 +22,8 @@ public class TestEventTypeIndex extends TestCase
     private EventBean testEventBean;
     private EventType testEventType;
 
-    private FilterCallbackSetNode callbackSetNode;
-    private FilterCallback filterCallback;
+    private FilterHandleSetNode handleSetNode;
+    private FilterHandle filterCallback;
 
     public void setUp()
     {
@@ -32,17 +31,17 @@ public class TestEventTypeIndex extends TestCase
         testEventBean = SupportEventBeanFactory.createObject(testBean);
         testEventType = testEventBean.getEventType();
 
-        callbackSetNode = new FilterCallbackSetNode();
-        filterCallback = new SupportFilterCallback();
-        callbackSetNode.add(filterCallback);
+        handleSetNode = new FilterHandleSetNode();
+        filterCallback = new SupportFilterHandle();
+        handleSetNode.add(filterCallback);
 
         testIndex = new EventTypeIndex();
-        testIndex.add(testEventType, callbackSetNode);
+        testIndex.add(testEventType, handleSetNode);
     }
 
     public void testMatch()
     {
-        List<FilterCallback> matchesList = new LinkedList<FilterCallback>();
+        List<FilterHandle> matchesList = new LinkedList<FilterHandle>();
 
         // Invoke match
         testIndex.matchEvent(testEventBean, matchesList);
@@ -55,7 +54,7 @@ public class TestEventTypeIndex extends TestCase
     {
         try
         {
-            testIndex.add(testEventType, callbackSetNode);
+            testIndex.add(testEventType, handleSetNode);
             assertTrue(false);
         }
         catch (IllegalStateException ex)
@@ -66,7 +65,7 @@ public class TestEventTypeIndex extends TestCase
 
     public void testGet()
     {
-        assertEquals(callbackSetNode, testIndex.get(testEventType));
+        assertEquals(handleSetNode, testIndex.get(testEventType));
     }
 
     public void testSuperclassMatch()
@@ -75,9 +74,9 @@ public class TestEventTypeIndex extends TestCase
         testEventType = SupportEventTypeFactory.createBeanType(ISupportA.class);
 
         testIndex = new EventTypeIndex();
-        testIndex.add(testEventType, callbackSetNode);
+        testIndex.add(testEventType, handleSetNode);
 
-        List<FilterCallback> matchesList = new LinkedList<FilterCallback>();
+        List<FilterHandle> matchesList = new LinkedList<FilterHandle>();
         testIndex.matchEvent(testEventBean, matchesList);
 
         assertEquals(1, matchesList.size());
@@ -90,9 +89,9 @@ public class TestEventTypeIndex extends TestCase
         testEventType = SupportEventTypeFactory.createBeanType(ISupportBaseAB.class);
 
         testIndex = new EventTypeIndex();
-        testIndex.add(testEventType, callbackSetNode);
+        testIndex.add(testEventType, handleSetNode);
 
-        List<FilterCallback> matchesList = new LinkedList<FilterCallback>();
+        List<FilterHandle> matchesList = new LinkedList<FilterHandle>();
         testIndex.matchEvent(testEventBean, matchesList);
 
         assertEquals(1, matchesList.size());

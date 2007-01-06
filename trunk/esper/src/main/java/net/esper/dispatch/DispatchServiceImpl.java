@@ -9,14 +9,7 @@ import java.util.LinkedList;
  */
 public class DispatchServiceImpl implements DispatchService
 {
-    private static final ThreadLocal<LinkedList<Dispatchable>> threadDispatchQueueInternal = new ThreadLocal<LinkedList<Dispatchable>>()
-    {
-        protected synchronized LinkedList<Dispatchable> initialValue()
-        {
-            return new LinkedList<Dispatchable>();
-        }
-    };
-    private static final ThreadLocal<LinkedList<Dispatchable>> threadDispatchQueueExternal = new ThreadLocal<LinkedList<Dispatchable>>()
+    private static final ThreadLocal<LinkedList<Dispatchable>> threadDispatchQueue = new ThreadLocal<LinkedList<Dispatchable>>()
     {
         protected synchronized LinkedList<Dispatchable> initialValue()
         {
@@ -26,19 +19,12 @@ public class DispatchServiceImpl implements DispatchService
 
     public void dispatch()
     {
-        dispatchFromQueue(threadDispatchQueueInternal.get());
-        dispatchFromQueue(threadDispatchQueueExternal.get());
+        dispatchFromQueue(threadDispatchQueue.get());
     }
 
     public void addExternal(Dispatchable dispatchable)
     {
-        LinkedList<Dispatchable> dispatchQueue = threadDispatchQueueExternal.get();
-        addToQueue(dispatchable, dispatchQueue);
-    }
-
-    public void addInternal(Dispatchable dispatchable)
-    {
-        LinkedList<Dispatchable> dispatchQueue = threadDispatchQueueInternal.get();
+        LinkedList<Dispatchable> dispatchQueue = threadDispatchQueue.get();
         addToQueue(dispatchable, dispatchQueue);
     }
 

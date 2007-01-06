@@ -1,4 +1,4 @@
-package net.esper.regression.mt;
+package net.esper.multithread;
 
 import net.esper.client.UpdateListener;
 import net.esper.event.EventBean;
@@ -20,7 +20,11 @@ public class MTListener implements UpdateListener
     public void update(EventBean[] newEvents, EventBean[] oldEvents)
     {
         Object value = newEvents[0].get(fieldName);
-        values.add(value);
+
+        synchronized(values)
+        {
+            values.add(value);
+        }
     }
 
     public List getValues()

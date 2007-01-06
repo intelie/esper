@@ -49,9 +49,9 @@ public class TestDispatchServiceImpl extends TestCase
         assertEquals(0, disOne.getAndResetNumExecuted());
     }
 
-    public void testAddInternalExternal()
+    public void testAdd()
     {
-        SupportDispatchable dispatchables[] = new SupportDispatchable[5];
+        SupportDispatchable dispatchables[] = new SupportDispatchable[2];
         for (int i = 0; i < dispatchables.length; i++)
         {
             dispatchables[i] = new SupportDispatchable();
@@ -59,20 +59,12 @@ public class TestDispatchServiceImpl extends TestCase
         SupportDispatchable.getAndResetInstanceList();
 
         service.addExternal(dispatchables[0]);
-        service.addInternal(dispatchables[1]);
-        service.addInternal(dispatchables[2]);
-        service.addExternal(dispatchables[3]);
-        service.addInternal(dispatchables[4]);
+        service.addExternal(dispatchables[1]);
 
         service.dispatch();
 
         List<SupportDispatchable> dispatchList = SupportDispatchable.getAndResetInstanceList();
-        assertSame(dispatchables[1], dispatchList.get(0));
-        assertSame(dispatchables[2], dispatchList.get(1));
-        assertSame(dispatchables[4], dispatchList.get(2));
-        assertSame(dispatchables[0], dispatchList.get(3));
-        assertSame(dispatchables[3], dispatchList.get(4));
+        assertSame(dispatchables[0], dispatchList.get(0));
+        assertSame(dispatchables[1], dispatchList.get(1));
     }
-
-    //private static Log log = LogFactory.getLog(TestDispatchServiceImpl.class);
 }

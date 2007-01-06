@@ -21,7 +21,7 @@ public class TestPollingViewableFactory extends TestCase
 
         EventCollection eventCollection = PollingViewableFactory.createDBStatementView(1, spec,
                 SupportDatabaseService.makeService(),
-                SupportEventAdapterService.getService());
+                SupportEventAdapterService.getService(), null);
         
         assertEquals(Long.class, eventCollection.getEventType().getPropertyType("mybigint"));
         assertEquals(String.class, eventCollection.getEventType().getPropertyType("myvarchar"));

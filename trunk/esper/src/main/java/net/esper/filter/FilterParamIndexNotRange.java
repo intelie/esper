@@ -2,7 +2,6 @@ package net.esper.filter;
 
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
-import net.esper.pattern.Evaluator;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -93,7 +92,7 @@ public final class FilterParamIndexNotRange extends FilterParamIndex
         return rangesRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, List<FilterCallback> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
     {
         Object objAttributeValue = this.getGetter().get(eventBean);
 

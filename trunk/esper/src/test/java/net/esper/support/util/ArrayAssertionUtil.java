@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 import net.esper.event.EventBean;
 
@@ -338,6 +339,34 @@ public class ArrayAssertionUtil
 
         // Must have matched exactly the number of objects times
         TestCase.assertEquals(numMatches, expected.length);
+    }
+
+    /**
+     * Asserts that all values in the given object array are boolean-typed values and are true
+     * @param objects values to assert that they are all true
+     */
+    public static void assertAllBooleanTrue(Object[] objects)
+    {
+        for (int i = 0; i < objects.length; i++)
+        {
+            Assert.assertTrue((Boolean) objects[i]);
+        }
+    }
+
+    /**
+     * Assert the class of the objects in the object array matches the expected classes in the classes array.
+     * @param classes is the expected class
+     * @param objects is the objects to check the class for
+     */
+    public static void assertTypeEqualsAnyOrder(Class[] classes, Object[] objects)
+    {
+        TestCase.assertEquals(classes.length, objects.length);
+        Class[] resultClasses = new Class[objects.length];
+        for (int i = 0; i < objects.length; i++)
+        {
+            resultClasses[i] = objects[i].getClass();
+        }
+        assertEqualsAnyOrder(resultClasses, classes);
     }
 
     private static final Log log = LogFactory.getLog(ArrayAssertionUtil.class);

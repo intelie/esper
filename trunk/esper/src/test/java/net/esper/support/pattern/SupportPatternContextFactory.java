@@ -12,6 +12,6 @@ public class SupportPatternContextFactory
     public static PatternContext makeContext()
     {
         SupportSchedulingServiceImpl sched = new SupportSchedulingServiceImpl();
-        return new PatternContext(null, sched, sched.allocateBucket(), SupportEventAdapterService.getService());
+        return new PatternContext(null, sched, sched.allocateBucket(), SupportEventAdapterService.getService(), null);
     }
 }

@@ -1,9 +1,9 @@
 package net.esper.support.filter;
 
-import net.esper.filter.FilterCallback;
+import net.esper.filter.FilterHandleCallback;
 import net.esper.event.EventBean;
 
-public class SupportFilterCallback implements FilterCallback
+public class SupportFilterHandle implements FilterHandleCallback
 {
     private int countInvoked;
     private EventBean lastEvent;

@@ -5,6 +5,8 @@ import net.esper.dispatch.DispatchService;
 import net.esper.view.internal.BufferObserver;
 import net.esper.event.EventBean;
 import net.esper.collection.FlushedEventBuffer;
+import net.esper.util.ThreadLogUtil;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -14,23 +16,20 @@ import java.util.HashMap;
  */
 public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserver
 {
-    private final DispatchService dispatchService;
     private final JoinExecutionStrategy joinExecutionStrategy;
     private final Map<Integer, FlushedEventBuffer> oldStreamBuffer;
     private final Map<Integer, FlushedEventBuffer> newStreamBuffer;
     private final int numStreams;
 
-    private boolean isDispatchRegistered;
+    private boolean hasNewData;
 
     /**
      * CTor.
-     * @param dispatchService - dispatches to this object via execute method
      * @param joinExecutionStrategy - strategy for executing the join
      * @param numStreams - number of stream
      */
-    public JoinExecStrategyDispatchable(DispatchService dispatchService, JoinExecutionStrategy joinExecutionStrategy, int numStreams)
+    public JoinExecStrategyDispatchable(JoinExecutionStrategy joinExecutionStrategy, int numStreams)
     {
-        this.dispatchService = dispatchService;
         this.joinExecutionStrategy = joinExecutionStrategy;
         this.numStreams = numStreams;
 
@@ -40,7 +39,11 @@ public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserve
 
     public void execute()
     {
-        isDispatchRegistered = false;
+        if (!hasNewData)
+        {
+            return;
+        }
+        hasNewData = false;
 
         EventBean[][] oldDataPerStream = new EventBean[numStreams][];
         EventBean[][] newDataPerStream = new EventBean[numStreams][];
@@ -50,6 +53,11 @@ public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserve
             oldDataPerStream[i] = getBufferData(oldStreamBuffer.get(i));
             newDataPerStream[i] = getBufferData(newStreamBuffer.get(i));
         }
+
+        ThreadLogUtil.trace("DISPATCH newDataSize=" +
+                (newDataPerStream[0] != null ? newDataPerStream[0].length : " null ") +
+                (newDataPerStream[1] != null ? newDataPerStream[1].length : " null ")
+                );
 
         joinExecutionStrategy.join(newDataPerStream, oldDataPerStream);
     }
@@ -66,11 +74,7 @@ public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserve
 
     public void newData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer)
     {
-        if (!isDispatchRegistered)
-        {
-            dispatchService.addInternal(this);
-            isDispatchRegistered = true;
-        }
+        hasNewData = true;
         newStreamBuffer.put(streamId, newEventBuffer);
         oldStreamBuffer.put(streamId, oldEventBuffer);
     }

@@ -1,10 +1,13 @@
 package net.esper.schedule;
 
+import java.util.Collection;
+
 /**
- * Interface for a service that allows to add and remove callbacks for a certain time which are called when
- * the evaluate method is invoked and the current time is on or after the callback times.
- * It is the expectation that the triggerPast method is called
- * with same or ascending values for each subsequent call. Callbacks with are triggered are automatically removed
+ * Interface for a service that allows to add and remove handles (typically storing callbacks)
+ * for a certain time which are returned when
+ * the evaluate method is invoked and the current time is on or after the handle's registered time.
+ * It is the expectation that the setTime method is called
+ * with same or ascending values for each subsequent call. Handles with are triggered are automatically removed
  * by implementations.
  */
 public interface SchedulingService
@@ -14,11 +17,11 @@ public interface SchedulingService
      * If the same callback (equals) was already added before, the method will not add a new
      * callback or change the existing callback to a new time, but throw an exception.
      * @param afterMSec number of millisec to get a callback
-     * @param callback to add
+     * @param handle to add
      * @param slot allows ordering of concurrent callbacks
      * @throws ScheduleServiceException thrown if the add operation did not complete
      */
-    public void add(long afterMSec, ScheduleCallback callback, ScheduleSlot slot)
+    public void add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot)
             throws ScheduleServiceException;
 
     /**
@@ -26,21 +29,21 @@ public interface SchedulingService
      * If the same callback (equals) was already added before, the method will not add a new
      * callback or change the existing callback to a new time, but throw an exception.
      * @param scheduleSpec holds the crontab-like information defining the next occurance
-     * @param callback to add
+     * @param handle to add
      * @param slot allows ordering of concurrent callbacks
      * @throws ScheduleServiceException thrown if the add operation did not complete
      */
-    public void add(ScheduleSpec scheduleSpec, ScheduleCallback callback, ScheduleSlot slot)
+    public void add(ScheduleSpec scheduleSpec, ScheduleHandle handle, ScheduleSlot slot)
             throws ScheduleServiceException;
 
     /**
-     * Remove a callback.
-     * If the callback to be removed was not found an exception is thrown.
-     * @param callback to remove
+     * Remove a handle.
+     * If the handle to be removed was not found an exception is thrown.
+     * @param handle to remove
      * @param slot for which the callback was added
      * @throws ScheduleServiceException thrown if the callback was not located
      */
-    public void remove(ScheduleCallback callback, ScheduleSlot slot)
+    public void remove(ScheduleHandle handle, ScheduleSlot slot)
             throws ScheduleServiceException;
 
     /**
@@ -56,9 +59,9 @@ public interface SchedulingService
     public void setTime(long timestamp);
 
     /**
-     * Evaluate the current time and perform any callbacks.
+     * Evaluate the current time and add to the collection any handles scheduled for execution.
      */
-    public void evaluate();
+    public void evaluate(Collection<ScheduleHandle> units);
 
     /**
      * Returns a bucket from which slots can be allocated for ordering concurrent callbacks.

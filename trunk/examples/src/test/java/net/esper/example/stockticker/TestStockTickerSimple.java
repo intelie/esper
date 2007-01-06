@@ -9,6 +9,7 @@ import net.esper.example.stockticker.eventbean.LimitAlert;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.Configuration;
+import net.esper.client.time.TimerControlEvent;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -27,6 +28,9 @@ public class TestStockTickerSimple extends TestCase
 
         epService = EPServiceProviderManager.getProvider("TestStockTickerSimple", configuration);
         epService.getEPRuntime().addEmittedListener(listener, null);
+
+        // TODO: remove this
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));        
     }
 
     public void testStockTicker() throws Exception

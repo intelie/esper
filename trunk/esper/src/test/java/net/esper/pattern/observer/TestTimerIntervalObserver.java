@@ -3,6 +3,7 @@ package net.esper.pattern.observer;
 import net.esper.schedule.SchedulingServiceImpl;
 import net.esper.support.guard.SupportObserverEvaluator;
 import net.esper.support.event.SupportEventAdapterService;
+import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.MatchedEventMap;
 import junit.framework.TestCase;
@@ -20,7 +21,7 @@ public class TestTimerIntervalObserver extends TestCase
         beginState = new MatchedEventMap();
 
         scheduleService = new SchedulingServiceImpl();
-        context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService());
+        context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService(), null);
 
         evaluator = new SupportObserverEvaluator();
 
@@ -32,17 +33,17 @@ public class TestTimerIntervalObserver extends TestCase
         scheduleService.setTime(0);
         observer.startObserve();
         scheduleService.setTime(1000);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);
         assertEquals(beginState, evaluator.getAndClearMatchEvents().get(0));
 
         // Test start again
         observer.startObserve();
         scheduleService.setTime(1999);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);
         assertEquals(0, evaluator.getMatchEvents().size());
 
         scheduleService.setTime(2000);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);
         assertEquals(beginState, evaluator.getAndClearMatchEvents().get(0));
     }
 
@@ -53,20 +54,20 @@ public class TestTimerIntervalObserver extends TestCase
         observer.startObserve();
         observer.stopObserve();
         scheduleService.setTime(1000);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);
         assertEquals(0, evaluator.getAndClearMatchEvents().size());
 
         // Test start again
         observer.startObserve();
         scheduleService.setTime(2500);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);
         assertEquals(beginState, evaluator.getAndClearMatchEvents().get(0));
 
         observer.stopObserve();
         observer.startObserve();
 
         scheduleService.setTime(3500);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);
         assertEquals(beginState, evaluator.getAndClearMatchEvents().get(0));
     }
 
@@ -79,7 +80,7 @@ public class TestTimerIntervalObserver extends TestCase
         observer.startObserve();
         assertEquals(beginState, evaluator.getAndClearMatchEvents().get(0));
         scheduleService.setTime(10000000);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);
         assertEquals(0, evaluator.getAndClearMatchEvents().size());
     }
 

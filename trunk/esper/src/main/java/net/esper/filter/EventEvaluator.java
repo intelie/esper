@@ -1,8 +1,7 @@
 package net.esper.filter;
 
 import net.esper.event.EventBean;
-
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Interface for matching an event instance based on the event's property values to
@@ -16,5 +15,5 @@ public interface EventEvaluator
      * @param event is the event object wrapper to obtain event property values from
      * @param matches accumulates the matching filter callbacks
      */
-    public void matchEvent(EventBean event, List<FilterCallback> matches);
+    public void matchEvent(EventBean event, Collection<FilterHandle> matches);
 }

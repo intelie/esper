@@ -1,24 +1,27 @@
-package net.esper.regression.mt;
+package net.esper.multithread;
 
 import net.esper.client.EPServiceProvider;
+import net.esper.util.ThreadLogUtil;
 
-import java.util.Iterator;
 import java.util.concurrent.Callable;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class SendEventCallable implements Callable
+public class SendEventWaitCallable implements Callable
 {
     private final int threadNum;
     private final EPServiceProvider engine;
     private final Iterator<Object> events;
+    private final Object semaphore;
 
-    public SendEventCallable(int threadNum, EPServiceProvider engine, Iterator<Object> events)
+    public SendEventWaitCallable(int threadNum, EPServiceProvider engine, Object semaphore, Iterator<Object> events)
     {
         this.threadNum = threadNum;
         this.engine = engine;
         this.events = events;
+        this.semaphore = semaphore;
     }
 
     public Object call() throws Exception
@@ -27,6 +30,10 @@ public class SendEventCallable implements Callable
         {
             while (events.hasNext())
             {
+                synchronized(semaphore) {
+                    semaphore.wait();
+                }
+                ThreadLogUtil.info("sending event");
                 engine.getEPRuntime().sendEvent(events.next());
             }
         }
@@ -38,5 +45,5 @@ public class SendEventCallable implements Callable
         return true;
     }
 
-    private static final Log log = LogFactory.getLog(SendEventCallable.class);            
+    private static final Log log = LogFactory.getLog(SendEventWaitCallable.class);
 }

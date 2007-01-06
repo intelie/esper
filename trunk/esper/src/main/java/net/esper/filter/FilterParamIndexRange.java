@@ -88,7 +88,7 @@ public final class FilterParamIndexRange extends FilterParamIndex
         return rangesRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, List<FilterCallback> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
     {
         Object objAttributeValue = this.getGetter().get(eventBean);
 

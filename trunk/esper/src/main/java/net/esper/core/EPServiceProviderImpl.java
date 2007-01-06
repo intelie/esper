@@ -9,6 +9,7 @@ import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
 import net.esper.util.JavaClassHelper;
+import net.esper.util.ManagedReadWriteLock;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
 import net.esper.schedule.ScheduleBucket;
@@ -16,6 +17,7 @@ import net.esper.schedule.ScheduleBucket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
@@ -82,15 +84,18 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         EPServicesContext services = new EPServicesContext(schedulingService,
                 eventAdapterService, autoImportService, databaseConfigService);
 
+        // New read-write lock for concurrent event processing
+        ManagedReadWriteLock eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock");
+
         // New runtime
-        EPRuntimeImpl runtime = new EPRuntimeImpl(services);
+        EPRuntimeImpl runtime = new EPRuntimeImpl(services, eventProcessingRWLock);
 
         // Configure services to use the new runtime
         services.setInternalEventRouter(runtime);
         services.getTimerService().setCallback(runtime);
 
         // New admin
-        EPAdministratorImpl admin = new EPAdministratorImpl(services);
+        EPAdministratorImpl admin = new EPAdministratorImpl(services, eventProcessingRWLock);
 
         // Start clocking
         services.getTimerService().startInternalClock();

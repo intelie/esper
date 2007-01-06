@@ -2,9 +2,9 @@ package net.esper.support.schedule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.schedule.ScheduleCallback;
+import net.esper.schedule.ScheduleHandleCallback;
 
-public class SupportScheduleCallback implements ScheduleCallback
+public class SupportScheduleCallback implements ScheduleHandleCallback
 {
     private static int orderAllCallbacks;
 

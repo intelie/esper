@@ -10,13 +10,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import junit.framework.TestCase;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.filter.SupportFilterSpecBuilder;
-import net.esper.support.filter.SupportFilterCallback;
+import net.esper.support.filter.SupportFilterHandle;
 import net.esper.support.filter.IndexTreeBuilderRunnable;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,17 +27,17 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
 
     private EventType eventType;
 
-    private FilterCallbackSetNode topNode;
+    private FilterHandleSetNode topNode;
     private IndexTreeBuilder builder;
-    private List<FilterCallback> filterCallbacks;
+    private List<FilterHandle> filterCallbacks;
     private List<IndexTreePath> pathsAddedTo;
 
     public void setUp()
     {
         builder = new IndexTreeBuilder();
         eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
-        topNode = new FilterCallbackSetNode();
-        filterCallbacks = new LinkedList<FilterCallback>();
+        topNode = new FilterHandleSetNode();
+        filterCallbacks = new LinkedList<FilterHandle>();
         pathsAddedTo = new LinkedList<IndexTreePath>();
 
         testFilterSpecs = new Vector<FilterSpec>();
@@ -95,7 +94,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         for (FilterSpec filterSpec : testFilterSpecs)
         {
             FilterValueSet filterValues = filterSpec.getValueSet(null);
-            FilterCallback callback = new SupportFilterCallback();
+            FilterHandle callback = new SupportFilterHandle();
             filterCallbacks.add(callback);
             pathsAddedTo.add(builder.add(filterValues, callback, topNode));
         }
@@ -103,7 +102,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         // None of the not-matching events should cause any match
         for (EventBean event : unmatchedEvents)
         {
-            List<FilterCallback> matches = new LinkedList<FilterCallback>();
+            List<FilterHandle> matches = new LinkedList<FilterHandle>();
             topNode.matchEvent(event, matches);
             assertTrue(matches.size() == 0);
         }
@@ -111,7 +110,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         // All of the matching events should cause exactly one match
         for (EventBean event : matchedEvents)
         {
-            List<FilterCallback> matches = new LinkedList<FilterCallback>();
+            List<FilterHandle> matches = new LinkedList<FilterHandle>();
             topNode.matchEvent(event, matches);
             assertTrue(matches.size() == 1);
         }
@@ -120,14 +119,14 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         int count = 0;
         for (IndexTreePath treePath : pathsAddedTo)
         {
-            FilterCallback callback = filterCallbacks.get(count++);
+            FilterHandle callback = filterCallbacks.get(count++);
             builder.remove(callback, treePath, topNode);
         }
 
         // After the remove no matches are expected
         for (EventBean event : matchedEvents)
         {
-            List<FilterCallback> matches = new LinkedList<FilterCallback>();
+            List<FilterHandle> matches = new LinkedList<FilterHandle>();
             topNode.matchEvent(event, matches);
             assertTrue(matches.size() == 0);
         }
@@ -135,18 +134,18 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
 
     public void testMultithreaded() throws Exception
     {
-        FilterCallbackSetNode topNode = new FilterCallbackSetNode();
+        FilterHandleSetNode topNode = new FilterHandleSetNode();
 
         performMultithreadedTest(topNode, 2, 1000, 1);
         performMultithreadedTest(topNode, 3, 1000, 1);
         performMultithreadedTest(topNode, 4, 1000, 1);
 
-        performMultithreadedTest(new FilterCallbackSetNode(), 2, 1000, 1);
-        performMultithreadedTest(new FilterCallbackSetNode(), 3, 1000, 1);
-        performMultithreadedTest(new FilterCallbackSetNode(), 4, 1000, 1);
+        performMultithreadedTest(new FilterHandleSetNode(), 2, 1000, 1);
+        performMultithreadedTest(new FilterHandleSetNode(), 3, 1000, 1);
+        performMultithreadedTest(new FilterHandleSetNode(), 4, 1000, 1);
     }
 
-    private void performMultithreadedTest(FilterCallbackSetNode topNode,
+    private void performMultithreadedTest(FilterHandleSetNode topNode,
                              int numberOfThreads,
                              int numberOfRunnables,
                              int numberOfSecondsSleep)

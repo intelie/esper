@@ -50,12 +50,12 @@ public class TestDatabaseServiceImpl extends TestCase
 
     public void testGetCache() throws Exception
     {
-        assertTrue(databaseServiceImpl.getDataCache("name1") instanceof DataCacheNullImpl);
+        assertTrue(databaseServiceImpl.getDataCache("name1", null) instanceof DataCacheNullImpl);
 
-        DataCacheLRUImpl lru = (DataCacheLRUImpl) databaseServiceImpl.getDataCache("name2");
+        DataCacheLRUImpl lru = (DataCacheLRUImpl) databaseServiceImpl.getDataCache("name2", null);
         assertEquals(10000, lru.getCacheSize());
 
-        DataCacheExpiringImpl exp = (DataCacheExpiringImpl) databaseServiceImpl.getDataCache("name3");
+        DataCacheExpiringImpl exp = (DataCacheExpiringImpl) databaseServiceImpl.getDataCache("name3", null);
         assertEquals(1000, exp.getMaxAgeMSec());
         assertEquals(3000, exp.getPurgeIntervalMSec());
     }

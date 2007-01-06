@@ -482,8 +482,8 @@ public class TestPriorFunction extends TestCase
 
     private void tryPriorSortWindow(String viewExpr)
     {
-        EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
-        selectTestView.addListener(testListener);
+        EPStatement statement = epService.getEPAdministrator().createEQL(viewExpr);
+        statement.addListener(testListener);
 
         sendMarketEvent("COX", 30);
         assertNewEvents("COX", "COX", 30d, null, null, null, null, null, null);
@@ -521,20 +521,9 @@ public class TestPriorFunction extends TestCase
         sendMarketEvent("AAB", 2);
         oldEvent = testListener.getLastOldData()[0];
         assertEventProps(oldEvent, "COX", "COX", 30d, null, null, null, null, null, null);
-    }
+        testListener.reset();
 
-    private void tryInvalid(String statement, String expectedError)
-    {
-        try
-        {
-            epService.getEPAdministrator().createEQL(statement);
-            fail();
-        }
-        catch (EPException ex)
-        {
-            // expected
-            assertEquals(expectedError, ex.getMessage());
-        }
+        statement.stop();
     }
 
     private void assertNewEvents(String currSymbol,

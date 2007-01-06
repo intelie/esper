@@ -10,8 +10,8 @@ import net.esper.collection.Pair;
 import net.esper.event.EventType;
 
 /**
- * Builder manipulates a tree structure consisting of {@link FilterCallbackSetNode} and {@link FilterParamIndex} instances.
- * Filters can be added to a top node (an instance of FilterCallbackSetNode) via the add method. This method returns
+ * Builder manipulates a tree structure consisting of {@link FilterHandleSetNode} and {@link FilterParamIndex} instances.
+ * Filters can be added to a top node (an instance of FilterHandleSetNode) via the add method. This method returns
  * an instance of {@link IndexTreePath} which represents the tree path (list of indizes) that the filter callback was
  * added to. To remove filters the same IndexTreePath instance must be passed in.
  * <p>The implementation is designed to be multithread-safe in conjunction with the node classes manipulated by this class.
@@ -20,7 +20,7 @@ public final class IndexTreeBuilder
 {
     private EventType eventType;
     private SortedSet<FilterValueSetParam> remainingParameters;
-    private FilterCallback filterCallback;
+    private FilterHandle filterCallback;
     private long currentThreadId;
 
     /**
@@ -39,8 +39,8 @@ public final class IndexTreeBuilder
      * @return an encapsulation of information need to allow for safe removal of the filter tree.
      */
     public final IndexTreePath add( FilterValueSet filterValueSet,
-                                    FilterCallback filterCallback,
-                                    FilterCallbackSetNode topNode)
+                                    FilterHandle filterCallback,
+                                    FilterHandleSetNode topNode)
     {
         this.eventType = filterValueSet.getEventType();
         this.remainingParameters = copySortParameters(filterValueSet.getParameters());
@@ -72,9 +72,9 @@ public final class IndexTreeBuilder
      * @param topNode The top tree node beneath which the filterCallback was added
      */
     public final void remove(
-                       FilterCallback filterCallback,
+                       FilterHandle filterCallback,
                        IndexTreePath treePathInfo,
-                       FilterCallbackSetNode topNode)
+                       FilterHandleSetNode topNode)
     {
         this.remainingParameters = null;
         this.filterCallback = filterCallback;
@@ -98,7 +98,7 @@ public final class IndexTreeBuilder
      * @param currentNode is the node to add to
      * @param treePathInfo is filled with information about which indizes were chosen to add the filter to
      */
-    private void addToNode(FilterCallbackSetNode currentNode, IndexTreePath treePathInfo)
+    private void addToNode(FilterHandleSetNode currentNode, IndexTreePath treePathInfo)
     {
         if (log.isDebugEnabled())
         {
@@ -164,7 +164,7 @@ public final class IndexTreeBuilder
     }
 
     // Remove an filterCallback from the current node, return true if the node is the node is empty now
-    private boolean removeFromNode(FilterCallbackSetNode currentNode,
+    private boolean removeFromNode(FilterHandleSetNode currentNode,
                                    IndexTreePath treePathInfo)
     {
         Pair<FilterParamIndex, Object> nextPair = treePathInfo.removeFirst();
@@ -239,15 +239,15 @@ public final class IndexTreeBuilder
             return false;
         }
 
-        if (eventEvaluator instanceof FilterCallbackSetNode)
+        if (eventEvaluator instanceof FilterHandleSetNode)
         {
-            FilterCallbackSetNode node = (FilterCallbackSetNode) eventEvaluator;
+            FilterHandleSetNode node = (FilterHandleSetNode) eventEvaluator;
             boolean isEmpty = removeFromNode(node, treePathInfo);
 
             if (isEmpty)
             {
                 // Since we are holding a write lock to this index, there should not be a chance that
-                // another thread had been adding anything to this FilterCallbackSetNode
+                // another thread had been adding anything to this FilterHandleSetNode
                 index.remove(filterForValue);
             }
             int size = index.size();
@@ -283,7 +283,7 @@ public final class IndexTreeBuilder
         if (isEmpty)
         {
             // Since we are holding a write lock to this index, there should not be a chance that
-            // another thread had been adding anything to this FilterCallbackSetNode
+            // another thread had been adding anything to this FilterHandleSetNode
             index.remove(filterForValue);
         }
         int size = index.size();
@@ -340,9 +340,9 @@ public final class IndexTreeBuilder
                 return;
             }
 
-            // The found eventEvaluator must be converted to a new FilterCallbackSetNode
+            // The found eventEvaluator must be converted to a new FilterHandleSetNode
             FilterParamIndex nextIndex = (FilterParamIndex) eventEvaluator;
-            FilterCallbackSetNode newNode = new FilterCallbackSetNode();
+            FilterHandleSetNode newNode = new FilterHandleSetNode();
             newNode.add(nextIndex);
             index.put(filterForValue, newNode);
             addToNode(newNode, treePathInfo);
@@ -355,7 +355,7 @@ public final class IndexTreeBuilder
         // if there are no remaining parameters, create a node
         if (remainingParameters.isEmpty())
         {
-            FilterCallbackSetNode node = new FilterCallbackSetNode();
+            FilterHandleSetNode node = new FilterHandleSetNode();
             addToNode(node, treePathInfo);
             index.put(filterForValue, node);
             index.getReadWriteLock().writeLock().unlock();
@@ -384,9 +384,9 @@ public final class IndexTreeBuilder
      */
     private boolean addToEvaluator(EventEvaluator eventEvaluator, IndexTreePath treePathInfo)
     {
-        if (eventEvaluator instanceof FilterCallbackSetNode)
+        if (eventEvaluator instanceof FilterHandleSetNode)
         {
-            FilterCallbackSetNode node = (FilterCallbackSetNode) eventEvaluator;
+            FilterHandleSetNode node = (FilterHandleSetNode) eventEvaluator;
             addToNode(node, treePathInfo);
             return true;
         }

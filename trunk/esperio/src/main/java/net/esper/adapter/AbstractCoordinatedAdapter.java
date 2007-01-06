@@ -7,7 +7,7 @@ import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.esper.client.EPServiceProvider;
 import net.esper.core.EPServiceProviderSPI;
-import net.esper.schedule.ScheduleCallback;
+import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.schedule.SchedulingService;
 
@@ -230,7 +230,7 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	private void scheduleNextCallback()
 	{
-		ScheduleCallback nextScheduleCallback = new ScheduleCallback() { public void scheduledTrigger() { continueSendingEvents(); } };
+		ScheduleHandleCallback nextScheduleCallback = new ScheduleHandleCallback() { public void scheduledTrigger() { continueSendingEvents(); } };
 		ScheduleSlot nextScheduleSlot;
 
 		if(eventsToSend.isEmpty())

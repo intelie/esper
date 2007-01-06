@@ -1,16 +1,17 @@
 package net.esper.filter;
 
 import net.esper.support.filter.SupportFilterSpecBuilder;
-import net.esper.support.filter.SupportFilterCallback;
+import net.esper.support.filter.SupportFilterHandle;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanSimple;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.event.EventBean;
 
 import java.util.Vector;
+import java.util.List;
+import java.util.LinkedList;
 
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
@@ -22,7 +23,7 @@ public class TestFilterServiceImpl extends TestCase
     private EventType eventTypeTwo;
     private FilterServiceImpl filterService;
     private Vector<FilterValueSet> filterSpecs;
-    private Vector<SupportFilterCallback> filterCallbacks;
+    private Vector<SupportFilterHandle> filterCallbacks;
     private Vector<EventBean> events;
     private Vector<int[]> matchesExpected;
 
@@ -46,10 +47,10 @@ public class TestFilterServiceImpl extends TestCase
                 "myString", FilterOperator.EQUAL, "Hello" }).getValueSet(null));
 
         // Create callbacks and add
-        filterCallbacks = new Vector<SupportFilterCallback>();
+        filterCallbacks = new Vector<SupportFilterHandle>();
         for (int i = 0; i < filterSpecs.size(); i++)
         {
-            filterCallbacks.add(new SupportFilterCallback());
+            filterCallbacks.add(new SupportFilterHandle());
             filterService.add(filterSpecs.get(i), filterCallbacks.get(i));
         }
 
@@ -95,12 +96,19 @@ public class TestFilterServiceImpl extends TestCase
     {
         for (int i = 0; i < events.size(); i++)
         {
-            filterService.evaluate(events.get(i));
+            List<FilterHandle> matchList = new LinkedList<FilterHandle>();
+            filterService.evaluate(events.get(i), matchList);
+            for (FilterHandle match : matchList)
+            {
+                SupportFilterHandle handle = (SupportFilterHandle) match;
+                handle.matchFound(events.get(i));
+            }
+
             int[] matches = matchesExpected.get(i);
 
             for (int j = 0; j < matches.length; j++)
             {
-                SupportFilterCallback callback = filterCallbacks.get(j);
+                SupportFilterHandle callback = filterCallbacks.get(j);
 
                 if (matches[j] != callback.getAndResetCountInvoked())
                 {
@@ -118,7 +126,7 @@ public class TestFilterServiceImpl extends TestCase
         {
             FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeTwo, new Object[] {
                 "myString", FilterOperator.GREATER, 2 }).getValueSet(null);
-            filterService.add(spec, new SupportFilterCallback());
+            filterService.add(spec, new SupportFilterHandle());
             assertTrue(false);
         }
         catch (IllegalArgumentException ex)
@@ -162,10 +170,10 @@ public class TestFilterServiceImpl extends TestCase
     public void testActiveCallbackRemove()
     {
         FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).getValueSet(null);
-        final SupportFilterCallback callbackTwo = new SupportFilterCallback();
+        final SupportFilterHandle callbackTwo = new SupportFilterHandle();
 
         // callback that removes another matching filter spec callback
-        FilterCallback callbackOne = new FilterCallback()
+        FilterHandleCallback callbackOne = new FilterHandleCallback()
         {
             public void matchFound(EventBean event)
             {
@@ -178,7 +186,14 @@ public class TestFilterServiceImpl extends TestCase
         filterService.add(spec, callbackTwo);
 
         // send event
-        filterService.evaluate(makeTypeOneEvent(1, "HELLO", false, 1));
+        EventBean event = makeTypeOneEvent(1, "HELLO", false, 1);
+        List<FilterHandle> matches = new LinkedList<FilterHandle>();
+        filterService.evaluate(event, matches);
+        for (FilterHandle match : matches)
+        {
+            FilterHandleCallback handle = (FilterHandleCallback) match;
+            handle.matchFound(event);
+        }
 
         // Callback two MUST be invoked, was removed by callback one, but since the
         // callback invocation order should not matter, the second one MUST also execute

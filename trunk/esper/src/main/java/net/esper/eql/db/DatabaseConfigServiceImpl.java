@@ -3,6 +3,7 @@ package net.esper.eql.db;
 import net.esper.client.ConfigurationDBRef;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.ScheduleBucket;
+import net.esper.core.EPStatementHandle;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
         return factory;
     }
 
-    public DataCache getDataCache(String databaseName) throws DatabaseConfigException
+    public DataCache getDataCache(String databaseName, EPStatementHandle epStatementHandle) throws DatabaseConfigException
     {
         ConfigurationDBRef config = mapDatabaseRef.get(databaseName);
         if (config == null)
@@ -111,7 +112,7 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
         {
             ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) config.getDataCacheDesc();
             return new DataCacheExpiringImpl(expCache.getMaxAgeSeconds(), expCache.getPurgeIntervalSeconds(), schedulingService,
-                    scheduleBucket.allocateSlot());
+                    scheduleBucket.allocateSlot(), epStatementHandle);
         }
 
         throw new IllegalStateException("Cache implementation class not configured");

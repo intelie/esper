@@ -8,6 +8,7 @@ import net.esper.util.SQLTypeMapUtil;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
 import net.esper.view.HistoricalEventViewable;
+import net.esper.core.EPStatementHandle;
 
 import java.sql.*;
 import java.util.*;
@@ -32,8 +33,8 @@ public class PollingViewableFactory
     public static HistoricalEventViewable createDBStatementView(int streamNumber,
                                                  DBStatementStreamSpec databaseStreamSpec,
                                                  DatabaseConfigService databaseConfigService,
-                                                 EventAdapterService eventAdapterService
-                                                 )
+                                                 EventAdapterService eventAdapterService,
+                                                 EPStatementHandle epStatementHandle)
             throws ExprValidationException
     {
         // Parse the SQL for placeholders and text fragments
@@ -222,7 +223,7 @@ public class PollingViewableFactory
         try
         {
             connectionCache = databaseConfigService.getConnectionCache(databaseName, preparedStatementText);
-            dataCache = databaseConfigService.getDataCache(databaseName);
+            dataCache = databaseConfigService.getDataCache(databaseName, epStatementHandle);
         }
         catch (DatabaseConfigException e)
         {

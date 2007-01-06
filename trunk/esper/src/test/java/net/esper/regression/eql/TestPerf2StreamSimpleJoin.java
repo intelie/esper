@@ -18,7 +18,7 @@ public class TestPerf2StreamSimpleJoin extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getProvider("TestPerf2StreamSimpleJoin");
         epService.initialize();
         updateListener = new SupportUpdateListener();
 
@@ -29,6 +29,11 @@ public class TestPerf2StreamSimpleJoin extends TestCase
 
         joinView = epService.getEPAdministrator().createEQL(joinStatement);
         joinView.addListener(updateListener);
+    }
+
+    public void tearDown()
+    {
+        epService.initialize();
     }
 
     public void testPerformanceJoinNoResults()

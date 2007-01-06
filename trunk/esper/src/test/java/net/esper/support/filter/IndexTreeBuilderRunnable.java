@@ -16,12 +16,12 @@ public class IndexTreeBuilderRunnable implements Runnable
 {
     protected final static Random random = new Random(System.currentTimeMillis());
 
-    private FilterCallbackSetNode topNode;
+    private FilterHandleSetNode topNode;
     private Vector<FilterSpec> testFilterSpecs;
     private Vector<EventBean> matchedEvents;
     private Vector<EventBean> unmatchedEvents;
 
-    public IndexTreeBuilderRunnable(FilterCallbackSetNode topNode, Vector<FilterSpec> testFilterSpecs, Vector<EventBean> matchedEvents, Vector<EventBean> unmatchedEvents)
+    public IndexTreeBuilderRunnable(FilterHandleSetNode topNode, Vector<FilterSpec> testFilterSpecs, Vector<EventBean> matchedEvents, Vector<EventBean> unmatchedEvents)
     {
         this.topNode = topNode;
         this.testFilterSpecs = testFilterSpecs;
@@ -50,12 +50,12 @@ public class IndexTreeBuilderRunnable implements Runnable
 
         // Add expression
         FilterValueSet filterValues = filterSpec.getValueSet(null);
-        FilterCallback filterCallback = new SupportFilterCallback();
+        FilterHandle filterCallback = new SupportFilterHandle();
         IndexTreeBuilder treeBuilder = new IndexTreeBuilder();
         IndexTreePath pathAddedTo = treeBuilder.add(filterValues, filterCallback, topNode);
 
         // Fire a no-match
-        List<FilterCallback> matches = new LinkedList<FilterCallback>();
+        List<FilterHandle> matches = new LinkedList<FilterHandle>();
         topNode.matchEvent(unmatchedEvent, matches);
 
         if (matches.size() != 0)

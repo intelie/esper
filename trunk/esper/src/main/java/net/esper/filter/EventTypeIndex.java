@@ -2,7 +2,7 @@ package net.esper.filter;
 
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
+import net.esper.util.ThreadLogUtil;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Mapping of event type to a tree-like structure
- * containing filter parameter constants in indexes {@link FilterParamIndex} and filter callbacks in {@link FilterCallbackSetNode}.
+ * containing filter parameter constants in indexes {@link FilterParamIndex} and filter callbacks in {@link FilterHandleSetNode}.
  * <p>
  * This class evaluates events for the purpose of filtering by (1) looking up the event's {@link EventType}
  * and (2) asking the subtree for this event type to evaluate the event.
@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EventTypeIndex implements EventEvaluator
 {
-    private Map<EventType, FilterCallbackSetNode> eventTypes;
+    private Map<EventType, FilterHandleSetNode> eventTypes;
     private ReadWriteLock eventTypesRWLock;
 
     /**
@@ -30,7 +30,7 @@ public class EventTypeIndex implements EventEvaluator
      */
     public EventTypeIndex()
     {
-        eventTypes = new HashMap<EventType, FilterCallbackSetNode>();
+        eventTypes = new HashMap<EventType, FilterHandleSetNode>();
         eventTypesRWLock = new ReentrantReadWriteLock();
     }
 
@@ -40,7 +40,7 @@ public class EventTypeIndex implements EventEvaluator
      * @param eventType is the event type to be added to the index
      * @param rootNode is the root node of the subtree for filter constant indizes and callbacks
      */
-    public void add(EventType eventType, FilterCallbackSetNode rootNode)
+    public void add(EventType eventType, FilterHandleSetNode rootNode)
     {
         eventTypesRWLock.writeLock().lock();
         if (eventTypes.containsKey(eventType))
@@ -57,16 +57,16 @@ public class EventTypeIndex implements EventEvaluator
      * @param eventType is an event type
      * @return the subtree's root node
      */
-    public FilterCallbackSetNode get(EventType eventType)
+    public FilterHandleSetNode get(EventType eventType)
     {
         eventTypesRWLock.readLock().lock();
-        FilterCallbackSetNode result = eventTypes.get(eventType);
+        FilterHandleSetNode result = eventTypes.get(eventType);
         eventTypesRWLock.readLock().unlock();
 
         return result;
     }
 
-    public void matchEvent(EventBean event, List<FilterCallback> matches)
+    public void matchEvent(EventBean event, Collection<FilterHandle> matches)
     {
         if (log.isDebugEnabled())
         {
@@ -91,10 +91,15 @@ public class EventTypeIndex implements EventEvaluator
         }
     }
 
-    private void matchType(EventType eventType, EventBean eventBean, List<FilterCallback> matches)
+    protected int size()
+    {
+        return eventTypes.size();
+    }
+
+    private void matchType(EventType eventType, EventBean eventBean, Collection<FilterHandle> matches)
     {
         eventTypesRWLock.readLock().lock();
-        FilterCallbackSetNode rootNode = eventTypes.get(eventType);
+        FilterHandleSetNode rootNode = eventTypes.get(eventType);
         eventTypesRWLock.readLock().unlock();
 
         // If the top class node is null, no filters have yet been registered for this event type.

@@ -16,7 +16,7 @@ public class TestFilterParamIndexNotEquals extends TestCase
     private SupportBean testBean;
     private EventBean testEventBean;
     private EventType testEventType;
-    private List<FilterCallback> matchesList;
+    private List<FilterHandle> matchesList;
 
     public void setUp()
     {
@@ -24,7 +24,7 @@ public class TestFilterParamIndexNotEquals extends TestCase
         testBean = new SupportBean();
         testEventBean = SupportEventBeanFactory.createObject(testBean);
         testEventType = testEventBean.getEventType();
-        matchesList = new LinkedList<FilterCallback>();
+        matchesList = new LinkedList<FilterHandle>();
     }
 
     public void testBoolean()

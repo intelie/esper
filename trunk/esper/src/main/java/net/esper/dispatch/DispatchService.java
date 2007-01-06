@@ -21,12 +21,6 @@ public interface DispatchService
      * Add a Dispatchable implementation.
      * @param dispatchable to execute later
      */
-    public void addInternal(Dispatchable dispatchable);
-
-    /**
-     * Add a Dispatchable implementation.
-     * @param dispatchable to execute later
-     */
     public void addExternal(Dispatchable dispatchable);
 
     /**

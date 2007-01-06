@@ -11,6 +11,8 @@ import net.esper.event.EventType;
 import net.esper.view.ViewProcessingException;
 import net.esper.view.Viewable;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.util.ManagedReadWriteLock;
+import net.esper.util.ManagedLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,6 +28,8 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
     private final String expressionText;
     private final UpdateDispatchView dispatchChildView;
     private final EPEQLStmtStartMethod startMethod;
+    private final ManagedReadWriteLock eventProcessingRWLock;
+    private final ManagedLock statementLock;
 
     private Viewable parentView;
     private EPStatementStopMethod stopMethod;
@@ -37,11 +41,15 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
      * @param startMethod to start the view
      */
     public EPEQLStatementImpl(String expressionText, DispatchService dispatchService,
-                               EPEQLStmtStartMethod startMethod)
+                               EPEQLStmtStartMethod startMethod,
+                               ManagedReadWriteLock eventProcessingRWLock,
+                               ManagedLock statementLock)
     {
         this.expressionText = expressionText;
         this.dispatchChildView = new UpdateDispatchView(this.getListeners(), dispatchService);
         this.startMethod = startMethod;
+        this.eventProcessingRWLock = eventProcessingRWLock;
+        this.statementLock = statementLock;
 
         start();
     }
@@ -53,12 +61,26 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
             throw new IllegalStateException("View statement already stopped");
         }
 
-        if (!this.getListeners().isEmpty())
+        // Acquire a lock for event processing as threads may be in the views used by the statement
+        // and that could conflict with the destroy of views
+        eventProcessingRWLock.acquireWriteLock();
+        try
         {
-            parentView.removeView(dispatchChildView);
-        }
+            if (!this.getListeners().isEmpty())
+            {
+                parentView.removeView(dispatchChildView);
+            }
 
-        stopMethod.stop();
+            stopMethod.stop();
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            eventProcessingRWLock.releaseWriteLock();
+        }
         stopMethod = null;
         parentView = null;
     }
@@ -70,28 +92,42 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
             throw new IllegalStateException("View statement already started");
         }
 
-        Pair<Viewable, EPStatementStopMethod> pair;
+        // Acquire a lock for event processing as threads may be in the views used by the statement
+        // and that could conflict with the destroy of views
+        eventProcessingRWLock.acquireWriteLock();
         try
         {
-            pair = startMethod.start();
-        }
-        catch (ExprValidationException ex)
-        {
-            log.debug(".start Error starting view", ex);
-            throw new EPStatementException("Error starting view: " + ex.getMessage(), expressionText);
-        }
-        catch (ViewProcessingException ex)
-        {
-            log.debug(".start Error starting view", ex);
-            throw new EPStatementException("Error starting view: " + ex.getMessage(), expressionText);
-        }
+            Pair<Viewable, EPStatementStopMethod> pair;
+            try
+            {
+                pair = startMethod.start();
+            }
+            catch (ExprValidationException ex)
+            {
+                log.debug(".start Error starting view", ex);
+                throw new EPStatementException("Error starting view: " + ex.getMessage(), expressionText);
+            }
+            catch (ViewProcessingException ex)
+            {
+                log.debug(".start Error starting view", ex);
+                throw new EPStatementException("Error starting view: " + ex.getMessage(), expressionText);
+            }
 
-        parentView = pair.getFirst();
-        stopMethod = pair.getSecond();
+            parentView = pair.getFirst();
+            stopMethod = pair.getSecond();
 
-        if (!this.getListeners().isEmpty())
+            if (!this.getListeners().isEmpty())
+            {
+                parentView.addView(dispatchChildView);
+            }
+        }
+        catch (RuntimeException ex)
         {
-            parentView.addView(dispatchChildView);
+            throw ex;
+        }
+        finally
+        {
+            eventProcessingRWLock.releaseWriteLock();
         }
     }
 
@@ -119,7 +155,19 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
     {
         if (parentView != null)
         {
-            parentView.removeView(dispatchChildView);
+            statementLock.acquireLock();
+            try
+            {
+                parentView.removeView(dispatchChildView);
+            }
+            catch (RuntimeException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                statementLock.releaseLock();
+            }
         }
     }
 
@@ -127,7 +175,19 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
     {
         if (parentView != null)
         {
-            parentView.addView(dispatchChildView);
+            statementLock.acquireLock();
+            try
+            {
+                parentView.addView(dispatchChildView);
+            }
+            catch (RuntimeException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                statementLock.releaseLock();
+            }
         }
     }
 

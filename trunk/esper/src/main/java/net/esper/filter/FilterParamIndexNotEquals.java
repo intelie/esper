@@ -6,6 +6,7 @@ import net.esper.event.EventBean;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -65,7 +66,7 @@ public final class FilterParamIndexNotEquals extends FilterParamIndex
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, List<FilterCallback> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
     {
         Object attributeValue = this.getGetter().get(eventBean);
 

@@ -4,10 +4,7 @@ import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.collection.MultiKeyUntyped;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -96,7 +93,7 @@ public final class FilterParamIndexIn extends FilterParamIndex
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, List<FilterCallback> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
     {
         Object attributeValue = this.getGetter().get(eventBean);
 

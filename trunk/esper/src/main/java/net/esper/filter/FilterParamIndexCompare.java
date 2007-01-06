@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -99,7 +100,7 @@ public final class FilterParamIndexCompare extends FilterParamIndex
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, List<FilterCallback> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
     {
         Object propertyValue = this.getGetter().get(eventBean);
 

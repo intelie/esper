@@ -11,11 +11,11 @@ public class SupportViewContextFactory
     {
         SupportSchedulingServiceImpl sched = new SupportSchedulingServiceImpl();
         ScheduleBucket bucket = sched.allocateBucket();
-        return new ViewServiceContext(sched, bucket, SupportEventAdapterService.getService());
+        return new ViewServiceContext(sched, bucket, SupportEventAdapterService.getService(), null);
     }
 
     public static ViewServiceContext makeContext(SupportSchedulingServiceImpl stub)
     {
-        return new ViewServiceContext(stub, stub.allocateBucket(), SupportEventAdapterService.getService());
+        return new ViewServiceContext(stub, stub.allocateBucket(), SupportEventAdapterService.getService(), null);
     }
 }

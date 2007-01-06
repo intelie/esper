@@ -2,6 +2,7 @@ package net.esper.filter;
 
 import net.esper.event.EventType;
 import net.esper.collection.Pair;
+import net.esper.util.ThreadLogUtil;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class EventTypeIndexBuilder
 {
-    private final Map<FilterCallback, Pair<EventType, IndexTreePath>> callbacks;
+    private final Map<FilterHandle, Pair<EventType, IndexTreePath>> callbacks;
     private final Lock callbacksLock;
     private final EventTypeIndex eventTypeIndex;
 
@@ -27,7 +28,7 @@ public class EventTypeIndexBuilder
     {
         this.eventTypeIndex = eventTypeIndex;
 
-        this.callbacks = new HashMap<FilterCallback, Pair<EventType, IndexTreePath>>();
+        this.callbacks = new HashMap<FilterHandle, Pair<EventType, IndexTreePath>>();
         this.callbacksLock = new ReentrantLock();
     }
 
@@ -37,12 +38,12 @@ public class EventTypeIndexBuilder
      * @param filterValueSet is the filter information
      * @param filterCallback is the callback
      */
-    public final void add(FilterValueSet filterValueSet, FilterCallback filterCallback)
+    public final void add(FilterValueSet filterValueSet, FilterHandle filterCallback)
     {
         EventType eventType = filterValueSet.getEventType();
 
         // Check if a filter tree exists for this event type
-        FilterCallbackSetNode rootNode = eventTypeIndex.get(eventType);
+        FilterHandleSetNode rootNode = eventTypeIndex.get(eventType);
 
         // Make sure we have a root node
         if (rootNode == null)
@@ -51,7 +52,7 @@ public class EventTypeIndexBuilder
             rootNode = eventTypeIndex.get(eventType);
             if (rootNode == null)
             {
-                rootNode = new FilterCallbackSetNode();
+                rootNode = new FilterHandleSetNode();
                 eventTypeIndex.add(eventType, rootNode);
             }
             callbacksLock.unlock();
@@ -79,7 +80,7 @@ public class EventTypeIndexBuilder
      * Remove a filter callback from the given index node.
      * @param filterCallback is the callback to remove
      */
-    public final void remove(FilterCallback filterCallback)
+    public final void remove(FilterHandle filterCallback)
     {
         callbacksLock.lock();
         Pair<EventType, IndexTreePath> pair = callbacks.get(filterCallback);
@@ -90,7 +91,7 @@ public class EventTypeIndexBuilder
             throw new IllegalArgumentException("Filter callback to be removed not found");
         }
 
-        FilterCallbackSetNode rootNode = eventTypeIndex.get(pair.getFirst());
+        FilterHandleSetNode rootNode = eventTypeIndex.get(pair.getFirst());
 
         // Now remove from tree
         IndexTreeBuilder treeBuilder = new IndexTreeBuilder();

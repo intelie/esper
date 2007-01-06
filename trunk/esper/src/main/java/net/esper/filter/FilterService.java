@@ -2,10 +2,13 @@ package net.esper.filter;
 
 import net.esper.event.EventBean;
 
+import java.util.List;
+import java.util.Collection;
+
 /**
  * Interface for filtering events by event type and event property values. Allows adding and removing filters.
  * <p>
- * Filters are defined by a {@link FilterSpec} and are associated with a {@link FilterCallback}
+ * Filters are defined by a {@link FilterSpec} and are associated with a {@link FilterHandle}
  * callback.
  * Implementations may decide if the same filter callback can be registered twice for different or some
  * filter specifications.
@@ -18,7 +21,7 @@ public interface FilterService
      * Finds matching filters to the event passed in and invokes their associated callback method.
      * @param event is the event to be matched against filters
      */
-    public void evaluate(EventBean event);
+    public void evaluate(EventBean event, Collection<FilterHandle> matches);
 
     /**
      * Add a filter for events as defined by the filter specification, and register a
@@ -27,13 +30,13 @@ public interface FilterService
      * event type information, event property values and operators
      * @param callback is the callback to be invoked when the filter matches an event
      */
-    public void add(FilterValueSet filterValueSet, FilterCallback callback);
+    public void add(FilterValueSet filterValueSet, FilterHandle callback);
 
     /**
      * Remove a filter callback.
      * @param callback is the callback to be removed
      */
-    public void remove(FilterCallback callback);
+    public void remove(FilterHandle callback);
 
     /**
      * Return a count of the number of events evaluated by this service.

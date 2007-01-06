@@ -5,6 +5,7 @@ import net.esper.pattern.PatternContext;
 import net.esper.schedule.SchedulingServiceImpl;
 import net.esper.support.guard.SupportQuitable;
 import net.esper.support.event.SupportEventAdapterService;
+import net.esper.support.schedule.SupportSchedulingServiceImpl;
 
 public class TestTimerWithinGuard extends TestCase
 {
@@ -15,7 +16,7 @@ public class TestTimerWithinGuard extends TestCase
     public void setUp()
     {
         scheduleService = new SchedulingServiceImpl();
-        PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService());
+        PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService(), null);
 
         quitable = new SupportQuitable();
 
@@ -39,7 +40,7 @@ public class TestTimerWithinGuard extends TestCase
         assertEquals(0, quitable.getAndResetQuitCounter());
 
         scheduleService.setTime(1000);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);
 
         assertEquals(1, quitable.getAndResetQuitCounter());
     }
@@ -53,7 +54,7 @@ public class TestTimerWithinGuard extends TestCase
         guard.stopGuard();
 
         scheduleService.setTime(1001);
-        scheduleService.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduleService);        
 
         assertEquals(0, quitable.getAndResetQuitCounter());
     }

@@ -1,5 +1,7 @@
 package net.esper.eql.db;
 
+import net.esper.core.EPStatementHandle;
+
 /**
  * Service providing database connection factory and configuration information
  * for use with historical data polling.
@@ -29,5 +31,5 @@ public interface DatabaseConfigService
      * @return cache implementation
      * @throws DatabaseConfigException is thrown to indicate database configuration errors
      */
-    public DataCache getDataCache(String databaseName) throws DatabaseConfigException;
+    public DataCache getDataCache(String databaseName, EPStatementHandle epStatementHandle) throws DatabaseConfigException;
 }

@@ -4,15 +4,20 @@ import net.esper.client.ConfigurationEventTypeLegacy;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * A cache and factory class for obtaining {@link EventType} instances and {@link EventBean} instances
  * for Java Bean events. The class caches {@link EventType} instances already known for performance reasons.
+ * <p>
+ * This class is multithread-safe. 
  */
 public class BeanEventAdapter
 {
     private final Map<Class, BeanEventType> typesPerJavaBean;
     private final Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
+    private final ReadWriteLock typesPerJavaBeanLock;
 
     /**
      * Ctor.
@@ -27,6 +32,8 @@ public class BeanEventAdapter
         {
             this.classToLegacyConfigs.putAll(classToLegacyConfigs);
         }
+
+        typesPerJavaBeanLock = new ReentrantReadWriteLock();
     }
 
     /**
@@ -55,17 +62,38 @@ public class BeanEventAdapter
         }
 
         // Check if its already there
+        typesPerJavaBeanLock.readLock().lock();
         BeanEventType eventType = typesPerJavaBean.get(clazz);
+        typesPerJavaBeanLock.readLock().unlock();
         if (eventType != null)
         {
             return eventType;
         }
 
-        // Check if we have a legacy type definition for this class
-        ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(clazz.getName());
+        // not created yet, thread-safe create
+        typesPerJavaBeanLock.writeLock().lock();
+        try
+        {
+            eventType = typesPerJavaBean.get(clazz);
+            if (eventType != null)
+            {
+                return eventType;
+            }
 
-        eventType = new BeanEventType(clazz, this, legacyDef);
-        typesPerJavaBean.put(clazz, eventType);
+            // Check if we have a legacy type definition for this class
+            ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(clazz.getName());
+
+            eventType = new BeanEventType(clazz, this, legacyDef);
+            typesPerJavaBean.put(clazz, eventType);
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            typesPerJavaBeanLock.writeLock().unlock();
+        }
 
         return eventType;
     }

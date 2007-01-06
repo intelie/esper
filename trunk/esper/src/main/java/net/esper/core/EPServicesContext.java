@@ -14,8 +14,8 @@ import net.esper.timer.TimerService;
 import net.esper.timer.TimerServiceProvider;
 import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
-import net.esper.view.stream.StreamReuseService;
-import net.esper.view.stream.StreamReuseServiceProvider;
+import net.esper.view.stream.StreamFactoryService;
+import net.esper.view.stream.StreamFactoryServiceProvider;
 
 /**
  * Convenience class to instantiate implementations for all services.
@@ -28,7 +28,7 @@ public final class EPServicesContext
     private final EmitService emitService;
     private final DispatchService dispatchService;
     private final ViewService viewService;
-    private final StreamReuseService streamReuseService;
+    private final StreamFactoryService streamFactoryService;
     private final EventAdapterService eventAdapterService;
     private final AutoImportService autoImportService;
     private final DatabaseConfigService databaseConfigService;
@@ -58,7 +58,7 @@ public final class EPServicesContext
         this.emitService = EmitServiceProvider.newService();
         this.dispatchService = DispatchServiceProvider.newService();
         this.viewService = ViewServiceProvider.newService();
-        this.streamReuseService = StreamReuseServiceProvider.newService();
+        this.streamFactoryService = StreamFactoryServiceProvider.newService(true);  // TODO: get from config
     }
 
     /**
@@ -137,9 +137,9 @@ public final class EPServicesContext
      * Returns stream service.
      * @return stream service
      */
-    public StreamReuseService getStreamService()
+    public StreamFactoryService getStreamService()
     {
-        return streamReuseService;
+        return streamFactoryService;
     }
 
     /**

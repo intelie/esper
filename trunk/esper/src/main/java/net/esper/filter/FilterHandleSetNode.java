@@ -10,24 +10,24 @@ import org.apache.commons.logging.Log;
 
 /**
  * This class holds a list of indizes storing filter constants in {@link FilterParamIndex} nodes
- * and a set of {@link FilterCallback}.
+ * and a set of {@link FilterHandle}.
  * An instance of this class represents a leaf-node (no indizes stored, just filter callbacks)
  * but can also be non-leaf (some indizes exist) in a filter evaluation tree.
  * Events are evaluated by asking each of the indizes to evaluate the event and by
  * adding any filter callbacks in this node to the "matches" list of callbacks.
  */
-public final class FilterCallbackSetNode implements EventEvaluator
+public final class FilterHandleSetNode implements EventEvaluator
 {
-    private final Set<FilterCallback> callbackSet;
+    private final Set<FilterHandle> callbackSet;
     private final List<FilterParamIndex> indizes;
     private final ReadWriteLock nodeRWLock;
 
     /**
      * Constructor.
      */
-    public FilterCallbackSetNode()
+    public FilterHandleSetNode()
     {
-        callbackSet = new LinkedHashSet<FilterCallback>();
+        callbackSet = new LinkedHashSet<FilterHandle>();
         indizes = new LinkedList<FilterParamIndex>();
         nodeRWLock = new ReentrantReadWriteLock();
     }
@@ -79,7 +79,7 @@ public final class FilterCallbackSetNode implements EventEvaluator
      * @param eventBean is the event wrapper supplying the event property values
      * @param matches is the list of callbacks to add to for any matches found
      */
-    public final void matchEvent(EventBean eventBean, List<FilterCallback> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
     {
         nodeRWLock.readLock().lock();
 
@@ -90,7 +90,7 @@ public final class FilterCallbackSetNode implements EventEvaluator
         }
 
         // Add each filter callback stored in this node to the matching list
-        for (FilterCallback filterCallback : callbackSet)
+        for (FilterHandle filterCallback : callbackSet)
         {
             if (log.isDebugEnabled())
             {
@@ -112,7 +112,7 @@ public final class FilterCallbackSetNode implements EventEvaluator
      * @param filterCallback is the filter callback to check for
      * @return true if callback found, false if not
      */
-    protected boolean contains(FilterCallback filterCallback)
+    protected boolean contains(FilterHandle filterCallback)
     {
         return callbackSet.contains(filterCallback);
     }
@@ -147,7 +147,7 @@ public final class FilterCallbackSetNode implements EventEvaluator
      * code.
      * @param filterCallback is the callback to add
      */
-    protected final void add(FilterCallback filterCallback)
+    protected final void add(FilterHandle filterCallback)
     {
         callbackSet.add(filterCallback);
     }
@@ -159,10 +159,10 @@ public final class FilterCallbackSetNode implements EventEvaluator
      * @param filterCallback is the callback to remove
      * @return true if found, false if not existing
      */
-    protected final boolean remove(FilterCallback filterCallback)
+    protected final boolean remove(FilterHandle filterCallback)
     {
         return callbackSet.remove(filterCallback);
     }
 
-    private static final Log log = LogFactory.getLog(FilterCallbackSetNode.class);
+    private static final Log log = LogFactory.getLog(FilterHandleSetNode.class);
 }

@@ -10,7 +10,6 @@ import net.esper.collection.MultiKeyUntyped;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Arrays;
 
 public class TestFilterParamIndexIn extends TestCase
 {
@@ -18,7 +17,7 @@ public class TestFilterParamIndexIn extends TestCase
     private SupportBean testBean;
     private EventBean testEventBean;
     private EventType testEventType;
-    private List<FilterCallback> matchesList;
+    private List<FilterHandle> matchesList;
 
     public void setUp()
     {
@@ -26,7 +25,7 @@ public class TestFilterParamIndexIn extends TestCase
         testBean = new SupportBean();
         testEventBean = SupportEventBeanFactory.createObject(testBean);
         testEventType = testEventBean.getEventType();
-        matchesList = new LinkedList<FilterCallback>();
+        matchesList = new LinkedList<FilterHandle>();
     }
 
     public void testIndex()

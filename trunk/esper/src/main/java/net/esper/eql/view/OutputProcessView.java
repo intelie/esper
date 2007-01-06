@@ -14,7 +14,6 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.ViewServiceContext;
 import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

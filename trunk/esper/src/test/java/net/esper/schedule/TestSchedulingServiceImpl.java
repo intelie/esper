@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 import net.esper.support.schedule.SupportScheduleCallback;
 
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class TestSchedulingServiceImpl extends TestCase
 {
@@ -51,24 +53,24 @@ public class TestSchedulingServiceImpl extends TestCase
         // Evaluate before the within time, expect not results
         startTime += 19;
         service.setTime(startTime);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
 
         // Evaluate exactly on the within time, expect a result
         startTime += 1;
         service.setTime(startTime);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 1, 2, 3, 0});
 
         // Evaluate after already evaluated once, no result
         startTime += 1;
         service.setTime(startTime);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {4, 0, 0, 0, 0});
 
         startTime += 1;
         service.setTime(startTime);
-        service.evaluate();
+        evaluateSchedule();
         assertEquals(0, callbacks[3].clearAndGetOrderTriggered());
 
         // Adding the same callback more than once should cause an exception
@@ -94,16 +96,16 @@ public class TestSchedulingServiceImpl extends TestCase
 
         startTime += 20;
         service.setTime(startTime);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 1, 2, 0, 0});
 
         startTime += 1;
         service.setTime(startTime);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {3, 0, 0, 4, 0});
 
         service.setTime(startTime + Integer.MAX_VALUE);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
     }
 
@@ -137,39 +139,39 @@ public class TestSchedulingServiceImpl extends TestCase
         // Now send a times reflecting various seconds later and check who got a callback
         service.setTime(startTime + 1000);
         SupportScheduleCallback.setCallbackOrderNum(0);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
 
         service.setTime(startTime + 2000);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
 
         service.setTime(startTime + 4000);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
 
         service.setTime(startTime + 5000);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {1, 0, 0, 0, 2});
 
         service.setTime(startTime + 9000);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
 
         service.setTime(startTime + 10000);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 3, 0, 4, 0});
 
         service.setTime(startTime + 11000);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
 
         service.setTime(startTime + 15000);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 5, 0, 0});
 
         service.setTime(startTime + Integer.MAX_VALUE);
-        service.evaluate();
+        evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
     }
 
@@ -177,16 +179,7 @@ public class TestSchedulingServiceImpl extends TestCase
     {
         SchedulingServiceImpl evaluator = new SchedulingServiceImpl();
         SupportScheduleCallback callback = new SupportScheduleCallback();
-
-        try
-        {
-            evaluator.remove(callback, null);
-            assertTrue(false);
-        }
-        catch (ScheduleServiceException ex)
-        {
-            // Expected exception
-        }
+        evaluator.remove(callback, null);
     }
 
     private void checkCallbacks(SupportScheduleCallback callbacks[], Integer[] results)
@@ -199,4 +192,15 @@ public class TestSchedulingServiceImpl extends TestCase
         }
     }
 
+    private void evaluateSchedule()
+    {
+        Collection<ScheduleHandle> handles = new LinkedList<ScheduleHandle>();
+        service.evaluate(handles);
+
+        for (ScheduleHandle handle : handles)
+        {
+            ScheduleHandleCallback cb = (ScheduleHandleCallback) handle;
+            cb.scheduledTrigger();
+        }
+    }    
 }

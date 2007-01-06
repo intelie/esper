@@ -5,6 +5,8 @@ import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.view.SupportViewContextFactory;
 import net.esper.view.ViewServiceContext;
+import net.esper.schedule.ScheduleHandleCallback;
+import net.esper.core.EPStatementHandleCallback;
 import junit.framework.TestCase;
 
 public class TestOutputConditionFirst extends TestCase
@@ -48,7 +50,7 @@ public class TestOutputConditionFirst extends TestCase
         // check callback scheduled, pretend callback
         assertTrue(schedulingServiceStub.getAdded().size() == 1);
         assertTrue(schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC) != null);
-        schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC).scheduledTrigger();
+        ((EPStatementHandleCallback) schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC)).getScheduleCallback().scheduledTrigger();
         
         // 2 new, 3 old
         condition.updateOutputCondition(2, 3);
@@ -59,7 +61,7 @@ public class TestOutputConditionFirst extends TestCase
         // check callback scheduled, pretend callback
         assertTrue(schedulingServiceStub.getAdded().size() == 1);
         assertTrue(schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC) != null);
-        schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC).scheduledTrigger();
+        ((EPStatementHandleCallback) schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC)).getScheduleCallback().scheduledTrigger();
 
         
     	// 0 new, 0 old

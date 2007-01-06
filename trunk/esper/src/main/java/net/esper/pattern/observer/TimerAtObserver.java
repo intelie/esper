@@ -2,17 +2,17 @@ package net.esper.pattern.observer;
 
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.MatchedEventMap;
-import net.esper.schedule.ScheduleCallback;
+import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSpec;
 import net.esper.schedule.ScheduleSlot;
-import net.esper.pattern.observer.EventObserver;
+import net.esper.core.EPStatementHandleCallback;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * Observer implementation for indicating that a certain time arrived, similar to "crontab".
  */
-public class TimerAtObserver implements EventObserver, ScheduleCallback
+public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
 {
     private final ScheduleSpec scheduleSpec;
     private final PatternContext context;
@@ -21,6 +21,7 @@ public class TimerAtObserver implements EventObserver, ScheduleCallback
     private final ObserverEventEvaluator observerEventEvaluator;
 
     private boolean isTimerActive = false;
+    private EPStatementHandleCallback scheduleHandle;
 
     /**
      * Ctor.
@@ -61,7 +62,8 @@ public class TimerAtObserver implements EventObserver, ScheduleCallback
             throw new IllegalStateException("Timer already active");
         }
 
-        context.getSchedulingService().add(scheduleSpec, this, scheduleSlot);
+        scheduleHandle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
+        context.getSchedulingService().add(scheduleSpec, scheduleHandle, scheduleSlot);
         isTimerActive = true;
     }
 
@@ -74,8 +76,9 @@ public class TimerAtObserver implements EventObserver, ScheduleCallback
 
         if (isTimerActive)
         {
-            context.getSchedulingService().remove(this, scheduleSlot);
+            context.getSchedulingService().remove(scheduleHandle, scheduleSlot);
             isTimerActive = false;
+            scheduleHandle = null;
         }
     }
 

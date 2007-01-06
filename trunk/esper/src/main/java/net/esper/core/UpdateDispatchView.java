@@ -23,10 +23,23 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
 {
     private final Set<UpdateListener> updateListeners;
     private final DispatchService dispatchService;
-    private boolean isDispatchWaiting;
+    
+    private ThreadLocal<Boolean> isDispatchWaiting = new ThreadLocal<Boolean>() {
+        protected synchronized Boolean initialValue() {
+            return new Boolean(false);
+        }
+    };
 
-    private LinkedList<EventBean[]> lastNewEvents = new LinkedList<EventBean[]>();
-    private LinkedList<EventBean[]> lastOldEvents = new LinkedList<EventBean[]>();
+    private ThreadLocal<LinkedList<EventBean[]>> lastNewEvents = new ThreadLocal<LinkedList<EventBean[]>>() {
+        protected synchronized LinkedList<EventBean[]> initialValue() {
+            return new LinkedList<EventBean[]>();
+        }
+    };
+    private ThreadLocal<LinkedList<EventBean[]>> lastOldEvents = new ThreadLocal<LinkedList<EventBean[]>>() {
+        protected synchronized LinkedList<EventBean[]> initialValue() {
+            return new LinkedList<EventBean[]>();
+        }
+    };
 
     /**
      * Ctor.
@@ -47,16 +60,16 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
         }
         if (newData != null)
         {
-            lastNewEvents.add(newData);
+            lastNewEvents.get().add(newData);
         }
         if (oldData != null)
         {
-            lastOldEvents.add(oldData);
+            lastOldEvents.get().add(oldData);
         }
-        if (!isDispatchWaiting)
+        if (!isDispatchWaiting.get())
         {
             dispatchService.addExternal(this);
-            isDispatchWaiting = true;
+            isDispatchWaiting.set(true);
         }
     }
 
@@ -72,9 +85,9 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
 
     public void execute()
     {
-        isDispatchWaiting = false;
-        EventBean[] newEvents = EventBeanUtility.flatten(lastNewEvents);
-        EventBean[] oldEvents = EventBeanUtility.flatten(lastOldEvents);
+        isDispatchWaiting.set(false);
+        EventBean[] newEvents = EventBeanUtility.flatten(lastNewEvents.get());
+        EventBean[] oldEvents = EventBeanUtility.flatten(lastOldEvents.get());
 
         if (log.isDebugEnabled())
         {
@@ -86,8 +99,8 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
             listener.update(newEvents, oldEvents);
         }
 
-        lastNewEvents.clear();
-        lastOldEvents.clear();
+        lastNewEvents.get().clear();
+        lastOldEvents.get().clear();
     }
 
     private static Log log = LogFactory.getLog(UpdateDispatchView.class);

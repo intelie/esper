@@ -1,10 +1,9 @@
 package net.esper.filter;
 
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanSimple;
-import net.esper.support.filter.SupportFilterCallback;
+import net.esper.support.filter.SupportFilterHandle;
 import net.esper.support.filter.SupportFilterSpecBuilder;
 import net.esper.support.event.SupportEventTypeFactory;
 
@@ -21,8 +20,8 @@ public class TestEventTypeIndexBuilder extends TestCase
     private FilterValueSet valueSetOne;
     private FilterValueSet valueSetTwo;
 
-    private FilterCallback callbackOne;
-    private FilterCallback callbackTwo;
+    private FilterHandle callbackOne;
+    private FilterHandle callbackTwo;
 
     public void setUp()
     {
@@ -35,8 +34,8 @@ public class TestEventTypeIndexBuilder extends TestCase
         valueSetOne = SupportFilterSpecBuilder.build(typeOne, new Object[0]).getValueSet(null);
         valueSetTwo = SupportFilterSpecBuilder.build(typeTwo, new Object[0]).getValueSet(null);
 
-        callbackOne = new SupportFilterCallback();
-        callbackTwo = new SupportFilterCallback();
+        callbackOne = new SupportFilterHandle();
+        callbackTwo = new SupportFilterHandle();
     }
 
     public void testAddRemove()

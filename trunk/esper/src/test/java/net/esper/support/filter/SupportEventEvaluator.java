@@ -1,18 +1,19 @@
 package net.esper.support.filter;
 
 import net.esper.filter.EventEvaluator;
-import net.esper.filter.FilterCallback;
+import net.esper.filter.FilterHandle;
 import net.esper.event.EventBean;
 
 import java.util.List;
+import java.util.Collection;
 
 public class SupportEventEvaluator implements EventEvaluator
 {
     private int countInvoked;
     private EventBean lastEvent;
-    private List<FilterCallback> lastMatches;
+    private Collection<FilterHandle> lastMatches;
 
-    public void matchEvent(EventBean event, List<FilterCallback> matches)
+    public void matchEvent(EventBean event, Collection<FilterHandle> matches)
     {
         countInvoked++;
         lastEvent = event;
@@ -24,7 +25,7 @@ public class SupportEventEvaluator implements EventEvaluator
         return lastEvent;
     }
 
-    public List<FilterCallback> getLastMatches()
+    public Collection<FilterHandle> getLastMatches()
     {
         return lastMatches;
     }
@@ -39,7 +40,7 @@ public class SupportEventEvaluator implements EventEvaluator
         this.lastEvent = lastEvent;
     }
 
-    public void setLastMatches(List<FilterCallback> lastMatches)
+    public void setLastMatches(List<FilterHandle> lastMatches)
     {
         this.lastMatches = lastMatches;
     }

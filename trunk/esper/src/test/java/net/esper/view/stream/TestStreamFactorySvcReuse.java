@@ -5,15 +5,14 @@ import net.esper.support.filter.SupportFilterServiceImpl;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.filter.FilterOperator;
 import net.esper.filter.FilterSpec;
 import net.esper.view.EventStream;
 import junit.framework.TestCase;
 
-public class TestStreamServiceImpl extends TestCase
+public class TestStreamFactorySvcReuse extends TestCase
 {
-    private StreamReuseService streamReuseService;
+    private StreamFactoryService streamFactoryService;
     private SupportFilterServiceImpl supportFilterService;
 
     private FilterSpec[] filterSpecs;
@@ -21,7 +20,7 @@ public class TestStreamServiceImpl extends TestCase
 
     public void setUp()
     {
-        streamReuseService = new StreamReuseServiceImpl();
+        streamFactoryService = new StreamFactorySvcReuse();
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
         supportFilterService = new SupportFilterServiceImpl();
 
@@ -31,10 +30,10 @@ public class TestStreamServiceImpl extends TestCase
         filterSpecs[2] = SupportFilterSpecBuilder.build(eventType, new Object[] { "string", FilterOperator.EQUAL, "b" });
 
         streams = new EventStream[4];
-        streams[0] = streamReuseService.createStream(filterSpecs[0], supportFilterService);
-        streams[1] = streamReuseService.createStream(filterSpecs[0], supportFilterService);
-        streams[2] = streamReuseService.createStream(filterSpecs[1], supportFilterService);
-        streams[3] = streamReuseService.createStream(filterSpecs[2], supportFilterService);
+        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, null);
+        streams[1] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, null);
+        streams[2] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, null);
+        streams[3] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, null);
     }
 
     public void testCreate()
@@ -53,21 +52,21 @@ public class TestStreamServiceImpl extends TestCase
 
     public void testDrop()
     {
-        streamReuseService.dropStream(filterSpecs[0], supportFilterService);
-        streamReuseService.dropStream(filterSpecs[1], supportFilterService);
+        streamFactoryService.dropStream(filterSpecs[0], supportFilterService);
+        streamFactoryService.dropStream(filterSpecs[1], supportFilterService);
         assertEquals(0, supportFilterService.getRemoved().size());
 
         // Filter removed
-        streamReuseService.dropStream(filterSpecs[0], supportFilterService);
+        streamFactoryService.dropStream(filterSpecs[0], supportFilterService);
         assertEquals(1, supportFilterService.getRemoved().size());
 
-        streamReuseService.dropStream(filterSpecs[2], supportFilterService);
+        streamFactoryService.dropStream(filterSpecs[2], supportFilterService);
         assertEquals(2, supportFilterService.getRemoved().size());
 
         // Something already removed
         try
         {
-            streamReuseService.dropStream(filterSpecs[2], supportFilterService);
+            streamFactoryService.dropStream(filterSpecs[2], supportFilterService);
             TestCase.fail();
         }
         catch (IllegalStateException ex)

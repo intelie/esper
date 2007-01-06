@@ -1,8 +1,10 @@
 package net.esper.eql.view;
 
-import net.esper.schedule.ScheduleCallback;
+import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.view.ViewServiceContext;
+import net.esper.core.EPStatementHandleCallback;
+import net.esper.core.EPStatementHandle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,8 +25,6 @@ public final class OutputConditionTime implements OutputCondition
     private Long currentReferencePoint;
     private ViewServiceContext context; 
     private boolean isCallbackScheduled;
-
-
 
     /**
      * Constructor.
@@ -107,7 +107,7 @@ public final class OutputConditionTime implements OutputCondition
                     " msecIntervalSize=" + msecIntervalSize);
         }
 
-        ScheduleCallback callback = new ScheduleCallback() {
+        ScheduleHandleCallback callback = new ScheduleHandleCallback() {
             public void scheduledTrigger()
             {
                 OutputConditionTime.this.isCallbackScheduled = false;
@@ -115,7 +115,8 @@ public final class OutputConditionTime implements OutputCondition
                 scheduleCallback();
             }
         };
-        context.getSchedulingService().add(afterMSec, callback, scheduleSlot);
+        EPStatementHandleCallback handle = new EPStatementHandleCallback(context.getEpStatementHandle(), callback);
+        context.getSchedulingService().add(afterMSec, handle, scheduleSlot);
     }
 
     /**

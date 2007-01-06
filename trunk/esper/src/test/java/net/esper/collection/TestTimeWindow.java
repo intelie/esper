@@ -3,25 +3,32 @@ package net.esper.collection;
 import junit.framework.*;
 
 import java.util.List;
+import java.util.Iterator;
+import java.util.ConcurrentModificationException;
 
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventBeanFactory;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.event.EventBean;
+import net.esper.client.EPException;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
 public class TestTimeWindow extends TestCase
 {
-    private TimeWindow window = new TimeWindow();
+    private final TimeWindow window = new TimeWindow();
+    private final EventBean[] beans = new EventBean[6];
 
-    public void testAdd()
+    public void setUp()
     {
-        EventBean[] beans = new EventBean[6];
         for (int i = 0; i < beans.length; i++)
         {
             beans[i] = createBean();
         }
+    }
 
+    public void testAdd()
+    {
         assertTrue(window.getOldestTimestamp() == null);
         assertTrue(window.isEmpty());
 
@@ -88,6 +95,23 @@ public class TestTimeWindow extends TestCase
         }
 
         log.info(".testTimeWindowPerformance Done");
+    }
+
+    public void testConcurrentIterator()
+    {
+        window.add(10000, beans[0]);
+        Iterator<EventBean> it = window.iterator();
+        window.add(10000, beans[1]);
+
+        try
+        {
+            ArrayAssertionUtil.assertEqualsExactOrder(it, new EventBean[] {beans[0], beans[1]});
+            fail();
+        }
+        catch (ConcurrentModificationException ex)
+        {
+            // expected 
+        }
     }
 
     private EventBean createBean()

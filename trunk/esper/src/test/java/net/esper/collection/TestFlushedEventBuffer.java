@@ -3,6 +3,7 @@ package net.esper.collection;
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventBeanFactory;
+import net.esper.util.ManagedReadWriteLock;
 
 public class TestFlushedEventBuffer extends TestCase
 {
@@ -55,5 +56,4 @@ public class TestFlushedEventBuffer extends TestCase
         buffer.flush();
         assertNull(buffer.getAndFlush());
     }
-
 }

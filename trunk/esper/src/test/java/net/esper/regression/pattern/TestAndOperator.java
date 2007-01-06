@@ -10,7 +10,7 @@ public class TestAndOperator extends TestCase implements SupportBeanConstants
     {
         EventCollection events = EventCollectionFactory.getEventSetOne(0, 1000);
         CaseList testCaseList = new CaseList();
-        EventExpressionCase testCase = null;
+        EventExpressionCase testCase;
 
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " and every d=" + EVENT_D_CLASS);
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));

@@ -3,7 +3,7 @@ package net.esper.filter;
 import junit.framework.TestCase;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.filter.SupportFilterSpecBuilder;
-import net.esper.support.filter.SupportFilterCallback;
+import net.esper.support.filter.SupportFilterHandle;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
@@ -14,11 +14,11 @@ import java.util.SortedSet;
 
 public class TestIndexTreeBuilder extends TestCase
 {
-    List<FilterCallback> matches;
+    List<FilterHandle> matches;
     IndexTreeBuilder builder;
     EventBean eventBean;
     EventType eventType;
-    FilterCallback testFilterCallback[];
+    FilterHandle testFilterCallback[];
 
     public void setUp()
     {
@@ -33,13 +33,13 @@ public class TestIndexTreeBuilder extends TestCase
         eventBean = SupportEventBeanFactory.createObject(testBean);
         eventType = eventBean.getEventType();
 
-        matches = new LinkedList<FilterCallback>();
+        matches = new LinkedList<FilterHandle>();
 
         // Allocate a couple of callbacks
-        testFilterCallback = new SupportFilterCallback[20];
+        testFilterCallback = new SupportFilterHandle[20];
         for (int i = 0; i < testFilterCallback.length; i++)
         {
-            testFilterCallback[i] = new SupportFilterCallback();
+            testFilterCallback[i] = new SupportFilterHandle();
         }
     }
 
@@ -76,7 +76,7 @@ public class TestIndexTreeBuilder extends TestCase
 
     public void testBuildWithMatch()
     {
-        FilterCallbackSetNode topNode = new FilterCallbackSetNode();
+        FilterHandleSetNode topNode = new FilterHandleSetNode();
 
         // Add some parameter-less expression
         FilterValueSet filterSpec = makeFilterValues();
@@ -140,7 +140,7 @@ public class TestIndexTreeBuilder extends TestCase
         assertTrue(topNode.getIndizes().get(0).size() == 2);
         assertTrue(topNode.getIndizes().get(1).size() == 1);
         assertTrue(topNode.getIndizes().get(2).size() == 1);
-        FilterCallbackSetNode nextLevelSetNode = (FilterCallbackSetNode) topNode.getIndizes().get(1).get(Double.valueOf(1.1));
+        FilterHandleSetNode nextLevelSetNode = (FilterHandleSetNode) topNode.getIndizes().get(1).get(Double.valueOf(1.1));
         assertTrue(nextLevelSetNode != null);
         assertTrue(nextLevelSetNode.getIndizes().size() == 1);
 
@@ -160,7 +160,7 @@ public class TestIndexTreeBuilder extends TestCase
                                     "string", FilterOperator.EQUAL, "jack");
         builder.add(filterSpec, testFilterCallback[7], topNode);
         assertTrue(nextLevelSetNode.getIndizes().size() == 1);
-        FilterCallbackSetNode nodeTwo = (FilterCallbackSetNode) nextLevelSetNode.getIndizes().get(0).get("jack");
+        FilterHandleSetNode nodeTwo = (FilterHandleSetNode) nextLevelSetNode.getIndizes().get(0).get("jack");
         assertTrue(nodeTwo.getFilterCallbackCount() == 2);
 
         topNode.matchEvent(eventBean, matches);
@@ -197,7 +197,7 @@ public class TestIndexTreeBuilder extends TestCase
 
     public void testBuildMatchRemove()
     {
-        FilterCallbackSetNode top = new FilterCallbackSetNode();
+        FilterHandleSetNode top = new FilterHandleSetNode();
 
         // Add a parameter-less filter
         FilterValueSet filterSpecNoParams = makeFilterValues();

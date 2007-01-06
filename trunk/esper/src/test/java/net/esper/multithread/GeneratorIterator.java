@@ -1,4 +1,4 @@
-package net.esper.regression.mt;
+package net.esper.multithread;
 
 import net.esper.support.bean.SupportBean;
 

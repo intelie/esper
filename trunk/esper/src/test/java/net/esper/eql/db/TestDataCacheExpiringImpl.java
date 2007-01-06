@@ -26,7 +26,7 @@ public class TestDataCacheExpiringImpl extends TestCase
     public void testPurgeInterval()
     {
         SchedulingServiceImpl scheduler = new SchedulingServiceImpl();
-        cache = new DataCacheExpiringImpl(10, 20, scheduler, null);   // age 10 sec, purge 1000 seconds
+        cache = new DataCacheExpiringImpl(10, 20, scheduler, null, null);   // age 10 sec, purge 1000 seconds
 
         // test single entry in cache
         scheduler.setTime(5000);
@@ -34,7 +34,7 @@ public class TestDataCacheExpiringImpl extends TestCase
         assertSame(lists[0], cache.getCached(make("a")));
 
         scheduler.setTime(26000);
-        scheduler.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduler);
         assertEquals(0, cache.getSize());
 
         // test 4 entries in cache
@@ -51,7 +51,7 @@ public class TestDataCacheExpiringImpl extends TestCase
         cache.put(make("e"), lists[4]);  // d at 40 sec
 
         scheduler.setTime(50000);
-        scheduler.evaluate();
+        SupportSchedulingServiceImpl.evaluateSchedule(scheduler);
         assertEquals(2, cache.getSize());   // only d and e
 
         assertSame(lists[3], cache.getCached(make("d")));
@@ -61,7 +61,7 @@ public class TestDataCacheExpiringImpl extends TestCase
     public void testGet()
     {
         scheduler = new SupportSchedulingServiceImpl();
-        cache = new DataCacheExpiringImpl(10, 1000, scheduler, null);   // age 10 sec, purge 1000 seconds
+        cache = new DataCacheExpiringImpl(10, 1000, scheduler, null, null);   // age 10 sec, purge 1000 seconds
 
         assertNull(cache.getCached(make("a")));
 

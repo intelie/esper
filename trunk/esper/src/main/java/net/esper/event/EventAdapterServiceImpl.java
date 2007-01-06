@@ -48,7 +48,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
                 throw new EventAdapterException("Event type named '" + eventTypeAlias +
                     "' has already been declared with differing type information");
             }
-            return;
         }
         else
         {
@@ -90,7 +89,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     "' has already been declared with differing type information");
         }
 
-        Class clazz = null;
+        Class clazz;
         try
         {
             clazz = Class.forName(fullyQualClassName);

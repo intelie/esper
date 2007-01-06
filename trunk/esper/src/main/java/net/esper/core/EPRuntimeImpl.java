@@ -1,8 +1,6 @@
 package net.esper.core;
 
-import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.*;
 
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
@@ -11,8 +9,15 @@ import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.TimerEvent;
 import net.esper.collection.ThreadWorkQueue;
+import net.esper.collection.ArrayBackedCollection;
 import net.esper.timer.TimerCallback;
 import net.esper.event.EventBean;
+import net.esper.filter.FilterHandle;
+import net.esper.filter.FilterHandleCallback;
+import net.esper.util.ThreadLogUtil;
+import net.esper.util.ManagedReadWriteLock;
+import net.esper.schedule.ScheduleHandle;
+import net.esper.schedule.ScheduleHandleCallback;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,17 +29,51 @@ import org.apache.commons.logging.LogFactory;
 public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRouter
 {
     private EPServicesContext services;
-    private ReadWriteLock timerRWLock;
+    private ManagedReadWriteLock eventProcessingRWLock;
     private ThreadWorkQueue threadWorkQueue;
+
+    private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
+    {
+        protected synchronized ArrayBackedCollection<FilterHandle> initialValue()
+        {
+            return new ArrayBackedCollection<FilterHandle>(100);
+        }
+    };
+
+    private ThreadLocal<HashMap<EPStatementHandle, Object>> matchesPerStmtThreadLocal =
+            new ThreadLocal<HashMap<EPStatementHandle, Object>>()
+    {
+        protected synchronized HashMap<EPStatementHandle, Object> initialValue()
+        {
+            return new HashMap<EPStatementHandle, Object>(10000);
+        }
+    };
+
+    private ThreadLocal<ArrayBackedCollection<ScheduleHandle>> scheduleArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<ScheduleHandle>>()
+    {
+        protected synchronized ArrayBackedCollection<ScheduleHandle> initialValue()
+        {
+            return new ArrayBackedCollection<ScheduleHandle>(100);
+        }
+    };
+
+    private ThreadLocal<HashMap<EPStatementHandle, Object>> schedulePerStmtThreadLocal =
+            new ThreadLocal<HashMap<EPStatementHandle, Object>>()
+    {
+        protected synchronized HashMap<EPStatementHandle, Object> initialValue()
+        {
+            return new HashMap<EPStatementHandle, Object>(10000);
+        }
+    };
 
     /**
      * Constructor.
      * @param services - references to services
      */
-    public EPRuntimeImpl(EPServicesContext services)
+    public EPRuntimeImpl(EPServicesContext services, ManagedReadWriteLock eventProcessingRWLock)
     {
         this.services = services;
-        timerRWLock = new ReentrantReadWriteLock();
+        this.eventProcessingRWLock = eventProcessingRWLock;
         threadWorkQueue = new ThreadWorkQueue();
     }
 
@@ -161,18 +200,11 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             eventBean = services.getEventAdapterService().adapterForBean(event);
         }
 
-        // All events are processed by the filter service
+        // Acquire main processing lock which locks out statement management
+        eventProcessingRWLock.acquireReadLock();
         try
         {
-            timerRWLock.readLock().lock();
-
-            services.getFilterService().evaluate(eventBean);
-
-            // Dispatch internal work items and results
-            dispatch();
-
-            // Work off the event queue if any events accumulated in there via a route()
-            processThreadWorkQueue();
+            processMatches(eventBean);
         }
         catch (RuntimeException ex)
         {
@@ -180,8 +212,14 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
         finally
         {
-            timerRWLock.readLock().unlock();
+            eventProcessingRWLock.releaseReadLock();
         }
+
+        // Dispatch results to listeners
+        dispatch();
+
+        // Work off the event queue if any events accumulated in there via a route()
+        processThreadWorkQueue();
     }
 
     private void processTimeEvent(TimerEvent event)
@@ -205,7 +243,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
 
         // Evaluation of all time events is protected from regular event stream processing
-        timerRWLock.writeLock().lock();
+        eventProcessingRWLock.acquireWriteLock();
 
         try
         {
@@ -218,13 +256,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             long currentTime = current.getTimeInMillis();
             services.getSchedulingService().setTime(currentTime);
 
-            services.getSchedulingService().evaluate();
-
-            // Let listeners know of results
-            dispatch();
-
-            // Work off the event queue if any events accumulated in there via a route()
-            processThreadWorkQueue();
+            processSchedule();
         }
         catch (RuntimeException ex)
         {
@@ -232,7 +264,122 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
         finally
         {
-            timerRWLock.writeLock().unlock();
+            eventProcessingRWLock.releaseWriteLock();
+        }
+
+        // Let listeners know of results
+        dispatch();
+
+        // Work off the event queue if any events accumulated in there via a route()
+        processThreadWorkQueue();
+    }
+
+    private void processSchedule()
+    {
+        ArrayBackedCollection<ScheduleHandle> handles = scheduleArrayThreadLocal.get();
+        services.getSchedulingService().evaluate(handles);
+
+        ThreadLogUtil.trace("Found schedules for", handles.size());
+
+        if (handles.size() == 0)
+        {
+            return;
+        }
+
+        // handle 1 result separatly for performance reasons
+        if (handles.size() == 1)
+        {
+            Object[] handleArray = handles.getArray();
+            EPStatementHandleCallback handle = (EPStatementHandleCallback) handleArray[0];
+            handle.getEpStatementHandle().getStatementLock().acquireLock();
+            try
+            {
+                handle.getScheduleCallback().scheduledTrigger();
+
+                handle.getEpStatementHandle().internalDispatch();
+            }
+            catch (RuntimeException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                handle.getEpStatementHandle().getStatementLock().releaseLock();
+            }
+            handles.clear();
+            return;
+        }
+
+        Object[] matchArray = handles.getArray();
+        int entryCount = handles.size();
+
+        // sort multiple matches for the event into statements
+        HashMap<EPStatementHandle, Object> stmtCallbacks = matchesPerStmtThreadLocal.get();
+        stmtCallbacks.clear();
+        for (int i = 0; i < entryCount; i++)    // need to use the size of the collection
+        {
+            EPStatementHandleCallback handleCallback = (EPStatementHandleCallback) matchArray[i];
+            EPStatementHandle handle = handleCallback.getEpStatementHandle();
+            ScheduleHandleCallback callback = handleCallback.getScheduleCallback();
+
+            Object entry = stmtCallbacks.get(handle);
+
+            // This statement has not been encountered before
+            if (entry == null)
+            {
+                stmtCallbacks.put(handle, callback);
+                continue;
+            }
+
+            // This statement has been encountered once before
+            if (entry instanceof ScheduleHandleCallback)
+            {
+                ScheduleHandleCallback existingCallback = (ScheduleHandleCallback) entry;
+                LinkedList<ScheduleHandleCallback> entries = new LinkedList<ScheduleHandleCallback>();
+                entries.add(existingCallback);
+                entries.add(callback);
+                stmtCallbacks.put(handle, entries);
+                continue;
+            }
+
+            // This statement has been encountered more then once before
+            LinkedList<ScheduleHandleCallback> entries = (LinkedList<ScheduleHandleCallback>) entry;
+            entries.add(callback);
+        }
+        handles.clear();
+
+        for (EPStatementHandle handle : stmtCallbacks.keySet())
+        {
+            Object callbackObject = stmtCallbacks.get(handle);
+
+            handle.getStatementLock().acquireLock();
+            try
+            {
+                if (callbackObject instanceof LinkedList)
+                {
+                    LinkedList<ScheduleHandleCallback> callbackList = (LinkedList<ScheduleHandleCallback>) callbackObject;
+                    for (ScheduleHandleCallback callback : callbackList)
+                    {
+                        callback.scheduledTrigger();
+                    }
+                }
+                else
+                {
+                    ScheduleHandleCallback callback = (ScheduleHandleCallback) callbackObject;
+                    callback.scheduledTrigger();
+                }
+
+                // internal join processing, if applicable
+                handle.internalDispatch();
+            }
+            catch (RuntimeException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                handle.getStatementLock().releaseLock();
+            }
         }
     }
 
@@ -251,9 +398,130 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
                 eventBean = services.getEventAdapterService().adapterForBean(event);
             }
 
-            services.getFilterService().evaluate(eventBean);
+            eventProcessingRWLock.acquireReadLock();
+            try
+            {
+                processMatches(eventBean);
+            }
+            catch (RuntimeException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                eventProcessingRWLock.releaseReadLock();
+            }
 
             dispatch();
+        }
+    }
+
+    private void processMatches(EventBean event)
+    {
+        // get matching filters
+        ArrayBackedCollection<FilterHandle> matches = matchesArrayThreadLocal.get();
+        services.getFilterService().evaluate(event, matches);
+
+        ThreadLogUtil.trace("Found matches for underlying ", matches.size(), event.getUnderlying());
+
+        if (matches.size() == 0)
+        {
+            return;
+        }
+
+        // handle 1 result separatly for performance reasons
+        if (matches.size() == 1)
+        {
+            Object[] matchArray = matches.getArray();
+            EPStatementHandleCallback handle = (EPStatementHandleCallback) matchArray[0];
+            handle.getEpStatementHandle().getStatementLock().acquireLock();
+            try
+            {
+                handle.getFilterCallback().matchFound(event);
+
+                handle.getEpStatementHandle().internalDispatch();
+            }
+            catch (RuntimeException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                handle.getEpStatementHandle().getStatementLock().releaseLock();
+            }
+            matches.clear();
+            return;
+        }
+
+        Object[] matchArray = matches.getArray();
+        int entryCount = matches.size();
+
+        // sort multiple matches for the event into statements
+        HashMap<EPStatementHandle, Object> stmtCallbacks = matchesPerStmtThreadLocal.get();
+        stmtCallbacks.clear();
+        for (int i = 0; i < entryCount; i++)    // need to use the size of the collection
+        {
+            EPStatementHandleCallback handleCallback = (EPStatementHandleCallback) matchArray[i];
+            EPStatementHandle handle = handleCallback.getEpStatementHandle();
+            FilterHandleCallback callback = handleCallback.getFilterCallback();
+
+            Object entry = stmtCallbacks.get(handle);
+
+            // This statement has not been encountered before
+            if (entry == null)
+            {
+                stmtCallbacks.put(handle, callback);
+                continue;
+            }
+
+            // This statement has been encountered once before
+            if (entry instanceof FilterHandleCallback)
+            {
+                FilterHandleCallback existingCallback = (FilterHandleCallback) entry;
+                LinkedList<FilterHandleCallback> entries = new LinkedList<FilterHandleCallback>();
+                entries.add(existingCallback);
+                entries.add(callback);
+                stmtCallbacks.put(handle, entries);
+                continue;
+            }
+
+            // This statement has been encountered more then once before
+            LinkedList<FilterHandleCallback> entries = (LinkedList<FilterHandleCallback>) entry;
+            entries.add(callback);
+        }
+        matches.clear();
+
+        for (EPStatementHandle handle : stmtCallbacks.keySet())
+        {
+            handle.getStatementLock().acquireLock();
+            Object callbackObject = stmtCallbacks.get(handle);
+            try
+            {
+                if (callbackObject instanceof LinkedList)
+                {
+                    LinkedList<FilterHandleCallback> callbackList = (LinkedList<FilterHandleCallback>) callbackObject;
+                    for (FilterHandleCallback callback : callbackList)
+                    {
+                        callback.matchFound(event);
+                    }
+                }
+                else
+                {
+                    FilterHandleCallback callback = (FilterHandleCallback) callbackObject;
+                    callback.matchFound(event);
+                }
+
+                // internal join processing, if applicable
+                handle.internalDispatch();
+            }
+            catch (RuntimeException ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                handle.getStatementLock().releaseLock();
+            }
         }
     }
 

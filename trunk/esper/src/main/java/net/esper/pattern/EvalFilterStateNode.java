@@ -2,15 +2,16 @@ package net.esper.pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.filter.FilterCallback;
 import net.esper.filter.FilterSpec;
 import net.esper.filter.FilterValueSet;
+import net.esper.filter.FilterHandleCallback;
 import net.esper.event.EventBean;
+import net.esper.core.EPStatementHandleCallback;
 
 /**
  * This class contains the state of a single filter expression in the evaluation state tree.
  */
-public final class EvalFilterStateNode extends EvalStateNode implements FilterCallback
+public final class EvalFilterStateNode extends EvalStateNode implements FilterHandleCallback
 {
     private final FilterSpec filterSpec;
     private final String eventAsName;
@@ -18,6 +19,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterCa
     private final PatternContext context;
 
     private boolean isStarted;
+    private EPStatementHandleCallback handle;
 
     /**
      * Constructor.
@@ -136,13 +138,16 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterCa
 
     private void startFiltering()
     {
+        handle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
         FilterValueSet filterValues = filterSpec.getValueSet(beginState);
-        context.getFilterService().add(filterValues, this);
+        context.getFilterService().add(filterValues, handle);
     }
 
     private void stopFiltering()
     {
-        context.getFilterService().remove(this);
+        context.getFilterService().remove(handle);
+        handle = null;
+        isStarted = false;
     }
 
     private static final Log log = LogFactory.getLog(EvalFilterStateNode.class);

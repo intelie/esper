@@ -5,32 +5,35 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import net.esper.schedule.*;
+import net.esper.core.EPStatementHandleCallback;
 
 public class SupportSchedulingServiceImpl implements SchedulingService
 {
-    private Map<Long, ScheduleCallback> added = new HashMap<Long, ScheduleCallback>();
+    private Map<Long, ScheduleHandle> added = new HashMap<Long, ScheduleHandle>();
     private long currentTime;
 
-    public Map<Long, ScheduleCallback> getAdded()
+    public Map<Long, ScheduleHandle> getAdded()
     {
         return added;
     }
 
-    public void add(long afterMSec, ScheduleCallback callback, ScheduleSlot slot)
+    public void add(long afterMSec, ScheduleHandle callback, ScheduleSlot slot)
     {
         log.debug(".add Not implemented, afterMSec=" + afterMSec + " callback=" + callback.getClass().getName());
         added.put(afterMSec, callback);
     }
 
-    public void add(ScheduleSpec scheduleSpecification, ScheduleCallback callback, ScheduleSlot slot)
+    public void add(ScheduleSpec scheduleSpecification, ScheduleHandle callback, ScheduleSlot slot)
     {
         log.debug(".add Not implemented, scheduleSpecification=" + scheduleSpecification +
                 " callback=" + callback.getClass().getName());
     }
 
-    public void remove(ScheduleCallback callback, ScheduleSlot slot)
+    public void remove(ScheduleHandle callback, ScheduleSlot slot)
     {
         log.debug(".remove Not implemented, callback=" + callback.getClass().getName());
     }
@@ -47,7 +50,7 @@ public class SupportSchedulingServiceImpl implements SchedulingService
         this.currentTime = currentTime;
     }
 
-    public void evaluate()
+    public void evaluate(Collection<ScheduleHandle> handles)
     {
         log.debug(".evaluate Not implemented");
     }
@@ -55,6 +58,26 @@ public class SupportSchedulingServiceImpl implements SchedulingService
     public ScheduleBucket allocateBucket()
     {
         return new ScheduleBucket(0);
+    }
+
+    public static void evaluateSchedule(SchedulingService service)
+    {
+        Collection<ScheduleHandle> handles = new LinkedList<ScheduleHandle>();
+        service.evaluate(handles);
+
+        for (ScheduleHandle handle : handles)
+        {
+            if (handle instanceof EPStatementHandleCallback)
+            {
+                EPStatementHandleCallback callback = (EPStatementHandleCallback) handle;
+                callback.getScheduleCallback().scheduledTrigger();
+            }
+            else
+            {
+                ScheduleHandleCallback cb = (ScheduleHandleCallback) handle;
+                cb.scheduledTrigger();
+            }
+        }
     }
 
     private static final Log log = LogFactory.getLog(SupportSchedulingServiceImpl.class);

@@ -16,7 +16,7 @@ public class TestFilterParamIndexRange extends TestCase
     private SupportBean testBean;
     private EventBean testEventBean;
     private EventType testEventType;
-    private List<FilterCallback> matchesList;
+    private List<FilterHandle> matchesList;
     private DoubleRange testRange;
 
     public void setUp()
@@ -25,7 +25,7 @@ public class TestFilterParamIndexRange extends TestCase
         testBean = new SupportBean();
         testEventBean = SupportEventBeanFactory.createObject(testBean);
         testEventType = testEventBean.getEventType();
-        matchesList = new LinkedList<FilterCallback>();
+        matchesList = new LinkedList<FilterHandle>();
 
         testRange = new DoubleRange(10, 20);
     }

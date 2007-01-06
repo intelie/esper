@@ -11,10 +11,11 @@ import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
 import net.esper.view.ContextAwareView;
 import net.esper.view.ViewServiceContext;
-import net.esper.schedule.ScheduleCallback;
+import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.client.EPException;
 import net.esper.collection.ViewUpdatedCollection;
+import net.esper.core.EPStatementHandleCallback;
 
 /**
  * A data view that aggregates events in a stream and releases them in one batch at every specified time interval.
@@ -282,13 +283,14 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
                     " msecIntervalSize=" + msecIntervalSize);
         }
 
-        ScheduleCallback callback = new ScheduleCallback() {
+        ScheduleHandleCallback callback = new ScheduleHandleCallback() {
             public void scheduledTrigger()
             {
                 TimeBatchView.this.sendBatch();
             }
         };
-        viewServiceContext.getSchedulingService().add(afterMSec, callback, scheduleSlot);
+        EPStatementHandleCallback handle = new EPStatementHandleCallback(viewServiceContext.getEpStatementHandle(), callback);
+        viewServiceContext.getSchedulingService().add(afterMSec, handle, scheduleSlot);
     }
 
     /**

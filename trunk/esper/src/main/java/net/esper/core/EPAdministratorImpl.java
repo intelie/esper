@@ -11,6 +11,8 @@ import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.spec.StatementSpec;
 import net.esper.eql.spec.PatternStreamSpec;
 import net.esper.util.DebugFacility;
+import net.esper.util.ManagedReadWriteLock;
+import net.esper.util.ManagedLock;
 import net.esper.pattern.EvalRootNode;
 
 import java.util.Map;
@@ -31,7 +33,8 @@ public class EPAdministratorImpl implements EPAdministrator
     private static WalkRuleSelector patternWalkRule;
     private static WalkRuleSelector eqlWalkRule;
 
-    private EPServicesContext services;
+    private final EPServicesContext services;
+    private final ManagedReadWriteLock eventProcessingRWLock;
 
     static
     {
@@ -70,9 +73,10 @@ public class EPAdministratorImpl implements EPAdministrator
      * Constructor - takes the services context as argument.
      * @param services - references to services
      */
-    public EPAdministratorImpl(EPServicesContext services)
+    public EPAdministratorImpl(EPServicesContext services, ManagedReadWriteLock eventProcessingRWLock)
     {
-        this.services = services;        
+        this.services = services;
+        this.eventProcessingRWLock = eventProcessingRWLock;
     }
 
     public EPStatement createPattern(String expression) throws EPException
@@ -106,20 +110,24 @@ public class EPAdministratorImpl implements EPAdministrator
             throw new IllegalStateException("Unexpected multiple stream specifications encountered");
         }
 
+        // Lock for coordinating changes to statement resources
+        ManagedLock statementResourceLock = new ManagedLock("PatternStmtLock");
+        EPStatementHandle epStatementHandle = new EPStatementHandle(statementResourceLock, expression);
+
         // Get pattern specification
         PatternStreamSpec patternStreamSpec = (PatternStreamSpec) walker.getStatementSpec().getStreamSpecs().get(0);
 
         // Create start method
         EvalRootNode rootNode = new EvalRootNode();
         rootNode.addChildNode(patternStreamSpec.getEvalNode());
-        EPPatternStmtStartMethod startMethod = new EPPatternStmtStartMethod(services, rootNode);
+        EPPatternStmtStartMethod startMethod = new EPPatternStmtStartMethod(services, rootNode, epStatementHandle);
 
         // Generate event type
         Map<String, EventType> eventTypes = patternStreamSpec.getTaggedEventTypes();
         EventType eventType = services.getEventAdapterService().createAnonymousMapTypeUnd(eventTypes);
 
         EPPatternStatementImpl patternStatement = new EPPatternStatementImpl(expression,
-                eventType, services.getDispatchService(), services.getEventAdapterService(), startMethod);
+                eventType, services.getDispatchService(), services.getEventAdapterService(), startMethod, eventProcessingRWLock);
         
         return patternStatement;
     }
@@ -152,9 +160,15 @@ public class EPAdministratorImpl implements EPAdministrator
 
         // Create start method
         StatementSpec statementSpec = walker.getStatementSpec();
-        EPEQLStmtStartMethod startMethod = new EPEQLStmtStartMethod(statementSpec, eqlStatement, services);
+        ManagedLock statementResourceLock = new ManagedLock("EQLStmtLock");
+        EPStatementHandle epStatementHandle = new EPStatementHandle(statementResourceLock, eqlStatement);
 
-        return new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod);
+        EPEQLStmtStartMethod startMethod = new EPEQLStmtStartMethod(statementSpec, eqlStatement, services, epStatementHandle);
+
+        // EPEQLStatementImpl starts the statement via start method on construction
+        // No locks required here as we are just set up to start everything and haven't actually started.
+        return new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod, eventProcessingRWLock,
+                statementResourceLock);
     }
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);

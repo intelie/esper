@@ -7,6 +7,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventAdapterService;
 import net.esper.collection.SingleEventIterator;
 import net.esper.dispatch.DispatchService;
+import net.esper.util.ManagedReadWriteLock;
 
 import java.util.*;
 
@@ -23,11 +24,12 @@ public class EPPatternStatementImpl extends EPStatementSupport implements Patter
     private final DispatchService dispatchService;
     private final EventAdapterService eventAdapterService;
     private final EPPatternStmtStartMethod startMethod;
+    private final ManagedReadWriteLock eventProcessingRWLock;
+    private final ThreadLocal<PatternListenerDispatch> dispatchThreadLocal;
 
     private EPStatementStopMethod stopMethod;
 
     private EventBean lastEvent;
-    private PatternListenerDispatch dispatch;
 
     /**
      * Constructor.
@@ -41,21 +43,28 @@ public class EPPatternStatementImpl extends EPStatementSupport implements Patter
                                   EventType eventType,
                                   DispatchService dispatchService,
                                   EventAdapterService eventAdapterService,
-                                  EPPatternStmtStartMethod startMethod)
+                                  EPPatternStmtStartMethod startMethod,
+                                  ManagedReadWriteLock eventProcessingRWLock)
     {
         this.expressionText = expressionText;
         this.eventType = eventType;
         this.dispatchService = dispatchService;
         this.eventAdapterService = eventAdapterService;
         this.startMethod = startMethod;
+        this.eventProcessingRWLock = eventProcessingRWLock;
 
-        dispatch = new PatternListenerDispatch(this.getListeners());
+        dispatchThreadLocal = new ThreadLocal<PatternListenerDispatch>() {
+            protected synchronized PatternListenerDispatch initialValue() {
+                return new PatternListenerDispatch(EPPatternStatementImpl.this.getListeners());
+            }
+        };
 
         start();
     }
 
     public void matchFound(Map<String, EventBean> matchEvent)
     {
+        PatternListenerDispatch dispatch = dispatchThreadLocal.get();
         if (log.isDebugEnabled())
         {
             log.debug(".matchFound Listeners=" + getListeners().size() + "  dispatch=" + dispatch);
@@ -82,7 +91,20 @@ public class EPPatternStatementImpl extends EPStatementSupport implements Patter
             throw new IllegalStateException("Pattern statement already stopped");
         }
 
-        stopMethod.stop();
+        eventProcessingRWLock.acquireWriteLock();
+        try
+        {
+            stopMethod.stop();
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            eventProcessingRWLock.releaseWriteLock();
+        }
+
         stopMethod = null;
         lastEvent = null;
     }
@@ -94,7 +116,19 @@ public class EPPatternStatementImpl extends EPStatementSupport implements Patter
             throw new IllegalStateException("Pattern statement already started");
         }
 
-        stopMethod = startMethod.start((PatternMatchCallback) this);
+        eventProcessingRWLock.acquireWriteLock();
+        try
+        {
+            stopMethod = startMethod.start((PatternMatchCallback) this);
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            eventProcessingRWLock.releaseWriteLock();            
+        }
 
         // Since the pattern start itself may have generated an event, dispatch
         dispatchService.dispatch();

@@ -1,4 +1,4 @@
-package net.esper.regression.mt;
+package net.esper.multithread;
 
 import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
@@ -10,10 +10,27 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Future;
+import java.util.TreeSet;
 
-public class SingleStmtSimpleTest extends TestCase
+/**
+ * TODO: Changes made were
+ * - UpdateDispatchView all threadlocal
+ * - new StreamFactorySvcCreate to disable view resource sharing
+ * - StreamFactorySvcCreate uses lock around eventStream.
+ *
+ * TODO: remaining tests
+ * - timer threading
+ * - route from listener
+ * - pattern statement
+ * - output rate limiting
+ */
+
+/**
+ * Test for multithread-safety for simple filter-based statements
+ */
+public class TestMTStmtFilter extends TestCase
 {
-    private final static int NUM_THREADS = 1;
+    private final static int NUM_THREADS = 2;
     private final static int NUM_MESSAGES = 1000;
 
     private EPServiceProvider engine;
@@ -45,6 +62,15 @@ public class SingleStmtSimpleTest extends TestCase
             assertTrue((Boolean) future[i].get());
         }
 
+        // verify results
         assertEquals(NUM_MESSAGES * NUM_THREADS, listener.getValues().size());
+        TreeSet<Integer> result = new TreeSet<Integer>();
+        for (Object row : listener.getValues())
+        {
+            result.add(((Number) row).intValue());
+        }
+        assertEquals(NUM_MESSAGES * NUM_THREADS, result.size());
+        assertEquals(1, (Object) result.first());
+        assertEquals(NUM_MESSAGES * NUM_THREADS, (Object) result.last());
     }
 }

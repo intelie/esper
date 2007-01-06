@@ -2,14 +2,15 @@ package net.esper.pattern.guard;
 
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.MatchedEventMap;
-import net.esper.schedule.ScheduleCallback;
+import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
+import net.esper.core.EPStatementHandleCallback;
 
 /**
  * Guard implementation that keeps a timer instance and quits when the timer expired,
  * letting all {@link MatchedEventMap} instances pass until then.
  */
-public class TimerWithinGuard implements Guard, ScheduleCallback
+public class TimerWithinGuard implements Guard, ScheduleHandleCallback
 {
     private final long msec;
     private final PatternContext context;
@@ -17,6 +18,7 @@ public class TimerWithinGuard implements Guard, ScheduleCallback
     private final ScheduleSlot scheduleSlot;
 
     private boolean isTimerActive;
+    private EPStatementHandleCallback scheduleHandle; 
 
     /**
      * Ctor.
@@ -40,7 +42,8 @@ public class TimerWithinGuard implements Guard, ScheduleCallback
         }
 
         // Start the stopwatch timer
-        context.getSchedulingService().add(msec, this, scheduleSlot);
+        scheduleHandle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
+        context.getSchedulingService().add(msec, scheduleHandle, scheduleSlot);
         isTimerActive = true;
     }
 
@@ -48,7 +51,8 @@ public class TimerWithinGuard implements Guard, ScheduleCallback
     {
         if (isTimerActive)
         {
-            context.getSchedulingService().remove(this, scheduleSlot);
+            context.getSchedulingService().remove(scheduleHandle, scheduleSlot);
+            scheduleHandle = null;
             isTimerActive = false;
         }
     }
