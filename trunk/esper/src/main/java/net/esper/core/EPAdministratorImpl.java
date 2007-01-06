@@ -72,6 +72,7 @@ public class EPAdministratorImpl implements EPAdministrator
     /**
      * Constructor - takes the services context as argument.
      * @param services - references to services
+     * @param eventProcessingRWLock - lock for statement create/start/stop across engine instance competing with events
      */
     public EPAdministratorImpl(EPServicesContext services, ManagedReadWriteLock eventProcessingRWLock)
     {
@@ -167,8 +168,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
         // EPEQLStatementImpl starts the statement via start method on construction
         // No locks required here as we are just set up to start everything and haven't actually started.
-        return new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod, eventProcessingRWLock,
-                statementResourceLock);
+        return new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod, eventProcessingRWLock);
     }
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);

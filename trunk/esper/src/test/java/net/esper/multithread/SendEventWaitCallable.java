@@ -14,14 +14,14 @@ public class SendEventWaitCallable implements Callable
     private final int threadNum;
     private final EPServiceProvider engine;
     private final Iterator<Object> events;
-    private final Object semaphore;
+    private final Object sendLock;
 
-    public SendEventWaitCallable(int threadNum, EPServiceProvider engine, Object semaphore, Iterator<Object> events)
+    public SendEventWaitCallable(int threadNum, EPServiceProvider engine, Object sendLock, Iterator<Object> events)
     {
         this.threadNum = threadNum;
         this.engine = engine;
         this.events = events;
-        this.semaphore = semaphore;
+        this.sendLock = sendLock;
     }
 
     public Object call() throws Exception
@@ -30,8 +30,8 @@ public class SendEventWaitCallable implements Callable
         {
             while (events.hasNext())
             {
-                synchronized(semaphore) {
-                    semaphore.wait();
+                synchronized(sendLock) {
+                    sendLock.wait();
                 }
                 ThreadLogUtil.info("sending event");
                 engine.getEPRuntime().sendEvent(events.next());

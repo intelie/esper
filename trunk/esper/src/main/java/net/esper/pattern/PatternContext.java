@@ -24,18 +24,19 @@ public final class PatternContext
      * @param scheduleBucket schedule buckets for use by scheduling service for ordering scheduling callbacks for pattern statements 
      * @param schedulingService implementation for schedule evaluation
      * @param eventAdapterService service for event adapters or wrappers
+     * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
     public PatternContext(FilterService filterService,
                           SchedulingService schedulingService,
                           ScheduleBucket scheduleBucket,
                           EventAdapterService eventAdapterService,
-                          EPStatementHandle epStatementHande)
+                          EPStatementHandle epStatementHandle)
     {
         this.filterService = filterService;
         this.schedulingService = schedulingService;
         this.scheduleBucket = scheduleBucket;
         this.eventAdapterService = eventAdapterService;
-        this.epStatementHande = epStatementHande;
+        this.epStatementHande = epStatementHandle;
     }
 
     /**

@@ -20,16 +20,6 @@ public abstract class EPStatementSupport implements EPListenable
     private Set<UpdateListener> listeners = new CopyOnWriteArraySet<UpdateListener>();
 
     /**
-     * Called when the last listener is removed.
-     */
-    public abstract void listenerStop();
-
-    /**
-     * Called when the first listener is added.
-     */
-    public abstract void listenerStart();
-
-    /**
      * Returns the set of listeners to the statement.
      * @return statement listeners
      */
@@ -50,10 +40,6 @@ public abstract class EPStatementSupport implements EPListenable
         }
 
         listeners.add(listener);
-        if (listeners.size() == 1)
-        {
-            listenerStart();
-        }
     }
 
     /**
@@ -68,10 +54,6 @@ public abstract class EPStatementSupport implements EPListenable
         }
 
         listeners.remove(listener);
-        if (listeners.isEmpty())
-        {
-            listenerStop();
-        }
     }
 
     /**
@@ -80,6 +62,5 @@ public abstract class EPStatementSupport implements EPListenable
     public void removeAllListeners()
     {
         listeners.clear();
-        listenerStop();
     }
 }

@@ -38,6 +38,7 @@ public class EPPatternStatementImpl extends EPStatementSupport implements Patter
      * @param dispatchService - service for dispatching events
      * @param eventAdapterService - service for generating events or event wrappers and types
      * @param startMethod - method to start the pattern
+     * @param eventProcessingRWLock - lock for statement create/start/stop across engine instance competing with events
      */
     public EPPatternStatementImpl(String expressionText,
                                   EventType eventType,
@@ -132,16 +133,6 @@ public class EPPatternStatementImpl extends EPStatementSupport implements Patter
 
         // Since the pattern start itself may have generated an event, dispatch
         dispatchService.dispatch();
-    }
-
-    public void listenerStop()
-    {
-        // No need to take action
-    }
-
-    public void listenerStart()
-    {
-        // No need to take action
     }
 
     public Iterator<EventBean> iterator()

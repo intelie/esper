@@ -20,6 +20,7 @@ public interface FilterService
     /**
      * Finds matching filters to the event passed in and invokes their associated callback method.
      * @param event is the event to be matched against filters
+     * @param matches is a collection that is populated via add method with any handles for matching filters
      */
     public void evaluate(EventBean event, Collection<FilterHandle> matches);
 

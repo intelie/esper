@@ -9,13 +9,11 @@ import net.esper.support.bean.SupportMarketDataBean;
 import java.util.concurrent.*;
 
 /**
- * Test for multithread-safety for adding and receiving events through emitted event listeners.
+ * Test for multithread-safety of adding emitted event listeners and receiving events through emitted event listeners.
  */
 public class TestMTEmitListener extends TestCase
 {
     private EPServiceProvider engine;
-
-    private final static String EVENT_NAME = SupportMarketDataBean.class.getName();
 
     public void setUp()
     {
@@ -25,6 +23,7 @@ public class TestMTEmitListener extends TestCase
     public void testEQL() throws Exception
     {
         tryEmitAndListen(10, 1000);
+        tryEmitAndListen(4, 1000);
     }
 
     private void tryEmitAndListen(int numThreads, int numRepeats) throws Exception

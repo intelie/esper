@@ -53,6 +53,7 @@ public class EPEQLStmtStartMethod
      * may have been used in the statement, i.e. if defines the select clauses, insert into, outer joins etc.
      * @param eqlStatement is the expression text
      * @param services is the service instances for dependency injection
+     * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
     public EPEQLStmtStartMethod(StatementSpec statementSpec,
                                 String eqlStatement,

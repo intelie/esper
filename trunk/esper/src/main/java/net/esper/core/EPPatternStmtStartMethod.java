@@ -21,6 +21,7 @@ public class EPPatternStmtStartMethod
      * Ctor.
      * @param services - services for starting
      * @param patternStarter - pattern start handle
+     * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
     public EPPatternStmtStartMethod(EPServicesContext services, PatternStarter patternStarter, EPStatementHandle epStatementHandle)
     {

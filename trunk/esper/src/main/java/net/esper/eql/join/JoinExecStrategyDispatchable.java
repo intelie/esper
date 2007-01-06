@@ -1,11 +1,9 @@
 package net.esper.eql.join;
 
 import net.esper.dispatch.Dispatchable;
-import net.esper.dispatch.DispatchService;
 import net.esper.view.internal.BufferObserver;
 import net.esper.event.EventBean;
 import net.esper.collection.FlushedEventBuffer;
-import net.esper.util.ThreadLogUtil;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -53,11 +51,6 @@ public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserve
             oldDataPerStream[i] = getBufferData(oldStreamBuffer.get(i));
             newDataPerStream[i] = getBufferData(newStreamBuffer.get(i));
         }
-
-        ThreadLogUtil.trace("DISPATCH newDataSize=" +
-                (newDataPerStream[0] != null ? newDataPerStream[0].length : " null ") +
-                (newDataPerStream[1] != null ? newDataPerStream[1].length : " null ")
-                );
 
         joinExecutionStrategy.join(newDataPerStream, oldDataPerStream);
     }

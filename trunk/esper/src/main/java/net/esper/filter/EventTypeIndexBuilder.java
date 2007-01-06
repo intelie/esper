@@ -2,7 +2,6 @@ package net.esper.filter;
 
 import net.esper.event.EventType;
 import net.esper.collection.Pair;
-import net.esper.util.ThreadLogUtil;
 
 import java.util.Map;
 import java.util.HashMap;

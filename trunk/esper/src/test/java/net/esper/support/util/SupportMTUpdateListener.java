@@ -117,6 +117,11 @@ public class SupportMTUpdateListener implements UpdateListener
         return flatten(newDataList);
     }
 
+    public synchronized EventBean[] getOldDataListFlattened()
+    {
+        return flatten(oldDataList);
+    }
+
     private EventBean[] flatten(List<EventBean[]> list)
     {
         int count = 0;

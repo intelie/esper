@@ -11,9 +11,8 @@ public class ThreadLogUtil
     public static int TRACE = 0;
     public static int INFO = 1;
 
-    // TODO: disable
     protected final static Boolean ENABLED_TRACE = false;
-    protected final static Boolean ENABLED_INFO = true;
+    protected final static Boolean ENABLED_INFO = false;
 
     public static void trace(String text, Object ... objects)
     {

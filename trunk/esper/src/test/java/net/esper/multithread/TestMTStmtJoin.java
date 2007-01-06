@@ -10,16 +10,7 @@ import net.esper.support.bean.SupportBean;
 import java.util.concurrent.*;
 
 /**
- * Test for multithread-safety for joins
- *
- * TODO - problem
- * (1) TestMatchMakingMonitor hangs: tries to create a statement from within a listener
- * (2) Join dispatch not threadsafe as it's not acquiring a lock on the statement
- *
- * EPStatementSupport now a copy-on-write collection
- * FilterService and ScheduleService return handles - organized by statements
- * statement locked, then matches processed, then internal dispatch, then unlock.
- * 
+ * Test for multithread-safety for joins.
  */
 public class TestMTStmtJoin extends TestCase
 {
@@ -30,8 +21,6 @@ public class TestMTStmtJoin extends TestCase
     public void setUp()
     {
         engine = EPServiceProviderManager.getDefaultProvider();
-        // Less much debug output can be obtained by using external times
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testJoin() throws Exception
@@ -42,6 +31,7 @@ public class TestMTStmtJoin extends TestCase
                 "where s0.longPrimitive = s1.longPrimitive\n"
                 );
         trySendAndReceive(4, stmt, 10000);
+        trySendAndReceive(2, stmt, 20000);
     }
 
     private void trySendAndReceive(int numThreads, EPStatement statement, int numRepeats) throws Exception

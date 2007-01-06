@@ -7,18 +7,11 @@ import net.esper.client.EPStatement;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.support.util.SupportMTUpdateListener;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.event.EventBean;
 
 import java.util.concurrent.*;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.HashSet;
 
 /**
- * Test for insert-into and aggregation
- *
+ * Test for pattern statement parallel execution by threads.
  */
 public class TestMTStmtPattern extends TestCase
 {
@@ -32,22 +25,25 @@ public class TestMTStmtPattern extends TestCase
         engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
-    public void testOrPattern() throws Exception
-    {
-        tryOrPattern(10, 100);
-    }
-
-    private void tryOrPattern(int numThreads, int numEvents) throws Exception
+    public void testPattern() throws Exception
     {
         String type = SupportBean.class.getName();
-        String pattern = "a=" + type;
-        Object semaphore = new Object();
 
+        String pattern = "a=" + type;
+        tryPattern(pattern, 4, 20);
+
+        pattern = "a=" + type + " or a=" + type;
+        tryPattern(pattern, 2, 20);
+    }
+
+    private void tryPattern(String pattern, int numThreads, int numEvents) throws Exception
+    {
+        Object sendLock = new Object();
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
         Future future[] = new Future[numThreads];
         for (int i = 0; i < numThreads; i++)
         {
-            Callable callable = new SendEventWaitCallable(i, engine, semaphore, new GeneratorIterator(numEvents));
+            Callable callable = new SendEventWaitCallable(i, engine, sendLock, new GeneratorIterator(numEvents));
             future[i] = threadPool.submit(callable);
         }
 
@@ -57,9 +53,9 @@ public class TestMTStmtPattern extends TestCase
             SupportMTUpdateListener listener = new SupportMTUpdateListener();
             stmt.addListener(listener);
 
-            synchronized(semaphore)
+            synchronized(sendLock)
             {
-                semaphore.notifyAll();
+                sendLock.notifyAll();
             }
             Thread.sleep(100);
             // Should be received exactly one

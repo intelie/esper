@@ -9,15 +9,7 @@ import java.util.concurrent.*;
 import java.util.Arrays;
 
 /**
- * Test for multithread-safety for creating and stopping statements
- *
- * TODO - DONE:
- * - BeanEventAdapter made threadsafe
- * - Added ReentrantReadWriteLock eventProcessingRWLock shared between EPRuntimeImpl and EPAdministratorImpl
- * - EPAdministratorImpl.createEQL now locks the eventProcessingRWLock
- * - EPEQLStatementImpl.stop, start, add first and remove first listener methods now locks the eventProcessingRWLock
- * - EPPatternStatementImpl start and stop also using eventProcessingRWLock
- * - EPRuntime now using EPStatementHandleCallback and lock on statements
+ * Test for multithread-safety for creating and stopping various statements.
  */
 public class TestMTStmtMgmt extends TestCase
 {
@@ -53,16 +45,16 @@ public class TestMTStmtMgmt extends TestCase
     {
         int numThreads = 3;
         Object[][] statements = new Object[][] {STMT[10]};
-        tryStatementCreateSendAndStop(numThreads, statements, 2000);
+        tryStatementCreateSendAndStop(numThreads, statements, 500);
 
         statements = new Object[][] {STMT[10], STMT[11]};
-        tryStatementCreateSendAndStop(numThreads, statements, 2000);
+        tryStatementCreateSendAndStop(numThreads, statements, 500);
 
         statements = new Object[][] {STMT[10], STMT[11], STMT[12]};
-        tryStatementCreateSendAndStop(numThreads, statements, 2000);
+        tryStatementCreateSendAndStop(numThreads, statements, 500);
 
         statements = new Object[][] {STMT[10], STMT[11], STMT[12], STMT[13]};
-        tryStatementCreateSendAndStop(numThreads, statements, 2000);
+        tryStatementCreateSendAndStop(numThreads, statements, 500);
     }
 
     public void testEachStatementAlone() throws Exception
@@ -71,7 +63,7 @@ public class TestMTStmtMgmt extends TestCase
         for (int i = 0; i < STMT.length; i++)
         {
             Object[][] statements = new Object[][] {STMT[i]};
-            tryStatementCreateSendAndStop(numThreads, statements, 1000);
+            tryStatementCreateSendAndStop(numThreads, statements, 250);
         }
     }
 
@@ -79,16 +71,16 @@ public class TestMTStmtMgmt extends TestCase
     {
         int numThreads = 2;
         Object[][] statements = new Object[][] {STMT[1], STMT[4], STMT[6], STMT[7], STMT[8]};
-        tryStatementCreateSendAndStop(numThreads, statements, 1000);
+        tryStatementCreateSendAndStop(numThreads, statements, 500);
 
         statements = new Object[][] {STMT[1], STMT[7], STMT[8], STMT[11], STMT[12]};
-        tryStatementCreateSendAndStop(numThreads, statements, 1000);
+        tryStatementCreateSendAndStop(numThreads, statements, 500);
     }
 
     public void testStatementsAll() throws Exception
     {
         int numThreads = 3;
-        tryStatementCreateSendAndStop(numThreads, STMT, 1000);
+        tryStatementCreateSendAndStop(numThreads, STMT, 250);
     }
 
     private void tryStatementCreateSendAndStop(int numThreads, Object[][] statements, int numRepeats) throws Exception

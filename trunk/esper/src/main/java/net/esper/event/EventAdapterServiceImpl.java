@@ -55,7 +55,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         }
     }
 
-    public EventType addBeanType(String eventTypeAlias, Class clazz) throws EventAdapterException
+    public synchronized EventType addBeanType(String eventTypeAlias, Class clazz) throws EventAdapterException
     {
         EventType existingType = eventTypes.get(eventTypeAlias);
         if (existingType != null)
@@ -75,7 +75,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return eventType;
     }
 
-    public EventType addBeanType(String eventTypeAlias, String fullyQualClassName) throws EventAdapterException
+    public synchronized EventType addBeanType(String eventTypeAlias, String fullyQualClassName) throws EventAdapterException
     {
         EventType existingType = eventTypes.get(eventTypeAlias);
         if (existingType != null)
@@ -105,7 +105,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return eventType;
     }
 
-    public EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes) throws EventAdapterException
+    public synchronized EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes) throws EventAdapterException
     {
         MapEventType newEventType = new MapEventType(propertyTypes, this);
 
@@ -225,7 +225,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
      * @param configurationEventTypeXMLDOM configures the event type schema and namespace and XPath
      * property information.
      */
-    public void addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public synchronized void addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
         if (configurationEventTypeXMLDOM.getRootElementName() == null)
         {
@@ -245,7 +245,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         xmldomRootElementNames.put(configurationEventTypeXMLDOM.getRootElementName(), type);
     }
 
-    public EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Class> propertyTypes) throws EventAdapterException 
+    public synchronized EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Class> propertyTypes) throws EventAdapterException
 	{
 	    WrapperEventType newEventType = new WrapperEventType(underlyingEventType, propertyTypes, this);
 	

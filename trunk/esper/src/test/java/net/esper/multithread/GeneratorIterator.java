@@ -30,8 +30,9 @@ public class GeneratorIterator implements Iterator<Object>
         {
             throw new NoSuchElementException();
         }
+        SupportBean bean = new SupportBean(Integer.toString(numEvents), numEvents);
         numEvents++;
-        return new SupportBean();
+        return bean;
     }
 
     public void remove()

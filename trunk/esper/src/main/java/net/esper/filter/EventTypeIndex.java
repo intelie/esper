@@ -2,7 +2,6 @@ package net.esper.filter;
 
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.util.ThreadLogUtil;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

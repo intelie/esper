@@ -17,8 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.HashSet;
 
 /**
- * Test for insert-into and aggregation
- *
+ * Test for multithread-safety (or lack thereof) for iterators: iterators fail with concurrent mods as expected behavior
  */
 public class TestMTStmtIterate extends TestCase
 {
@@ -27,9 +26,12 @@ public class TestMTStmtIterate extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getDefaultProvider();
-        // Less much debug output can be obtained by using external times
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        engine = EPServiceProviderManager.getProvider("TestMTStmtIterate");
+    }
+
+    public void tearDown()
+    {
+        engine.initialize();
     }
 
     public void testIterator() throws Exception
@@ -47,7 +49,7 @@ public class TestMTStmtIterate extends TestCase
         /**
          * NOTE: just 1 thread - not thread-safe
          */
-        trySend(1, 1000, stmt);
+        trySend(1, 10, stmt);
     }
 
     private void trySend(int numThreads, int numRepeats, EPStatement stmt) throws Exception

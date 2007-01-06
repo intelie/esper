@@ -23,6 +23,7 @@ public interface StreamFactoryService
      * When called for some filters, should return same stream.
      * @param filterSpec event filter definition
      * @param filterService filter service to activate filter if not already active
+     * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      * @return event stream representing active filter
      */
     public EventStream createStream(FilterSpec filterSpec, FilterService filterService, EPStatementHandle epStatementHandle);

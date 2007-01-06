@@ -5,19 +5,14 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.util.SupportMTUpdateListener;
 
 import java.util.concurrent.*;
 
 /**
  * Test for multithread-safety for adding and removing listener.
- *
- * Threads in this test get a handle to a statement and then add and remove listeners.
- *
- * TODO - done:
- * - EPStatementSupport added RW lock for Set<Listener> writes and iteration
- * - EPEQLStatement when adding and removing the last listener now uses the statement resource lock  
  */
-public class TestMTStmtListener extends TestCase
+public class TestMTStmtListenerAddRemove extends TestCase
 {
     private EPServiceProvider engine;
 
@@ -25,9 +20,14 @@ public class TestMTStmtListener extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getDefaultProvider();
+        engine = EPServiceProviderManager.getProvider("TestMTStmtListenerAddRemove");
         // Less much debug output can be obtained by using external times
         //engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+    }
+
+    public void tearDown()
+    {
+        engine.initialize();
     }
 
     public void testPatterns() throws Exception
@@ -50,7 +50,7 @@ public class TestMTStmtListener extends TestCase
         Future future[] = new Future[numThreads];
         for (int i = 0; i < numThreads; i++)
         {
-            Callable callable = new StmtListenerCallable(engine, statement, isEQL, numRepeats);
+            Callable callable = new StmtListenerAddRemoveCallable(engine, statement, isEQL, numRepeats);
             future[i] = threadPool.submit(callable);
         }
 

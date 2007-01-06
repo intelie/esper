@@ -12,7 +12,6 @@ import net.esper.view.ViewProcessingException;
 import net.esper.view.Viewable;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.util.ManagedReadWriteLock;
-import net.esper.util.ManagedLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,7 +28,6 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
     private final UpdateDispatchView dispatchChildView;
     private final EPEQLStmtStartMethod startMethod;
     private final ManagedReadWriteLock eventProcessingRWLock;
-    private final ManagedLock statementLock;
 
     private Viewable parentView;
     private EPStatementStopMethod stopMethod;
@@ -39,17 +37,17 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
      * @param expressionText expression
      * @param dispatchService for dispatching
      * @param startMethod to start the view
+     * @param eventProcessingRWLock - lock for statement create/start/stop across engine instance competing with events
      */
-    public EPEQLStatementImpl(String expressionText, DispatchService dispatchService,
-                               EPEQLStmtStartMethod startMethod,
-                               ManagedReadWriteLock eventProcessingRWLock,
-                               ManagedLock statementLock)
+    public EPEQLStatementImpl(String expressionText, 
+                              DispatchService dispatchService,
+                              EPEQLStmtStartMethod startMethod,
+                              ManagedReadWriteLock eventProcessingRWLock)
     {
         this.expressionText = expressionText;
         this.dispatchChildView = new UpdateDispatchView(this.getListeners(), dispatchService);
         this.startMethod = startMethod;
         this.eventProcessingRWLock = eventProcessingRWLock;
-        this.statementLock = statementLock;
 
         start();
     }
@@ -66,11 +64,7 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
         eventProcessingRWLock.acquireWriteLock();
         try
         {
-            if (!this.getListeners().isEmpty())
-            {
-                parentView.removeView(dispatchChildView);
-            }
-
+            parentView.removeView(dispatchChildView);
             stopMethod.stop();
         }
         catch (RuntimeException ex)
@@ -115,11 +109,7 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
 
             parentView = pair.getFirst();
             stopMethod = pair.getSecond();
-
-            if (!this.getListeners().isEmpty())
-            {
-                parentView.addView(dispatchChildView);
-            }
+            parentView.addView(dispatchChildView);
         }
         catch (RuntimeException ex)
         {
@@ -149,46 +139,6 @@ public class EPEQLStatementImpl extends EPStatementSupport implements EPStatemen
     public EventType getEventType()
     {
         return parentView.getEventType();
-    }
-
-    public void listenerStop()
-    {
-        if (parentView != null)
-        {
-            statementLock.acquireLock();
-            try
-            {
-                parentView.removeView(dispatchChildView);
-            }
-            catch (RuntimeException ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                statementLock.releaseLock();
-            }
-        }
-    }
-
-    public void listenerStart()
-    {
-        if (parentView != null)
-        {
-            statementLock.acquireLock();
-            try
-            {
-                parentView.addView(dispatchChildView);
-            }
-            catch (RuntimeException ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                statementLock.releaseLock();
-            }
-        }
     }
 
     private static Log log = LogFactory.getLog(EPEQLStatementImpl.class);

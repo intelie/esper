@@ -60,8 +60,10 @@ public interface SchedulingService
 
     /**
      * Evaluate the current time and add to the collection any handles scheduled for execution.
+     * @param handles is a collection of handles populated by the service with any callbacks due
+     * for the current time
      */
-    public void evaluate(Collection<ScheduleHandle> units);
+    public void evaluate(Collection<ScheduleHandle> handles);
 
     /**
      * Returns a bucket from which slots can be allocated for ordering concurrent callbacks.

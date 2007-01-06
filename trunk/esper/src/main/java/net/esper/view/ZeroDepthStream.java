@@ -3,14 +3,11 @@ package net.esper.view;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.ConcurrentModificationException;
 
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
-import net.esper.util.ThreadLogUtil;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
-import org.apache.commons.collections.list.CursorableLinkedList;
 
 /**
  * Event stream implementation that does not keep any window by itself of the events coming into the stream.

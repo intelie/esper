@@ -17,8 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 /**
- * Test for insert-into and aggregation
- *
+ * Test for multithread-safety of insert-into and aggregation per group.
  */
 public class TestMTStmtInsertInto extends TestCase
 {
@@ -29,7 +28,7 @@ public class TestMTStmtInsertInto extends TestCase
     {
         engine = EPServiceProviderManager.getDefaultProvider();
         // Less much debug output can be obtained by using external times
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        //engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testInsertInto() throws Exception
@@ -52,6 +51,7 @@ public class TestMTStmtInsertInto extends TestCase
         stmtConsolidated.addListener(listener);
 
         trySend(10, 5000);
+        trySend(4, 10000);
     }
 
     private void trySend(int numThreads, int numRepeats) throws Exception
@@ -101,5 +101,7 @@ public class TestMTStmtInsertInto extends TestCase
                 assertTrue(value.contains("E2_" + i));
             }            
         }
+
+        listener.reset();
     }
 }

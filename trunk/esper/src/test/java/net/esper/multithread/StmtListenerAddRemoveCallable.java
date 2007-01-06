@@ -15,14 +15,14 @@ import junit.framework.AssertionFailedError;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class StmtListenerCallable implements Callable
+public class StmtListenerAddRemoveCallable implements Callable
 {
     private final EPServiceProvider engine;
     private final EPStatement stmt;
     private final boolean isEQL;
     private final int numRepeats;
 
-    public StmtListenerCallable(EPServiceProvider engine, EPStatement stmt, boolean isEQL, int numRepeats)
+    public StmtListenerAddRemoveCallable(EPServiceProvider engine, EPStatement stmt, boolean isEQL, int numRepeats)
     {
         this.engine = engine;
         this.stmt = stmt;
@@ -51,6 +51,7 @@ public class StmtListenerCallable implements Callable
                 stmt.addListener(assertListener);
                 stmt.addListener(logListener);
 
+                // send event
                 Object event = makeEvent();
                 ThreadLogUtil.trace("sending event ", event);
                 engine.getEPRuntime().sendEvent(event);
@@ -122,5 +123,5 @@ public class StmtListenerCallable implements Callable
         return event;
     }
 
-    private static final Log log = LogFactory.getLog(StmtListenerCallable.class);
+    private static final Log log = LogFactory.getLog(StmtListenerAddRemoveCallable.class);
 }

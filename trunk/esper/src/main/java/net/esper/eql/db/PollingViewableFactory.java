@@ -27,6 +27,7 @@ public class PollingViewableFactory
      * @param databaseStreamSpec provides the SQL statement, database name and additional info
      * @param databaseConfigService for getting database connection and settings
      * @param eventAdapterService for generating event beans from database information
+     * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      * @return viewable providing poll functionality
      * @throws ExprValidationException if the validation failed
      */

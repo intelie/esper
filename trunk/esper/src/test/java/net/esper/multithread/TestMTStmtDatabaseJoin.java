@@ -30,7 +30,11 @@ public class TestMTStmtDatabaseJoin extends TestCase
         Configuration configuration = new Configuration();
         configuration.addDatabaseReference("MyDB", configDB);
 
-        engine = EPServiceProviderManager.getDefaultProvider(configuration);
+        engine = EPServiceProviderManager.getProvider("TestMTStmtDatabaseJoin", configuration);        
+    }
+
+    public void tearDown()
+    {
         engine.initialize();
     }
 
@@ -40,7 +44,8 @@ public class TestMTStmtDatabaseJoin extends TestCase
                 "  from " + EVENT_NAME + ".win:length(1000) as s0,\n" +
                 "      sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s1"
                 );
-        trySendAndReceive(4, stmt, 10000);
+        trySendAndReceive(4, stmt, 1000);
+        trySendAndReceive(2, stmt, 2000);
     }
 
     private void trySendAndReceive(int numThreads, EPStatement statement, int numRepeats) throws Exception

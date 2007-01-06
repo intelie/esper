@@ -1,10 +1,6 @@
 package net.esper.filter;
 
 import net.esper.event.EventBean;
-import net.esper.util.ThreadLogUtil;
-
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,7 +30,6 @@ public final class FilterServiceImpl implements FilterService
 
     public final void remove(FilterHandle filterCallback)
     {
-        ThreadLogUtil.trace("remove callback ", filterCallback);
         indexBuilder.remove(filterCallback);
     }
 

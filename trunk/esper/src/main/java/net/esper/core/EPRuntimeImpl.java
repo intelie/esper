@@ -69,6 +69,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     /**
      * Constructor.
      * @param services - references to services
+     * @param eventProcessingRWLock - lock for statement create/start/stop across engine instance competing with events
      */
     public EPRuntimeImpl(EPServicesContext services, ManagedReadWriteLock eventProcessingRWLock)
     {
@@ -243,7 +244,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
 
         // Evaluation of all time events is protected from regular event stream processing
-        eventProcessingRWLock.acquireWriteLock();
+        eventProcessingRWLock.acquireReadLock();
 
         try
         {
@@ -264,7 +265,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
         finally
         {
-            eventProcessingRWLock.releaseWriteLock();
+            eventProcessingRWLock.releaseReadLock();
         }
 
         // Let listeners know of results

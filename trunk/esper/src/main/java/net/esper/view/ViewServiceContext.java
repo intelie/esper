@@ -20,6 +20,7 @@ public final class ViewServiceContext
      * @param schedulingService implementation for schedule registration
      * @param scheduleBucket is for ordering scheduled callbacks within the view statements
      * @param eventAdapterService service for generating events and handling event types
+     * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
     public ViewServiceContext(SchedulingService schedulingService,
                               ScheduleBucket scheduleBucket,
