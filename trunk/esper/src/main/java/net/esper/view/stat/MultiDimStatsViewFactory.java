@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Factory for {@link MultiDimStatsView} instances.
+ */
 public class MultiDimStatsViewFactory implements ViewFactory
 {
     private String[] derivedMeasures;

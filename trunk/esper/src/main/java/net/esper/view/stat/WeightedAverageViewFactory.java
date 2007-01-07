@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Factory for {@link WeightedAverageView} instances. 
+ */
 public class WeightedAverageViewFactory implements ViewFactory
 {
     private String fieldNameX;

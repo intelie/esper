@@ -6,6 +6,9 @@ import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
 
+/**
+ * Factory for {@link LastElementView} instances.
+ */
 public class LastElementViewFactory implements ViewFactory
 {
     private EventType eventType;

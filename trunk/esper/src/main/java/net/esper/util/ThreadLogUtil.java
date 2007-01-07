@@ -6,14 +6,38 @@ import org.apache.commons.logging.LogFactory;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Utility class for logging threading-related messages.
+ * <p>
+ * Prints thread information and lock-specific info. 
+ */
 public class ThreadLogUtil
 {
+    /**
+     * Set trace log level.
+     */
     public static int TRACE = 0;
+
+    /**
+     * Set info log level.
+     */
     public static int INFO = 1;
 
-    protected final static Boolean ENABLED_TRACE = false;
-    protected final static Boolean ENABLED_INFO = false;
+    /**
+     * Enable trace logging.
+     */
+    public final static Boolean ENABLED_TRACE = false;
 
+    /**
+     * Enable info logging.
+     */
+    public final static Boolean ENABLED_INFO = false;
+
+    /**
+     * If enabled, logs for trace level the given objects and text
+     * @param text to log
+     * @param objects to write
+     */
     public static void trace(String text, Object ... objects)
     {
         if (!ENABLED_TRACE)
@@ -23,6 +47,11 @@ public class ThreadLogUtil
         write(text, objects);
     }
 
+    /**
+     * If enabled, logs for info level the given objects and text
+     * @param text to log
+     * @param objects to write
+     */
     public static void info(String text, Object ... objects)
     {
         if (!ENABLED_INFO)
@@ -32,6 +61,11 @@ public class ThreadLogUtil
         write(text, objects);
     }
 
+    /**
+     * Logs the lock and action.
+     * @param lockAction is the action towards the lock
+     * @param lock is the lock instance
+     */
     public static void traceLock(String lockAction, ReentrantLock lock)
     {
         if (!ENABLED_TRACE)
@@ -41,6 +75,11 @@ public class ThreadLogUtil
         write(lockAction + " " + getLockInfo(lock));
     }
 
+    /**
+     * Logs the lock and action.
+     * @param lockAction is the action towards the lock
+     * @param lock is the lock instance
+     */
     public static void traceLock(String lockAction, ReentrantReadWriteLock lock)
     {
         if (!ENABLED_TRACE)

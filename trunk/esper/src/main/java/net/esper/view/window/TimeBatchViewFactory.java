@@ -11,6 +11,9 @@ import net.esper.util.JavaClassHelper;
 import java.util.List;
 import java.util.LinkedList;
 
+/**
+ * Factory for {@link TimeBatchView}. 
+ */
 public class TimeBatchViewFactory implements ViewFactory
 {
     private long millisecondsBeforeExpiry;

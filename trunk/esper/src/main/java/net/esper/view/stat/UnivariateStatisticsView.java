@@ -145,6 +145,11 @@ public final class UnivariateStatisticsView extends ViewSupport implements Conte
         return eventAdapterService.createMapFromValues(result, eventType);
     }
 
+    /**
+     * Creates the event type for this view.
+     * @param viewServiceContext is the event adapter service
+     * @return event type of view
+     */
     protected static EventType createEventType(ViewServiceContext viewServiceContext)
     {
         Map<String, Class> eventTypeMap = new HashMap<String, Class>();

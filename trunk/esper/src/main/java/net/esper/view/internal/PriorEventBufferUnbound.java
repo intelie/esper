@@ -17,6 +17,10 @@ public class PriorEventBufferUnbound implements ViewUpdatedCollection, RandomAcc
     private final int maxSize;
     private final RollingEventBuffer newEvents;
 
+    /**
+     * Ctor.
+     * @param maxPriorIndex is the highest prior-event index required by any expression
+     */
     public PriorEventBufferUnbound(int maxPriorIndex)
     {
         this.maxSize = maxPriorIndex + 1;

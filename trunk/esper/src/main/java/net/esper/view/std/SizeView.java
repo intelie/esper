@@ -83,6 +83,11 @@ public final class SizeView extends ViewSupport implements ContextAwareView
         return this.getClass().getName();
     }
 
+    /**
+     * Creates the event type for this view
+     * @param viewServiceContext is the event adapter service
+     * @return event type for view
+     */
     protected static EventType createEventType(ViewServiceContext viewServiceContext)
     {
         Map<String, Class> schemaMap = new HashMap<String, Class>();

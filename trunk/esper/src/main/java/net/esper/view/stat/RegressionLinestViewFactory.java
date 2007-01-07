@@ -9,6 +9,9 @@ import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
 
+/**
+ * Factory for {@link RegressionLinestView} instances.
+ */
 public class RegressionLinestViewFactory implements ViewFactory
 {
     private String fieldNameX;

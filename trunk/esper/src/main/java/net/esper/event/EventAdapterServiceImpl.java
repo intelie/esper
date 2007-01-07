@@ -38,23 +38,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return eventTypes.get(eventName);
     }
 
-    public void addAliasForType(String eventTypeAlias, EventType eventType) throws EventAdapterException
-    {
-        EventType existingType = eventTypes.get(eventTypeAlias);
-        if (existingType != null)
-        {
-            if (!existingType.equals(eventType))
-            {
-                throw new EventAdapterException("Event type named '" + eventTypeAlias +
-                    "' has already been declared with differing type information");
-            }
-        }
-        else
-        {
-            eventTypes.put(eventTypeAlias, eventType);
-        }
-    }
-
     public synchronized EventType addBeanType(String eventTypeAlias, Class clazz) throws EventAdapterException
     {
         EventType existingType = eventTypes.get(eventTypeAlias);

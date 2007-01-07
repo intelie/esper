@@ -259,11 +259,18 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
         }
     }
 
+    /**
+     * Method to transform an event based on the select expression.
+     */
     public static class OutputProcessTransform implements TransformEventMethod
     {
         private final ResultSetProcessor resultSetProcessor;
         private final EventBean[] newData;
 
+        /**
+         * Ctor.
+         * @param resultSetProcessor is applying the select expressions to the events for the transformation
+         */
         public OutputProcessTransform(ResultSetProcessor resultSetProcessor) {
             this.resultSetProcessor = resultSetProcessor;
             newData = new EventBean[1];

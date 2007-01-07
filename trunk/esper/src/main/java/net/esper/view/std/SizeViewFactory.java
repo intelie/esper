@@ -6,6 +6,9 @@ import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
 
+/**
+ * Factory for {@link SizeView} instances. 
+ */
 public class SizeViewFactory implements ViewFactory
 {
     private EventType eventType;

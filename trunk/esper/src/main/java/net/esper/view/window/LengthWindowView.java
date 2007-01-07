@@ -40,6 +40,10 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
+    /**
+     * Returns true if the window is empty, or false if not empty.
+     * @return true if empty
+     */
     public boolean isEmpty()
     {
         return events.isEmpty();
@@ -63,11 +67,19 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         this.size = size;
     }
 
+    /**
+     * Returns the (optional) collection handling random access to window contents for prior or previous events.
+     * @return buffer for events
+     */
     public ViewUpdatedCollection getViewUpdatedCollection()
     {
         return viewUpdatedCollection;
     }
 
+    /**
+     * Sets the buffer for keeping a reference to prior or previous events.
+     * @param viewUpdatedCollection buffer
+     */
     public void setViewUpdatedCollection(IStreamRandomAccess viewUpdatedCollection)
     {
         this.viewUpdatedCollection = viewUpdatedCollection;

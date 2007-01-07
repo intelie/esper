@@ -47,6 +47,11 @@ public final class CorrelationView extends BaseBivariateStatisticsView
                 " fieldY=" + this.getFieldNameY();
     }
 
+    /**
+     * Creates the event type for this view.
+     * @param viewServiceContext is the event adapter service
+     * @return event type of view
+     */
     protected static EventType createEventType(ViewServiceContext viewServiceContext)
     {
         return viewServiceContext.getEventAdapterService().addBeanType(CorrelationBean.class.getName(), CorrelationBean.class);

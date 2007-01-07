@@ -20,6 +20,9 @@ import javax.xml.xpath.XPathConstants;
 import java.util.*;
 import java.io.*;
 
+/**
+ * Parser for configuration XML.
+ */
 class ConfigurationParser {
 
     /**

@@ -92,6 +92,10 @@ public final class FilterSpecParamIn extends FilterSpecParam
         return new MultiKeyUntyped(actualValues);
     }
 
+    /**
+     * Returns the list of values we are asking to match.
+     * @return list of filter values
+     */
     public List<FilterSpecParamInValue> getListOfValues()
     {
         return listOfValues;

@@ -10,6 +10,9 @@ import net.esper.eql.core.ViewResourceCallback;
 import java.util.List;
 import java.util.LinkedList;
 
+/**
+ * Factory for {@link LengthWindowView}. 
+ */
 public class LengthWindowViewFactory implements ViewFactory
 {
     private int size;

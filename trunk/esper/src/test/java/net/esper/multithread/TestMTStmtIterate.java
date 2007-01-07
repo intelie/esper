@@ -40,14 +40,14 @@ public class TestMTStmtIterate extends TestCase
                 " select string from " + SupportBean.class.getName() + ".win:time(5 min)");
 
         /**
-         * TODO: The iterator is not yet thread-safe
+         * Iterator fail with concurrent mod exception.
          * (1) copy-on-write would be a performance drag
          * (2) clients may want to fail if a concurrent mod happened
          * (3) statement lock could prevent concurrent mod but could also become an issue for deadlock and lock contention
          */
 
         /**
-         * NOTE: just 1 thread - not thread-safe
+         * NOTE: just 1 thread
          */
         trySend(1, 10, stmt);
     }

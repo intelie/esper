@@ -49,6 +49,11 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView
                 " fieldY=" + this.getFieldNameY();
     }
 
+    /**
+     * Creates the event type for this view.
+     * @param viewServiceContext is the event adapter service
+     * @return event type of view
+     */
     protected static EventType createEventType(ViewServiceContext viewServiceContext)
     {
         return viewServiceContext.getEventAdapterService().addBeanType(RegressionBean.class.getName(), RegressionBean.class);

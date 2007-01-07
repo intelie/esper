@@ -7,10 +7,17 @@ import net.esper.collection.ViewUpdatedCollection;
 
 import java.util.Iterator;
 
+/**
+ * View that provides access to prior events posted by the parent view for use by 'prior' expression nodes.
+ */
 public class PriorEventView extends ViewSupport
 {
     private ViewUpdatedCollection buffer;
 
+    /**
+     * Ctor.
+     * @param buffer is handling the actual storage of events for use in the 'prior' expression
+     */
     public PriorEventView(ViewUpdatedCollection buffer)
     {
         this.buffer = buffer;
@@ -22,6 +29,10 @@ public class PriorEventView extends ViewSupport
         this.updateChildren(newData, oldData);
     }
 
+    /**
+     * Returns the underlying buffer used for access to prior events.
+     * @return buffer
+     */
     protected ViewUpdatedCollection getBuffer()
     {
         return buffer;

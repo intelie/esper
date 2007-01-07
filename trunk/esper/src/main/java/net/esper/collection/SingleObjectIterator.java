@@ -20,6 +20,9 @@ public class SingleObjectIterator<T> implements Iterator<T>
         this.object = object;
     }
 
+    /**
+     * Ctor for an iterator starting out empty.
+     */
     public SingleObjectIterator()
     {
     }
@@ -47,10 +50,5 @@ public class SingleObjectIterator<T> implements Iterator<T>
     public void remove()
     {
         throw new UnsupportedOperationException();
-    }
-
-    public void reset(T object)
-    {
-        this.object = object;
     }
 }

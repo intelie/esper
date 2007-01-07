@@ -2,17 +2,27 @@ package net.esper.util;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Simple lock based on {@link ReentrantLock} that associates a name with the lock and traces locking and unlocking.
+ */
 public class ManagedLock
 {
     private final ReentrantLock lock;
     private final String name;
 
+    /**
+     * Ctor.
+     * @param name of lock
+     */
     public ManagedLock(String name)
     {
         this.name = name;
         this.lock = new ReentrantLock();
     }
 
+    /**
+     * Lock.
+     */
     public void acquireLock()
     {
         if (ThreadLogUtil.ENABLED_TRACE)
@@ -28,6 +38,9 @@ public class ManagedLock
         }
     }
 
+    /**
+     * Unlock.
+     */
     public void releaseLock()
     {
         if (ThreadLogUtil.ENABLED_TRACE)

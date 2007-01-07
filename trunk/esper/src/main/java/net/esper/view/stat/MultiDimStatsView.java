@@ -329,6 +329,11 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
         return eventBean;
     }
 
+    /**
+     * Creates the event type for this view.
+     * @param viewServiceContext is the event adapter service
+     * @return event type of view
+     */
     protected static EventType createEventType(ViewServiceContext viewServiceContext)
     {
         Map<String, Class> schemaMap = new HashMap<String, Class>();

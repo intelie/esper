@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Factory for {@link UnivariateStatisticsView} instances. 
+ */
 public class UnivariateStatisticsViewFactory implements ViewFactory
 {
     private String fieldName;

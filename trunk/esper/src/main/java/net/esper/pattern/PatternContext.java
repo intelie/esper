@@ -75,6 +75,10 @@ public final class PatternContext
         return eventAdapterService;
     }
 
+    /**
+     * Returns the statement's resource handle for locking.
+     * @return handle of statement
+     */
     public EPStatementHandle getEpStatementHandle()
     {
         return epStatementHande;

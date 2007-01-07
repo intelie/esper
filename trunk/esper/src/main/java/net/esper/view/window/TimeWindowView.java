@@ -77,11 +77,19 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
     }
 
+    /**
+     * Returns the (optional) collection handling random access to window contents for prior or previous events.
+     * @return buffer for events
+     */
     public ViewUpdatedCollection getViewUpdatedCollection()
     {
         return viewUpdatedCollection;
     }
 
+    /**
+     * Sets the buffer for keeping a reference to prior or previous events.
+     * @param viewUpdatedCollection buffer
+     */
     public void setViewUpdatedCollection(IStreamRandomAccess viewUpdatedCollection)
     {
         this.viewUpdatedCollection = viewUpdatedCollection;
@@ -226,6 +234,10 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
         this.scheduleSlot = viewServiceContext.getScheduleBucket().allocateSlot();
     }
 
+    /**
+     * Returns true if the window is empty, or false if not empty.
+     * @return true if empty
+     */
     public boolean isEmpty()
     {
         return timeWindow.isEmpty();

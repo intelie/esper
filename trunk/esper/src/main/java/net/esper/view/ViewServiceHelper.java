@@ -228,7 +228,15 @@ public class ViewServiceHelper
         return new Pair<Viewable, List<View>>(currentParent, matchedViewList);
     }
 
-    public static List<ViewFactory> instantiateFactoryChain(List<ViewSpec> viewSpecList, ViewServiceContext context)
+    /**
+     * Given a list of view specifications obtained from by parsing this method instantiates a list of view factories.
+     * The view factories are not yet aware of each other after leaving this method (so not yet chained logically).
+     * They are simply instantiated and assigned view parameters.
+     * @param viewSpecList is the view definition
+     * @return list of view factories
+     * @throws ViewProcessingException if the factory cannot be creates such as for invalid view spec
+     */
+    public static List<ViewFactory> instantiateFactories(List<ViewSpec> viewSpecList)
             throws ViewProcessingException
     {
         List<ViewFactory> factoryChain = new ArrayList<ViewFactory>();

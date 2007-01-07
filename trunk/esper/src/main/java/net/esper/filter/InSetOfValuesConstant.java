@@ -12,6 +12,10 @@ public class InSetOfValuesConstant implements FilterSpecParamInValue
 {
     private Object constant;
 
+    /**
+     * Ctor.
+     * @param constant is the constant value
+     */
     public InSetOfValuesConstant(Object constant)
     {
         this.constant = constant;

@@ -9,12 +9,20 @@ import net.esper.collection.*;
 
 import java.util.*;
 
+/**
+ * Factory for making {@link PriorEventView} instances.
+ */
 public class PriorEventViewFactory implements ViewFactory
 {
     private TreeMap<Integer, List<ViewResourceCallback>> callbacksPerIndex = new TreeMap<Integer, List<ViewResourceCallback>>();
     private EventType eventType;
     private final boolean isUnbound;
 
+    /**
+     * Ctor.
+     * @param unbound to indicate the we are not receiving remove stream events (unbound stream, stream without child
+     * views) therefore must use a different buffer.
+     */
     public PriorEventViewFactory(boolean unbound)
     {
         isUnbound = unbound;
@@ -135,11 +143,19 @@ public class PriorEventViewFactory implements ViewFactory
         return false;
     }
 
+    /**
+     * Adapter to provide access given an index.
+     */
     public static class RelativeAccessImpl implements RelativeAccessByEventNIndex
     {
         private final RelativeAccessByEventNIndex buffer;
         private final int relativeIndex;
 
+        /**
+         * Ctor.
+         * @param buffer is the buffer to acces
+         * @param relativeIndex is the index to pull out
+         */
         public RelativeAccessImpl(RelativeAccessByEventNIndex buffer, int relativeIndex)
         {
             this.buffer = buffer;

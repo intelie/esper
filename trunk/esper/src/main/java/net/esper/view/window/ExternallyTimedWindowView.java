@@ -171,6 +171,10 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
         return num.longValue();
     }
 
+    /**
+     * Returns true to indicate the window is empty, or false if the view is not empty.
+     * @return true if empty
+     */
     public boolean isEmpty()
     {
         return timeWindow.isEmpty();

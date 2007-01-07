@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface ViewService
 {
-    /*
+    /**
      * Returns a chain of view factories that can be used to obtain the final event type,
      * and that can later be used to actually create the chain of views or reuse existing views.
      * <p>
@@ -19,6 +19,7 @@ public interface ViewService
      * @param parentEventType - is the event type of the event stream that originates the raw events
      * @param viewSpecList - the specification for each view factory in the chain to be created
      * @param context - dependent services
+     * @return chain of view factories
      * @throws ViewProcessingException thrown if a view factory doesn't take parameters as supplied,
      * or cannot hook onto it's parent view or event stream
      */

@@ -6,11 +6,17 @@ import net.esper.collection.ViewUpdatedCollection;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Provides relative access to insert stream events for certain window.
+ */
 public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewUpdatedCollection
 {
     private Map<EventBean, Integer> indexPerEvent;
     private EventBean[] lastNewData;
 
+    /**
+     * Ctor.
+     */
     public IStreamRelativeAccess()
     {
         indexPerEvent = new HashMap<EventBean, Integer>();

@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+/**
+ * Factory for sort window views.
+ */
 public class SortWindowViewFactory implements ViewFactory
 {
     private String[] sortFieldNames;

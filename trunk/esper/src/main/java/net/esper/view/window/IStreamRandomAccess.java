@@ -13,6 +13,9 @@ public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedColl
 {
     private ArrayList<EventBean> arrayList;
 
+    /**
+     * Ctor.
+     */
     public IStreamRandomAccess()
     {
         this.arrayList = new ArrayList<EventBean>();

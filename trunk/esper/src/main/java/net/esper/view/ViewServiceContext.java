@@ -60,6 +60,10 @@ public final class ViewServiceContext
         return scheduleBucket;
     }
 
+    /**
+     * Returns the statement's resource locks.
+     * @return statement resource lock/handle
+     */
     public EPStatementHandle getEpStatementHandle()
     {
         return epStatementHandle;

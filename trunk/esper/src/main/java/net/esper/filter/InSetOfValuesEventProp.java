@@ -61,11 +61,19 @@ public class InSetOfValuesEventProp implements FilterSpecParamInValue
         return value;
     }
 
+    /**
+     * Returns the tag used for the event property.
+     * @return tag
+     */
     public String getResultEventAsName()
     {
         return resultEventAsName;
     }
 
+    /**
+     * Returns the event property name.
+     * @return property name
+     */
     public String getResultEventProperty()
     {
         return resultEventProperty;

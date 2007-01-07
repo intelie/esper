@@ -280,7 +280,10 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         ArrayBackedCollection<ScheduleHandle> handles = scheduleArrayThreadLocal.get();
         services.getSchedulingService().evaluate(handles);
 
-        ThreadLogUtil.trace("Found schedules for", handles.size());
+        if (ThreadLogUtil.ENABLED_TRACE)
+        {
+            ThreadLogUtil.trace("Found schedules for", handles.size());
+        }
 
         if (handles.size() == 0)
         {
@@ -423,7 +426,10 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         ArrayBackedCollection<FilterHandle> matches = matchesArrayThreadLocal.get();
         services.getFilterService().evaluate(event, matches);
 
-        ThreadLogUtil.trace("Found matches for underlying ", matches.size(), event.getUnderlying());
+        if (ThreadLogUtil.ENABLED_TRACE)
+        {
+            ThreadLogUtil.trace("Found matches for underlying ", matches.size(), event.getUnderlying());
+        }
 
         if (matches.size() == 0)
         {

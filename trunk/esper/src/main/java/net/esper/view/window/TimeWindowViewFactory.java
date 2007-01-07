@@ -9,6 +9,9 @@ import net.esper.util.JavaClassHelper;
 import java.util.List;
 import java.util.LinkedList;
 
+/**
+ * Factory for {@link TimeWindowView}. 
+ */
 public class TimeWindowViewFactory implements ViewFactory
 {
     private long millisecondsBeforeExpiry;

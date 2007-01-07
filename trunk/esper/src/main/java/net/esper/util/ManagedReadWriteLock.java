@@ -2,6 +2,10 @@ package net.esper.util;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Simple read-write lock based on {@link java.util.concurrent.locks.ReentrantReadWriteLock} that associates a
+ * name with the lock and traces read/write locking and unlocking.
+ */
 public class ManagedReadWriteLock
 {
     protected final static String ACQUIRE_TEXT  = "Acquire ";
@@ -12,12 +16,19 @@ public class ManagedReadWriteLock
     private final ReentrantReadWriteLock lock;
     private final String name;
 
+    /**
+     * Ctor.
+     * @param name of lock
+     */
     public ManagedReadWriteLock(String name)
     {
         this.name = name;
         this.lock = new ReentrantReadWriteLock();
     }
 
+    /**
+     * Lock write lock.
+     */
     public void acquireWriteLock()
     {
         if (ThreadLogUtil.ENABLED_TRACE)
@@ -33,6 +44,9 @@ public class ManagedReadWriteLock
         }
     }
 
+    /**
+     * Unlock write lock.
+     */
     public void releaseWriteLock()
     {
         if (ThreadLogUtil.ENABLED_TRACE)
@@ -48,6 +62,9 @@ public class ManagedReadWriteLock
         }
     }
 
+    /**
+     * Lock read lock.
+     */
     public void acquireReadLock()
     {
         if (ThreadLogUtil.ENABLED_TRACE)
@@ -63,6 +80,9 @@ public class ManagedReadWriteLock
         }
     }
 
+    /**
+     * Unlock read lock.
+     */
     public void releaseReadLock()
     {
         if (ThreadLogUtil.ENABLED_TRACE)

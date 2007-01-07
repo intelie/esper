@@ -9,6 +9,9 @@ import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
 
+/**
+ * Factory for {@link UniqueByPropertyView} instances. 
+ */
 public class UniqueByPropertyViewFactory implements ViewFactory
 {
     private String propertyName;

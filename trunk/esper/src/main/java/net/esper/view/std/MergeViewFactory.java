@@ -7,6 +7,9 @@ import net.esper.eql.core.ViewResourceCallback;
 import java.util.List;
 import java.util.Arrays;
 
+/**
+ * Factory for {@link MergeView} instances. 
+ */
 public class MergeViewFactory implements ViewFactory
 {
     private String[] fieldNames;

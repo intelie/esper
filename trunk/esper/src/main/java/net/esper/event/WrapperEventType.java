@@ -1,26 +1,39 @@
 package net.esper.event;
 
+import net.esper.client.EPException;
+import net.esper.collection.Pair;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import net.esper.client.EPException;
-import net.esper.collection.Pair;
-
-public class WrapperEventType implements EventType 
+/**
+ * An event type that adds zero or more fields to an existing event type.
+ * <p>
+ * The additional fields are represented as a Map. Any queries to event properties are first
+ * held against the additional fields, and secondly are handed through to the underlying event.
+ * <p>
+ * If this event type is to add information to another wrapper event type (wrapper to wrapper), then it is the
+ * responsibility of the creating logic to use the existing event type and add to it.
+ * <p>
+ * Uses a {@link MapEventType} to represent the mapped properties. This is because the additional properties
+ * can also be beans or complex types and the Map event type handles these nicely.
+ */
+public class WrapperEventType implements EventType
 {
-	private final Log log = LogFactory.getLog(WrapperEventType.class);
-	
 	private final EventType underlyingEventType;
 	private final MapEventType underlyingMapType;
 	private final String[] propertyNames;
     private final int hashCode;
     private final boolean isNoMapProperties;
 
+    /**
+     * Ctor.
+     * @param eventType is the event type of the wrapped events
+     * @param properties is the additional properties this wrapper adds
+     * @param eventAdapterService is the ser
+     */
     public WrapperEventType(EventType eventType, Map<String, Class> properties, EventAdapterService eventAdapterService)
 	{
 		checkForRepeatedPropertyNames(eventType, properties);

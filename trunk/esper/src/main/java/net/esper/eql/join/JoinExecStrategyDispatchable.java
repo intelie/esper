@@ -4,6 +4,7 @@ import net.esper.dispatch.Dispatchable;
 import net.esper.view.internal.BufferObserver;
 import net.esper.event.EventBean;
 import net.esper.collection.FlushedEventBuffer;
+import net.esper.core.EPStatementDispatch;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.HashMap;
  * This class reacts to any new data buffered by registring with the dispatch service.
  * When dispatched via execute, it takes the buffered events and hands these to the join execution strategy.
  */
-public class JoinExecStrategyDispatchable implements Dispatchable, BufferObserver
+public class JoinExecStrategyDispatchable implements EPStatementDispatch, BufferObserver
 {
     private final JoinExecutionStrategy joinExecutionStrategy;
     private final Map<Integer, FlushedEventBuffer> oldStreamBuffer;

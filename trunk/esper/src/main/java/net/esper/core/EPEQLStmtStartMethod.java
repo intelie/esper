@@ -260,15 +260,15 @@ public class EPEQLStmtStartMethod
         JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
 
         // Hook up dispatchable with buffer and execution strategy
-        JoinExecStrategyDispatchable dispatchable = new JoinExecStrategyDispatchable(execution, statementSpec.getStreamSpecs().size());
-        epStatementHandle.setOptionalDispatchable(dispatchable);
+        JoinExecStrategyDispatchable joinStatementDispatch = new JoinExecStrategyDispatchable(execution, statementSpec.getStreamSpecs().size());
+        epStatementHandle.setOptionalDispatchable(joinStatementDispatch);
 
         // Create buffer for each view. Point buffer to dispatchable for join.
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             BufferView buffer = new BufferView(i);
             streamViews[i].addView(buffer);
-            buffer.setObserver(dispatchable);
+            buffer.setObserver(joinStatementDispatch);
         }
 
         return indicatorView;

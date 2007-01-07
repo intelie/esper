@@ -185,6 +185,11 @@ public final class WeightedAverageView extends ViewSupport implements ContextAwa
                 " fieldNameWeight=" + fieldNameWeight;
     }
 
+    /**
+     * Creates the event type for this view.
+     * @param viewServiceContext is the event adapter service
+     * @return event type of view
+     */
     protected static EventType createEventType(ViewServiceContext viewServiceContext)
     {
         Map<String, Class> schemaMap = new HashMap<String, Class>();

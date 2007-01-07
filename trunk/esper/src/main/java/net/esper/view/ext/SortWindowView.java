@@ -46,6 +46,14 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
     {
     }
 
+    /**
+     * Ctor.
+     * @param sortFieldNames is the event property names to sort
+     * @param descendingValues indicates whether to sort ascending or descending for each field
+     * @param sortWindowSize is the window size
+     * @param optionalSortedRandomAccess is the friend class handling the random access, if required by
+     * expressions 
+     */
     public SortWindowView(String[] sortFieldNames, Boolean[] descendingValues, int sortWindowSize,
                           IStreamSortedRandomAccess optionalSortedRandomAccess)
     {
@@ -99,11 +107,19 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
         return sortWindowSize;
     }
 
+    /**
+     * Returns the friend handling the random access, cal be null if not required.
+     * @return random accessor to sort window contents
+     */
     public IStreamSortedRandomAccess getOptionalSortedRandomAccess()
     {
         return optionalSortedRandomAccess;
     }
 
+    /**
+     * Sets the friend handling the random access, can be null if not required.
+     * @param optionalSortedRandomAccess random accessor to sort window contents
+     */
     public void setOptionalSortedRandomAccess(IStreamSortedRandomAccess optionalSortedRandomAccess)
     {
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
@@ -273,6 +289,10 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
     	return new MultiKeyUntyped(result);
     }
 
+    /**
+     * True to indicate the sort window is empty, or false if not empty.
+     * @return true if empty sort window
+     */
     public boolean isEmpty()
     {
         return sortedEvents.isEmpty();

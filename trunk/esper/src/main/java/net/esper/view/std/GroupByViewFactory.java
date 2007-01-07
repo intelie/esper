@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Factory for {@link GroupByView} instances.
+ */
 public class GroupByViewFactory implements ViewFactory
 {
     private String[] groupFieldNames;
@@ -33,7 +36,10 @@ public class GroupByViewFactory implements ViewFactory
         this.eventType = parentEventType;
     }
 
-
+    /**
+     * Returns the names of fields to group by
+     * @return field names
+     */
     public String[] getGroupFieldNames()
     {
         return groupFieldNames;
@@ -59,9 +65,16 @@ public class GroupByViewFactory implements ViewFactory
         return eventType;
     }
 
+    /**
+     * Parses the given view parameters into a list of field names to group-by.
+     * @param viewParameters is the raw parameter objects
+     * @param viewName is the name of the view
+     * @return field names
+     * @throws ViewParameterException thrown to indicate a parameter problem
+     */
     protected static String[] getFieldNameParams(List<Object> viewParameters, String viewName) throws ViewParameterException
     {
-        String[] fieldNames = null;
+        String[] fieldNames;
 
         String errorMessage = '\'' + viewName + "' view requires a list of String values or a String-array as parameter";
         if (viewParameters.isEmpty())

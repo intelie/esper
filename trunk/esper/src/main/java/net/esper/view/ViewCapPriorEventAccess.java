@@ -21,6 +21,10 @@ public class ViewCapPriorEventAccess implements ViewCapability
         this.indexConstant = indexConstant;
     }
 
+    /**
+     * Index or the prior event we are asking for.
+     * @return prior event index constant
+     */
     public Integer getIndexConstant()
     {
         return indexConstant;

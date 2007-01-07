@@ -3,12 +3,28 @@ package net.esper.collection;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * A fast collection backed by an array with severe limitations. Allows direct access to the backing array
+ * - this must be used with care as old elements could be in the array and the array is only valid until
+ *  the number of elements indicated by size.
+ * <p>
+ * Implements only the add, size and clear methods of the collection interface.
+ * <p>
+ * When running out of space for the underlying array, allocates a new array of double the size of the
+ * current array.
+ * <p>
+ * Not synchronized and not thread-safe.
+ */
 public class ArrayBackedCollection<T> implements Collection<T>
 {
     private int lastIndex;
     private int currentIndex;
     private Object[] handles;
 
+    /**
+     * Ctor.
+     * @param currentSize is the initial size of the backing array.
+     */
     public ArrayBackedCollection(int currentSize)
     {
         this.lastIndex = currentSize - 1;
@@ -46,6 +62,12 @@ public class ArrayBackedCollection<T> implements Collection<T>
         return currentIndex;
     }
 
+    /**
+     * Returns the backing object array, valid until the current size.
+     * <p>
+     * Applications must ensure to not read past current size as old elements can be encountered.
+     * @return backing array
+     */
     public Object[] getArray()
     {
         return handles;
@@ -70,7 +92,6 @@ public class ArrayBackedCollection<T> implements Collection<T>
     {
         throw new UnsupportedOperationException();
     }
-
 
     public Object[] toArray(Object[] a)
     {

@@ -90,6 +90,10 @@ public class EventTypeIndex implements EventEvaluator
         }
     }
 
+    /**
+     * Returns the current size of the known event types.
+     * @return collection size
+     */
     protected int size()
     {
         return eventTypes.size();

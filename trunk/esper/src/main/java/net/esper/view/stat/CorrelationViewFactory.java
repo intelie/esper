@@ -8,6 +8,9 @@ import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
 
+/**
+ * Factory for {@link CorrelationView} instances.
+ */
 public class CorrelationViewFactory implements ViewFactory
 {
     private String fieldNameX;
