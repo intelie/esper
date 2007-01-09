@@ -7,15 +7,10 @@ public final class StreamFactoryServiceProvider
 {
     /**
      * Creates an implementation of the StreamFactoryService interface.
-     * @param isMultithreading is a flag indicating whether or not to share streams or not
-     * @return implementation depending on needs for multithread-safety
+     * @return implementation
      */
-    public static StreamFactoryService newService(boolean isMultithreading)
+    public static StreamFactoryService newService()
     {
-        if (isMultithreading)
-        {
-            return new StreamFactorySvcCreate();
-        }
-        return new StreamFactorySvcReuse();
+        return new StreamFactorySvcImpl();
     }
 }

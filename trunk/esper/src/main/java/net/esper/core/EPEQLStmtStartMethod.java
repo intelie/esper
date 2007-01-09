@@ -84,6 +84,7 @@ public class EPEQLStmtStartMethod
     {
         // Determine stream names for each stream - some streams may not have a name given
         String[] streamNames = determineStreamNames(statementSpec.getStreamSpecs());
+        final boolean isJoin = statementSpec.getStreamSpecs().size() > 1;
 
         int numStreams = streamNames.length;
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
@@ -99,7 +100,7 @@ public class EPEQLStmtStartMethod
             if (streamSpec instanceof FilterStreamSpec)
             {
                 FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
-                eventStreamParentViewable[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), epStatementHandle);
+                eventStreamParentViewable[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), epStatementHandle, isJoin);
                 unmaterializedViewChain[i] = services.getViewService().createFactories(eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), viewContext);
             }
             // Create view factories and parent view based on a pattern expression
@@ -164,7 +165,7 @@ public class EPEQLStmtStartMethod
                     if (streamSpec instanceof FilterStreamSpec)
                     {
                         FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
-                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService());
+                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin);
                     }
                 }
                 for (StopCallback stopCallback : stopCallbacks)

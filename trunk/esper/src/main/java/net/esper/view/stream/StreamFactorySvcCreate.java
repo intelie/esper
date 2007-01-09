@@ -1,13 +1,15 @@
 package net.esper.view.stream;
 
-import net.esper.filter.*;
+import net.esper.collection.Pair;
+import net.esper.core.EPStatementHandle;
+import net.esper.core.EPStatementHandleCallback;
+import net.esper.event.EventBean;
+import net.esper.filter.FilterHandleCallback;
+import net.esper.filter.FilterService;
+import net.esper.filter.FilterSpec;
+import net.esper.filter.FilterValueSet;
 import net.esper.view.EventStream;
 import net.esper.view.ZeroDepthStream;
-import net.esper.collection.Pair;
-import net.esper.event.EventBean;
-import net.esper.util.ManagedLock;
-import net.esper.core.EPStatementHandleCallback;
-import net.esper.core.EPStatementHandle;
 
 import java.util.IdentityHashMap;
 
@@ -16,7 +18,7 @@ import java.util.IdentityHashMap;
  * <p>
  * Thus views under the newly created event stream are not reused across statements, for multithread-safety.
  */
-public class StreamFactorySvcCreate implements StreamFactoryService
+public class StreamFactorySvcCreate
 {
     // Using identify hash map - ignoring the equals semantics on filter specs
     // Thus two filter specs objects are always separate entries in the map
@@ -30,6 +32,13 @@ public class StreamFactorySvcCreate implements StreamFactoryService
         this.eventStreams = new IdentityHashMap<FilterSpec, Pair<EventStream, EPStatementHandleCallback>>();
     }
 
+    /**
+     * See the method of the same name in {@link StreamFactoryService}. Always creates a new event stream.
+     * @param filterSpec is the filter definition
+     * @param filterService is the filtering service
+     * @param epStatementHandle is the statement resource lock
+     * @return newly created event stream, not reusing existing instances
+     */
     public EventStream createStream(FilterSpec filterSpec, FilterService filterService, EPStatementHandle epStatementHandle)
     {
         // Check if a stream for this filter already exists
@@ -63,6 +72,11 @@ public class StreamFactorySvcCreate implements StreamFactoryService
         return eventStream;
     }
 
+    /**
+     * See the method of the same name in {@link StreamFactoryService}.
+     * @param filterSpec is the filter definition
+     * @param filterService is the filtering service
+     */
     public void dropStream(FilterSpec filterSpec, FilterService filterService)
     {
         Pair<EventStream, EPStatementHandleCallback> pair = eventStreams.get(filterSpec);

@@ -12,7 +12,7 @@ import net.esper.event.EventType;
 
 public class TestStreamFactorySvcCreate extends TestCase
 {
-    private StreamFactoryService streamFactoryService;
+    private StreamFactorySvcCreate streamFactoryService;
     private SupportFilterServiceImpl supportFilterService;
 
     private FilterSpec[] filterSpecs;

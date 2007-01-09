@@ -58,7 +58,7 @@ public final class EPServicesContext
         this.emitService = EmitServiceProvider.newService();
         this.dispatchService = DispatchServiceProvider.newService();
         this.viewService = ViewServiceProvider.newService();
-        this.streamFactoryService = StreamFactoryServiceProvider.newService(true);  // TODO: get from config
+        this.streamFactoryService = StreamFactoryServiceProvider.newService();
     }
 
     /**

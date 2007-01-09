@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 
 public class TestStreamFactorySvcReuse extends TestCase
 {
-    private StreamFactoryService streamFactoryService;
+    private StreamFactorySvcReuse streamFactoryService;
     private SupportFilterServiceImpl supportFilterService;
 
     private FilterSpec[] filterSpecs;
