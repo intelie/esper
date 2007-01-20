@@ -2,22 +2,24 @@ package net.esper.adapter;
 
 import net.esper.client.UpdateListener;
 import net.esper.client.EPException;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPRuntime;
 import net.esper.event.EventBean;
+import net.esper.core.EPServiceProviderSPI;
+import net.esper.schedule.ScheduleSlot;
+import net.esper.schedule.SchedulingService;
+import net.esper.filter.FilterService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-/**
- * Created by IntelliJ IDEA.
- * User: MYSELF
- * Date: Nov 30, 2006
- * Time: 8:17:35 AM
- * To change this template use File | Settings | File Templates.
- */
-public interface OutputAdapter
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+
+public interface OutputAdapter extends Adapter
 {
-
-    // Send method to external systems.
-    public void send(final EventBean eventBean_) throws EPException;
-
-    /* Returns the active output adapter */
-    public UpdateListener getEventBeanListener();
-
+  public void setEPServiceProvider(EPServiceProvider epService);
+  public EventBean getLastEvent();
+  public int getEventCount();
+  public int getAndResetEventCount();
 }

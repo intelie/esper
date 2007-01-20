@@ -191,7 +191,7 @@ public final class EPServicesContext
             return;
         }
 
-        if (!insertIntoDesc.isIStream())
+        if ((insertIntoDesc == null) || (!insertIntoDesc.isIStream()))
         {
             return;
         }

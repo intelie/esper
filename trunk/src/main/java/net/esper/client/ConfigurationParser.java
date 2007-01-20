@@ -19,6 +19,9 @@ import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 import java.util.*;
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.net.URLClassLoader;
+import java.net.URL;
 
 class ConfigurationParser {
 
@@ -78,6 +81,7 @@ class ConfigurationParser {
         handleEventTypes(configuration, root);
         handleAutoImports(configuration, root);
         handleDatabaseRefs(configuration, root);
+        handleOutputAdapters(configuration, root);
     }
 
     private static void handleEventTypes(Configuration configuration, Element parentElement)
@@ -321,6 +325,37 @@ class ConfigurationParser {
             }
         }
         return properties;
+    }
+
+    private static void handleOutputAdapters(Configuration configuration, Element parentNode) throws EPException
+    {
+        NodeList adapterNodes = parentNode.getElementsByTagName("ouput-adapter");
+        if (adapterNodes.getLength() == 0) return;
+        try
+        {
+            for (int i = 0; i < adapterNodes.getLength(); i++)
+            {
+                String jarLocation = adapterNodes.item(i).getAttributes().getNamedItem("jarLocation").getTextContent();
+                URLClassLoader ucl = new URLClassLoader(new URL[] { new File(jarLocation).toURL() });
+                ElementIterator nodeIterator = new ElementIterator(adapterNodes.item(i).getChildNodes());
+                while (nodeIterator.hasNext())
+                {
+                    Element subElement = nodeIterator.next();
+                    if (subElement.getNodeName().equals("spring-adapter"))
+                    {
+                        Class adapterClass = Class.forName("net.esper.adapter.SpringContextLoader", false, ucl);
+                        Class[] types = new Class[]{net.esper.client.Configuration.class, org.w3c.dom.Node.class};                        
+                        Constructor ctor =  adapterClass.getConstructor(types);
+                        Object[] args = new Object[] {configuration, subElement};
+                        configuration.addSpringLoaderContextReference(ctor.newInstance(args));
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new EPException("Cannot initialize ouput adapter");
+        }
     }
 
     /**

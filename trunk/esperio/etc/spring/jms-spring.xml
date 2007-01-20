@@ -72,6 +72,7 @@
     <bean id="defaultJMSMarshaler" class="net.esper.adapter.jms.DefaultJMSMarshaler">
     </bean>
 
+    <bean id="jmsMarshaler" class="net.esper.adapter.jms.JMSDefaultMapMessageMarshaler"/>
     
     <bean id="jmsInputAdapterEventType" class="net.esper.adapter.jms.JMSMapEventType">
     	<constructor-arg type="java.util.Map">
@@ -83,21 +84,18 @@
 	</constructor-arg>
     </bean>
     
-    <bean id="jmsOuputAdapter" class="net.esper.adapter.jms.JMSAdapter">
-    	<property name="role" value="SENDER"/>
-    	<property name="defaultJmsTemplate">
+    <bean id="jmsOuputAdapter" class="net.esper.adapter.jms.SpringJMSTemplateOutputAdapter">
+    	<property name="jmsTemplate">
         	<ref bean="jmsTemplate"/>
         </property>        
-        <property name="outputStreamAlias">
-        	<value>myOutputStream</value>
-        </property>                
-        <property name="defaultJMSMarshaler">
-        	<ref bean="defaultJMSMarshaler"/>
-        </property>                        
-     </bean>
+        <property name="eventTypeAlias" value="MyMapEvent" />
+        <property name="jmsMarshaler">
+        	<ref bean="jmsMarshaler"/>
+        </property>
+    </bean>
     
 
-    <bean id="jmsInputAdapter" class="net.esper.adapter.jms.JMSAdapter">
+    <!--bean id="jmsInputAdapter" class="net.esper.adapter.jms.JMSAdapter">
     	<property name="role" value="RECEIVER"/>
     	<property name="eventsPerSec" value="1000"/>    	    	
     	<property name="defaultJmsTemplate">
@@ -109,7 +107,7 @@
         <property name="defaultInputEventType">
         	<ref bean="jmsInputAdapterEventType"/>
         </property>                                
-     </bean>
+     </bean-->
           
 </beans>
 
