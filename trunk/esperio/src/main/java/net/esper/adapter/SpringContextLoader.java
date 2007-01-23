@@ -1,10 +1,8 @@
 package net.esper.adapter;
 
-import net.esper.client.EPException;
 import net.esper.client.Configuration;
-import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPException;
 import net.esper.core.EPServiceProviderSPI;
-import net.esper.adapter.jms.JMSAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -15,10 +13,10 @@ import org.w3c.dom.Node;
 
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created for ESPER.
@@ -34,12 +32,6 @@ public class SpringContextLoader
 
   }
 
-  public SpringContextLoader(Node configRootNode) throws EPException
-  {
-    if (!configRootNode.getNodeName().equals("spring-adapter")) return;
-    String resource = configRootNode.getAttributes().getNamedItem("SpringApplicationContext").getTextContent();
-  }
-
   public SpringContextLoader(Configuration config, Node configRootNode) throws EPException
   {
     if (!configRootNode.getNodeName().equals("spring-adapter")) return;
@@ -49,7 +41,8 @@ public class SpringContextLoader
 
   public void configure(Configuration config, String resource)
   {
-    log.debug("configuring from resource: " + resource);
+    if ((config == null) || (resource == null)) return;
+    log.debug(".Configuring from resource: " + resource);
     adapterSpringContext = createSpringApplicationContext(resource);
     String[] beanNames = adapterSpringContext.getBeanDefinitionNames();
     for (String beanName : beanNames)
@@ -60,15 +53,34 @@ public class SpringContextLoader
         adapterMap.put(beanName, (Adapter) o);
       }
     }
+  }
+
+  public void configure(String resource)
+  {
+    log.debug(".Configuring from resource: " + resource);
+    adapterSpringContext = createSpringApplicationContext(resource);
+    String[] beanNames = adapterSpringContext.getBeanDefinitionNames();
+    for (String beanName : beanNames)
+    {
+      Object o = getBean(beanName);
+      if (o instanceof Adapter)
+      {
+        adapterMap.put(beanName, (Adapter) o);
+      }
+    }
+  }
+
+  public void setEPServiceProvider(EPServiceProviderSPI epService)
+  {
     Collection<Adapter> c = adapterMap.values();
     for (Iterator<Adapter> itAdapter = c.iterator(); itAdapter.hasNext();)
     {
       Adapter adapter = itAdapter.next();
       if (adapter instanceof OutputAdapter)
       {
-        ((OutputAdapter) adapter).setEPServiceProvider(EPServiceProviderManager.getProvider("OutputAdapter", config));
+        ((OutputAdapter) adapter).setEPServiceProvider(epService);
+        adapter.start();
       }
-      adapter.start();
     }
   }
 

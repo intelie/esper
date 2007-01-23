@@ -6,15 +6,15 @@ import net.esper.eql.core.AutoImportServiceImpl;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.db.DatabaseConfigServiceImpl;
 import net.esper.event.EventAdapterException;
-import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
-import net.esper.util.JavaClassHelper;
+import net.esper.event.EventAdapterServiceImpl;
+import net.esper.filter.FilterService;
+import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
-import net.esper.schedule.ScheduleBucket;
-import net.esper.adapter.OutputAdapterService;
-import net.esper.filter.FilterService;
+import net.esper.util.JavaClassHelper;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -61,11 +61,6 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     public FilterService getFilterService()
     {
         return engine.getServices().getFilterService();
-    }
-
-    public void setOuputAdapterService(OutputAdapterService outputAdapterService)
-    {
-        engine.getServices().setOutputAdapterService(outputAdapterService);
     }
 
     public void initialize()
@@ -119,6 +114,9 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
 
         // Save engine instance
         engine = new EPServiceEngine(services, runtime, admin);
+
+        // Set up ouput adapter EPService Provider.
+        makeSpringContextAdapterRefService(this, configSnapshot);
     }
 
     private static Map<String, Class> createPropertyTypes(Properties properties)
@@ -257,6 +255,24 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return databaseConfigService;
     }
 
+    private static void makeSpringContextAdapterRefService(EPServiceProviderSPI spi,
+                                                           ConfigurationSnapshot configSnapshot)
+    {
+      if (configSnapshot.getSpringContextLoaderReference() == null) return;
+      try
+      {
+        Class[] types = new Class[]{ net.esper.core.EPServiceProviderSPI.class};
+        Object springLoader = configSnapshot.getSpringContextLoaderReference();
+        Method method = springLoader.getClass().getMethod("setEPServiceProvider", types);
+        Object[] args = new Object[] {spi};
+        method.invoke(springLoader, args);
+      }
+      catch (Exception ex)
+      {
+        throw new EPException("Could not set Service Provider for ouptut adapters");
+      }
+    }
+
     /**
      * Snapshot of Configuration is held for re-initializing engine state
      * from prior configuration values that may have been muted.
@@ -269,6 +285,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         private String[] autoImports;
         private Map<String, Properties> mapAliases = new HashMap<String, Properties>();
         private Map<String, ConfigurationDBRef> databaseRefs = new HashMap<String, ConfigurationDBRef>();
+        private Object springContextLoaderReference;
 
         /**
          * Ctor.
@@ -285,6 +302,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             mapAliases.putAll(configuration.getEventTypesMapEvents());
             legacyAliases.putAll(configuration.getEventTypesLegacy());
             databaseRefs.putAll(configuration.getDatabaseReferences());
+            springContextLoaderReference = configuration.getSpringContextLoaderReference();
         }
 
         /**
@@ -340,6 +358,16 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         {
             return databaseRefs;
         }
+
+      /**
+       * Returns a reference object to the Adapter Spring Context Configuration.
+       * @return OutputAdapter reference
+       */
+      public Object getSpringContextLoaderReference()
+      {
+          return springContextLoaderReference;
+      }
+
     }
 
     private class EPServiceEngine

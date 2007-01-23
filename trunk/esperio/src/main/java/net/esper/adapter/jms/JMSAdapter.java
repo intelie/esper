@@ -24,7 +24,7 @@ import javax.jms.Session;
  * Time: 10:53:15 AM
  * To change this template use File | Settings | File Templates.
  */
-public class JMSAdapter extends AbstractCoordinatedAdapter implements UpdateListener, OutputAdapter
+public class JMSAdapter extends AbstractCoordinatedAdapter implements UpdateListener
 {
     private AdapterRole role;
     private String outputStreamAlias;
@@ -42,7 +42,7 @@ public class JMSAdapter extends AbstractCoordinatedAdapter implements UpdateList
     private int eventsPerSec = -1;
     private long totalDelay;
 
-    private static final Log log = LogFactory.getLog(JMSAdapter.class);
+    private final Log log = LogFactory.getLog(getClass());
 
     public JMSAdapter()
     {

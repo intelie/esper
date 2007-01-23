@@ -21,6 +21,7 @@ public class JMSEventBean implements EventBean, SendableEvent
     private Map<String, Object> properties;
     private final long timestamp;
     private ScheduleSlot scheduleSlot;
+  
 
     protected JMSEventBean(Map<String, Object> properties, EventType eventType, long timestamp, ScheduleSlot scheduleSlot )
     {

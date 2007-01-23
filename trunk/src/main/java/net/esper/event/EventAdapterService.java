@@ -153,12 +153,4 @@ public interface EventAdapterService
      * @return wrapper for composite event
      */
     public EventBean adapterForCompositeEvent(EventType eventType, Map<String, EventBean> taggedEvents);
-
-  /**
-   * Add an eventTypeListener to the event adapter service which will call back the listener when the
-   * event type becomes known.
-   * @param eventTypeAlias
-   * @param listener
-   */
-    public void registerInterest(String eventTypeAlias, EventTypeListener listener);
 }

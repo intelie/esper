@@ -7,17 +7,13 @@
  **************************************************************************************/
 package net.esper.client;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+
+import java.io.*;
+import java.net.URL;
+import java.util.*;
 
 /**
  * An instance of <tt>Configuration</tt> allows the application

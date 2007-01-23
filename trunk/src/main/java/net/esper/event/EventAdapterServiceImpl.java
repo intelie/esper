@@ -19,7 +19,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
   private Map<String, EventType> eventTypes;
   private BeanEventAdapter beanEventAdapter;
   private Map<String, EventType> xmldomRootElementNames;
-  private Map<String, Set<EventTypeListener>> eventTypeListeners;
 
   /**
    * Ctor.
@@ -29,7 +28,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
   public EventAdapterServiceImpl(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
   {
     eventTypes = new HashMap<String, EventType>();
-    eventTypeListeners = new HashMap<String, Set<EventTypeListener>>();
     xmldomRootElementNames = new HashMap<String, EventType>();
     beanEventAdapter = new BeanEventAdapter(classToLegacyConfigs);
   }
@@ -56,7 +54,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     EventType eventType = beanEventAdapter.createOrGetBeanType(clazz);
     eventTypes.put(eventTypeAlias, eventType);
-    notifyEventTypeListeners(eventTypeAlias);
     return eventType;
   }
 
@@ -86,7 +83,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     EventType eventType = beanEventAdapter.createOrGetBeanType(clazz);
     eventTypes.put(eventTypeAlias, eventType);
-    notifyEventTypeListeners(eventTypeAlias);
     return eventType;
   }
 
@@ -109,7 +105,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
     }
 
     eventTypes.put(eventTypeAlias, newEventType);
-    notifyEventTypeListeners(eventTypeAlias);
     return newEventType;
   }
 
@@ -223,7 +218,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
     }
 
     eventTypes.put(eventTypeAlias, type);
-    notifyEventTypeListeners(eventTypeAlias);
     xmldomRootElementNames.put(configurationEventTypeXMLDOM.getRootElementName(), type);
   }
 
@@ -231,26 +225,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
   {
     Map<String, Class> underlyingTypes = getUnderlyingTypes(propertyTypes);
     return this.createAnonymousMapType(underlyingTypes);
-  }
-
-  public synchronized void registerInterest(String eventTypeAlias, EventTypeListener listener)
-  {
-    if (!eventTypeListeners.containsKey(eventTypeAlias))
-    {
-      eventTypeListeners.put(eventTypeAlias, new HashSet<EventTypeListener>());
-    }
-    Set<EventTypeListener> listeners = eventTypeListeners.get(eventTypeAlias);
-    listeners.add(listener);
-  }
-
-  private void notifyEventTypeListeners(String eventTypeAlias)
-  {
-    if (!eventTypeListeners.containsKey(eventTypeAlias)) return;
-    Set<EventTypeListener> listeners = eventTypeListeners.get(eventTypeAlias);
-    for (Iterator<EventTypeListener> it = listeners.iterator(); it.hasNext();)
-    {
-      it.next().registeredEventType(eventTypeAlias, eventTypes.get(eventTypeAlias));
-    }
   }
 
   /**

@@ -1,23 +1,19 @@
 package net.esper.regression.adapter;
 
 import junit.framework.TestCase;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.net.URL;
-import java.io.File;
-
+import net.esper.adapter.Adapter;
+import net.esper.adapter.OutputAdapter;
+import net.esper.adapter.SpringContextLoader;
 import net.esper.client.*;
-import net.esper.client.time.TimerControlEvent;
-import net.esper.client.time.CurrentTimeEvent;
-import net.esper.adapter.jms.JMSAdapter;
-import net.esper.adapter.*;
-import net.esper.core.EPServiceProviderSPI;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.event.EventType;
 import net.esper.event.EventBean;
+import net.esper.event.EventType;
+import net.esper.event.EventTypeListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,8 +22,7 @@ import org.apache.commons.logging.LogFactory;
  * Time: 1:30:01 PM
  * To change this template use File | Settings | File Templates.
  */
-public class TestJMSAdapter extends TestCase
-{
+public class TestJMSAdapter extends TestCase {
 
   private Configuration config = new Configuration();
   private String eventTypeAlias;
@@ -35,148 +30,104 @@ public class TestJMSAdapter extends TestCase
   EPAdministrator administrator;
   String statementText;
   private EPStatement statement;
-  private SupportUpdateListener listener;
-  private Map<String, Class> propertyTypes;
-  private long currentTime;
-  private static final String ESPER_TEST_CONFIG ="esper.yves.test.readconfig.cfg.xml";
-  private File configFile = new File("F:\\Esper\\jmsadapter\\trunk\\etc\\"+ESPER_TEST_CONFIG);
+  private static final String ESPER_TEST_CONFIG = "esper.yves.test.readconfig.cfg.xml";
+  private File configFile = new File("F:\\Esper\\jmsadapter\\trunk\\etc\\" + ESPER_TEST_CONFIG);
   private final Log log = LogFactory.getLog(this.getClass());
 
-  protected void setUp()
-  {
+  protected void setUp() {
     config.configure(configFile);
     epService = EPServiceProviderManager.getProvider("OutputAdapter", config);
-    //administrator = epService.getEPAdministrator();
-    // Set the clock to 0
-    //currentTime = 0;
-    //sendTimeEvent(0);
-    // Turn off external clocking
-    //epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+    administrator = epService.getEPAdministrator();
   }
 
-  public void testSpringLoaderConfiguration()
+  public void testEvalEvents() throws Throwable
   {
-    String resource = "spring/jms-spring.xml";
-    SpringContextLoader scl = new SpringContextLoader();
-    scl.configure(config, resource);        
-  }
-
-  public void testEPService()
-  {
+    SpringContextLoader scl = (SpringContextLoader) config.getSpringContextLoaderReference();
+    sendEvent("MyMapEvent", 1, 1.1, "some string");
+    assertEvent("jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string", 1, false);
+    sendEvent("MyMapEvent", 1, 1.1, "");
+    assertEvent("jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string", 1, true);
     statementText = "select * from MyMapEvent.win:length(5)";
-    EPStatement statement = administrator.createEQL(statementText);
-    listener = new SupportUpdateListener();
-    statement.addListener(listener);
-    sendEvent("jmsOuputAdapter", "MyMapEvent", 1, 1.1, "some string");
-  }
-
-  public void testInsert()
-  {
-    statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:length(1)";
-    EPStatement stmt = administrator.createEQL(statementText);
-    listener = new SupportUpdateListener();
-    stmt.addListener(listener);
-    sendEvent("jmsOuputAdapter", "MyMapEvent", 1, 1.1, "some string");
-  }
-
-  public void testOneEvent()
-  {
-    sendEvent("jmsOuputAdapter", "MyMapEvent", 1, 1.1, "some string");
-    assertEvent("jmsOuputAdapter", new Integer(1), new Double(1.1), "some string", 1);
-  }
-
-  public void testAdapter()
-  {
-    URL urlAdapterConfig = getClass().getClassLoader().getResource("Spring/jms-spring.xml");
-    OutputAdapterService adapterService = OutputAdapterServiceProvider.newService(urlAdapterConfig.toString());
-    //epService.setOuputAdapterService(adapterService);
-    JMSAdapter inputAdapter = ((OutputAdapterServiceImpl) adapterService).getJMSAdapter("jmsInputAdapter", AdapterRole.RECEIVER);
-    inputAdapter.setUsingEngineThread(true);
-    inputAdapter.setEPService(epService);
-    inputAdapter.start();
-    EventType eventType = ((OutputAdapterServiceImpl) adapterService).getEventType("jmsInputAdapterEventType");
-    config.addEventTypeAlias("testInputAdapter", buildPropertyMap(eventType));
-    //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time_batch(2).std:lastevent()";
-    //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time(10 sec)";
+    statement = administrator.createEQL(statementText);
+    administrator.createEQL(statementText);
+    sendEvent("MyMapEvent", 1, 1.1, "some string");
+    assertEvent("jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string", 1, false);
     statementText = "insert into myOutputStream select intPrimitive, doublePrimitive " +
       "from " + SupportBean.class.getName() + ".win:length(100)";
-    //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:length(5)";
     administrator.createEQL(statementText);
-    //statementText = "insert into myOutputStream select myInt, myDouble, myString from MyMapEvent.win:time_batch(2).std:lastevent()";
-    //administrator.createEQL(statementText);
-    //sendEvent(1,1.1,"some string");
-    sendEvent(1, 1.1);
-    sleep(10000);
+    sendEvent("MyMapEvent", 1, 1.1, "some string");
+    assertEvent("jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string", 1, false);
   }
 
-  private void sendTimeEvent(int timeIncrement)
-  {
-    currentTime += timeIncrement;
-    CurrentTimeEvent event = new CurrentTimeEvent(currentTime);
-    epService.getEPRuntime().sendEvent(event);
+  public void testLateEventTypeBidding() throws Throwable {
+    SpringContextLoader scl = new SpringContextLoader();
+    scl.configure("spring/jms-spring.xml");
+    Adapter adapter = getAdapter("jmsOutputAdapter", scl);
+    ((OutputAdapter) adapter).setEventTypeAlias("newMapEventType");
+    epService = EPServiceProviderManager.getProvider("testLateEventTypeBidding",
+                createMapEventTypeConfig(scl, "newMapEventType", "key1", Long.class, "key2", Double.class));
+    sendMapEventType("newMapEventType", "key1", (long)1, "key2", 1.1);
   }
 
-  private Adapter getAdapter(String adapterAlias)
+  private Adapter getAdapter(String adapterAlias, SpringContextLoader scl)
   {
-    Object o = config.getSpringContextLoaderReference();
-    if (! (o instanceof SpringContextLoader))
-    {
-      return null;
-    }
-    return ((SpringContextLoader) o).getAdapter(adapterAlias);
+    return scl.getAdapter(adapterAlias);
   }
 
-  private void sendEvent(String adapterAlias, String eventTypeAlias, Integer myInt, Double myDouble, String myString)
+  private Configuration createMapEventTypeConfig(SpringContextLoader scl,
+                                                 String eventTypeAlias,
+                                                 String key1, Class class1,
+                                                 String key2, Class class2)
   {
+    Configuration config = new Configuration();
+    Map<String, Class> props = new HashMap<String, Class>();
+    props.put(key1, class1);
+    props.put(key2, class2);
+    config.addEventTypeAlias(eventTypeAlias, props);
+    config.addSpringLoaderContextReference(scl);
+    //OutputAdapter adapter = (OutputAdapter) getAdapter("jmsOutputAdapter", scl);
+    //config.registerInterest(eventTypeAlias, adapter.getEventTypeListener());
+    return config;
+  }
+
+  private void sendEvent(String eventTypeAlias, Integer myInt, Double myDouble, String myString) {
     Map map = new HashMap<String, Object>();
     map.put("myInt", myInt);
     map.put("myDouble", myDouble);
     map.put("myString", myString);
-    ((OutputAdapter) getAdapter(adapterAlias)).setEPServiceProvider(epService);
     epService.getEPRuntime().sendEvent(map, eventTypeAlias);
   }
 
-  private void sendEvent(int intPrimitive, double doublePrimitive)
-  {
-    SupportBean bean = new SupportBean();
-    bean.setIntPrimitive(intPrimitive);
-    bean.setDoublePrimitive(doublePrimitive);
-    epService.getEPRuntime().sendEvent(bean);
+  private void sendMapEventType(String eventTypeAlias, String key1, Object value1,
+                                String key2, Object value2) {
+    Map map = new HashMap<String, Object>();
+    map.put(key1, value1);
+    map.put(key2, value2);
+    epService.getEPRuntime().sendEvent(map, eventTypeAlias);
   }
 
-  private void assertEvent(String adapterAlias, Object myInt, Object myDouble, Object myString, int count)
-  {
-    EventBean event = ((OutputAdapter) getAdapter(adapterAlias)).getLastEvent();
-    int eventCount = ((OutputAdapter) getAdapter(adapterAlias)).getAndResetEventCount();
-    assertEquals(myInt, event.get("myInt"));
-    assertEquals(myDouble, event.get("myDouble"));
-    assertEquals(myString, event.get("myString"));
-    assertEquals(count, eventCount);
-  }
-
-  private Map buildPropertyMap(EventType eventType)
-  {
-    Map<String, Class> mapType = new HashMap<String, Class>();
-    for (String prop : eventType.getPropertyNames())
-    {
-      mapType.put(prop, eventType.getPropertyType(prop));
+  private void assertEvent(String adapterAlias, SpringContextLoader scl,
+                           Object myInt, Object myDouble, Object myString, int count,
+                           boolean failed) throws Throwable {
+    EventTypeListener eventTypeListener = ((OutputAdapter) scl.getAdapter(adapterAlias)).getEventTypeListener();
+    EventBean event = eventTypeListener.getLastEvent();
+    int eventCount = eventTypeListener.getAndResetEventCount();
+    try {
+      assertEquals(myInt, event.get("myInt"));
+      assertEquals(myDouble, event.get("myDouble"));
+      assertEquals(myString, event.get("myString"));
+      assertEquals(count, eventCount);
     }
-    return mapType;
-  }
-
-  private void sleep(int msec)
-  {
-    try
-    {
-      Thread.sleep(msec);
-    }
-    catch (InterruptedException e)
-    {
+    catch (Throwable e) {
+      if (failed) {
+        assertTrue(true);
+      } else {
+        fail();
+      }
     }
   }
 
-  private class SupportBean
-  {
+  private class SupportBean {
     private String string;
 
     private boolean boolPrimitive;
@@ -199,205 +150,165 @@ public class TestJMSAdapter extends TestCase
 
     private SupportEnum enumValue;
 
-    public SupportBean()
-    {
+    public SupportBean() {
     }
 
-    public SupportBean(String string, int intPrimitive)
-    {
+    public SupportBean(String string, int intPrimitive) {
       this.string = string;
       this.intPrimitive = intPrimitive;
     }
 
-    public String getString()
-    {
+    public String getString() {
       return string;
     }
 
-    public boolean isBoolPrimitive()
-    {
+    public boolean isBoolPrimitive() {
       return boolPrimitive;
     }
 
-    public int getIntPrimitive()
-    {
+    public int getIntPrimitive() {
       return intPrimitive;
     }
 
-    public long getLongPrimitive()
-    {
+    public long getLongPrimitive() {
       return longPrimitive;
     }
 
-    public char getCharPrimitive()
-    {
+    public char getCharPrimitive() {
       return charPrimitive;
     }
 
-    public short getShortPrimitive()
-    {
+    public short getShortPrimitive() {
       return shortPrimitive;
     }
 
-    public byte getBytePrimitive()
-    {
+    public byte getBytePrimitive() {
       return bytePrimitive;
     }
 
-    public float getFloatPrimitive()
-    {
+    public float getFloatPrimitive() {
       return floatPrimitive;
     }
 
-    public double getDoublePrimitive()
-    {
+    public double getDoublePrimitive() {
       return doublePrimitive;
     }
 
-    public Boolean getBoolBoxed()
-    {
+    public Boolean getBoolBoxed() {
       return boolBoxed;
     }
 
-    public Integer getIntBoxed()
-    {
+    public Integer getIntBoxed() {
       return intBoxed;
     }
 
-    public Long getLongBoxed()
-    {
+    public Long getLongBoxed() {
       return longBoxed;
     }
 
-    public Character getCharBoxed()
-    {
+    public Character getCharBoxed() {
       return charBoxed;
     }
 
-    public Short getShortBoxed()
-    {
+    public Short getShortBoxed() {
       return shortBoxed;
     }
 
-    public Byte getByteBoxed()
-    {
+    public Byte getByteBoxed() {
       return byteBoxed;
     }
 
-    public Float getFloatBoxed()
-    {
+    public Float getFloatBoxed() {
       return floatBoxed;
     }
 
-    public Double getDoubleBoxed()
-    {
+    public Double getDoubleBoxed() {
       return doubleBoxed;
     }
 
-    public void setString(String string)
-    {
+    public void setString(String string) {
       this.string = string;
     }
 
-    public void setBoolPrimitive(boolean boolPrimitive)
-    {
+    public void setBoolPrimitive(boolean boolPrimitive) {
       this.boolPrimitive = boolPrimitive;
     }
 
-    public void setIntPrimitive(int intPrimitive)
-    {
+    public void setIntPrimitive(int intPrimitive) {
       this.intPrimitive = intPrimitive;
     }
 
-    public void setLongPrimitive(long longPrimitive)
-    {
+    public void setLongPrimitive(long longPrimitive) {
       this.longPrimitive = longPrimitive;
     }
 
-    public void setCharPrimitive(char charPrimitive)
-    {
+    public void setCharPrimitive(char charPrimitive) {
       this.charPrimitive = charPrimitive;
     }
 
-    public void setShortPrimitive(short shortPrimitive)
-    {
+    public void setShortPrimitive(short shortPrimitive) {
       this.shortPrimitive = shortPrimitive;
     }
 
-    public void setBytePrimitive(byte bytePrimitive)
-    {
+    public void setBytePrimitive(byte bytePrimitive) {
       this.bytePrimitive = bytePrimitive;
     }
 
-    public void setFloatPrimitive(float floatPrimitive)
-    {
+    public void setFloatPrimitive(float floatPrimitive) {
       this.floatPrimitive = floatPrimitive;
     }
 
-    public void setDoublePrimitive(double doublePrimitive)
-    {
+    public void setDoublePrimitive(double doublePrimitive) {
       this.doublePrimitive = doublePrimitive;
     }
 
-    public void setBoolBoxed(Boolean boolBoxed)
-    {
+    public void setBoolBoxed(Boolean boolBoxed) {
       this.boolBoxed = boolBoxed;
     }
 
-    public void setIntBoxed(Integer intBoxed)
-    {
+    public void setIntBoxed(Integer intBoxed) {
       this.intBoxed = intBoxed;
     }
 
-    public void setLongBoxed(Long longBoxed)
-    {
+    public void setLongBoxed(Long longBoxed) {
       this.longBoxed = longBoxed;
     }
 
-    public void setCharBoxed(Character charBoxed)
-    {
+    public void setCharBoxed(Character charBoxed) {
       this.charBoxed = charBoxed;
     }
 
-    public void setShortBoxed(Short shortBoxed)
-    {
+    public void setShortBoxed(Short shortBoxed) {
       this.shortBoxed = shortBoxed;
     }
 
-    public void setByteBoxed(Byte byteBoxed)
-    {
+    public void setByteBoxed(Byte byteBoxed) {
       this.byteBoxed = byteBoxed;
     }
 
-    public void setFloatBoxed(Float floatBoxed)
-    {
+    public void setFloatBoxed(Float floatBoxed) {
       this.floatBoxed = floatBoxed;
     }
 
-    public void setDoubleBoxed(Double doubleBoxed)
-    {
+    public void setDoubleBoxed(Double doubleBoxed) {
       this.doubleBoxed = doubleBoxed;
     }
 
-    public SupportEnum getEnumValue()
-    {
+    public SupportEnum getEnumValue() {
       return enumValue;
     }
 
-    public void setEnumValue(SupportEnum enumValue)
-    {
+    public void setEnumValue(SupportEnum enumValue) {
       this.enumValue = enumValue;
     }
   }
 
-  private enum SupportEnum
-  {
+  private enum SupportEnum {
     ENUM_VALUE_1,
     ENUM_VALUE_2,
     ENUM_VALUE_3;
 
-    public static SupportEnum getValueForEnum(int count)
-    {
+    public static SupportEnum getValueForEnum(int count) {
       return SupportEnum.values()[count];
     }
 

@@ -1,16 +1,17 @@
 package net.esper.adapter.jms;
 
-import net.esper.client.EPException;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPRuntime;
-import net.esper.core.EPServiceProviderSPI;
-import net.esper.adapter.AdapterStateManager;
 import net.esper.adapter.AdapterState;
+import net.esper.adapter.AdapterStateManager;
 import net.esper.adapter.OutputAdapter;
-import net.esper.schedule.SchedulingService;
-import net.esper.filter.*;
-import net.esper.event.EventType;
+import net.esper.client.EPException;
+import net.esper.client.EPRuntime;
+import net.esper.client.EPServiceProvider;
+import net.esper.core.EPServiceProviderSPI;
+import net.esper.event.EventAdapterService;
 import net.esper.event.EventBean;
+import net.esper.event.EventType;
+import net.esper.event.EventTypeListener;
+import net.esper.filter.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.jms.core.JmsTemplate;
@@ -24,12 +25,14 @@ import java.util.LinkedList;
  * Created for ESPER.
  */
 
-public class SpringJMSTemplateOutputAdapter implements OutputAdapter, FilterCallback
+public class SpringJMSTemplateOutputAdapter
+  implements OutputAdapter, FilterCallback, EventTypeListener
 {
 
-  protected final AdapterStateManager stateManager = new AdapterStateManager();
+  private final AdapterStateManager stateManager = new AdapterStateManager();
   private EPServiceProviderSPI spi;
   private EPRuntime runtime;
+  private EventAdapterService evAdaptSvc;
   private FilterService filterService;
   private EventBean lastEvent;
   private int eventCount;
@@ -72,6 +75,11 @@ public class SpringJMSTemplateOutputAdapter implements OutputAdapter, FilterCall
     this.eventTypeAlias = eventTypeAlias;
   }
 
+  public EventTypeListener getEventTypeListener()
+  {
+    return this;
+  }
+
   public EventBean getLastEvent()
   {
     return lastEvent;
@@ -99,7 +107,8 @@ public class SpringJMSTemplateOutputAdapter implements OutputAdapter, FilterCall
     {
       throw new IllegalArgumentException("Invalid type of EPServiceProvider");
     }
-    spi = (EPServiceProviderSPI) epService;
+    spi = (EPServiceProviderSPI)epService;
+    evAdaptSvc = spi.getEventAdapterService();
     runtime = spi.getEPRuntime();
     filterService = spi.getFilterService();
   }
@@ -114,27 +123,42 @@ public class SpringJMSTemplateOutputAdapter implements OutputAdapter, FilterCall
     log.debug(".start");
     if (runtime == null)
     {
-      throw new EPException("Attempting to start an Adapter that hasn't had the epService provided");
+      throw new EPException(
+        "Attempting to start an Adapter that hasn't had the epService provided");
     }
     startTime = getCurrentTime();
     log.debug(".start startTime==" + startTime);
     stateManager.start();
-    EventType eventType = spi.getEventAdapterService().getEventType(eventTypeAlias);
-    if (eventType == null)
+    if (spi != null)
     {
+      EventType eventType = evAdaptSvc.getEventType(eventTypeAlias);
+      FilterValueSet fvs = new FilterSpec(
+        eventType, new LinkedList<FilterSpecParam>()).getValueSet(null);
+      if (filterService != null)
+      {
+        filterService.add(fvs, this);
+      }
+    }
 
-    }
-    else
-    {
-      FilterValueSet fvs = new FilterSpec(eventType, new LinkedList<FilterSpecParam>()).getValueSet(null);
-      filterService.add(fvs, this);
-    }
   }
 
   public void matchFound(EventBean event)
   {
     send(event);
     lastEvent = event;
+    eventCount++;
+  }
+
+  public void registeredEventType(String eventTypeAlias, EventType eventType)
+  {
+    if (filterService == null)
+    {
+      return;
+    }
+    FilterValueSet fvs =
+      new FilterSpec(eventType, new LinkedList<FilterSpecParam>()).getValueSet(
+        null);
+    filterService.add(fvs, this);
   }
 
   public void send(final EventBean eventBean_) throws EPException
@@ -146,11 +170,13 @@ public class SpringJMSTemplateOutputAdapter implements OutputAdapter, FilterCall
         {
           public Message createMessage(Session session_)
           {
-            Message msg = jmsMarshaler.marshal(eventBean_, session_, getCurrentTime());
+            Message msg =
+              jmsMarshaler.marshal(eventBean_, session_, getCurrentTime());
             log.debug("Creating jms message from event." + msg.toString());
             return msg;
           }
-        });
+        }
+      );
     }
   }
 
@@ -170,6 +196,12 @@ public class SpringJMSTemplateOutputAdapter implements OutputAdapter, FilterCall
   {
     log.debug(".stop");
     stateManager.stop();
+    reset();
+  }
+
+  public void reset()
+  {
+    eventCount = 0;
   }
 
   public void destroy() throws EPException
