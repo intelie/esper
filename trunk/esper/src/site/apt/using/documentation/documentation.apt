@@ -1,0 +1,181 @@
+Documentation
+~~~~~~~~~~~~~~
+
+	Links to reference documentation and API JavaDocs can be found here.
+
+* Esper and EsperIO 1.5.0
+	
+	<<Esper Reference documentation>> : {{{../../esper-1.5.0/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 		{{{../../esper-1.5.0/doc/reference/en/html/index.html}Online HTML}} \
+ 		{{{../../esper-1.5.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<Esper API JavaDoc>> : {{{../../esper-1.5.0/doc/api/index.html}API JavaDoc}}
+
+
+	<<EsperIO Reference documentation>> : {{{../../esperio-1.5.0/doc/reference/en/pdf/esper_adapter_reference.pdf}PDF print version}} \
+ 		{{{../../esperio-1.5.0/doc/reference/en/html/index.html}Online HTML}} \
+ 		{{{../../esperio-1.5.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<EsperIO API JavaDoc>> : {{{../../esperio-1.5.0/doc/api/index.html}API JavaDoc}}
+
+* Esper and EsperIO 1.4.0
+	
+	<<Esper Reference documentation>> : {{{../../esper-1.4.0/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 		{{{../../esper-1.4.0/doc/reference/en/html/index.html}Online HTML}} \
+ 		{{{../../esper-1.4.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<Esper API JavaDoc>> : {{{../../esper-1.4.0/doc/api/index.html}API JavaDoc}}
+
+
+	<<EsperIO Reference documentation>> : {{{../../esperio-1.4.0/doc/reference/en/pdf/esper_adapter_reference.pdf}PDF print version}} \
+ 		{{{../../esperio-1.4.0/doc/reference/en/html/index.html}Online HTML}} \
+ 		{{{../../esperio-1.4.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<EsperIO API JavaDoc>> : {{{../../esperio-1.4.0/doc/api/index.html}API JavaDoc}}
+
+* Esper 1.3.0
+	
+	<<Reference documentation>>
+	
+ 	{{{../../esper-1.3.0/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{../../esper-1.3.0/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{../../esper-1.3.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{../../esper-1.3.0/doc/api/index.html}API JavaDoc}}
+
+* Esper 1.2.0
+	
+	<<Reference documentation>>
+	
+ 	{{{../../esper-1.2.0/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{../../esper-1.2.0/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{../../esper-1.2.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{../../esper-1.2.0/doc/api/index.html}API JavaDoc}}
+
+* Esper 1.1.0
+	
+	<<Reference documentation>>
+	
+ 	{{{../../esper-1.1.0/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{../../esper-1.1.0/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{../../esper-1.1.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{../../esper-1.1.0/doc/api/index.html}API JavaDoc}}
+
+
+* Esper 1.0.5
+	
+	<<Reference documentation>>
+	
+ 	{{{../../esper-1.0.5/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{../../esper-1.0.5/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{../../esper-1.0.5/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{../../esper-1.0.5/doc/api/index.html}API JavaDoc}}
+
+
+* Esper 1.0.0
+	
+	<<Reference documentation>>
+	
+ 	{{{../../esper-1.0.0/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{../../esper-1.0.0/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{../../esper-1.0.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{../../esper-1.0.0/doc/api/index.html}API JavaDoc}}
+
+
+* Esper 0.9.5
+	
+	<<Reference documentation>>
+	
+ 	{{{../../esper-0.9.5/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{../../esper-0.9.5/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{../../esper-0.9.5/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{../../esper-0.9.5/doc/api/index.html}API JavaDoc}}
+
+
+* Esper 0.9.1
+	
+	<<Reference documentation>>
+	
+ 	{{{../../esper-0.9.1/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{../../esper-0.9.1/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{../../esper-0.9.1/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{../../esper-0.9.1/doc/api/index.html}API JavaDoc}}
+
+* Esper 0.9.0
+	
+	<<Reference documentation>>
+	
+ 	{{{http://esper.sourceforge.net/esper-0.9.0/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{http://esper.sourceforge.net/esper-0.9.0/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{http://esper.sourceforge.net/esper-0.9.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{http://esper.sourceforge.net/esper-0.9.0/doc/api/index.html}API JavaDoc}}
+
+* Esper 0.8.5
+	
+	<<Reference documentation>>
+	
+ 	{{{http://esper.sourceforge.net/esper-0.8.5/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{http://esper.sourceforge.net/esper-0.8.5/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{http://esper.sourceforge.net/esper-0.8.5/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{../../esper-0.8.5/doc/api/index.html}API JavaDoc}}
+
+* Esper 0.8.0
+	
+	<<Reference documentation>>
+	
+ 	{{{http://esper.sourceforge.net/esper-0.8.0/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{http://esper.sourceforge.net/esper-0.8.0/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{http://esper.sourceforge.net/esper-0.8.0/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{http://esper.sourceforge.net/esper-0.8.0/doc/api/index.html}API JavaDoc}}
+
+
+* Esper 0.7.5
+	
+	<<Reference documentation>>
+	
+ 	{{{http://esper.sourceforge.net/esper-0.7.5/doc/reference/en/pdf/esper_reference.pdf}PDF print version}} \
+ 	{{{http://esper.sourceforge.net/esper-0.7.5/doc/reference/en/html/index.html}Online HTML}} \
+ 	{{{http://esper.sourceforge.net/esper-0.7.5/doc/reference/en/html_single/index.html}Single page HTML}}
+
+	<<API JavaDoc>>
+	
+	{{{http://esper.sourceforge.net/esper-0.7.5/doc/api/index.html}API JavaDoc}}
+
+* Esper 0.7.0
+		
+	<<Reference Documentation>>
+	
+	{{{http://esper.sourceforge.net/esper-0.7.0/doc/reference/pdf/esper_reference.pdf}PDF print version}}.
+	
+	<<API JavaDoc>>
+	
+	{{{http://esper.sourceforge.net/esper-0.7.0/doc/api/index.html}API JavaDoc}}
