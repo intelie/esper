@@ -54,6 +54,50 @@ public class JavaClassHelper
         return clazz;
     }
 
+    /**
+     * Returns the un-boxed class for the given class, or the class itself if already un-boxed or not a primitive type.
+     * For primitive boxed types returns the unboxed primitive type, e.g. returns int.class for passing Integer.class.
+     * For any other class, returns the class passed.
+     * @param clazz is the class to return the unboxed (or primitive) class for
+     * @return primitive variant of the same class
+     */
+    public static Class getPrimitiveType(Class clazz)
+    {
+        if (clazz == Boolean.class)
+        {
+            return boolean.class;
+        }
+        if (clazz == Character.class)
+        {
+            return char.class;
+        }
+        if (clazz == Double.class)
+        {
+            return double.class;
+        }
+        if (clazz == Float.class)
+        {
+            return float.class;
+        }
+        if (clazz == Byte.class)
+        {
+            return byte.class;
+        }
+        if (clazz == Short.class)
+        {
+            return short.class;
+        }
+        if (clazz == Integer.class)
+        {
+            return int.class;
+        }
+        if (clazz == Long.class)
+        {
+            return long.class;
+        }
+        return clazz;
+    }
+
    /**
      * Determines if the class passed in is one of the numeric classes.
      * @param clazz to check
@@ -155,43 +199,43 @@ public class JavaClassHelper
     }
 
     /**
-     * Coerce the given number to the given type. Allows coerce to lower resultion number.
+     * Coerce the given number to the given type, assuming the type is a Boxed type. Allows coerce to lower resultion number.
      * Does't coerce to primitive types.
      * @param numToCoerce is the number to coerce to the given type
-     * @param resultType is the result type to return
+     * @param resultBoxedType is the boxed result type to return
      * @return the numToCoerce as a value in the given result type 
      */
-    public static Number coerceNumber(Number numToCoerce, Class resultType)
+    public static Number coerceBoxed(Number numToCoerce, Class resultBoxedType)
     {
-        if (numToCoerce.getClass() == resultType)
+        if (numToCoerce.getClass() == resultBoxedType)
         {
             return numToCoerce;
         }
-        if (resultType == Double.class)
+        if (resultBoxedType == Double.class)
         {
             return numToCoerce.doubleValue();
         }
-        if (resultType == Long.class)
+        if (resultBoxedType == Long.class)
         {
             return numToCoerce.longValue();
         }
-        if (resultType == Float.class)
+        if (resultBoxedType == Float.class)
         {
             return numToCoerce.floatValue();
         }
-        if (resultType == Integer.class)
+        if (resultBoxedType == Integer.class)
         {
             return numToCoerce.intValue();
         }
-        if (resultType == Short.class)
+        if (resultBoxedType == Short.class)
         {
             return numToCoerce.shortValue();
         }
-        if (resultType == Byte.class)
+        if (resultBoxedType == Byte.class)
         {
             return numToCoerce.byteValue();
         }
-        throw new IllegalArgumentException("Cannot coerce to number subtype " + resultType.getName());
+        throw new IllegalArgumentException("Cannot coerce to number subtype " + resultBoxedType.getName());
     }
 
     /**

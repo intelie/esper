@@ -690,6 +690,15 @@ public class TestEQLTreeWalker extends TestCase
         assertTrue((Boolean) tryRelationalOp("'a' not like 'ab'"));
     }
 
+    public void testWalkArray() throws Exception
+    {
+        Object result = tryExpression("{1, 2}");
+        Integer[] ints = (Integer[]) result;
+        assertEquals(2, ints.length);
+        assertEquals(1, (int) ints[0]);
+        assertEquals(2, (int) ints[1]);
+    }
+
     public void testWalkStaticFunc() throws Exception
     {
         String text = "select MyClass.someFunc(1) from SupportBean_N";

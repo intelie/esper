@@ -125,6 +125,7 @@ tokens
 	LIB_FUNCTION;
 	UNARY_MINUS;
 	TIME_PERIOD;
+	ARRAY_EXPR;
 	DAY_PART;
 	HOUR_PART;
 	MINUTE_PART;
@@ -421,6 +422,12 @@ unaryExpression
 	| LPAREN! expression RPAREN!
 	| eventPropertyOrLibFunction
 	| builtinFunc
+	| arrayExpression
+	;
+	
+arrayExpression
+	: LCURLY! (expression (COMMA! expression)* )? RCURLY!
+	{ #arrayExpression = #([ARRAY_EXPR,"arrayExpression"], #arrayExpression); }	
 	;
 
 builtinFunc

@@ -154,8 +154,8 @@ public class ExprInNode extends ExprNode
         }
         else
         {
-            Number left = JavaClassHelper.coerceNumber((Number) leftResult, coercionType);
-            Number right = JavaClassHelper.coerceNumber((Number) rightResult, coercionType);
+            Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
+            Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
             return left.equals(right);
         }
     }

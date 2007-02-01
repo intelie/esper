@@ -108,6 +108,31 @@ public class ArrayAssertionUtil
     }
 
     /**
+     * Compare the STring values in the two String arrays assuming the exact same order.
+     * @param data is the data to assertEqualsExactOrder against
+     * @param expectedValues is the expected values
+     */
+    public static void assertEqualsExactOrder(String[] data, String[] expectedValues)
+    {
+        if ((expectedValues == null) && (data == null))
+        {
+            return;
+        }
+        if ( ((expectedValues == null) && (data != null)) ||
+             ((expectedValues != null) && (data == null)) )
+        {
+            TestCase.assertTrue(false);
+        }
+
+        TestCase.assertEquals(expectedValues.length, data.length);
+
+        for (int i = 0; i < expectedValues.length; i++)
+        {
+            TestCase.assertEquals(expectedValues[i], data[i]);
+        }
+    }
+
+    /**
      * Compare the boolean values in the two bool arrays assuming the exact same order.
      * @param data is the data to assertEqualsExactOrder against
      * @param expectedValues is the expected values

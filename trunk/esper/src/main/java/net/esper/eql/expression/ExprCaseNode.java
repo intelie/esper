@@ -245,7 +245,7 @@ public class ExprCaseNode extends ExprNode
 
         if ((caseResult.getClass() != resultType) && (isNumericResult))
         {
-            return JavaClassHelper.coerceNumber( (Number) caseResult, resultType);
+            return JavaClassHelper.coerceBoxed( (Number) caseResult, resultType);
         }
         return caseResult;
     }
@@ -281,7 +281,7 @@ public class ExprCaseNode extends ExprNode
 
         if ((caseResult.getClass() != resultType) && (isNumericResult))
         {
-            return JavaClassHelper.coerceNumber( (Number) caseResult, resultType);
+            return JavaClassHelper.coerceBoxed( (Number) caseResult, resultType);
         }
         return caseResult;
     }
@@ -303,8 +303,8 @@ public class ExprCaseNode extends ExprNode
         }
         else
         {
-            Number left = JavaClassHelper.coerceNumber((Number) leftResult, coercionType);
-            Number right = JavaClassHelper.coerceNumber((Number) rightResult, coercionType);
+            Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
+            Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
             return left.equals(right);
         }
     }

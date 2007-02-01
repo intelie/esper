@@ -117,7 +117,7 @@ public class ExprMinMaxRowNode extends ExprNode
             }
         }
 
-        return JavaClassHelper.coerceNumber(result, resultType);
+        return JavaClassHelper.coerceBoxed(result, resultType);
     }
 
     public String toExpressionString()

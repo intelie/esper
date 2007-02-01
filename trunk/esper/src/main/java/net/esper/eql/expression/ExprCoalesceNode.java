@@ -80,7 +80,7 @@ public class ExprCoalesceNode extends ExprNode
                 // Check if we need to coerce
                 if (isNumericCoercion[count])
                 {
-                    return JavaClassHelper.coerceNumber((Number)value, resultType);
+                    return JavaClassHelper.coerceBoxed((Number)value, resultType);
                 }
                 return value;
             }

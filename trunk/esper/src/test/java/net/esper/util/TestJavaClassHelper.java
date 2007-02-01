@@ -7,18 +7,18 @@ public class TestJavaClassHelper extends TestCase
 {
     public void testCoerceNumber()
     {
-        assertEquals(1d, JavaClassHelper.coerceNumber(1d, Double.class));
-        assertEquals(5d, JavaClassHelper.coerceNumber(5, Double.class));
-        assertEquals(6d, JavaClassHelper.coerceNumber((byte) 6, Double.class));
-        assertEquals(3f, JavaClassHelper.coerceNumber((long) 3, Float.class));
-        assertEquals((short) 2, JavaClassHelper.coerceNumber((long) 2, Short.class));
-        assertEquals(4, JavaClassHelper.coerceNumber((long) 4, Integer.class));
-        assertEquals((byte) 5, JavaClassHelper.coerceNumber((long) 5, Byte.class));
-        assertEquals(8l, JavaClassHelper.coerceNumber((long) 8, Long.class));
+        assertEquals(1d, JavaClassHelper.coerceBoxed(1d, Double.class));
+        assertEquals(5d, JavaClassHelper.coerceBoxed(5, Double.class));
+        assertEquals(6d, JavaClassHelper.coerceBoxed((byte) 6, Double.class));
+        assertEquals(3f, JavaClassHelper.coerceBoxed((long) 3, Float.class));
+        assertEquals((short) 2, JavaClassHelper.coerceBoxed((long) 2, Short.class));
+        assertEquals(4, JavaClassHelper.coerceBoxed((long) 4, Integer.class));
+        assertEquals((byte) 5, JavaClassHelper.coerceBoxed((long) 5, Byte.class));
+        assertEquals(8l, JavaClassHelper.coerceBoxed((long) 8, Long.class));
 
         try
         {
-            JavaClassHelper.coerceNumber(10, int.class);
+            JavaClassHelper.coerceBoxed(10, int.class);
             fail();
         }
         catch (IllegalArgumentException ex)
@@ -75,6 +75,36 @@ public class TestJavaClassHelper extends TestCase
         {
             Class boxed = JavaClassHelper.getBoxedType(otherClasses[i]);
             assertEquals(boxed, otherClasses[i]);
+        }
+    }
+
+    public void testGetPrimitive()
+    {
+        final Class[] primitiveClasses = {
+            boolean.class, float.class, double.class, byte.class, short.class, int.class, long.class, char.class};
+
+        final Class[] boxedClasses = {
+            Boolean.class, Float.class, Double.class, Byte.class, Short.class, Integer.class, Long.class, Character.class};
+
+        final Class[] otherClasses = {
+            String.class, TestCase.class };
+
+        for (int i = 0; i < primitiveClasses.length; i++)
+        {
+            Class primitive = JavaClassHelper.getPrimitiveType(boxedClasses[i]);
+            assertEquals(primitive, primitiveClasses[i]);
+        }
+
+        for (int i = 0; i < boxedClasses.length; i++)
+        {
+            Class primitive = JavaClassHelper.getPrimitiveType(primitiveClasses[i]);
+            assertEquals(primitive, primitiveClasses[i]);
+        }
+
+        for (int i = 0; i < otherClasses.length; i++)
+        {
+            Class clazz = JavaClassHelper.getPrimitiveType(otherClasses[i]);
+            assertEquals(clazz, otherClasses[i]);
         }
     }
 

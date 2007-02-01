@@ -159,6 +159,7 @@ valueExpr
 	|	b:betweenExpr { leaveNode(#b); }
 	|	li:likeExpr { leaveNode(#li); }
 	|	r:regExpExpr { leaveNode(#r); }
+	|	arr:arrayExpr { leaveNode(#arr); }
 	;
 
 caseExpr
@@ -196,6 +197,10 @@ builtinFunc
 	| 	#(COALESCE valueExpr valueExpr (valueExpr)* )
 	| 	#(PREVIOUS valueExpr eventPropertyExpr)
 	| 	#(PRIOR c:NUM_INT eventPropertyExpr) {leaveNode(#c);}
+	;
+	
+arrayExpr
+	:	#(ARRAY_EXPR (valueExpr)*)
 	;
 	
 arithmeticExpr

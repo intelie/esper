@@ -1545,6 +1545,32 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			</table>
 		</sect2>		
 
+		<sect2 id="eql-operator-ref-array">
+			<title>Array Definition Operator</title>
+			<para>
+				The <literal>{</literal> and <literal>}</literal> curly braces are array definition operators following the Java array initialization syntax. Arrays can be useful to pass to user-defined functions or to select array data in a select clause.
+			</para>
+
+			<para>
+				Array definitions consist of zero or more expressions within curly braces. Any type of expression is allowed within array definitions including constants, arithmatic expressions or event properties. This is the syntax of an array definition:
+			</para>
+			<synopsis><emphasis>{</emphasis> [<emphasis>expression</emphasis> [,<emphasis>expression</emphasis>...]] }</synopsis>
+
+			<para>
+				Consider the next statement that returns an event property named <literal>actions</literal>. The <literal>actions</literal> column is an array of <literal>java.lang.String</literal> values with a length of 2 elements. The first element of the array contains the <literal>observation</literal> property value and the second element the <literal>command</literal> property value of <literal>RFIDEvent</literal> events.
+			</para>
+			<programlisting><![CDATA[select {observation, command} as actions from RFIDEvent]]></programlisting>
+
+			<para>
+				The engine determines the array type based on the expressions in the definiton. If the type of the expressions is not homogenous, or cannot be coerced to each other, then the type of the array returned is <literal>Object[]</literal>. Otherwise, the engine returns the suitable boxed-type array, such as <literal>java.lang.Integer[]</literal> and <literal>java.lang.Double[]</literal>.
+			</para>
+
+			<para>
+				Arrays can come in handy for use as parameters to user-defined functions:
+			</para>
+			<programlisting><![CDATA[select * from RFIDEvent where Filter.myFilter(zone, {1,2,3})]]></programlisting>
+		</sect2>
+
 		<sect2 id="eql-operator-ref-keyword-in">
 			<title>The '<literal>in</literal>' Keyword</title>
 			<para>
@@ -2065,5 +2091,11 @@ events with the highest price (with ties resolved by alphabetical order of symbo
 		 
 <programlisting><![CDATA[select 3 * MyClass.myFunction(price, volume) as myValue 
 from StockTick.win:time(30 sec)]]></programlisting>
+
+		 <para>
+			 User-defined functions also take array parameters as this example shows. The section on <xref linkend="eql-operator-ref-array"/> outlines in more detail the types of arrays produced.
+		 </para>
+		 
+<programlisting><![CDATA[select * from RFIDEvent where MyChecker.isInZone(zone, {10, 20, 30})]]></programlisting>
     </sect1>
 </chapter>

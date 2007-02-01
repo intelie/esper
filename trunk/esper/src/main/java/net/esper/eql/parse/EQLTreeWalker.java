@@ -247,6 +247,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case PRIOR:
                 leavePrior(node);
                 break;
+            case ARRAY_EXPR:
+                leaveArray(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -309,6 +312,14 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         ExprPriorNode priorNode = new ExprPriorNode();
         astExprNodeMap.put(node, priorNode);
+    }
+
+    private void leaveArray(AST node)
+    {
+        log.debug(".leaveArray");
+
+        ExprArrayNode arrayNode = new ExprArrayNode();
+        astExprNodeMap.put(node, arrayNode);
     }
 
     /**
