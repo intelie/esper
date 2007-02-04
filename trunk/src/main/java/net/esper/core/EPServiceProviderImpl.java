@@ -13,11 +13,10 @@ import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
 import net.esper.util.JavaClassHelper;
+import net.esper.adapter.*;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
@@ -116,7 +115,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         engine = new EPServiceEngine(services, runtime, admin);
 
         // Set up ouput adapter EPService Provider.
-        makeSpringContextAdapterRefService(this, configSnapshot);
+        setEPServiceProviderAdapters(this, configSnapshot);
     }
 
     private static Map<String, Class> createPropertyTypes(Properties properties)
@@ -255,17 +254,21 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return databaseConfigService;
     }
 
-    private static void makeSpringContextAdapterRefService(EPServiceProviderSPI spi,
+    private static void setEPServiceProviderAdapters(EPServiceProviderSPI spi,
                                                            ConfigurationSnapshot configSnapshot)
     {
-      if (configSnapshot.getSpringContextLoaderReference() == null) return;
+      List<AdapterLoader> adapterLoaders = configSnapshot.getAdapterLoaders();
+      if (adapterLoaders == null) return;
       try
       {
-        Class[] types = new Class[]{ net.esper.core.EPServiceProviderSPI.class};
-        Object springLoader = configSnapshot.getSpringContextLoaderReference();
-        Method method = springLoader.getClass().getMethod("setEPServiceProvider", types);
-        Object[] args = new Object[] {spi};
-        method.invoke(springLoader, args);
+        for (Iterator<AdapterLoader> adapterLoaderIt = adapterLoaders.iterator(); adapterLoaderIt.hasNext(); )
+        {
+          Class[] types = new Class[]{ net.esper.core.EPServiceProviderSPI.class};
+          AdapterLoader adapterLoader = adapterLoaderIt.next();
+          Method method = adapterLoader.getClass().getMethod("setEPServiceProvider", types);
+          Object[] args = new Object[] {spi};
+          method.invoke(adapterLoader, args);
+        }
       }
       catch (Exception ex)
       {
@@ -285,7 +288,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         private String[] autoImports;
         private Map<String, Properties> mapAliases = new HashMap<String, Properties>();
         private Map<String, ConfigurationDBRef> databaseRefs = new HashMap<String, ConfigurationDBRef>();
-        private Object springContextLoaderReference;
+        private List<AdapterLoader> adapterLoaders;
 
         /**
          * Ctor.
@@ -302,7 +305,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             mapAliases.putAll(configuration.getEventTypesMapEvents());
             legacyAliases.putAll(configuration.getEventTypesLegacy());
             databaseRefs.putAll(configuration.getDatabaseReferences());
-            springContextLoaderReference = configuration.getSpringContextLoaderReference();
+            adapterLoaders = configuration.getAdapterLoaders();
         }
 
         /**
@@ -360,12 +363,12 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         }
 
       /**
-       * Returns a reference object to the Adapter Spring Context Configuration.
-       * @return OutputAdapter reference
+       * Returns a reference object to the Adapter Loaders.
+       * @return adapterLoader list
        */
-      public Object getSpringContextLoaderReference()
+      public List getAdapterLoaders()
       {
-          return springContextLoaderReference;
+          return adapterLoaders;
       }
 
     }

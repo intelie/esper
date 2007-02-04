@@ -19,9 +19,11 @@ import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 import java.util.*;
 import java.io.*;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.*;
 import java.net.URLClassLoader;
 import java.net.URL;
+
+import net.esper.adapter.*;
 
 class ConfigurationParser {
 
@@ -341,13 +343,23 @@ class ConfigurationParser {
                 while (nodeIterator.hasNext())
                 {
                     Element subElement = nodeIterator.next();
-                    if (subElement.getNodeName().equals("spring-adapter"))
+                    if (subElement.getNodeName().equals("adapter-loader"))
                     {
-                        Class adapterClass = Class.forName("net.esper.adapter.SpringContextLoader", false, ucl);
-                        Class[] types = new Class[]{net.esper.client.Configuration.class, org.w3c.dom.Node.class};                        
-                        Constructor ctor =  adapterClass.getConstructor(types);
-                        Object[] args = new Object[] {configuration, subElement};
-                        configuration.addSpringLoaderContextReference(ctor.newInstance(args));
+                        String className = subElement.getAttributes().getNamedItem("class").getTextContent();
+                        Class adapterLoaderClass = Class.forName(className, false, ucl);
+                        Class[] types = new Class[0];
+                        Object[] args = new Object[0];
+                        Constructor ctor =  adapterLoaderClass.getConstructor(types);
+                        Object adapterLoader = ctor.newInstance(args);
+                        if (!(adapterLoader instanceof AdapterLoader))
+                        {
+                          continue;
+                        }
+                        types = new Class[]{net.esper.client.Configuration.class, org.w3c.dom.Element.class};
+                        Method method = adapterLoader.getClass().getMethod("init", types);
+                        args = new Object[] {configuration, subElement};
+                        method.invoke(adapterLoader, args);
+                        configuration.addAdapterLoader((AdapterLoader)adapterLoader);
                     }
                 }
             }

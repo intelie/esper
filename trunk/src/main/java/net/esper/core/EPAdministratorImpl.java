@@ -154,8 +154,6 @@ public class EPAdministratorImpl implements EPAdministrator
         StatementSpec statementSpec = walker.getStatementSpec();
         EPEQLStmtStartMethod startMethod = new EPEQLStmtStartMethod(statementSpec, eqlStatement, services);
         EPStatement epStmt = new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod);
-        // Yves Output Adapter
-        services.addOuputAdapter(statementSpec.getInsertIntoDesc(), epStmt);
         return epStmt;
         //return new EPEQLStatementImpl(eqlStatement, services.getDispatchService(), startMethod);
     }

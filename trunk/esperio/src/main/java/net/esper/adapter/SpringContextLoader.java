@@ -9,19 +9,19 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
-import java.io.File;
-import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import javax.xml.parsers.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.lang.reflect.*;
 
 /**
  * Created for ESPER.
  */
-public class SpringContextLoader
+public class SpringContextLoader implements AdapterLoader
 {
   private final Log log = LogFactory.getLog(this.getClass());
   private AbstractXmlApplicationContext adapterSpringContext;
@@ -32,12 +32,16 @@ public class SpringContextLoader
 
   }
 
-  public SpringContextLoader(Configuration config, Node configRootNode) throws EPException
+  public void init(Configuration config, Element configElement) throws EPException
   {
-    if (!configRootNode.getNodeName().equals("spring-adapter")) return;
-    String resource = configRootNode.getAttributes().getNamedItem("SpringApplicationContext").getTextContent();
+    NodeList nodes = configElement.getElementsByTagName("classpath-app-context");
+    if (nodes.getLength() != 1) return;
+    Node classPathNode = nodes.item(0);
+    if (!classPathNode.getNodeName().equals("classpath-app-context")) return;
+    String resource = classPathNode.getAttributes().getNamedItem("name").getTextContent();
     configure(config, resource);
   }
+
 
   public void configure(Configuration config, String resource)
   {

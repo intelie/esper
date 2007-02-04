@@ -69,9 +69,6 @@
         </property>
     </bean>
 
-    <bean id="defaultJMSMarshaler" class="net.esper.adapter.jms.DefaultJMSMarshaler">
-    </bean>
-
     <bean id="jmsMarshaler" class="net.esper.adapter.jms.JMSDefaultMapMessageMarshaler"/>
     
     <bean id="jmsInputAdapterEventType" class="net.esper.adapter.jms.JMSMapEventType">

@@ -15,6 +15,8 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 
+import net.esper.adapter.*;
+
 /**
  * An instance of <tt>Configuration</tt> allows the application
  * to specify properties to be used when
@@ -77,12 +79,11 @@ public class Configuration
    */
   private boolean isUsingDefaultImports = true;
 
-  /*
-  *   The SpringContextReference is used when setting runtime configuration parameters for
-  *   adapters configured via Esper configuration.
+ /*
+  *   A list of adapter loaders.
   */
 
-  private Object springContextLoaderReference;
+  private List<AdapterLoader> adapterLoaders;
 
   /**
    * Constructs an empty configuration. The auto import values
@@ -199,14 +200,14 @@ public class Configuration
   }
 
   /**
-   * Add a SpringLoaderContext reference, no typing is mentioned to avoid dependency on Esper IO.
+   * Add an adapter loader to existing configuration.
    *
-   * @param ref descriptor containing the contextused to set up output adapters.
+   * @param adapterLoader used to set up Esper IO adapters.
    */
 
-  public void addSpringLoaderContextReference(Object ref)
+  public void addAdapterLoader(AdapterLoader adapterLoader)
   {
-    springContextLoaderReference = ref;
+    adapterLoaders.add(adapterLoader);
   }
 
   /**
@@ -276,9 +277,9 @@ public class Configuration
    * @return object reference
    */
 
-  public Object getSpringContextLoaderReference()
+  public List getAdapterLoaders()
   {
-    return springContextLoaderReference;
+    return adapterLoaders;
   }
 
   /**
@@ -455,6 +456,7 @@ public class Configuration
     eventTypesXMLDOM = new HashMap<String, ConfigurationEventTypeXMLDOM>();
     eventTypesLegacy = new HashMap<String, ConfigurationEventTypeLegacy>();
     databaseReferences = new HashMap<String, ConfigurationDBRef>();
+    adapterLoaders = new ArrayList<AdapterLoader>();
     imports = new ArrayList<String>();
     addDefaultImports();
     isUsingDefaultImports = true;

@@ -1,9 +1,7 @@
 package net.esper.regression.adapter;
 
 import junit.framework.TestCase;
-import net.esper.adapter.Adapter;
-import net.esper.adapter.OutputAdapter;
-import net.esper.adapter.SpringContextLoader;
+import net.esper.adapter.*;
 import net.esper.client.*;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -12,8 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,7 +39,8 @@ public class TestJMSAdapter extends TestCase {
 
   public void testEvalEvents() throws Throwable
   {
-    SpringContextLoader scl = (SpringContextLoader) config.getSpringContextLoaderReference();
+    List<AdapterLoader> adapterLoaders = config.getAdapterLoaders();
+    SpringContextLoader scl = (SpringContextLoader) adapterLoaders.get(0);
     sendEvent("MyMapEvent", 1, 1.1, "some string");
     assertEvent("jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string", 1, false);
     sendEvent("MyMapEvent", 1, 1.1, "");
@@ -84,9 +82,7 @@ public class TestJMSAdapter extends TestCase {
     props.put(key1, class1);
     props.put(key2, class2);
     config.addEventTypeAlias(eventTypeAlias, props);
-    config.addSpringLoaderContextReference(scl);
-    //OutputAdapter adapter = (OutputAdapter) getAdapter("jmsOutputAdapter", scl);
-    //config.registerInterest(eventTypeAlias, adapter.getEventTypeListener());
+    config.addAdapterLoader(scl);
     return config;
   }
 
