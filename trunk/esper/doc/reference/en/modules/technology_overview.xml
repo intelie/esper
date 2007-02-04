@@ -127,11 +127,6 @@
 					LOG4J and Apache commons logging are logging components. This open source software is under the Apache license. The Apache 2.0 license is in the lib directory.
 				</para>
 			</listitem>
-			<listitem>
-				<para>
-					BeanUtils is a JavaBean manipulation library. This open source software is under the Apache license. The Apache 2.0 license is in the lib directory.
-				</para>
-			</listitem>
 		</itemizedlist>
 
         <para>

@@ -9,10 +9,6 @@ commons-logging-1.0.4.jar (1.0.4)
 - Commons Logging
 - runtime, required
 
-commons-beanutils-1.7.0.jar (1.7.0)
-- Commons bean utils
-- runtime, required
-
 cglib-full-2.0.2jar (2.0.2)
 - CGLIB bytecode generator
 - runtime, required
