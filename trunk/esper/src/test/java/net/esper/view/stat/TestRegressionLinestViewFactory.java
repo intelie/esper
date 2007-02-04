@@ -35,10 +35,10 @@ public class TestRegressionLinestViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new RegressionLinestView("a", "c")));
-        assertFalse(factory.canReuse(new RegressionLinestView("x", "b")));
-        assertTrue(factory.canReuse(new RegressionLinestView("a", "b")));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new RegressionLinestView(SupportViewContextFactory.makeContext(), "a", "c")));
+        assertFalse(factory.canReuse(new RegressionLinestView(SupportViewContextFactory.makeContext(), "x", "b")));
+        assertTrue(factory.canReuse(new RegressionLinestView(SupportViewContextFactory.makeContext(), "a", "b")));
     }
 
     public void testAttaches() throws Exception

@@ -11,6 +11,7 @@ import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
 import net.esper.support.view.SupportViewDataChecker;
+import net.esper.support.view.SupportViewContextFactory;
 import net.esper.view.ViewSupport;
 
 public class TestLengthWindowView extends TestCase
@@ -21,7 +22,7 @@ public class TestLengthWindowView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new LengthWindowView(5, null);
+        myView = new LengthWindowView(null, 5, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -30,7 +31,7 @@ public class TestLengthWindowView extends TestCase
     {
         try
         {
-            myView = new LengthWindowView(0, null);
+            myView = new LengthWindowView(null, 0, null);
         }
         catch (IllegalArgumentException ex)
         {
@@ -101,15 +102,6 @@ public class TestLengthWindowView extends TestCase
         SupportViewDataChecker.checkOldData(childView, makeArray(events, new String[]{ "h2" }));
         SupportViewDataChecker.checkNewData(childView,makeArray(events, new String[]{ "i0" }));
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(),makeArray(events, new String[]{ "h3", "h4", "h5", "h6", "i0" }));
-    }
-
-    public void testCopyView() throws Exception
-    {
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        myView.setParent(parent);
-
-        LengthWindowView copied = (LengthWindowView) ViewSupport.shallowCopyView(myView);
-        assertEquals(myView.getSize(), copied.getSize());
     }
 
     private EventBean[] makeArray(Map<String, EventBean> events, String[] ids)

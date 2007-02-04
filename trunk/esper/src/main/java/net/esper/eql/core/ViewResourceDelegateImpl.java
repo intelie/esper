@@ -25,11 +25,14 @@ public class ViewResourceDelegateImpl implements ViewResourceDelegate
     {
         ViewFactoryChain factories = viewFactories[streamNumber];
 
+        // first we give the capability implementation a chance to inspect the view factory chain
+        // it can deny by returning false
         if (!(requestedCabability.inspect(factories.getViewFactoryChain())))
         {
             return false;
         }
 
+        // then ask each view in turn to support the capability
         for (ViewFactory factory : factories.getViewFactoryChain())
         {
             if (factory.canProvideCapability(requestedCabability))

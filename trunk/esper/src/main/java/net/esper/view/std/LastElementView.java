@@ -6,6 +6,9 @@ import java.util.LinkedList;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
+import net.esper.view.CloneableView;
+import net.esper.view.View;
+import net.esper.view.ViewServiceContext;
 import net.esper.collection.SingleEventIterator;
 
 /**
@@ -28,18 +31,16 @@ import net.esper.collection.SingleEventIterator;
  *      last event is not null +
  *      new data from index zero to N-1, where N is the index of the last element in new data
  */
-public class LastElementView extends ViewSupport
+public class LastElementView extends ViewSupport implements CloneableView
 {
     /**
      * The last new element posted from a parent view.
      */
     protected EventBean lastEvent;
 
-    /**
-     * Constructor.
-     */
-    public LastElementView()
+    public View cloneView(ViewServiceContext context)
     {
+        return new LastElementView();
     }
 
     public final EventType getEventType()

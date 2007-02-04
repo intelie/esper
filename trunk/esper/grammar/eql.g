@@ -348,7 +348,6 @@ negatedExpression
 	| NOT_EXPR^ evalEqualsExpression
 	;		
 
-
 evalEqualsExpression
 	:	evalRelationalExpression ( 
 			(eq:EQUALS! 

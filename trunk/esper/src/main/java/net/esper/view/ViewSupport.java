@@ -1,16 +1,14 @@
 package net.esper.view;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-import java.io.StringWriter;
-import java.io.PrintWriter;
-
-import org.apache.commons.beanutils.PropertyUtils;
+import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.event.EventBean;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 
 /**
@@ -115,48 +113,6 @@ public abstract class ViewSupport implements View
     }
 
     /**
-     * Copies the view by copying the bean properties of the view but does not copy the views children,
-     * does not copy or set the property for the parent view.
-     * @param view to be copied
-     * @return copy of the view, populated via Java bean property getter and setter methods
-     */
-    public static View shallowCopyView(View view)
-    {
-        View copied = null;
-        
-        try
-        {
-            // Need to perform no conversion - therefore not using BeanUtils but PropertyUtils.
-            // BeanUtils populate method would make out of a Long "null" value a "0".
-            Map properties = PropertyUtils.describe(view);
-
-            // Remove properties that would and could not be copied
-            properties.remove("views");
-            properties.remove("parent");
-            properties.remove("class");
-
-            copied = (View) view.getClass().newInstance();
-
-            // No populate method on PropertyUtils (why not?), need to go one by one
-            for (Object key : properties.keySet())
-            {
-                String name = (String) key;
-                if (PropertyUtils.isWriteable(copied, name))
-                {
-                    PropertyUtils.setProperty(copied, name, properties.get(key));
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            log.fatal(".shallowCopyView Failed to copy view " + view.getClass().getName());
-            throw new RuntimeException(e);
-        }
-
-        return copied;
-    }
-
-    /**
      * Convenience method for logging the parameters passed to the update method. Only logs if debug is enabled.
      * @param prefix is a prefix text to output for each line
      * @param newData is the new data in an update call
@@ -233,7 +189,7 @@ public abstract class ViewSupport implements View
     {
         Stack<View> stack = new Stack<View>();
 
-        boolean found = false;
+        boolean found;
 
         for (View view : parentView.getViews())
         {

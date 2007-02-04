@@ -8,10 +8,7 @@ import java.util.Map;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.event.EventAdapterService;
-import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
-import net.esper.view.ContextAwareView;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,20 +16,13 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This view simply adds a property to the events posted to it. This is useful for the group-merge views.
  */
-public final class AddPropertyValueView extends ViewSupport implements ContextAwareView
+public final class AddPropertyValueView extends ViewSupport implements CloneableView
 {
-    private ViewServiceContext viewServiceContext;
-    private String[] propertyNames;
-    private Object[] propertyValues;
-    private EventType eventType;
+    private final ViewServiceContext viewServiceContext;
+    private final String[] propertyNames;
+    private final Object[] propertyValues;
+    private final EventType eventType;
     private boolean mustAddProperty;
-
-    /**
-     * Empty constructor - required for Java bean.
-     */
-    public AddPropertyValueView()
-    {
-    }
 
     /**
      * Constructor.
@@ -40,21 +30,17 @@ public final class AddPropertyValueView extends ViewSupport implements ContextAw
      * @param mergeValues is the values of the field that is added to any events received by this view.
      * @param mergedResultEventType is the event type that the merge view reports to it's child views
      */
-    public AddPropertyValueView(String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
+    public AddPropertyValueView(ViewServiceContext viewServiceContext, String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
     {
         this.propertyNames = fieldNames;
         this.propertyValues = mergeValues;
         this.eventType = mergedResultEventType;
-    }
-
-    public ViewServiceContext getViewServiceContext()
-    {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
-    {
         this.viewServiceContext = viewServiceContext;
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return new AddPropertyValueView(viewServiceContext, propertyNames, propertyValues, eventType);
     }
 
     public void setParent(Viewable parent)
@@ -85,30 +71,12 @@ public final class AddPropertyValueView extends ViewSupport implements ContextAw
     }
 
     /**
-     * Sets the field name for which to set the merge value for.
-     * @param propertyNames to set
-     */
-    public final void setPropertyNames(String[] propertyNames)
-    {
-        this.propertyNames = propertyNames;
-    }
-
-    /**
      * Returns the value to set for the field.
      * @return value to set
      */
     public final Object[] getPropertyValues()
     {
         return propertyValues;
-    }
-
-    /**
-     * Sets the value for the field to merge into the events coming into this view.
-     * @param propertyValue is the value to merge in
-     */
-    public final void setPropertyValues(Object[] propertyValue)
-    {
-        this.propertyValues = propertyValue;
     }
 
     public final void update(EventBean[] newData, EventBean[] oldData)
@@ -152,11 +120,6 @@ public final class AddPropertyValueView extends ViewSupport implements ContextAw
     public final EventType getEventType()
     {
         return eventType;
-    }
-
-    public void setEventType(EventType eventType)
-    {
-        this.eventType = eventType;
     }
 
     public final Iterator<EventBean> iterator()

@@ -34,9 +34,9 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {"a"}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new UnivariateStatisticsView("x")));
-        assertTrue(factory.canReuse(new UnivariateStatisticsView("a")));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new UnivariateStatisticsView(SupportViewContextFactory.makeContext(), "x")));
+        assertTrue(factory.canReuse(new UnivariateStatisticsView(SupportViewContextFactory.makeContext(), "a")));
     }
 
     public void testAttaches() throws Exception

@@ -37,13 +37,13 @@ public class TestGroupByViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new GroupByView(new String[] {"a"})));
-        assertTrue(factory.canReuse(new GroupByView(new String[] {"a", "b"})));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new GroupByView(SupportViewContextFactory.makeContext(), new String[] {"a"})));
+        assertTrue(factory.canReuse(new GroupByView(SupportViewContextFactory.makeContext(), new String[] {"a", "b"})));
 
         factory.setViewParameters(Arrays.asList(new Object[] {new String[] {"a", "b"}}));
-        assertFalse(factory.canReuse(new GroupByView(new String[] {"a"})));
-        assertTrue(factory.canReuse(new GroupByView(new String[] {"a", "b"})));
+        assertFalse(factory.canReuse(new GroupByView(SupportViewContextFactory.makeContext(), new String[] {"a"})));
+        assertTrue(factory.canReuse(new GroupByView(SupportViewContextFactory.makeContext(), new String[] {"a", "b"})));
     }
 
     public void testAttaches() throws Exception

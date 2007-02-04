@@ -32,9 +32,9 @@ public class TestTimeWindowViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {1000}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new TimeBatchView(1000, null, null)));
-        assertTrue(factory.canReuse(new TimeWindowView(1000000, null)));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new TimeBatchView(null, SupportViewContextFactory.makeContext(), 1000, null, null)));
+        assertTrue(factory.canReuse(new TimeWindowView(SupportViewContextFactory.makeContext(), factory, 1000000, null)));
     }
 
     private void tryInvalidParameter(Object param) throws Exception

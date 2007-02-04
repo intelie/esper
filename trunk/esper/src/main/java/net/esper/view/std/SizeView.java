@@ -8,35 +8,27 @@ import net.esper.collection.SingleEventIterator;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.*;
-import net.esper.view.stat.CorrelationBean;
 
 /**
  * This view is a very simple view presenting the number of elements in a stream or view.
  * The view computes a single long-typed count of the number of events passed through it similar
  * to the base statistics COUNT column.
  */
-public final class SizeView extends ViewSupport implements ContextAwareView
+public final class SizeView extends ViewSupport implements CloneableView
 {
-    private ViewServiceContext viewServiceContext;
+    private final ViewServiceContext viewServiceContext;
     private EventType eventType;
     private long size = 0;
 
-    /**
-     * Constructor.
-     */
-    public SizeView()
-    {
-    }
-
-    public ViewServiceContext getViewServiceContext()
-    {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
+    public SizeView(ViewServiceContext viewServiceContext)
     {
         this.viewServiceContext = viewServiceContext;
         this.eventType = createEventType(viewServiceContext);
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return new SizeView(viewServiceContext);
     }
 
     public final EventType getEventType()

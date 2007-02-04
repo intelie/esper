@@ -25,7 +25,7 @@ public class TestLastElementViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        assertFalse(factory.canReuse(new SizeView()));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
         assertTrue(factory.canReuse(new LastElementView()));
     }
 

@@ -44,14 +44,18 @@ public class TestMultiDimStatsViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {new String[] {"stddev"}, "price", "volume"}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new MultiDimStatsView(new String[] {"stddev", "average"}, "price", "volume", null, null)));
-        assertTrue(factory.canReuse(new MultiDimStatsView(new String[] {"stddev"}, "price", "volume", null, null)));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new MultiDimStatsView(SupportViewContextFactory.makeContext(),
+                new String[] {"stddev", "average"}, "price", "volume", null, null)));
+        assertTrue(factory.canReuse(new MultiDimStatsView(SupportViewContextFactory.makeContext(),
+                new String[] {"stddev"}, "price", "volume", null, null)));
 
         factory.setViewParameters(Arrays.asList(new Object[] {new String[] {"stddev"}, "price", "volume", "a", "b"}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new MultiDimStatsView(new String[] {"stddev"}, "price", "volume", "x", "b")));
-        assertTrue(factory.canReuse(new MultiDimStatsView(new String[] {"stddev"}, "price", "volume", "a", "b")));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new MultiDimStatsView(SupportViewContextFactory.makeContext(),
+                new String[] {"stddev"}, "price", "volume", "x", "b")));
+        assertTrue(factory.canReuse(new MultiDimStatsView(SupportViewContextFactory.makeContext(),
+                new String[] {"stddev"}, "price", "volume", "a", "b")));
     }
 
     public void testAttaches() throws Exception

@@ -1,23 +1,15 @@
 package net.esper.view.std;
 
-import junit.framework.*;
-import net.esper.support.view.SupportBeanClassView;
-import net.esper.support.view.SupportStreamImpl;
-import net.esper.support.view.SupportViewDataChecker;
-import net.esper.support.view.SupportViewContextFactory;
-import net.esper.support.bean.SupportMarketDataBean;
+import junit.framework.TestCase;
+import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventTypeFactory;
-import net.esper.support.event.SupportEventAdapterService;
-import net.esper.view.ViewSupport;
-import net.esper.event.EventBean;
-import net.esper.event.EventType;
-import net.esper.view.View;
-import net.esper.view.ViewServiceContext;
-
-import java.util.List;
-import java.util.LinkedList;
+import net.esper.support.view.SupportBeanClassView;
+import net.esper.support.view.SupportStreamImpl;
+import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportViewDataChecker;
 
 public class TestMergeView extends TestCase
 {
@@ -27,8 +19,9 @@ public class TestMergeView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new MergeView(new String[] {"symbol"}, null);
-        myView.setViewServiceContext(SupportViewContextFactory.makeContext());
+        myView = new MergeView(SupportViewContextFactory.makeContext(),
+                new String[] {"symbol"},
+                SupportEventTypeFactory.createBeanType(SupportBean.class));
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -59,14 +52,12 @@ public class TestMergeView extends TestCase
 
     public void testCopyView() throws Exception
     {
-        EventType someEventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.setParent(parent);
-        myView.setEventType(someEventType);
 
-        MergeView copied = (MergeView) ViewSupport.shallowCopyView(myView);
+        MergeView copied = (MergeView) myView.cloneView(SupportViewContextFactory.makeContext());
         assertEquals(myView.getGroupFieldNames(), copied.getGroupFieldNames());
-        assertEquals(myView.getEventType(), someEventType);
+        assertEquals(myView.getEventType(), SupportEventTypeFactory.createBeanType(SupportBean.class));
     }
 
     private EventBean makeTradeBean(String symbol, int price)

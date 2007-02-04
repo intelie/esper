@@ -58,7 +58,7 @@ public class CorrelationViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new CorrelationView(fieldNameX, fieldNameY);
+        return new CorrelationView(viewServiceContext, fieldNameX, fieldNameY);
     }
 
     public EventType getEventType()

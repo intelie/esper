@@ -171,6 +171,11 @@ public class TestInvalidView extends TestCase
         // function not known
         exceptionText = getStatementExceptionView("select gogglex(1) from " + EVENT_NUM + ".win:length(1)");
         assertEquals("Unknown method named 'gogglex' could not be resolved [select gogglex(1) from net.esper.support.bean.SupportBean_N.win:length(1)]", exceptionText);
+
+        // insert into column name incorrect
+        epService.getEPAdministrator().createEQL("insert into Xyz select 1 as dodi from java.lang.String");
+        exceptionText = getStatementExceptionView("select pox from pattern[Xyz(yodo=4)]");
+        assertEquals("Property named 'yodo' not found in selected stream of type java.util.Map [select pox from pattern[Xyz(yodo=4)]]", exceptionText);
     }
 
     public void testInvalidView()

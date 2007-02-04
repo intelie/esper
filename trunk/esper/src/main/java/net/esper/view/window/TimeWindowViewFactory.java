@@ -97,7 +97,7 @@ public class TimeWindowViewFactory implements ViewFactory
             }
         }
         
-        return new TimeWindowView(millisecondsBeforeExpiry, randomAccess);
+        return new TimeWindowView(viewServiceContext, this, millisecondsBeforeExpiry, randomAccess);
     }
 
     public EventType getEventType()

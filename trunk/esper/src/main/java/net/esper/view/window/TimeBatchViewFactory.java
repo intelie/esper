@@ -109,7 +109,7 @@ public class TimeBatchViewFactory implements ViewFactory
             }
         }
 
-        return new TimeBatchView(millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);
+        return new TimeBatchView(this, viewServiceContext, millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);
     }
 
     public EventType getEventType()

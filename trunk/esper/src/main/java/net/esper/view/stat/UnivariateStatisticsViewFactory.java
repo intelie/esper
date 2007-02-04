@@ -57,7 +57,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new UnivariateStatisticsView(fieldName);
+        return new UnivariateStatisticsView(viewServiceContext, fieldName);
     }
 
     public EventType getEventType()

@@ -60,7 +60,7 @@ public class WeightedAverageViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new WeightedAverageView(fieldNameX, fieldNameWeight);
+        return new WeightedAverageView(viewServiceContext, fieldNameX, fieldNameWeight);
     }
 
     public EventType getEventType()

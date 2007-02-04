@@ -25,6 +25,36 @@ public class TestPreviousFunction extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
+    public void testPreviousPerGroup()
+    {
+        String viewExpr = "select symbol, prev(1, price) as prevPrice " +
+                          "from " + SupportMarketDataBean.class.getName() + ".std:groupby('symbol').win:length(10) ";
+
+        EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
+        selectTestView.addListener(testListener);
+
+        // assert select result type
+        assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
+        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+
+        sendMarketEvent("IBM", 75);
+        assertReceived("IBM", null);
+
+        sendMarketEvent("MSFT", 40);
+
+        assertReceived("MSFT", null);
+
+        sendMarketEvent("IBM", 76);
+        assertReceived("IBM", 75d);
+    }
+
+    private void assertReceived(String symbol, Double price)
+    {
+        EventBean event = testListener.assertOneGetNewAndReset();
+        assertEquals(symbol, event.get("symbol"));
+        assertEquals(price, event.get("prevPrice"));
+    }
+
     public void testPreviousTimeWindow()
     {
         String viewExpr = "select symbol as currSymbol, " +

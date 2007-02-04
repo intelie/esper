@@ -65,11 +65,4 @@ public class TestLastElementView extends TestCase
         SupportViewDataChecker.checkNewData(childView, new EventBean[] { events.get("e0") });
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(), new EventBean[] { events.get("e0") });
     }
-
-    public void testCopyView() throws Exception
-    {
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        myView.setParent(parent);
-        ViewSupport.shallowCopyView(myView);
-    }
 }

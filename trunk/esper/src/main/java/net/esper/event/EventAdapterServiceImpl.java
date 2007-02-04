@@ -49,7 +49,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             }
 
             throw new EventAdapterException("Event type named '" + eventTypeAlias +
-                    "' has already been declared with differing type information");
+                    "' has already been declared with differing column name or type information");
         }
 
         EventType eventType = beanEventAdapter.createOrGetBeanType(clazz);
@@ -69,7 +69,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             }
 
             throw new EventAdapterException("Event type named '" + eventTypeAlias +
-                    "' has already been declared with differing type information");
+                    "' has already been declared with differing column name or type information");
         }
 
         Class clazz;
@@ -99,7 +99,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             if (!newEventType.equals(existingType))
             {
                 throw new EventAdapterException("Event type named '" + eventTypeAlias +
-                        "' has already been declared with differing type information");
+                        "' has already been declared with differing column name or type information");
             }
 
             // Since it's the same, return the existing type
@@ -239,7 +239,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 	        if (!newEventType.equals(existingType))
 	        {
 	            throw new EventAdapterException("Event type named '" + eventTypeAlias +
-	                    "' has already been declared with differing type information");
+	                    "' has already been declared with differing column name or type information");
 	        }
 	
 	        // Since it's the same, return the existing type

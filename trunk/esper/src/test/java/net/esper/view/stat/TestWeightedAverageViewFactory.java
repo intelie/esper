@@ -56,10 +56,10 @@ public class TestWeightedAverageViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new WeightedAverageView("a", "c")));
-        assertFalse(factory.canReuse(new WeightedAverageView("x", "b")));
-        assertTrue(factory.canReuse(new WeightedAverageView("a", "b")));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new WeightedAverageView(SupportViewContextFactory.makeContext(), "a", "c")));
+        assertFalse(factory.canReuse(new WeightedAverageView(SupportViewContextFactory.makeContext(), "x", "b")));
+        assertTrue(factory.canReuse(new WeightedAverageView(SupportViewContextFactory.makeContext(), "a", "b")));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception

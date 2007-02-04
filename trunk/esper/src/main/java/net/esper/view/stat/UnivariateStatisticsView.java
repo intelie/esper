@@ -14,40 +14,29 @@ import net.esper.collection.SingleEventIterator;
  * View for computing statistics, which the view exposes via fields representing the sum, count, standard deviation
  * for sample and for population and variance.
  */
-public final class UnivariateStatisticsView extends ViewSupport implements ContextAwareView
+public final class UnivariateStatisticsView extends ViewSupport implements CloneableView
 {
-    private ViewServiceContext viewServiceContext;
-    private EventType eventType;
-    private String fieldName;
+    private final ViewServiceContext viewServiceContext;
+    private final EventType eventType;
+    private final String fieldName;
     private EventPropertyGetter fieldGetter;
     private final BaseStatisticsBean baseStatisticsBean = new BaseStatisticsBean();
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public UnivariateStatisticsView()
-    {
-    }
 
     /**
      * Constructor requires the name of the field to use in the parent view to compute the statistics.
      * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view to
      * compute the statistics on.
      */
-    public UnivariateStatisticsView(String fieldName)
-    {
-        this.fieldName = fieldName;
-    }
-
-    public ViewServiceContext getViewServiceContext()
-    {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
+    public UnivariateStatisticsView(ViewServiceContext viewServiceContext, String fieldName)
     {
         this.viewServiceContext = viewServiceContext;
+        this.fieldName = fieldName;
         eventType = createEventType(viewServiceContext);
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return new UnivariateStatisticsView(viewServiceContext, fieldName);
     }
 
     public void setParent(Viewable parent)
@@ -66,15 +55,6 @@ public final class UnivariateStatisticsView extends ViewSupport implements Conte
     public final String getFieldName()
     {
         return fieldName;
-    }
-
-    /**
-     * Set the field name of the field to report statistics on.
-     * @param fieldName is the field to report statistics on
-     */
-    public final void setFieldName(String fieldName)
-    {
-        this.fieldName = fieldName;
     }
 
     public final void update(EventBean[] newData, EventBean[] oldData)

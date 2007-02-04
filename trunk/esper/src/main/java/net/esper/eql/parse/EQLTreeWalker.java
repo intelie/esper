@@ -18,7 +18,6 @@ import net.esper.util.ConstructorHelper;
 import antlr.collections.AST;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.beanutils.ConstructorUtils;
 
 import java.util.*;
 
@@ -419,7 +418,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
 
         // Convert to a stream specification instance
-        StreamSpec streamSpec = null;
+        StreamSpec streamSpec;
         // If the first subnode is a filter node, we have a filter stream specification
         if (node.getFirstChild().getType() == EVENT_FILTER_EXPR)
         {
@@ -650,7 +649,7 @@ public class EQLTreeWalker extends EQLBaseWalker
             isDistinct = true;
         }
 
-        ExprAggregateNode aggregateNode = null;
+        ExprAggregateNode aggregateNode;
 
         switch (node.getType())
         {
@@ -1035,10 +1034,10 @@ public class EQLTreeWalker extends EQLBaseWalker
                     " is not a known guard");
         }
 
-        GuardFactory guardFactory = null;
+        GuardFactory guardFactory;
         try
         {
-            guardFactory = (GuardFactory) ConstructorUtils.invokeConstructor(guardEnum.getClazz(), objectParams.toArray());
+            guardFactory = (GuardFactory) ConstructorHelper.invokeConstructor(guardEnum.getClazz(), objectParams.toArray());
 
             if (log.isDebugEnabled())
             {
@@ -1104,7 +1103,7 @@ public class EQLTreeWalker extends EQLBaseWalker
                     " is not a known observer");
         }
 
-        ObserverFactory observerFactory = null;
+        ObserverFactory observerFactory;
         try
         {
             Object obsFactory = ConstructorHelper.invokeConstructor(observerEnum.getClazz(), observerParameters);

@@ -91,7 +91,7 @@ public class MergeViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new MergeView(fieldNames, eventType);
+        return new MergeView(viewServiceContext, fieldNames, eventType);
     }
 
     public EventType getEventType()

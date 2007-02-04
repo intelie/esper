@@ -22,12 +22,11 @@ public class TestGroupByView extends TestCase
     public void setUp()
     {
         viewServiceContext = SupportViewContextFactory.makeContext();
-        myGroupByView = new GroupByView(new String[] {"symbol"});
-        myGroupByView.setViewServiceContext(viewServiceContext);
+        myGroupByView = new GroupByView(viewServiceContext, new String[] {"symbol"});
 
         SupportBeanClassView childView = new SupportBeanClassView(SupportMarketDataBean.class);
 
-        MergeView myMergeView = new MergeView(new String[]{"symbol"}, SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class));
+        MergeView myMergeView = new MergeView(viewServiceContext, new String[]{"symbol"}, SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class));
 
         ultimateChildView = new SupportBeanClassView(SupportMarketDataBean.class);
 
@@ -111,7 +110,7 @@ public class TestGroupByView extends TestCase
     public void testMakeSubviews()
     {
         EventStream eventStream = new SupportStreamImpl(SupportMarketDataBean.class, 4);
-        GroupByView groupView = new GroupByView(new String[] {"symbol"});
+        GroupByView groupView = new GroupByView(viewServiceContext, new String[] {"symbol"});
         eventStream.addView(groupView);
 
         Object[] groupByValue = new Object[] {"IBM"};
@@ -128,7 +127,7 @@ public class TestGroupByView extends TestCase
         }
 
         // Invalid for child node is a merge node - doesn't make sense to group and merge only
-        MergeView mergeViewOne = new MergeView(new String[] {"symbol"}, null);
+        MergeView mergeViewOne = new MergeView(viewServiceContext, new String[] {"symbol"}, null);
         groupView.addView(mergeViewOne);
         try
         {
@@ -141,14 +140,12 @@ public class TestGroupByView extends TestCase
         }
 
         // Add a size view parent of merge view
-        groupView = new GroupByView(new String[] {"symbol"});
-        groupView.setViewServiceContext(SupportViewContextFactory.makeContext());
+        groupView = new GroupByView(viewServiceContext, new String[] {"symbol"});
 
-        SizeView sizeView_1 = new SizeView();
-        sizeView_1.setViewServiceContext(SupportViewContextFactory.makeContext());
+        SizeView sizeView_1 = new SizeView(viewServiceContext);
 
         groupView.addView(sizeView_1);
-        mergeViewOne = new MergeView(new String[] {"symbol"}, null);
+        mergeViewOne = new MergeView(viewServiceContext, new String[] {"symbol"}, null);
         sizeView_1.addView(mergeViewOne);
 
         List<View> subViews = GroupByView.makeSubViews(groupView, groupByValue, viewServiceContext);

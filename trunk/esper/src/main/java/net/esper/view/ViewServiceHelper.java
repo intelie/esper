@@ -59,14 +59,12 @@ public class ViewServiceHelper
 
     /**
      * Instantiate a chain of views.
-     * @param existingParentViews - parent views
      * @param parentViewable - parent view to add the chain to
      * @param viewFactories - is the view factories to use to make each view, or reuse and existing view
      * @param context - dependent services
      * @return chain of views instantiated
      */
-    protected static List<View> instantiateChain(List<View> existingParentViews,
-                                                 Viewable parentViewable,
+    protected static List<View> instantiateChain(Viewable parentViewable,
                                                  List<ViewFactory> viewFactories,
                                                  ViewServiceContext context)
     {
@@ -80,12 +78,6 @@ public class ViewServiceHelper
 
             newViews.add(currentView);
             parent.addView(currentView);
-
-            // Set context
-            if (currentView instanceof ContextAwareView)
-            {
-                ((ContextAwareView) currentView).setViewServiceContext(context);
-            }
 
             // Next parent is the new view
             parent = currentView;
@@ -195,7 +187,7 @@ public class ViewServiceHelper
         Viewable currentParent = rootViewable;
         List<View> matchedViewList = new LinkedList<View>();
 
-        boolean foundMatch = false;
+        boolean foundMatch;
 
         if (viewFactories.isEmpty())
         {

@@ -20,29 +20,28 @@ import net.esper.collection.IterablesListIterator;
  * The parent view of this view is generally the AddPropertyValueView that adds the grouped-by information
  * back into the data.
  */
-public final class MergeView extends ViewSupport implements ContextAwareView
+public final class MergeView extends ViewSupport implements CloneableView
 {
     private final LinkedList<View> parentViews = new LinkedList<View>();
-    private String[] groupFieldNames;
-    private EventType eventType;
-    private ViewServiceContext viewServiceContext;
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public MergeView()
-    {
-    }
+    private final String[] groupFieldNames;
+    private final EventType eventType;
+    private final ViewServiceContext viewServiceContext;
 
     /**
      * Constructor.
      * @param groupFieldNames is the fields from which to pull the value to group by
      * @param resultEventType is passed by the factory as the factory adds the merged fields to an event type
      */
-    public MergeView(String groupFieldNames[], EventType resultEventType)
+    public MergeView(ViewServiceContext viewServiceContext, String groupFieldNames[], EventType resultEventType)
     {
         this.groupFieldNames = groupFieldNames;
         this.eventType = resultEventType;
+        this.viewServiceContext = viewServiceContext;
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return new MergeView(viewServiceContext, groupFieldNames, eventType);
     }
 
     /**
@@ -52,34 +51,6 @@ public final class MergeView extends ViewSupport implements ContextAwareView
     public final String[] getGroupFieldNames()
     {
         return groupFieldNames;
-    }
-
-    public ViewServiceContext getViewServiceContext()
-    {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
-    {
-        this.viewServiceContext = viewServiceContext;
-    }
-
-    /**
-     * Sets the field name that contains the values to group by.
-     * @param groupFieldNames is the field names providing group key values
-     */
-    public final void setGroupFieldNames(String groupFieldNames[])
-    {
-        this.groupFieldNames = groupFieldNames;
-    }
-
-    /**
-     * Sets event type - required for successful view copy.
-     * @param eventType is the event type
-     */
-    public void setEventType(EventType eventType)
-    {
-        this.eventType = eventType;
     }
 
     /**

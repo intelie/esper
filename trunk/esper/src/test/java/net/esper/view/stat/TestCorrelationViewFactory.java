@@ -35,10 +35,10 @@ public class TestCorrelationViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new CorrelationView("a", "c")));
-        assertFalse(factory.canReuse(new CorrelationView("x", "b")));
-        assertTrue(factory.canReuse(new CorrelationView("a", "b")));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new CorrelationView(SupportViewContextFactory.makeContext(), "a", "c")));
+        assertFalse(factory.canReuse(new CorrelationView(SupportViewContextFactory.makeContext(), "x", "b")));
+        assertTrue(factory.canReuse(new CorrelationView(SupportViewContextFactory.makeContext(), "a", "b")));
     }
 
     public void testAttaches() throws Exception

@@ -59,7 +59,7 @@ public class RegressionLinestViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new RegressionLinestView(fieldNameX, fieldNameY);
+        return new RegressionLinestView(viewServiceContext, fieldNameX, fieldNameY);
     }
 
     public boolean canReuse(View view)

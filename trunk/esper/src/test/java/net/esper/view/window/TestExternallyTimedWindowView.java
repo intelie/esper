@@ -3,12 +3,12 @@ package net.esper.view.window;
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBeanTimestamp;
+import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
+import net.esper.support.view.SupportViewContextFactory;
 import net.esper.support.view.SupportViewDataChecker;
-import net.esper.support.event.SupportEventBeanFactory;
-import net.esper.view.ViewSupport;
 
 public class TestExternallyTimedWindowView extends TestCase
 {
@@ -18,7 +18,7 @@ public class TestExternallyTimedWindowView extends TestCase
     public void setUp()
     {
         // Set up timed window view and a test child view, set the time window size to 1 second
-        myView = new ExternallyTimedWindowView("timestamp", 1000, null);
+        myView = new ExternallyTimedWindowView(null, "timestamp", 1000, null);
         childView = new SupportBeanClassView(SupportBeanTimestamp.class);
         myView.addView(childView);
     }
@@ -27,7 +27,7 @@ public class TestExternallyTimedWindowView extends TestCase
     {
         try
         {
-            myView = new ExternallyTimedWindowView("goodie", 0, null);
+            myView = new ExternallyTimedWindowView(null, "goodie", 0, null);
         }
         catch (IllegalArgumentException ex)
         {
@@ -94,16 +94,6 @@ public class TestExternallyTimedWindowView extends TestCase
         SupportViewDataChecker.checkOldData(childView, new EventBean[] { e[0], e[1], f[0], g[0], h[0], h[1], h[2] });
         SupportViewDataChecker.checkNewData(childView, new EventBean[] { i[0] });
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(),new EventBean[] { i[0] });
-    }
-
-    public void testCopyView() throws Exception
-    {
-        SupportStreamImpl stream = new SupportStreamImpl(SupportBeanTimestamp.class, 3);
-        stream.addView(myView);
-
-        ExternallyTimedWindowView copied = (ExternallyTimedWindowView) ViewSupport.shallowCopyView(myView);
-        assertEquals(myView.getTimestampFieldName(), copied.getTimestampFieldName());
-        assertEquals(myView.getMillisecondsBeforeExpiry(),copied.getMillisecondsBeforeExpiry());
     }
 
     private EventBean[] makeBeans(String id, long timestamp, int numBeans)

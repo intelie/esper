@@ -7,6 +7,7 @@ import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
 import net.esper.support.view.SupportViewDataChecker;
+import net.esper.support.view.SupportViewContextFactory;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.view.ViewSupport;
 
@@ -74,7 +75,7 @@ public class TestUniqueByPropertyView extends TestCase
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.setParent(parent);
 
-        UniqueByPropertyView copied = (UniqueByPropertyView) ViewSupport.shallowCopyView(myView);
+        UniqueByPropertyView copied = (UniqueByPropertyView) myView.cloneView(SupportViewContextFactory.makeContext());
         assertEquals(myView.getUniqueFieldName(), copied.getUniqueFieldName());
     }
 

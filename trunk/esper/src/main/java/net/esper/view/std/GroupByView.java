@@ -31,40 +31,29 @@ import net.esper.client.EPException;
  * view unto each leaf child view that merges the value key that was grouped by back into the stream
  * using the group-by field name.
  */
-public final class GroupByView extends ViewSupport implements ContextAwareView
+public final class GroupByView extends ViewSupport implements CloneableView
 {
-    private String[] groupFieldNames;
+    private final String[] groupFieldNames;
+    private final ViewServiceContext viewServiceContext;
     private EventPropertyGetter[] groupFieldGetters;
-    private ViewServiceContext viewServiceContext;
 
-    private final Map<MultiKey<Object>, List<View>> subViewsPerKey = new HashMap<MultiKey<Object>, List<View>>();;
+    private final Map<MultiKey<Object>, List<View>> subViewsPerKey = new HashMap<MultiKey<Object>, List<View>>();
 
     private HashMap<List<View>, Pair<List<EventBean>, List<EventBean>>> groupedEvents = new HashMap<List<View>, Pair<List<EventBean>, List<EventBean>>>();
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public GroupByView()
-    {
-    }
 
     /**
      * Constructor.
      * @param groupFieldNames is the fields from which to pull the values to group by
      */
-    public GroupByView(String[] groupFieldNames)
+    public GroupByView(ViewServiceContext viewServiceContext, String[] groupFieldNames)
     {
+        this.viewServiceContext = viewServiceContext;
         this.groupFieldNames = groupFieldNames;
     }
 
-    public ViewServiceContext getViewServiceContext()
+    public View cloneView(ViewServiceContext viewServiceContext)
     {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
-    {
-        this.viewServiceContext = viewServiceContext;
+        return new GroupByView(viewServiceContext, groupFieldNames);
     }
 
     public void setParent(Viewable parent)
@@ -90,15 +79,6 @@ public final class GroupByView extends ViewSupport implements ContextAwareView
     public String[] getGroupFieldNames()
     {
         return groupFieldNames;
-    }
-
-    /**
-     * Sets the field name that provides the key valie by which to group by.
-     * @param groupFieldNames the the field names providing the group-by key values.
-     */
-    public final void setGroupFieldNames(String[] groupFieldNames)
-    {
-        this.groupFieldNames = groupFieldNames;
     }
 
     public final EventType getEventType()
@@ -142,7 +122,7 @@ public final class GroupByView extends ViewSupport implements ContextAwareView
         groupedEvents.clear();
     }
 
-    private final void handleEvent(EventBean event, boolean isNew)
+    private void handleEvent(EventBean event, boolean isNew)
     {
         // Get values for group-by, construct MultiKey
         Object[] groupByValues = new Object[groupFieldGetters.length];
@@ -225,8 +205,14 @@ public final class GroupByView extends ViewSupport implements ContextAwareView
                 throw new EPException(message);
             }
 
-            // Shallow copy child node
-            View copyChildView = ViewSupport.shallowCopyView(originalChildView);
+            if (!(originalChildView instanceof CloneableView))
+            {
+                throw new EPException("Unexpected error copying subview " + originalChildView.getClass().getName());
+            }
+            CloneableView cloneableView = (CloneableView) originalChildView;
+
+            // Copy child node
+            View copyChildView = cloneableView.cloneView(viewServiceContext); 
             copyChildView.setParent(groupView);
             subViewList.add(copyChildView);
 
@@ -250,8 +236,7 @@ public final class GroupByView extends ViewSupport implements ContextAwareView
                 if (Arrays.equals(mergeView.getGroupFieldNames(), groupFieldNames))
                 {
                     // We found our merge view - install a new data merge view on top of it
-                    AddPropertyValueView mergeDataView = new AddPropertyValueView(groupFieldNames, groupByValues, mergeView.getEventType());                    
-                    mergeDataView.setViewServiceContext(viewServiceContext);
+                    AddPropertyValueView mergeDataView = new AddPropertyValueView(viewServiceContext, groupFieldNames, groupByValues, mergeView.getEventType());
 
                     // Add to the copied parent subview the view merge data view
                     copyView.addView(mergeDataView);
@@ -266,7 +251,12 @@ public final class GroupByView extends ViewSupport implements ContextAwareView
                 }
             }
 
-            View copiedChild = ViewSupport.shallowCopyView(subView);
+            if (!(subView instanceof CloneableView))
+            {
+                throw new EPException("Unexpected error copying subview");
+            }
+            CloneableView cloneableView = (CloneableView) subView;
+            View copiedChild = cloneableView.cloneView(viewServiceContext);
             copyView.addView(copiedChild);
 
             // Make the sub views for child

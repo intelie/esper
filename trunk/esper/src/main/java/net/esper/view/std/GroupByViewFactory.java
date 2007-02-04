@@ -57,7 +57,7 @@ public class GroupByViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new GroupByView(groupFieldNames);
+        return new GroupByView(viewServiceContext, groupFieldNames);
     }
 
     public EventType getEventType()

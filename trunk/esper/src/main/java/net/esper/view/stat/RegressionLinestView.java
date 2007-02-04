@@ -1,9 +1,9 @@
 package net.esper.view.stat;
 
-import net.esper.view.stat.RegressionBean;
-import net.esper.view.ViewServiceContext;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
+import net.esper.view.ViewServiceContext;
+import net.esper.view.CloneableView;
+import net.esper.view.View;
 
 /**
  * A view that calculates regression on two fields. The view uses internally a {@link RegressionBean}
@@ -11,27 +11,24 @@ import net.esper.event.BeanEventAdapter;
  * This class accepts most of its behaviour from its parent, {@link net.esper.view.stat.BaseBivariateStatisticsView}. It adds
  * the usage of the regression bean and the appropriate schema.
  */
-public final class RegressionLinestView extends BaseBivariateStatisticsView
+public final class RegressionLinestView extends BaseBivariateStatisticsView implements CloneableView
 {
     private EventType eventType;
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public RegressionLinestView()
-    {
-        statisticsBean = new RegressionBean();
-    }
 
     /**
      * Constructor.
      * @param xFieldName is the field name of the field providing X data points
      * @param yFieldName is the field name of the field providing X data points
      */
-    public RegressionLinestView(String xFieldName, String yFieldName)
+    public RegressionLinestView(ViewServiceContext viewServiceContext, String xFieldName, String yFieldName)
     {
-        super(new RegressionBean(), xFieldName, yFieldName);
-    }        
+        super(viewServiceContext, new RegressionBean(), xFieldName, yFieldName);
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return new RegressionLinestView(viewServiceContext, this.getFieldNameX(), this.getFieldNameY());
+    }
 
     public EventType getEventType()
     {

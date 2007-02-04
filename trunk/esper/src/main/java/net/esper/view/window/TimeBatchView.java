@@ -9,8 +9,9 @@ import java.text.SimpleDateFormat;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
-import net.esper.view.ContextAwareView;
 import net.esper.view.ViewServiceContext;
+import net.esper.view.View;
+import net.esper.view.CloneableView;
 import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.client.EPException;
@@ -32,29 +33,23 @@ import net.esper.core.EPStatementHandleCallback;
  * If there are no events in the current and prior batch, the view will not invoke the update method of child views.
  * In that case also, no next callback is scheduled with the scheduling service until the next event arrives.
  */
-public final class TimeBatchView extends ViewSupport implements ContextAwareView, DataWindowView
+public final class TimeBatchView extends ViewSupport implements CloneableView, DataWindowView
 {
     private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     // View parameters
-    private long msecIntervalSize;
-    private Long initialReferencePoint;
-    private ViewUpdatedCollection viewUpdatedCollection;
+    private final TimeBatchViewFactory timeBatchViewFactory;
+    private final ViewServiceContext viewServiceContext;
+    private final long msecIntervalSize;
+    private final Long initialReferencePoint;
+    private final ViewUpdatedCollection viewUpdatedCollection;
+    private final ScheduleSlot scheduleSlot;
 
     // Current running parameters
     private Long currentReferencePoint;
-    private ViewServiceContext viewServiceContext;
     private LinkedList<EventBean> lastBatch = null;
     private LinkedList<EventBean> currentBatch = new LinkedList<EventBean>();
     private boolean isCallbackScheduled;
-    private ScheduleSlot scheduleSlot;
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public TimeBatchView()
-    {
-    }
 
     /**
      * Constructor.
@@ -63,11 +58,20 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
      * there is no such reference point supplied
      * @param viewUpdatedCollection is a collection that the view must update when receiving events
      */
-    public TimeBatchView(long msecIntervalSize, Long referencePoint, ViewUpdatedCollection viewUpdatedCollection)
+    public TimeBatchView(TimeBatchViewFactory timeBatchViewFactory, ViewServiceContext viewServiceContext, long msecIntervalSize, Long referencePoint, ViewUpdatedCollection viewUpdatedCollection)
     {
+        this.viewServiceContext = viewServiceContext;
+        this.timeBatchViewFactory = timeBatchViewFactory;
         this.msecIntervalSize = msecIntervalSize;
         this.initialReferencePoint = referencePoint;
         this.viewUpdatedCollection = viewUpdatedCollection;
+
+        this.scheduleSlot = viewServiceContext.getScheduleBucket().allocateSlot();
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return timeBatchViewFactory.makeView(viewServiceContext);
     }
 
     /**
@@ -80,15 +84,6 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
     }
 
     /**
-     * Sets the interval size in milliseconds.
-     * @param msecIntervalSize batch size
-     */
-    public final void setMsecIntervalSize(long msecIntervalSize)
-    {
-        this.msecIntervalSize = msecIntervalSize;
-    }
-
-    /**
      * Gets the reference point to use to anchor interval start and end dates to.
      * @return is the millisecond reference point.
      */
@@ -97,47 +92,9 @@ public final class TimeBatchView extends ViewSupport implements ContextAwareView
         return initialReferencePoint;
     }
 
-    /**
-     * Returns the (optional) collection handling random access to window contents for prior or previous events.
-     * @return buffer for events
-     */
-    public ViewUpdatedCollection getViewUpdatedCollection()
-    {
-        return viewUpdatedCollection;
-    }
-
-    /**
-     * Sets the buffer for keeping a reference to prior or previous events.
-     * @param viewUpdatedCollection buffer
-     */
-    public void setViewUpdatedCollection(IStreamRandomAccess viewUpdatedCollection)
-    {
-        this.viewUpdatedCollection = viewUpdatedCollection;
-    }
-
-    /**
-     * Sets the reference point to use to anchor interval start and end dates to.
-     * @param initialReferencePoint is the millisecond reference point.
-     */
-    public final void setInitialReferencePoint(Long initialReferencePoint)
-    {
-        this.initialReferencePoint = initialReferencePoint;
-    }
-
     public final EventType getEventType()
     {
         return parent.getEventType();
-    }
-
-    public ViewServiceContext getViewServiceContext()
-    {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
-    {
-        this.viewServiceContext = viewServiceContext;
-        this.scheduleSlot = viewServiceContext.getScheduleBucket().allocateSlot();
     }
 
     public final void update(EventBean[] newData, EventBean[] oldData)

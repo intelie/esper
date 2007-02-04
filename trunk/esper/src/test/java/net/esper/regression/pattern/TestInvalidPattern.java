@@ -40,11 +40,11 @@ public class TestInvalidPattern extends TestCase
 
         // simple property not found
         exceptionText = getStatementExceptionPattern(EVENT_NUM + "(dummy=1)");
-        assertEquals("Property named 'dummy' not found in class net.esper.support.bean.SupportBean_N [net.esper.support.bean.SupportBean_N(dummy=1)]", exceptionText);
+        assertEquals("Property named 'dummy' not found in selected stream of type net.esper.support.bean.SupportBean_N [net.esper.support.bean.SupportBean_N(dummy=1)]", exceptionText);
 
         // nested property not found
         exceptionText = getStatementExceptionPattern(EVENT_NUM + "(dummy.nested=1)");
-        assertEquals("Property named 'dummy.nested' not found in class net.esper.support.bean.SupportBean_N [net.esper.support.bean.SupportBean_N(dummy.nested=1)]", exceptionText);
+        assertEquals("Property named 'dummy.nested' not found in selected stream of type net.esper.support.bean.SupportBean_N [net.esper.support.bean.SupportBean_N(dummy.nested=1)]", exceptionText);
 
         // property wrong type
         exceptionText = getStatementExceptionPattern(EVENT_NUM + "(intPrimitive='s')");

@@ -134,7 +134,7 @@ public class SortWindowViewFactory implements ViewFactory
                 resourceCallback.setViewResource(sortedRandomAccess);
             }
         }
-        return new SortWindowView(sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess);
+        return new SortWindowView(this, sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess);
     }
 
     public EventType getEventType()

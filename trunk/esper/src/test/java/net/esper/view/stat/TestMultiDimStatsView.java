@@ -30,10 +30,9 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testOneDim()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "enumValue", null, null);
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportViewContextFactory.makeContext(), derivedFields, "intPrimitive", "enumValue", null, null);
         parentStream.addView(olapView);
         olapView.addView(childView);
-        olapView.setViewServiceContext(SupportViewContextFactory.makeContext());
 
         insertEvents();
 
@@ -57,10 +56,9 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testTwoDim()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "string", "enumValue", null);
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportViewContextFactory.makeContext(), derivedFields, "intPrimitive", "string", "enumValue", null);
         parentStream.addView(olapView);
         olapView.addView(childView);
-        olapView.setViewServiceContext(SupportViewContextFactory.makeContext());
 
         insertEvents();
 
@@ -82,10 +80,9 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testThreeDim()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "boolBoxed", "string", "enumValue");
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportViewContextFactory.makeContext(), derivedFields, "intPrimitive", "boolBoxed", "string", "enumValue");
         parentStream.addView(olapView);
         olapView.addView(childView);
-        olapView.setViewServiceContext(SupportViewContextFactory.makeContext());
 
         insertEvents();
 

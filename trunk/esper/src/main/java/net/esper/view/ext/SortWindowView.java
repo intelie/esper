@@ -6,8 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 
 import net.esper.util.MultiKeyComparator;
-import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
+import net.esper.view.*;
 import net.esper.view.window.DataWindowView;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventPropertyGetter;
@@ -28,23 +27,17 @@ import net.esper.event.EventBean;
  *
  * Old values removed from a prior view are removed from the sort view.
  */
-public final class SortWindowView extends ViewSupport implements DataWindowView
+public final class SortWindowView extends ViewSupport implements DataWindowView, CloneableView
 {
-    private String[] sortFieldNames;
-    private EventPropertyGetter[] sortFieldGetters;
-    private Boolean[] isDescendingValues;
-    private int sortWindowSize = 0;
+    private final SortWindowViewFactory sortWindowViewFactory;
+    private final String[] sortFieldNames;
+    private final Boolean[] isDescendingValues;
+    private final int sortWindowSize;
+    private final IStreamSortedRandomAccess optionalSortedRandomAccess;
 
+    private EventPropertyGetter[] sortFieldGetters;
     private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
     private int eventCount;
-    private IStreamSortedRandomAccess optionalSortedRandomAccess;
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public SortWindowView()
-    {
-    }
 
     /**
      * Ctor.
@@ -54,9 +47,13 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
      * @param optionalSortedRandomAccess is the friend class handling the random access, if required by
      * expressions 
      */
-    public SortWindowView(String[] sortFieldNames, Boolean[] descendingValues, int sortWindowSize,
+    public SortWindowView(SortWindowViewFactory sortWindowViewFactory,
+                          String[] sortFieldNames,
+                          Boolean[] descendingValues,
+                          int sortWindowSize,
                           IStreamSortedRandomAccess optionalSortedRandomAccess)
     {
+        this.sortWindowViewFactory = sortWindowViewFactory;
         this.sortFieldNames = sortFieldNames;
         this.isDescendingValues = descendingValues;
         this.sortWindowSize = sortWindowSize;
@@ -84,7 +81,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
      * Returns the field names supplying the values to sort by.
      * @return field names to sort by
      */
-    public final String[] getSortFieldNames()
+    protected final String[] getSortFieldNames()
     {
         return sortFieldNames;
     }
@@ -93,7 +90,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
      * Returns the flags indicating whether to sort in descending order on each property.
      * @return the isDescending value for each sort property
      */
-    public final Boolean[] getIsDescendingValues()
+    protected final Boolean[] getIsDescendingValues()
     {
     	return isDescendingValues;
     }
@@ -102,7 +99,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
      * Returns the number of elements kept by the sort window.
      * @return size of window
      */
-    public final int getSortWindowSize()
+    protected final int getSortWindowSize()
     {
         return sortWindowSize;
     }
@@ -111,43 +108,15 @@ public final class SortWindowView extends ViewSupport implements DataWindowView
      * Returns the friend handling the random access, cal be null if not required.
      * @return random accessor to sort window contents
      */
-    public IStreamSortedRandomAccess getOptionalSortedRandomAccess()
+    protected IStreamSortedRandomAccess getOptionalSortedRandomAccess()
     {
         return optionalSortedRandomAccess;
     }
 
-    /**
-     * Sets the friend handling the random access, can be null if not required.
-     * @param optionalSortedRandomAccess random accessor to sort window contents
-     */
-    public void setOptionalSortedRandomAccess(IStreamSortedRandomAccess optionalSortedRandomAccess)
+    public View cloneView(ViewServiceContext viewServiceContext)
     {
-        this.optionalSortedRandomAccess = optionalSortedRandomAccess;
+        return sortWindowViewFactory.makeView(viewServiceContext);
     }
-
-    /**
-    * Set the sort order for the sort properties.
-    * @param isDescendingValues - the direction to sort in for each sort property
-    */
-    public final void setIsDescendingValues(Boolean[] isDescendingValues) {
-		this.isDescendingValues = isDescendingValues;
-	}
-
-	/**
-	 * Set the names of the properties to sort on.
-	 * @param sortFieldNames - the names of the properties to sort on
-	 */
-    public final void setSortFieldNames(String[] sortFieldNames) {
-		this.sortFieldNames = sortFieldNames;
-	}
-
-    /**
-     * Set the number of elements kept by the sort window.
-     * @param sortWindowSize - size of window
-     */
-    public final void setSortWindowSize(int sortWindowSize) {
-		this.sortWindowSize = sortWindowSize;
-	}
 
     public final EventType getEventType()
     {

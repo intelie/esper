@@ -88,7 +88,7 @@ public class ExprIdentNode extends ExprNode
 
     public Class getType() throws ExprValidationException
     {
-        if (propertyType == null)
+        if (resolvedPropertyName == null)
         {
             throw new IllegalStateException("Identifier node has not been validated");
         }

@@ -87,7 +87,7 @@ public class LengthWindowViewFactory implements ViewFactory
             }
         }
 
-        return new LengthWindowView(size, randomAccess);
+        return new LengthWindowView(this, size, randomAccess);
     }
 
     public EventType getEventType()

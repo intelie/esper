@@ -8,7 +8,6 @@ import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
 import net.esper.support.view.SupportViewDataChecker;
-import net.esper.view.ViewSupport;
 
 public class TestSortWindowView extends TestCase
 {
@@ -18,7 +17,7 @@ public class TestSortWindowView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new SortWindowView(new String[]{"volume"}, new Boolean[] {false}, 5, null);
+        myView = new SortWindowView(null, new String[]{"volume"}, new Boolean[] {false}, 5, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -77,7 +76,7 @@ public class TestSortWindowView extends TestCase
     public void testViewTwoProperties()
     {
     	// Set up a sort windows that sorts on two properties
-    	myView = new SortWindowView(new String[]{"volume", "price"}, new Boolean[] {false, true}, 5, null);
+    	myView = new SortWindowView(null, new String[]{"volume", "price"}, new Boolean[] {false, true}, 5, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
         
@@ -128,18 +127,6 @@ public class TestSortWindowView extends TestCase
         SupportViewDataChecker.checkOldData(childView, new EventBean[] { bean[1] });
         SupportViewDataChecker.checkNewData(childView, new EventBean[] { bean[11] });
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(), new EventBean[] { bean[8], bean[7], bean[4], bean[10], bean[11] });
-    }
-
-    public void testCopyView() throws Exception
-    {
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        myView.setParent(parent);
-
-        SortWindowView copied = (SortWindowView) ViewSupport.shallowCopyView(myView);
-        
-        ArrayAssertionUtil.assertEqualsExactOrder(myView.getSortFieldNames(), copied.getSortFieldNames());
-        assertEquals(myView.getSortWindowSize(), copied.getSortWindowSize());
-        ArrayAssertionUtil.assertEqualsExactOrder(myView.getIsDescendingValues(), copied.getIsDescendingValues());
     }
 
     private EventBean makeBean(long volume)

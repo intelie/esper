@@ -8,9 +8,7 @@ import java.util.Map;
 import net.esper.event.EventBean;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
-import net.esper.view.PropertyCheckHelper;
-import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
+import net.esper.view.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,18 +29,11 @@ import org.apache.commons.logging.LogFactory;
  * The type of the field returning the unique value can be any type but should override equals and hashCode()
  * as the type plays the role of a key in a map storing unique values.
  */
-public final class UniqueByPropertyView extends ViewSupport
+public final class UniqueByPropertyView extends ViewSupport implements CloneableView
 {
-    private String uniqueFieldName;
+    private final String uniqueFieldName;
     private EventPropertyGetter uniqueFieldGetter;
     private final Map<Object, EventBean> mostRecentEvents = new LinkedHashMap<Object, EventBean>();;
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public UniqueByPropertyView()
-    {
-    }
 
     /**
      * Constructor.
@@ -51,6 +42,11 @@ public final class UniqueByPropertyView extends ViewSupport
     public UniqueByPropertyView(String uniqueFieldName)
     {
         this.uniqueFieldName = uniqueFieldName;
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return new UniqueByPropertyView(uniqueFieldName);
     }
 
     public void setParent(Viewable parent)
@@ -69,15 +65,6 @@ public final class UniqueByPropertyView extends ViewSupport
     public final String getUniqueFieldName()
     {
         return uniqueFieldName;
-    }
-
-    /**
-     * Sets the name of the field supplying the unique value to keep the most recent record for.
-     * @param uniqueFieldName field name for unique value
-     */
-    public final void setUniqueFieldName(String uniqueFieldName)
-    {
-        this.uniqueFieldName = uniqueFieldName;
     }
 
     public final EventType getEventType()

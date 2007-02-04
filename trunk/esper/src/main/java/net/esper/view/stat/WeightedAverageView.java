@@ -14,12 +14,12 @@ import java.util.HashMap;
  * as   (sum(price * volume) / sum(volume)).
  * Example: weighted_avg("price", "volume")
  */
-public final class WeightedAverageView extends ViewSupport implements ContextAwareView
+public final class WeightedAverageView extends ViewSupport implements CloneableView
 {
-    private EventType eventType;
-    private ViewServiceContext viewServiceContext;
-    private String fieldNameX;
-    private String fieldNameWeight;
+    private final EventType eventType;
+    private final ViewServiceContext viewServiceContext;
+    private final String fieldNameX;
+    private final String fieldNameWeight;
     private EventPropertyGetter fieldXGetter;
     private EventPropertyGetter fieldWeightGetter;
 
@@ -28,34 +28,23 @@ public final class WeightedAverageView extends ViewSupport implements ContextAwa
     private double currentValue = Double.NaN;
 
     /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public WeightedAverageView()
-    {
-    }
-
-    /**
      * Constructor requires the name of the field to use in the parent view to compute the weighted average on,
      * as well as the name of the field in the parent view to get the weight from.
      * @param fieldNameX is the name of the field within the parent view to use to get numeric data points for this view to
      * compute the average for.
      * @param fieldNameWeight is the field name for the weight to apply to each data point
      */
-    public WeightedAverageView(String fieldNameX, String fieldNameWeight)
+    public WeightedAverageView(ViewServiceContext viewServiceContext, String fieldNameX, String fieldNameWeight)
     {
         this.fieldNameX = fieldNameX;
         this.fieldNameWeight = fieldNameWeight;
-    }
-
-    public ViewServiceContext getViewServiceContext()
-    {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
-    {
         this.viewServiceContext = viewServiceContext;
         eventType = createEventType(viewServiceContext);
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return new WeightedAverageView(viewServiceContext, fieldNameX, fieldNameWeight);
     }
 
     public void setParent(Viewable parent)
@@ -78,30 +67,12 @@ public final class WeightedAverageView extends ViewSupport implements ContextAwa
     }
 
     /**
-     * Sets the name of the field supplying the X values.
-     * @param fieldNameX field name supplying X data points
-     */
-    public final void setFieldNameX(String fieldNameX)
-    {
-        this.fieldNameX = fieldNameX;
-    }
-
-    /**
      * Returns the name of the field supplying the weight values.
      * @return field name supplying weight
      */
     public final String getFieldNameWeight()
     {
         return fieldNameWeight;
-    }
-
-    /**
-     * Sets the name of the field supplying the weight values.
-     * @param fieldNameWeight field name supplying weight
-     */
-    public final void setFieldNameWeight(String fieldNameWeight)
-    {
-        this.fieldNameWeight = fieldNameWeight;
     }
 
     public final void update(EventBean[] newData, EventBean[] oldData)
@@ -197,5 +168,4 @@ public final class WeightedAverageView extends ViewSupport implements ContextAwa
         EventType eventType = viewServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
         return eventType;
     }
-
 }

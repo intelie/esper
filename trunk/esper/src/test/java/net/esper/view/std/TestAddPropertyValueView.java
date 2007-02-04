@@ -9,7 +9,6 @@ import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.view.SupportMapView;
 import net.esper.support.view.SupportSchemaNeutralView;
 import net.esper.support.view.SupportViewContextFactory;
-import net.esper.view.ViewSupport;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +30,7 @@ public class TestAddPropertyValueView extends TestCase
                 new String[] {"symbol"}, new Class[] {String.class});
 
         // Set up length window view and a test child view
-        myView = new AddPropertyValueView(new String[] {"symbol"}, new Object[] {"IBM"}, mergeEventType);
-        myView.setViewServiceContext(SupportViewContextFactory.makeContext());
+        myView = new AddPropertyValueView(SupportViewContextFactory.makeContext(), new String[] {"symbol"}, new Object[] {"IBM"}, mergeEventType);
 
         parentView = new SupportMapView(schema);
         parentView.addView(myView);
@@ -73,7 +71,7 @@ public class TestAddPropertyValueView extends TestCase
 
     public void testCopyView() throws Exception
     {
-        AddPropertyValueView copied = (AddPropertyValueView) ViewSupport.shallowCopyView(myView);
+        AddPropertyValueView copied = (AddPropertyValueView) myView.cloneView(SupportViewContextFactory.makeContext());
         assertEquals(myView.getPropertyNames(), copied.getPropertyNames());
         assertEquals(myView.getPropertyValues(), copied.getPropertyValues());
     }

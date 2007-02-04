@@ -223,6 +223,14 @@ class MapEventType implements EventType
     public boolean isProperty(String propertyName)
     {
         Class propertyType = getPropertyType(propertyName);
+        if (propertyType == null)
+        {
+            // Could be a native null type, such as "insert into A select null as field..."
+            if (types.containsKey(propertyName))
+            {
+                return true;
+            }
+        }
         return propertyType != null;
     }
 
@@ -273,11 +281,17 @@ class MapEventType implements EventType
         for (Map.Entry<String, Class> entry : types.entrySet())
         {
             Class otherClass = other.types.get(entry.getKey());
-            if (otherClass == null)
+            Class thisClass = entry.getValue();
+            if (((otherClass == null) && (thisClass != null)) ||
+                 (otherClass != null) && (thisClass == null))
             {
                 return false;
             }
-            if (!otherClass.equals(entry.getValue()))
+            if (otherClass == null)
+            {
+                continue;
+            }
+            if (!otherClass.equals(thisClass))
             {
                 return false;
             }

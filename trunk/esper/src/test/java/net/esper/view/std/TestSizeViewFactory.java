@@ -25,7 +25,7 @@ public class TestSizeViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         assertFalse(factory.canReuse(new LastElementView()));
-        assertTrue(factory.canReuse(new SizeView()));
+        assertTrue(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
     }
 
     private void tryInvalidParameter(Object param) throws Exception

@@ -1,11 +1,10 @@
 package net.esper.view.std;
 
-import net.esper.view.ViewParameterException;
-import net.esper.view.window.TimeWindowView;
-import net.esper.support.view.SupportViewContextFactory;
-import java.util.Arrays;
-
 import junit.framework.TestCase;
+import net.esper.support.view.SupportViewContextFactory;
+import net.esper.view.ViewParameterException;
+
+import java.util.Arrays;
 
 public class TestUniqueByPropertyViewFactory extends TestCase
 {
@@ -25,7 +24,7 @@ public class TestUniqueByPropertyViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {"a"}));
-        assertFalse(factory.canReuse(new SizeView()));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
         assertTrue(factory.canReuse(new UniqueByPropertyView("a")));
         assertFalse(factory.canReuse(new UniqueByPropertyView("c")));
     }

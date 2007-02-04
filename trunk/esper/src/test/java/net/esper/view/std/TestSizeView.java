@@ -5,12 +5,11 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
 import net.esper.support.view.SupportViewContextFactory;
-import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.view.ViewFieldEnum;
-import net.esper.view.ViewSupport;
 
 public class TestSizeView extends TestCase
 {
@@ -20,9 +19,8 @@ public class TestSizeView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new SizeView();
-        myView.setViewServiceContext(SupportViewContextFactory.makeContext());
-        
+        myView = new SizeView(SupportViewContextFactory.makeContext());
+
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -87,8 +85,7 @@ public class TestSizeView extends TestCase
 
     public void testSchema()
     {
-        SizeView view = new SizeView();
-        view.setViewServiceContext(SupportViewContextFactory.makeContext());
+        SizeView view = new SizeView(SupportViewContextFactory.makeContext());
 
         EventType eventType = view.getEventType();
         assertEquals(long.class, eventType.getPropertyType(ViewFieldEnum.SIZE_VIEW__SIZE.getName()));
@@ -96,7 +93,7 @@ public class TestSizeView extends TestCase
 
     public void testCopyView() throws Exception
     {
-        ViewSupport.shallowCopyView(myView);
+        assertTrue(myView.cloneView(SupportViewContextFactory.makeContext()) instanceof SizeView);
     }
 
     private void checkNewData(long expectedSize)

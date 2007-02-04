@@ -1,7 +1,5 @@
 package net.esper.view.window;
 
-import java.util.Map;
-
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportMarketDataBean;
@@ -9,10 +7,10 @@ import net.esper.support.event.EventFactoryHelper;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
-import net.esper.support.view.SupportViewDataChecker;
 import net.esper.support.view.SupportViewContextFactory;
-import net.esper.view.ViewServiceContext;
-import net.esper.view.ViewSupport;
+import net.esper.support.view.SupportViewDataChecker;
+
+import java.util.Map;
 
 public class TestTimeBatchView extends TestCase
 {
@@ -24,14 +22,13 @@ public class TestTimeBatchView extends TestCase
 
     public void setUp()
     {
-        // Set up length window view and a test child view
-        myView = new TimeBatchView(TEST_INTERVAL_MSEC, null, null);
-        childView = new SupportBeanClassView(SupportMarketDataBean.class);
-        myView.addView(childView);
-
         // Set the scheduling service to use
         schedulingServiceStub = new SupportSchedulingServiceImpl();
-        myView.setViewServiceContext(SupportViewContextFactory.makeContext(schedulingServiceStub));
+
+        // Set up length window view and a test child view
+        myView = new TimeBatchView(null, SupportViewContextFactory.makeContext(schedulingServiceStub), TEST_INTERVAL_MSEC, null, null);
+        childView = new SupportBeanClassView(SupportMarketDataBean.class);
+        myView.addView(childView);
     }
 
     public void testViewPushNoRefPoint()
@@ -149,10 +146,9 @@ public class TestTimeBatchView extends TestCase
         long startTime = 50000;
         schedulingServiceStub.setTime(startTime);
 
-        myView = new TimeBatchView(TEST_INTERVAL_MSEC, 1505L, null);
+        myView = new TimeBatchView(null, SupportViewContextFactory.makeContext(schedulingServiceStub), TEST_INTERVAL_MSEC, 1505L, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
-        myView.setViewServiceContext(SupportViewContextFactory.makeContext(schedulingServiceStub));
 
         Map<String, EventBean> events = EventFactoryHelper.makeEventMap(
             new String[] {"A1", "A2", "A3"});
@@ -214,20 +210,5 @@ public class TestTimeBatchView extends TestCase
 
         result = TimeBatchView.computeWaitMSec(23050, 16800, 10000);
         assertEquals(3750, result);
-    }
-
-    public void testCopyView() throws Exception
-    {
-        myView = new TimeBatchView(TEST_INTERVAL_MSEC, null, null);
-
-        ViewServiceContext context = SupportViewContextFactory.makeContext();
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        myView.setParent(parent);
-        myView.setViewServiceContext(context);
-
-        TimeBatchView copied = (TimeBatchView) ViewSupport.shallowCopyView(myView);
-        assertEquals(myView.getMsecIntervalSize(), copied.getMsecIntervalSize());
-        assertEquals(myView.getInitialReferencePoint(), copied.getInitialReferencePoint());
-        assertEquals(myView.getViewServiceContext(), copied.getViewServiceContext());
     }
 }

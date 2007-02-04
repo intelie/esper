@@ -1,17 +1,11 @@
 package net.esper.view.std;
 
 import junit.framework.TestCase;
+import net.esper.support.util.ArrayAssertionUtil;
+import net.esper.support.view.SupportViewContextFactory;
+import net.esper.view.ViewParameterException;
 
 import java.util.Arrays;
-
-import net.esper.view.ViewParameterException;
-import net.esper.view.window.TimeWindowView;
-import net.esper.support.view.SupportViewContextFactory;
-import net.esper.support.view.SupportBeanClassView;
-import net.esper.support.util.ArrayAssertionUtil;
-import net.esper.support.event.SupportEventAdapterService;
-import net.esper.support.bean.SupportBean;
-import net.esper.event.EventType;
 
 public class TestMergeViewFactory extends TestCase
 {
@@ -38,9 +32,9 @@ public class TestMergeViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertFalse(factory.canReuse(new MergeView(new String[] {"a"}, null)));
-        assertTrue(factory.canReuse(new MergeView(new String[] {"a", "b"}, null)));
+        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new MergeView(SupportViewContextFactory.makeContext(), new String[] {"a"}, null)));
+        assertTrue(factory.canReuse(new MergeView(SupportViewContextFactory.makeContext(), new String[] {"a", "b"}, null)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception

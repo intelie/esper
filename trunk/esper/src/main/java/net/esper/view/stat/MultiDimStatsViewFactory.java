@@ -1,17 +1,11 @@
 package net.esper.view.stat;
 
-import net.esper.view.ViewFactory;
-import net.esper.view.ViewParameterException;
-import net.esper.view.ViewAttachException;
-import net.esper.view.*;
-import net.esper.view.stat.olap.Cube;
-import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.event.EventType;
+import net.esper.view.*;
 
-import java.util.List;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
 
 /**
  * Factory for {@link MultiDimStatsView} instances.
@@ -118,7 +112,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new MultiDimStatsView(derivedMeasures, measureField, columnField, rowField, pageField);
+        return new MultiDimStatsView(viewServiceContext, derivedMeasures, measureField, columnField, rowField, pageField);
     }
 
     public EventType getEventType()

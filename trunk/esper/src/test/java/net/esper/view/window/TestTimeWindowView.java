@@ -1,7 +1,5 @@
 package net.esper.view.window;
 
-import java.util.Map;
-
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportMarketDataBean;
@@ -9,9 +7,10 @@ import net.esper.support.event.EventFactoryHelper;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
-import net.esper.support.view.SupportViewDataChecker;
 import net.esper.support.view.SupportViewContextFactory;
-import net.esper.view.ViewSupport;
+import net.esper.support.view.SupportViewDataChecker;
+
+import java.util.Map;
 
 public class TestTimeWindowView extends TestCase
 {
@@ -23,14 +22,13 @@ public class TestTimeWindowView extends TestCase
 
     public void setUp()
     {
-        // Set up length window view and a test child view
-        myView = new TimeWindowView(TEST_WINDOW_MSEC, null);
-        childView = new SupportBeanClassView(SupportMarketDataBean.class);
-        myView.addView(childView);
-
         // Set the scheduling service to use
         schedulingServiceStub = new SupportSchedulingServiceImpl();
-        myView.setViewServiceContext(SupportViewContextFactory.makeContext(schedulingServiceStub));
+
+        // Set up length window view and a test child view
+        myView = new TimeWindowView(SupportViewContextFactory.makeContext(schedulingServiceStub), null, TEST_WINDOW_MSEC, null);
+        childView = new SupportBeanClassView(SupportMarketDataBean.class);
+        myView.addView(childView);
     }
 
     public void testViewPushAndExpire()
@@ -148,14 +146,6 @@ public class TestTimeWindowView extends TestCase
         SupportViewDataChecker.checkNewData(childView, null);
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(),null);
         assertTrue(schedulingServiceStub.getAdded().size() == 0);
-    }
-
-    public void testCopyView() throws Exception
-    {
-        SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
-        myView.setParent(parent);
-        TimeWindowView copied = (TimeWindowView) ViewSupport.shallowCopyView(myView);
-        assertEquals(myView.getMillisecondsBeforeExpiry(), copied.getMillisecondsBeforeExpiry());
     }
 
     public EventBean[] makeEvents(String[] ids)

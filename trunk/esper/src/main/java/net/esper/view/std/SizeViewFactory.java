@@ -39,7 +39,7 @@ public class SizeViewFactory implements ViewFactory
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
-        return new SizeView();
+        return new SizeView(viewServiceContext);
     }
 
     public EventType getEventType()

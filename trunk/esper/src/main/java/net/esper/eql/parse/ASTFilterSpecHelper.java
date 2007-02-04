@@ -118,7 +118,7 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
         if (propertyType == null)
         {
             throw new ASTFilterSpecValidationException("Property named '" + propertyName
-                    + "' not found in class " + eventType.getUnderlyingType().getName());
+                    + "' not found in selected stream of type " + eventType.getUnderlyingType().getName());
         }
 
         // Get type representation

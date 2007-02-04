@@ -188,7 +188,7 @@ public class TestInsertInto extends TestCase
         catch (EPStatementException ex)
         {
             // expected
-            assertEquals("Error starting view: Event type named 'Event_1' has already been declared with differing type information [insert into Event_1 (delta) select intPrimitive - intBoxed as deltaTag from net.esper.support.bean.SupportBean.win:length(100)]", ex.getMessage());
+            assertEquals("Error starting view: Event type named 'Event_1' has already been declared with differing column name or type information [insert into Event_1 (delta) select intPrimitive - intBoxed as deltaTag from net.esper.support.bean.SupportBean.win:length(100)]", ex.getMessage());
         }
     }
 
@@ -316,6 +316,21 @@ public class TestInsertInto extends TestCase
         assertEquals("LR2", event.get("locationReportId"));
     }
     
+    public void testNullType()
+    {
+        String stmtOneTxt = "insert into InZone select null as dummy from java.lang.String";
+        EPStatement stmtOne = epService.getEPAdministrator().createEQL(stmtOneTxt);
+        assertTrue(stmtOne.getEventType().isProperty("dummy"));
+
+        String stmtTwoTxt = "select dummy from InZone";
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(stmtTwoTxt);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmtTwo.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent("a");
+        assertNull(listener.assertOneGetNewAndReset().get("dummy"));
+    }
+
     private void assertSimple(SupportUpdateListener listener, String myString, int myInt, String additionalString, int additionalInt)
     {
     	assertTrue(listener.getAndClearIsInvoked());

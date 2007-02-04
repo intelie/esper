@@ -82,7 +82,7 @@ public final class ViewServiceImpl implements ViewService
         }
 
         // Instantiate remaining chain of views from the remaining factories which didn't match to existing views.
-        List<View> views = ViewServiceHelper.instantiateChain(existingParentViews, parentViewable, viewFactories, context);
+        List<View> views = ViewServiceHelper.instantiateChain(parentViewable, viewFactories, context);
 
         if (log.isDebugEnabled())
         {

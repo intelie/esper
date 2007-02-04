@@ -3,6 +3,7 @@ package net.esper.view.ext;
 import junit.framework.TestCase;
 import net.esper.view.ViewAttachException;
 import net.esper.view.ViewParameterException;
+import net.esper.view.ViewServiceContext;
 import net.esper.view.std.SizeView;
 import net.esper.event.EventType;
 import net.esper.support.event.SupportEventTypeFactory;
@@ -58,16 +59,18 @@ public class TestSortWindowViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
+        ViewServiceContext context = SupportViewContextFactory.makeContext();
+
         factory.setViewParameters(Arrays.asList(new Object[] {"price", true, 100}));
-        assertFalse(factory.canReuse(new SizeView()));
-        assertTrue(factory.canReuse(new SortWindowView(new String[] {"price"}, new Boolean[] {true}, 100, null)));
-        assertFalse(factory.canReuse(new SortWindowView(new String[] {"volume"}, new Boolean[] {true}, 100, null)));
-        assertFalse(factory.canReuse(new SortWindowView(new String[] {"price"}, new Boolean[] {false}, 100, null)));
-        assertFalse(factory.canReuse(new SortWindowView(new String[] {"price"}, new Boolean[] {true}, 99, null)));
+        assertFalse(factory.canReuse(new SizeView(context)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new Boolean[] {true}, 100, null)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"volume"}, new Boolean[] {true}, 100, null)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new Boolean[] {false}, 100, null)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new Boolean[] {true}, 99, null)));
 
         factory.setViewParameters(Arrays.asList(new Object[] {new Object[] {"price", true, "volume", false}, 100}));
-        assertTrue(factory.canReuse(new SortWindowView(new String[] {"price", "volume"}, new Boolean[] {true, false}, 100, null)));
-        assertFalse(factory.canReuse(new SortWindowView(new String[] {"price", "xxx"}, new Boolean[] {true, false}, 100, null)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, new String[] {"price", "volume"}, new Boolean[] {true, false}, 100, null)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price", "xxx"}, new Boolean[] {true, false}, 100, null)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception

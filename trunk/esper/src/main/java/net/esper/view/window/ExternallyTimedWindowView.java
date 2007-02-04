@@ -2,8 +2,7 @@ package net.esper.view.window;
 
 import java.util.*;
 
-import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
+import net.esper.view.*;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
@@ -28,21 +27,15 @@ import net.esper.collection.ViewUpdatedCollection;
  * ((Tn - T1) > t == true) then event X1 is pushed as oldData out of the window. It is assumed that
  * events are sent in in their natural order and the timestamp values are ascending.
  */
-public final class ExternallyTimedWindowView extends ViewSupport implements DataWindowView
+public final class ExternallyTimedWindowView extends ViewSupport implements DataWindowView, CloneableView
 {
-    private String timestampFieldName;
-    private long millisecondsBeforeExpiry;
+    private final ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory;
+    private final String timestampFieldName;
+    private final long millisecondsBeforeExpiry;
     private EventPropertyGetter timestampFieldGetter;
 
     private final TimeWindow timeWindow = new TimeWindow();
     private ViewUpdatedCollection viewUpdatedCollection;
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public ExternallyTimedWindowView()
-    {
-    }
 
     /**
      * Constructor.
@@ -55,11 +48,18 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * greater then secondsBeforeExpiry are pushed out of the window.
      * @param viewUpdatedCollection is a collection that the view must update when receiving events
      */
-    public ExternallyTimedWindowView(String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
+    public ExternallyTimedWindowView(ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory,
+                                     String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
     {
+        this.externallyTimedWindowViewFactory = externallyTimedWindowViewFactory;
         this.timestampFieldName = timestampFieldName;
         this.millisecondsBeforeExpiry = msecBeforeExpiry;
         this.viewUpdatedCollection = viewUpdatedCollection;
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return externallyTimedWindowViewFactory.makeView(viewServiceContext);
     }
 
     /**
@@ -69,15 +69,6 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     public final String getTimestampFieldName()
     {
         return timestampFieldName;
-    }
-
-    /**
-     * Sets the field name to get timestamp values from.
-     * @param timestampFieldName is the field name for timestamp values
-     */
-    public final void setTimestampFieldName(String timestampFieldName)
-    {
-        this.timestampFieldName = timestampFieldName;
     }
 
     public void setParent(Viewable parent)
@@ -96,15 +87,6 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     public final long getMillisecondsBeforeExpiry()
     {
         return millisecondsBeforeExpiry;
-    }
-
-    /**
-     * Sets the window size in milliseconds.
-     * @param millisecondsBeforeExpiry number of milliseconds before events expire from the window
-     */
-    public final void setMillisecondsBeforeExpiry(long millisecondsBeforeExpiry)
-    {
-        this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
     }
 
     public final EventType getEventType()

@@ -7,8 +7,9 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 
 import net.esper.view.ViewSupport;
-import net.esper.view.ContextAwareView;
 import net.esper.view.ViewServiceContext;
+import net.esper.view.View;
+import net.esper.view.CloneableView;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.schedule.ScheduleHandleCallback;
@@ -29,23 +30,17 @@ import net.esper.core.EPStatementHandleCallback;
  * as the system-time-based timeWindow moves on. However child views receive updates containing new data
  * as soon as the new data arrives.
  */
-public final class TimeWindowView extends ViewSupport implements ContextAwareView, DataWindowView
+public final class TimeWindowView extends ViewSupport implements CloneableView, DataWindowView
 {
     private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    private long millisecondsBeforeExpiry;
-    private TimeWindow timeWindow = new TimeWindow();
-    private ViewUpdatedCollection viewUpdatedCollection;
+    private final TimeWindowViewFactory timeWindowViewFactory;
+    private final long millisecondsBeforeExpiry;
+    private final TimeWindow timeWindow = new TimeWindow();
+    private final ViewUpdatedCollection viewUpdatedCollection;
 
-    private ViewServiceContext viewServiceContext;
-    private ScheduleSlot scheduleSlot;
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public TimeWindowView()
-    {
-    }
+    private final ViewServiceContext viewServiceContext;
+    private final ScheduleSlot scheduleSlot;
 
     /**
      * Constructor.
@@ -53,10 +48,18 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
      * out of the timeWindow as oldData in the update method.
      * @param viewUpdatedCollection is a collection the view must update when receiving events
      */
-    public TimeWindowView(long millisecondsBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
+    public TimeWindowView(ViewServiceContext viewServiceContext, TimeWindowViewFactory timeWindowViewFactory, long millisecondsBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
     {
+        this.viewServiceContext = viewServiceContext;
+        this.timeWindowViewFactory = timeWindowViewFactory;
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
         this.viewUpdatedCollection = viewUpdatedCollection;
+        this.scheduleSlot = viewServiceContext.getScheduleBucket().allocateSlot();
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return timeWindowViewFactory.makeView(viewServiceContext);
     }
 
     /**
@@ -69,30 +72,12 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
     }
 
     /**
-     * Sets the size of the time window in millisecond.
-     * @param millisecondsBeforeExpiry size of window
-     */
-    public final void setMillisecondsBeforeExpiry(long millisecondsBeforeExpiry)
-    {
-        this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
-    }
-
-    /**
      * Returns the (optional) collection handling random access to window contents for prior or previous events.
      * @return buffer for events
      */
     public ViewUpdatedCollection getViewUpdatedCollection()
     {
         return viewUpdatedCollection;
-    }
-
-    /**
-     * Sets the buffer for keeping a reference to prior or previous events.
-     * @param viewUpdatedCollection buffer
-     */
-    public void setViewUpdatedCollection(IStreamRandomAccess viewUpdatedCollection)
-    {
-        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     public final EventType getEventType()
@@ -221,17 +206,6 @@ public final class TimeWindowView extends ViewSupport implements ContextAwareVie
     {
         return this.getClass().getName() +
                 " millisecondsBeforeExpiry=" + millisecondsBeforeExpiry;
-    }
-
-    public ViewServiceContext getViewServiceContext()
-    {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
-    {
-        this.viewServiceContext = viewServiceContext;
-        this.scheduleSlot = viewServiceContext.getScheduleBucket().allocateSlot();
     }
 
     /**

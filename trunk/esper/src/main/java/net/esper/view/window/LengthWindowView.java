@@ -6,38 +6,41 @@ import java.util.LinkedList;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
+import net.esper.view.CloneableView;
+import net.esper.view.View;
+import net.esper.view.ViewServiceContext;
 import net.esper.collection.ViewUpdatedCollection;
 
 /**
  * This view is a moving window extending the specified number of elements into the past.
  */
-public final class LengthWindowView extends ViewSupport implements DataWindowView
+public final class LengthWindowView extends ViewSupport implements DataWindowView, CloneableView
 {
-    private int size = 0;
-    private ViewUpdatedCollection viewUpdatedCollection;
+    private final LengthWindowViewFactory lengthWindowViewFactory;
+    private final int size;
+    private final ViewUpdatedCollection viewUpdatedCollection;
     private final LinkedList<EventBean> events = new LinkedList<EventBean>();
-
-    /**
-     * Default constructor - required by all views to adhere to the Java bean specification.
-     */
-    public LengthWindowView()
-    {
-    }
 
     /**
      * Constructor creates a moving window extending the specified number of elements into the past.
      * @param size is the specified number of elements into the past
      * @param viewUpdatedCollection is a collection that the view must update when receiving events  
      */
-    public LengthWindowView(int size, ViewUpdatedCollection viewUpdatedCollection)
+    public LengthWindowView(LengthWindowViewFactory lengthWindowViewFactory, int size, ViewUpdatedCollection viewUpdatedCollection)
     {
         if (size < 1)
         {
             throw new IllegalArgumentException("Illegal argument for size of length window");
         }
 
+        this.lengthWindowViewFactory = lengthWindowViewFactory;
         this.size = size;
         this.viewUpdatedCollection = viewUpdatedCollection;
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return lengthWindowViewFactory.makeView(viewServiceContext);
     }
 
     /**
@@ -59,30 +62,12 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
     }
 
     /**
-     * Sets the size of the length window.
-     * @param size size of length window
-     */
-    public final void setSize(int size)
-    {
-        this.size = size;
-    }
-
-    /**
      * Returns the (optional) collection handling random access to window contents for prior or previous events.
      * @return buffer for events
      */
     public ViewUpdatedCollection getViewUpdatedCollection()
     {
         return viewUpdatedCollection;
-    }
-
-    /**
-     * Sets the buffer for keeping a reference to prior or previous events.
-     * @param viewUpdatedCollection buffer
-     */
-    public void setViewUpdatedCollection(IStreamRandomAccess viewUpdatedCollection)
-    {
-        this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
     public final EventType getEventType()

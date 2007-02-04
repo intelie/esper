@@ -1,18 +1,16 @@
 package net.esper.view;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import junit.framework.TestCase;
+import net.esper.collection.Pair;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.view.*;
-import net.esper.view.window.TimeWindowView;
-import net.esper.view.window.LengthWindowView;
-import net.esper.view.ViewFactory;
-import net.esper.view.std.SizeView;
-import net.esper.view.std.LastElementView;
 import net.esper.view.stat.UnivariateStatisticsView;
-import net.esper.collection.Pair;
+import net.esper.view.std.LastElementView;
+import net.esper.view.std.SizeView;
+import net.esper.view.window.LengthWindowView;
+import net.esper.view.window.TimeWindowView;
+
+import java.util.List;
 
 public class TestViewServiceHelper extends TestCase
 {
@@ -51,14 +49,12 @@ public class TestViewServiceHelper extends TestCase
 
     public void testInstantiateChain() throws Exception
     {
-        LinkedList<View> existingParentViews = new LinkedList<View>();
-
         SupportBeanClassView topView = new SupportBeanClassView(TEST_CLASS);
         List<ViewFactory> viewFactories = SupportViewSpecFactory.makeFactoryListOne(topView.getEventType());
         ViewServiceContext context = SupportViewContextFactory.makeContext();
 
         // Check correct views created
-        List<View> views = ViewServiceHelper.instantiateChain(existingParentViews, topView, viewFactories, context);
+        List<View> views = ViewServiceHelper.instantiateChain(topView, viewFactories, context);
 
         assertEquals(3, views.size());
         assertEquals(ViewEnum.LENGTH_WINDOW.getClazz(), views.get(0).getClass());
@@ -67,9 +63,8 @@ public class TestViewServiceHelper extends TestCase
 
         // Check that the context is set
         viewFactories = SupportViewSpecFactory.makeFactoryListFive(topView.getEventType());
-        views = ViewServiceHelper.instantiateChain(existingParentViews, topView, viewFactories, context);
+        views = ViewServiceHelper.instantiateChain(topView, viewFactories, context);
         TimeWindowView timeWindow = (TimeWindowView) views.get(0);
-        assertEquals(context, timeWindow.getViewServiceContext());
     }
 
     public void testMatch() throws Exception
@@ -85,7 +80,7 @@ public class TestViewServiceHelper extends TestCase
 
         // One top view under the stream that doesn't match
         SupportBeanClassView testView = new SupportBeanClassView(TEST_CLASS);
-        stream.addView(new SizeView());
+        stream.addView(new SizeView(SupportViewContextFactory.makeContext()));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
         assertEquals(stream, result.getFirst());
@@ -94,7 +89,7 @@ public class TestViewServiceHelper extends TestCase
 
         // Another top view under the stream that doesn't matche again
         testView = new SupportBeanClassView(TEST_CLASS);
-        stream.addView(new LengthWindowView(999, null));
+        stream.addView(new LengthWindowView(null, 999, null));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
         assertEquals(stream, result.getFirst());
@@ -102,7 +97,7 @@ public class TestViewServiceHelper extends TestCase
         assertEquals(0, result.getSecond().size());
 
         // One top view under the stream that does actually match
-        LengthWindowView myLengthWindowView = new LengthWindowView(1000, null);
+        LengthWindowView myLengthWindowView = new LengthWindowView(null, 1000, null);
         stream.addView(myLengthWindowView);
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
@@ -114,7 +109,7 @@ public class TestViewServiceHelper extends TestCase
         // One child view under the top view that does not match
         testView = new SupportBeanClassView(TEST_CLASS);
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        myLengthWindowView.addView(new UnivariateStatisticsView("volume"));
+        myLengthWindowView.addView(new UnivariateStatisticsView(SupportViewContextFactory.makeContext(), "volume"));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
         assertEquals(1, result.getSecond().size());
         assertEquals(myLengthWindowView, result.getSecond().get(0));
@@ -123,7 +118,7 @@ public class TestViewServiceHelper extends TestCase
 
         // Add child view under the top view that does match
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView("price");
+        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(SupportViewContextFactory.makeContext(), "price");
         myLengthWindowView.addView(myUnivarView);
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 

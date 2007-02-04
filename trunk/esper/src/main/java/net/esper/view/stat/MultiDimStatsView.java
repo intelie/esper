@@ -26,9 +26,8 @@ import net.esper.collection.MultiKeyUntyped;
  *
  * The view post new data to child views that contains a Map with the Cube (see Cube). It does not post old data.
  */
-public final class MultiDimStatsView extends ViewSupport implements ContextAwareView
+public final class MultiDimStatsView extends ViewSupport implements CloneableView
 {
-    private ViewServiceContext viewServiceContext;
     private EventType eventType;
     private static final MultidimCubeCellFactory<BaseStatisticsBean> multidimCubeCellFactory;
 
@@ -48,11 +47,12 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
         };
     }
 
-    private String[] derivedMeasures;
-    private String measureField;
-    private String columnField;
-    private String rowField;
-    private String pageField;
+    private final ViewServiceContext viewServiceContext;
+    private final String[] derivedMeasures;
+    private final String measureField;
+    private final String columnField;
+    private final String rowField;
+    private final String pageField;
 
     private EventPropertyGetter measureFieldGetter;
     private EventPropertyGetter columnFieldGetter;
@@ -62,24 +62,6 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
     private MultidimCube<BaseStatisticsBean> multidimCube;
 
     /**
-     * Empty constructor - views are Java beans.
-     */
-    public MultiDimStatsView()
-    {
-    }
-
-    public ViewServiceContext getViewServiceContext()
-    {
-        return viewServiceContext;
-    }
-
-    public void setViewServiceContext(ViewServiceContext viewServiceContext)
-    {
-        this.viewServiceContext = viewServiceContext;
-        eventType = createEventType(viewServiceContext);
-    }
-
-    /**
      * Constructor.
      * @param derivedMeasures is an array of ViewFieldEnum names defining the measures to derive
      * @param measureField defines the field supplying measures
@@ -87,13 +69,21 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
      * @param rowField defines an optional field supplying row dimension members
      * @param pageField defines an optional field supplying page dimension members
      */
-    public MultiDimStatsView(String[] derivedMeasures, String measureField, String columnField, String rowField, String pageField)
+    public MultiDimStatsView(ViewServiceContext viewServiceContext,
+                             String[] derivedMeasures, String measureField, String columnField, String rowField, String pageField)
     {
+        this.viewServiceContext = viewServiceContext;
         this.derivedMeasures = derivedMeasures;
         this.measureField = measureField;
         this.columnField = columnField;
         this.rowField = rowField;
         this.pageField = pageField;
+        eventType = createEventType(viewServiceContext);
+    }
+
+    public View cloneView(ViewServiceContext viewServiceContext)
+    {
+        return new MultiDimStatsView(viewServiceContext, derivedMeasures, measureField, columnField, rowField, pageField); 
     }
 
     /**
@@ -106,30 +96,12 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
     }
 
     /**
-     * Sets the names of measures to derive from facts.
-     * @param derivedMeasures measure names
-     */
-    public final void setDerivedMeasures(String[] derivedMeasures)
-    {
-        this.derivedMeasures = derivedMeasures;
-    }
-
-    /**
      * Returns the name of the field to extract the measure values from.
      * @return field for measure values
      */
     public final String getMeasureField()
     {
         return measureField;
-    }
-
-    /**
-     * Sets the name of the field to extract the measure values from.
-     * @param measureField field for measure values
-     */
-    public final void setMeasureField(String measureField)
-    {
-        this.measureField = measureField;
     }
 
     /**
@@ -142,15 +114,6 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
     }
 
     /**
-     * Sets the name of the field to extract the column values from.
-     * @param columnField field for column values
-     */
-    public final void setColumnField(String columnField)
-    {
-        this.columnField = columnField;
-    }
-
-    /**
      * Returns the name of the field to extract the row values from.
      * @return field for row values
      */
@@ -160,30 +123,12 @@ public final class MultiDimStatsView extends ViewSupport implements ContextAware
     }
 
     /**
-     * Sets the name of the field to extract the row values from.
-     * @param rowField field for row values
-     */
-    public final void setRowField(String rowField)
-    {
-        this.rowField = rowField;
-    }
-
-    /**
      * Returns the name of the field to extract the page values from.
      * @return field for page values
      */
     public final String getPageField()
     {
         return pageField;
-    }
-
-    /**
-     * Sets the name of the field to extract the page values from.
-     * @param pageField field for page values
-     */
-    public final void setPageField(String pageField)
-    {
-        this.pageField = pageField;
     }
 
     /**

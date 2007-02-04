@@ -103,7 +103,7 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
             }
         }
 
-        return new ExternallyTimedWindowView(timestampFieldName, millisecondsBeforeExpiry, randomAccess);
+        return new ExternallyTimedWindowView(this, timestampFieldName, millisecondsBeforeExpiry, randomAccess);
     }
 
     public EventType getEventType()

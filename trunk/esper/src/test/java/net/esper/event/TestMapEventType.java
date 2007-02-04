@@ -30,13 +30,14 @@ public class TestMapEventType extends TestCase
         testTypesMap.put("mySupportBean", SupportBean.class);
         testTypesMap.put("myComplexBean", SupportBeanComplexProps.class);
         testTypesMap.put("myNullableSupportBean", SupportBean.class);
+        testTypesMap.put("myNullType", null);
         eventType = new MapEventType("", testTypesMap, eventAdapterService);
     }
 
     public void testGetPropertyNames()
     {
         String[] properties = eventType.getPropertyNames();
-        ArrayAssertionUtil.assertEqualsAnyOrder(properties, new String[] {"myInt", "myString", "myNullableString", "mySupportBean", "myComplexBean", "myNullableSupportBean"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(properties, new String[] {"myInt", "myString", "myNullableString", "mySupportBean", "myComplexBean", "myNullableSupportBean", "myNullType"});
     }
 
     public void testGetPropertyType()
@@ -49,6 +50,7 @@ public class TestMapEventType extends TestCase
         assertEquals(String.class, eventType.getPropertyType("myComplexBean.nested.nestedValue"));
         assertEquals(int.class, eventType.getPropertyType("myComplexBean.indexed[1]"));
         assertEquals(String.class, eventType.getPropertyType("myComplexBean.mapped('a')"));
+        assertEquals(null, eventType.getPropertyType("myNullType"));
 
         assertNull(eventType.getPropertyType("dummy"));
         assertNull(eventType.getPropertyType("mySupportBean.dfgdg"));
@@ -69,6 +71,7 @@ public class TestMapEventType extends TestCase
         assertTrue(eventType.isProperty("myComplexBean.nested.nestedValue"));
         assertTrue(eventType.isProperty("myComplexBean.indexed[1]"));
         assertTrue(eventType.isProperty("myComplexBean.mapped('a')"));
+        assertTrue(eventType.isProperty("myNullType"));
 
         assertFalse(eventType.isProperty("dummy"));
         assertFalse(eventType.isProperty("mySupportBean.dfgdg"));
@@ -142,6 +145,7 @@ public class TestMapEventType extends TestCase
         assertFalse((new MapEventType("", mapTwo, eventAdapterService)).equals(eventType));
         mapTwo.put("myString", String.class);
         mapTwo.put("myNullableString", String.class);
+        mapTwo.put("myNullType", null);
 
         // compare, should equal
         assertEquals(new MapEventType("", mapTwo, eventAdapterService), eventType);
