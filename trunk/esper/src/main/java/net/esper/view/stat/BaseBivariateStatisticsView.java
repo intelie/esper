@@ -33,6 +33,7 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
      * @param statisticsBean is the base class prodiving sum of X and Y and squares for use by subclasses
      * @param fieldNameX is the name of the field within the parent view to get the X values from
      * @param fieldNameY is the name of the field within the parent view to get the Y values from
+     * @param viewServiceContext contains required view services
      */
     public BaseBivariateStatisticsView(ViewServiceContext viewServiceContext,
                                        BaseStatisticsBean statisticsBean,

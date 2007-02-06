@@ -7,6 +7,8 @@ import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventBean;
 import net.esper.view.window.RandomAccessByIndex;
 import net.esper.view.window.RelativeAccessByEventNIndex;
+import net.esper.view.window.RandomAccessByIndexGetter;
+import net.esper.view.window.RelativeAccessByEventNIndexGetter;
 import net.esper.view.ViewCapDataWindowAccess;
 import net.esper.util.JavaClassHelper;
 
@@ -20,8 +22,8 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
     private Integer constantIndexNumber;
     private boolean isConstantIndex;
 
-    private RandomAccessByIndex randomAccess;
-    private RelativeAccessByEventNIndex relativeAccessEvent;
+    private RandomAccessByIndexGetter randomAccessGetter;
+    private RelativeAccessByEventNIndexGetter relativeAccessGetter;
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
@@ -70,7 +72,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        Integer index = null;
+        Integer index;
 
         // Use constant if supplied
         if (isConstantIndex)
@@ -90,20 +92,22 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 
         // access based on index returned
         EventBean substituteEvent = null;
-        if (randomAccess != null)
+        if (randomAccessGetter != null)
         {
+            RandomAccessByIndex randomAccess = randomAccessGetter.getAccessor();
             if (isNewData)
             {
                 substituteEvent = randomAccess.getNewData(index);
             }
-            else
-            {
-                substituteEvent = randomAccess.getOldData(index);
-            }
         }
         else
         {
-            substituteEvent = relativeAccessEvent.getRelativeToEvent(eventsPerStream[streamNumber], index);
+            if (isNewData)
+            {
+                EventBean evalEvent = eventsPerStream[streamNumber];
+                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.getAccessor(evalEvent);
+                substituteEvent = relativeAccess.getRelativeToEvent(evalEvent, index);
+            }
         }
         if (substituteEvent == null)
         {
@@ -142,13 +146,13 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 
     public void setViewResource(Object resource)
     {
-        if (resource instanceof RandomAccessByIndex)
+        if (resource instanceof RandomAccessByIndexGetter)
         {
-            randomAccess = (RandomAccessByIndex) resource;
+            randomAccessGetter = (RandomAccessByIndexGetter) resource;
         }
-        else if (resource instanceof RelativeAccessByEventNIndex)
+        else if (resource instanceof RelativeAccessByEventNIndexGetter)
         {
-            relativeAccessEvent = (RelativeAccessByEventNIndex) resource;
+            relativeAccessGetter = (RelativeAccessByEventNIndexGetter) resource;
         }
         else
         {

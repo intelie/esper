@@ -31,6 +31,7 @@ public final class MergeView extends ViewSupport implements CloneableView
      * Constructor.
      * @param groupFieldNames is the fields from which to pull the value to group by
      * @param resultEventType is passed by the factory as the factory adds the merged fields to an event type
+     * @param viewServiceContext contains required view services
      */
     public MergeView(ViewServiceContext viewServiceContext, String groupFieldNames[], EventType resultEventType)
     {

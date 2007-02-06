@@ -1,15 +1,12 @@
 package net.esper.view.window;
 
-import net.esper.view.ViewParameterException;
-import net.esper.view.ViewFactory;
-import net.esper.view.*;
-import net.esper.event.EventType;
-import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
+import net.esper.view.*;
 
 import java.util.List;
-import java.util.LinkedList;
 
 /**
  * Factory for {@link TimeBatchView}. 
@@ -18,9 +15,8 @@ public class TimeBatchViewFactory implements ViewFactory
 {
     private long millisecondsBeforeExpiry;
     private Long optionalReferencePoint;
-    private boolean isRequiresRandomAccess;
     private EventType eventType;
-    private List<ViewResourceCallback> resourceCallbacks = new LinkedList<ViewResourceCallback>();
+    private RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -76,14 +72,7 @@ public class TimeBatchViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
-        if (viewCapability instanceof ViewCapDataWindowAccess)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return viewCapability instanceof ViewCapDataWindowAccess;
     }
 
     public void setProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
@@ -92,21 +81,21 @@ public class TimeBatchViewFactory implements ViewFactory
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
-        isRequiresRandomAccess = true;
-        resourceCallbacks.add(resourceCallback);
+        if (relativeAccessGetterImpl == null)
+        {
+            relativeAccessGetterImpl = new RelativeAccessByEventNIndexGetter();            
+        }
+        resourceCallback.setViewResource(relativeAccessGetterImpl);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
         IStreamRelativeAccess relativeAccessByEvent = null;
 
-        if (isRequiresRandomAccess)
+        if (relativeAccessGetterImpl != null)
         {
-            relativeAccessByEvent = new IStreamRelativeAccess();
-            for (ViewResourceCallback resourceCallback : resourceCallbacks)
-            {
-                resourceCallback.setViewResource(relativeAccessByEvent);
-            }
+            relativeAccessByEvent = new IStreamRelativeAccess(relativeAccessGetterImpl);
+            relativeAccessGetterImpl.updated(relativeAccessByEvent, null);
         }
 
         return new TimeBatchView(this, viewServiceContext, millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);

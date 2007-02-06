@@ -29,6 +29,7 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
      * @param fieldNames is the name of the field that is added to any events received by this view.
      * @param mergeValues is the values of the field that is added to any events received by this view.
      * @param mergedResultEventType is the event type that the merge view reports to it's child views
+     * @param viewServiceContext contains required view services
      */
     public AddPropertyValueView(ViewServiceContext viewServiceContext, String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
     {

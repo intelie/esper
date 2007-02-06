@@ -33,6 +33,7 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
      * @param fieldNameX is the name of the field within the parent view to use to get numeric data points for this view to
      * compute the average for.
      * @param fieldNameWeight is the field name for the weight to apply to each data point
+     * @param viewServiceContext contains required view services
      */
     public WeightedAverageView(ViewServiceContext viewServiceContext, String fieldNameX, String fieldNameWeight)
     {

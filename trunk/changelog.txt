@@ -4,6 +4,7 @@ Esper Changelog
 Changes in version 1.6
 ----------------------
 * Added support for array use in EQL (Enhancement Request ESPER-76 Java array initialization syntax for constants)
+* Added support for group-by and previous (TODO)
 * Removed dependency on Apache Common BeanUtils library (commons-beanutils-1.7.0)
 * Fixed issue ESPER-78 "Insert-into streams not using correct event type when same-typed streams"
 

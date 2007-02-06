@@ -13,7 +13,13 @@ public class TestIStreamRandomAccessImpl extends TestCase
 
     public void setUp()
     {
-        access = new IStreamRandomAccess();
+        IStreamRandomAccess.UpdateObserver updateObserver = new IStreamRandomAccess.UpdateObserver()
+        {
+            public void updated(IStreamRandomAccess iStreamRandomAccess)
+            {
+            }
+        };
+        access = new IStreamRandomAccess(updateObserver);
         events = new EventBean[100];
         for (int i = 0; i < events.length; i++)
         {

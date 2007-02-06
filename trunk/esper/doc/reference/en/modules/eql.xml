@@ -332,7 +332,7 @@ milliseconds-part : <emphasis>number</emphasis> ("milliseconds" | "millisecond" 
 			</para>
 				
 			<para>
-				The first view <literal>std:groupby('carId')</literal> groups car location events by car id. The second view <literal>win:length(4)</literal> keeps a length window of the 4 last events, with one length window for each car id. The next view <literal>std:groupby({'expressway', 'direction', 'segment'})</literal> groups each event by it's expressway, direction and segment property values. Again, the grouping is done for each car id considering the last 4 events only. The last view <literal>std:size()</literal> is used to report the number of events. Thus the below example reports the number of events per car id and per expressway, direction and segment considering the last 4 events for each car id only. 
+				The first view <literal>std:groupby('carId')</literal> groups car location events by car id. The second view <literal>win:length(4)</literal> keeps a length window of the 4 last events, with one length window for each car id. The next view <literal>std:groupby({'expressway', 'direction', 'segment'})</literal> groups each event by its expressway, direction and segment property values. Again, the grouping is done for each car id considering the last 4 events only. The last view <literal>std:size()</literal> is used to report the number of events. Thus the below example reports the number of events per car id and per expressway, direction and segment considering the last 4 events for each car id only. 
 			</para>
 
          <programlisting><![CDATA[select * from CarLocEvent.std:groupby('carId').win:length(4).
@@ -1311,46 +1311,80 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			</para>
 			<programlisting>select prev(1, symbol) from Trade.win:time_batch(1 min)</programlisting>			
 
-			<para>
-					The following restrictions apply to the <literal>prev</literal> functions and it's results:
-			</para>
+			<sect3 id="eql-single-row-function-ref-prev-group">
+				<title>Previous Event per Group</title>
 
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						The function always returns a <literal>null</literal> value for remove stream (old data) events
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The function requires a data window view with no subviews. Data window views are: length window, time and time batch window and sorted window
-					</para>
-				</listitem>
-			</itemizedlist>
+				<para>
+					The combination of <literal>prev</literal> function and group-by view returns the property value for a previous event in the given group. 
+				</para>
 
-			<para>
-				The <literal>prev</literal> function is similar to the <literal>prior</literal> function. The key differences between the two functions are as follows:				 
-			</para>						
+				<para>
+					Let's look at an example. Assume we want to obtain the price of the previous event of the same symbol as the current event.
+				</para>
+					
+				<para>
+					The statement that follows solves this problem. It declares a group-by view grouping on the symbol property and a time window of 1 minute. As a result, when the engine encounters a new symbol value that it hasn't seen before, it creates a new time window specifically to hold events for that symbol. Consequently, the previous function returns the previous event within the respective time window for that event's symbol value. 
+				</para>
+				<programlisting>select prev(1, price) as prevPrice from Trade.std:groupby('symbol').win:time(1 min)</programlisting>
 
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						The <literal>prev</literal> function returns previous events in the order provided by the data window, while the <literal>prior</literal> function returns prior events in the order of arrival.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The <literal>prev</literal> function requires a data window view while the <literal>prior</literal> function does not have any view requirements.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The <literal>prev</literal> function returns a <literal>null</literal> value for remove stream events, i.e. for events leaving a data window. 
-						The <literal>prior</literal> function does not have this restriction.
-					</para>
-				</listitem>
-			</itemizedlist>
+				<para>
+					In a second example, assume we need to return, for each event, the current top price per symbol. We can use the <literal>prev</literal> to obtain the highest price from a sorted data window, and use the group-by view to group by symbol:
+				</para>
+				<programlisting>select prev(0, price) as topPricePerSymbol 
+from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
+			</sect3>
+			
+			<sect3 id="eql-single-row-function-ref-prev-restrictions">
+				<title>Restrictions</title>
+				<para>
+						The following restrictions apply to the <literal>prev</literal> functions and its results:
+				</para>
 	
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							The function always returns a <literal>null</literal> value for remove stream (old data) events
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The function requires a data window view, or a group-by and data window view, without any additional sub-views. Data window views are: length window, time and time batch window and sorted window
+						</para>
+					</listitem>
+				</itemizedlist>
+			</sect3>
+
+			<sect3 id="eql-single-row-function-ref-prev-prior">
+				<title>Comparison to the <literal>prior</literal> Function</title>
+				<para>
+					The <literal>prev</literal> function is similar to the <literal>prior</literal> function. The key differences between the two functions are as follows:				 
+				</para>						
+	
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							The <literal>prev</literal> function returns previous events in the order provided by the data window, while the <literal>prior</literal> function returns prior events in the order of arrival as posted by a stream's declared views.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The <literal>prev</literal> function requires a data window view while the <literal>prior</literal> function does not have any view requirements.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The <literal>prev</literal> function returns the previous event grouped by a criteria by combining the <literal>std:groupby</literal> view and a data window. The <literal>prior</literal> function returns prior events posted by the last view regardless of data window grouping.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The <literal>prev</literal> function returns a <literal>null</literal> value for remove stream events, i.e. for events leaving a data window. 
+							The <literal>prior</literal> function does not have this restriction.
+						</para>
+					</listitem>
+				</itemizedlist>
+			</sect3>
+			
 		</sect2>
 
 		<sect2 id="eql-single-row-function-ref-prior">

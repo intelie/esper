@@ -19,6 +19,7 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
      * Constructor.
      * @param xFieldName is the field name of the field providing X data points
      * @param yFieldName is the field name of the field providing X data points
+     * @param viewServiceContext contains required view services
      */
     public RegressionLinestView(ViewServiceContext viewServiceContext, String xFieldName, String yFieldName)
     {

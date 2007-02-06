@@ -1,16 +1,13 @@
 package net.esper.view.ext;
 
-import net.esper.view.ViewFactory;
-import net.esper.view.ViewParameterException;
-import net.esper.view.ViewAttachException;
-import net.esper.view.*;
+import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
-import net.esper.eql.core.ViewResourceCallback;
+import net.esper.view.*;
+import net.esper.view.window.RandomAccessByIndexGetter;
 
-import java.util.List;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Factory for sort window views.
@@ -21,8 +18,7 @@ public class SortWindowViewFactory implements ViewFactory
     private Boolean[] isDescendingValues;
     private int sortWindowSize;
     private EventType eventType;
-    private boolean isRequiresRandomAccess;
-    private List<ViewResourceCallback> resourceCallbacks = new LinkedList<ViewResourceCallback>();
+    private RandomAccessByIndexGetter randomAccessGetterImpl;
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -118,22 +114,24 @@ public class SortWindowViewFactory implements ViewFactory
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
-        isRequiresRandomAccess = true;
-        resourceCallbacks.add(resourceCallback);
+        
+        if (randomAccessGetterImpl == null)
+        {
+            randomAccessGetterImpl = new RandomAccessByIndexGetter();
+        }
+        resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
         IStreamSortedRandomAccess sortedRandomAccess = null;
 
-        if (isRequiresRandomAccess)
+        if (randomAccessGetterImpl != null)
         {
-            sortedRandomAccess = new IStreamSortedRandomAccess();
-            for (ViewResourceCallback resourceCallback : resourceCallbacks)
-            {
-                resourceCallback.setViewResource(sortedRandomAccess);
-            }
+            sortedRandomAccess = new IStreamSortedRandomAccess(randomAccessGetterImpl);
+            randomAccessGetterImpl.updated(sortedRandomAccess);
         }
+
         return new SortWindowView(this, sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess);
     }
 

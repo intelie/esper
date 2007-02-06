@@ -26,6 +26,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
      * Constructor requires the name of the field to use in the parent view to compute the statistics.
      * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view to
      * compute the statistics on.
+     * @param viewServiceContext contains required view services
      */
     public UnivariateStatisticsView(ViewServiceContext viewServiceContext, String fieldName)
     {

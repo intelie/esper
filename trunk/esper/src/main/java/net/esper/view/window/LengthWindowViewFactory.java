@@ -1,14 +1,11 @@
 package net.esper.view.window;
 
-import net.esper.view.ViewParameterException;
-import net.esper.view.ViewAttachException;
-import net.esper.view.*;
+import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
-import net.esper.eql.core.ViewResourceCallback;
+import net.esper.view.*;
 
 import java.util.List;
-import java.util.LinkedList;
 
 /**
  * Factory for {@link LengthWindowView}. 
@@ -16,9 +13,8 @@ import java.util.LinkedList;
 public class LengthWindowViewFactory implements ViewFactory
 {
     private int size;
-    private boolean isRequiresRandomAccess;
     private EventType eventType;
-    private List<ViewResourceCallback> resourceCallbacks = new LinkedList<ViewResourceCallback>();
+    private RandomAccessByIndexGetter randomAccessGetterImpl;
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -70,21 +66,21 @@ public class LengthWindowViewFactory implements ViewFactory
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
-        isRequiresRandomAccess = true;
-        resourceCallbacks.add(resourceCallback);
+        if (randomAccessGetterImpl == null)
+        {
+            randomAccessGetterImpl = new RandomAccessByIndexGetter();
+        }
+        resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
         IStreamRandomAccess randomAccess = null;
 
-        if (isRequiresRandomAccess)
+        if (randomAccessGetterImpl != null)
         {
-            randomAccess = new IStreamRandomAccess();
-            for (ViewResourceCallback resourceCallback : resourceCallbacks)
-            {
-                resourceCallback.setViewResource(randomAccess);
-            }
+            randomAccess = new IStreamRandomAccess(randomAccessGetterImpl);
+            randomAccessGetterImpl.updated(randomAccess);
         }
 
         return new LengthWindowView(this, size, randomAccess);

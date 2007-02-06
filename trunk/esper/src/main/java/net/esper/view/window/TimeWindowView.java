@@ -47,6 +47,8 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
      * @param millisecondsBeforeExpiry is the number of milliseconds before events gets pushed
      * out of the timeWindow as oldData in the update method.
      * @param viewUpdatedCollection is a collection the view must update when receiving events
+     * @param viewServiceContext is required view services
+     * @param timeWindowViewFactory for copying the view in a group-by
      */
     public TimeWindowView(ViewServiceContext viewServiceContext, TimeWindowViewFactory timeWindowViewFactory, long millisecondsBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
     {

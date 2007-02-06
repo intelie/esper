@@ -1,24 +1,31 @@
 package net.esper.view.ext;
 
-import net.esper.view.window.RandomAccessByIndex;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
+import net.esper.view.window.RandomAccessByIndex;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
-import java.util.Iterator;
 
 /**
  * Provides random access into a sorted-window's data.
  */
 public class IStreamSortedRandomAccess implements RandomAccessByIndex
 {
+    private final UpdateObserver updateObserver;
+
     private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
     private int currentSize;
 
     private Iterator<LinkedList<EventBean>> iterator;
     private EventBean[] cache;
     private int cacheFilledTo;
+
+    public IStreamSortedRandomAccess(UpdateObserver updateObserver)
+    {
+        this.updateObserver = updateObserver;
+    }
 
     /**
      * Refreshes the random access data with the updated information.
@@ -28,6 +35,7 @@ public class IStreamSortedRandomAccess implements RandomAccessByIndex
      */
     public void refresh(TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents, int currentSize, int maxSize)
     {
+        updateObserver.updated(this);
         this.sortedEvents = sortedEvents;
         this.currentSize = currentSize;
 
@@ -94,5 +102,10 @@ public class IStreamSortedRandomAccess implements RandomAccessByIndex
     public EventBean getOldData(int index)
     {
         return null;
+    }
+
+    public interface UpdateObserver
+    {
+        public void updated(IStreamSortedRandomAccess iStreamSortedRandomAccess);
     }
 }

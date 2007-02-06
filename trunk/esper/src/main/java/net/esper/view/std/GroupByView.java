@@ -44,6 +44,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
     /**
      * Constructor.
      * @param groupFieldNames is the fields from which to pull the values to group by
+     * @param viewServiceContext contains required view services
      */
     public GroupByView(ViewServiceContext viewServiceContext, String[] groupFieldNames)
     {

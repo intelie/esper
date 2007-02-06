@@ -7,7 +7,6 @@ import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
 
 import java.util.List;
-import java.util.LinkedList;
 
 /**
  * Factory for {@link TimeWindowView}. 
@@ -15,10 +14,8 @@ import java.util.LinkedList;
 public class TimeWindowViewFactory implements ViewFactory
 {
     private long millisecondsBeforeExpiry;
-    private boolean isRequiresRandomAccess;
-
+    private RandomAccessByIndexGetter randomAccessGetterImpl;
     private EventType eventType;
-    private List<ViewResourceCallback> resourceCallbacks = new LinkedList<ViewResourceCallback>();
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -80,21 +77,21 @@ public class TimeWindowViewFactory implements ViewFactory
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
-        isRequiresRandomAccess = true;
-        resourceCallbacks.add(resourceCallback);
+        if (randomAccessGetterImpl == null)
+        {
+            randomAccessGetterImpl = new RandomAccessByIndexGetter();
+        }
+        resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
         IStreamRandomAccess randomAccess = null;
 
-        if (isRequiresRandomAccess)
+        if (randomAccessGetterImpl != null)
         {
-            randomAccess = new IStreamRandomAccess();
-            for (ViewResourceCallback resourceCallback : resourceCallbacks)
-            {
-                resourceCallback.setViewResource(randomAccess);
-            }
+            randomAccess = new IStreamRandomAccess(randomAccessGetterImpl);
+            randomAccessGetterImpl.updated(randomAccess);
         }
         
         return new TimeWindowView(viewServiceContext, this, millisecondsBeforeExpiry, randomAccess);

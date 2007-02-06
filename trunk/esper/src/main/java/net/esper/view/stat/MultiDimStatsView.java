@@ -68,6 +68,7 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
      * @param columnField defines the field supplying column dimension members
      * @param rowField defines an optional field supplying row dimension members
      * @param pageField defines an optional field supplying page dimension members
+     * @param viewServiceContext contains required view services
      */
     public MultiDimStatsView(ViewServiceContext viewServiceContext,
                              String[] derivedMeasures, String measureField, String columnField, String rowField, String pageField)

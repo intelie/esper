@@ -45,7 +45,8 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
      * @param descendingValues indicates whether to sort ascending or descending for each field
      * @param sortWindowSize is the window size
      * @param optionalSortedRandomAccess is the friend class handling the random access, if required by
-     * expressions 
+     * expressions
+     * @param sortWindowViewFactory for copying this view in a group-by
      */
     public SortWindowView(SortWindowViewFactory sortWindowViewFactory,
                           String[] sortFieldNames,

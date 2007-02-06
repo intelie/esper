@@ -7,6 +7,8 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.event.EventBean;
 import net.esper.view.internal.PriorEventBufferUnbound;
+import net.esper.view.window.RandomAccessByIndexGetter;
+import net.esper.view.window.IStreamRandomAccess;
 
 public class TestExprPreviousNode extends TestCase {
     private ExprPreviousNode prevNode;
@@ -35,8 +37,11 @@ public class TestExprPreviousNode extends TestCase {
 
     public void testEvaluate() throws Exception
     {
-        PriorEventBufferUnbound buffer = new PriorEventBufferUnbound(10);
-        prevNode.setViewResource(buffer);
+        RandomAccessByIndexGetter getter = new RandomAccessByIndexGetter();
+        IStreamRandomAccess buffer = new IStreamRandomAccess(getter);
+        getter.updated(buffer);
+
+        prevNode.setViewResource(getter);
         EventBean[] events = makeEvent(0, 5d);
         buffer.update(events, null);
 

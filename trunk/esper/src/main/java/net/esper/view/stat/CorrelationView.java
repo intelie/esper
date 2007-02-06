@@ -19,6 +19,7 @@ public final class CorrelationView extends BaseBivariateStatisticsView implement
      * Constructor.
      * @param xFieldName is the field name of the field providing X data points
      * @param yFieldName is the field name of the field providing X data points
+     * @param viewServiceContext contains required view services
      */
     public CorrelationView(ViewServiceContext viewServiceContext, String xFieldName, String yFieldName)
     {

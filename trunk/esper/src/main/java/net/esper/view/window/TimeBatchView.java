@@ -57,8 +57,14 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, D
      * @param referencePoint is the reference point onto which to base intervals, or null if
      * there is no such reference point supplied
      * @param viewUpdatedCollection is a collection that the view must update when receiving events
+     * @param timeBatchViewFactory fr copying this view in a group-by
+     * @param viewServiceContext is required view services
      */
-    public TimeBatchView(TimeBatchViewFactory timeBatchViewFactory, ViewServiceContext viewServiceContext, long msecIntervalSize, Long referencePoint, ViewUpdatedCollection viewUpdatedCollection)
+    public TimeBatchView(TimeBatchViewFactory timeBatchViewFactory,
+                         ViewServiceContext viewServiceContext,
+                         long msecIntervalSize,
+                         Long referencePoint,
+                         ViewUpdatedCollection viewUpdatedCollection)
     {
         this.viewServiceContext = viewServiceContext;
         this.timeBatchViewFactory = timeBatchViewFactory;

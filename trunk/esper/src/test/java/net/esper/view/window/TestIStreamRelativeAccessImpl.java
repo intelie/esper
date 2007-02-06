@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.bean.SupportBean;
-import net.esper.view.window.IStreamRelativeAccess;
 
 public class TestIStreamRelativeAccessImpl extends TestCase
 {
@@ -13,7 +12,13 @@ public class TestIStreamRelativeAccessImpl extends TestCase
 
     public void setUp()
     {
-        access = new IStreamRelativeAccess();
+        IStreamRelativeAccess.UpdateObserver updateObserver = new IStreamRelativeAccess.UpdateObserver()
+        {
+            public void updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData)
+            {
+            }
+        };
+        access = new IStreamRelativeAccess(updateObserver);
 
         events = new EventBean[100];
         for (int i = 0; i < events.length; i++)

@@ -11,19 +11,23 @@ import java.util.HashMap;
  */
 public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewUpdatedCollection
 {
-    private Map<EventBean, Integer> indexPerEvent;
+    private final Map<EventBean, Integer> indexPerEvent;
     private EventBean[] lastNewData;
+    private final UpdateObserver updateObserver;
 
     /**
      * Ctor.
+     * @param updateObserver is invoked when updates are received
      */
-    public IStreamRelativeAccess()
+    public IStreamRelativeAccess(UpdateObserver updateObserver)
     {
+        this.updateObserver = updateObserver;
         indexPerEvent = new HashMap<EventBean, Integer>();
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
+        updateObserver.updated(this, newData);
         indexPerEvent.clear();
         lastNewData = newData;
 
@@ -65,5 +69,10 @@ public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewU
             return lastNewData[relativeIndex];
         }
         return null;
+    }
+
+    public interface UpdateObserver
+    {
+        public void updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData);
     }
 }

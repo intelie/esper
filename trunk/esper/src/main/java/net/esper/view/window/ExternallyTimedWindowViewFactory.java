@@ -1,13 +1,12 @@
 package net.esper.view.window;
 
-import net.esper.view.*;
-import net.esper.event.EventType;
-import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
+import net.esper.view.*;
 
 import java.util.List;
-import java.util.LinkedList;
 
 /**
  * Factory for {@link ExternallyTimedWindowView}.
@@ -17,8 +16,7 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
     private String timestampFieldName;
     private long millisecondsBeforeExpiry;
     private EventType eventType;
-    private boolean isRequiresRandomAccess;
-    private List<ViewResourceCallback> resourceCallbacks = new LinkedList<ViewResourceCallback>();
+    private RandomAccessByIndexGetter randomAccessGetterImpl;
 
     public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
     {
@@ -86,21 +84,21 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
-        isRequiresRandomAccess = true;
-        resourceCallbacks.add(resourceCallback);
+        if (randomAccessGetterImpl == null)
+        {
+            randomAccessGetterImpl = new RandomAccessByIndexGetter();
+        }
+        resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
     public View makeView(ViewServiceContext viewServiceContext)
     {
         IStreamRandomAccess randomAccess = null;
 
-        if (isRequiresRandomAccess)
+        if (randomAccessGetterImpl != null)
         {
-            randomAccess = new IStreamRandomAccess();
-            for (ViewResourceCallback resourceCallback : resourceCallbacks)
-            {
-                resourceCallback.setViewResource(randomAccess);
-            }
+            randomAccess = new IStreamRandomAccess(randomAccessGetterImpl);
+            randomAccessGetterImpl.updated(randomAccess);
         }
 
         return new ExternallyTimedWindowView(this, timestampFieldName, millisecondsBeforeExpiry, randomAccess);
