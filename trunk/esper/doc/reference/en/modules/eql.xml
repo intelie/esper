@@ -25,7 +25,7 @@
 		<orderedlist spacing="compact">
 			<listitem>
 				<para>
-					Views that represent moving event windows: <literal>win:length</literal>, <literal>win:time</literal>, <literal>win:time_batch</literal>, <literal>win:ext_time</literal>, <literal>ext:sort_window</literal>
+					Views that represent moving event windows: <literal>win:length</literal>, <literal>win:length_batch</literal>, <literal>win:time</literal>, <literal>win:time_batch</literal>, <literal>win:ext_time</literal>, <literal>ext:sort_window</literal>
 				</para>
 			</listitem>
 			<listitem>
@@ -904,6 +904,17 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
   from net.esper.example.atm.FraudWarningEvent.win:time(30 min) as fraud,
        net.esper.example.atm.WithdrawalEvent.win:time(30 sec) as withdraw
  where fraud.accountNumber = withdraw.accountNumber]]></programlisting>
+
+		<para>
+			Joins can also include one or more pattern statements as the next example shows:
+		</para>
+<programlisting><![CDATA[select * from FraudWarningEvent.win:time(30 min) as fraud,
+       pattern [every w=WithdrawalEvent -> PINChangeEvent(acct=w.acct)] as withdraw
+ where fraud.accountNumber = withdraw.w.accountNumber]]></programlisting>
+
+		<para>
+			The statement above joins the last 30 minutes of fraud warnings with a pattern. The pattern consists of every withdrawal event that is followed by a PIN change event for the same account number. It joins the two event streams on account number.
+		</para>
     </sect1>
 
     <sect1 id="eql-outerjoin">
@@ -1724,7 +1735,7 @@ from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
            <title>Window views</title>
 
 			<sect3 id="view-win-length" >
-			   <title>Length window</title>
+			   <title>Length window (<literal>win:length</literal>)</title>
 		
 				<para>
 					Creates a moving window extending the specified number of elements into the past. 
@@ -1734,18 +1745,32 @@ from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
 					The below example calculates basic univariate statistics for the last 5 stock ticks for symbol IBM.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent(symbol='IBM').win:length(5).stat:uni('price')]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent(symbol='IBM').win:length(5).stat:uni('price')]]></programlisting>
 
 				<para>
 					The next example keeps a length window of 10 events of stock trade events, with a separate window for each symbol. The
 					statistics on price is calculated only for the last 10 events for each symbol.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.std:groupby('symbol').win:length(10).stat:uni('price')]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent.std:groupby('symbol').win:length(10).stat:uni('price')]]></programlisting>
+			</sect3>
+
+			<sect3 id="view-win-length-batch" >
+			   <title>Length window batch (<literal>win:length_batch</literal>)</title>
+		
+				<para>
+					This window view buffers events and releases them when a given minimum number of events has been collected. The view takes a number of events to batch as a parameter.
+				</para>
+
+				<para>
+					The next statement buffers events until a minimum of 5 events have collected. Listeners to updates posted by this view receive updated information only when 5 or more events have collected.
+				</para>
+	
+				<programlisting><![CDATA[select * from StockTickEvent.win:length_batch(5)]]></programlisting>
 			</sect3>
 
 			<sect3 id="view-win-time" >
-			   <title>Time window</title>
+			   <title>Time window (<literal>win:time</literal>)</title>
 		
 				<para>
 					Creates a moving time window extending from the specified time interval into the past based on the system time.
@@ -1756,7 +1781,7 @@ from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
 					For the IBM stock tick events in the last 1 second, calculate statistics on price.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent(symbol='IBM').win:time(1 sec).stat:uni('price')]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent(symbol='IBM').win:time(1 sec).stat:uni('price')]]></programlisting>
 
 				<para>
 					The following time windows are equivalent specifications:
@@ -1768,7 +1793,7 @@ win:time(125)</programlisting>
 			</sect3>
 
 			<sect3 id="view-win-ext_time" >
-			   <title>Externally-timed window</title>
+			   <title>Externally-timed window (<literal>win:ext_timed</literal>)</title>
 		
 				<para>
 					Similar to the time window this view moving time window extending from the specified time interval into the past, but based on the millisecond
@@ -1779,11 +1804,11 @@ win:time(125)</programlisting>
 					This view holds stock tick events of the last 10 seconds based on the timestamp property in <literal>StockTickEvent</literal>.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.win:ext_timed('timestamp', 10 seconds)]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent.win:ext_timed('timestamp', 10 seconds)]]></programlisting>
 			</sect3>
 
 			<sect3 id="view-win-time-batch" >
-			   <title>Time window buffer</title>
+			   <title>Time window batch (<literal>win:time_batch</literal>)</title>
 		
 				<para>
 					This window view buffers events and releases them every specified time interval in one update. The view takes a time period or a number of seconds as a parameter.
@@ -1794,7 +1819,7 @@ win:time(125)</programlisting>
 					posted by this view receive updated information only every 5 seconds.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.win:time_batch(5 sec)]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent.win:time_batch(5 sec)]]></programlisting>
 			</sect3>
 	   </sect2>
 
@@ -1802,21 +1827,21 @@ win:time(125)</programlisting>
            <title>Standard view set</title>
 
 			<sect3 id="view-std-unique" >
-			   <title>Unique</title>
+			   <title>Unique (<literal>std:unique</literal>)</title>
 		
 				<para>
-					The <literal>unique</literal>view is a view that includes only the most recent among events having the same value for the specified field. 
+					The <literal>unique</literal> view is a view that includes only the most recent among events having the same value for the specified field. 
 				</para>
 
 				<para>
 					The below example creates a view that retains only the last event per symbol.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.std:unique('symbol')]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent.std:unique('symbol')]]></programlisting>
 			</sect3>
 
 			<sect3 id="view-std-groupby" >
-			   <title>Group By</title>
+			   <title>Group By (<literal>std:groupby</literal>)</title>
 		
 				<para>
 					This view groups events into sub-views by the value of the specified field.
@@ -1826,32 +1851,79 @@ win:time(125)</programlisting>
 					This example calculates statistics on price separately for each symbol.					
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.std:groupby('symbol').stat:uni('price')]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent.std:groupby('symbol').stat:uni('price')]]></programlisting>
 
 				<para>
-					The next example keeps a length window of 10 events of stock trade events, with a separate window for each symbol. Now the
-					statistics on price is calculated only for the last 10 events for each symbol.
+					The group-by view can also take multiple fields to group by. This example calculates statistics on price for each symbol and feed.					
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.std:groupby('symbol').win:length(10).stat:uni('price')]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent.std:groupby({'symbol', 'feed'}).stat:uni('price')]]></programlisting>
+
+				<para>
+					The order in which the group-by view appears within sub-views of a stream controls the data the engine derives from events for each group. The next 2 statements demonstrate this using a length window.
+				</para>
+
+				<para>
+					This example keeps a length window of 10 events of stock trade events, with a separate length window for each symbol. The engine calculates statistics on price for the last 10 events for each symbol. During runtime, the engine actually allocates a separate length window for each new symbol arriving.
+				</para>
+	
+				<programlisting><![CDATA[select * from StockTickEvent.std:groupby('symbol').win:length(10).stat:uni('price')]]></programlisting>
+
+				<para>
+					My moving the group-by view to a position after the length window, we can change the semantics of the query. The query now returns the statistics on price per symbol for only the last 10 events across all symbols. Here the engine allocates only one length window for all events.
+				</para>
+	
+				<programlisting><![CDATA[select * from StockTickEvent.win:length(10).std:groupby('symbol').stat:uni('price')]]></programlisting>
+
+				<para>
+					We have learned that by placing the group-by view before other views, these other views become part of the grouped set of views. The engine dynamically allocates a new view instance for each subview, every time it encounters a new group key such as a new value for symbol. Therefore, in <literal>std:groupby('symbol').win:length(10)</literal> the engine allocates a new length window for each distinct symbol. However in <literal>win:length(10).std:groupby('symbol')</literal> the engine maintains a single length window.
+				</para>
+
+				<para>
+					Multiple group-by views can also be used in the same statement. The statement below groups by symbol and feed. As the statement declares the time window after the group-by view for symbols, the engine allocates a new time window per symbol however reports statistics on price per symbol and feed. The query results are statistics on price per symbol and feed for the last 1 minute of events per symbol (and not per feed).
+				</para>
+
+				<programlisting><![CDATA[select * from StockTickEvent.std:groupby('symbol').win:time(1 minute)
+    .std:groupby('feed').stat:uni('price')]]></programlisting>
+
+				<para>
+					Last, we consider the permutation where the time window is declared after the group-by. Here, the query results are statistics on price per symbol and feed for the last 1 minute of events per symbol and feed.
+				</para>
+
+				<programlisting><![CDATA[select * from StockTickEvent.std:groupby({'symbol', 'feed'})
+    .win:time(1 minute).stat:uni('price')]]></programlisting>
 			</sect3>
 
 			<sect3 id="view-std-size" >
-			   <title>Size</title>
+			   <title>Size (<literal>std:size</literal>)</title>
 		
 				<para>
-					This view returns the number of elements in view.
+					This view simply posts the number of events received from a stream or view. The view posts a single long-typed property named <literal>size</literal>. The view posts the prior size as old data, and the current size as new data to update listeners of the view. Via the <literal>iterator</literal> method of the statement the size value can also be polled (read).
 				</para>
 
 				<para>
-					This example view reports the number of events within the last 1 minute.
+					When combined with a data window view, the size view reports the current and prior number of events in the data window. This example reports the number of tick events within the last 1 minute:
 				</para>
-	
-				<programlisting><![CDATA[StockTickEvent.win:time(1 min).std:size()]]></programlisting>
+				<programlisting><![CDATA[select size from StockTickEvent.win:time(1 min).std:size()]]></programlisting>
+
+				<para>
+					The size view is also useful in conjunction with a group-by view to count the number of events per group. The EQL below returns the number of events per symbol.
+				</para>
+				<programlisting><![CDATA[select size from StockTickEvent.std:groupby('symbol').std:size()]]></programlisting>
+
+				<para>
+					When used without a data window, the view simply counts the number of events:
+				</para>
+				<programlisting><![CDATA[select size from StockTickEvent.std:size()]]></programlisting>
+
+				<para>
+					All views can be used with pattern statements as well. The next EQL snippet shows a pattern where we look for tick events followed by trade events for the same symbol. The size view counts the number of occurances of the pattern.
+				</para>
+				<programlisting><![CDATA[select size from pattern[every s=StockTickEvent -> TradeEvent(symbol=s.symbol)].std:size()]]></programlisting>
 			</sect3>
 
 			<sect3 id="view-std-last" >
-			   <title>Last</title>
+			   <title>Last (<literal>std:lastevent</literal>)</title>
 		
 				<para>
 					This view exposes the last element of its parent view.
@@ -1861,7 +1933,7 @@ win:time(125)</programlisting>
 					This example view retains statistics calculated on stock tick price for the symbol IBM.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent(symbol='IBM').stat:uni('price').std:lastevent()]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent(symbol='IBM').stat:uni('price').std:lastevent()]]></programlisting>
 			</sect3>
 	   </sect2>
   
@@ -1869,7 +1941,7 @@ win:time(125)</programlisting>
            <title>Statistics views</title>
            
 			<sect3 id="view-stat-uni" >
-			   <title>Univariate statistics</title>
+			   <title>Univariate statistics (<literal>stat:uni</literal>)</title>
 		
 				<para>
 					This view calculated basic univariate statistics on an event property.
@@ -1919,11 +1991,11 @@ win:time(125)</programlisting>
 					The below example calculates price statistics on stock tick events for the last 10 events.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.win:length(10).stat:uni('price')]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent.win:length(10).stat:uni('price')]]></programlisting>
 			</sect3>
 
 			<sect3 id="view-stat-linest" >
-			   <title>Regression</title>
+			   <title>Regression (<literal>stat:linest</literal>)</title>
 		
 				<para>
 					This view calculates regression on two event properties.
@@ -1957,11 +2029,11 @@ win:time(125)</programlisting>
 					Calculate slope and y-intercept on price and offer for all events in the last 10 seconds.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent.win:time(10 seconds).stat:linest('price', 'offer')]]></programlisting>	
+				<programlisting><![CDATA[select * from StockTickEvent.win:time(10 seconds).stat:linest('price', 'offer')]]></programlisting>	
 			</sect3>
 				
 			<sect3 id="view-stat-correl" >
-			   <title>Correlation</title>
+			   <title>Correlation (<literal>stat:correl</literal>)</title>
 		
 				<para>
 					This view calculates the correlation value on two event properties.
@@ -1991,11 +2063,11 @@ win:time(125)</programlisting>
 					Calculate correlation on price and offer over all stock tick events for IBM.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent(symbol='IBM').stat:correl('price', 'offer')]]></programlisting>            
+				<programlisting><![CDATA[select * from StockTickEvent(symbol='IBM').stat:correl('price', 'offer')]]></programlisting>            
 			</sect3>
 						
 			<sect3 id="view-stat-weightedavg" >
-			   <title>Weighted average</title>
+			   <title>Weighted average (<literal>stat:weighted_avg</literal>)</title>
 		
 				<para>
 					This view returns the weighted average given a weight field and a field to compute the average for.
@@ -2026,11 +2098,11 @@ win:time(125)</programlisting>
 					Views that derive the volume-weighted average price for the last 3 seconds.
 				</para>
 	
-				<programlisting><![CDATA[StockTickEvent(symbol='IBM').win:time(3 seconds).stat:weighted_avg('price', 'volume')]]></programlisting>            
+				<programlisting><![CDATA[select * from StockTickEvent(symbol='IBM').win:time(3 seconds).stat:weighted_avg('price', 'volume')]]></programlisting>            
 			</sect3> 
 			
 			<sect3 id="view-stat-multidim" >
-			   <title>Multi-dimensional statistics</title>
+			   <title>Multi-dimensional statistics (<literal>stat:multidim_stats</literal>)</title>
 		
 				<para>
 					This view works similar to the <literal>std:groupby</literal> views in that it groups information by one or more event properties. 
@@ -2062,14 +2134,14 @@ win:time(125)</programlisting>
 				<para>
 					The example below derives the count, average and standard deviation latency of service measurement events per customer.
 				</para>	
-				<programlisting><![CDATA[ServiceMeasurement.stat:multidim_stats({‘count’, ‘average’, ‘stdev’}, 
+				<programlisting><![CDATA[select * from ServiceMeasurement.stat:multidim_stats({‘count’, ‘average’, ‘stdev’}, 
     'latency', 'customer')]]></programlisting>            
 
 				<para>
 					This example derives the average latency of service measurement events per customer, service and error status for events in
 					the last 30 seconds.
 				</para>	
-				<programlisting><![CDATA[ServiceMeasurement.win:length(30000).stat:multidim_stats({‘average’}, 
+				<programlisting><![CDATA[select * from ServiceMeasurement.win:length(30000).stat:multidim_stats({‘average’}, 
 	'latency', 'customer', 'service', 'status')]]></programlisting>            
 			</sect3> 
 
@@ -2079,7 +2151,7 @@ win:time(125)</programlisting>
            <title>Extension View Set</title>
 
 			<sect3 id="view-ext-sort" >
-			   <title>Sorted Window View</title>
+			   <title>Sorted Window View (<literal>ext:sort</literal>)</title>
 		
 				<para>					
 					This view sorts by values of the specified event properties and keeps only the top events up to the given size. 
@@ -2098,13 +2170,13 @@ win:time(125)</programlisting>
 				<para>
 					The view below sorts on price descending keeping the lowest 10 prices and reporting statistics on price.
 				</para>
-				<programlisting><![CDATA[StockTickEvent.ext:sort('price', false, 10).stat:uni('price')]]></programlisting>				
+				<programlisting><![CDATA[select * from StockTickEvent.ext:sort('price', false, 10).stat:uni('price')]]></programlisting>				
 
 				<para>
 					The following example sorts events first by price in descending order, and then by symbol name in ascending (alphabetical) order, keeping only the 10
 events with the highest price (with ties resolved by alphabetical order of symbol).
 				</para>
-				<programlisting><![CDATA[StockTickEvent.ext:sort({'price', true, 'symbol', false}, 10)]]></programlisting>				
+				<programlisting><![CDATA[select * from StockTickEvent.ext:sort({'price', true, 'symbol', false}, 10)]]></programlisting>				
 			</sect3>
 			
 		</sect2>

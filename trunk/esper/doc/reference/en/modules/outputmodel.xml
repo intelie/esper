@@ -211,5 +211,261 @@ select * from WithdrawalFiltered]]></programlisting>
         <programlisting><![CDATA[select istream count(*) as mycount from Withdrawal having count(*) = 2]]></programlisting>
     </sect1>
     
+    <sect1 id="outputmodel_time_window" revision="1">
+        <title>Time Windows</title>
+        
+        <para>
+			In this section we explain the output model of statements employing a time window view and a time batch view.
+        </para>
+
+		<sect2 id="outputmodel_time_window_1" revision="1">
+			<title>Time Window</title>
+
+			<para>
+				A time window is a moving window extending to the specified time interval into the past based on the system time. Time windows enable us to limit the number of events considered by a query, as do length windows. 
+			</para>
+			
+			<para>
+				As a practical example, consider the need to determine all accounts where the average withdrawal amount per account for the last 4 seconds of withdrawals is greater then 1000. The statement to solve this problem is shown below.
+			</para>
+
+			<programlisting><![CDATA[select account, avg(amount) 
+from Withdrawal.win:time(4 sec) 
+group by account
+having amount > 1000]]></programlisting>
+	
+			<para>
+				The next diagram serves to illustrate the functioning of a time window. For the diagram, we assume a query that simply selects the event itself and does not group or filter events.
+			</para>
+
+			<programlisting><![CDATA[select * from Withdrawal.win:time(4 sec)]]></programlisting>
+
+			<para>
+				The diagram starts at a given time <literal>t</literal> and displays the contents of the time window at <literal>t + 4</literal> and <literal>t + 5 seconds</literal> and so on.
+			</para>
+
+			<figure id="outputmodel_timewindow_flow">
+				<title>Output example for a statement with a time window</title>
+				<mediaobject>
+					<imageobject role="fo">
+						<imagedata fileref="images/refdoc_outputmodel_timewindow.gif" format="GIF" align="center"/>
+					</imageobject>
+					<imageobject role="html">
+						<imagedata fileref="../shared/images/refdoc_outputmodel_timewindow.gif" format="GIF" align="center"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+	
+			<para>
+				The activity as illustrated by the diagram:
+			</para>
+			
+			<orderedlist>
+				<listitem>
+					<para>
+						At time <literal>t + 4 seconds</literal> an event <literal>W<subscript>1</subscript></literal> arrives and enters the time window. The engine reports the new event to update listeners.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						At time <literal>t + 5 seconds</literal> an event <literal>W<subscript>2</subscript></literal> arrives and enters the time window. The engine reports the new event to update listeners.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						At time <literal>t + 6.5 seconds</literal> an event <literal>W<subscript>3</subscript></literal> arrives and enters the time window. The engine reports the new event to update listeners.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						At time <literal>t + 8 seconds</literal> event <literal>W<subscript>1</subscript></literal> leaves the time window. The engine reports the event as an old event to update listeners.
+					</para>
+				</listitem>
+			</orderedlist>
+
+		</sect2>
+        
+		<sect2 id="outputmodel_time_batch_1" revision="1">
+			<title>Time Batch</title>
+
+			<para>
+				The time batch view buffers events and releases them every specified time interval in one update. Time windows control the evaluation of events, as does the length batch window. 
+			</para>
+			
+			<para>
+				The next diagram serves to illustrate the functioning of a time batch view. For the diagram, we assume a simple query as below:
+			</para>
+
+			<programlisting><![CDATA[select * from Withdrawal.win:time_batch(4 sec)]]></programlisting>
+
+			<para>
+				The diagram starts at a given time <literal>t</literal> and displays the contents of the time window at <literal>t + 4</literal> and <literal>t + 5 seconds</literal> and so on.
+			</para>
+
+			<figure id="outputmodel_timebatch_flow">
+				<title>Output example for a statement with a time batch view</title>
+				<mediaobject>
+					<imageobject role="fo">
+						<imagedata fileref="images/refdoc_outputmodel_timebatch.gif" format="GIF" align="center"/>
+					</imageobject>
+					<imageobject role="html">
+						<imagedata fileref="../shared/images/refdoc_outputmodel_timebatch.gif" format="GIF" align="center"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+	
+			<para>
+				The activity as illustrated by the diagram:
+			</para>
+			
+			<orderedlist>
+				<listitem>
+					<para>
+						At time <literal>t + 1 seconds</literal> an event <literal>W<subscript>1</subscript></literal> arrives and enters the batch. No call to inform update listeners occurs.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						At time <literal>t + 3 seconds</literal> an event <literal>W<subscript>2</subscript></literal> arrives and enters the batch. No call to inform update listeners occurs.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						At time <literal>t + 4 seconds</literal> the engine processes the batched events and a starts a new batch. The engine reports events <literal>W<subscript>1</subscript></literal> and <literal>W<subscript>2</subscript></literal> to update listeners.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						At time <literal>t + 6.5 seconds</literal> an event <literal>W<subscript>3</subscript></literal> arrives and enters the batch. No call to inform update listeners occurs.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						At time <literal>t + 8 seconds</literal> the engine processes the batched events and a starts a new batch. The engine reports the event <literal>W<subscript>3</subscript></literal> as new data to update listeners. The engine reports the events <literal>W<subscript>1</subscript></literal> and <literal>W<subscript>2</subscript></literal> as old data (prior batch) to update listeners.
+					</para>
+				</listitem>
+			</orderedlist>
+
+		</sect2>
+
+    </sect1>
+
+    <sect1 id="outputmodel_eventbean" revision="1">
+        <title><literal>EventBean</literal> Query Results</title>
+        
+        <para>
+			The engine posts events to <literal>UpdateListener</literal> implementations as <literal>net.esper.event.EventBean</literal> instances. The <literal>EventBean</literal> represents a row (event) in your continuous query's result set.  
+        </para>
+			
+        <para>
+			Use the <literal>iterator</literal> method on <literal>EPStatement</literal> statements to poll or read data out of statements, if your require read-based access to statement result sets. Statement iterators also return <literal>EventBean</literal> instances.
+        </para>
+
+        <para>
+			The <literal>EventBean</literal> interface offers property type metadata via the <literal>getEventType</literal> method. The <literal>EventType</literal> offers a rich set of property name, property type and underlying type information. This information can be useful to dynamically interrogate query results.
+        </para>
+
+        <para>
+			Consider a statement that returns the symbol, count of events per symbol and average price per symbol for tick events. Our sample statement may declare a fully-qualified Java class name as the event type: <literal>org.sample.StockTickEvent</literal>. Assume that this class exists and exposes a <literal>symbol</literal> property of type String, and a <literal>price</literal> property of type double.
+        </para>
+		<programlisting><![CDATA[select symbol, avg(price) as avgprice, count(*) as mycount 
+from org.sample.StockTickEvent 
+group by symbol]]></programlisting>
+
+        <para>
+			The next table summarized the property names and types as posted by the statement above:
+        </para>
+        
+		<table frame="topbot">
+			<title>Properties offered by sample statement</title>
+			<tgroup cols="4">
+				<colspec colwidth="1*"/>
+				<colspec colwidth="1*"/>
+				<colspec colwidth="2*"/>
+				<colspec colwidth="2*"/>
+				<thead>
+					<row>
+						<entry>Name</entry>
+						<entry>Type</entry>
+						<entry>Description</entry>
+						<entry>Java code snippet</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry><literal>symbol</literal></entry>
+						<entry>String</entry>
+						<entry>Value of symbol event property</entry>
+						<entry><synopsis>eventBean.get("symbol")</synopsis></entry>
+					</row>
+					<row>
+						<entry><literal>avgprice</literal></entry>
+						<entry>Double</entry>
+						<entry>Average price per symbol</entry>
+						<entry><synopsis>eventBean.get("avgprice")</synopsis></entry>
+					</row>
+					<row>
+						<entry><literal>mycount</literal></entry>
+						<entry>Long</entry>
+						<entry>Number of events per symbol</entry>
+						<entry><synopsis>eventBean.get("mycount")</synopsis></entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table> 
+        
+        <para>
+			The engine supplies the boxed <literal>java.lang.Double</literal> and <literal>java.lang.Long</literal> types as property values rather then primitive Java types. This is because aggregated values can return a <literal>null</literal> value to indicate that no data is available for aggregation. 
+        </para>
+
+		<!-- underlying type and primitive types -->
+		
+        <para>
+			Consider a second statement that specifies a wildcard-select:
+        </para>
+		<programlisting><![CDATA[select * from org.sample.StockTickEvent where price > 100]]></programlisting>
+
+        <para>
+			The next table summarized the property names and types as posted by the statement above:
+        </para>
+        
+		<table frame="topbot">
+			<title>Properties offered by sample statement</title>
+			<tgroup cols="4">
+				<colspec colwidth="1*"/>
+				<colspec colwidth="1*"/>
+				<colspec colwidth="2*"/>
+				<colspec colwidth="2*"/>
+				<thead>
+					<row>
+						<entry>Name</entry>
+						<entry>Type</entry>
+						<entry>Description</entry>
+						<entry>Java code snippet</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry><literal>symbol</literal></entry>
+						<entry>String</entry>
+						<entry>Value of symbol event property</entry>
+						<entry><synopsis>eventBean.get("symbol")</synopsis></entry>
+					</row>
+					<row>
+						<entry><literal>avgprice</literal></entry>
+						<entry>Double</entry>
+						<entry>Average price per symbol</entry>
+						<entry><synopsis>eventBean.get("avgprice")</synopsis></entry>
+					</row>
+					<row>
+						<entry><literal>mycount</literal></entry>
+						<entry>Long</entry>
+						<entry>Number of events per symbol</entry>
+						<entry><synopsis>eventBean.get("mycount")</synopsis></entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table> 
+	</sect1>
 </chapter>
 

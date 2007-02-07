@@ -151,4 +151,79 @@ public class SupportUpdateListener implements UpdateListener
         }
         return array;
     }
+
+    public void assertUnderlyingAndReset(Object[] expectedUnderlyingNew, Object[] expectedUnderlyingOld)
+    {
+        Assert.assertEquals(1, getNewDataList().size());
+        Assert.assertEquals(1, getOldDataList().size());
+
+        EventBean[] newEvents = getLastNewData();
+        EventBean[] oldEvents = getLastOldData();
+
+        if (expectedUnderlyingNew != null)
+        {
+            Assert.assertEquals(expectedUnderlyingNew.length, newEvents.length);
+            for (int i = 0; i < expectedUnderlyingNew.length; i++)
+            {
+                Assert.assertSame(expectedUnderlyingNew[i], newEvents[i].getUnderlying());
+            }
+        }
+        else
+        {
+            Assert.assertNull(newEvents);
+        }
+
+        if (expectedUnderlyingOld != null)
+        {
+            Assert.assertEquals(expectedUnderlyingOld.length, oldEvents.length);
+            for (int i = 0; i < expectedUnderlyingOld.length; i++)
+            {
+                Assert.assertSame(expectedUnderlyingOld[i], oldEvents[i].getUnderlying());
+            }
+        }
+        else
+        {
+            Assert.assertNull(oldEvents);
+        }
+
+        reset();
+    }
+
+    public void assertFieldEqualsAndReset(String fieldName, Object[] expectedNew, Object[] expectedOld)
+    {
+        Assert.assertEquals(1, getNewDataList().size());
+        Assert.assertEquals(1, getOldDataList().size());
+
+        EventBean[] newEvents = getLastNewData();
+        EventBean[] oldEvents = getLastOldData();
+
+        if (expectedNew != null)
+        {
+            Assert.assertEquals(expectedNew.length, newEvents.length);
+            for (int i = 0; i < expectedNew.length; i++)
+            {
+                Object result = newEvents[i].get(fieldName);
+                Assert.assertEquals(expectedNew[i], result);
+            }
+        }
+        else
+        {
+            Assert.assertNull(newEvents);
+        }
+
+        if (expectedOld != null)
+        {
+            Assert.assertEquals(expectedOld.length, oldEvents.length);
+            for (int i = 0; i < expectedOld.length; i++)
+            {
+                Assert.assertEquals(expectedOld[i], oldEvents[i].get(fieldName));
+            }
+        }
+        else
+        {
+            Assert.assertNull(oldEvents);
+        }
+
+        reset();
+    }
 }

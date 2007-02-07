@@ -6,6 +6,7 @@ import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.event.EventBean;
 import junit.framework.TestCase;
 
 public class TestCountAll extends TestCase
@@ -19,6 +20,19 @@ public class TestCountAll extends TestCase
         listener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
+    }
+
+    public void testSize()
+    {
+        String statementText = "select size from " + SupportMarketDataBean.class.getName() + ".std:size()";
+        selectTestView = epService.getEPAdministrator().createEQL(statementText);
+        selectTestView.addListener(listener);
+
+        sendEvent("DELL", 1L);
+        assertSize(1, 0);
+
+        sendEvent("DELL", 1L);
+        assertSize(2, 1);
     }
     
     public void testCount()
@@ -83,5 +97,10 @@ public class TestCountAll extends TestCase
     {
         SupportBean bean = new SupportBean("", 1);
         epService.getEPRuntime().sendEvent(bean);
+    }
+
+    private void assertSize(long newSize, long oldSize)
+    {
+        listener.assertFieldEqualsAndReset("size", new Object[] {newSize}, new Object[] {oldSize});
     }
 }

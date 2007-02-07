@@ -5,9 +5,10 @@ Changes in version 1.6
 ----------------------
 * Added support for array use in EQL (Enhancement Request ESPER-76 Java array initialization syntax for constants)
 * Added support for group-by and previous (TODO)
+* Added length window batch (TODO)
 * Removed dependency on Apache Common BeanUtils library (commons-beanutils-1.7.0)
 * Fixed issue ESPER-78 "Insert-into streams not using correct event type when same-typed streams"
-
+* documentation: output model, extensive description of build-in views
 
 Changes in version 1.5.0
 ----------------------

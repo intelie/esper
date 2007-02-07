@@ -57,9 +57,9 @@ public class TestViewServiceHelper extends TestCase
         List<View> views = ViewServiceHelper.instantiateChain(topView, viewFactories, context);
 
         assertEquals(3, views.size());
-        assertEquals(ViewEnum.LENGTH_WINDOW.getClazz(), views.get(0).getClass());
-        assertEquals(ViewEnum.UNIVARIATE_STATISTICS.getClazz(), views.get(1).getClass());
-        assertEquals(ViewEnum.LAST_EVENT.getClazz(), views.get(2).getClass());
+        assertEquals(LengthWindowView.class, views.get(0).getClass());
+        assertEquals(UnivariateStatisticsView.class, views.get(1).getClass());
+        assertEquals(LastElementView.class, views.get(2).getClass());
 
         // Check that the context is set
         viewFactories = SupportViewSpecFactory.makeFactoryListFive(topView.getEventType());

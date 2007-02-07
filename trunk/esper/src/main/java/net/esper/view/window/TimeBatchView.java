@@ -23,7 +23,7 @@ import net.esper.core.EPStatementHandleCallback;
  * The view works similar to a time_window but in not continuous.
  * The view releases the batched events after the interval as new data to child views. The prior batch if
  * not empty is released as old data to child view. The view doesn't release intervals with no old or new data.
- * It also does not getSelectListEvents old data published by a parent view.
+ * It also does not collect old data published by a parent view.
  *
  * For example, we want to calculate the average of IBM stock every hour, for the last hour.
  * The view accepts 2 parameter combinations.

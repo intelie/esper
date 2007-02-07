@@ -56,6 +56,11 @@
 			</listitem>
 			<listitem>
 				<para>
+                    Read <xref linkend="outputmodel"/> to gain insight into EQL continuous query results
+                </para>
+			</listitem>
+			<listitem>
+				<para>
                     Then glance over the examples <xref linkend="examples-overview"/>
                 </para>
 			</listitem>
