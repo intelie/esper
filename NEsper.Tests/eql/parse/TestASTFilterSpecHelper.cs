@@ -1,0 +1,194 @@
+using System;
+
+using antlr.collections;
+
+using net.esper.compat;
+using net.esper.events;
+using net.esper.filter;
+using net.esper.support.bean;
+using net.esper.support.eql.parse;
+using net.esper.support.events;
+using net.esper.util;
+
+using NUnit.Core;
+using NUnit.Framework;
+
+using org.apache.commons.logging;
+
+namespace net.esper.eql.parse
+{
+
+	[TestFixture]
+    public class TestASTFilterSpecHelper 
+    {
+        [Test]
+        public virtual void testInvalid()
+        {
+            String classname = typeof(SupportBean).FullName;
+
+            assertIsInvalid("goofy.mickey");
+            assertIsInvalid(classname + "(dummy=4)");
+            assertIsInvalid(classname + "(BoolPrimitive=4)");
+            assertIsInvalid(classname + "(IntPrimitive=false)");
+            assertIsInvalid(classname + "(string in [2:2])");
+            assertIsInvalid(classname + "(string=\"a\", string=\"b\")"); // Same attribute twice should be a problem
+        }
+
+        [Test]
+        public virtual void testValidNoParams()
+        {
+            String expression = "gum=" + typeof(SupportBean).FullName;
+
+            FilterSpec spec = getFilterSpec(expression, null);
+            Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);
+            Assert.AreEqual(0, spec.Parameters.Count);
+
+            Assert.AreEqual("gum", getEventNameTag(expression));
+        }
+
+        [Test]
+        public virtual void testValidWithParams()
+        {
+            String expression = "name=" + typeof(SupportBean).FullName + "(intPrimitive>4, string=\"test\", doublePrimitive in [1:4])";
+
+            FilterSpec spec = getFilterSpec(expression, null);
+            Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);
+            Assert.AreEqual(3, spec.Parameters.Count);
+
+            FilterSpecParam param = spec.Parameters[0];
+            Assert.AreEqual("IntPrimitive", param.PropertyName);
+            Assert.AreEqual(FilterOperator.GREATER, param.FilterOperator);
+            Assert.AreEqual(4, param.getFilterValue(null));
+
+            param = spec.Parameters[1];
+            Assert.AreEqual("string", param.PropertyName);
+            Assert.AreEqual(FilterOperator.EQUAL, param.FilterOperator);
+            Assert.AreEqual("test", param.getFilterValue(null));
+
+            param = spec.Parameters[2];
+            Assert.AreEqual("doublePrimitive", param.PropertyName);
+            Assert.AreEqual(FilterOperator.RANGE_CLOSED, param.FilterOperator);
+            Assert.AreEqual(new DoubleRange(1, 4), param.getFilterValue(null));
+
+            Assert.AreEqual("name", getEventNameTag(expression));
+        }
+
+        [Test]
+        public virtual void testValidUseResultParams()
+        {
+            String expression = "n1=" + typeof(SupportBean).FullName + "(IntPrimitive=n2.IntBoxed)";
+
+            EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
+            taggedEventTypes.Put("n2", SupportEventTypeFactory.createBeanType(typeof(SupportBean)));
+
+            FilterSpec spec = getFilterSpec(expression, taggedEventTypes);
+
+            Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);
+            Assert.AreEqual(1, spec.Parameters.Count);
+            FilterSpecParamEventProp eventPropParam = (FilterSpecParamEventProp)spec.Parameters[0];
+            Assert.AreEqual("n2", eventPropParam.ResultEventAsName);
+            Assert.AreEqual("IntBoxed", eventPropParam.ResultEventProperty);
+        }
+
+        [Test]
+        public virtual void testValidComplexProperty()
+        {
+            String expression = "n1=" + typeof(SupportBeanComplexProps).FullName + "(mapped('a') = '1')";
+            FilterSpec spec = getFilterSpec(expression, null);
+
+            Assert.AreEqual(1, spec.Parameters.Count);
+            FilterSpecParamConstant param = (FilterSpecParamConstant)spec.Parameters[0];
+            Assert.AreEqual("mapped('a')", param.PropertyName);
+        }
+
+        [Test]
+        public virtual void testValidRange()
+        {
+            String expression = "myname=" + typeof(SupportBean).FullName + "(IntPrimitive in (1:2), IntBoxed in [2:6))";
+
+            FilterSpec spec = getFilterSpec(expression, null);
+            Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);
+            Assert.AreEqual(2, spec.Parameters.Count);
+
+            FilterSpecParam param = spec.Parameters[0];
+            Assert.AreEqual("IntPrimitive", param.PropertyName);
+            Assert.AreEqual(FilterOperator.RANGE_OPEN, param.FilterOperator);
+
+            param = spec.Parameters[1];
+            Assert.AreEqual("IntBoxed", param.PropertyName);
+            Assert.AreEqual(FilterOperator.RANGE_HALF_OPEN, param.FilterOperator);
+
+            Assert.AreEqual("myname", getEventNameTag(expression));
+        }
+
+        [Test]
+        public virtual void testValidRangeUseResult()
+        {
+            String expression = "myname=" + typeof(SupportBean).FullName + "(intPrimitive in (asName.IntPrimitive:asName.IntBoxed))";
+
+            EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
+            taggedEventTypes.Put("asName", SupportEventTypeFactory.createBeanType(typeof(SupportBean)));
+
+            FilterSpec spec = getFilterSpec(expression, taggedEventTypes);
+            Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);
+            Assert.AreEqual(1, spec.Parameters.Count);
+
+            FilterSpecParam param = spec.Parameters[0];
+            Assert.AreEqual("IntPrimitive", param.PropertyName);
+            Assert.AreEqual(FilterOperator.RANGE_OPEN, param.FilterOperator);
+            Assert.AreEqual(typeof(DoubleRange), param.getFilterValueClass(taggedEventTypes));
+        }
+
+        [Test]
+        public virtual void testGetPropertyName()
+        {
+            String PROPERTY = "a('aa').b[1].c";
+
+            // Should parse and result in the exact same property name
+            AST propertyNameExprNode = SupportParserHelper.parseEventProperty(PROPERTY);
+            String propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode.getFirstChild());
+            Assert.AreEqual(PROPERTY, propertyName);
+
+            // Try AST with tokens separated, same property name
+            propertyNameExprNode = SupportParserHelper.parseEventProperty("a(    'aa'   ). b [ 1 ] . c");
+            propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode.getFirstChild());
+            Assert.AreEqual(PROPERTY, propertyName);
+        }
+
+        private void assertIsInvalid(String expression)
+        {
+            try
+            {
+                getFilterSpec(expression, null);
+                Assert.IsTrue(false);
+            }
+            catch (System.Exception ex)
+            {
+                log.Debug("Caught expected exception, type= " + ex.GetType().FullName + "  msg=" + ex.Message);
+            }
+        }
+
+        private FilterSpec getFilterSpec(string expressionText, EDictionary<String, EventType> taggedEventTypes)
+        {
+            AST filterNode = parse(expressionText);
+            DebugFacility.dumpAST(filterNode);
+            return ASTFilterSpecHelper.buildSpec(filterNode, taggedEventTypes, SupportEventAdapterService.Service);
+        }
+
+        private String getEventNameTag(String expressionText)
+        {
+            AST filterNode = parse(expressionText);
+            return ASTFilterSpecHelper.getEventNameTag(filterNode);
+        }
+
+        private AST parse(String expression)
+        {
+            log.Debug(".getFilterSpec Parsing expression " + expression);
+
+            AST filterNode = SupportParserHelper.parsePattern(expression);
+            return filterNode;
+        }
+
+        private static readonly Log log = LogFactory.GetLog(typeof(TestASTFilterSpecHelper));
+    }
+}

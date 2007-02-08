@@ -1,0 +1,268 @@
+using System;
+using System.Collections.Generic;
+
+using net.esper.collection;
+
+namespace net.esper.type
+{
+	/// <summary>
+	/// Enum representing relational types of operation.
+	/// </summary>
+
+	public class BitWiseOpEnum
+	{
+		/// <summary>
+		/// Bitwise and.
+		/// </summary>
+
+		public static readonly BitWiseOpEnum BAND = new BitWiseOpEnum( "&" );
+
+		/// <summary>
+		/// Bitwise or.
+		/// </summary>
+
+		public static readonly BitWiseOpEnum BOR = new BitWiseOpEnum( "|" );
+
+		/// <summary>
+		/// Bitwise xor.
+		/// </summary>
+
+		public static readonly BitWiseOpEnum BXOR = new BitWiseOpEnum( "^" );
+
+		private static IDictionary<MultiKey<Object>, BitWiseOpEnum.Computer> computers;
+
+		private String expressionText;
+
+		private BitWiseOpEnum( String expressionText )
+		{
+			this.expressionText = expressionText;
+		}
+
+		static BitWiseOpEnum()
+		{
+			computers = new Dictionary<MultiKey<Object>, BitWiseOpEnum.Computer>();
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( byte ),  BAND } ), BAndByte );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( short ), BAND } ), BAndShort );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( int ),   BAND } ), BAndInt );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( long ),  BAND } ), BAndLong );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool ),  BAND } ), BAndBoolean );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( byte ),  BOR } ),  BOrByte );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( short ), BOR } ),  BOrShort );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( int ),   BOR } ),  BOrInt );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( long ),  BOR } ),  BOrLong );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool ),  BOR } ),  BOrBoolean );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( byte ),  BXOR } ), BXorByte );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( short ), BXOR } ), BXorShort );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( int ),   BXOR } ), BXorInt );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( long ),  BXOR } ), BXorLong );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool ),  BXOR } ), BXorBoolean );
+		}
+
+		/**
+		 * Returns number or boolean computation for the target coercion type.
+		 * @param coercedType - target type
+		 * @return number cruncher
+		 */
+		public Computer getComputer( Type coercedType )
+		{
+			if ( ( coercedType != typeof( Byte ) ) &&
+				 ( coercedType != typeof( Int16 ) ) &&
+				 ( coercedType != typeof( Int32 ) ) &&
+				 ( coercedType != typeof( Int64 ) ) &&
+				 ( coercedType != typeof( Boolean ) ) )
+			{
+				throw new ArgumentException( "Expected base numeric or boolean type for computation result but got type " + coercedType );
+			}
+
+			MultiKey<Object> key = new MultiKey<Object>( new Object[] { coercedType, this } );
+            return computers[key];
+		}
+
+		/**
+		 * Computer for relational op.
+		 */
+
+		public delegate Object Computer( Object objOne, Object objTwo );
+
+		/**
+		 * Computer for type-specific arith. operations.
+		 */
+		/**
+		 * Bit Wise And.
+		 */
+		public static Object BAndByte( Object objOne, Object objTwo )
+		{
+			byte n1 = (byte) objOne;
+			byte n2 = (byte) objTwo;
+			byte result = (byte) ( n1 & n2 );
+			return result;
+		}
+
+		/**
+		 * Bit Wise Or.
+		 */
+        public static Object BOrByte(Object objOne, Object objTwo)
+		{
+			byte n1 = (byte) objOne;
+			byte n2 = (byte) objTwo;
+			byte result = (byte) ( n1 | n2 );
+			return result;
+		}
+
+		/**
+     * Bit Wise Xor.
+     */
+        public static Object BXorByte(Object objOne, Object objTwo)
+		{
+			byte n1 = (byte) objOne;
+			byte n2 = (byte) objTwo;
+			byte result = (byte) ( n1 ^ n2 );
+			return result;
+		}
+
+		/**
+		 * Computer for type-specific arith. operations.
+		 */
+		/**
+		 * Bit Wise And.
+		 */
+        public static Object BAndShort(Object objOne, Object objTwo)
+		{
+			short n1 = (short) objOne;
+			short n2 = (short) objTwo;
+			short result = (short) ( n1 & n2 );
+			return result;
+		}
+		/**
+		 * Bit Wise Or.
+		 */
+        public static Object BOrShort(Object objOne, Object objTwo)
+		{
+			short n1 = (short) objOne;
+			short n2 = (short) objTwo;
+			short result = (short) ( n1 | n2 );
+			return result;
+		}
+		/**
+		 * Bit Wise Xor.
+		 */
+        public static Object BXorShort(Object objOne, Object objTwo)
+		{
+			short n1 = (short) objOne;
+			short n2 = (short) objTwo;
+			short result = (short) ( n1 ^ n2 );
+			return result;
+		}
+
+		/**
+		 * Computer for type-specific arith. operations.
+		 */
+		/**
+		 * Bit Wise And.
+		 */
+        public static Object BAndInt(Object objOne, Object objTwo)
+		{
+			int n1 = (int) objOne;
+			int n2 = (int) objTwo;
+			int result = n1 & n2;
+			return result;
+		}
+		/**
+		 * Bit Wise Or.
+		 */
+        public static Object BOrInt(Object objOne, Object objTwo)
+		{
+			int n1 = (int) objOne;
+			int n2 = (int) objTwo;
+			int result = n1 | n2;
+			return result;
+		}
+		/**
+		 * Bit Wise Xor.
+		 */
+        public static Object BXorInt(Object objOne, Object objTwo)
+		{
+			int n1 = (int) objOne;
+			int n2 = (int) objTwo;
+			int result = n1 ^ n2;
+			return result;
+		}
+
+		/**
+		 * Computer for type-specific arith. operations.
+		 */
+		/**
+		 * Bit Wise And.
+		 */
+        public static Object BAndLong(Object objOne, Object objTwo)
+		{
+			long n1 = (long) objOne;
+			long n2 = (long) objTwo;
+			long result = n1 & n2;
+			return result;
+		}
+		/**
+		 * Bit Wise Or.
+		 */
+        public static Object BOrLong(Object objOne, Object objTwo)
+		{
+			long n1 = (long) objOne;
+			long n2 = (long) objTwo;
+			long result = n1 | n2;
+			return result;
+		}
+		/**
+		 * Bit Wise Xor.
+		 */
+        public static Object BXorLong(Object objOne, Object objTwo)
+		{
+			long n1 = (long) objOne;
+			long n2 = (long) objTwo;
+			long result = n1 ^ n2;
+			return result;
+		}
+
+		/**
+		 * Computer for type-specific arith. operations.
+		 */
+		/**
+		 * Bit Wise And.
+		 */
+        public static Object BAndBoolean(Object objOne, Object objTwo)
+		{
+			bool b1 = (bool) objOne;
+			bool b2 = (bool) objTwo;
+			bool result = b1 & b2;
+			return result;
+		}
+		/**
+		 * Bit Wise Or.
+		 */
+        public static Object BOrBoolean(Object objOne, Object objTwo)
+		{
+			bool b1 = (bool) objOne;
+			bool b2 = (bool) objTwo;
+			bool result = b1 | b2;
+			return result;
+		}
+		/**
+		 * Bit Wise Xor.
+		 */
+        public static Object BXorBoolean(Object objOne, Object objTwo)
+		{
+			bool b1 = (bool) objOne;
+			bool b2 = (bool) objTwo;
+			bool result = b1 ^ b2;
+			return result;
+		}
+
+		/**
+		 * Returns string rendering of enum.
+		 * @return bitwise operator string
+		 */
+		public String getComputeDescription()
+		{
+			return expressionText;
+		}
+	}
+}
