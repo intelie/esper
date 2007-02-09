@@ -29,47 +29,65 @@ public class SpringContextLoader implements AdapterLoader
 
   public SpringContextLoader()
   {
-
   }
 
-  public void init(Configuration config, Element configElement) throws EPException
+  public void init(Configuration config, Element configElement)
+    throws EPException
   {
-    NodeList nodes = configElement.getElementsByTagName("classpath-app-context");
-    if (nodes.getLength() != 1) return;
+    NodeList nodes =
+      configElement.getElementsByTagName("classpath-app-context");
+    if (nodes.getLength() == 0)
+    {
+      nodes = configElement.getElementsByTagName("file-app-context");
+    }
+    if (nodes.getLength() != 1)
+    {
+      return;
+    }
     Node classPathNode = nodes.item(0);
-    if (!classPathNode.getNodeName().equals("classpath-app-context")) return;
-    String resource = classPathNode.getAttributes().getNamedItem("name").getTextContent();
-    configure(config, resource);
+    boolean loadFromClassPath = (classPathNode.getNodeName().equals(
+      "classpath-app-context")) ?
+      true :
+      false;
+    String resource =
+      classPathNode.getAttributes().getNamedItem("name").getTextContent();
+    configure(config, resource, loadFromClassPath);
   }
 
 
-  public void configure(Configuration config, String resource)
+  public void configure(Configuration config, String resource,
+    boolean fromClassPath)
   {
-    if ((config == null) || (resource == null)) return;
+    if ((config == null) || (resource == null))
+    {
+      return;
+    }
     log.debug(".Configuring from resource: " + resource);
-    adapterSpringContext = createSpringApplicationContext(resource);
+    adapterSpringContext =
+      createSpringApplicationContext(resource, fromClassPath);
     String[] beanNames = adapterSpringContext.getBeanDefinitionNames();
     for (String beanName : beanNames)
     {
       Object o = getBean(beanName);
       if (o instanceof Adapter)
       {
-        adapterMap.put(beanName, (Adapter) o);
+        adapterMap.put(beanName, (Adapter)o);
       }
     }
   }
 
-  public void configure(String resource)
+  public void configure(String resource, boolean fromClassPath)
   {
     log.debug(".Configuring from resource: " + resource);
-    adapterSpringContext = createSpringApplicationContext(resource);
+    adapterSpringContext =
+      createSpringApplicationContext(resource, fromClassPath);
     String[] beanNames = adapterSpringContext.getBeanDefinitionNames();
     for (String beanName : beanNames)
     {
       Object o = getBean(beanName);
       if (o instanceof Adapter)
       {
-        adapterMap.put(beanName, (Adapter) o);
+        adapterMap.put(beanName, (Adapter)o);
       }
     }
   }
@@ -82,7 +100,7 @@ public class SpringContextLoader implements AdapterLoader
       Adapter adapter = itAdapter.next();
       if (adapter instanceof OutputAdapter)
       {
-        ((OutputAdapter) adapter).setEPServiceProvider(epService);
+        ((OutputAdapter)adapter).setEPServiceProvider(epService);
         adapter.start();
       }
     }
@@ -97,8 +115,14 @@ public class SpringContextLoader implements AdapterLoader
     return adapterMap.get(adapterName);
   }
 
-  private AbstractXmlApplicationContext createSpringApplicationContext(String configuration) throws BeansException
+  private AbstractXmlApplicationContext createSpringApplicationContext(
+    String configuration, boolean fromClassPath) throws BeansException
   {
+    if (fromClassPath)
+    {
+      log.debug("classpath configuration");
+      return new ClassPathXmlApplicationContext(configuration);
+    }
     if (new File(configuration).exists())
     {
       log.debug("File configuration");
@@ -106,8 +130,7 @@ public class SpringContextLoader implements AdapterLoader
     }
     else
     {
-      log.debug("classpath configuration");
-      return new ClassPathXmlApplicationContext(configuration);
+      throw new EPException("Spring configuration file not found.");
     }
   }
 

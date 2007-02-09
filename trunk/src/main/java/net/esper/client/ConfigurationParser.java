@@ -337,8 +337,6 @@ class ConfigurationParser {
         {
             for (int i = 0; i < adapterNodes.getLength(); i++)
             {
-                String jarLocation = adapterNodes.item(i).getAttributes().getNamedItem("jarLocation").getTextContent();
-                URLClassLoader ucl = new URLClassLoader(new URL[] { new File(jarLocation).toURL() });
                 ElementIterator nodeIterator = new ElementIterator(adapterNodes.item(i).getChildNodes());
                 while (nodeIterator.hasNext())
                 {
@@ -346,7 +344,7 @@ class ConfigurationParser {
                     if (subElement.getNodeName().equals("adapter-loader"))
                     {
                         String className = subElement.getAttributes().getNamedItem("class").getTextContent();
-                        Class adapterLoaderClass = Class.forName(className, false, ucl);
+                        Class adapterLoaderClass = Class.forName(className);
                         Class[] types = new Class[0];
                         Object[] args = new Object[0];
                         Constructor ctor =  adapterLoaderClass.getConstructor(types);

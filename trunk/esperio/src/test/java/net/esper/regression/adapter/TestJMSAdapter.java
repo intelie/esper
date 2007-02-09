@@ -59,7 +59,7 @@ public class TestJMSAdapter extends TestCase {
 
   public void testLateEventTypeBidding() throws Throwable {
     SpringContextLoader scl = new SpringContextLoader();
-    scl.configure("spring/jms-spring.xml");
+    scl.configure("spring/jms-spring.xml", true);
     Adapter adapter = getAdapter("jmsOutputAdapter", scl);
     ((OutputAdapter) adapter).setEventTypeAlias("newMapEventType");
     epService = EPServiceProviderManager.getProvider("testLateEventTypeBidding",

@@ -1,6 +1,6 @@
 package net.esper.adapter.jms;
 
-import net.esper.event.EventType;
+import net.esper.event.*;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.client.EPException;
 
@@ -22,7 +22,7 @@ public class JMSDefaultMapMessageUnmarshaler
 
   private final Log log = LogFactory.getLog(this.getClass());
 
-  public JMSEventBean unmarshal(EventType eventType, Message message,
+  public EventBean unmarshal(EventAdapterService eventAdapterService, Message message,
     long totalDelay, ScheduleSlot scheduleSlot) throws EPException
   {
     JMSEventBean eventBean = null;
@@ -30,17 +30,20 @@ public class JMSDefaultMapMessageUnmarshaler
     {
       if ((message != null) && (message instanceof MapMessage))
       {
-        Map<String, Object> eventTypeMap = new HashMap<String, Object>();
+        Map<String, Class> eventTypeMap = new HashMap<String, Class>();        
+        Map<String, Object> properties = new HashMap<String, Object>();
         MapMessage mapMsg = (MapMessage)message;
         mapMsg.getMapNames();
         Enumeration en = mapMsg.getMapNames();
         while (en.hasMoreElements())
         {
           String property = (String)en.nextElement();
-          eventTypeMap.put(property, mapMsg.getObject(property));
+          Object mapObject = mapMsg.getObject(property);
+          eventTypeMap.put(property, mapObject.getClass());
+          properties.put(property, mapObject);
         }
-        eventBean =
-          new JMSEventBean(eventTypeMap, eventType, totalDelay, scheduleSlot);
+        EventType eventType = eventAdapterService.addMapType("SpringAdapterType", eventTypeMap);
+        return eventAdapterService.createMapFromValues(properties, eventType);
       }
     }
     catch (JMSException ex)

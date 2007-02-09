@@ -91,8 +91,9 @@ public class SpringJMSTemplateInputAdapter extends AbstractCoordinatedAdapter
         EventType eventType = evAdaptSvc.getEventType(eventTypeAlias);
         if ((jmsTemplate != null) && (eventType != null))
         {
-          evBean = jmsUnmarshaler.unmarshal(
-            eventType, jmsTemplate.receive(), totalDelay, scheduleSlot);
+          //evBean = jmsUnmarshaler.unmarshal(
+          //  evAdaptSvc, jmsTemplate.receive(), totalDelay, scheduleSlot);
+          evBean = null;
         }
         updateTotalDelay();
         return evBean;
