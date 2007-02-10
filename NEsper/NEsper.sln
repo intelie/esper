@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+# SharpDevelop 2.1.0.2201
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper", "NEsper.csproj", "{8376DC7A-06AC-40F1-9338-9AC5AF788356}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.Tests", "..\NEsper.Tests\NEsper.Tests.csproj", "{34C1A382-1B8B-4A15-B168-0AD7D30E2E22}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8376DC7A-06AC-40F1-9338-9AC5AF788356}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8376DC7A-06AC-40F1-9338-9AC5AF788356}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8376DC7A-06AC-40F1-9338-9AC5AF788356}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8376DC7A-06AC-40F1-9338-9AC5AF788356}.Release|Any CPU.Build.0 = Release|Any CPU
+		{960B46B2-EBA9-4140-A0DA-3306396B46FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{960B46B2-EBA9-4140-A0DA-3306396B46FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{960B46B2-EBA9-4140-A0DA-3306396B46FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{960B46B2-EBA9-4140-A0DA-3306396B46FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34C1A382-1B8B-4A15-B168-0AD7D30E2E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34C1A382-1B8B-4A15-B168-0AD7D30E2E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34C1A382-1B8B-4A15-B168-0AD7D30E2E22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34C1A382-1B8B-4A15-B168-0AD7D30E2E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+EndGlobal

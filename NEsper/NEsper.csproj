@@ -30,11 +30,15 @@
   <ItemGroup>
     <Reference Include="antlr.runtime, Version=2.7.7.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\antlr\277\lib\antlr.runtime.dll</HintPath>
+      <HintPath>..\lib\antlr.runtime.dll</HintPath>
     </Reference>
     <Reference Include="C5, Version=1.0.1.0, Culture=neutral, PublicKeyToken=06a1b38866503b69, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\C5\C5.dll</HintPath>
+      <HintPath>..\lib\C5.dll</HintPath>
+    </Reference>
+    <Reference Include="commons-logging, Version=1.0.2596.34124, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\commons-logging.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -564,12 +568,6 @@
     <Compile Include="view\ZeroDepthStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="compat\XMLConstants.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\commons-logging-net\commons-logging\commons-logging.csproj">
-      <Project>{960B46B2-EBA9-4140-A0DA-3306396B46FA}</Project>
-      <Name>commons-logging</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="indicator\jmx\" />
