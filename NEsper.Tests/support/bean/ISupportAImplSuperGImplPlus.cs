@@ -2,11 +2,10 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	[Serializable]
 	public class ISupportAImplSuperGImplPlus:ISupportAImplSuperG, ISupportB, ISupportC
 	{
-		override public String G
+		override public String g
 		{
 			get
 			{
@@ -14,7 +13,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		override public String A
+		override public String a
 		{
 			get
 			{
@@ -22,7 +21,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		override public String BaseAB
+		override public String baseAB
 		{
 			get
 			{
@@ -30,7 +29,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		virtual public String B
+		virtual public String b
 		{
 			get
 			{
@@ -38,7 +37,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		virtual public String C
+		virtual public String c
 		{
 			get
 			{

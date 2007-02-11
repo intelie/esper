@@ -86,15 +86,15 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testToExpressionString()
         {
-            Assert.AreEqual("s0.StringValue like \"%abc__\"", likeNodeNormal.ExpressionString);
-            Assert.AreEqual("s0.StringValue not like \"%abc__\"", likeNodeNot.ExpressionString);
-            Assert.AreEqual("s0.StringValue like \"%abc__\" escape \"!\"", likeNodeNormalEscaped.ExpressionString);
+            Assert.AreEqual("s0.str like \"%abc__\"", likeNodeNormal.ExpressionString);
+            Assert.AreEqual("s0.str not like \"%abc__\"", likeNodeNot.ExpressionString);
+            Assert.AreEqual("s0.str like \"%abc__\" escape \"!\"", likeNodeNormalEscaped.ExpressionString);
         }
 
         private EventBean[] MakeEvent(String stringValue)
         {
             SupportBean _event = new SupportBean();
-            _event.StringValue = stringValue;
+            _event.str = stringValue;
             return new EventBean[] { SupportEventBeanFactory.createObject(_event) };
         }
 

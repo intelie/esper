@@ -43,7 +43,7 @@ namespace net.esper.view.std
         private String uniqueFieldName;
         private EventPropertyGetter uniqueFieldGetter;
 
-        private readonly IDictionary<Object, EventBean> mostRecentEvents = new LinkedDictionary<Object, EventBean>();
+        private readonly EDictionary<Object, EventBean> mostRecentEvents = new LinkedDictionary<Object, EventBean>();
 
         /// <summary>
         /// Default constructor - required by all views to adhere to the Java bean specification.
@@ -119,7 +119,7 @@ namespace net.esper.view.std
                     }
 
                     // Post the last value as old data
-                    EventBean lastValue = mostRecentEvents[uniqueValue];
+                    EventBean lastValue = mostRecentEvents.Fetch(uniqueValue);
                     if (lastValue != null)
                     {
                         postOldData.Add(lastValue);

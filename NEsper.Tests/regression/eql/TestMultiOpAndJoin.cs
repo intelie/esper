@@ -56,12 +56,12 @@ namespace net.esper.regression.eql
 			for (int i = 0; i < eventData.Length; i++)
 			{
 				eventsA[i] = new SupportBean();
-				eventsA[i].StringValue = "A";
+                eventsA[i].str = "A";
 				eventsA[i].intPrimitive = eventData[i][0];
 				eventsA[i].intBoxed = eventData[i][1];
 				
 				eventsB[i] = new SupportBean();
-				eventsB[i].StringValue = "B";
+                eventsB[i].str = "B";
 				eventsB[i].intPrimitive = eventData[i][0];
 				eventsB[i].intBoxed = eventData[i][1];
 			}

@@ -150,8 +150,8 @@ namespace net.esper.regression.view
 			  " when 13 then Float.toString(floatPrimitive) " + 
 			  " when 14 then Float.toString(floatBoxed) " + 
 			  " when 15 then Double.toString(doublePrimitive) " + 
-			  " when 16 then Double.toString(doubleBoxed) " + 
-			  " when 17 then StringValue " + 
+			  " when 16 then Double.toString(doubleBoxed) " +
+              " when 17 then str " + 
 			  " else 'x' end as p1 " + 
 			  " from " + typeof(SupportBean).FullName + ".win:length(1)";
 			
@@ -503,7 +503,7 @@ namespace net.esper.regression.view
 			_event.floatBoxed = floatBoxed_;
 			_event.doublePrimitive = d_;
 			_event.doubleBoxed = doubleBoxed_;
-			_event.StringValue = str_;
+            _event.str = str_;
 			_event.EnumValue = enum_;
 			epService.EPRuntime.SendEvent(_event);
 		}
@@ -528,7 +528,7 @@ namespace net.esper.regression.view
 		private void  sendSupportBeanEvent(String stringValue)
 		{
 			SupportBean _event = new SupportBean();
-			_event.StringValue = stringValue;
+            _event.str = stringValue;
 			epService.EPRuntime.SendEvent(_event);
 		}
 		

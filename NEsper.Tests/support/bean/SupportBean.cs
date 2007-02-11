@@ -4,11 +4,17 @@ namespace net.esper.support.bean
 {
 	public class SupportBean
 	{
-		virtual public String StringValue
+		virtual public String Str
 		{
             get { return m_stringValue; }
             set { this.m_stringValue = value; }
 		}
+
+        virtual public String str
+        {
+            get { return m_stringValue; }
+            set { this.m_stringValue = value; }
+        }
 
 		#region "Primitives"
 

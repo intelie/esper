@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace net.esper.type
 {
-	
 	[TestFixture]
 	public class TestStringValue 
 	{

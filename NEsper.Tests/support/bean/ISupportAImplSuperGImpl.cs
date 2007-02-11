@@ -5,7 +5,7 @@ namespace net.esper.support.bean
 	
 	public class ISupportAImplSuperGImpl:ISupportAImplSuperG
 	{
-		override public String G
+		override public String g
 		{
 			get
 			{
@@ -13,7 +13,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		override public String A
+		override public String a
 		{
 			get
 			{
@@ -21,7 +21,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		override public String BaseAB
+		override public String baseAB
 		{
 			get
 			{

@@ -112,12 +112,12 @@ namespace net.esper.regression.view
             Assert.AreEqual(null, selectTestView.EventType.GetPropertyType("result"));
 
             tryCoalesceInvalid("coalesce(intPrimitive)");
-            tryCoalesceInvalid("coalesce(intPrimitive, StringValue)");
+            tryCoalesceInvalid("coalesce(intPrimitive, str)");
             tryCoalesceInvalid("coalesce(intPrimitive, xxx)");
-            tryCoalesceInvalid("coalesce(intPrimitive, BooleanBoxed)");
+            tryCoalesceInvalid("coalesce(intPrimitive, boolBoxed)");
             tryCoalesceInvalid("coalesce(charPrimitive, longBoxed)");
-            tryCoalesceInvalid("coalesce(charPrimitive, StringValue, StringValue)");
-            tryCoalesceInvalid("coalesce(StringValue, longBoxed)");
+            tryCoalesceInvalid("coalesce(charPrimitive, str, str)");
+            tryCoalesceInvalid("coalesce(str, longBoxed)");
             tryCoalesceInvalid("coalesce(null, longBoxed, string)");
             tryCoalesceInvalid("coalesce(null, null, boolBoxed, 1l)");
         }
@@ -233,7 +233,7 @@ namespace net.esper.regression.view
         private SupportBean SendEvent(String stringValue)
         {
             SupportBean bean = new SupportBean();
-            bean.StringValue = stringValue;
+            bean.str = stringValue;
             epService.EPRuntime.SendEvent(bean);
             return bean;
         }

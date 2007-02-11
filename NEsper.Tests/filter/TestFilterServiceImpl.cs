@@ -71,7 +71,7 @@ namespace net.esper.filter
 
             filterSpecs = new List<FilterValueSet>();
             filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).getValueSet(null));
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[] { "intPrimitive", FilterOperator.RANGE_CLOSED, 10, 20, "StringValue", FilterOperator.EQUAL, "HELLO", "boolPrimitive", FilterOperator.EQUAL, false, "doubleBoxed", FilterOperator.GREATER, 100d }).getValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[] { "intPrimitive", FilterOperator.RANGE_CLOSED, 10, 20, "str", FilterOperator.EQUAL, "HELLO", "boolPrimitive", FilterOperator.EQUAL, false, "doubleBoxed", FilterOperator.GREATER, 100d }).getValueSet(null));
             filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeTwo, new Object[0]).getValueSet(null));
             filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeTwo, eventTypeTwoArgs).getValueSet(null));
 
@@ -215,7 +215,7 @@ namespace net.esper.filter
         {
             SupportBean bean = new SupportBean();
             bean.intPrimitive = intPrimitive;
-            bean.StringValue = stringValue;
+            bean.str = stringValue;
             bean.boolPrimitive = boolPrimitive;
             bean.doubleBoxed = doubleBoxed;
             return SupportEventBeanFactory.createObject(bean);

@@ -140,7 +140,7 @@ namespace net.esper.pattern
 		{
 			foreach ( KeyValuePair<String, EventBean> entry in events )
 			{
-				events.Add( entry ) ;
+				events.Put( entry.Key, entry.Value ) ;
 			}
 		}
 	}

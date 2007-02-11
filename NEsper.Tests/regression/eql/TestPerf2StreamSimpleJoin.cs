@@ -110,7 +110,7 @@ namespace net.esper.regression.eql
         private Object makeSupportEvent(String id)
         {
             SupportBean bean = new SupportBean();
-            bean.StringValue = id;
+            bean.str = id;
             return bean;
         }
 

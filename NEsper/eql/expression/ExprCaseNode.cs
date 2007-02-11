@@ -147,7 +147,7 @@ namespace net.esper.eql.expression
             {
                 ExprNode whenExpr = children[i * 2];
                 ExprNode thenExpr = children[i * 2 + 1];
-                if (whenExpr.ReturnType != typeof(Boolean))
+                if (!TypeHelper.IsBoolean(whenExpr.ReturnType))
                 {
                     throw new ExprValidationException("Case node 'when' expressions must return a boolean value");
                 }

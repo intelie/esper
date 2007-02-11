@@ -45,7 +45,7 @@ namespace net.esper.regression.eql
 			epService.EPRuntime.SendEvent( complex );
 
 			EventBean _event = testListener.getAndResetLastNewData()[0];
-			Assert.AreSame( complex.Nested, _event["nested.nested"] );
+			Assert.AreSame( complex.nested, _event["nested.nested"] );
 			Assert.AreSame( combined.getIndexed( 0 ), _event["s1.indexed[0]"] );
 			Assert.AreEqual( complex.getIndexed( 1 ), _event["nested.indexed[1]"] );
 		}

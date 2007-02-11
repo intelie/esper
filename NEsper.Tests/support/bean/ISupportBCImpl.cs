@@ -6,7 +6,7 @@ namespace net.esper.support.bean
 	[Serializable]
 	public class ISupportBCImpl : ISupportB, ISupportC
 	{
-		virtual public String B
+		virtual public String b
 		{
 			get
 			{
@@ -14,7 +14,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		virtual public String BaseAB
+		virtual public String baseAB
 		{
 			get
 			{
@@ -22,7 +22,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		virtual public String C
+		virtual public String c
 		{
 			get
 			{

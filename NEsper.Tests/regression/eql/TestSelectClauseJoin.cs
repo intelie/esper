@@ -27,7 +27,11 @@ namespace net.esper.regression.eql
 			String eventA = typeof(SupportBean).FullName;
 			String eventB = typeof(SupportBean).FullName;
 			
-			String joinStatement = "select s0.doubleBoxed, s1.intPrimitive*s1.intBoxed/2.0 as div from " + eventA + "(string='s0').win:length(3) as s0," + eventB + "(string='s1').win:length(3) as s1" + " where s0.doubleBoxed = s1.doubleBoxed";
+			String joinStatement = 
+                "select s0.doubleBoxed, s1.intPrimitive*s1.intBoxed/2.0 as div from " +
+                eventA + "(str='s0').win:length(3) as s0," +
+                eventB + "(str='s1').win:length(3) as s1" +
+                " where s0.doubleBoxed = s1.doubleBoxed";
 			
 			joinView = epService.EPAdministrator.createEQL(joinStatement);
 			joinView.AddListener(updateListener);
@@ -58,7 +62,7 @@ namespace net.esper.regression.eql
 		private void  SendEvent(String s, double doubleBoxed, int intPrimitive, int intBoxed)
 		{
 			SupportBean bean = new SupportBean();
-			bean.StringValue = s;
+            bean.str = s;
 			bean.doubleBoxed = doubleBoxed;
 			bean.intPrimitive = intPrimitive;
 			bean.intBoxed = intBoxed;

@@ -74,14 +74,14 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testToExpressionString()
         {
-            Assert.AreEqual("s0.StringValue regexp \"[a-z][a-z]\"", regexpNodeNormal.ExpressionString);
-            Assert.AreEqual("s0.StringValue not regexp \"[a-z][a-z]\"", regexpNodeNot.ExpressionString);
+            Assert.AreEqual("s0.str regexp \"[a-z][a-z]\"", regexpNodeNormal.ExpressionString);
+            Assert.AreEqual("s0.str not regexp \"[a-z][a-z]\"", regexpNodeNot.ExpressionString);
         }
 
         private EventBean[] MakeEvent(String stringValue)
         {
             SupportBean _event = new SupportBean();
-            _event.StringValue = stringValue;
+            _event.str = stringValue;
             return new EventBean[] { SupportEventBeanFactory.createObject(_event) };
         }
 

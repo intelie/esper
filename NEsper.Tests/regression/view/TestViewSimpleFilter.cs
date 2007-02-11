@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 namespace net.esper.regression.view
 {
-	
 	[TestFixture]
 	public class TestViewSimpleFilter 
 	{
@@ -27,7 +26,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testNotEqualsOp()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + "(string != 'a')");
+			EPStatement statement = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + "(str != 'a')");
 			statement.AddListener(testListener);
 			
 			SendEvent("a");
@@ -46,7 +45,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCombinationEqualsOp()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + "(string != 'a', intPrimitive=0)");
+			EPStatement statement = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + "(str != 'a', intPrimitive=0)");
 			statement.AddListener(testListener);
 			
 			SendEvent("b", 1);
@@ -70,7 +69,7 @@ namespace net.esper.regression.view
 		private Object SendEvent(String stringValue, int intPrimitive)
 		{
 			SupportBean _event = new SupportBean();
-			_event.StringValue = stringValue;
+            _event.str = stringValue;
 			_event.intPrimitive = intPrimitive;
 			epService.EPRuntime.SendEvent(_event);
 			return _event;

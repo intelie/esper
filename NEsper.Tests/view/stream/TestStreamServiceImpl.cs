@@ -30,9 +30,9 @@ namespace net.esper.view.stream
 			supportFilterService = new SupportFilterServiceImpl();
 			
 			filterSpecs = new FilterSpec[3];
-			filterSpecs[0] = SupportFilterSpecBuilder.build(eventType, new Object[]{"StringValue", FilterOperator.EQUAL, "a"});
-			filterSpecs[1] = SupportFilterSpecBuilder.build(eventType, new Object[]{"StringValue", FilterOperator.EQUAL, "a"});
-			filterSpecs[2] = SupportFilterSpecBuilder.build(eventType, new Object[]{"StringValue", FilterOperator.EQUAL, "b"});
+			filterSpecs[0] = SupportFilterSpecBuilder.build(eventType, new Object[]{"str", FilterOperator.EQUAL, "a"});
+			filterSpecs[1] = SupportFilterSpecBuilder.build(eventType, new Object[]{"str", FilterOperator.EQUAL, "a"});
+			filterSpecs[2] = SupportFilterSpecBuilder.build(eventType, new Object[]{"str", FilterOperator.EQUAL, "b"});
 			
 			streams = new EventStream[4];
 			streams[0] = streamReuseService.createStream(filterSpecs[0], supportFilterService);

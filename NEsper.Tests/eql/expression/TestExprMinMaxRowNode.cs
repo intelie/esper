@@ -25,11 +25,11 @@ namespace net.esper.eql.expression
 			minMaxNode.AddChildNode(new SupportExprNode(typeof(Double)));
 			minMaxNode.AddChildNode(new SupportExprNode(typeof(Int32)));
 			minMaxNode.validate(null, null);
-			Assert.AreEqual( typeof( Double ), minMaxNode.ReturnType );
+			Assert.AreEqual( typeof( double? ), minMaxNode.ReturnType );
 			
 			minMaxNode.AddChildNode(new SupportExprNode(typeof(Double)));
 			minMaxNode.validate(null, null);
-			Assert.AreEqual( typeof( Double ), minMaxNode.ReturnType );
+			Assert.AreEqual( typeof( double? ), minMaxNode.ReturnType );
 		}
 		
 		[Test]

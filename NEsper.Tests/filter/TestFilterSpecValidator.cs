@@ -30,11 +30,11 @@ namespace net.esper.filter
 			assertInvalid("boolPrimitive", FilterOperator.RANGE_CLOSED, 1, 1);
 			assertValid("boolPrimitive", FilterOperator.EQUAL, false);
 			assertValid("boolPrimitive", FilterOperator.EQUAL, true);
-			
-			assertInvalid("StringValue", FilterOperator.LESS, "a");
-			assertInvalid("StringValue", FilterOperator.RANGE_CLOSED, 10, 20);
-			assertInvalid("StringValue", FilterOperator.EQUAL, null);
-			assertValid("StringValue", FilterOperator.EQUAL, "a");
+
+            assertInvalid("str", FilterOperator.LESS, "a");
+            assertInvalid("str", FilterOperator.RANGE_CLOSED, 10, 20);
+            assertInvalid("str", FilterOperator.EQUAL, null);
+            assertValid("str", FilterOperator.EQUAL, "a");
 			
 			assertInvalid("dummy", FilterOperator.EQUAL, "a");
 			

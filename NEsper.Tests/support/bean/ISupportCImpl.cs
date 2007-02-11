@@ -6,7 +6,7 @@ namespace net.esper.support.bean
 	[Serializable]
 	public class ISupportCImpl : ISupportC
 	{
-		virtual public String C
+		virtual public String c
 		{
 			get
 			{

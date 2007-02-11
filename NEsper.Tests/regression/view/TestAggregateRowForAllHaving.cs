@@ -81,7 +81,7 @@ namespace net.esper.regression.view
 		private void  SendEvent(long longBoxed, int intBoxed, short shortBoxed)
 		{
 			SupportBean bean = new SupportBean();
-			bean.StringValue = JOIN_KEY;
+			bean.str = JOIN_KEY;
 			bean.longBoxed = longBoxed;
 			bean.intBoxed = intBoxed;
 			bean.shortBoxed = shortBoxed;

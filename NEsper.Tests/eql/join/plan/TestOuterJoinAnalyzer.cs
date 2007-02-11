@@ -20,7 +20,7 @@ namespace net.esper.eql.join.plan
         {
             IList<OuterJoinDesc> descList = new ELinkedList<OuterJoinDesc>();
             descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT));
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "StringValue", "s1", OuterJoinType.LEFT));
+            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.LEFT));
             // simpleProperty in s2
 
             QueryGraph graph = new QueryGraph(3);
@@ -34,7 +34,7 @@ namespace net.esper.eql.join.plan
             Assert.AreEqual("intBoxed", graph.GetKeyProperties(1, 0)[0]);
 
             Assert.IsTrue(graph.IsNavigable(1, 2));
-            Assert.AreEqual("StringValue", graph.GetKeyProperties(1, 2)[0]);
+            Assert.AreEqual("str", graph.GetKeyProperties(1, 2)[0]);
             Assert.AreEqual("simpleProperty", graph.GetKeyProperties(2, 1)[0]);
         }
     }

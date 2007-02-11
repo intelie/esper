@@ -59,7 +59,7 @@ namespace net.esper.view.stat
 		[Test]
 		public virtual void  testTwoDim()
 		{
-			MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "StringValue", "enumValue");
+			MultiDimStatsView olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "str", "enumValue");
 			parentStream.AddView(olapView);
 			olapView.AddView(childView);
 			olapView.ViewServiceContext = SupportViewContextFactory.makeContext();
@@ -125,23 +125,23 @@ namespace net.esper.view.stat
 			olapView = new MultiDimStatsView(derivedFields, "dummy", "intPrimitive");
 			Assert.IsTrue(olapView.AttachesTo(parentStream) != null);
 
-            olapView = new MultiDimStatsView(derivedFields, "StringValue", "intPrimitive");
+            olapView = new MultiDimStatsView(derivedFields, "str", "intPrimitive");
 			Assert.IsTrue(olapView.AttachesTo(parentStream) != null);
 
-            olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "StringValue", "dummy");
+            olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "str", "dummy");
 			Assert.IsTrue(olapView.AttachesTo(parentStream) != null);
 
-            olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "StringValue", "doublePrimitive", "dummy");
+            olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "str", "doublePrimitive", "dummy");
 			Assert.IsTrue(olapView.AttachesTo(parentStream) != null);
 
-            olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "StringValue", "doubleBoxed", "doublePrimitive");
+            olapView = new MultiDimStatsView(derivedFields, "intPrimitive", "str", "doubleBoxed", "doublePrimitive");
 			Assert.IsTrue(olapView.AttachesTo(parentStream) == null);
 			
 			// Try invalid derived fields
-			olapView = new MultiDimStatsView(new String[]{"goodie"}, "intPrimitive", "StringValue");
+			olapView = new MultiDimStatsView(new String[]{"goodie"}, "intPrimitive", "str");
 			Assert.IsTrue(olapView.AttachesTo(parentStream) != null);
 			
-			olapView = new MultiDimStatsView(new String[]{"count", "goodie"}, "intPrimitive", "StringValue");
+			olapView = new MultiDimStatsView(new String[]{"count", "goodie"}, "intPrimitive", "str");
 			Assert.IsTrue(olapView.AttachesTo(parentStream) != null);
 		}
 		
@@ -173,7 +173,7 @@ namespace net.esper.view.stat
 			SupportBean bean = new SupportBean();
 			bean.intPrimitive = intPrimitive;
 			bean.EnumValue = enumValue;
-			bean.StringValue = stringValue;
+            bean.str = stringValue;
 			bean.boolBoxed = boolValue;
 			return SupportEventBeanFactory.createObject(bean);
 		}

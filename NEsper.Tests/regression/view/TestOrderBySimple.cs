@@ -42,8 +42,8 @@ namespace net.esper.regression.view
             sendJoinEvents();
             orderValuesByPriceJoin();
             assertValues(symbols, "symbol");
-            assertValues(symbols, "StringValue");
-            assertOnlyProperties(new String[] { "symbol", "StringValue" });
+            assertValues(symbols, "str");
+            assertOnlyProperties(new String[] { "symbol", "str" });
             clearValues();
 
             statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by string, price";

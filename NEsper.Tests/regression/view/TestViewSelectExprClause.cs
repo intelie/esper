@@ -30,7 +30,7 @@ namespace net.esper.regression.view
 			epService.Initialize();
 			epService.EPRuntime.SendEvent( new TimerControlEvent( TimerControlEvent.ClockType.CLOCK_EXTERNAL ) );
 
-			String viewExpr = "select string, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" + " from " + typeof( SupportBean ).FullName + ".win:length(3) " + " where boolBoxed = true";
+			String viewExpr = "select str, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" + " from " + typeof( SupportBean ).FullName + ".win:length(3) " + " where boolBoxed = true";
 			selectTestView = epService.EPAdministrator.createEQL( viewExpr );
 			selectTestView.AddListener( testListener );
 		}
@@ -39,11 +39,11 @@ namespace net.esper.regression.view
 		public virtual void testGetEventType()
 		{
 			EventType type = selectTestView.EventType;
-            IList<String> testList = new String[]{ "(3*intPrimitive)", "StringValue", "result", "aBool" } ;
+            IList<String> testList = new String[]{ "(3*intPrimitive)", "str", "result", "aBool" } ;
 
 			log.Debug( ".testGetEventType properties=" + CollectionHelper.Render( type.PropertyNames ) );
 			Assert.IsTrue( CollectionHelper.AreEqual( type.PropertyNames, testList ) ) ;
-			Assert.AreEqual( typeof( String ), type.GetPropertyType( "StringValue" ) );
+			Assert.AreEqual( typeof( String ), type.GetPropertyType( "str" ) );
 			Assert.AreEqual( typeof( bool ), type.GetPropertyType( "aBool" ) );
 			Assert.AreEqual( typeof( Single ), type.GetPropertyType( "result" ) );
 			Assert.AreEqual( typeof( Int32 ), type.GetPropertyType( "(3*intPrimitive)" ) );
@@ -60,7 +60,7 @@ namespace net.esper.regression.view
 			SendEvent( "c", true, 3, 10, 20 );
 
 			EventBean received = testListener.getAndResetLastNewData()[0];
-			Assert.AreEqual( "c", received["StringValue"] );
+			Assert.AreEqual( "c", received["str"] );
 			Assert.AreEqual( true, received["aBool"] );
 			Assert.AreEqual( 30f, received["result"] );
 		}
@@ -68,7 +68,7 @@ namespace net.esper.regression.view
 		private void SendEvent( String s, bool b, int i, float f1, float f2 )
 		{
 			SupportBean bean = new SupportBean();
-			bean.StringValue = s;
+			bean.str = s;
 			bean.boolBoxed = b ;
 			bean.intPrimitive = i;
 			bean.floatPrimitive = f1;

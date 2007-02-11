@@ -113,7 +113,7 @@ namespace net.esper.view.window
 			
 			view = new ExternallyTimedWindowView("intPrimitive", 20);
 			Assert.IsTrue(view.AttachesTo(parent) != null);
-			view = new ExternallyTimedWindowView("StringValue", 20);
+			view = new ExternallyTimedWindowView("str", 20);
 			Assert.IsTrue(view.AttachesTo(parent) != null);
 			view = new ExternallyTimedWindowView("boolean", 20);
 			Assert.IsTrue(view.AttachesTo(parent) != null);

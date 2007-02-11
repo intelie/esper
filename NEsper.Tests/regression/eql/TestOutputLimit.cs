@@ -306,7 +306,7 @@ namespace net.esper.regression.eql
 		private void  SendEvent(String s)
 		{
 			SupportBean bean = new SupportBean();
-			bean.StringValue = s;
+			bean.str = s;
 			bean.doubleBoxed = 0.0;
 			bean.intPrimitive = 0;
 			bean.intBoxed = 0;
@@ -316,7 +316,7 @@ namespace net.esper.regression.eql
 		private void  sendJoinEvents(String s)
 		{
 			SupportBean event1 = new SupportBean();
-			event1.StringValue = s;
+			event1.str = s;
 			event1.doubleBoxed = 0.0;
 			event1.intPrimitive = 0;
 			event1.intBoxed = 0;

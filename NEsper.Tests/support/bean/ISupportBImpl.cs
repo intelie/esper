@@ -5,7 +5,7 @@ namespace net.esper.support.bean
 	
 	public class ISupportBImpl : ISupportB
 	{
-		virtual public String B
+		virtual public String b
 		{
 			get
 			{
@@ -13,7 +13,7 @@ namespace net.esper.support.bean
 			}
 			
 		}
-		virtual public String BaseAB
+		virtual public String baseAB
 		{
 			get
 			{

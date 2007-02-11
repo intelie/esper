@@ -24,7 +24,7 @@ namespace net.esper.support.events
             for (int i = 0; i < events.Length; i++)
             {
                 SupportBean bean = new SupportBean();
-                bean.StringValue = ids[i];
+                bean.str = ids[i];
                 events[i] = createObject(bean);
             }
             return events;

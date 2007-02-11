@@ -27,8 +27,8 @@ namespace net.esper.eql.parse
 		private static String CLASSNAME = typeof( SupportBean ).FullName;
 		private static String EXPRESSION = 
             "select * from " +
-            CLASSNAME + "(StringValue='a').win:length(10).std:lastevent() as win1," +
-            CLASSNAME + "(StringValue='b').win:length(10).std:lastevent() as win2 ";
+            CLASSNAME + "(str='a').win:length(10).std:lastevent() as win1," +
+            CLASSNAME + "(str='b').win:length(10).std:lastevent() as win2 ";
 
 		[Test]
 		public virtual void testWalkEQLSimpleWhere()
@@ -67,9 +67,9 @@ namespace net.esper.eql.parse
 		{
 			String expression =
                 "select * from " +
-                CLASSNAME + "(StringValue='a').win:length(10).std:lastevent() as win1," + 
-                CLASSNAME + "(StringValue='b').win:length(9).std:lastevent() as win2, " +
-                CLASSNAME + "(StringValue='c').win:length(3).std:lastevent() as win3 " +
+                CLASSNAME + "(str='a').win:length(10).std:lastevent() as win1," +
+                CLASSNAME + "(str='b').win:length(9).std:lastevent() as win2, " +
+                CLASSNAME + "(str='c').win:length(3).std:lastevent() as win3 " +
                 "where win1.f1=win2.f2 and win3.f3=f4";
 
 			EQLTreeWalker walker = parseAndWalkEQL( expression );
@@ -164,7 +164,7 @@ namespace net.esper.eql.parse
 			String expression =
                 "insert into MyAlias select * from " +
                 CLASSNAME + "().win:length(10).std:lastevent() as win1," +
-                CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2";
+                CLASSNAME + "(str='b').win:length(9).std:lastevent() as win2";
 
 			EQLTreeWalker walker = parseAndWalkEQL( expression );
 
@@ -176,7 +176,7 @@ namespace net.esper.eql.parse
 			expression =
                 "insert rstream into MyAlias(a, b, c) select * from " +
                 CLASSNAME + "().win:length(10).std:lastevent() as win1," +
-                CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2";
+                CLASSNAME + "(str='b').win:length(9).std:lastevent() as win2";
 
 			walker = parseAndWalkEQL( expression );
 
@@ -203,7 +203,7 @@ namespace net.esper.eql.parse
 		{
 			String text =
                 "select * from " + typeof( SupportBean ).FullName +
-                "(StringValue=\"IBM\").win:length(10, 1.1, \"a\").stat:uni('price', false)";
+                "(str=\"IBM\").win:length(10, 1.1, \"a\").stat:uni('price', false)";
 
 			EQLTreeWalker walker = parseAndWalkEQL( text );
             FilterSpec filterSpec = ((FilterStreamSpec)walker.StatementSpec.StreamSpecs[0]).FilterSpec;
@@ -235,7 +235,7 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testSelectList()
 		{
-			String text = "select intPrimitive, 2 * intBoxed, 5 as myConst, stream0.string as theString from " + typeof( SupportBean ).FullName + "().win:length(10) as stream0";
+            String text = "select intPrimitive, 2 * intBoxed, 5 as myConst, stream0.str as theString from " + typeof(SupportBean).FullName + "().win:length(10) as stream0";
 			EQLTreeWalker walker = parseAndWalkEQL( text );
 			IList<SelectExprElementUnnamedSpec> selectExpressions = walker.StatementSpec.SelectListExpressions;
 			Assert.AreEqual( 4, selectExpressions.Count );
@@ -560,7 +560,7 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testWalkPattern()
 		{
-			String text = "every g=" + typeof( SupportBean ).FullName + "(StringValue=\"IBM\", intPrimitive != 1) where timer:within(20)";
+            String text = "every g=" + typeof(SupportBean).FullName + "(str=\"IBM\", intPrimitive != 1) where timer:within(20)";
 
 			EQLTreeWalker walker = parseAndWalkPattern( text );
 

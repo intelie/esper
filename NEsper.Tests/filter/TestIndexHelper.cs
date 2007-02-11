@@ -33,7 +33,7 @@ namespace net.esper.filter
             parameters.Add(parameterOne);
             parameterTwo = new FilterValueSetParamImpl("doubleBoxed", FilterOperator.GREATER, 20d);
             parameters.Add(parameterTwo);
-            parameterThree = new FilterValueSetParamImpl("StringValue", FilterOperator.EQUAL, "sometext");
+            parameterThree = new FilterValueSetParamImpl("str", FilterOperator.EQUAL, "sometext");
             parameters.Add(parameterThree);
         }
 
@@ -81,7 +81,7 @@ namespace net.esper.filter
             FilterParamIndex indexOne = IndexFactory.createIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
             Assert.IsNull(IndexHelper.findParameter(parameters, indexOne));
 
-            FilterParamIndex indexTwo = IndexFactory.createIndex(eventType, "StringValue", FilterOperator.EQUAL);
+            FilterParamIndex indexTwo = IndexFactory.createIndex(eventType, "str", FilterOperator.EQUAL);
             Assert.AreEqual(parameterThree, IndexHelper.findParameter(parameters, indexTwo));
 
             FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);

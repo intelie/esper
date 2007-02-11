@@ -56,7 +56,7 @@ namespace net.esper.regression.view
 			
 			SendEvent("a");
 			Assert.IsFalse(testListener.Invoked);
-			Assert.AreEqual("a", testListenerInsertInto.assertOneGetNewAndReset()["StringValue"]); // insert into unchanged
+			Assert.AreEqual("a", testListenerInsertInto.assertOneGetNewAndReset()["str"]); // insert into unchanged
 			
 			sendEvents(new String[]{"b", "c"});
 			Assert.IsFalse(testListener.Invoked);
@@ -64,9 +64,9 @@ namespace net.esper.regression.view
 			testListenerInsertInto.reset();
 			
 			SendEvent("d");
-			Assert.AreSame("a", testListener.LastNewData[0]["StringValue"]); // receive 'a' as new data
+			Assert.AreSame("a", testListener.LastNewData[0]["str"]); // receive 'a' as new data
 			Assert.IsNull(testListener.LastOldData); // receive no more old data
-			Assert.AreEqual("d", testListenerInsertInto.LastNewData[0]["StringValue"]); // insert into unchanged
+			Assert.AreEqual("d", testListenerInsertInto.LastNewData[0]["str"]); // insert into unchanged
 			Assert.IsNull(testListenerInsertInto.LastOldData); // receive no old data in insert into
 			testListener.reset();
 		}
@@ -89,9 +89,9 @@ namespace net.esper.regression.view
 			Assert.IsFalse(testListenerInsertInto.Invoked);
 			
 			SendEvent("d");
-			Assert.AreSame("a", testListener.LastNewData[0]["StringValue"]); // receive 'a' as new data
+			Assert.AreSame("a", testListener.LastNewData[0]["str"]); // receive 'a' as new data
 			Assert.IsNull(testListener.LastOldData); // receive no more old data
-			Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["StringValue"]); // insert into unchanged
+			Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["str"]); // insert into unchanged
 			Assert.IsNull(testListener.LastOldData); // receive no old data in insert into
 			testListener.reset();
 		}
@@ -141,13 +141,13 @@ namespace net.esper.regression.view
 			statement.AddListener(testListenerInsertInto);
 			
 			SendEvent("a");
-			Assert.AreEqual("a", testListener.assertOneGetNewAndReset()["StringValue"]);
+			Assert.AreEqual("a", testListener.assertOneGetNewAndReset()["str"]);
 			Assert.IsFalse(testListenerInsertInto.Invoked);
 			
 			SendEvent("b");
-			Assert.AreEqual("b", testListener.LastNewData[0]["StringValue"]);
+			Assert.AreEqual("b", testListener.LastNewData[0]["str"]);
 			Assert.IsNull(testListener.LastOldData);
-			Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["StringValue"]);
+			Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["str"]);
 			Assert.IsNull(testListenerInsertInto.LastOldData);
 		}
 		
@@ -187,7 +187,7 @@ namespace net.esper.regression.view
 		private Object SendEvent(String stringValue, int intPrimitive)
 		{
 			SupportBean _event = new SupportBean();
-			_event.StringValue = stringValue;
+			_event.str = stringValue;
 			_event.intPrimitive = intPrimitive;
 			epService.EPRuntime.SendEvent(_event);
 			return _event;

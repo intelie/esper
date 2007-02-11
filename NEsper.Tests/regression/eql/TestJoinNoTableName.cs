@@ -40,7 +40,7 @@ namespace net.esper.regression.eql
 				setOne[i] = new SupportMarketDataBean( "IBM", 0, (long) i, "" );
 
 				SupportBean _event = new SupportBean();
-				_event.StringValue = "IBM";
+                _event.str = "IBM";
 				_event.longBoxed = (long) i ;
 				setTwo[i] = _event;
 			}

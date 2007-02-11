@@ -185,7 +185,7 @@ namespace net.esper.eql.join.assemble
 			return result;
 		}
 
-		private static void recursiveAggregateEnter( BaseAssemblyNode currentNode, IDictionary<Int32, IList<BaseAssemblyNode>> nodesPerLevel, int currentLevel )
+		private static void recursiveAggregateEnter( BaseAssemblyNode currentNode, EDictionary<Int32, IList<BaseAssemblyNode>> nodesPerLevel, int currentLevel )
 		{
 			// ask all child nodes to enter themselves
 			foreach ( BaseAssemblyNode node in currentNode.ChildNodes )
@@ -194,7 +194,7 @@ namespace net.esper.eql.join.assemble
 			}
 
 			// Add myself to list
-			IList<BaseAssemblyNode> aggregates = nodesPerLevel[ currentLevel ] ;
+			IList<BaseAssemblyNode> aggregates = nodesPerLevel.Fetch( currentLevel, null ) ;
 			if ( aggregates == null )
 			{
 				aggregates = new ELinkedList<BaseAssemblyNode>();

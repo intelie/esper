@@ -33,19 +33,19 @@ namespace net.esper.filter
 			Assert.IsTrue(index.FilterOperator == FilterOperator.GREATER);
 			
 			// Create an "equals" index
-			index = IndexFactory.createIndex(eventType, "StringValue", FilterOperator.EQUAL);
+            index = IndexFactory.createIndex(eventType, "str", FilterOperator.EQUAL);
 			
 			Assert.IsTrue(index != null);
 			Assert.IsTrue(index is FilterParamIndexEquals);
-			Assert.IsTrue(index.PropertyName.Equals("StringValue"));
+            Assert.IsTrue(index.PropertyName.Equals("str"));
 			Assert.IsTrue(index.FilterOperator == FilterOperator.EQUAL);
 			
 			// Create an "not equals" index
-			index = IndexFactory.createIndex(eventType, "StringValue", FilterOperator.NOT_EQUAL);
+            index = IndexFactory.createIndex(eventType, "str", FilterOperator.NOT_EQUAL);
 			
 			Assert.IsTrue(index != null);
 			Assert.IsTrue(index is FilterParamIndexNotEquals);
-			Assert.IsTrue(index.PropertyName.Equals("StringValue"));
+            Assert.IsTrue(index.PropertyName.Equals("str"));
 			Assert.IsTrue(index.FilterOperator == FilterOperator.NOT_EQUAL);
 			
 			// Create a range index

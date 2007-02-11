@@ -5,7 +5,7 @@ namespace net.esper.support.bean
 	
 	public interface ISupportD:ISupportBaseD
 	{
-		String D
+		String d
 		{
 			get;
 			

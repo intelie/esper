@@ -22,7 +22,7 @@ namespace net.esper.eql.core
         [SetUp]
         public virtual void setUp()
         {
-            SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("StringValue", "s0"), null, SupportEventAdapterService.Service);
+            SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("str", "s0"), null, SupportEventAdapterService.Service);
             supportAggregationService = new SupportAggregationService();
 
             IList<ExprNode> groupKeyNodes = new List<ExprNode>();

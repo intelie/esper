@@ -127,7 +127,7 @@ namespace net.esper.events
         {
             EventType eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
             EventPropertyGetter[] getters = new EventPropertyGetter[2];
-            getters[0] = eventType.GetGetter("StringValue");
+            getters[0] = eventType.GetGetter("str");
             getters[1] = eventType.GetGetter("intPrimitive");
             return getters;
         }

@@ -87,7 +87,7 @@ namespace net.esper.compat
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
         public void Add(T item)
         {
-            m_dataTable.Add(item, item);
+            m_dataTable[item] = item;
         }
 
         /// <summary>

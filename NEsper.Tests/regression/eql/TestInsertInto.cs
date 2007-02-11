@@ -232,7 +232,7 @@ namespace net.esper.regression.eql
 		private void SendEvent( int intPrimitive, int intBoxed )
 		{
 			SupportBean bean = new SupportBean();
-			bean.StringValue = "myId";
+			bean.str = "myId";
 			bean.intPrimitive = intPrimitive;
 			bean.intBoxed = intBoxed ;
 			epService.EPRuntime.SendEvent( bean );

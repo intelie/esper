@@ -47,7 +47,7 @@ namespace net.esper.filter
         [Test]
         public virtual void testString()
         {
-            FilterParamIndexNotEquals index = new FilterParamIndexNotEquals("StringValue", testEventType);
+            FilterParamIndexNotEquals index = new FilterParamIndexNotEquals("str", testEventType);
 
             index.Put("hello", testEvaluator);
             index.Put("test", testEvaluator);
@@ -77,7 +77,7 @@ namespace net.esper.filter
 
         private void verifyString(FilterParamIndex index, String testValue, int numExpected)
         {
-            testBean.StringValue = testValue;
+            testBean.str = testValue;
             index.matchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }

@@ -37,8 +37,8 @@ namespace net.esper.support.eql
 			e1.AddChildNode(i1_1);
 			e1.AddChildNode(i1_2);
 			
-			ExprIdentNode i2_1 = new ExprIdentNode("StringValue", "s1");
-			ExprIdentNode i2_2 = new ExprIdentNode("StringValue", "s0");
+			ExprIdentNode i2_1 = new ExprIdentNode("str", "s1");
+			ExprIdentNode i2_2 = new ExprIdentNode("str", "s0");
 			e2.AddChildNode(i2_1);
 			e2.AddChildNode(i2_2);
 			
@@ -63,8 +63,8 @@ namespace net.esper.support.eql
 			equalNodes[0].AddChildNode(i1_1);
 			equalNodes[0].AddChildNode(i1_2);
 			
-			ExprIdentNode i2_1 = new ExprIdentNode("StringValue", "s1");
-			ExprIdentNode i2_2 = new ExprIdentNode("StringValue", "s0");
+			ExprIdentNode i2_1 = new ExprIdentNode("str", "s1");
+			ExprIdentNode i2_2 = new ExprIdentNode("str", "s0");
 			equalNodes[1].AddChildNode(i2_1);
 			equalNodes[1].AddChildNode(i2_2);
 			
@@ -187,7 +187,7 @@ namespace net.esper.support.eql
 		{
 			// Build :      s0.string regexp "[a-z][a-z]"  (with not)
 			ExprRegexpNode node = new ExprRegexpNode(isNot);
-			node.AddChildNode(makeIdentNode("StringValue", "s0"));
+			node.AddChildNode(makeIdentNode("str", "s0"));
 			node.AddChildNode(new SupportExprNode("[a-z][a-z]"));
 			validate(node);
 			return node;
@@ -197,7 +197,7 @@ namespace net.esper.support.eql
 		{
 			// Build :      s0.string like "%abc__"  (with or witout escape)
 			ExprLikeNode node = new ExprLikeNode(isNot);
-			node.AddChildNode(makeIdentNode("StringValue", "s0"));
+			node.AddChildNode(makeIdentNode("str", "s0"));
 			node.AddChildNode(new SupportExprNode("%abc__"));
 			if (optionalEscape != null)
 			{

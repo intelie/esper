@@ -49,7 +49,7 @@ namespace net.esper.filter
 
             try
             {
-                new FilterParamIndexCompare("StringValue", FilterOperator.RANGE_CLOSED, testEventType);
+                new FilterParamIndexCompare("str", FilterOperator.RANGE_CLOSED, testEventType);
                 Assert.IsTrue(false);
             }
             catch (ArgumentException ex)

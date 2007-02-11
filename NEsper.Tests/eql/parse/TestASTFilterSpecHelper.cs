@@ -60,7 +60,7 @@ namespace net.esper.eql.parse
             Assert.AreEqual(4, param.getFilterValue(null));
 
             param = spec.Parameters[1];
-            Assert.AreEqual("StringValue", param.PropertyName);
+            Assert.AreEqual("str", param.PropertyName);
             Assert.AreEqual(FilterOperator.EQUAL, param.FilterOperator);
             Assert.AreEqual("test", param.getFilterValue(null));
 

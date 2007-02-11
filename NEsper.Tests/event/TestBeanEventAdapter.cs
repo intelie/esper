@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
 
@@ -59,7 +60,7 @@ namespace net.esper.events
         {
             EventType eventType = beanEventAdapter.CreateOrGetBeanType(typeof(SupportBeanComplexProps));
 
-            Assert.AreEqual(typeof(System.Collections.IDictionary), eventType.GetPropertyType("mapProperty"));
+            Assert.AreTrue(eventType.GetPropertyType("mapProperty") is IDataDictionary);
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("mapped('x')"));
             Assert.AreEqual(typeof(int), eventType.GetPropertyType("indexed[1]"));
             Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), eventType.GetPropertyType("nested"));

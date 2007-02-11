@@ -61,7 +61,7 @@ namespace net.esper.regression.eql
 			
 			SupportBean _event = new SupportBean();
 			_event.intPrimitive = 1;
-			_event.StringValue = "test";
+            _event.str = "test";
 			epService.EPRuntime.SendEvent(_event);
 			
 			EventBean eventBean = updateListener.assertOneGetNewAndReset();
@@ -90,7 +90,7 @@ namespace net.esper.regression.eql
 			
 			SupportBean eventTwo = new SupportBean();
 			eventTwo.intPrimitive = 2;
-			eventTwo.StringValue = "test2";
+            eventTwo.str = "test2";
 			epService.EPRuntime.SendEvent(eventTwo);
 			eventBean = updateListener.assertOneGetNewAndReset();
 			Assert.AreEqual(2, eventBean["myInt"]);

@@ -88,7 +88,7 @@ namespace net.esper.regression.eql
         private Object makeSupportEvent(String id, long longBoxed)
         {
             SupportBean bean = new SupportBean();
-            bean.StringValue = id;
+            bean.str = id;
             bean.longBoxed = longBoxed;
             return bean;
         }

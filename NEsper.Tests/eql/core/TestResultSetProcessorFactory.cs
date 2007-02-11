@@ -102,7 +102,7 @@ namespace net.esper.eql.core
             //      wildcard
             //      or one or more non-aggregated event properties are not in the group by (output per event)
             IList<SelectExprElementUnnamedSpec> selectList = SupportSelectExprFactory.makeAggregateMixed();
-            ExprNode identNode = SupportExprNodeFactory.makeIdentNode("StringValue", "s0");
+            ExprNode identNode = SupportExprNodeFactory.makeIdentNode("str", "s0");
             selectList.Add(new SelectExprElementUnnamedSpec(identNode, null));
 
             groupByList.Add(SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0"));

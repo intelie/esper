@@ -124,7 +124,7 @@ namespace net.esper.type
          */
         public static ValueType AddDouble(ValueType d1, ValueType d2)
         {
-            double? result = ((double?) d1) + ((double?) d2);
+            double? result = ((double) d1) + ((double) d2);
             return result;
         }
         /**
@@ -132,7 +132,7 @@ namespace net.esper.type
          */
         public static ValueType AddSingle(ValueType d1, ValueType d2)
         {
-            float? result = ((float?) d1) + ((float?) d2);
+            float? result = ((float) d1) + ((float) d2);
             return result;
         }
         /**
@@ -140,7 +140,7 @@ namespace net.esper.type
          */
         public static ValueType AddInt64(ValueType d1, ValueType d2)
         {
-            long? result = ((long?) d1) + ((long?) d2);
+            long? result = ((long) d1) + ((long) d2);
             return result;
         }
         /**
@@ -148,7 +148,7 @@ namespace net.esper.type
          */
         public static ValueType AddInt32(ValueType d1, ValueType d2)
         {
-            int? result = ((int?) d1) + ((int?) d2);
+            int? result = ((int) d1) + ((int) d2);
             return result;
         }
 
@@ -157,7 +157,7 @@ namespace net.esper.type
          */
         public static ValueType SubtractDouble(ValueType d1, ValueType d2)
         {
-            double? result = ((double?) d1) - ((double?) d2);
+            double? result = ((double) d1) - ((double) d2);
             return result;
         }
         /**
@@ -165,7 +165,7 @@ namespace net.esper.type
          */
         public static ValueType SubtractSingle(ValueType d1, ValueType d2)
         {
-            float? result = ((float?) d1) - ((float?) d2);
+            float? result = ((float) d1) - ((float) d2);
             return result;
         }
         /**
@@ -173,7 +173,7 @@ namespace net.esper.type
          */
         public static ValueType SubtractInt64(ValueType d1, ValueType d2)
         {
-            long? result = ((long?) d1) - ((long?) d2);
+            long? result = ((long) d1) - ((long) d2);
             return result;
         }
         /**
@@ -181,7 +181,7 @@ namespace net.esper.type
          */
         public static ValueType SubtractInt32(ValueType d1, ValueType d2)
         {
-            int? result = ((int?) d1) - ((int?) d2);
+            int? result = ((int) d1) - ((int) d2);
             return result;
         }
 
@@ -190,7 +190,7 @@ namespace net.esper.type
          */
         public static ValueType DivideDouble(ValueType d1, ValueType d2)
         {
-            double? result = ((double?) d1) / ((double?) d2);
+            double? result = ((double) d1) / ((double) d2);
             return result;
         }
         /**
@@ -198,7 +198,7 @@ namespace net.esper.type
          */
         public static ValueType DivideSingle(ValueType d1, ValueType d2)
         {
-            float? result = ((float?) d1) / ((float?) d2);
+            float? result = ((float) d1) / ((float) d2);
             return result;
         }
         /**
@@ -206,7 +206,7 @@ namespace net.esper.type
          */
 		public static ValueType DivideInt64( ValueType d1, ValueType d2 )
         {
-            long? result = ((long?) d1) / ((long?) d2);
+            long? result = ((long) d1) / ((long) d2);
             return result;
         }
         /**
@@ -214,7 +214,7 @@ namespace net.esper.type
          */
         public static ValueType DivideInt32(ValueType d1, ValueType d2)
         {
-            int? result = ((int?) d1) / ((int?) d2);
+            int? result = ((int) d1) / ((int) d2);
             return result;
         }
 
@@ -223,7 +223,7 @@ namespace net.esper.type
          */
         public static ValueType MultiplyDouble(ValueType d1, ValueType d2)
         {
-            double? result = ((double?) d1) * ((double?) d2);
+            double? result = ((double) d1) * ((double) d2);
             return result;
         }
         /**
@@ -231,7 +231,7 @@ namespace net.esper.type
          */
         public static ValueType MultiplySingle(ValueType d1, ValueType d2)
         {
-            float? result = ((float?) d1) * ((float?) d2);
+            float? result = ((float) d1) * ((float) d2);
             return result;
         }
         /**
@@ -239,7 +239,7 @@ namespace net.esper.type
          */
 		public static ValueType MultiplyInt64( ValueType d1, ValueType d2 )
         {
-            long? result = ((long?) d1) * ((long?) d2);
+            long? result = ((long) d1) * ((long) d2);
             return result;
         }
         /**
@@ -247,7 +247,7 @@ namespace net.esper.type
          */
         public static ValueType MultiplyInt32(ValueType d1, ValueType d2)
         {
-            int? result = ((int?) d1) * ((int?) d2);
+            int? result = ((int) d1) * ((int) d2);
             return result;
         }
 
@@ -256,7 +256,7 @@ namespace net.esper.type
          */
         public static ValueType ModuloDouble(ValueType d1, ValueType d2)
         {
-            double? result = ((double?) d1) % ((double?) d2);
+            double? result = ((double) d1) % ((double) d2);
             return result;
         }
         /**

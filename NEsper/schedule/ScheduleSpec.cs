@@ -62,8 +62,8 @@ namespace net.esper.schedule
 
 		public void addValue( ScheduleUnit element, int value )
 		{
-			ETreeSet<Int32> _set ;
-			if ( ! unitValues.TryGetValue( element, out _set ) )
+            ETreeSet<Int32> _set = unitValues.Fetch(element, null);
+            if ( _set == null )
 			{
 				_set = new ETreeSet<Int32>();
 				unitValues[element] = _set;
@@ -181,6 +181,8 @@ namespace net.esper.schedule
 		/// </param>
 		internal static void compress( IDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues )
 		{
+            List<ScheduleUnit> termList = new List<ScheduleUnit>();
+
 			foreach ( KeyValuePair<ScheduleUnit, ETreeSet<Int32>> entry in unitValues )
 			{
 				int elementValueSetSize = entry.Key.max() - entry.Key.min() + 1;
@@ -188,10 +190,15 @@ namespace net.esper.schedule
 				{
 					if ( entry.Value.Count == elementValueSetSize )
 					{
-						unitValues[entry.Key] = null;
+                        termList.Add(entry.Key);
 					}
 				}
 			}
+
+            foreach (ScheduleUnit scheduleUnit in termList)
+            {
+                unitValues[scheduleUnit] = null;
+            }
 		}
 
 		/// <summary> Validate units and their value sets.</summary>

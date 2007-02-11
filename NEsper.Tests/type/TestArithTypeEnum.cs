@@ -30,10 +30,10 @@ namespace net.esper.type
         public virtual void testAllComputers()
         {
             Type[] testClasses = new Type[]{
-                typeof(Single),
-                typeof(Double), 
-                typeof(Int32), 
-                typeof(Int64)
+                typeof(float?),
+                typeof(double?), 
+                typeof(int?), 
+                typeof(long?)
             };
 
             foreach (Type testType in testClasses)
@@ -58,7 +58,7 @@ namespace net.esper.type
                     }
                     if (type == MathArithTypeEnum.DIVIDE)
                     {
-                        if ((testType == typeof(Int32)) || (testType == typeof(Int64)))
+                        if ((testType == typeof(int?)) || (testType == typeof(long?)))
                         {
                             Assert.AreEqual(0d, Convert.ToDouble(result), "clazz=" + testType);
                         }

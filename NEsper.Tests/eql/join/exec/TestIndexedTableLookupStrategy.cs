@@ -11,7 +11,6 @@ using NUnit.Framework;
 
 namespace net.esper.eql.join.exec
 {
-	
 	[TestFixture]
 	public class TestIndexedTableLookupStrategy 
 	{
@@ -24,8 +23,8 @@ namespace net.esper.eql.join.exec
 		{
 			eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
 			
-			propertyMapEventIndex = new PropertyIndexedEventTable(0, eventType, new String[]{"StringValue", "intPrimitive"});
-			lookupStrategy = new IndexedTableLookupStrategy(eventType, new String[]{"StringValue", "intPrimitive"}, propertyMapEventIndex);
+			propertyMapEventIndex = new PropertyIndexedEventTable(0, eventType, new String[]{"str", "intPrimitive"});
+            lookupStrategy = new IndexedTableLookupStrategy(eventType, new String[] { "str", "intPrimitive" }, propertyMapEventIndex);
 			
 			propertyMapEventIndex.Add(new EventBean[]{SupportEventBeanFactory.createObject(new SupportBean("a", 1))});
 		}
@@ -43,7 +42,7 @@ namespace net.esper.eql.join.exec
 		{
 			try
 			{
-				new IndexedTableLookupStrategy(eventType, new String[]{"StringValue", "xxx"}, propertyMapEventIndex);
+                new IndexedTableLookupStrategy(eventType, new String[] { "str", "xxx" }, propertyMapEventIndex);
 				Assert.Fail();
 			}
 			catch (ArgumentException ex)

@@ -335,7 +335,7 @@ namespace net.esper.regression.view
         private void sendSupportBeanEvent(String stringValue)
         {
             SupportBean _event = new SupportBean();
-            _event.StringValue = stringValue;
+            _event.str = stringValue;
             epService.EPRuntime.SendEvent(_event);
         }
 

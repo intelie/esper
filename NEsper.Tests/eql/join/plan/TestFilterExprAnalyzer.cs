@@ -50,16 +50,16 @@ namespace net.esper.eql.join.plan
 			Assert.IsTrue(graph.IsNavigable(0, 1));
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetKeyProperties(0, 1),
-                (ICollection<string>) new String[] { "intPrimitive", "StringValue" });
+                (ICollection<string>)new String[] { "intPrimitive", "str" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetIndexProperties(1, 0),
-                (ICollection<string>) new String[] { "intPrimitive", "StringValue" });
+                (ICollection<string>)new String[] { "intPrimitive", "str" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetKeyProperties(1, 0),
-                (ICollection<string>) new String[] { "intBoxed", "StringValue" });
+                (ICollection<string>)new String[] { "intBoxed", "str" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetIndexProperties(0, 1),
-                (ICollection<string>) new String[] { "intBoxed", "StringValue" });
+                (ICollection<string>)new String[] { "intBoxed", "str" });
 		}
 	}
 }

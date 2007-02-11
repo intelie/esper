@@ -27,7 +27,7 @@ namespace net.esper.filter
             SupportBean testBean = new SupportBean();
             testBean.intPrimitive = 50;
             testBean.doublePrimitive = 0.5;
-            testBean.StringValue = "jack";
+            testBean.str = "jack";
             testBean.longPrimitive = 10;
             testBean.shortPrimitive = (short)20;
 
@@ -52,7 +52,7 @@ namespace net.esper.filter
 		                "doublePrimitive", FilterOperator.LESS, 1.1,
 		                "doubleBoxed", FilterOperator.LESS, 1.1,
 		                "intPrimitive", FilterOperator.EQUAL, 1,
-		                "StringValue", FilterOperator.EQUAL, "jack",
+		                "str", FilterOperator.EQUAL, "jack",
 		                "intBoxed", FilterOperator.EQUAL, 2,
 		                "floatBoxed", FilterOperator.RANGE_CLOSED, 1.1d, 2.2d);
 
@@ -64,7 +64,7 @@ namespace net.esper.filter
             Assert.IsTrue(copy.First.PropertyName.Equals("intPrimitive"));
             copy.Remove(copy.First);
 
-            Assert.IsTrue(copy.First.PropertyName.Equals("StringValue"));
+            Assert.IsTrue(copy.First.PropertyName.Equals("str"));
             copy.Remove(copy.First);
 
             Assert.IsTrue(copy.First.PropertyName.Equals("floatBoxed"));
@@ -137,7 +137,7 @@ namespace net.esper.filter
             matches.Clear();
 
             // Add an filterSpec against double and string
-            filterSpec = makeFilterValues("doublePrimitive", FilterOperator.LESS, 1.1, "StringValue", FilterOperator.EQUAL, "jack");
+            filterSpec = makeFilterValues("doublePrimitive", FilterOperator.LESS, 1.1, "str", FilterOperator.EQUAL, "jack");
             builder.Add(filterSpec, testFilterCallback[5], topNode);
             Assert.IsTrue(topNode.Indizes.Count == 3);
             Assert.IsTrue(topNode.Indizes[0].Count == 2);
@@ -151,14 +151,14 @@ namespace net.esper.filter
             Assert.IsTrue(matches.Count == 5);
             matches.Clear();
 
-            filterSpec = makeFilterValues("doublePrimitive", FilterOperator.LESS, 1.1, "StringValue", FilterOperator.EQUAL, "beta");
+            filterSpec = makeFilterValues("doublePrimitive", FilterOperator.LESS, 1.1, "str", FilterOperator.EQUAL, "beta");
             builder.Add(filterSpec, testFilterCallback[6], topNode);
 
             topNode.matchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 5);
             matches.Clear();
 
-            filterSpec = makeFilterValues("doublePrimitive", FilterOperator.LESS, 1.1, "StringValue", FilterOperator.EQUAL, "jack");
+            filterSpec = makeFilterValues("doublePrimitive", FilterOperator.LESS, 1.1, "str", FilterOperator.EQUAL, "jack");
             builder.Add(filterSpec, testFilterCallback[7], topNode);
             Assert.IsTrue(nextLevelSetNode.Indizes.Count == 1);
             FilterCallbackSetNode nodeTwo = (FilterCallbackSetNode)nextLevelSetNode.Indizes[0]["jack"];
@@ -169,7 +169,7 @@ namespace net.esper.filter
             matches.Clear();
 
             // Try depth first
-            filterSpec = makeFilterValues("StringValue", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L, "shortPrimitive", FilterOperator.EQUAL, (short)20);
+            filterSpec = makeFilterValues("str", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L, "shortPrimitive", FilterOperator.EQUAL, (short)20);
             builder.Add(filterSpec, testFilterCallback[8], topNode);
 
             topNode.matchEvent(eventBean, matches);
@@ -177,13 +177,13 @@ namespace net.esper.filter
             matches.Clear();
 
             // Add an filterSpec in the middle
-            filterSpec = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L, "StringValue", FilterOperator.EQUAL, "jack");
+            filterSpec = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L, "str", FilterOperator.EQUAL, "jack");
             builder.Add(filterSpec, testFilterCallback[9], topNode);
 
-            filterSpec = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L, "StringValue", FilterOperator.EQUAL, "jim");
+            filterSpec = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L, "str", FilterOperator.EQUAL, "jim");
             builder.Add(filterSpec, testFilterCallback[10], topNode);
 
-            filterSpec = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L, "StringValue", FilterOperator.EQUAL, "joe");
+            filterSpec = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L, "str", FilterOperator.EQUAL, "joe");
             builder.Add(filterSpec, testFilterCallback[11], topNode);
 
             topNode.matchEvent(eventBean, matches);
@@ -214,16 +214,16 @@ namespace net.esper.filter
             matches.Clear();
 
             // Add a depth-first filterSpec
-            FilterValueSet filterSpecOne = makeFilterValues("StringValue", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L, "shortPrimitive", FilterOperator.EQUAL, (short)20);
+            FilterValueSet filterSpecOne = makeFilterValues("str", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L, "shortPrimitive", FilterOperator.EQUAL, (short)20);
             IndexTreePath pathAddedToOne = builder.Add(filterSpecOne, testFilterCallback[1], top);
 
-            FilterValueSet filterSpecTwo = makeFilterValues("StringValue", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L, "shortPrimitive", FilterOperator.EQUAL, (short)20);
+            FilterValueSet filterSpecTwo = makeFilterValues("str", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L, "shortPrimitive", FilterOperator.EQUAL, (short)20);
             IndexTreePath pathAddedToTwo = builder.Add(filterSpecTwo, testFilterCallback[2], top);
 
-            FilterValueSet filterSpecThree = makeFilterValues("StringValue", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L);
+            FilterValueSet filterSpecThree = makeFilterValues("str", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L);
             IndexTreePath pathAddedToThree = builder.Add(filterSpecThree, testFilterCallback[3], top);
 
-            FilterValueSet filterSpecFour = makeFilterValues("StringValue", FilterOperator.EQUAL, "jack");
+            FilterValueSet filterSpecFour = makeFilterValues("str", FilterOperator.EQUAL, "jack");
             IndexTreePath pathAddedToFour = builder.Add(filterSpecFour, testFilterCallback[4], top);
 
             FilterValueSet filterSpecFive = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L);
