@@ -199,46 +199,46 @@ namespace net.esper.eql.parse
 			
 			// Base vocabulary
 			assertIsValid(className);
-			assertIsValid(className + "(IntPrimitive=444)");
+			assertIsValid(className + "(intPrimitive=444)");
 			assertIsValid(className + "(string=\"\")");
 			assertIsValid(className + "(string=\"ddddd\")");
-			assertIsValid(className + "(DoubleBoxed=444E43)");
-			assertIsValid(className + "(DoubleBoxed=1.2345)");
-			assertIsValid(className + "(DoubleBoxed=0)");
-			assertIsValid(className + "(DoubleBoxed=-394847575)");
-			assertIsValid(className + "(DoublePrimitive=37374)");
-			assertIsValid(className + "(DoublePrimitive=+2)");
-			assertIsValid(className + "(BoolPrimitive=false)");
-			assertIsValid(className + "(BoolPrimitive=true)");
-			assertIsValid(className + "(BoolPrimitive=true,IntPrimitive=4,string=\"d\")");
+			assertIsValid(className + "(doubleBoxed=444E43)");
+			assertIsValid(className + "(doubleBoxed=1.2345)");
+			assertIsValid(className + "(doubleBoxed=0)");
+			assertIsValid(className + "(doubleBoxed=-394847575)");
+			assertIsValid(className + "(doublePrimitive=37374)");
+			assertIsValid(className + "(doublePrimitive=+2)");
+			assertIsValid(className + "(boolPrimitive=false)");
+			assertIsValid(className + "(boolPrimitive=true)");
+			assertIsValid(className + "(boolPrimitive=true,intPrimitive=4,string=\"d\")");
 			assertIsValid(className + "(string=\"b\",\nByteBoxed=3)");
-			assertIsValid(className + "(IntPrimitive<5,IntBoxed>3,DoublePrimitive<=2,DoubleBoxed>=5)");
-			assertIsValid(className + " (  IntPrimitive<5, \n IntBoxed>3, \n DoublePrimitive<=2,\t DoubleBoxed>=5)");
-			assertIsValid(className + "(BoolBoxed=true)");
-			assertIsValid(className + "(IntPrimitive in [1:2])");
-			assertIsValid(className + "(IntPrimitive in (1:2])");
-			assertIsValid(className + "(IntPrimitive in (1:2))");
-			assertIsValid(className + "(IntPrimitive in [1:2))");
-			assertIsValid(className + "(IntPrimitive in (-34243232:+342342343])");
-			assertIsValid(className + "(LongPrimitive in (-34243232L:+342342343l])");
-			assertIsValid(className + "(DoublePrimitive in [1E20:-1])");
-			assertIsValid(className + "(DoublePrimitive in [45775.2244502:1.345674))");
-			assertIsValid(className + "(LongPrimitive in [   1   :  2  ])");
-			assertIsValid(className + "(IntPrimitive in [1:2], LongPrimitive=3)");
-			assertIsValid(className + "(IntPrimitive=3, string=\"a2\", LongPrimitive in [1:2], DoubleBoxed=3)");
-			assertIsValid(className + "(IntPrimitive in [2:10])");
-			assertIsValid(className + "(DoubleBoxed in [-0.00001:-0.1E2])");
-			assertIsValid(className + "(DoubleBoxed in [60.0:61.0])");
+			assertIsValid(className + "(intPrimitive<5,intBoxed>3,doublePrimitive<=2,doubleBoxed>=5)");
+			assertIsValid(className + " (  intPrimitive<5, \n intBoxed>3, \n doublePrimitive<=2,\t doubleBoxed>=5)");
+			assertIsValid(className + "(boolBoxed=true)");
+			assertIsValid(className + "(intPrimitive in [1:2])");
+			assertIsValid(className + "(intPrimitive in (1:2])");
+			assertIsValid(className + "(intPrimitive in (1:2))");
+			assertIsValid(className + "(intPrimitive in [1:2))");
+			assertIsValid(className + "(intPrimitive in (-34243232:+342342343])");
+			assertIsValid(className + "(longPrimitive in (-34243232L:+342342343l])");
+			assertIsValid(className + "(doublePrimitive in [1E20:-1])");
+			assertIsValid(className + "(doublePrimitive in [45775.2244502:1.345674))");
+			assertIsValid(className + "(longPrimitive in [   1   :  2  ])");
+			assertIsValid(className + "(intPrimitive in [1:2], longPrimitive=3)");
+			assertIsValid(className + "(intPrimitive=3, string=\"a2\", longPrimitive in [1:2], doubleBoxed=3)");
+			assertIsValid(className + "(intPrimitive in [2:10])");
+			assertIsValid(className + "(doubleBoxed in [-0.00001:-0.1E2])");
+			assertIsValid(className + "(doubleBoxed in [60.0:61.0])");
 			
 			// With name
 			assertIsValid("se1=" + className);
-			assertIsValid("er2=" + className + "(IntPrimitive=444)");
-			assertIsValid("x3=" + className + "(IntPrimitive in [1:2])");
-			assertIsValid("gamma=" + className + "(DoubleBoxed in [-0.00001:-0.1E2])");
+			assertIsValid("er2=" + className + "(intPrimitive=444)");
+			assertIsValid("x3=" + className + "(intPrimitive in [1:2])");
+			assertIsValid("gamma=" + className + "(doubleBoxed in [-0.00001:-0.1E2])");
 			
 			// Every
 			assertIsValid("every " + className);
-			assertIsValid("every " + className + "(string=\"b\",\nIntPrimitive=3)");
+			assertIsValid("every " + className + "(string=\"b\",\nintPrimitive=3)");
 			assertIsValid("(every " + className + "())");
 			assertIsValid("every(" + className + "())");
 			assertIsValid("((every " + className + "()))");

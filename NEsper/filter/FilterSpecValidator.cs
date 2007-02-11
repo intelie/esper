@@ -37,7 +37,7 @@ namespace net.esper.filter
                     throw new ASTFilterSpecValidationException("Invalid property named '" + property + "' for this event type");
                 }
 
-                Type type = eventType.GetPropertyType(property);
+                Type type = TypeHelper.GetBoxedType(eventType.GetPropertyType(property));
 
                 // Check value not null
                 if (param.getFilterValueClass(optionalTaggedEventTypes) == null)
@@ -60,9 +60,9 @@ namespace net.esper.filter
                 // Check type of value supplied if the type is supplied
                 if (FilterOperatorHelper.isComparisonOperator( _operator ) || ( _operator == FilterOperator.EQUAL ) )
                 {
-                    Type boxedType = type;
+                    Type boxedType = TypeHelper.GetBoxedType(type);
                     Type filterValueClass = param.getFilterValueClass(optionalTaggedEventTypes);
-                    Type boxedFilterValueClass = filterValueClass;
+                    Type boxedFilterValueClass = TypeHelper.GetBoxedType(filterValueClass);
                     if (boxedType != boxedFilterValueClass)
                     {
                         throw new ASTFilterSpecValidationException(

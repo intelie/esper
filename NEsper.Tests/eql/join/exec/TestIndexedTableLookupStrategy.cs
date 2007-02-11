@@ -24,8 +24,8 @@ namespace net.esper.eql.join.exec
 		{
 			eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
 			
-			propertyMapEventIndex = new PropertyIndexedEventTable(0, eventType, new String[]{"string", "IntPrimitive"});
-			lookupStrategy = new IndexedTableLookupStrategy(eventType, new String[]{"string", "IntPrimitive"}, propertyMapEventIndex);
+			propertyMapEventIndex = new PropertyIndexedEventTable(0, eventType, new String[]{"StringValue", "intPrimitive"});
+			lookupStrategy = new IndexedTableLookupStrategy(eventType, new String[]{"StringValue", "intPrimitive"}, propertyMapEventIndex);
 			
 			propertyMapEventIndex.Add(new EventBean[]{SupportEventBeanFactory.createObject(new SupportBean("a", 1))});
 		}
@@ -43,7 +43,7 @@ namespace net.esper.eql.join.exec
 		{
 			try
 			{
-				new IndexedTableLookupStrategy(eventType, new String[]{"string", "xxx"}, propertyMapEventIndex);
+				new IndexedTableLookupStrategy(eventType, new String[]{"StringValue", "xxx"}, propertyMapEventIndex);
 				Assert.Fail();
 			}
 			catch (ArgumentException ex)

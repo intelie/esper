@@ -26,7 +26,7 @@ namespace net.esper.regression.events
         {
             properties = new EHashDictionary<string,string>();
             properties[(String)"myInt"] = (String)"int";
-            properties[(String)"myString"] = (String)"string";
+            properties[(String)"myString"] = (String)"StringValue";
             properties[(String)"beanA"] = (String)typeof(SupportBeanComplexProps).FullName;
 
             map = new EDataDictionary() ;
@@ -89,7 +89,7 @@ namespace net.esper.regression.events
             properties["double"] = "double";
             properties["boolean"] = "boolean";
             properties["long"] = "long";
-            properties["astring"] = "string";
+            properties["astring"] = "StringValue";
 
             Configuration configuration = new Configuration();
             configuration.addEventTypeAlias("MyPrimMapEvent", properties);

@@ -1,5 +1,7 @@
 using System;
 
+using net.esper.events;
+
 namespace net.esper.eql.expression
 {
 	/// <summary>
@@ -8,7 +10,7 @@ namespace net.esper.eql.expression
 	
 	public class ExprEvaluatorNull : ExprEvaluator
 	{
-		public object Evaluate(net.esper.events.EventBean[] eventsPerStream)
+		public object Evaluate(EventBean[] eventsPerStream)
 		{
 			return null ;
 		}

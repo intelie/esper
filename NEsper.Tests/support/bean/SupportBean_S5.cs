@@ -7,61 +7,65 @@ namespace net.esper.support.bean
 	{
 		virtual public int Id
 		{
-			get
-			{
-				return id;
-			}
-			
-			set
-			{
-				this.id = value;
-			}
-			
+            get { return _id; }
+            set { this._id = value; }
 		}
+
 		virtual public String P50
 		{
-			get
-			{
-				return p50;
-			}
-			
-			set
-			{
-				this.p50 = value;
-			}
-			
+            get { return _p50; }
+            set { this._p50 = value; }
 		}
+
 		virtual public String P51
 		{
-			get
-			{
-				return p51;
-			}
-			
+            get { return _p51; }
 		}
+
 		virtual public String P52
 		{
-			get
-			{
-				return p52;
-			}
-			
+            get { return _p52; }			
 		}
+
 		virtual public String P53
 		{
-			get
-			{
-				return p53;
-			}
-			
+			get { return _p53; }
 		}
-		private static int idCounter;
+
+        virtual public int id
+        {
+            get { return _id; }
+            set { this._id = value; }
+        }
+
+        virtual public String p50
+        {
+            get { return _p50; }
+            set { this._p50 = value; }
+        }
+
+        virtual public String p51
+        {
+            get { return _p51; }
+        }
+
+        virtual public String p52
+        {
+            get { return _p52; }
+        }
+
+        virtual public String p53
+        {
+            get { return _p53; }
+        }
+
+        private static int idCounter;
 		
-		private int id;
-		private String p50;
-		private String p51;
-		private String p52;
-		private String p53;
+		private int _id;
+        private String _p50;
+        private String _p51;
+        private String _p52;
+        private String _p53;
 		
 		public static Object[] makeS5(String propOne, String[] propTwo)
 		{
@@ -77,20 +81,20 @@ namespace net.esper.support.bean
 		
 		public SupportBean_S5(int id)
 		{
-			this.id = id;
+            this._id = id;
 		}
 		
 		public SupportBean_S5(int id, String p50)
 		{
-			this.id = id;
-			this.p50 = p50;
+            this._id = id;
+            this._p50 = p50;
 		}
 		
 		public SupportBean_S5(int id, String p50, String p51)
 		{
-			this.id = id;
-			this.p50 = p50;
-			this.p51 = p51;
+            this._id = id;
+            this._p50 = p50;
+            this._p51 = p51;
 		}
 	}
 }

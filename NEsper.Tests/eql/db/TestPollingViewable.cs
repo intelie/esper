@@ -21,7 +21,7 @@ namespace net.esper.eql.db
 		[SetUp]
 		public virtual void setUp()
 		{
-			IList<String> inputProperties = new String[] { "s0.IntPrimitive" };
+			IList<String> inputProperties = new String[] { "s0.intPrimitive" };
 
 			DataCache dataCache = new DataCacheLRUImpl( 100 );
 
@@ -61,7 +61,7 @@ namespace net.esper.eql.db
 		private EventBean MakeEvent( int intPrimitive )
 		{
 			SupportBean bean = new SupportBean();
-			bean.IntPrimitive = intPrimitive;
+			bean.intPrimitive = intPrimitive;
 			return SupportEventAdapterService.Service.AdapterForBean( bean );
 		}
 	}

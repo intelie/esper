@@ -42,7 +42,7 @@ namespace net.esper.events
 			testTypesMap.Put( "key1", typeof( String ) );
 			EventType eventType = adapterService.CreateAnonymousMapType( testTypesMap );
 
-			Assert.AreEqual( typeof( System.Collections.IDictionary ), eventType.UnderlyingType );
+			Assert.AreEqual( typeof( IDataDictionary ), eventType.UnderlyingType );
 			Assert.AreEqual( 1, eventType.PropertyNames.Count );
 			Assert.AreEqual( "key1", CollectionHelper.First( eventType.PropertyNames ) );
 		}

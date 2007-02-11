@@ -19,7 +19,7 @@ namespace net.esper.eql.join.plan
         public virtual void testGetPlan()
         {
             IList<OuterJoinDesc> descList = new ELinkedList<OuterJoinDesc>();
-            OuterJoinDesc joinDesc = SupportOuterJoinDescFactory.makeDesc("IntPrimitive", "s0", "IntBoxed", "s1", OuterJoinType.LEFT);
+            OuterJoinDesc joinDesc = SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT);
             descList.Add(joinDesc);
 
             QueryPlan plan = QueryPlanBuilder.getPlan(2, new ELinkedList<OuterJoinDesc>(), null, null);

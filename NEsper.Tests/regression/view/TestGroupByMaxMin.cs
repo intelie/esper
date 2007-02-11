@@ -98,15 +98,15 @@ namespace net.esper.regression.view
 		
 		private void  assertEvents(
 			String symbolOld,
-            Nullable<Int64> minVolOld,
-			Nullable<Int64> maxVolOld,
-			Nullable<Int64> minDistVolOld,
-			Nullable<Int64> maxDistVolOld,
+            long? minVolOld,
+			long? maxVolOld,
+			long? minDistVolOld,
+			long? maxDistVolOld,
 			string symbolNew,
-            Nullable<Int64> minVolNew,
-            Nullable<Int64> maxVolNew,
-            Nullable<Int64> minDistVolNew,
-            Nullable<Int64> maxDistVolNew)
+            long? minVolNew,
+            long? maxVolNew,
+            long? minDistVolNew,
+            long? maxDistVolNew)
 		{
 			EventBean[] oldData = testListener.LastOldData;
 			EventBean[] newData = testListener.LastNewData;
@@ -130,7 +130,7 @@ namespace net.esper.regression.view
 			Assert.IsFalse(testListener.Invoked);
 		}
 		
-		private void  SendEvent(String symbol, Nullable<Int64> volume)
+		private void  SendEvent(String symbol, long? volume)
 		{
 			SupportMarketDataBean bean = new SupportMarketDataBean(symbol, 0, volume, null);
 			epService.EPRuntime.SendEvent(bean);

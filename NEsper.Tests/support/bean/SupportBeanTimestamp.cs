@@ -2,32 +2,35 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportBeanTimestamp
 	{
 		virtual public String Id
 		{
-			get
-			{
-				return id;
-			}
-			
+            get { return _id; }
 		}
+
 		virtual public long Timestamp
 		{
-			get
-			{
-				return timestamp;
-			}
-			
+            get { return _timestamp; }
 		}
-		private String id;
-		private long timestamp;
+
+        virtual public String id
+        {
+            get { return _id; }
+        }
+
+        virtual public long timestamp
+        {
+            get { return _timestamp; }
+        }
+
+		private String _id;
+		private long _timestamp;
 		
 		public SupportBeanTimestamp(String id, long timestamp)
 		{
-			this.id = id;
-			this.timestamp = timestamp;
+            this._id = id;
+            this._timestamp = timestamp;
 		}
 	}
 }

@@ -30,9 +30,9 @@ namespace net.esper.eql.expression
 			maxNode.validate(null, null);
 			Assert.AreEqual(typeof(Int32), maxNode.ReturnType);
 			
-			minNode.AddChildNode(new SupportExprNode(typeof(System.Single)));
+			minNode.AddChildNode(new SupportExprNode(typeof(Single)));
 			minNode.validate(null, null);
-			Assert.AreEqual( typeof( System.Single ), minNode.ReturnType );
+			Assert.AreEqual( typeof( Single ), minNode.ReturnType );
 			
 			maxNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MAX);
 			maxNode.AddChildNode(new SupportExprNode(typeof(Int16)));

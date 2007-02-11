@@ -19,7 +19,7 @@ namespace net.esper.events
         public virtual void setUp()
         {
             testEvent = new SupportBean();
-            testEvent.IntPrimitive = 10;
+            testEvent.intPrimitive = 10;
         }
 
         [Test]
@@ -31,7 +31,7 @@ namespace net.esper.events
             Assert.AreEqual(eventType, eventBean.EventType);
             Assert.AreEqual(testEvent, eventBean.Underlying);
 
-            Assert.AreEqual(10, eventBean["IntPrimitive"]);
+            Assert.AreEqual(10, eventBean["intPrimitive"]);
 
             // Test wrong property name
             try

@@ -136,7 +136,7 @@ namespace net.esper.regression.view
 			String caseExpr =
 			  "select case intPrimitive" + 
 			  " when 1 then Boolean.toString(boolPrimitive) " + 
-			  " when 2 then Boolean.toString(BoolBoxed) " + 
+			  " when 2 then Boolean.toString(boolBoxed) " + 
 			  " when 3 then Integer.toString(intPrimitive) " + 
 			  " when 4 then Integer.toString(intBoxed)" + 
 			  " when 5 then Long.toString(longPrimitive) " + 
@@ -151,7 +151,7 @@ namespace net.esper.regression.view
 			  " when 14 then Float.toString(floatBoxed) " + 
 			  " when 15 then Double.toString(doublePrimitive) " + 
 			  " when 16 then Double.toString(doubleBoxed) " + 
-			  " when 17 then string " + 
+			  " when 17 then StringValue " + 
 			  " else 'x' end as p1 " + 
 			  " from " + typeof(SupportBean).FullName + ".win:length(1)";
 			
@@ -298,7 +298,12 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCaseSyntax2WithNullBool()
 		{
-			String caseExpr = "select case BoolBoxed " + " when null then 1 " + " when true then 2l" + " when false then 3 " + " end as p1 from " + typeof(SupportBean).FullName + ".win:length(100)";
+			String caseExpr =
+                "select case boolBoxed " +
+                " when null then 1 " + 
+                " when true then 2l" +
+                " when false then 3 " + 
+                " end as p1 from " + typeof(SupportBean).FullName + ".win:length(100)";
 			
 			EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
 			selectTestFixture.AddListener(testListener);
@@ -315,7 +320,11 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCaseSyntax2WithCoercion()
 		{
-			String caseExpr = "select case intPrimitive " + " when 1.0 then null " + " when 4/2.0 then 'x'" + " end as p1 from " + typeof(SupportBean).FullName + ".win:length(100)";
+			String caseExpr =
+                "select case intPrimitive " +
+                " when 1.0 then null " +
+                " when 4/2.0 then 'x'" + 
+                " end as p1 from " + typeof(SupportBean).FullName + ".win:length(100)";
 			
 			EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
 			selectTestFixture.AddListener(testListener);
@@ -332,7 +341,12 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCaseSyntax2WithinExpression()
 		{
-			String caseExpr = "select 2 * (case " + " intPrimitive when 1 then 2 " + " when 2 then 3 " + " else 10 end) as p1 " + " from " + typeof(SupportBean).FullName + ".win:length(1)";
+			String caseExpr =
+                "select 2 * (case " +
+                " intPrimitive when 1 then 2 " + 
+                " when 2 then 3 " + 
+                " else 10 end) as p1 " + 
+                " from " + typeof(SupportBean).FullName + ".win:length(1)";
 			
 			EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
 			selectTestFixture.AddListener(testListener);
@@ -354,11 +368,15 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCaseSyntax2Sum()
 		{
-			String caseExpr = "select case intPrimitive when 1 then sum(longPrimitive) " + " when 2 then sum(floatPrimitive) " + " else sum(intPrimitive) end as p1 " + " from " + typeof(SupportBean).FullName + ".win:length(10)";
+			String caseExpr =
+                "select case intPrimitive when 1 then sum(longPrimitive) " +
+                " when 2 then sum(floatPrimitive) " +
+                " else sum(intPrimitive) end as p1 " +
+                " from " + typeof(SupportBean).FullName + ".win:length(10)";
 			
 			EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
 			selectTestFixture.AddListener(testListener);
-			Assert.AreEqual(typeof(System.Single), selectTestFixture.EventType.GetPropertyType("p1"));
+			Assert.AreEqual(typeof(Single), selectTestFixture.EventType.GetPropertyType("p1"));
 			
 			sendSupportBeanEvent(1, 10L, 3.0f, 4.0);
 			EventBean _event = testListener.getAndResetLastNewData()[0];
@@ -388,7 +406,12 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCaseSyntax2EnumChecks()
 		{
-			String caseExpr = "select case supportEnum " + " when net.esper.support.bean.SupportEnum.getValueForEnum(0) then 1 " + " when net.esper.support.bean.SupportEnum.getValueForEnum(1) then 2 " + " end as p1 " + " from " + typeof(SupportBeanWithEnum).FullName + ".win:length(10)";
+			String caseExpr =
+                "select case supportEnum " + 
+                " when net.esper.support.bean.SupportEnum.getValueForEnum(0) then 1 " +
+                " when net.esper.support.bean.SupportEnum.getValueForEnum(1) then 2 " +
+                " end as p1 " + " from " + typeof(SupportBeanWithEnum).FullName + 
+                ".win:length(10)";
 			
 			EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
 			selectTestFixture.AddListener(testListener);
@@ -410,7 +433,13 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCaseSyntax2EnumResult()
 		{
-			String caseExpr = "select case intPrimitive * 2 " + " when 2 then net.esper.support.bean.SupportEnum.getValueForEnum(0) " + " when 4 then net.esper.support.bean.SupportEnum.getValueForEnum(1) " + " else net.esper.support.bean.SupportEnum.getValueForEnum(2) " + " end as p1 " + " from " + typeof(SupportBean).FullName + ".win:length(10)";
+			String caseExpr = 
+                "select case intPrimitive * 2 " + 
+                " when 2 then net.esper.support.bean.SupportEnum.getValueForEnum(0) " + 
+                " when 4 then net.esper.support.bean.SupportEnum.getValueForEnum(1) " + 
+                " else net.esper.support.bean.SupportEnum.getValueForEnum(2) " + 
+                " end as p1 " + 
+                " from " + typeof(SupportBean).FullName + ".win:length(10)";
 			
 			EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
 			selectTestFixture.AddListener(testListener);
@@ -433,7 +462,9 @@ namespace net.esper.regression.view
 		public virtual void  testCaseSyntax2NoAsName()
 		{
 			String caseSubExpr = "case intPrimitive when 1 then 0 end";
-			String caseExpr = "select " + caseSubExpr + " from " + typeof(SupportBean).FullName + ".win:length(10)";
+			String caseExpr =
+                "select " + caseSubExpr +
+                " from " + typeof(SupportBean).FullName + ".win:length(10)";
 			
 			EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
 			selectTestFixture.AddListener(testListener);
@@ -456,22 +487,22 @@ namespace net.esper.regression.view
 			String str_, SupportEnum enum_)
 		{
 			SupportBean _event = new SupportBean();
-			_event.BoolPrimitive = b_;
-			_event.BoolBoxed = boolBoxed_;
-			_event.IntPrimitive = i_;
-			_event.IntBoxed = intBoxed_;
-			_event.LongPrimitive = l_;
-			_event.LongBoxed = longBoxed_;
-			_event.CharPrimitive = c_;
-			_event.CharBoxed = charBoxed_;
-			_event.ShortPrimitive = s_;
-			_event.ShortBoxed = shortBoxed_;
-			_event.BytePrimitive = by_;
-			_event.ByteBoxed = byteBoxed_;
-			_event.FloatPrimitive = f_;
-			_event.FloatBoxed = floatBoxed_;
-			_event.DoublePrimitive = d_;
-			_event.DoubleBoxed = doubleBoxed_;
+			_event.boolPrimitive = b_;
+			_event.boolBoxed = boolBoxed_;
+			_event.intPrimitive = i_;
+			_event.intBoxed = intBoxed_;
+			_event.longPrimitive = l_;
+			_event.longBoxed = longBoxed_;
+			_event.charPrimitive = c_;
+			_event.charBoxed = charBoxed_;
+			_event.shortPrimitive = s_;
+			_event.shortBoxed = shortBoxed_;
+			_event.bytePrimitive = by_;
+			_event.byteBoxed = byteBoxed_;
+			_event.floatPrimitive = f_;
+			_event.floatBoxed = floatBoxed_;
+			_event.doublePrimitive = d_;
+			_event.doubleBoxed = doubleBoxed_;
 			_event.StringValue = str_;
 			_event.EnumValue = enum_;
 			epService.EPRuntime.SendEvent(_event);
@@ -480,17 +511,17 @@ namespace net.esper.regression.view
 		private void  sendSupportBeanEvent(int intPrimitive, long longPrimitive, float floatPrimitive, double doublePrimitive)
 		{
 			SupportBean _event = new SupportBean();
-			_event.IntPrimitive = intPrimitive;
-			_event.LongPrimitive = longPrimitive;
-			_event.FloatPrimitive = floatPrimitive;
-			_event.DoublePrimitive = doublePrimitive;
+			_event.intPrimitive = intPrimitive;
+			_event.longPrimitive = longPrimitive;
+			_event.floatPrimitive = floatPrimitive;
+			_event.doublePrimitive = doublePrimitive;
 			epService.EPRuntime.SendEvent(_event);
 		}
 		
 		private void  sendSupportBeanEvent(int intPrimitive)
 		{
 			SupportBean _event = new SupportBean();
-			_event.IntPrimitive = intPrimitive;
+			_event.intPrimitive = intPrimitive;
 			epService.EPRuntime.SendEvent(_event);
 		}
 		
@@ -504,7 +535,7 @@ namespace net.esper.regression.view
 		private void  sendSupportBeanEvent(bool boolBoxed)
 		{
 			SupportBean _event = new SupportBean();
-			_event.BoolBoxed = boolBoxed;
+			_event.boolBoxed = boolBoxed;
 			epService.EPRuntime.SendEvent(_event);
 		}
 		

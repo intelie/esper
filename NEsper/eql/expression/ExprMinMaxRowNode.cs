@@ -17,10 +17,7 @@ namespace net.esper.eql.expression
     {
         override public Type ReturnType
         {
-            get
-            {
-                return resultType;
-            }
+            get { return resultType; }
         }
 
         private MinMaxTypeEnum minMaxTypeEnum;
@@ -120,7 +117,7 @@ namespace net.esper.eql.expression
                 }
             }
 
-            return Convert.ChangeType(result, resultType);
+            return TypeHelper.CoerceNumber(result, resultType);
         }
 
         public override String ExpressionString

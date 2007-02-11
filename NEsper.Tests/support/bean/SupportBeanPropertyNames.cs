@@ -2,30 +2,29 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportBeanPropertyNames
 	{
 		virtual public int[] Array
 		{
-			get
-			{
-				return new int[0];
-			}
-			
+			get { return new int[0]; }
 		}
+
 		public virtual String getA(String key)
 		{
 			return "";
 		}
+
 		public virtual String getAB(String key)
 		{
 			return "";
 		}
+
 		public virtual String getABC(String key)
 		{
 			return "";
 		}
-		public virtual String geta(String key)
+
+        public virtual String geta(String key)
 		{
 			return "";
 		}

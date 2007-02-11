@@ -17,7 +17,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.eql.parse
 {
-
 	[TestFixture]
     public class TestASTFilterSpecHelper 
     {
@@ -28,8 +27,8 @@ namespace net.esper.eql.parse
 
             assertIsInvalid("goofy.mickey");
             assertIsInvalid(classname + "(dummy=4)");
-            assertIsInvalid(classname + "(BoolPrimitive=4)");
-            assertIsInvalid(classname + "(IntPrimitive=false)");
+            assertIsInvalid(classname + "(boolPrimitive=4)");
+            assertIsInvalid(classname + "(intPrimitive=false)");
             assertIsInvalid(classname + "(string in [2:2])");
             assertIsInvalid(classname + "(string=\"a\", string=\"b\")"); // Same attribute twice should be a problem
         }
@@ -56,12 +55,12 @@ namespace net.esper.eql.parse
             Assert.AreEqual(3, spec.Parameters.Count);
 
             FilterSpecParam param = spec.Parameters[0];
-            Assert.AreEqual("IntPrimitive", param.PropertyName);
+            Assert.AreEqual("intPrimitive", param.PropertyName);
             Assert.AreEqual(FilterOperator.GREATER, param.FilterOperator);
             Assert.AreEqual(4, param.getFilterValue(null));
 
             param = spec.Parameters[1];
-            Assert.AreEqual("string", param.PropertyName);
+            Assert.AreEqual("StringValue", param.PropertyName);
             Assert.AreEqual(FilterOperator.EQUAL, param.FilterOperator);
             Assert.AreEqual("test", param.getFilterValue(null));
 
@@ -76,7 +75,7 @@ namespace net.esper.eql.parse
         [Test]
         public virtual void testValidUseResultParams()
         {
-            String expression = "n1=" + typeof(SupportBean).FullName + "(IntPrimitive=n2.IntBoxed)";
+            String expression = "n1=" + typeof(SupportBean).FullName + "(intPrimitive=n2.intBoxed)";
 
             EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
             taggedEventTypes.Put("n2", SupportEventTypeFactory.createBeanType(typeof(SupportBean)));
@@ -87,7 +86,7 @@ namespace net.esper.eql.parse
             Assert.AreEqual(1, spec.Parameters.Count);
             FilterSpecParamEventProp eventPropParam = (FilterSpecParamEventProp)spec.Parameters[0];
             Assert.AreEqual("n2", eventPropParam.ResultEventAsName);
-            Assert.AreEqual("IntBoxed", eventPropParam.ResultEventProperty);
+            Assert.AreEqual("intBoxed", eventPropParam.ResultEventProperty);
         }
 
         [Test]
@@ -104,18 +103,18 @@ namespace net.esper.eql.parse
         [Test]
         public virtual void testValidRange()
         {
-            String expression = "myname=" + typeof(SupportBean).FullName + "(IntPrimitive in (1:2), IntBoxed in [2:6))";
+            String expression = "myname=" + typeof(SupportBean).FullName + "(intPrimitive in (1:2), intBoxed in [2:6))";
 
             FilterSpec spec = getFilterSpec(expression, null);
             Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);
             Assert.AreEqual(2, spec.Parameters.Count);
 
             FilterSpecParam param = spec.Parameters[0];
-            Assert.AreEqual("IntPrimitive", param.PropertyName);
+            Assert.AreEqual("intPrimitive", param.PropertyName);
             Assert.AreEqual(FilterOperator.RANGE_OPEN, param.FilterOperator);
 
             param = spec.Parameters[1];
-            Assert.AreEqual("IntBoxed", param.PropertyName);
+            Assert.AreEqual("intBoxed", param.PropertyName);
             Assert.AreEqual(FilterOperator.RANGE_HALF_OPEN, param.FilterOperator);
 
             Assert.AreEqual("myname", getEventNameTag(expression));
@@ -124,7 +123,7 @@ namespace net.esper.eql.parse
         [Test]
         public virtual void testValidRangeUseResult()
         {
-            String expression = "myname=" + typeof(SupportBean).FullName + "(intPrimitive in (asName.IntPrimitive:asName.IntBoxed))";
+            String expression = "myname=" + typeof(SupportBean).FullName + "(intPrimitive in (asName.intPrimitive:asName.intBoxed))";
 
             EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
             taggedEventTypes.Put("asName", SupportEventTypeFactory.createBeanType(typeof(SupportBean)));
@@ -134,7 +133,7 @@ namespace net.esper.eql.parse
             Assert.AreEqual(1, spec.Parameters.Count);
 
             FilterSpecParam param = spec.Parameters[0];
-            Assert.AreEqual("IntPrimitive", param.PropertyName);
+            Assert.AreEqual("intPrimitive", param.PropertyName);
             Assert.AreEqual(FilterOperator.RANGE_OPEN, param.FilterOperator);
             Assert.AreEqual(typeof(DoubleRange), param.getFilterValueClass(taggedEventTypes));
         }

@@ -30,6 +30,7 @@ namespace net.esper.eql.expression
         private Type resultType;
         private bool isNumericResult;
         private Type coercionType;
+        private bool mustCoerce;
 
         /// <summary> Ctor.</summary>
         /// <param name="isCase2">is an indicator of which Case statement we are working on.
@@ -194,6 +195,19 @@ namespace net.esper.eql.expression
             try
             {
                 coercionType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray()) ;
+                
+                // Determine if we need to coerce numbers when one type doesn't match any other type
+                if (TypeHelper.IsNumeric(coercionType))
+                {
+                    mustCoerce = false;
+                    foreach (Type comparedType in comparedTypes)
+                    {
+                        if (comparedType != coercionType)
+                        {
+                            mustCoerce = true;
+                        }
+                    }
+                }
             }
             catch (CoercionException ex)
             {
@@ -233,7 +247,7 @@ namespace net.esper.eql.expression
 
             if ((caseResult.GetType() != resultType) && (isNumericResult))
             {
-                return Convert.ChangeType(caseResult, resultType);
+                return TypeHelper.CoerceNumber(caseResult, resultType);
             }
 
             return caseResult;
@@ -272,7 +286,7 @@ namespace net.esper.eql.expression
 
             if ((caseResult.GetType() != resultType) && (isNumericResult))
             {
-                return Convert.ChangeType(caseResult, resultType);
+                return TypeHelper.CoerceNumber(caseResult, resultType);
             }
             return caseResult;
         }
@@ -289,8 +303,13 @@ namespace net.esper.eql.expression
                 return (leftResult == null);
             }
 
-            Object left = Convert.ChangeType(leftResult, coercionType);
-            Object right = Convert.ChangeType(rightResult, coercionType);
+            if (!mustCoerce)
+            {
+                return leftResult.Equals(rightResult);
+            }
+
+            Object left = TypeHelper.CoerceNumber(leftResult, coercionType);
+            Object right = TypeHelper.CoerceNumber(rightResult, coercionType);
             return Object.Equals(left, right);
         }
 

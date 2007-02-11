@@ -52,12 +52,12 @@ namespace net.esper.regression.view
 		{
 			String viewExpr =
                 "select " +
-                " IntPrimitive + LongPrimitive as p1," +
-                " IntPrimitive * DoublePrimitive as p2," +
-                " FloatPrimitive / DoublePrimitive as p3" + 
+                " intPrimitive + longPrimitive as p1," +
+                " intPrimitive * doublePrimitive as p2," +
+                " floatPrimitive / doublePrimitive as p3" + 
                 " from " + typeof(SupportBean).FullName +
                 ".win:length(3) where " + 
-                "IntPrimitive=LongPrimitive and IntPrimitive=DoublePrimitive and FloatPrimitive=DoublePrimitive";
+                "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
 			
 			testView = epService.EPAdministrator.createEQL(viewExpr);
 			testListener = new SupportUpdateListener();
@@ -85,10 +85,10 @@ namespace net.esper.regression.view
 		private void  sendSupportBeanEvent(int intPrimitive, long longPrimitive, float floatPrimitive, double doublePrimitive)
 		{
 			SupportBean _event = new SupportBean();
-			_event.IntPrimitive = intPrimitive;
-			_event.LongPrimitive = longPrimitive;
-			_event.FloatPrimitive = floatPrimitive;
-			_event.DoublePrimitive = doublePrimitive;
+			_event.intPrimitive = intPrimitive;
+			_event.longPrimitive = longPrimitive;
+			_event.floatPrimitive = floatPrimitive;
+			_event.doublePrimitive = doublePrimitive;
 			epService.EPRuntime.SendEvent(_event);
 		}
 	}

@@ -65,10 +65,10 @@ namespace net.esper.events.property
         public virtual void testInvalid()
         {
             tryInvalidField("x", typeof(SupportBean));
-            tryInvalidField("IntPrimitive", typeof(SupportBean));
+            tryInvalidField("intPrimitive", typeof(SupportBean));
 
             tryInvalidMethod("x", typeof(SupportBean));
-            tryInvalidMethod("IntPrimitive", typeof(SupportBean));
+            tryInvalidMethod("intPrimitive", typeof(SupportBean));
         }
 
         private void tryInvalidMethod(String methodName, Type clazz)

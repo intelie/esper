@@ -21,8 +21,8 @@ namespace net.esper.eql.expression
                 }
                 return value.GetType();
             }
-
         }
+
         private Object value;
 
         /// <summary> Ctor.</summary>

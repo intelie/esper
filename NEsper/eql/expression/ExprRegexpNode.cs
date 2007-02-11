@@ -18,7 +18,7 @@ namespace net.esper.eql.expression
     {
         override public Type ReturnType
         {
-            get { return typeof(Boolean); }
+            get { return typeof(bool?); }
         }
 
         private readonly bool isNot;

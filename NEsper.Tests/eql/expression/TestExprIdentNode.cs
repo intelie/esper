@@ -27,7 +27,7 @@ namespace net.esper.eql.expression
 			identNodes[0] = new ExprIdentNode( "mapped('a')" );
 			identNodes[1] = new ExprIdentNode( "nestedValue", "nested" );
 			identNodes[2] = new ExprIdentNode( "indexed[1]", "s2" );
-			identNodes[3] = new ExprIdentNode( "IntPrimitive", "s0" );
+			identNodes[3] = new ExprIdentNode( "intPrimitive", "s0" );
 
 			streamTypeService = new SupportStreamTypeSvc3Stream();
 		}
@@ -101,14 +101,14 @@ namespace net.esper.eql.expression
 			identNodes[3].validate( streamTypeService, null );
 			Assert.AreEqual( 0, identNodes[3].StreamId );
 			Assert.AreEqual( typeof( int ), identNodes[3].ReturnType );
-			Assert.AreEqual( "IntPrimitive", identNodes[3].ResolvedPropertyName );
+			Assert.AreEqual( "intPrimitive", identNodes[3].ResolvedPropertyName );
 
 			tryInvalidValidate( new ExprIdentNode( "" ) );
 			tryInvalidValidate( new ExprIdentNode( "dummy" ) );
 			tryInvalidValidate( new ExprIdentNode( "nested", "s0" ) );
 			tryInvalidValidate( new ExprIdentNode( "dummy", "s2" ) );
-			tryInvalidValidate( new ExprIdentNode( "IntPrimitive", "s2" ) );
-			tryInvalidValidate( new ExprIdentNode( "IntPrimitive", "s3" ) );
+			tryInvalidValidate( new ExprIdentNode( "intPrimitive", "s2" ) );
+			tryInvalidValidate( new ExprIdentNode( "intPrimitive", "s3" ) );
 		}
 
 		[Test]
@@ -159,7 +159,7 @@ namespace net.esper.eql.expression
 			Assert.AreEqual( "mapped('a')", identNodes[0].ExpressionString );
 			Assert.AreEqual( "nested.nestedValue", identNodes[1].ExpressionString );
 			Assert.AreEqual( "s2.indexed[1]", identNodes[2].ExpressionString );
-			Assert.AreEqual( "s0.IntPrimitive", identNodes[3].ExpressionString );
+			Assert.AreEqual( "s0.intPrimitive", identNodes[3].ExpressionString );
 		}
 
 		[Test]
@@ -175,7 +175,7 @@ namespace net.esper.eql.expression
 		private EventBean MakeEvent( int intPrimitive )
 		{
 			SupportBean _event = new SupportBean();
-			_event.IntPrimitive = intPrimitive;
+			_event.intPrimitive = intPrimitive;
 			return SupportEventBeanFactory.createObject( _event );
 		}
 

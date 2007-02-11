@@ -96,7 +96,7 @@ namespace net.esper.regression.pattern
         private SupportBean SendEvent(int intValue)
         {
             SupportBean _event = new SupportBean();
-            _event.IntPrimitive = intValue;
+            _event.intPrimitive = intValue;
             epService.EPRuntime.SendEvent(_event);
             return _event;
         }
@@ -104,7 +104,7 @@ namespace net.esper.regression.pattern
         private SupportBean routeEvent(int intValue)
         {
             SupportBean _event = new SupportBean();
-            _event.IntPrimitive = intValue;
+            _event.intPrimitive = intValue;
             epService.EPRuntime.Route(_event);
             return _event;
         }
@@ -177,7 +177,7 @@ namespace net.esper.regression.pattern
             {
                 countReceived++;
                 SupportBean _event = (SupportBean)(newEvents[0]["tag"]);
-                int numNewEvents = _event.IntPrimitive;
+                int numNewEvents = _event.intPrimitive;
 
                 for (int i = 0; i < numNewEvents; i++)
                 {

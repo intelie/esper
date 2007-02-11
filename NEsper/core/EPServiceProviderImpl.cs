@@ -106,14 +106,15 @@ namespace net.esper.core
                     typeName = typeof(String).Name;
                 }
 
-                Type type = null;
+                Type type = null ;
+
                 try
                 {
-                	type = Type.GetType(typeName);
+                    type = TypeHelper.ResolveType(typeName);
                 }
-                catch ( TypeLoadException ex )
+                catch (Exception ex)
                 {
-                    throw new EventAdapterException("Unable to load type '" + typeName + "', type load exception", ex);
+                    throw new EventAdapterException("Unable to load type '" + typeName + "'", ex);
                 }
 
                 propertyTypes[property] = type;

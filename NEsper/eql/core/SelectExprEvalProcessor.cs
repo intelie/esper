@@ -85,7 +85,7 @@ namespace net.esper.eql.core
             EDictionary<String, Type> selPropertyTypes = new EHashDictionary<String, Type>();
             for (int i = 0; i < expressionNodes.Length; i++)
             {
-                Type expressionReturnType = expressionNodes[i].GetType();
+                Type expressionReturnType = expressionNodes[i].ReturnType;
                 selPropertyTypes[columnNames[i]] = expressionReturnType;
             }
 

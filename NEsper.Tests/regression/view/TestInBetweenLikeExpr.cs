@@ -114,13 +114,13 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testInBoolExpr()
         {
-            tryInBoolean("BoolBoxed in (true, true)",
+            tryInBoolean("boolBoxed in (true, true)",
                 new bool[] { true, false },
                 new bool[] { true, false });
-            tryInBoolean("BoolBoxed in (1>2, 2=3, 4<=2)",
+            tryInBoolean("boolBoxed in (1>2, 2=3, 4<=2)",
                 new bool[] { true, false },
                 new bool[] { false, true });
-            tryInBoolean("BoolBoxed not in (1>2, 2=3, 4<=2)",
+            tryInBoolean("boolBoxed not in (1>2, 2=3, 4<=2)",
                 new bool[] { true, false },
                 new bool[] { true, false });
         }
@@ -218,9 +218,9 @@ namespace net.esper.regression.view
              bool result)
         {
             SupportBean bean = new SupportBean();
-            bean.IntBoxed = intBoxed;
-            bean.FloatBoxed = floatBoxed;
-            bean.DoublePrimitive = doublePrimitive;
+            bean.intBoxed = intBoxed;
+            bean.floatBoxed = floatBoxed;
+            bean.doublePrimitive = doublePrimitive;
 
             epService.EPRuntime.SendEvent(bean);
 
@@ -236,10 +236,10 @@ namespace net.esper.regression.view
             bool result)
         {
             SupportBean bean = new SupportBean();
-            bean.IntPrimitive = intPrimitive;
-            bean.ShortBoxed = (short)shortBoxed;
-            bean.IntBoxed = intBoxed;
-            bean.LongBoxed = longBoxed;
+            bean.intPrimitive = intPrimitive;
+            bean.shortBoxed = (short)shortBoxed;
+            bean.intBoxed = intBoxed;
+            bean.longBoxed = longBoxed;
 
             epService.EPRuntime.SendEvent(bean);
 
@@ -250,9 +250,9 @@ namespace net.esper.regression.view
         private void sendAndAssert(int intPrimitive, int shortBoxed, long longBoxed, bool result)
         {
             SupportBean bean = new SupportBean();
-            bean.IntPrimitive = intPrimitive;
-            bean.ShortBoxed = (short)shortBoxed;
-            bean.LongBoxed = longBoxed;
+            bean.intPrimitive = intPrimitive;
+            bean.shortBoxed = (short)shortBoxed;
+            bean.longBoxed = longBoxed;
 
             epService.EPRuntime.SendEvent(bean);
 
@@ -263,10 +263,10 @@ namespace net.esper.regression.view
         private void sendAndAssert(int intBoxed, float floatBoxed, double doublePrimitve, long longBoxed, bool result)
         {
             SupportBean bean = new SupportBean();
-            bean.IntBoxed = intBoxed;
-            bean.FloatBoxed = floatBoxed;
-            bean.DoublePrimitive = doublePrimitve;
-            bean.LongBoxed = longBoxed;
+            bean.intBoxed = intBoxed;
+            bean.floatBoxed = floatBoxed;
+            bean.doublePrimitive = doublePrimitve;
+            bean.longBoxed = longBoxed;
 
             epService.EPRuntime.SendEvent(bean);
 
@@ -328,7 +328,7 @@ namespace net.esper.regression.view
         private void sendSupportBeanEvent(double? doubleBoxed)
         {
             SupportBean _event = new SupportBean();
-            _event.DoubleBoxed = doubleBoxed;
+            _event.doubleBoxed = doubleBoxed;
             epService.EPRuntime.SendEvent(_event);
         }
 
@@ -342,7 +342,7 @@ namespace net.esper.regression.view
         private void sendSupportBeanEvent(bool boolBoxed)
         {
             SupportBean _event = new SupportBean();
-            _event.BoolBoxed = boolBoxed;
+            _event.boolBoxed = boolBoxed;
             epService.EPRuntime.SendEvent(_event);
         }
     }

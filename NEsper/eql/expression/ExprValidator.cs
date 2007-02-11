@@ -1,7 +1,6 @@
 using System;
 
-using AutoImportService = net.esper.eql.core.AutoImportService;
-using StreamTypeService = net.esper.eql.core.StreamTypeService;
+using net.esper.eql.core;
 
 namespace net.esper.eql.expression
 {

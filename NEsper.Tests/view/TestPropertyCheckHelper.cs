@@ -44,7 +44,7 @@ namespace net.esper.view
 			Assert.AreEqual(null, PropertyCheckHelper.checkLong(mySchema, "longBoxed"));
 			Assert.AreEqual(null, PropertyCheckHelper.checkLong(mySchema, "longBoxed"));
 			Assert.IsTrue(PropertyCheckHelper.checkLong(mySchema, "dummy") != null);
-			Assert.IsTrue(PropertyCheckHelper.checkLong(mySchema, "IntPrimitive") != null);
+			Assert.IsTrue(PropertyCheckHelper.checkLong(mySchema, "intPrimitive") != null);
 			Assert.IsTrue(PropertyCheckHelper.checkLong(mySchema, "doubleBoxed") != null);
 		}
 		

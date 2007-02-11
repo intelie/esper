@@ -79,7 +79,7 @@ namespace net.esper.support.eql
             selectionList.Add(new SelectExprElementUnnamedSpec(identNode, null));
 
             ExprNode top = new ExprSumNode(false);
-            identNode = SupportExprNodeFactory.makeIdentNode("IntPrimitive", "s0");
+            identNode = SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0");
             top.AddChildNode(identNode);
             selectionList.Add(new SelectExprElementUnnamedSpec(top, null));
 

@@ -6,6 +6,7 @@ using net.esper.compat;
 using net.esper.client;
 using net.esper.events;
 using net.esper.events.xml;
+using net.esper.util;
 
 namespace net.esper.events
 {
@@ -70,7 +71,7 @@ namespace net.esper.events
             Type clazz = null;
             try
             {
-                clazz = Type.GetType(fullyQualClassName, true, true);
+                clazz = TypeHelper.ResolveType(fullyQualClassName);
             }
             catch (Exception ex)
             {
@@ -93,8 +94,9 @@ namespace net.esper.events
                 // The existing type must be the same as the type created
                 if (!newEventType.Equals(existingType))
                 {
-                    throw new EventAdapterException("Event type named '" + eventTypeAlias +
-                            "' has already been declared with differing type information");
+                    throw new EventAdapterException(
+                        "Event type named '" + eventTypeAlias +
+                        "' has already been declared with differing type information");
                 }
 
                 // Since it's the same, return the existing type

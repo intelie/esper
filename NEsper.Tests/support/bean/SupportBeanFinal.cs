@@ -4,16 +4,16 @@ namespace net.esper.support.bean
 {
 	public sealed class SupportBeanFinal
 	{
-		public int IntPrimitive
+		public int intPrimitive
 		{
-			get { return intPrimitive; }
+			get { return m_intPrimitive; }
 		}
 
-		private int intPrimitive;
+		private int m_intPrimitive;
 		
 		public SupportBeanFinal(int intPrimitive)
 		{
-			this.intPrimitive = intPrimitive;
+			this.m_intPrimitive = intPrimitive;
 		}
 	}
 }

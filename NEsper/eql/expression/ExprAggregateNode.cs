@@ -233,7 +233,7 @@ namespace net.esper.eql.expression
 
                 if (isDistinct)
                 {
-                    buffer.Append("distinct	");
+                    buffer.Append("distinct ");
                 }
 
                 if (this.ChildNodes.Count > 0)

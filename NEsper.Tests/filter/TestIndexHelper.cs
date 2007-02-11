@@ -29,11 +29,11 @@ namespace net.esper.filter
             parameters = new ETreeSet<FilterValueSetParam>(new FilterSpecParamComparator());
 
             // Create parameter test list
-            parameterOne = new FilterValueSetParamImpl("IntPrimitive", FilterOperator.GREATER, 10);
+            parameterOne = new FilterValueSetParamImpl("intPrimitive", FilterOperator.GREATER, 10);
             parameters.Add(parameterOne);
             parameterTwo = new FilterValueSetParamImpl("doubleBoxed", FilterOperator.GREATER, 20d);
             parameters.Add(parameterTwo);
-            parameterThree = new FilterValueSetParamImpl("string", FilterOperator.EQUAL, "sometext");
+            parameterThree = new FilterValueSetParamImpl("StringValue", FilterOperator.EQUAL, "sometext");
             parameters.Add(parameterThree);
         }
 
@@ -62,7 +62,7 @@ namespace net.esper.filter
             Assert.AreEqual(indexTwo, pair.Second);
 
             // Add another index that does match a parameter, should return first match however which is doubleBoxed
-            FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "IntPrimitive", FilterOperator.GREATER);
+            FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
             indexes.Add(indexThree);
             pair = IndexHelper.findIndex(parameters, indexes);
             Assert.AreEqual(parameterTwo, pair.First);
@@ -81,10 +81,10 @@ namespace net.esper.filter
             FilterParamIndex indexOne = IndexFactory.createIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
             Assert.IsNull(IndexHelper.findParameter(parameters, indexOne));
 
-            FilterParamIndex indexTwo = IndexFactory.createIndex(eventType, "string", FilterOperator.EQUAL);
+            FilterParamIndex indexTwo = IndexFactory.createIndex(eventType, "StringValue", FilterOperator.EQUAL);
             Assert.AreEqual(parameterThree, IndexHelper.findParameter(parameters, indexTwo));
 
-            FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "IntPrimitive", FilterOperator.GREATER);
+            FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
             Assert.AreEqual(parameterOne, IndexHelper.findParameter(parameters, indexThree));
         }
     }

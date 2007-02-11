@@ -11,47 +11,40 @@ namespace net.esper.util
     public class TestTypeHelper
     {
         [Test]
-        public virtual void testCoerceNumber()
+        public void testCoerceNumber()
         {
-            Assert.AreEqual(1d, (double) TypeHelper.CoerceNumber(1d, typeof(double)));
-            Assert.AreEqual(5d, (double) TypeHelper.CoerceNumber(5, typeof(double)));
-            Assert.AreEqual(6d, (double) TypeHelper.CoerceNumber((sbyte)6, typeof(double)));
-            Assert.AreEqual(3f, (float) TypeHelper.CoerceNumber(3L, typeof(float)));
-            Assert.AreEqual((short)2, (short) TypeHelper.CoerceNumber(2L, typeof(short)));
-            Assert.AreEqual(4, TypeHelper.CoerceNumber(4L, typeof(int)));
-            Assert.AreEqual((sbyte)5, TypeHelper.CoerceNumber(5L, typeof(sbyte)));
-            Assert.AreEqual(8L, TypeHelper.CoerceNumber(8L, typeof(long)));
+            Assert.AreEqual(1d, TypeHelper.CoerceNumber(1d, typeof(double?)));
+            Assert.AreEqual(5d, TypeHelper.CoerceNumber(5, typeof(double?)));
+            Assert.AreEqual(6d, TypeHelper.CoerceNumber((sbyte)6, typeof(double?)));
+            Assert.AreEqual(3f, TypeHelper.CoerceNumber((long)3, typeof(float?)));
+            Assert.AreEqual((short)2, TypeHelper.CoerceNumber((long)2, typeof(short?)));
+            Assert.AreEqual(4, TypeHelper.CoerceNumber((long)4, typeof(int?)));
+            Assert.AreEqual((sbyte)5, TypeHelper.CoerceNumber((long)5, typeof(sbyte?)));
+            Assert.AreEqual(8l, TypeHelper.CoerceNumber((long)8, typeof(long?)));
 
             try
             {
                 TypeHelper.CoerceNumber(10, typeof(int));
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }
         }
 
         [Test]
-        public virtual void testIsNumeric()
+        public void testIsNumeric()
         {
-            Type[] numericClasses = new Type[]
-			{
-				typeof(float),
-				typeof(double), 
-				typeof(sbyte), 
-				typeof(short), 
-				typeof(int), 
-				typeof(long), 
-			};
+            Type[] numericClasses = {
+                typeof(float), typeof(float?), typeof(double), typeof(double?),
+                typeof(sbyte), typeof(sbyte?), typeof(short), typeof(short?), typeof(int), typeof(int?),
+                typeof(long), typeof(long?)
+            };
 
-            Type[] nonnumericClasses = new Type[]
-			{
-				typeof(string),
-				typeof(bool),
-				typeof(TestFixture)
-			};
+            Type[] nonnumericClasses = {
+                typeof(string), typeof(bool), typeof(bool?), typeof(TestFixture)
+            };
 
             foreach (Type type in numericClasses)
             {
@@ -65,28 +58,72 @@ namespace net.esper.util
         }
 
         [Test]
-        public virtual void testIsBoolean()
+        public void testGetBoxed()
         {
-            Assert.IsTrue(TypeHelper.IsBoolean(typeof(bool)));
-            Assert.IsTrue(TypeHelper.IsBoolean(typeof(bool)));
-            Assert.IsFalse(TypeHelper.IsBoolean(typeof(String)));
+            Type[] primitiveClasses = {
+                typeof(bool), typeof(float), typeof(double), typeof(sbyte), typeof(short), typeof(int), typeof(long), typeof(char)
+            };
+
+            Type[] boxedClasses = {
+                typeof(bool?), typeof(float?), typeof(double?), typeof(sbyte?), typeof(short?), typeof(int?), typeof(long?), typeof(char?)
+            };
+
+            Type[] otherClasses = {
+                typeof(string), typeof(TestFixture)
+            };
+
+            for (int i = 0; i < primitiveClasses.Length; i++)
+            {
+                Type boxed = TypeHelper.GetBoxedType(primitiveClasses[i]);
+                Assert.AreEqual(boxed, boxedClasses[i]);
+            }
+
+            for (int i = 0; i < boxedClasses.Length; i++)
+            {
+                Type boxed = TypeHelper.GetBoxedType(boxedClasses[i]);
+                Assert.AreEqual(boxed, boxedClasses[i]);
+            }
+
+            for (int i = 0; i < otherClasses.Length; i++)
+            {
+                Type boxed = TypeHelper.GetBoxedType(otherClasses[i]);
+                Assert.AreEqual(boxed, otherClasses[i]);
+            }
         }
 
         [Test]
-        public virtual void testGetCoercionType()
+        public void testIsAssignmentCompatible()
         {
-            Assert.AreEqual(typeof(Double), TypeHelper.GetArithmaticCoercionType(typeof(Double), typeof(int)));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(double)));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(long)));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(long)));
-            Assert.AreEqual(typeof(System.Single), TypeHelper.GetArithmaticCoercionType(typeof(float), typeof(long)));
-            Assert.AreEqual(typeof(System.Single), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(float)));
-            Assert.AreEqual(typeof(Int32), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(int)));
-            Assert.AreEqual(typeof(Int32), TypeHelper.GetArithmaticCoercionType(typeof(Int32), typeof(int)));
+            Assert.IsTrue(TypeHelper.IsAssignmentCompatible(typeof(bool), typeof(bool?)));
+            Assert.IsFalse(TypeHelper.IsAssignmentCompatible(typeof(string), typeof(bool?)));
+            Assert.IsFalse(TypeHelper.IsAssignmentCompatible(typeof(int), typeof(long?)));
+            Assert.IsTrue(TypeHelper.IsAssignmentCompatible(typeof(long), typeof(long?)));
+            Assert.IsTrue(TypeHelper.IsAssignmentCompatible(typeof(double), typeof(double)));
+        }
+
+        [Test]
+        public void testIsBoolean()
+        {
+            Assert.IsTrue(TypeHelper.IsBoolean(typeof(bool?)));
+            Assert.IsTrue(TypeHelper.IsBoolean(typeof(bool)));
+            Assert.IsFalse(TypeHelper.IsBoolean(typeof(string)));
+        }
+
+        [Test]
+        public void testGetCoercionType()
+        {
+            Assert.AreEqual(typeof(double?), TypeHelper.GetArithmaticCoercionType(typeof(double?), typeof(int)));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(double)));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(long)));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(long)));
+            Assert.AreEqual(typeof(float?), TypeHelper.GetArithmaticCoercionType(typeof(float), typeof(long)));
+            Assert.AreEqual(typeof(float?), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(float)));
+            Assert.AreEqual(typeof(int?), TypeHelper.GetArithmaticCoercionType(typeof(sbyte), typeof(int)));
+            Assert.AreEqual(typeof(int?), TypeHelper.GetArithmaticCoercionType(typeof(int?), typeof(int)));
 
             try
             {
-                TypeHelper.GetArithmaticCoercionType(typeof(String), typeof(float));
+                TypeHelper.GetArithmaticCoercionType(typeof(string), typeof(float));
                 Assert.Fail();
             }
             catch (CoercionException ex)
@@ -106,73 +143,87 @@ namespace net.esper.util
         }
 
         [Test]
-        public virtual void testIsFloatingPointNumber()
+        public void testIsFloatingPointNumber()
         {
+            double? testValueDouble = 1.0;
+            float? testValueFloat = 1.0f;
+            int? testValueInt = 1;
+
             Assert.IsTrue(TypeHelper.IsFloatingPointNumber(1d));
             Assert.IsTrue(TypeHelper.IsFloatingPointNumber(1f));
-            Assert.IsTrue(TypeHelper.IsFloatingPointNumber((double)1));
-            Assert.IsTrue(TypeHelper.IsFloatingPointNumber((float)1));
+            Assert.IsTrue(TypeHelper.IsFloatingPointNumber(testValueDouble));
+            Assert.IsTrue(TypeHelper.IsFloatingPointNumber(testValueFloat));
 
             Assert.IsFalse(TypeHelper.IsFloatingPointNumber(1));
-            Assert.IsFalse(TypeHelper.IsFloatingPointNumber(1));
+            Assert.IsFalse(TypeHelper.IsFloatingPointNumber(testValueInt));
         }
 
         [Test]
-        public virtual void testIsFloatingPointClass()
+        public void testIsFloatingPointClass()
         {
             Assert.IsTrue(TypeHelper.IsFloatingPointClass(typeof(double)));
             Assert.IsTrue(TypeHelper.IsFloatingPointClass(typeof(float)));
-            Assert.IsTrue(TypeHelper.IsFloatingPointClass(typeof(Double)));
-            Assert.IsTrue(TypeHelper.IsFloatingPointClass(typeof(System.Single)));
+            Assert.IsTrue(TypeHelper.IsFloatingPointClass(typeof(double?)));
+            Assert.IsTrue(TypeHelper.IsFloatingPointClass(typeof(float?)));
 
-            Assert.IsFalse(TypeHelper.IsFloatingPointClass(typeof(String)));
+            Assert.IsFalse(TypeHelper.IsFloatingPointClass(typeof(string)));
             Assert.IsFalse(TypeHelper.IsFloatingPointClass(typeof(int)));
-            Assert.IsFalse(TypeHelper.IsFloatingPointClass(typeof(Int32)));
+            Assert.IsFalse(TypeHelper.IsFloatingPointClass(typeof(int?)));
         }
 
         [Test]
-        public virtual void testGetCompareToCoercionType()
+        public void testGetCompareToCoercionType()
         {
-            Assert.AreEqual(typeof(String), TypeHelper.GetCompareToCoercionType(typeof(String), typeof(String)));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCompareToCoercionType(typeof(bool), typeof(bool)));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCompareToCoercionType(typeof(bool), typeof(bool)));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCompareToCoercionType(typeof(bool), typeof(bool)));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCompareToCoercionType(typeof(bool), typeof(bool)));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCompareToCoercionType(typeof(string), typeof(string)));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCompareToCoercionType(typeof(bool?), typeof(bool?)));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCompareToCoercionType(typeof(bool?), typeof(bool)));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCompareToCoercionType(typeof(bool), typeof(bool?)));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCompareToCoercionType(typeof(bool), typeof(bool)));
 
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCompareToCoercionType(typeof(int), typeof(float)));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCompareToCoercionType(typeof(double), typeof(sbyte)));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCompareToCoercionType(typeof(float), typeof(float)));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCompareToCoercionType(typeof(float), typeof(Double)));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCompareToCoercionType(typeof(int), typeof(float)));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCompareToCoercionType(typeof(double), typeof(sbyte)));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCompareToCoercionType(typeof(float), typeof(float)));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCompareToCoercionType(typeof(float), typeof(double?)));
 
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCompareToCoercionType(typeof(int), typeof(int)));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCompareToCoercionType(typeof(Int16), typeof(Int32)));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCompareToCoercionType(typeof(int), typeof(int)));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCompareToCoercionType(typeof(short?), typeof(int?)));
 
-            tryInvalidGetRelational(typeof(String), typeof(int));
-            tryInvalidGetRelational(typeof(Int64), typeof(String));
-            tryInvalidGetRelational(typeof(Int64), typeof(bool));
+            tryInvalidGetRelational(typeof(string), typeof(int));
+            tryInvalidGetRelational(typeof(long?), typeof(string));
+            tryInvalidGetRelational(typeof(long?), typeof(bool?));
             tryInvalidGetRelational(typeof(bool), typeof(int));
         }
 
         [Test]
-        public virtual void testIsBuiltinDataType()
+        public void testGetBoxedClassName()
         {
-            Type[] classesDataType = new Type[]
-			{
-                typeof(short),
-				typeof(int),
-				typeof(long), 
-				typeof(double), 
-				typeof(bool), 
-				typeof(char), 
-				typeof(string)
-			};
+            String[,] tests = new String[,] {
+                {typeof(int?).FullName, typeof(int).FullName},
+                {typeof(long?).FullName, typeof(long).FullName},
+                {typeof(short?).FullName, typeof(short).FullName},
+                {typeof(double?).FullName, typeof(double).FullName},
+                {typeof(float?).FullName, typeof(float).FullName},
+                {typeof(bool?).FullName, typeof(bool).FullName},
+                {typeof(sbyte?).FullName, typeof(sbyte).FullName},
+                {typeof(char?).FullName, typeof(char).FullName}
+            };
 
-            Type[] classesNotDataType = new Type[]
-			{
-				typeof(SupportBean),
-				typeof(Math),
-				typeof(Type)
-			};
+            for (int i = 0; i < tests.Length; i++)
+            {
+                Assert.AreEqual(tests[i,0], TypeHelper.GetBoxedTypeName(tests[i,1]));
+            }
+        }
+
+        [Test]
+        public void testIsBuiltinDataType()
+        {
+            Type[] classesDataType = new Type[] {
+                typeof(int), typeof(long?), typeof(double), typeof(bool), typeof(bool?),
+                typeof(char), typeof(char?), typeof(string)
+            };
+            Type[] classesNotDataType = new Type[] {
+                typeof(SupportBean), typeof(Math), typeof(Type)
+            };
 
             for (int i = 0; i < classesDataType.Length; i++)
             {
@@ -191,50 +242,50 @@ namespace net.esper.util
                 TypeHelper.GetCompareToCoercionType(classOne, classTwo);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }
         }
 
         [Test]
-        public virtual void testGetCommonCoercionType()
+        public void testGetCommonCoercionType()
         {
-            Assert.AreEqual(typeof(String), TypeHelper.GetCommonCoercionType(new Type[] { typeof(String) }));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool) }));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long) }));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCommonCoercionType(new Type[] { typeof(string) }));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool) }));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long) }));
 
-            Assert.AreEqual(typeof(String), TypeHelper.GetCommonCoercionType(new Type[] { typeof(String), null }));
-            Assert.AreEqual(typeof(String), TypeHelper.GetCommonCoercionType(new Type[] { typeof(String), typeof(String) }));
-            Assert.AreEqual(typeof(String), TypeHelper.GetCommonCoercionType(new Type[] { typeof(String), typeof(String), typeof(String) }));
-            Assert.AreEqual(typeof(String), TypeHelper.GetCommonCoercionType(new Type[] { typeof(String), typeof(String), null }));
-            Assert.AreEqual(typeof(String), TypeHelper.GetCommonCoercionType(new Type[] { null, typeof(String), null }));
-            Assert.AreEqual(typeof(String), TypeHelper.GetCommonCoercionType(new Type[] { null, typeof(String), typeof(String) }));
-            Assert.AreEqual(typeof(String), TypeHelper.GetCommonCoercionType(new Type[] { null, null, typeof(String), typeof(String) }));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCommonCoercionType(new Type[] { typeof(string), null }));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCommonCoercionType(new Type[] { typeof(string), typeof(string) }));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCommonCoercionType(new Type[] { typeof(string), typeof(string), typeof(string) }));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCommonCoercionType(new Type[] { typeof(string), typeof(string), null }));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCommonCoercionType(new Type[] { null, typeof(string), null }));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCommonCoercionType(new Type[] { null, typeof(string), typeof(string) }));
+            Assert.AreEqual(typeof(string), TypeHelper.GetCommonCoercionType(new Type[] { null, null, typeof(string), typeof(string) }));
 
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool), typeof(bool) }));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool), typeof(bool) }));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool), typeof(bool) }));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool), typeof(bool) }));
-            Assert.AreEqual(typeof(bool), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool), typeof(bool), typeof(bool) }));
-            Assert.AreEqual(typeof(Int32), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int), typeof(sbyte), typeof(int) }));
-            Assert.AreEqual(typeof(Int32), TypeHelper.GetCommonCoercionType(new Type[] { typeof(Int32), typeof(System.SByte), typeof(Int16) }));
-            Assert.AreEqual(typeof(Int32), TypeHelper.GetCommonCoercionType(new Type[] { typeof(sbyte), typeof(short), typeof(short) }));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCommonCoercionType(new Type[] { typeof(Int32), typeof(System.SByte), typeof(Double) }));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCommonCoercionType(new Type[] { typeof(Int64), typeof(Double), typeof(Double) }));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCommonCoercionType(new Type[] { typeof(double), typeof(sbyte) }));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCommonCoercionType(new Type[] { typeof(double), typeof(sbyte), null }));
-            Assert.AreEqual(typeof(System.Single), TypeHelper.GetCommonCoercionType(new Type[] { typeof(float), typeof(float) }));
-            Assert.AreEqual(typeof(System.Single), TypeHelper.GetCommonCoercionType(new Type[] { typeof(float), typeof(int) }));
-            Assert.AreEqual(typeof(System.Single), TypeHelper.GetCommonCoercionType(new Type[] { typeof(Int32), typeof(int), typeof(System.Single) }));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCommonCoercionType(new Type[] { typeof(Int32), typeof(int), typeof(long) }));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long), typeof(int) }));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long), typeof(int), typeof(int), typeof(int), typeof(sbyte), typeof(short) }));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long), null, typeof(int), null, typeof(int), typeof(int), null, typeof(sbyte), typeof(short) }));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCommonCoercionType(new Type[] { typeof(Int32), typeof(int), typeof(long) }));
-            Assert.AreEqual(typeof(System.Char), TypeHelper.GetCommonCoercionType(new Type[] { typeof(char), typeof(char), typeof(char) }));
-            Assert.AreEqual(typeof(Int64), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int), typeof(int), typeof(int), typeof(long), typeof(int), typeof(int) }));
-            Assert.AreEqual(typeof(Double), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int), typeof(long), typeof(int), typeof(double), typeof(int), typeof(int) }));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool?), typeof(bool?) }));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool?), typeof(bool) }));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool), typeof(bool?) }));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool), typeof(bool) }));
+            Assert.AreEqual(typeof(bool?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(bool?), typeof(bool), typeof(bool) }));
+            Assert.AreEqual(typeof(int?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int), typeof(sbyte), typeof(int) }));
+            Assert.AreEqual(typeof(int?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int?), typeof(sbyte?), typeof(short?) }));
+            Assert.AreEqual(typeof(int?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(sbyte), typeof(short), typeof(short) }));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int?), typeof(sbyte?), typeof(double?) }));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long?), typeof(double?), typeof(double?) }));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(double), typeof(sbyte) }));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(double), typeof(sbyte), null }));
+            Assert.AreEqual(typeof(float?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(float), typeof(float) }));
+            Assert.AreEqual(typeof(float?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(float), typeof(int) }));
+            Assert.AreEqual(typeof(float?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int?), typeof(int), typeof(float?) }));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int?), typeof(int), typeof(long) }));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long), typeof(int) }));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long), typeof(int), typeof(int), typeof(int), typeof(sbyte), typeof(short) }));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(long), null, typeof(int), null, typeof(int), typeof(int), null, typeof(sbyte), typeof(short) }));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int?), typeof(int), typeof(long) }));
+            Assert.AreEqual(typeof(char?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(char), typeof(char), typeof(char) }));
+            Assert.AreEqual(typeof(long?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int), typeof(int), typeof(int), typeof(long), typeof(int), typeof(int) }));
+            Assert.AreEqual(typeof(double?), TypeHelper.GetCommonCoercionType(new Type[] { typeof(int), typeof(long), typeof(int), typeof(double), typeof(int), typeof(int) }));
             Assert.AreEqual(null, TypeHelper.GetCommonCoercionType(new Type[] { null, null }));
             Assert.AreEqual(null, TypeHelper.GetCommonCoercionType(new Type[] { null, null, null }));
             Assert.AreEqual(typeof(SupportBean), TypeHelper.GetCommonCoercionType(new Type[] { typeof(SupportBean), null, null }));
@@ -243,27 +294,27 @@ namespace net.esper.util
             Assert.AreEqual(typeof(SupportBean), TypeHelper.GetCommonCoercionType(new Type[] { null, null, typeof(SupportBean) }));
             Assert.AreEqual(typeof(SupportBean), TypeHelper.GetCommonCoercionType(new Type[] { typeof(SupportBean), null, typeof(SupportBean), typeof(SupportBean) }));
 
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(String), typeof(bool) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(String), typeof(String), typeof(bool) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(bool), typeof(String), typeof(bool) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(bool), typeof(bool), typeof(String) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(long), typeof(bool), typeof(String) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(double), typeof(long), typeof(String) });
-            tryInvalidGetCommonCoercionType(new Type[] { null, typeof(double), typeof(long), typeof(String) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(String), typeof(String), typeof(long) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(String), typeof(SupportBean) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(bool), null, null, typeof(String) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(int), null, null, typeof(String) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(SupportBean), typeof(bool) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(String), typeof(SupportBean) });
-            tryInvalidGetCommonCoercionType(new Type[] { typeof(SupportBean), typeof(String), typeof(SupportBean) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(string), typeof(bool?) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(string), typeof(string), typeof(bool?) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(bool?), typeof(string), typeof(bool?) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(bool?), typeof(bool?), typeof(string) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(long), typeof(bool?), typeof(string) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(double), typeof(long), typeof(string) });
+            tryInvalidGetCommonCoercionType(new Type[] { null, typeof(double), typeof(long), typeof(string) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(string), typeof(string), typeof(long) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(string), typeof(SupportBean) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(bool), null, null, typeof(string) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(int), null, null, typeof(string) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(SupportBean), typeof(bool?) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(string), typeof(SupportBean) });
+            tryInvalidGetCommonCoercionType(new Type[] { typeof(SupportBean), typeof(string), typeof(SupportBean) });
 
             try
             {
                 TypeHelper.GetCommonCoercionType(new Type[0]);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -276,7 +327,7 @@ namespace net.esper.util
                 TypeHelper.GetCommonCoercionType(types);
                 Assert.Fail();
             }
-            catch (CoercionException ex)
+            catch (CoercionException)
             {
                 // expected
             }

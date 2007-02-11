@@ -21,9 +21,9 @@ namespace net.esper.events
 		public virtual void  setUp()
 		{
 			SupportBean testEvent = new SupportBean();
-			testEvent.IntPrimitive = 10;
+			testEvent.intPrimitive = 10;
 			testEvent.StringValue = "a";
-			testEvent.DoubleBoxed = null;
+			testEvent.doubleBoxed = null;
 			
 			unitTestBean = SupportEventBeanFactory.createObject(testEvent);
 		}
@@ -31,7 +31,7 @@ namespace net.esper.events
 		[Test]
 		public virtual void  testGetter()
 		{
-			ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getIntPrimitive");
+			ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getintPrimitive");
 			Assert.AreEqual(10, getter.GetValue(unitTestBean));
 			
 			getter = makeGetter(typeof(SupportBean), "getString");
@@ -56,7 +56,7 @@ namespace net.esper.events
 		[Test]
 		public virtual void  testPerformance()
 		{
-			ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getIntPrimitive");
+			ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getintPrimitive");
 			
 			log.Info(".testPerformance Starting test");
 			

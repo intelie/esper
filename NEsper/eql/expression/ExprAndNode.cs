@@ -1,8 +1,8 @@
 using System;
-using TypeHelper = net.esper.util.TypeHelper;
-using EventBean = net.esper.events.EventBean;
-using AutoImportService = net.esper.eql.core.AutoImportService;
-using StreamTypeService = net.esper.eql.core.StreamTypeService;
+
+using net.esper.eql.core;
+using net.esper.events;
+using net.esper.util;
 
 namespace net.esper.eql.expression
 {
@@ -14,7 +14,7 @@ namespace net.esper.eql.expression
     {
         override public Type ReturnType
         {
-            get { return typeof(Boolean); }
+            get { return typeof(bool?); }
 
         }
         

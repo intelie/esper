@@ -71,7 +71,7 @@ namespace net.esper.regression.view
 		{
 			SupportBean _event = new SupportBean();
 			_event.StringValue = stringValue;
-			_event.IntPrimitive = intPrimitive;
+			_event.intPrimitive = intPrimitive;
 			epService.EPRuntime.SendEvent(_event);
 			return _event;
 		}

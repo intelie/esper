@@ -5,29 +5,33 @@ namespace net.esper.support.bean
 	
 	public class SupportBeanWithEnum
 	{
-		virtual public String String
+		virtual public String Str
 		{
-			get
-			{
-				return stringValue;
-			}
-			
+            get { return _stringValue; }
 		}
+
 		virtual public SupportEnum SupportEnum
 		{
-			get
-			{
-				return supportEnum;
-			}
-			
+            get { return _supportEnum; }
 		}
-		private String stringValue;
-		private SupportEnum supportEnum;
+
+        virtual public String str
+        {
+            get { return _stringValue; }
+        }
+
+        virtual public SupportEnum supportEnum
+        {
+            get { return _supportEnum; }
+        }
+
+		private String _stringValue;
+		private SupportEnum _supportEnum;
 		
 		public SupportBeanWithEnum(String stringValue, SupportEnum supportEnum)
 		{
-			this.stringValue = stringValue;
-			this.supportEnum = supportEnum;
+			this._stringValue = stringValue;
+			this._supportEnum = supportEnum;
 		}
 	}
 }

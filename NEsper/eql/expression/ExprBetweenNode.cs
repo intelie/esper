@@ -16,7 +16,7 @@ namespace net.esper.eql.expression
 	{
 		override public Type ReturnType
 		{
-			get { return typeof(Boolean); }
+			get { return typeof(bool?); }
 		}
 		
 		private readonly bool isNotBetween;
@@ -41,9 +41,9 @@ namespace net.esper.eql.expression
 			}
 			
 			// Must be either numeric or string
-            Type typeOne = this.ChildNodes[0].ReturnType;
-            Type typeTwo = this.ChildNodes[1].ReturnType;
-			Type typeThree = this.ChildNodes[2].ReturnType;
+            Type typeOne = TypeHelper.GetBoxedType(this.ChildNodes[0].ReturnType);
+            Type typeTwo = TypeHelper.GetBoxedType(this.ChildNodes[1].ReturnType);
+			Type typeThree = TypeHelper.GetBoxedType(this.ChildNodes[2].ReturnType);
 			
 			if (typeOne == null)
 			{

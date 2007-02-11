@@ -47,8 +47,8 @@ namespace net.esper.regression.eql
 				"select * from " +
 				eventClass + "(string='A').win:length(3) as streamA," + 
 				eventClass + "(string='B').win:length(3) as streamB" +
-				" where streamA.IntPrimitive = streamB.IntPrimitive " +
-				"and streamA.IntBoxed = streamB.IntBoxed";
+				" where streamA.intPrimitive = streamB.intPrimitive " +
+				"and streamA.intBoxed = streamB.intBoxed";
 			
 			joinView = epService.EPAdministrator.createEQL(joinStatement);
 			joinView.AddListener(updateListener);
@@ -57,13 +57,13 @@ namespace net.esper.regression.eql
 			{
 				eventsA[i] = new SupportBean();
 				eventsA[i].StringValue = "A";
-				eventsA[i].IntPrimitive = eventData[i][0];
-				eventsA[i].IntBoxed = eventData[i][1];
+				eventsA[i].intPrimitive = eventData[i][0];
+				eventsA[i].intBoxed = eventData[i][1];
 				
 				eventsB[i] = new SupportBean();
 				eventsB[i].StringValue = "B";
-				eventsB[i].IntPrimitive = eventData[i][0];
-				eventsB[i].IntBoxed = eventData[i][1];
+				eventsB[i].intPrimitive = eventData[i][0];
+				eventsB[i].intBoxed = eventData[i][1];
 			}
 		}
 		

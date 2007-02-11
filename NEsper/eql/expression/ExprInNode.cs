@@ -17,7 +17,7 @@ namespace net.esper.eql.expression
     {
         override public Type ReturnType
         {
-            get { return typeof(Boolean); }
+            get { return typeof(bool?); }
         }
 
         private readonly bool isNotIn;
@@ -142,8 +142,8 @@ namespace net.esper.eql.expression
         	}
 
             return Object.Equals(
-            	Convert.ChangeType(leftResult, coercionType),
-            	Convert.ChangeType(rightResult, coercionType)
+                TypeHelper.CoerceNumber(leftResult, coercionType),
+                TypeHelper.CoerceNumber(rightResult, coercionType)
                 ) ;
         }
     }

@@ -75,7 +75,7 @@ namespace net.esper.filter
         [Test]
         public virtual void testString()
         {
-            FilterParamIndexEquals index = new FilterParamIndexEquals("string", testEventType);
+            FilterParamIndexEquals index = new FilterParamIndexEquals("StringValue", testEventType);
 
             index.Put("hello", testEvaluator);
             index.Put("test", testEvaluator);
@@ -103,9 +103,9 @@ namespace net.esper.filter
 
             index.Put(1.5f, testEvaluator);
 
-            verifyFloatPrimitive(index, 1.5f, 1);
-            verifyFloatPrimitive(index, 2.2f, 0);
-            verifyFloatPrimitive(index, 0, 0);
+            verifyfloatPrimitive(index, 1.5f, 1);
+            verifyfloatPrimitive(index, 2.2f, 0);
+            verifyfloatPrimitive(index, 0, 0);
 
             try
             {
@@ -118,16 +118,16 @@ namespace net.esper.filter
             }
         }
 
-        private void verifyShortBoxed(FilterParamIndex index, Nullable<Int16> testValue, int numExpected)
+        private void verifyShortBoxed(FilterParamIndex index, short? testValue, int numExpected)
         {
-            testBean.ShortBoxed = testValue;
+            testBean.shortBoxed = testValue;
             index.matchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
 
         private void verifyBooleanPrimitive(FilterParamIndex index, bool testValue, int numExpected)
         {
-            testBean.BoolPrimitive = testValue;
+            testBean.boolPrimitive = testValue;
             index.matchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
@@ -139,9 +139,9 @@ namespace net.esper.filter
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
 
-        private void verifyFloatPrimitive(FilterParamIndex index, float testValue, int numExpected)
+        private void verifyfloatPrimitive(FilterParamIndex index, float testValue, int numExpected)
         {
-            testBean.FloatPrimitive = testValue;
+            testBean.floatPrimitive = testValue;
             index.matchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }

@@ -7,7 +7,6 @@ using net.esper.util;
 
 namespace net.esper.eql.expression
 {
-
     /// <summary>
     /// Represents a lesser or greater then (</<=/>/>=) expression in a filter expression tree.
     /// </summary>
@@ -16,7 +15,7 @@ namespace net.esper.eql.expression
     {
         override public Type ReturnType
         {
-            get { return typeof(Boolean); }
+            get { return typeof(bool); }
         }
 
         private readonly RelationalOpEnum relationalOpEnum;
@@ -39,8 +38,8 @@ namespace net.esper.eql.expression
             }
 
             // Must be either numeric or string
-            Type typeOne = this.ChildNodes[0].ReturnType;
-            Type typeTwo = this.ChildNodes[1].ReturnType;
+            Type typeOne = TypeHelper.GetBoxedType(this.ChildNodes[0].ReturnType);
+            Type typeTwo = TypeHelper.GetBoxedType(this.ChildNodes[1].ReturnType);
 
             if ((typeOne != typeof(String)) || (typeTwo != typeof(String)))
             {

@@ -16,7 +16,6 @@ namespace net.esper.regression.view
     [TestFixture]
     public class TestBitWiseOperators
     {
-
         internal const sbyte FIRST_EVENT = 1;
         internal const short SECOND_EVENT = 2;
         internal const int THIRD_EVENT = FIRST_EVENT | SECOND_EVENT;
@@ -33,7 +32,7 @@ namespace net.esper.regression.view
             setUpBitWiseStmt();
             EventType type = _selectTestView.EventType;
             log.Debug(".testGetEventType properties=" + CollectionHelper.Render(type.PropertyNames));
-            Assert.AreEqual(typeof(System.SByte), type.GetPropertyType("myFirstProperty"));
+            Assert.AreEqual(typeof(SByte), type.GetPropertyType("myFirstProperty"));
             Assert.AreEqual(typeof(Int16), type.GetPropertyType("mySecondProperty"));
             Assert.AreEqual(typeof(Int32), type.GetPropertyType("myThirdProperty"));
             Assert.AreEqual(typeof(Int64), type.GetPropertyType("myFourthProperty"));
@@ -76,7 +75,7 @@ namespace net.esper.regression.view
                 "(shortPrimitive | shortBoxed) as mySecondProperty, " + 
                 "(intPrimitive | intBoxed) as myThirdProperty, " + 
                 "(longPrimitive ^ longBoxed) as myFourthProperty, " + 
-                "(boolPrimitive & BoolBoxed) as myFithProperty " + 
+                "(boolPrimitive & boolBoxed) as myFithProperty " + 
                 " from " + typeof(SupportBean).FullName + ".win:length(3) ";
             _selectTestView = _epService.EPAdministrator.createEQL(viewExpr);
             _selectTestView.AddListener(_testListener);
@@ -95,16 +94,16 @@ namespace net.esper.regression.view
             bool? boolBoxed_)
         {
             SupportBean bean = new SupportBean();
-            bean.BytePrimitive = bytePrimitive_;
-            bean.ByteBoxed = byteBoxed_;
-            bean.ShortPrimitive = shortPrimitive_;
-            bean.ShortBoxed = shortBoxed;
-            bean.IntPrimitive = intPrimitive_;
-            bean.IntBoxed = intBoxed_;
-            bean.LongPrimitive = longPrimitive_;
-            bean.LongBoxed = longBoxed_;
-            bean.BoolPrimitive = boolPrimitive_;
-            bean.BoolBoxed = boolBoxed_;
+            bean.bytePrimitive = bytePrimitive_;
+            bean.byteBoxed = byteBoxed_;
+            bean.shortPrimitive = shortPrimitive_;
+            bean.shortBoxed = shortBoxed;
+            bean.intPrimitive = intPrimitive_;
+            bean.intBoxed = intBoxed_;
+            bean.longPrimitive = longPrimitive_;
+            bean.longBoxed = longBoxed_;
+            bean.boolPrimitive = boolPrimitive_;
+            bean.boolBoxed = boolBoxed_;
             _epService.EPRuntime.SendEvent(bean);
         }
 

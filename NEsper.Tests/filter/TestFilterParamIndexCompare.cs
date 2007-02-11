@@ -63,12 +63,12 @@ namespace net.esper.filter
 			index.Put( 2.1, testEvaluator );
 			index.Put( 2.2, testEvaluator );
 
-			verifyDoublePrimitive( index, 1.5, 0 );
-			verifyDoublePrimitive( index, 1.7, 1 );
-			verifyDoublePrimitive( index, 2.2, 2 );
-			verifyDoublePrimitive( index, 2.1999999, 2 );
-			verifyDoublePrimitive( index, -1, 0 );
-			verifyDoublePrimitive( index, 99, 3 );
+			verifydoublePrimitive( index, 1.5, 0 );
+			verifydoublePrimitive( index, 1.7, 1 );
+			verifydoublePrimitive( index, 2.2, 2 );
+			verifydoublePrimitive( index, 2.1999999, 2 );
+			verifydoublePrimitive( index, -1, 0 );
+			verifydoublePrimitive( index, 99, 3 );
 
 			Assert.AreEqual( testEvaluator, index[ 1.5d ] );
 			Assert.IsTrue( index.ReadWriteLock != null );
@@ -128,15 +128,15 @@ namespace net.esper.filter
 			index.Put( 10L, testEvaluator );
 			index.Put( 100L, testEvaluator );
 
-			verifyLongPrimitive( index, 100, 0 );
-			verifyLongPrimitive( index, 101, 0 );
-			verifyLongPrimitive( index, 99, 1 );
-			verifyLongPrimitive( index, 11, 1 );
-			verifyLongPrimitive( index, 10, 1 );
-			verifyLongPrimitive( index, 9, 2 );
-			verifyLongPrimitive( index, 2, 2 );
-			verifyLongPrimitive( index, 1, 2 );
-			verifyLongPrimitive( index, 0, 3 );
+			verifylongPrimitive( index, 100, 0 );
+			verifylongPrimitive( index, 101, 0 );
+			verifylongPrimitive( index, 99, 1 );
+			verifylongPrimitive( index, 11, 1 );
+			verifylongPrimitive( index, 10, 1 );
+			verifylongPrimitive( index, 9, 2 );
+			verifylongPrimitive( index, 2, 2 );
+			verifylongPrimitive( index, 1, 2 );
+			verifylongPrimitive( index, 0, 3 );
 		}
 
 		[Test]
@@ -157,30 +157,30 @@ namespace net.esper.filter
 			verifyDoubleBoxed( index, 7.61, 0 );
 		}
 
-		private void verifyDoublePrimitive( FilterParamIndex index, double testValue, int numExpected )
+		private void verifydoublePrimitive( FilterParamIndex index, double testValue, int numExpected )
 		{
-			testBean.DoublePrimitive = testValue;
+			testBean.doublePrimitive = testValue;
 			index.matchEvent( testEventBean, matchesList );
 			Assert.AreEqual( numExpected, testEvaluator.AndResetCountInvoked );
 		}
 
 		private void verifyDoubleBoxed( FilterParamIndex index, Double? testValue, int numExpected )
 		{
-			testBean.DoubleBoxed = testValue;
+			testBean.doubleBoxed = testValue;
 			index.matchEvent( testEventBean, matchesList );
 			Assert.AreEqual( numExpected, testEvaluator.AndResetCountInvoked );
 		}
 
 		private void verifyLongBoxed( FilterParamIndex index, Int64? testValue, int numExpected )
 		{
-			testBean.LongBoxed = testValue;
+			testBean.longBoxed = testValue;
 			index.matchEvent( testEventBean, matchesList );
 			Assert.AreEqual( numExpected, testEvaluator.AndResetCountInvoked );
 		}
 
-		private void verifyLongPrimitive( FilterParamIndex index, long testValue, int numExpected )
+		private void verifylongPrimitive( FilterParamIndex index, long testValue, int numExpected )
 		{
-			testBean.LongPrimitive = testValue;
+			testBean.longPrimitive = testValue;
 			index.matchEvent( testEventBean, matchesList );
 			Assert.AreEqual( numExpected, testEvaluator.AndResetCountInvoked );
 		}

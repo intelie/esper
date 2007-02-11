@@ -41,21 +41,21 @@ namespace net.esper.type
 		static BitWiseOpEnum()
 		{
 			computers = new Dictionary<MultiKey<Object>, BitWiseOpEnum.Computer>();
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( byte ),  BAND } ), BAndByte );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( short ), BAND } ), BAndShort );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( int ),   BAND } ), BAndInt );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( long ),  BAND } ), BAndLong );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool ),  BAND } ), BAndBoolean );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( byte ),  BOR } ),  BOrByte );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( short ), BOR } ),  BOrShort );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( int ),   BOR } ),  BOrInt );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( long ),  BOR } ),  BOrLong );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool ),  BOR } ),  BOrBoolean );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( byte ),  BXOR } ), BXorByte );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( short ), BXOR } ), BXorShort );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( int ),   BXOR } ), BXorInt );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( long ),  BXOR } ), BXorLong );
-			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool ),  BXOR } ), BXorBoolean );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( sbyte? ),  BAND } ), BAndByte );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( short? ), BAND } ), BAndShort );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( int? ),   BAND } ), BAndInt );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( long? ),  BAND } ), BAndLong );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool? ),  BAND } ), BAndBoolean );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( sbyte? ),  BOR } ),  BOrByte );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( short? ), BOR } ),  BOrShort );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( int? ),   BOR } ),  BOrInt );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( long? ),  BOR } ),  BOrLong );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool? ),  BOR } ),  BOrBoolean );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( sbyte? ),  BXOR } ), BXorByte );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( short? ), BXOR } ), BXorShort );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( int? ),   BXOR } ), BXorInt );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( long? ),  BXOR } ), BXorLong );
+			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool? ),  BXOR } ), BXorBoolean );
 		}
 
 		/**
@@ -65,11 +65,11 @@ namespace net.esper.type
 		 */
 		public Computer getComputer( Type coercedType )
 		{
-			if ( ( coercedType != typeof( Byte ) ) &&
-				 ( coercedType != typeof( Int16 ) ) &&
-				 ( coercedType != typeof( Int32 ) ) &&
-				 ( coercedType != typeof( Int64 ) ) &&
-				 ( coercedType != typeof( Boolean ) ) )
+			if ( ( coercedType != typeof( sbyte? ) ) &&
+				 ( coercedType != typeof( short? ) ) &&
+				 ( coercedType != typeof( int? ) ) &&
+				 ( coercedType != typeof( long? ) ) &&
+				 ( coercedType != typeof( bool? ) ) )
 			{
 				throw new ArgumentException( "Expected base numeric or boolean type for computation result but got type " + coercedType );
 			}
@@ -92,9 +92,9 @@ namespace net.esper.type
 		 */
 		public static Object BAndByte( Object objOne, Object objTwo )
 		{
-			byte n1 = (byte) objOne;
-			byte n2 = (byte) objTwo;
-			byte result = (byte) ( n1 & n2 );
+			sbyte? n1 = (sbyte?) objOne;
+			sbyte? n2 = (sbyte?) objTwo;
+			sbyte? result = (sbyte?) ( n1 & n2 );
 			return result;
 		}
 
@@ -103,9 +103,9 @@ namespace net.esper.type
 		 */
         public static Object BOrByte(Object objOne, Object objTwo)
 		{
-			byte n1 = (byte) objOne;
-			byte n2 = (byte) objTwo;
-			byte result = (byte) ( n1 | n2 );
+			sbyte? n1 = (sbyte?) objOne;
+			sbyte? n2 = (sbyte?) objTwo;
+			sbyte? result = (sbyte?) ( n1 | n2);
 			return result;
 		}
 
@@ -114,9 +114,9 @@ namespace net.esper.type
      */
         public static Object BXorByte(Object objOne, Object objTwo)
 		{
-			byte n1 = (byte) objOne;
-			byte n2 = (byte) objTwo;
-			byte result = (byte) ( n1 ^ n2 );
+			sbyte? n1 = (sbyte?) objOne;
+			sbyte? n2 = (sbyte?) objTwo;
+			sbyte? result = (sbyte?) ( n1 ^ n2 );
 			return result;
 		}
 
@@ -128,9 +128,9 @@ namespace net.esper.type
 		 */
         public static Object BAndShort(Object objOne, Object objTwo)
 		{
-			short n1 = (short) objOne;
-			short n2 = (short) objTwo;
-			short result = (short) ( n1 & n2 );
+			short? n1 = (short?) objOne;
+			short? n2 = (short?) objTwo;
+			short? result = (short?) ( n1 & n2 );
 			return result;
 		}
 		/**
@@ -138,9 +138,9 @@ namespace net.esper.type
 		 */
         public static Object BOrShort(Object objOne, Object objTwo)
 		{
-			short n1 = (short) objOne;
-			short n2 = (short) objTwo;
-			short result = (short) ( n1 | n2 );
+			short? n1 = (short?) objOne;
+			short? n2 = (short?) objTwo;
+			short? result = (short?) ( n1 | n2 );
 			return result;
 		}
 		/**
@@ -148,9 +148,9 @@ namespace net.esper.type
 		 */
         public static Object BXorShort(Object objOne, Object objTwo)
 		{
-			short n1 = (short) objOne;
-			short n2 = (short) objTwo;
-			short result = (short) ( n1 ^ n2 );
+			short? n1 = (short?) objOne;
+			short? n2 = (short?) objTwo;
+			short? result = (short?) ( n1 ^ n2 );
 			return result;
 		}
 
@@ -162,9 +162,9 @@ namespace net.esper.type
 		 */
         public static Object BAndInt(Object objOne, Object objTwo)
 		{
-			int n1 = (int) objOne;
-			int n2 = (int) objTwo;
-			int result = n1 & n2;
+			int? n1 = (int?) objOne;
+			int? n2 = (int?) objTwo;
+			int? result = n1 & n2;
 			return result;
 		}
 		/**
@@ -172,9 +172,9 @@ namespace net.esper.type
 		 */
         public static Object BOrInt(Object objOne, Object objTwo)
 		{
-			int n1 = (int) objOne;
-			int n2 = (int) objTwo;
-			int result = n1 | n2;
+			int? n1 = (int?) objOne;
+			int? n2 = (int?) objTwo;
+			int? result = n1 | n2;
 			return result;
 		}
 		/**
@@ -182,9 +182,9 @@ namespace net.esper.type
 		 */
         public static Object BXorInt(Object objOne, Object objTwo)
 		{
-			int n1 = (int) objOne;
-			int n2 = (int) objTwo;
-			int result = n1 ^ n2;
+			int? n1 = (int?) objOne;
+			int? n2 = (int?) objTwo;
+			int? result = n1 ^ n2;
 			return result;
 		}
 
@@ -196,9 +196,9 @@ namespace net.esper.type
 		 */
         public static Object BAndLong(Object objOne, Object objTwo)
 		{
-			long n1 = (long) objOne;
-			long n2 = (long) objTwo;
-			long result = n1 & n2;
+			long? n1 = (long?) objOne;
+			long? n2 = (long?) objTwo;
+			long? result = n1 & n2;
 			return result;
 		}
 		/**
@@ -206,9 +206,9 @@ namespace net.esper.type
 		 */
         public static Object BOrLong(Object objOne, Object objTwo)
 		{
-			long n1 = (long) objOne;
-			long n2 = (long) objTwo;
-			long result = n1 | n2;
+			long? n1 = (long?) objOne;
+			long? n2 = (long?) objTwo;
+			long? result = n1 | n2;
 			return result;
 		}
 		/**
@@ -216,9 +216,9 @@ namespace net.esper.type
 		 */
         public static Object BXorLong(Object objOne, Object objTwo)
 		{
-			long n1 = (long) objOne;
-			long n2 = (long) objTwo;
-			long result = n1 ^ n2;
+			long? n1 = (long?) objOne;
+			long? n2 = (long?) objTwo;
+			long? result = n1 ^ n2;
 			return result;
 		}
 
@@ -230,9 +230,9 @@ namespace net.esper.type
 		 */
         public static Object BAndBoolean(Object objOne, Object objTwo)
 		{
-			bool b1 = (bool) objOne;
-			bool b2 = (bool) objTwo;
-			bool result = b1 & b2;
+			bool? b1 = (bool?) objOne;
+			bool? b2 = (bool?) objTwo;
+			bool? result = b1 & b2;
 			return result;
 		}
 		/**
@@ -240,9 +240,9 @@ namespace net.esper.type
 		 */
         public static Object BOrBoolean(Object objOne, Object objTwo)
 		{
-			bool b1 = (bool) objOne;
-			bool b2 = (bool) objTwo;
-			bool result = b1 | b2;
+			bool? b1 = (bool?) objOne;
+			bool? b2 = (bool?) objTwo;
+			bool? result = b1 | b2;
 			return result;
 		}
 		/**
@@ -250,9 +250,9 @@ namespace net.esper.type
 		 */
         public static Object BXorBoolean(Object objOne, Object objTwo)
 		{
-			bool b1 = (bool) objOne;
-			bool b2 = (bool) objTwo;
-			bool result = b1 ^ b2;
+			bool? b1 = (bool?) objOne;
+			bool? b2 = (bool?) objTwo;
+			bool? result = b1 ^ b2;
 			return result;
 		}
 

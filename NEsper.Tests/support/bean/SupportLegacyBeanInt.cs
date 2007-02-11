@@ -2,27 +2,23 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportLegacyBeanInt
 	{
-		virtual public int IntPrimitive
+		virtual public int intPrimitive
 		{
-			get
-			{
-				return fieldIntPrimitive;
-			}
+			get { return _fieldIntPrimitive; }
 			
 		}
-		public int fieldIntPrimitive;
+		public int _fieldIntPrimitive;
 		
 		public SupportLegacyBeanInt(int fieldIntPrimitive)
 		{
-			this.fieldIntPrimitive = fieldIntPrimitive;
+			this._fieldIntPrimitive = fieldIntPrimitive;
 		}
 		
 		public virtual int readIntPrimitive()
 		{
-			return fieldIntPrimitive;
+			return _fieldIntPrimitive;
 		}
 	}
 }

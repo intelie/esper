@@ -18,31 +18,31 @@ namespace net.esper.type
 	
         public static PrimitiveValue create(Type type)
 		{
-			if (type == typeof(Boolean))
+			if ((type == typeof(bool)) || type == typeof(bool?))
 			{
 				return new BoolValue();
 			}
-			if (type == typeof(sbyte))
+			if ((type == typeof(sbyte)) || (type == typeof(sbyte?)))
 			{
 				return new ByteValue();
 			}
-			if (type == typeof(Double))
+			if ((type == typeof(double)) || (type == typeof(double?)))
 			{
 				return new DoubleValue();
 			}
-			if (type == typeof(Single))
+			if ((type == typeof(float)) || (type == typeof(float?)))
 			{
 				return new FloatValue();
 			}
-			if (type == typeof(Int32))
+			if ((type == typeof(int)) || (type == typeof(int?)))
 			{
 				return new IntValue();
 			}
-			if (type == typeof(long))
+			if ((type == typeof(long)) || (type == typeof(long?)))
 			{
 				return new LongValue();
 			}
-			if (type == typeof(short))
+			if ((type == typeof(short)) || (type == typeof(short?)))
 			{
 				return new ShortValue();
 			}

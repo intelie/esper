@@ -233,8 +233,8 @@ namespace net.esper.regression.eql
 		{
 			SupportBean bean = new SupportBean();
 			bean.StringValue = "myId";
-			bean.IntPrimitive = intPrimitive;
-			bean.IntBoxed = intBoxed ;
+			bean.intPrimitive = intPrimitive;
+			bean.intBoxed = intBoxed ;
 			epService.EPRuntime.SendEvent( bean );
 		}
 	}

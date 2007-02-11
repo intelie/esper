@@ -20,8 +20,8 @@ namespace net.esper.eql.join.plan
         public virtual void testGraphOuterJoins()
         {
             IList<OuterJoinDesc> descList = new ELinkedList<OuterJoinDesc>();
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("IntPrimitive", "s0", "IntBoxed", "s1", OuterJoinType.RIGHT));
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "string", "s1", OuterJoinType.FULL));
+            descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.RIGHT));
+            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "StringValue", "s1", OuterJoinType.FULL));
 
             OuterInnerDirectionalGraph graph = NStreamOuterQueryPlanBuilder.graphOuterJoins(3, descList);
 
@@ -30,8 +30,8 @@ namespace net.esper.eql.join.plan
             assertOuters(new int[][] { new int[] { 1 }, new int[] { 2 }, new int[] { 1 } }, graph);
 
             descList.Clear();
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("IntPrimitive", "s1", "IntBoxed", "s0", OuterJoinType.LEFT));
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "string", "s1", OuterJoinType.RIGHT));
+            descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s1", "intBoxed", "s0", OuterJoinType.LEFT));
+            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "StringValue", "s1", OuterJoinType.RIGHT));
 
             graph = NStreamOuterQueryPlanBuilder.graphOuterJoins(3, descList);
 

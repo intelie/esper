@@ -25,20 +25,20 @@ namespace net.esper.eql.join.plan
 		{
 			types = new EventType[]{SupportEventTypeFactory.createBeanType(typeof(SupportBean))};
 			
-			propertyMapEventIndex = new PropertyIndexedEventTable(1, types[0], new String[]{"IntBoxed"});
+			propertyMapEventIndex = new PropertyIndexedEventTable(1, types[0], new String[]{"intBoxed"});
 		}
 		
 		[Test]
 		public virtual void  testLookup()
 		{
-			IndexedTableLookupPlan spec = new IndexedTableLookupPlan(0, 1, 0, new String[]{"IntBoxed"});
+			IndexedTableLookupPlan spec = new IndexedTableLookupPlan(0, 1, 0, new String[]{"intBoxed"});
 			
 			EventTable[][] indexes = new EventTable[2][];
 			indexes[1] = new EventTable[]{propertyMapEventIndex};
 			
 			TableLookupStrategy lookupStrategy = spec.MakeStrategy(indexes, types);
 
-            IList<string> testList = new String[] { "IntBoxed" };
+            IList<string> testList = new String[] { "intBoxed" };
 
 			IndexedTableLookupStrategy strategy = (IndexedTableLookupStrategy) lookupStrategy;
 			Assert.AreEqual(types[0], strategy.EventType);

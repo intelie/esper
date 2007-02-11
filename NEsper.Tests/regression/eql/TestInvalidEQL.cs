@@ -40,55 +40,55 @@ namespace net.esper.regression.eql
 
 			String streamDefTwo = "select * from " + typeof( SupportBean ).FullName + ".win:length(3)," + typeof( SupportMarketDataBean ).FullName + ".win:length(3)" + " where ";
 
-			tryInvalid( streamDef + "sa.IntPrimitive = sb.string" );
-			tryValid( streamDef + "sa.IntPrimitive = sb.IntBoxed" );
-			tryValid( streamDef + "sa.IntPrimitive = sb.IntPrimitive" );
-			tryValid( streamDef + "sa.IntPrimitive = sb.longBoxed" );
+			tryInvalid( streamDef + "sa.intPrimitive = sb.StringValue" );
+			tryValid( streamDef + "sa.intPrimitive = sb.intBoxed" );
+			tryValid( streamDef + "sa.intPrimitive = sb.intPrimitive" );
+			tryValid( streamDef + "sa.intPrimitive = sb.longBoxed" );
 
-			tryInvalid( streamDef + "sa.IntPrimitive = sb.IntPrimitive and sb.IntBoxed = sa.boolPrimitive" );
-			tryValid( streamDef + "sa.IntPrimitive = sb.IntPrimitive and sb.BoolBoxed = sa.boolPrimitive" );
+			tryInvalid( streamDef + "sa.intPrimitive = sb.intPrimitive and sb.intBoxed = sa.boolPrimitive" );
+			tryValid( streamDef + "sa.intPrimitive = sb.intPrimitive and sb.boolBoxed = sa.boolPrimitive" );
 
-			tryInvalid( streamDef + "sa.IntPrimitive = sb.IntPrimitive and sb.IntBoxed = sa.IntPrimitive and sa.string=sX.string" );
-			tryValid( streamDef + "sa.IntPrimitive = sb.IntPrimitive and sb.IntBoxed = sa.IntPrimitive and sa.string=sb.string" );
+			tryInvalid( streamDef + "sa.intPrimitive = sb.intPrimitive and sb.intBoxed = sa.intPrimitive and sa.string=sX.string" );
+			tryValid( streamDef + "sa.intPrimitive = sb.intPrimitive and sb.intBoxed = sa.intPrimitive and sa.string=sb.string" );
 
-			tryInvalid( streamDef + "sa.IntPrimitive = sb.IntPrimitive or sa.string=sX.string" );
-			tryValid( streamDef + "sa.IntPrimitive = sb.IntPrimitive or sb.IntBoxed = sa.IntPrimitive" );
+			tryInvalid( streamDef + "sa.intPrimitive = sb.intPrimitive or sa.StringValue=sX.StringValue" );
+			tryValid( streamDef + "sa.intPrimitive = sb.intPrimitive or sb.intBoxed = sa.intPrimitive" );
 
 			// try constants
-			tryValid( streamDef + "sa.IntPrimitive=5" );
-			tryValid( streamDef + "sa.string='4'" );
-			tryValid( streamDef + "sa.string=\"4\"" );
+			tryValid( streamDef + "sa.intPrimitive=5" );
+			tryValid( streamDef + "sa.StringValue='4'" );
+			tryValid( streamDef + "sa.StringValue=\"4\"" );
 			tryValid( streamDef + "sa.boolPrimitive=false" );
 			tryValid( streamDef + "sa.longPrimitive=-5L" );
 			tryValid( streamDef + "sa.doubleBoxed=5.6d" );
 			tryValid( streamDef + "sa.floatPrimitive=-5.6f" );
 
-			tryInvalid( streamDef + "sa.IntPrimitive='5'" );
-			tryInvalid( streamDef + "sa.string=5" );
-			tryInvalid( streamDef + "sa.BoolBoxed=f" );
-			tryInvalid( streamDef + "sa.IntPrimitive=x" );
-			tryValid( streamDef + "sa.IntPrimitive=5.5" );
+			tryInvalid( streamDef + "sa.intPrimitive='5'" );
+			tryInvalid( streamDef + "sa.StringValue=5" );
+			tryInvalid( streamDef + "sa.boolBoxed=f" );
+			tryInvalid( streamDef + "sa.intPrimitive=x" );
+			tryValid( streamDef + "sa.intPrimitive=5.5" );
 
 			// try addition and subtraction
-			tryValid( streamDef + "sa.IntPrimitive=sa.IntBoxed + 5" );
-			tryValid( streamDef + "sa.IntPrimitive=2*sa.IntBoxed - sa.IntPrimitive/10 + 1" );
-			tryValid( streamDef + "sa.IntPrimitive=2*(sa.IntBoxed - sa.IntPrimitive)/(10 + 1)" );
-			tryInvalid( streamDef + "sa.IntPrimitive=2*(sa.IntBoxed" );
+			tryValid( streamDef + "sa.intPrimitive=sa.intBoxed + 5" );
+			tryValid( streamDef + "sa.intPrimitive=2*sa.intBoxed - sa.intPrimitive/10 + 1" );
+			tryValid( streamDef + "sa.intPrimitive=2*(sa.intBoxed - sa.intPrimitive)/(10 + 1)" );
+			tryInvalid( streamDef + "sa.intPrimitive=2*(sa.intBoxed" );
 
 			// try comparison
-			tryValid( streamDef + "sa.IntPrimitive > sa.IntBoxed and sb.doublePrimitive < sb.doubleBoxed" );
-			tryValid( streamDef + "sa.IntPrimitive >= sa.IntBoxed and sa.doublePrimitive <= sa.doubleBoxed" );
-			tryValid( streamDef + "sa.IntPrimitive > (sa.IntBoxed + sb.doublePrimitive)" );
-			tryInvalid( streamDef + "sa.IntPrimitive >= sa.string" );
-			tryInvalid( streamDef + "sa.BoolBoxed >= sa.BoolPrimitive" );
+			tryValid( streamDef + "sa.intPrimitive > sa.intBoxed and sb.doublePrimitive < sb.doubleBoxed" );
+			tryValid( streamDef + "sa.intPrimitive >= sa.intBoxed and sa.doublePrimitive <= sa.doubleBoxed" );
+			tryValid( streamDef + "sa.intPrimitive > (sa.intBoxed + sb.doublePrimitive)" );
+			tryInvalid( streamDef + "sa.intPrimitive >= sa.StringValue" );
+			tryInvalid( streamDef + "sa.boolBoxed >= sa.boolPrimitive" );
 
 			// Try some nested
-			tryValid( streamDef + "(sa.IntPrimitive=3) or (sa.IntBoxed=3 and sa.IntPrimitive=1)" );
-			tryValid( streamDef + "((sa.IntPrimitive>3) or (sa.IntBoxed<3)) and sa.BoolBoxed=false" );
-			tryValid( streamDef + "(sa.IntPrimitive<=3 and sa.IntPrimitive>=1) or (sa.BoolBoxed=false and sa.boolPrimitive=true)" );
-			tryInvalid( streamDef + "sa.IntPrimitive=3 or (sa.IntBoxed=2" );
-			tryInvalid( streamDef + "sa.IntPrimitive=3 or sa.IntBoxed=2)" );
-			tryInvalid( streamDef + "sa.IntPrimitive=3 or ((sa.IntBoxed=2)" );
+			tryValid( streamDef + "(sa.intPrimitive=3) or (sa.intBoxed=3 and sa.intPrimitive=1)" );
+			tryValid( streamDef + "((sa.intPrimitive>3) or (sa.intBoxed<3)) and sa.boolBoxed=false" );
+			tryValid( streamDef + "(sa.intPrimitive<=3 and sa.intPrimitive>=1) or (sa.boolBoxed=false and sa.boolPrimitive=true)" );
+			tryInvalid( streamDef + "sa.intPrimitive=3 or (sa.intBoxed=2" );
+			tryInvalid( streamDef + "sa.intPrimitive=3 or sa.intBoxed=2)" );
+			tryInvalid( streamDef + "sa.intPrimitive=3 or ((sa.intBoxed=2)" );
 
 			// Try some without stream name
 			tryInvalid( streamDef + "intPrimitive=3" );
@@ -97,17 +97,17 @@ namespace net.esper.regression.eql
 			// Try invalid outer join criteria
 			String outerJoinDef = "select * from " + typeof( SupportBean ).FullName + ".win:length(3) as sa " + "left outer join " + typeof( SupportBean ).FullName + ".win:length(3) as sb ";
 			tryInvalid( outerJoinDef + "" );
-			tryValid( outerJoinDef + "on sa.IntPrimitive = sb.IntBoxed" );
-			tryInvalid( outerJoinDef + "on sa.IntPrimitive = sb.XX" );
+			tryValid( outerJoinDef + "on sa.intPrimitive = sb.intBoxed" );
+			tryInvalid( outerJoinDef + "on sa.intPrimitive = sb.XX" );
 			tryInvalid( outerJoinDef + "on sa.XX = sb.XX" );
-			tryInvalid( outerJoinDef + "on sa.XX = sb.IntBoxed" );
-			tryInvalid( outerJoinDef + "on sa.BoolBoxed = sb.IntBoxed" );
-			tryValid( outerJoinDef + "on sa.boolPrimitive = sb.BoolBoxed" );
-			tryInvalid( outerJoinDef + "on sa.boolPrimitive = sb.string" );
-			tryInvalid( outerJoinDef + "on sa.IntPrimitive <= sb.IntBoxed" );
-			tryInvalid( outerJoinDef + "on sa.IntPrimitive = sa.IntBoxed" );
-			tryInvalid( outerJoinDef + "on sb.IntPrimitive = sb.IntBoxed" );
-			tryValid( outerJoinDef + "on sb.IntPrimitive = sa.IntBoxed" );
+			tryInvalid( outerJoinDef + "on sa.XX = sb.intBoxed" );
+			tryInvalid( outerJoinDef + "on sa.boolBoxed = sb.intBoxed" );
+			tryValid( outerJoinDef + "on sa.boolPrimitive = sb.boolBoxed" );
+			tryInvalid( outerJoinDef + "on sa.boolPrimitive = sb.StringValue" );
+			tryInvalid( outerJoinDef + "on sa.intPrimitive <= sb.intBoxed" );
+			tryInvalid( outerJoinDef + "on sa.intPrimitive = sa.intBoxed" );
+			tryInvalid( outerJoinDef + "on sb.intPrimitive = sb.intBoxed" );
+			tryValid( outerJoinDef + "on sb.intPrimitive = sa.intBoxed" );
 		}
 
 		private void tryInvalid( String eqlInvalidEQL )

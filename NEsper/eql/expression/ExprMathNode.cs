@@ -54,12 +54,13 @@ namespace net.esper.eql.expression
 
             if (childTypeOne.Equals(childTypeTwo))
             {
-                resultType = childTypeTwo;
+                resultType = TypeHelper.GetBoxedType(childTypeTwo);
             }
             else
             {
                 resultType = TypeHelper.GetArithmaticCoercionType(childTypeOne, childTypeTwo);
             }
+
             arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType);
         }
 

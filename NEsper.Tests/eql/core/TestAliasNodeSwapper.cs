@@ -37,7 +37,7 @@ namespace net.esper.eql.core
 		public virtual void  testPartReplaced()
 		{
 			exprTree = SupportExprNodeFactory.makeEqualsNode();
-			alias = "IntPrimitive";
+			alias = "intPrimitive";
 			resultingTree = AliasNodeSwapper.swap(exprTree, alias, fullExpr);
 			
 			Assert.IsTrue(resultingTree == exprTree);
@@ -48,7 +48,7 @@ namespace net.esper.eql.core
 			Assert.IsTrue(childNodes[1] == oldChildNodes[1]);
 			
 			exprTree = resultingTree;
-			alias = "IntBoxed";
+			alias = "intBoxed";
 			resultingTree = AliasNodeSwapper.swap(exprTree, alias, fullExpr);
 			childNodes = resultingTree.ChildNodes;
 			Assert.IsTrue(childNodes.Count == 2);

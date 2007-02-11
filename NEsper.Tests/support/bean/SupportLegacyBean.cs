@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace net.esper.support.bean
 {
-
-    /// <summary> Legacy Java class for testing non-JavaBean style accessor methods.</summary>
+    /// <summary>
+    /// Legacy class for testing non-JavaBean style accessor methods.
+    /// </summary>
+    
     public class SupportLegacyBean
     {
         private String legacyBeanVal;

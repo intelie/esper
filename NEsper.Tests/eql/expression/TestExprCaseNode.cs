@@ -20,7 +20,7 @@ namespace net.esper.eql.expression
 		public virtual void  testGetType()
 		{
 			// Template expression is:
-			// case when (so.floatPrimitive>s1.shortBoxed) then count(5) when (so.LongPrimitive>s1.IntPrimitive) then (25 + 130.5) else (3*3) end
+			// case when (so.floatPrimitive>s1.shortBoxed) then count(5) when (so.longPrimitive>s1.intPrimitive) then (25 + 130.5) else (3*3) end
 			ExprCaseNode caseNode = SupportExprNodeFactory.makeCaseSyntax1Node();
 			Assert.AreEqual( typeof( String ), caseNode.ReturnType );
 			
@@ -97,10 +97,10 @@ namespace net.esper.eql.expression
 		public virtual void  testToExpressionString()
 		{
 			ExprCaseNode _caseNode = SupportExprNodeFactory.makeCaseSyntax1Node();
-			Assert.AreEqual("case when s0.IntPrimitive = 1 then \"a\" when s0.IntPrimitive = 2 then \"b\" else \"c\" end", _caseNode.ExpressionString);
+			Assert.AreEqual("case when s0.intPrimitive = 1 then \"a\" when s0.intPrimitive = 2 then \"b\" else \"c\" end", _caseNode.ExpressionString);
 			
 			_caseNode = SupportExprNodeFactory.makeCaseSyntax2Node();
-			Assert.AreEqual("case s0.IntPrimitive when 1 then \"a\" when 2 then \"b\" else \"c\" end", _caseNode.ExpressionString);
+			Assert.AreEqual("case s0.intPrimitive when 1 then \"a\" when 2 then \"b\" else \"c\" end", _caseNode.ExpressionString);
 		}
 		
 		private void  tryInvalidValidate(ExprCaseNode exprCaseNode)
@@ -119,7 +119,7 @@ namespace net.esper.eql.expression
 		private EventBean[] MakeEvent(int intPrimitive)
 		{
 			SupportBean _event = new SupportBean();
-			_event.IntPrimitive = intPrimitive;
+			_event.intPrimitive = intPrimitive;
 			return new EventBean[]{SupportEventBeanFactory.createObject(_event)};
 		}
 

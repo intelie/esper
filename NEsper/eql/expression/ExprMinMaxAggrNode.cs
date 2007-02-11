@@ -11,12 +11,11 @@ namespace net.esper.eql.expression
     /// Represents the min/max(distinct? ...) aggregate function is an expression tree.
     /// </summary>
 	
-    public class ExprMinMaxAggrNode:ExprAggregateNode
+    public class ExprMinMaxAggrNode : ExprAggregateNode
 	{
 		override public Type ReturnType
 		{
 			get { return computer.ValueType; }
-			
 		}
 
 		override protected internal String AggregationFunctionName
@@ -32,12 +31,13 @@ namespace net.esper.eql.expression
 		/// </param>
 		/// <param name="minMaxTypeEnum">- enum for whether to minimum or maximum compute
 		/// </param>
+		
 		public ExprMinMaxAggrNode(bool distinct, MinMaxTypeEnum minMaxTypeEnum):base(distinct)
 		{
 			this.minMaxTypeEnum = minMaxTypeEnum;
 		}
 		
-		public override void  validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+		public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
 		{
 			if (this.ChildNodes.Count != 1)
 			{
@@ -72,7 +72,10 @@ namespace net.esper.eql.expression
 			return other.minMaxTypeEnum == this.minMaxTypeEnum;
 		}
 		
-		/// <summary> Min/max aggregator for all values.</summary>
+		/// <summary>
+		/// Min/max aggregator for all values.
+		/// </summary>
+		
 		public class MinMaxAggregator : Aggregator
 		{
 			virtual public Object Value
@@ -88,7 +91,6 @@ namespace net.esper.eql.expression
 						return refSet.MinValue;
 					}
 				}
-				
 			}
 			
             virtual public Type ValueType
@@ -99,7 +101,7 @@ namespace net.esper.eql.expression
 			private readonly MinMaxTypeEnum minMaxTypeEnum;
 			private readonly Type returnType;
 			
-			private SortedRefCountedSet < Object > refSet;
+			private SortedRefCountedSet<Object> refSet;
 			
 			/// <summary> Ctor.</summary>
 			/// <param name="minMaxTypeEnum">- enum indicating to return minimum or maximum values
@@ -111,10 +113,10 @@ namespace net.esper.eql.expression
 			{
 				this.minMaxTypeEnum = minMaxTypeEnum;
 				this.returnType = returnType;
-				this.refSet = new SortedRefCountedSet < Object >();
+				this.refSet = new SortedRefCountedSet<Object>();
 			}
 			
-			public virtual void  enter(Object _object)
+			public virtual void enter(Object _object)
 			{
 				if (_object == null)
 				{
@@ -123,7 +125,7 @@ namespace net.esper.eql.expression
 				refSet.Add(_object);
 			}
 			
-			public virtual void  leave(Object _object)
+			public virtual void leave(Object _object)
 			{
 				if (_object == null)
 				{

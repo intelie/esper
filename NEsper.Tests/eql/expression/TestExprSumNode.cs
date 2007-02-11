@@ -29,9 +29,9 @@ namespace net.esper.eql.expression
 			Assert.AreEqual( typeof( Int32 ), sumNode.ReturnType );
 			
 			sumNode = new ExprSumNode(false);
-			sumNode.AddChildNode(new SupportExprNode(typeof(System.Single)));
+			sumNode.AddChildNode(new SupportExprNode(typeof(Single)));
 			sumNode.validate(null, null);
-			Assert.AreEqual( typeof( System.Single ), sumNode.ReturnType );
+			Assert.AreEqual( typeof( Single ), sumNode.ReturnType );
 			
 			sumNode = new ExprSumNode(false);
 			sumNode.AddChildNode(new SupportExprNode(typeof(Int16)));
@@ -85,7 +85,7 @@ namespace net.esper.eql.expression
 		public virtual void  testMakeAggregator()
 		{
 			Assert.IsTrue(makeNode(5, typeof(Int32)).PrototypeAggregator is ExprSumNode.IntegerSum);
-			Assert.IsTrue(makeNode(5, typeof(System.Single)).PrototypeAggregator is ExprSumNode.FloatSum);
+			Assert.IsTrue(makeNode(5, typeof(Single)).PrototypeAggregator is ExprSumNode.FloatSum);
 			Assert.IsTrue(makeNode(5, typeof(Double)).PrototypeAggregator is ExprSumNode.DoubleSum);
 			Assert.IsTrue(makeNode(5, typeof(Int16)).PrototypeAggregator is ExprSumNode.NumberIntegerSum);
 			Assert.IsTrue(makeNode(5, typeof(Int64)).PrototypeAggregator is ExprSumNode.LongSum);

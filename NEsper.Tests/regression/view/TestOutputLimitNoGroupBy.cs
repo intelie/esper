@@ -183,9 +183,9 @@ namespace net.esper.regression.view
 		{
 			SupportBean bean = new SupportBean();
 			bean.StringValue = JOIN_KEY;
-			bean.LongBoxed = longBoxed;
-			bean.IntBoxed = intBoxed;
-			bean.ShortBoxed = shortBoxed;
+			bean.longBoxed = longBoxed;
+			bean.intBoxed = intBoxed;
+			bean.shortBoxed = shortBoxed;
 			epService.EPRuntime.SendEvent(bean);
 		}
 		

@@ -28,7 +28,7 @@ namespace net.esper.util
 			testData.Put((int) System.Data.OleDb.OleDbType.SmallInt, typeof(Int16));
 			testData.Put((int) System.Data.OleDb.OleDbType.Integer, typeof(Int32));
 			testData.Put((int) System.Data.OleDb.OleDbType.BigInt, typeof(Int64));
-			testData.Put((int) System.Data.OleDb.OleDbType.Double, typeof(System.Single));
+			testData.Put((int) System.Data.OleDb.OleDbType.Double, typeof(Single));
 			testData.Put((int) System.Data.OleDb.OleDbType.Single, typeof(Double));
 			testData.Put((int) System.Data.OleDb.OleDbType.Double, typeof(Double));
 			testData.Put((int) System.Data.OleDb.OleDbType.Binary, typeof(sbyte[]));
@@ -37,7 +37,7 @@ namespace net.esper.util
 			testData.Put((int) System.Data.OleDb.OleDbType.Date, typeof(DateTime));
 			testData.Put((int) System.Data.OleDb.OleDbType.DBTimeStamp, typeof(DateTime));
 			testData.Put((int) System.Data.OleDb.OleDbType.DBTime, typeof(DateTime));
-			testData.Put((int) System.Data.OleDb.OleDbType.LongVarChar, typeof(System.Char[]));
+			testData.Put((int) System.Data.OleDb.OleDbType.LongVarChar, typeof(Char[]));
 			testData.Put((int) System.Data.OleDb.OleDbType.LongVarBinary, typeof(System.Byte[]));
 			testData.Put(Types.ARRAY, typeof(java.sql.Array));
 			testData.Put(Types.STRUCT, typeof(java.sql.Struct));

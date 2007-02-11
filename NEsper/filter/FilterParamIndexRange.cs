@@ -50,7 +50,7 @@ namespace net.esper.filter
                     throw new ArgumentException("Supplied expressionValue must be of type DoubleRange");
                 }
 
-            	return ranges[doubleRange];
+                return ranges.Fetch(doubleRange);
             }
 
             set

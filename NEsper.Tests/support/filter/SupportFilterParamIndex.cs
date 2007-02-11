@@ -17,7 +17,7 @@ namespace net.esper.support.filter
         }
 
         public SupportFilterParamIndex()
-            : base("IntPrimitive", FilterOperator.EQUAL, SupportEventTypeFactory.createBeanType(typeof(SupportBean)))
+            : base("intPrimitive", FilterOperator.EQUAL, SupportEventTypeFactory.createBeanType(typeof(SupportBean)))
         {
         }
 

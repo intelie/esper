@@ -25,33 +25,33 @@ namespace net.esper.regression.pattern
 			testCase.Add("N6", "na", events.getEvent("N1"), "nb", events.getEvent("N6"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=87) -> nb=" + EVENT + "(intPrimitive > na.IntPrimitive)");
+			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=87) -> nb=" + EVENT + "(intPrimitive > na.intPrimitive)");
 			testCase.Add("N8", "na", events.getEvent("N3"), "nb", events.getEvent("N8"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=87) -> nb=" + EVENT + "(intPrimitive < na.IntPrimitive)");
+			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=87) -> nb=" + EVENT + "(intPrimitive < na.intPrimitive)");
 			testCase.Add("N4", "na", events.getEvent("N3"), "nb", events.getEvent("N4"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=66) -> every nb=" + EVENT + "(intPrimitive >= na.IntPrimitive)");
+			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=66) -> every nb=" + EVENT + "(intPrimitive >= na.intPrimitive)");
+			testCase.Add("N3", "na", events.getEvent("N2"), "nb", events.getEvent("N3"));
+			testCase.Add("N4", "na", events.getEvent("N2"), "nb", events.getEvent("N4"));
+			testCase.Add("N8", "na", events.getEvent("N2"), "nb", events.getEvent("N8"));
+			testCaseList.AddTest(testCase);
+
+            testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=66) -> every nb=" + EVENT + "(intPrimitive >= na.intPrimitive)");
 			testCase.Add("N3", "na", events.getEvent("N2"), "nb", events.getEvent("N3"));
 			testCase.Add("N4", "na", events.getEvent("N2"), "nb", events.getEvent("N4"));
 			testCase.Add("N8", "na", events.getEvent("N2"), "nb", events.getEvent("N8"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=66) -> every nb=" + EVENT + "(intPrimitive >= na.IntPrimitive)");
-			testCase.Add("N3", "na", events.getEvent("N2"), "nb", events.getEvent("N3"));
-			testCase.Add("N4", "na", events.getEvent("N2"), "nb", events.getEvent("N4"));
-			testCase.Add("N8", "na", events.getEvent("N2"), "nb", events.getEvent("N8"));
-			testCaseList.AddTest(testCase);
-			
-			testCase = new EventExpressionCase("na=" + EVENT + "(BoolBoxed=false) -> every nb=" + EVENT + "(boolPrimitive = na.boolPrimitive)");
+			testCase = new EventExpressionCase("na=" + EVENT + "(boolBoxed=false) -> every nb=" + EVENT + "(boolPrimitive = na.boolPrimitive)");
 			testCase.Add("N4", "na", events.getEvent("N2"), "nb", events.getEvent("N4"));
 			testCase.Add("N5", "na", events.getEvent("N2"), "nb", events.getEvent("N5"));
 			testCase.Add("N8", "na", events.getEvent("N2"), "nb", events.getEvent("N8"));
 			testCaseList.AddTest(testCase);
-			
-			testCase = new EventExpressionCase("every na=" + EVENT + " -> every nb=" + EVENT + "(intPrimitive=na.IntPrimitive)");
+
+            testCase = new EventExpressionCase("every na=" + EVENT + " -> every nb=" + EVENT + "(intPrimitive=na.intPrimitive)");
 			testCaseList.AddTest(testCase);
 			
 			testCase = new EventExpressionCase("every na=" + EVENT + "() -> every nb=" + EVENT + "(doublePrimitive=na.doublePrimitive)");
@@ -59,29 +59,29 @@ namespace net.esper.regression.pattern
 			testCase.Add("N6", "na", events.getEvent("N1"), "nb", events.getEvent("N6"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("every na=" + EVENT + "(BoolBoxed=false) -> every nb=" + EVENT + "(BoolBoxed=na.BoolBoxed)");
+			testCase = new EventExpressionCase("every na=" + EVENT + "(boolBoxed=false) -> every nb=" + EVENT + "(boolBoxed=na.boolBoxed)");
 			testCase.Add("N5", "na", events.getEvent("N2"), "nb", events.getEvent("N5"));
 			testCase.Add("N8", "na", events.getEvent("N2"), "nb", events.getEvent("N8"));
 			testCase.Add("N8", "na", events.getEvent("N5"), "nb", events.getEvent("N8"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(BoolBoxed=false) -> nb=" + EVENT + "(intPrimitive<na.IntPrimitive)" + " -> nc=" + EVENT + "(intPrimitive > nb.IntPrimitive)");
+			testCase = new EventExpressionCase("na=" + EVENT + "(boolBoxed=false) -> nb=" + EVENT + "(intPrimitive<na.intPrimitive)" + " -> nc=" + EVENT + "(intPrimitive > nb.intPrimitive)");
 			testCase.Add("N6", "na", events.getEvent("N2"), "nb", events.getEvent("N5"), "nc", events.getEvent("N6"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=86) -> nb=" + EVENT + "(intPrimitive<na.IntPrimitive)" + " -> nc=" + EVENT + "(intPrimitive > na.IntPrimitive)");
+			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=86) -> nb=" + EVENT + "(intPrimitive<na.intPrimitive)" + " -> nc=" + EVENT + "(intPrimitive > na.intPrimitive)");
 			testCase.Add("N8", "na", events.getEvent("N4"), "nb", events.getEvent("N5"), "nc", events.getEvent("N8"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=86) -> (nb=" + EVENT + "(intPrimitive<na.IntPrimitive)" + " or nc=" + EVENT + "(intPrimitive > na.IntPrimitive))");
+			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=86) -> (nb=" + EVENT + "(intPrimitive<na.intPrimitive)" + " or nc=" + EVENT + "(intPrimitive > na.intPrimitive))");
 			testCase.Add("N5", "na", events.getEvent("N4"), "nb", events.getEvent("N5"), "nc", (Object) null);
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=86) -> (nb=" + EVENT + "(intPrimitive>na.IntPrimitive)" + " or nc=" + EVENT + "(intBoxed < na.IntBoxed))");
+			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=86) -> (nb=" + EVENT + "(intPrimitive>na.intPrimitive)" + " or nc=" + EVENT + "(intBoxed < na.intBoxed))");
 			testCase.Add("N8", "na", events.getEvent("N4"), "nb", events.getEvent("N8"), "nc", (Object) null);
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=86) -> (nb=" + EVENT + "(intPrimitive>na.IntPrimitive)" + " and nc=" + EVENT + "(intBoxed < na.IntBoxed))");
+			testCase = new EventExpressionCase("na=" + EVENT + "(intPrimitive=86) -> (nb=" + EVENT + "(intPrimitive>na.intPrimitive)" + " and nc=" + EVENT + "(intBoxed < na.intBoxed))");
 			testCaseList.AddTest(testCase);
 			
 			testCase = new EventExpressionCase("na=" + EVENT + "() -> every nb=" + EVENT + "(doublePrimitive in [0:na.doublePrimitive])");
@@ -95,11 +95,11 @@ namespace net.esper.regression.pattern
 			testCase.Add("N7", "na", events.getEvent("N1"), "nb", events.getEvent("N7"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "() -> every nb=" + EVENT + "(intPrimitive in (na.IntPrimitive:na.doublePrimitive))");
+			testCase = new EventExpressionCase("na=" + EVENT + "() -> every nb=" + EVENT + "(intPrimitive in (na.intPrimitive:na.doublePrimitive))");
 			testCase.Add("N7", "na", events.getEvent("N1"), "nb", events.getEvent("N7"));
 			testCaseList.AddTest(testCase);
 			
-			testCase = new EventExpressionCase("na=" + EVENT + "() -> every nb=" + EVENT + "(intPrimitive in (na.IntPrimitive:60))");
+			testCase = new EventExpressionCase("na=" + EVENT + "() -> every nb=" + EVENT + "(intPrimitive in (na.intPrimitive:60))");
 			testCase.Add("N6", "na", events.getEvent("N1"), "nb", events.getEvent("N6"));
 			testCase.Add("N7", "na", events.getEvent("N1"), "nb", events.getEvent("N7"));
 			testCaseList.AddTest(testCase);

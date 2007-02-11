@@ -46,10 +46,14 @@ namespace net.esper.compat
 		/// <returns></returns>
 
 		public virtual V Fetch( K key, V defaultValue ) {
-			V returnValue ;
-			if ( ! TryGetValue( key, out returnValue ) ) {
-				returnValue = defaultValue;
-			}
+            V returnValue = defaultValue;
+            if (key != null)
+            {
+                if (!TryGetValue(key, out returnValue))
+                {
+                    returnValue = defaultValue;
+                }
+            }
 			return returnValue;			
 		}
 

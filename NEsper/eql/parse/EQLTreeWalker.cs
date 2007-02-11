@@ -284,15 +284,17 @@ namespace net.esper.eql.parse
 
             // For each AST child node of this AST node that generated an ExprNode add the child node to the expression node.
             // This is for automatic expression tree building.
-            ExprNode thisEvalNode = null;
-            astExprNodeMap.TryGetValue(node, out thisEvalNode);
+            ExprNode thisEvalNode = astExprNodeMap.Fetch( node, null ) ;
 
             // Loop over all child nodes for this node.
             AST childNode = node.getFirstChild();
             do
             {
                 ExprNode childEvalNode = null;
-                astExprNodeMap.TryGetValue(childNode, out childEvalNode);
+                if (childNode != null)
+                {
+                    astExprNodeMap.TryGetValue(childNode, out childEvalNode);
+                }
                 // If there was an expression node generated for the child node, and there is a current expression node,
                 // add it to the current expression node (thisEvalNode)
                 if ((childEvalNode != null) && (thisEvalNode != null))
@@ -309,14 +311,13 @@ namespace net.esper.eql.parse
             while (childNode != null);
 
             // For each AST child node of this AST node that generated an EvalNode add the EvalNode as a child
-            EvalNode thisPatternNode = null;
-            astPatternNodeMap.TryGetValue(node, out thisPatternNode);
+            EvalNode thisPatternNode = astPatternNodeMap.Fetch(node, null);
 
             childNode = node.getFirstChild();
             do
             {
-                EvalNode childEvalNode = null;
-                if ( !astPatternNodeMap.TryGetValue(childNode, out childEvalNode ) )
+                EvalNode childEvalNode = astPatternNodeMap.Fetch(childNode);
+                if ( childEvalNode != null )
                 {
                     thisPatternNode.AddChildNode(childEvalNode);
                     astPatternNodeMap.Remove(childNode);
@@ -336,7 +337,7 @@ namespace net.esper.eql.parse
         {
             log.Debug(".endPattern");
 
-            if ((astPatternNodeMap.Count > 1) || ((astPatternNodeMap.Count == 0)))
+            if ((astPatternNodeMap.Count > 1) || (astPatternNodeMap.Count == 0))
             {
                 throw new ASTWalkException("Unexpected AST tree contains zero or more then 1 child elements for root");
             }

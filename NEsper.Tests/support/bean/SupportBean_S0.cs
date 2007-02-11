@@ -7,76 +7,71 @@ namespace net.esper.support.bean
 	{
 		virtual public int Id
 		{
-			get
-			{
-				return id;
-			}
-			
-			set
-			{
-				this.id = value;
-			}
-			
+            get { return _id; }
+            set { this._id = value; }
 		}
+
 		virtual public String P00
 		{
-			get
-			{
-				return p00;
-			}
-			
-			set
-			{
-				this.p00 = value;
-			}
-			
+            get { return _p00; }
+            set { this._p00 = value; }
 		}
+
 		virtual public String P01
 		{
-			get
-			{
-				return p01;
-			}
-			
-			set
-			{
-				this.p01 = value;
-			}
-			
+            get { return _p01; }
+            set { this._p01 = value; }
 		}
+
 		virtual public String P02
 		{
-			get
-			{
-				return p02;
-			}
-			
-			set
-			{
-				this.p02 = value;
-			}
-			
+            get { return _p02; }
+            set { this._p02 = value; }
 		}
+
 		virtual public String P03
 		{
-			get
-			{
-				return p03;
-			}
-			
-			set
-			{
-				this.p03 = value;
-			}
-			
+			get { return p03; }			
+			set { this.p03 = value; }
 		}
+
+        virtual public int id
+        {
+            get { return _id; }
+            set { this._id = value; }
+        }
+
+        virtual public String p00
+        {
+            get { return _p00; }
+            set { this._p00 = value; }
+        }
+
+        virtual public String p01
+        {
+            get { return _p01; }
+            set { this._p01 = value; }
+        }
+
+        virtual public String p02
+        {
+            get { return _p02; }
+            set { this._p02 = value; }
+        }
+
+        virtual public String p03
+        {
+            get { return _p03; }
+            set { this._p03 = value; }
+        }
+
 		private static int idCounter;
 		
-		private int id;
-		private String p00;
-		private String p01;
-		private String p02;
-		private String p03;
+		private int _id;
+        private String _p00;
+        private String _p01;
+        private String _p02;
+        private String _p03;
 		
 		public static Object[] makeS0(String propOne, String[] propTwo)
 		{
@@ -91,37 +86,37 @@ namespace net.esper.support.bean
 		
 		public SupportBean_S0(int id)
 		{
-			this.id = id;
+            this._id = id;
 		}
 		
 		public SupportBean_S0(int id, String p00)
 		{
-			this.id = id;
-			this.p00 = p00;
+            this._id = id;
+            this._p00 = p00;
 		}
 		
 		public SupportBean_S0(int id, String p00, String p01)
 		{
-			this.id = id;
-			this.p00 = p00;
-			this.p01 = p01;
+            this._id = id;
+            this._p00 = p00;
+            this._p01 = p01;
 		}
 		
 		public SupportBean_S0(int id, String p00, String p01, String p02)
 		{
-			this.id = id;
-			this.p00 = p00;
-			this.p01 = p01;
-			this.p02 = p02;
+            this._id = id;
+            this._p00 = p00;
+            this._p01 = p01;
+            this._p02 = p02;
 		}
 		
 		public SupportBean_S0(int id, String p00, String p01, String p02, String p03)
 		{
-			this.id = id;
-			this.p00 = p00;
-			this.p01 = p01;
-			this.p02 = p02;
-			this.p03 = p03;
+            this._id = id;
+            this._p00 = p00;
+            this._p01 = p01;
+            this._p02 = p02;
+            this._p03 = p03;
 		}
 	}
 }

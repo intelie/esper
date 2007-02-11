@@ -49,7 +49,7 @@ namespace net.esper.filter
 
             try
             {
-                new FilterParamIndexCompare("string", FilterOperator.RANGE_CLOSED, testEventType);
+                new FilterParamIndexCompare("StringValue", FilterOperator.RANGE_CLOSED, testEventType);
                 Assert.IsTrue(false);
             }
             catch (ArgumentException ex)
@@ -62,19 +62,19 @@ namespace net.esper.filter
         public virtual void testLongBothEndpointsIncluded()
         {
             FilterParamIndexRange index = this.getLongDataset(FilterOperator.RANGE_CLOSED);
-            verifyLongPrimitive(index, -1, 0);
-            verifyLongPrimitive(index, 0, 2);
-            verifyLongPrimitive(index, 1, 5);
-            verifyLongPrimitive(index, 2, 5);
-            verifyLongPrimitive(index, 3, 7);
-            verifyLongPrimitive(index, 4, 6);
-            verifyLongPrimitive(index, 5, 6);
-            verifyLongPrimitive(index, 6, 6);
-            verifyLongPrimitive(index, 7, 6);
-            verifyLongPrimitive(index, 8, 6);
-            verifyLongPrimitive(index, 9, 5);
-            verifyLongPrimitive(index, 10, 3);
-            verifyLongPrimitive(index, 11, 1);
+            verifylongPrimitive(index, -1, 0);
+            verifylongPrimitive(index, 0, 2);
+            verifylongPrimitive(index, 1, 5);
+            verifylongPrimitive(index, 2, 5);
+            verifylongPrimitive(index, 3, 7);
+            verifylongPrimitive(index, 4, 6);
+            verifylongPrimitive(index, 5, 6);
+            verifylongPrimitive(index, 6, 6);
+            verifylongPrimitive(index, 7, 6);
+            verifylongPrimitive(index, 8, 6);
+            verifylongPrimitive(index, 9, 5);
+            verifylongPrimitive(index, 10, 3);
+            verifylongPrimitive(index, 11, 1);
 
             index.Put(testRange, testEvaluator);
             Assert.AreEqual(testEvaluator, index[testRange]);
@@ -98,77 +98,77 @@ namespace net.esper.filter
         public virtual void testLongLowEndpointIncluded()
         {
             FilterParamIndexRange index = this.getLongDataset(FilterOperator.RANGE_HALF_OPEN);
-            verifyLongPrimitive(index, -1, 0);
-            verifyLongPrimitive(index, 0, 2);
-            verifyLongPrimitive(index, 1, 5);
-            verifyLongPrimitive(index, 2, 5);
-            verifyLongPrimitive(index, 3, 6);
-            verifyLongPrimitive(index, 4, 6);
-            verifyLongPrimitive(index, 5, 3);
-            verifyLongPrimitive(index, 6, 5);
-            verifyLongPrimitive(index, 7, 4);
-            verifyLongPrimitive(index, 8, 5);
-            verifyLongPrimitive(index, 9, 3);
-            verifyLongPrimitive(index, 10, 1);
-            verifyLongPrimitive(index, 11, 1);
+            verifylongPrimitive(index, -1, 0);
+            verifylongPrimitive(index, 0, 2);
+            verifylongPrimitive(index, 1, 5);
+            verifylongPrimitive(index, 2, 5);
+            verifylongPrimitive(index, 3, 6);
+            verifylongPrimitive(index, 4, 6);
+            verifylongPrimitive(index, 5, 3);
+            verifylongPrimitive(index, 6, 5);
+            verifylongPrimitive(index, 7, 4);
+            verifylongPrimitive(index, 8, 5);
+            verifylongPrimitive(index, 9, 3);
+            verifylongPrimitive(index, 10, 1);
+            verifylongPrimitive(index, 11, 1);
         }
 
         [Test]
         public virtual void testLongHighEndpointIncluded()
         {
             FilterParamIndexRange index = this.getLongDataset(FilterOperator.RANGE_HALF_CLOSED);
-            verifyLongPrimitive(index, -1, 0);
-            verifyLongPrimitive(index, 0, 0);
-            verifyLongPrimitive(index, 1, 2);
-            verifyLongPrimitive(index, 2, 5);
-            verifyLongPrimitive(index, 3, 5);
-            verifyLongPrimitive(index, 4, 6);
-            verifyLongPrimitive(index, 5, 6);
-            verifyLongPrimitive(index, 6, 3);
-            verifyLongPrimitive(index, 7, 5);
-            verifyLongPrimitive(index, 8, 4);
-            verifyLongPrimitive(index, 9, 5);
-            verifyLongPrimitive(index, 10, 3);
-            verifyLongPrimitive(index, 11, 1);
+            verifylongPrimitive(index, -1, 0);
+            verifylongPrimitive(index, 0, 0);
+            verifylongPrimitive(index, 1, 2);
+            verifylongPrimitive(index, 2, 5);
+            verifylongPrimitive(index, 3, 5);
+            verifylongPrimitive(index, 4, 6);
+            verifylongPrimitive(index, 5, 6);
+            verifylongPrimitive(index, 6, 3);
+            verifylongPrimitive(index, 7, 5);
+            verifylongPrimitive(index, 8, 4);
+            verifylongPrimitive(index, 9, 5);
+            verifylongPrimitive(index, 10, 3);
+            verifylongPrimitive(index, 11, 1);
         }
 
         [Test]
         public virtual void testLongNeitherEndpointIncluded()
         {
             FilterParamIndexRange index = this.getLongDataset(FilterOperator.RANGE_OPEN);
-            verifyLongPrimitive(index, -1, 0);
-            verifyLongPrimitive(index, 0, 0);
-            verifyLongPrimitive(index, 1, 2);
-            verifyLongPrimitive(index, 2, 5);
-            verifyLongPrimitive(index, 3, 4);
-            verifyLongPrimitive(index, 4, 6);
-            verifyLongPrimitive(index, 5, 3);
-            verifyLongPrimitive(index, 6, 2);
-            verifyLongPrimitive(index, 7, 3);
-            verifyLongPrimitive(index, 8, 3);
-            verifyLongPrimitive(index, 9, 3);
-            verifyLongPrimitive(index, 10, 1);
-            verifyLongPrimitive(index, 11, 1);
+            verifylongPrimitive(index, -1, 0);
+            verifylongPrimitive(index, 0, 0);
+            verifylongPrimitive(index, 1, 2);
+            verifylongPrimitive(index, 2, 5);
+            verifylongPrimitive(index, 3, 4);
+            verifylongPrimitive(index, 4, 6);
+            verifylongPrimitive(index, 5, 3);
+            verifylongPrimitive(index, 6, 2);
+            verifylongPrimitive(index, 7, 3);
+            verifylongPrimitive(index, 8, 3);
+            verifylongPrimitive(index, 9, 3);
+            verifylongPrimitive(index, 10, 1);
+            verifylongPrimitive(index, 11, 1);
         }
 
         [Test]
         public virtual void testDoubleBothEndpointsIncluded()
         {
             FilterParamIndexRange index = this.getDoubleDataset(FilterOperator.RANGE_CLOSED);
-            verifyDoublePrimitive(index, 1.49, 0);
-            verifyDoublePrimitive(index, 1.5, 1);
-            verifyDoublePrimitive(index, 2.5, 1);
-            verifyDoublePrimitive(index, 2.51, 0);
-            verifyDoublePrimitive(index, 3.5, 2);
-            verifyDoublePrimitive(index, 4.4, 2);
-            verifyDoublePrimitive(index, 4.5, 2);
-            verifyDoublePrimitive(index, 4.5001, 1);
-            verifyDoublePrimitive(index, 5.1, 1);
-            verifyDoublePrimitive(index, 5.8, 2);
-            verifyDoublePrimitive(index, 6.7, 2);
-            verifyDoublePrimitive(index, 6.8, 1);
-            verifyDoublePrimitive(index, 9.5, 1);
-            verifyDoublePrimitive(index, 10.1, 0);
+            verifydoublePrimitive(index, 1.49, 0);
+            verifydoublePrimitive(index, 1.5, 1);
+            verifydoublePrimitive(index, 2.5, 1);
+            verifydoublePrimitive(index, 2.51, 0);
+            verifydoublePrimitive(index, 3.5, 2);
+            verifydoublePrimitive(index, 4.4, 2);
+            verifydoublePrimitive(index, 4.5, 2);
+            verifydoublePrimitive(index, 4.5001, 1);
+            verifydoublePrimitive(index, 5.1, 1);
+            verifydoublePrimitive(index, 5.8, 2);
+            verifydoublePrimitive(index, 6.7, 2);
+            verifydoublePrimitive(index, 6.8, 1);
+            verifydoublePrimitive(index, 9.5, 1);
+            verifydoublePrimitive(index, 10.1, 0);
         }
 
         [Test]
@@ -182,9 +182,9 @@ namespace net.esper.filter
                 index.Put(range, testEvaluator);
             }
 
-            verifyDoublePrimitive(index, 5000, 0);
-            verifyDoublePrimitive(index, 5000.5, 1);
-            verifyDoublePrimitive(index, 5001, 0);
+            verifydoublePrimitive(index, 5000, 0);
+            verifydoublePrimitive(index, 5000.5, 1);
+            verifydoublePrimitive(index, 5001, 0);
         }
 
         [Test]
@@ -203,13 +203,13 @@ namespace net.esper.filter
             // 3 to 6
             // and so on
 
-            verifyDoublePrimitive(index, 1, 1);
-            verifyDoublePrimitive(index, 2, 2);
-            verifyDoublePrimitive(index, 2.001, 1);
-            verifyDoublePrimitive(index, 3, 2);
-            verifyDoublePrimitive(index, 4, 3);
-            verifyDoublePrimitive(index, 4.5, 2);
-            verifyDoublePrimitive(index, 50, 26);
+            verifydoublePrimitive(index, 1, 1);
+            verifydoublePrimitive(index, 2, 2);
+            verifydoublePrimitive(index, 2.001, 1);
+            verifydoublePrimitive(index, 3, 2);
+            verifydoublePrimitive(index, 4, 3);
+            verifydoublePrimitive(index, 4.5, 2);
+            verifydoublePrimitive(index, 50, 26);
         }
 
         private FilterParamIndexRange getLongDataset(FilterOperator operatorType)
@@ -245,16 +245,16 @@ namespace net.esper.filter
             return index;
         }
 
-        private void verifyDoublePrimitive(FilterParamIndex index, double testValue, int numExpected)
+        private void verifydoublePrimitive(FilterParamIndex index, double testValue, int numExpected)
         {
-            testBean.DoublePrimitive = testValue;
+            testBean.doublePrimitive = testValue;
             index.matchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
 
-        private void verifyLongPrimitive(FilterParamIndex index, long testValue, int numExpected)
+        private void verifylongPrimitive(FilterParamIndex index, long testValue, int numExpected)
         {
-            testBean.LongPrimitive = testValue;
+            testBean.longPrimitive = testValue;
             index.matchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }

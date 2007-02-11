@@ -111,9 +111,9 @@ namespace net.esper.view.window
 			SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportBean));
 			Assert.IsTrue(view.AttachesTo(parent) != null);
 			
-			view = new ExternallyTimedWindowView("IntPrimitive", 20);
+			view = new ExternallyTimedWindowView("intPrimitive", 20);
 			Assert.IsTrue(view.AttachesTo(parent) != null);
-			view = new ExternallyTimedWindowView("string", 20);
+			view = new ExternallyTimedWindowView("StringValue", 20);
 			Assert.IsTrue(view.AttachesTo(parent) != null);
 			view = new ExternallyTimedWindowView("boolean", 20);
 			Assert.IsTrue(view.AttachesTo(parent) != null);

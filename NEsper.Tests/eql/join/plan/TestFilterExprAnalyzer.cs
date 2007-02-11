@@ -26,16 +26,16 @@ namespace net.esper.eql.join.plan
 			Assert.IsTrue(graph.IsNavigable(0, 1));
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetKeyProperties(0, 1),
-                (ICollection<string>) new String[] { "IntPrimitive" });
+                (ICollection<string>) new String[] { "intPrimitive" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetIndexProperties(1, 0),
-                (ICollection<string>) new String[] { "IntPrimitive" });
+                (ICollection<string>) new String[] { "intPrimitive" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetKeyProperties(1, 0),
-                (ICollection<string>) new String[] { "IntBoxed" });
+                (ICollection<string>) new String[] { "intBoxed" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetIndexProperties(0, 1),
-                (ICollection<string>) new String[] { "IntBoxed" });
+                (ICollection<string>) new String[] { "intBoxed" });
 		}
 		
 		[Test]
@@ -50,16 +50,16 @@ namespace net.esper.eql.join.plan
 			Assert.IsTrue(graph.IsNavigable(0, 1));
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetKeyProperties(0, 1),
-                (ICollection<string>) new String[] { "IntPrimitive", "string" });
+                (ICollection<string>) new String[] { "intPrimitive", "StringValue" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetIndexProperties(1, 0),
-                (ICollection<string>) new String[] { "IntPrimitive", "string" });
+                (ICollection<string>) new String[] { "intPrimitive", "StringValue" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetKeyProperties(1, 0),
-                (ICollection<string>) new String[] { "IntBoxed", "string" });
+                (ICollection<string>) new String[] { "intBoxed", "StringValue" });
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) graph.GetIndexProperties(0, 1),
-                (ICollection<string>) new String[] { "IntBoxed", "string" });
+                (ICollection<string>) new String[] { "intBoxed", "StringValue" });
 		}
 	}
 }

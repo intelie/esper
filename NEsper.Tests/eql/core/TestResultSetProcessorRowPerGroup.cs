@@ -22,12 +22,12 @@ namespace net.esper.eql.core
         [SetUp]
         public virtual void setUp()
         {
-            SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"), null, SupportEventAdapterService.Service);
+            SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("StringValue", "s0"), null, SupportEventAdapterService.Service);
             supportAggregationService = new SupportAggregationService();
 
             IList<ExprNode> groupKeyNodes = new List<ExprNode>();
-            groupKeyNodes.Add(SupportExprNodeFactory.makeIdentNode("IntPrimitive", "s0"));
-            groupKeyNodes.Add(SupportExprNodeFactory.makeIdentNode("IntBoxed", "s0"));
+            groupKeyNodes.Add(SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0"));
+            groupKeyNodes.Add(SupportExprNodeFactory.makeIdentNode("intBoxed", "s0"));
 
             processor = new ResultSetProcessorRowPerGroup(selectProcessor, null, supportAggregationService, groupKeyNodes, null, false, false);
         }
@@ -50,8 +50,8 @@ namespace net.esper.eql.core
         private EventBean MakeEvent(int intPrimitive, int intBoxed)
         {
             SupportBean bean = new SupportBean();
-            bean.IntPrimitive = intPrimitive;
-            bean.IntBoxed = intBoxed;
+            bean.intPrimitive = intPrimitive;
+            bean.intBoxed = intBoxed;
             return SupportEventBeanFactory.createObject(bean);
         }
     }

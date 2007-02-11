@@ -13,7 +13,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.events
 {
-
 	[TestFixture]
     public class TestMapEventType 
     {
@@ -58,21 +57,21 @@ namespace net.esper.events
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("myString"));
             Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("mySupportBean"));
             Assert.AreEqual(typeof(SupportBeanComplexProps), eventType.GetPropertyType("myComplexBean"));
-            Assert.AreEqual(typeof(int), eventType.GetPropertyType("mySupportBean.IntPrimitive"));
+            Assert.AreEqual(typeof(int), eventType.GetPropertyType("mySupportBean.intPrimitive"));
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("myComplexBean.nested.nestedValue"));
             Assert.AreEqual(typeof(int), eventType.GetPropertyType("myComplexBean.indexed[1]"));
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("myComplexBean.mapped('a')"));
 
             Assert.IsNull(eventType.GetPropertyType("dummy"));
             Assert.IsNull(eventType.GetPropertyType("mySupportBean.dfgdg"));
-            Assert.IsNull(eventType.GetPropertyType("xxx.IntPrimitive"));
+            Assert.IsNull(eventType.GetPropertyType("xxx.intPrimitive"));
             Assert.IsNull(eventType.GetPropertyType("myComplexBean.nested.nestedValueXXX"));
         }
 
         [Test]
         public virtual void testGetUnderlyingType()
         {
-            Assert.AreEqual(typeof(System.Collections.IDictionary), eventType.UnderlyingType);
+            Assert.AreEqual(typeof(IDataDictionary), eventType.UnderlyingType);
         }
 
         [Test]
@@ -80,14 +79,14 @@ namespace net.esper.events
         {
             Assert.IsTrue(eventType.isProperty("myInt"));
             Assert.IsTrue(eventType.isProperty("myString"));
-            Assert.IsTrue(eventType.isProperty("mySupportBean.IntPrimitive"));
+            Assert.IsTrue(eventType.isProperty("mySupportBean.intPrimitive"));
             Assert.IsTrue(eventType.isProperty("myComplexBean.nested.nestedValue"));
             Assert.IsTrue(eventType.isProperty("myComplexBean.indexed[1]"));
             Assert.IsTrue(eventType.isProperty("myComplexBean.mapped('a')"));
 
             Assert.IsFalse(eventType.isProperty("dummy"));
             Assert.IsFalse(eventType.isProperty("mySupportBean.dfgdg"));
-            Assert.IsFalse(eventType.isProperty("xxx.IntPrimitive"));
+            Assert.IsFalse(eventType.isProperty("xxx.intPrimitive"));
             Assert.IsFalse(eventType.isProperty("myComplexBean.nested.nestedValueXXX"));
         }
 
@@ -95,7 +94,7 @@ namespace net.esper.events
         public virtual void testGetGetter()
         {
             SupportBean nestedSupportBean = new SupportBean();
-            nestedSupportBean.IntPrimitive = 100;
+            nestedSupportBean.intPrimitive = 100;
             SupportBeanComplexProps complexPropBean = SupportBeanComplexProps.makeDefaultBean();
 
             Assert.AreEqual(null, eventType.GetGetter("dummy"));
@@ -121,10 +120,10 @@ namespace net.esper.events
             getter = eventType.GetGetter("mySupportBean");
             Assert.AreEqual(nestedSupportBean, getter.GetValue(eventBean));
 
-            getter = eventType.GetGetter("mySupportBean.IntPrimitive");
+            getter = eventType.GetGetter("mySupportBean.intPrimitive");
             Assert.AreEqual(100, getter.GetValue(eventBean));
 
-            getter = eventType.GetGetter("myNullableSupportBean.IntPrimitive");
+            getter = eventType.GetGetter("myNullableSupportBean.intPrimitive");
             Assert.IsNull(getter.GetValue(eventBean));
 
             getter = eventType.GetGetter("myComplexBean.nested.nestedValue");

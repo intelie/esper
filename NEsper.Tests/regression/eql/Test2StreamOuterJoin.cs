@@ -208,8 +208,8 @@ namespace net.esper.regression.eql
 		
 		private void  compareEvent(
 			EventBean receivedEvent,
-			Nullable<Int32> idS0, String p00,
-			Nullable<Int32> idS1, String p10)
+			int? idS0, String p00,
+			int? idS1, String p10)
 		{
 			Assert.AreEqual(idS0, receivedEvent["s0.id"]);
 			Assert.AreEqual(idS1, receivedEvent["s1.id"]);

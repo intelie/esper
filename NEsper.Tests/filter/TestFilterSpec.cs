@@ -27,15 +27,15 @@ namespace net.esper.filter
 		[Test]
 		public virtual void  testHashCode()
 		{
-			FilterSpec spec = SupportFilterSpecBuilder.build(eventType, new Object[]{"IntPrimitive", FilterOperator.EQUAL, 2, "IntBoxed", FilterOperator.EQUAL, 3});
-			int expectedHash = eventType.GetHashCode() ^ "IntPrimitive".GetHashCode() ^ "IntBoxed".GetHashCode();
+			FilterSpec spec = SupportFilterSpecBuilder.build(eventType, new Object[]{"intPrimitive", FilterOperator.EQUAL, 2, "intBoxed", FilterOperator.EQUAL, 3});
+			int expectedHash = eventType.GetHashCode() ^ "intPrimitive".GetHashCode() ^ "intBoxed".GetHashCode();
 			Assert.AreEqual(expectedHash, spec.GetHashCode());
 		}
 		
 		[Test]
 		public virtual void  testEquals()
 		{
-			Object[][] paramList = new Object[][]{new Object[]{"IntPrimitive", FilterOperator.EQUAL, 2, "IntBoxed", FilterOperator.EQUAL, 3}, new Object[]{"IntPrimitive", FilterOperator.EQUAL, 3, "IntBoxed", FilterOperator.EQUAL, 3}, new Object[]{"IntPrimitive", FilterOperator.EQUAL, 2}, new Object[]{"IntPrimitive", FilterOperator.RANGE_CLOSED, 1, 10}, new Object[]{"IntPrimitive", FilterOperator.EQUAL, 2, "IntBoxed", FilterOperator.EQUAL, 3}, new Object[]{}, new Object[]{}};
+			Object[][] paramList = new Object[][]{new Object[]{"intPrimitive", FilterOperator.EQUAL, 2, "intBoxed", FilterOperator.EQUAL, 3}, new Object[]{"intPrimitive", FilterOperator.EQUAL, 3, "intBoxed", FilterOperator.EQUAL, 3}, new Object[]{"intPrimitive", FilterOperator.EQUAL, 2}, new Object[]{"intPrimitive", FilterOperator.RANGE_CLOSED, 1, 10}, new Object[]{"intPrimitive", FilterOperator.EQUAL, 2, "intBoxed", FilterOperator.EQUAL, 3}, new Object[]{}, new Object[]{}};
 			
 			List< FilterSpec > specVec = new List< FilterSpec >();
 			foreach(Object [] param in paramList)
@@ -58,12 +58,12 @@ namespace net.esper.filter
 		public virtual void  testGetValueSet()
 		{
 			IList<FilterSpecParam> _params = SupportFilterSpecBuilder.buildList(
-				new Object[] { "IntPrimitive", FilterOperator.EQUAL, 2 });
+				new Object[] { "intPrimitive", FilterOperator.EQUAL, 2 });
 			_params.Add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive"));
 			FilterSpec filterSpec = new FilterSpec(eventType, _params);
 			
 			SupportBean eventBean = new SupportBean();
-			eventBean.DoublePrimitive = 999.999;
+			eventBean.doublePrimitive = 999.999;
 			EventBean _event = SupportEventBeanFactory.createObject(eventBean);
 			MatchedEventMap matchedEvents = new MatchedEventMap();
 			matchedEvents.Add("asName", _event);
@@ -75,7 +75,7 @@ namespace net.esper.filter
 			
 			// Assert the first param
 			FilterValueSetParam param = valueSet.Parameters[0];
-			Assert.AreEqual("IntPrimitive", param.PropertyName);
+			Assert.AreEqual("intPrimitive", param.PropertyName);
 			Assert.AreEqual(FilterOperator.EQUAL, param.FilterOperator);
 			Assert.AreEqual(2, param.FilterForValue);
 			

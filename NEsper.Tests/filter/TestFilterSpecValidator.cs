@@ -26,15 +26,15 @@ namespace net.esper.filter
 		[Test]
 		public virtual void  testValidate()
 		{
-			assertInvalid("BoolPrimitive", FilterOperator.GREATER, false);
-			assertInvalid("BoolPrimitive", FilterOperator.RANGE_CLOSED, 1, 1);
-			assertValid("BoolPrimitive", FilterOperator.EQUAL, false);
-			assertValid("BoolPrimitive", FilterOperator.EQUAL, true);
+			assertInvalid("boolPrimitive", FilterOperator.GREATER, false);
+			assertInvalid("boolPrimitive", FilterOperator.RANGE_CLOSED, 1, 1);
+			assertValid("boolPrimitive", FilterOperator.EQUAL, false);
+			assertValid("boolPrimitive", FilterOperator.EQUAL, true);
 			
-			assertInvalid("string", FilterOperator.LESS, "a");
-			assertInvalid("string", FilterOperator.RANGE_CLOSED, 10, 20);
-			assertInvalid("string", FilterOperator.EQUAL, null);
-			assertValid("string", FilterOperator.EQUAL, "a");
+			assertInvalid("StringValue", FilterOperator.LESS, "a");
+			assertInvalid("StringValue", FilterOperator.RANGE_CLOSED, 10, 20);
+			assertInvalid("StringValue", FilterOperator.EQUAL, null);
+			assertValid("StringValue", FilterOperator.EQUAL, "a");
 			
 			assertInvalid("dummy", FilterOperator.EQUAL, "a");
 			

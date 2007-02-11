@@ -22,9 +22,9 @@ namespace net.esper.filter
         {
             _params[0] = new RangeValueEventProp("a", "b");
             _params[1] = new RangeValueEventProp("asName", "b");
-            _params[2] = new RangeValueEventProp("asName", "BoolBoxed");
-            _params[3] = new RangeValueEventProp("asName", "IntPrimitive");
-            _params[4] = new RangeValueEventProp("asName", "IntPrimitive");
+            _params[2] = new RangeValueEventProp("asName", "boolBoxed");
+            _params[3] = new RangeValueEventProp("asName", "intPrimitive");
+            _params[4] = new RangeValueEventProp("asName", "intPrimitive");
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace net.esper.filter
         public virtual void testGetFilterValue()
         {
             SupportBean eventBean = new SupportBean();
-            eventBean.IntPrimitive = 1000;
+            eventBean.intPrimitive = 1000;
             EventBean _event = SupportEventBeanFactory.createObject(eventBean);
             MatchedEventMap matchedEvents = new MatchedEventMap();
             matchedEvents.Add("asName", _event);

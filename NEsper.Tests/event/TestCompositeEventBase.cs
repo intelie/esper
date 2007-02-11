@@ -26,7 +26,7 @@ namespace net.esper.events
 			eventType = new CompositeEventType( taggedEventTypes );
 
 			_event = new SupportBean();
-			_event.IntPrimitive = 1;
+			_event.intPrimitive = 1;
 
 			EDictionary<String, EventBean> wrappedEvents = new EHashDictionary<String, EventBean>();
 			wrappedEvents.Put( "a", SupportEventAdapterService.Service.AdapterForBean( _event ) );

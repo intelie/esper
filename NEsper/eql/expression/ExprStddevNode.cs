@@ -1,7 +1,7 @@
 using System;
-using Aggregator = net.esper.eql.core.Aggregator;
-using AutoImportService = net.esper.eql.core.AutoImportService;
-using StreamTypeService = net.esper.eql.core.StreamTypeService;
+
+using net.esper.eql.core;
+
 namespace net.esper.eql.expression
 {
 

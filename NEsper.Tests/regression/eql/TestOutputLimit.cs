@@ -307,9 +307,9 @@ namespace net.esper.regression.eql
 		{
 			SupportBean bean = new SupportBean();
 			bean.StringValue = s;
-			bean.DoubleBoxed = 0.0;
-			bean.IntPrimitive = 0;
-			bean.IntBoxed = 0;
+			bean.doubleBoxed = 0.0;
+			bean.intPrimitive = 0;
+			bean.intBoxed = 0;
 			epService.EPRuntime.SendEvent(bean);
 		}
 		
@@ -317,9 +317,9 @@ namespace net.esper.regression.eql
 		{
 			SupportBean event1 = new SupportBean();
 			event1.StringValue = s;
-			event1.DoubleBoxed = 0.0;
-			event1.IntPrimitive = 0;
-			event1.IntBoxed = 0;
+			event1.doubleBoxed = 0.0;
+			event1.intPrimitive = 0;
+			event1.intBoxed = 0;
 			
 			
 			SupportBean_A event2 = new SupportBean_A(s);

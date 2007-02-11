@@ -2,72 +2,53 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportBean_N
 	{
-		virtual public int IntPrimitive
+		virtual public int intPrimitive
 		{
-			get
-			{
-				return intPrimitive;
-			}
-			
+			get { return _intPrimitive; }
 		}
-		virtual public Int32 IntBoxed
+
+		virtual public Int32 intBoxed
 		{
-			get
-			{
-				return intBoxed;
-			}
-			
+			get { return _intBoxed; }
 		}
-		virtual public double DoublePrimitive
+
+		virtual public double doublePrimitive
 		{
-			get
-			{
-				return doublePrimitive;
-			}
-			
+			get { return _doublePrimitive; }
 		}
-		virtual public Double DoubleBoxed
+
+		virtual public Double doubleBoxed
 		{
-			get
-			{
-				return doubleBoxed;
-			}
-			
+			get { return _doubleBoxed; }
 		}
-		virtual public bool BoolPrimitive
+
+		virtual public bool boolPrimitive
 		{
-			get
-			{
-				return boolPrimitive;
-			}
-			
+			get { return _boolPrimitive; }
 		}
-		virtual public bool BoolBoxed
+
+		virtual public bool boolBoxed
 		{
-			get
-			{
-				return boolBoxed;
-			}
-			
+			get { return _boolBoxed; }
 		}
-		private int intPrimitive;
-		private Int32 intBoxed;
-		private double doublePrimitive;
-		private Double doubleBoxed;
-		private bool boolPrimitive;
-		private bool boolBoxed;
+
+		private int _intPrimitive;
+		private Int32 _intBoxed;
+		private double _doublePrimitive;
+		private Double _doubleBoxed;
+		private bool _boolPrimitive;
+		private bool _boolBoxed;
 		
 		public SupportBean_N(int intPrimitive, Int32 intBoxed, double doublePrimitive, Double doubleBoxed, bool boolPrimitive, bool boolBoxed)
 		{
-			this.intPrimitive = intPrimitive;
-			this.intBoxed = intBoxed;
-			this.doublePrimitive = doublePrimitive;
-			this.doubleBoxed = doubleBoxed;
-			this.boolPrimitive = boolPrimitive;
-			this.boolBoxed = boolBoxed;
+			this._intPrimitive = intPrimitive;
+			this._intBoxed = intBoxed;
+			this._doublePrimitive = doublePrimitive;
+			this._doubleBoxed = doubleBoxed;
+			this._boolPrimitive = boolPrimitive;
+			this._boolBoxed = boolBoxed;
 		}
 		
 		public override String ToString()

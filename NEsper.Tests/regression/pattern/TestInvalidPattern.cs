@@ -90,8 +90,8 @@ namespace net.esper.regression.pattern
 			Assert.AreEqual("Error invoking constructor for guard 'within', invalid parameter list for the object [net.esper.support.bean.SupportBean where timer:within('s')]", exceptionText);
 			
 			// use-result property is wrong type
-			exceptionText = getStatementExceptionPattern("x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(doublePrimitive=x.BoolBoxed)");
-			Assert.AreEqual("Type mismatch for property named 'doublePrimitive', supplied type of 'java.lang.Boolean' does not match property type 'java.lang.Double' [x=net.esper.support.bean.SupportBean -> net.esper.support.bean.SupportBean(doublePrimitive=x.BoolBoxed)]", exceptionText);
+			exceptionText = getStatementExceptionPattern("x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(doublePrimitive=x.boolBoxed)");
+			Assert.AreEqual("Type mismatch for property named 'doublePrimitive', supplied type of 'java.lang.Boolean' does not match property type 'java.lang.Double' [x=net.esper.support.bean.SupportBean -> net.esper.support.bean.SupportBean(doublePrimitive=x.boolBoxed)]", exceptionText);
 		}
 		
 		[Test]
@@ -105,15 +105,15 @@ namespace net.esper.regression.pattern
 			tryInvalid("na=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = na.xx)");
 			tryInvalid("xx=" + EVENT + " -> nb=" + EVENT + "(xx = na.doublePrimitive)");
 			tryInvalid("na=" + EVENT + " -> nb=" + EVENT + "(xx = na.xx)");
-			tryValid("na=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = na.doublePrimitive, intBoxed=na.IntBoxed)");
+			tryValid("na=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = na.doublePrimitive, intBoxed=na.intBoxed)");
 			tryInvalid("xx=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = nb.doublePrimitive)");
 			tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in (na.doublePrimitive:na.doubleBoxed))");
 			tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.doublePrimitive:na.doubleBoxed])");
-			tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.IntBoxed:na.IntPrimitive])");
-			tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.IntBoxed:na.xx])");
-			tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.IntBoxed:na.BoolBoxed])");
-			tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.xx:na.IntPrimitive])");
-			tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.BoolBoxed:na.IntPrimitive])");
+			tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.intBoxed:na.intPrimitive])");
+			tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.intBoxed:na.xx])");
+			tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.intBoxed:na.boolBoxed])");
+			tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.xx:na.intPrimitive])");
+			tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.boolBoxed:na.intPrimitive])");
 		}
 		
 		private void  tryInvalid(String eqlInvalidPattern)

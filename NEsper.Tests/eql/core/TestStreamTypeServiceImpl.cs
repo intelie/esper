@@ -10,7 +10,6 @@ using NUnit.Framework;
 
 namespace net.esper.eql.core
 {
-	
 	[TestFixture]
 	public class TestStreamTypeServiceImpl 
 	{
@@ -32,7 +31,7 @@ namespace net.esper.eql.core
 			// Test lookup by stream name and prop name
 			PropertyResolutionDescriptor desc = service.resolveByStreamAndPropName("s4", "volume");
 			Assert.AreEqual(3, (int) desc.StreamNum);
-			Assert.AreEqual(typeof(Int64), desc.PropertyType);
+			Assert.AreEqual(typeof(long?), desc.PropertyType);
 			Assert.AreEqual("volume", desc.PropertyName);
 			Assert.AreEqual("s4", desc.StreamName);
 			Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
@@ -64,14 +63,14 @@ namespace net.esper.eql.core
 			// Test lookup by property name only
 			PropertyResolutionDescriptor desc = service.resolveByPropertyName("volume");
 			Assert.AreEqual(3, (int) (desc.StreamNum));
-			Assert.AreEqual(typeof(Int64), desc.PropertyType);
+			Assert.AreEqual(typeof(long?), desc.PropertyType);
 			Assert.AreEqual("volume", desc.PropertyName);
 			Assert.AreEqual("s4", desc.StreamName);
 			Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
 			
 			try
 			{
-				service.resolveByPropertyName("BoolPrimitive");
+				service.resolveByPropertyName("boolPrimitive");
 				Assert.Fail();
 			}
 			catch (DuplicatePropertyException ex)
@@ -96,7 +95,7 @@ namespace net.esper.eql.core
 			// Test lookup by stream name and prop name
 			PropertyResolutionDescriptor desc = service.resolveByStreamAndPropName("s4.volume");
 			Assert.AreEqual(3, (int) desc.StreamNum);
-			Assert.AreEqual(typeof(Int64), desc.PropertyType);
+			Assert.AreEqual(typeof(long?), desc.PropertyType);
 			Assert.AreEqual("volume", desc.PropertyName);
 			Assert.AreEqual("s4", desc.StreamName);
 			Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);

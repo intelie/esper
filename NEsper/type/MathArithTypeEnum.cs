@@ -59,26 +59,26 @@ namespace net.esper.type
         static MathArithTypeEnum()
         {
             computers = new EHashDictionary<MultiKey<Object>, Computer>();
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Double), ADD }), AddDouble);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Single), ADD }), AddSingle);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int64), ADD }), AddInt64);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int32), ADD }), AddInt32);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Double), SUBTRACT }), SubtractDouble);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Single), SUBTRACT }), SubtractSingle);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int64), SUBTRACT }), SubtractInt64);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int32), SUBTRACT }), SubtractInt32);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Double), DIVIDE }), DivideDouble);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Single), DIVIDE }), DivideSingle);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int64), DIVIDE }), DivideInt64);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int32), DIVIDE }), DivideInt32);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Double), MULTIPLY }), MultiplyDouble);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Single), MULTIPLY }), MultiplySingle);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int64), MULTIPLY }), MultiplyInt64);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int32), MULTIPLY }), MultiplyInt32);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Double), MODULO }), ModuloDouble);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Single), MODULO }), ModuloSingle);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int64), MODULO }), ModuloInt64);
-            computers.Add(new MultiKey<Object>(new Object[] { typeof(Int32), MODULO }), ModuloInt32);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), ADD }), AddDouble);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(float?), ADD }), AddSingle);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), ADD }), AddInt64);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(int?), ADD }), AddInt32);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), SUBTRACT }), SubtractDouble);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(float?), SUBTRACT }), SubtractSingle);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), SUBTRACT }), SubtractInt64);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(int?), SUBTRACT }), SubtractInt32);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), DIVIDE }), DivideDouble);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(float?), DIVIDE }), DivideSingle);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), DIVIDE }), DivideInt64);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(int?), DIVIDE }), DivideInt32);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), MULTIPLY }), MultiplyDouble);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(float?), MULTIPLY }), MultiplySingle);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), MULTIPLY }), MultiplyInt64);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(int?), MULTIPLY }), MultiplyInt32);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), MODULO }), ModuloDouble);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(float?), MODULO }), ModuloSingle);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), MODULO }), ModuloInt64);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(int?), MODULO }), ModuloInt32);
         }
 
         /**
@@ -93,17 +93,18 @@ namespace net.esper.type
             this.expressionText = expressionText;
         }
 
-        /**
-         * Returns number cruncher for the target coercion type.
-         * @param coercedType - target type
-         * @return number cruncher
-         */
+        /// <summary>
+        /// Returns number cruncher for the target coercion type.
+        /// </summary>
+        /// <param name="coercedType">target type</param>
+        /// <returns>number cruncher</returns>
+
         public Computer getComputer(Type coercedType)
         {
-            if ((coercedType != typeof(double)) &&
-                (coercedType != typeof(float)) &&
-                (coercedType != typeof(long)) &&
-                (coercedType != typeof(int)))
+            if ((coercedType != typeof(double?)) &&
+                (coercedType != typeof(float?)) &&
+                (coercedType != typeof(long?)) &&
+                (coercedType != typeof(int?)))
             {
                 throw new ArgumentException("Expected base numeric type for computation result but got type " + coercedType);
             }
@@ -123,7 +124,7 @@ namespace net.esper.type
          */
         public static ValueType AddDouble(ValueType d1, ValueType d2)
         {
-            double result = ((double) d1) + ((double) d2);
+            double? result = ((double?) d1) + ((double?) d2);
             return result;
         }
         /**
@@ -131,7 +132,7 @@ namespace net.esper.type
          */
         public static ValueType AddSingle(ValueType d1, ValueType d2)
         {
-            float result = ((float) d1) + ((float) d2);
+            float? result = ((float?) d1) + ((float?) d2);
             return result;
         }
         /**
@@ -139,7 +140,7 @@ namespace net.esper.type
          */
         public static ValueType AddInt64(ValueType d1, ValueType d2)
         {
-            long result = ((long) d1) + ((long) d2);
+            long? result = ((long?) d1) + ((long?) d2);
             return result;
         }
         /**
@@ -147,7 +148,7 @@ namespace net.esper.type
          */
         public static ValueType AddInt32(ValueType d1, ValueType d2)
         {
-            int result = ((int) d1) + ((int) d2);
+            int? result = ((int?) d1) + ((int?) d2);
             return result;
         }
 
@@ -156,7 +157,7 @@ namespace net.esper.type
          */
         public static ValueType SubtractDouble(ValueType d1, ValueType d2)
         {
-            double result = ((double) d1) - ((double) d2);
+            double? result = ((double?) d1) - ((double?) d2);
             return result;
         }
         /**
@@ -164,7 +165,7 @@ namespace net.esper.type
          */
         public static ValueType SubtractSingle(ValueType d1, ValueType d2)
         {
-            float result = ((float) d1) - ((float) d2);
+            float? result = ((float?) d1) - ((float?) d2);
             return result;
         }
         /**
@@ -172,7 +173,7 @@ namespace net.esper.type
          */
         public static ValueType SubtractInt64(ValueType d1, ValueType d2)
         {
-            long result = ((long) d1) - ((long) d2);
+            long? result = ((long?) d1) - ((long?) d2);
             return result;
         }
         /**
@@ -180,7 +181,7 @@ namespace net.esper.type
          */
         public static ValueType SubtractInt32(ValueType d1, ValueType d2)
         {
-            int result = ((int) d1) - ((int) d2);
+            int? result = ((int?) d1) - ((int?) d2);
             return result;
         }
 
@@ -189,7 +190,7 @@ namespace net.esper.type
          */
         public static ValueType DivideDouble(ValueType d1, ValueType d2)
         {
-            double result = ((double) d1) / ((double) d2);
+            double? result = ((double?) d1) / ((double?) d2);
             return result;
         }
         /**
@@ -197,7 +198,7 @@ namespace net.esper.type
          */
         public static ValueType DivideSingle(ValueType d1, ValueType d2)
         {
-            float result = ((float) d1) / ((float) d2);
+            float? result = ((float?) d1) / ((float?) d2);
             return result;
         }
         /**
@@ -205,7 +206,7 @@ namespace net.esper.type
          */
 		public static ValueType DivideInt64( ValueType d1, ValueType d2 )
         {
-            long result = ((long) d1) / ((long) d2);
+            long? result = ((long?) d1) / ((long?) d2);
             return result;
         }
         /**
@@ -213,7 +214,7 @@ namespace net.esper.type
          */
         public static ValueType DivideInt32(ValueType d1, ValueType d2)
         {
-            int result = ((int) d1) / ((int) d2);
+            int? result = ((int?) d1) / ((int?) d2);
             return result;
         }
 
@@ -222,7 +223,7 @@ namespace net.esper.type
          */
         public static ValueType MultiplyDouble(ValueType d1, ValueType d2)
         {
-            double result = ((double) d1) * ((double) d2);
+            double? result = ((double?) d1) * ((double?) d2);
             return result;
         }
         /**
@@ -230,7 +231,7 @@ namespace net.esper.type
          */
         public static ValueType MultiplySingle(ValueType d1, ValueType d2)
         {
-            float result = ((float) d1) * ((float) d2);
+            float? result = ((float?) d1) * ((float?) d2);
             return result;
         }
         /**
@@ -238,7 +239,7 @@ namespace net.esper.type
          */
 		public static ValueType MultiplyInt64( ValueType d1, ValueType d2 )
         {
-            long result = ((long) d1) * ((long) d2);
+            long? result = ((long?) d1) * ((long?) d2);
             return result;
         }
         /**
@@ -246,7 +247,7 @@ namespace net.esper.type
          */
         public static ValueType MultiplyInt32(ValueType d1, ValueType d2)
         {
-            int result = ((int) d1) * ((int) d2);
+            int? result = ((int?) d1) * ((int?) d2);
             return result;
         }
 
@@ -255,7 +256,7 @@ namespace net.esper.type
          */
         public static ValueType ModuloDouble(ValueType d1, ValueType d2)
         {
-            double result = ((double) d1) % ((double) d2);
+            double? result = ((double?) d1) % ((double?) d2);
             return result;
         }
         /**

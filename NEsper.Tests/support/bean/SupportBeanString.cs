@@ -2,22 +2,20 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportBeanString
 	{
-		virtual public String String
+		virtual public String Str
 		{
-			get
-			{
-				return stringValue;
-			}
-			
-			set
-			{
-				this.stringValue = value;
-			}
-			
+			get { return stringValue; }
+			set { this.stringValue = value; }
 		}
+
+        virtual public String str
+        {
+            get { return stringValue; }
+            set { this.stringValue = value; }
+        }
+
 		private String stringValue;
 		
 		public SupportBeanString(String stringValue)

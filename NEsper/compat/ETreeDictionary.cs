@@ -28,7 +28,7 @@ namespace net.esper.compat
 		/// <returns></returns>
 
 		public virtual ETreeDictionary<K,V> Head( K key ) {
-			C5.TreeDictionary<K,V> child = new C5.TreeDictionary<K, V>() ;
+            C5.TreeDictionary<K, V> child = new C5.TreeDictionary<K, V>(m_subDictionary.Comparer);
 			child.AddAll( m_subDictionary.RangeTo( key ) ) ;
 			return new ETreeDictionary<K, V>( child ) ;
 		}
@@ -42,7 +42,7 @@ namespace net.esper.compat
 		/// <returns></returns>
 		
 		public virtual ETreeDictionary<K,V> Tail( K key ) {
-			C5.TreeDictionary<K,V> child = new C5.TreeDictionary<K, V>() ;
+            C5.TreeDictionary<K, V> child = new C5.TreeDictionary<K, V>(m_subDictionary.Comparer);
 			child.AddAll( m_subDictionary.RangeFrom( key ) ) ;
 			return new ETreeDictionary<K, V>( child ) ;
 		}
@@ -57,7 +57,7 @@ namespace net.esper.compat
 		/// <returns></returns>
 		
 		public virtual ETreeDictionary<K,V> Range( K lowerKey, K upperKey ) {
-			C5.TreeDictionary<K,V> child = new C5.TreeDictionary<K, V>() ;
+            C5.TreeDictionary<K, V> child = new C5.TreeDictionary<K, V>(m_subDictionary.Comparer);
 			child.AddAll( m_subDictionary.RangeFromTo( lowerKey, upperKey ) ) ;
 			return new ETreeDictionary<K, V>( child ) ;
 		}

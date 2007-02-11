@@ -58,16 +58,17 @@ namespace net.esper.eql.expression
             }
             else
             {
-                if (childTypeOne == childTypeTwo)
+                Type childBoxedTypeOne = TypeHelper.GetBoxedType(childTypeOne);
+                Type childBoxedTypeTwo = TypeHelper.GetBoxedType(childTypeTwo);
+
+                if (childBoxedTypeOne == childBoxedTypeTwo)
                 {
-                    _resultType = childTypeOne;
+                    _resultType = childBoxedTypeOne;
                     _bitWiseOpEnumComputer = _bitWiseOpEnum.getComputer(_resultType);
                 }
                 else
                 {
-                    throw new ExprValidationException(
-                        "Both nodes muts be of the same type for bitwise " + _bitWiseOpEnum.getComputeDescription() +
-                        " operator");
+                    throw new ExprValidationException("Both nodes muts be of the same type for bitwise " + _bitWiseOpEnum.getComputeDescription() + " operator");
                 }
             }
         }

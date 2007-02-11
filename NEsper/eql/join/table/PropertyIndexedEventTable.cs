@@ -10,7 +10,6 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 
 namespace net.esper.eql.join.table
 {
-
     /// <summary> Index that organizes events by the event property values into hash buckets. Based on a HashMap
     /// with {@link net.esper.collection.MultiKeyUntyped} keys that store the property values.
     /// 
@@ -94,7 +93,7 @@ namespace net.esper.eql.join.table
         public ISet<EventBean> lookup(Object[] keys)
         {
             MultiKeyUntyped key = new MultiKeyUntyped(keys);
-            ISet<EventBean> events = propertyIndex[key];
+            ISet<EventBean> events = propertyIndex.Fetch(key);
             return events;
         }
 

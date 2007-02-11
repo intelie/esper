@@ -12,8 +12,8 @@ namespace net.esper.support.eql
 		public static ExprEqualsNode makeEqualsNode()
 		{
 			ExprEqualsNode topNode = new ExprEqualsNode(false);
-			ExprIdentNode i1_1 = new ExprIdentNode("IntPrimitive", "s0");
-			ExprIdentNode i1_2 = new ExprIdentNode("IntBoxed", "s1");
+			ExprIdentNode i1_1 = new ExprIdentNode("intPrimitive", "s0");
+			ExprIdentNode i1_2 = new ExprIdentNode("intBoxed", "s1");
 			topNode.AddChildNode(i1_1);
 			topNode.AddChildNode(i1_2);
 			
@@ -32,13 +32,13 @@ namespace net.esper.support.eql
 			topNode.AddChildNode(e1);
 			topNode.AddChildNode(e2);
 			
-			ExprIdentNode i1_1 = new ExprIdentNode("IntPrimitive", "s0");
-			ExprIdentNode i1_2 = new ExprIdentNode("IntBoxed", "s1");
+			ExprIdentNode i1_1 = new ExprIdentNode("intPrimitive", "s0");
+			ExprIdentNode i1_2 = new ExprIdentNode("intBoxed", "s1");
 			e1.AddChildNode(i1_1);
 			e1.AddChildNode(i1_2);
 			
-			ExprIdentNode i2_1 = new ExprIdentNode("string", "s1");
-			ExprIdentNode i2_2 = new ExprIdentNode("string", "s0");
+			ExprIdentNode i2_1 = new ExprIdentNode("StringValue", "s1");
+			ExprIdentNode i2_2 = new ExprIdentNode("StringValue", "s0");
 			e2.AddChildNode(i2_1);
 			e2.AddChildNode(i2_2);
 			
@@ -58,18 +58,18 @@ namespace net.esper.support.eql
 				topNode.AddChildNode(equalNodes[i]);
 			}
 			
-			ExprIdentNode i1_1 = new ExprIdentNode("IntPrimitive", "s0");
-			ExprIdentNode i1_2 = new ExprIdentNode("IntBoxed", "s1");
+			ExprIdentNode i1_1 = new ExprIdentNode("intPrimitive", "s0");
+			ExprIdentNode i1_2 = new ExprIdentNode("intBoxed", "s1");
 			equalNodes[0].AddChildNode(i1_1);
 			equalNodes[0].AddChildNode(i1_2);
 			
-			ExprIdentNode i2_1 = new ExprIdentNode("string", "s1");
-			ExprIdentNode i2_2 = new ExprIdentNode("string", "s0");
+			ExprIdentNode i2_1 = new ExprIdentNode("StringValue", "s1");
+			ExprIdentNode i2_2 = new ExprIdentNode("StringValue", "s0");
 			equalNodes[1].AddChildNode(i2_1);
 			equalNodes[1].AddChildNode(i2_2);
 			
-			ExprIdentNode i3_1 = new ExprIdentNode("BoolBoxed", "s0");
-			ExprIdentNode i3_2 = new ExprIdentNode("BoolPrimitive", "s1");
+			ExprIdentNode i3_1 = new ExprIdentNode("boolBoxed", "s0");
+			ExprIdentNode i3_2 = new ExprIdentNode("boolPrimitive", "s1");
 			equalNodes[2].AddChildNode(i3_1);
 			equalNodes[2].AddChildNode(i3_2);
 			
@@ -87,8 +87,8 @@ namespace net.esper.support.eql
 		
 		public static ExprNode makeMathNode()
 		{
-			ExprIdentNode node1 = new ExprIdentNode("IntBoxed", "s0");
-			ExprIdentNode node2 = new ExprIdentNode("IntPrimitive", "s0");
+			ExprIdentNode node1 = new ExprIdentNode("intBoxed", "s0");
+			ExprIdentNode node2 = new ExprIdentNode("intPrimitive", "s0");
 			ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
 			mathNode.AddChildNode(node1);
 			mathNode.AddChildNode(node2);
@@ -111,10 +111,10 @@ namespace net.esper.support.eql
 		{
 			// sum node
 			ExprSumNode sum = new ExprSumNode(false);
-			ExprIdentNode ident = new ExprIdentNode("IntPrimitive", "s0");
+			ExprIdentNode ident = new ExprIdentNode("intPrimitive", "s0");
 			sum.AddChildNode(ident);
 			
-			ExprIdentNode node = new ExprIdentNode("IntBoxed", "s0");
+			ExprIdentNode node = new ExprIdentNode("intBoxed", "s0");
 			ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
 			mathNode.AddChildNode(node);
 			mathNode.AddChildNode(sum);
@@ -127,7 +127,7 @@ namespace net.esper.support.eql
 		public static ExprAggregateNode makeSumAggregateNode()
 		{
 			ExprSumNode top = new ExprSumNode(false);
-			ExprIdentNode ident = new ExprIdentNode("IntPrimitive", "s0");
+			ExprIdentNode ident = new ExprIdentNode("intPrimitive", "s0");
 			top.AddChildNode(ident);
 			
 			validate(top);
@@ -174,9 +174,9 @@ namespace net.esper.support.eql
 		
 		public static ExprInNode makeInSetNode(bool isNotIn)
 		{
-			// Build :      s0.IntPrimitive in (1, 2)
+			// Build :      s0.intPrimitive in (1, 2)
 			ExprInNode inNode = new ExprInNode(isNotIn);
-			inNode.AddChildNode(makeIdentNode("IntPrimitive", "s0"));
+			inNode.AddChildNode(makeIdentNode("intPrimitive", "s0"));
 			inNode.AddChildNode(new SupportExprNode(1));
 			inNode.AddChildNode(new SupportExprNode(2));
 			validate(inNode);
@@ -187,7 +187,7 @@ namespace net.esper.support.eql
 		{
 			// Build :      s0.string regexp "[a-z][a-z]"  (with not)
 			ExprRegexpNode node = new ExprRegexpNode(isNot);
-			node.AddChildNode(makeIdentNode("string", "s0"));
+			node.AddChildNode(makeIdentNode("StringValue", "s0"));
 			node.AddChildNode(new SupportExprNode("[a-z][a-z]"));
 			validate(node);
 			return node;
@@ -197,7 +197,7 @@ namespace net.esper.support.eql
 		{
 			// Build :      s0.string like "%abc__"  (with or witout escape)
 			ExprLikeNode node = new ExprLikeNode(isNot);
-			node.AddChildNode(makeIdentNode("string", "s0"));
+			node.AddChildNode(makeIdentNode("StringValue", "s0"));
 			node.AddChildNode(new SupportExprNode("%abc__"));
 			if (optionalEscape != null)
 			{
@@ -210,17 +210,17 @@ namespace net.esper.support.eql
 		public static ExprCaseNode makeCaseSyntax1Node()
 		{
 			// Build (case 1 expression):
-			// case when s0.IntPrimitive = 1 then "a"
-			//      when s0.IntPrimitive = 2 then "b"
+			// case when s0.intPrimitive = 1 then "a"
+			//      when s0.intPrimitive = 2 then "b"
 			//      else "c"
 			// end
 			ExprCaseNode caseNode = new ExprCaseNode(false);
 			
-			ExprNode node = makeEqualsNode("IntPrimitive", "s0", 1);
+			ExprNode node = makeEqualsNode("intPrimitive", "s0", 1);
 			caseNode.AddChildNode(node);
 			caseNode.AddChildNode(new SupportExprNode("a"));
 			
-			node = makeEqualsNode("IntPrimitive", "s0", 2);
+			node = makeEqualsNode("intPrimitive", "s0", 2);
 			caseNode.AddChildNode(node);
 			caseNode.AddChildNode(new SupportExprNode("b"));
 			
@@ -234,13 +234,13 @@ namespace net.esper.support.eql
 		public static ExprCaseNode makeCaseSyntax2Node()
 		{
 			// Build (case 2 expression):
-			// case s0.IntPrimitive
+			// case s0.intPrimitive
 			//   when 1 then "a"
 			//   when 2 then "b"
 			//   else "c"
 			// end
 			ExprCaseNode caseNode = new ExprCaseNode(true);
-			caseNode.AddChildNode(makeIdentNode("IntPrimitive", "s0"));
+			caseNode.AddChildNode(makeIdentNode("intPrimitive", "s0"));
 			
 			caseNode.AddChildNode(new SupportExprNode(1));
 			caseNode.AddChildNode(new SupportExprNode("a"));

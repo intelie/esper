@@ -1,9 +1,11 @@
 using System;
 namespace net.esper.eql.expression
 {
+	/// <summary>
+    /// Visitor interface for use with expression node trees.
+    /// </summary>
 	
-	/// <summary> Visitor interface for use with expression node trees.</summary>
-	public interface ExprNodeVisitor
+    public interface ExprNodeVisitor
 	{
 		/// <summary> Allows visitor to indicate whether to visit a given node.
 		/// Implicitly if a visitor doesn't visit a node it would also not visit any descendent child nodes of that node.

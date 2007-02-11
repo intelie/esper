@@ -112,9 +112,9 @@ namespace net.esper.eql.core
         private EventBean MakeEvent(double doubleBoxed, int intBoxed, int intPrimitive)
         {
             SupportBean bean = new SupportBean();
-            bean.DoubleBoxed = doubleBoxed;
-            bean.IntBoxed = intBoxed;
-            bean.IntPrimitive = intPrimitive;
+            bean.doubleBoxed = doubleBoxed;
+            bean.intBoxed = intBoxed;
+            bean.intPrimitive = intPrimitive;
             return SupportEventBeanFactory.createObject(bean);
         }
 

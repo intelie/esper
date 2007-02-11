@@ -212,9 +212,9 @@ namespace net.esper.regression.events
             ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
 			legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.NATIVE;
             legacyDef.CodeGeneration = codeGeneration;
-            legacyDef.addFieldProperty("explicitFInt", "fieldIntPrimitive");
-            legacyDef.addMethodProperty("explicitMGetInt", "getIntPrimitive");
-            legacyDef.addMethodProperty("explicitMReadInt", "readIntPrimitive");
+            legacyDef.addFieldProperty("explicitFInt", "fieldintPrimitive");
+            legacyDef.addMethodProperty("explicitMGetInt", "getintPrimitive");
+            legacyDef.addMethodProperty("explicitMReadInt", "readintPrimitive");
             config.addEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBeanInt).FullName, legacyDef);
 
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test3" + codeGeneration, config);
@@ -231,7 +231,7 @@ namespace net.esper.regression.events
             epService.EPRuntime.SendEvent(_event);
 
             string[] _items = new string[] {
-                "IntPrimitive",
+                "intPrimitive",
                 "explicitFInt",
                 "explicitMGetInt",
                 "explicitMReadInt"
@@ -263,7 +263,7 @@ namespace net.esper.regression.events
 
             SupportBeanFinal _event = new SupportBeanFinal(10);
             epService.EPRuntime.SendEvent(_event);
-            Assert.AreEqual(10, listener.LastNewData[0]["IntPrimitive"]);
+            Assert.AreEqual(10, listener.LastNewData[0]["intPrimitive"]);
         }
     }
 }

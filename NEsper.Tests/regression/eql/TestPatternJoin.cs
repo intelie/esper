@@ -238,8 +238,8 @@ namespace net.esper.regression.eql
 
 		private void assertEventData(
             EventBean _event,
-            Nullable<Int32> es0aId, String es0ap00, 
-            Nullable<Int32> es0bId, String es0bp00,
+            int? es0aId, String es0ap00, 
+            int? es0bId, String es0bp00,
             int s1Id, String s1p10 )
 		{
 			Assert.AreEqual( es0aId, _event["es0aId"] );

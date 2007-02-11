@@ -8,12 +8,11 @@ using NUnit.Framework;
 
 namespace net.esper.eql.expression
 {
-	
 	[TestFixture]
 	public class TestExprNode 
 	{
 		[Test]
-		public virtual void  testGetValidatedSubtree()
+		public virtual void testGetValidatedSubtree()
 		{
 			SupportExprNode.ValidateCount = 0;
 			
@@ -49,17 +48,17 @@ namespace net.esper.eql.expression
 		}
 		
 		[Test]
-		public virtual void  testIdentToStaticMethod()
+		public virtual void testIdentToStaticMethod()
 		{
 			StreamTypeService typeService = new SupportStreamTypeSvc1Stream();
-			AutoImportService autoImportService = new AutoImportServiceImpl(new String[]{"java.lang.*"});
+			AutoImportService autoImportService = new AutoImportServiceImpl(new String[]{"System"});
 			
-			ExprNode identNode = new ExprIdentNode("Integer.valueOf(\"3\")");
+			ExprNode identNode = new ExprIdentNode("Int32.Parse(\"3\")");
 			ExprNode result = identNode.GetValidatedSubtree(typeService, autoImportService);
 			Assert.IsTrue(result is ExprStaticMethodNode);
 			Assert.AreEqual(Int32.Parse("3"), result.Evaluate(null));
 			
-			identNode = new ExprIdentNode("Integer.valueOf(\'3\')");
+			identNode = new ExprIdentNode("Int32.Parse(\'3\')");
 			result = identNode.GetValidatedSubtree(typeService, autoImportService);
 			Assert.IsTrue(result is ExprStaticMethodNode);
 			Assert.AreEqual(Int32.Parse("3"), result.Evaluate(null));

@@ -43,11 +43,11 @@ namespace net.esper.filter
             unmatchedEvents = new List<EventBean>();
 
             // Any int and double value specified here must match only the current filter spec not any other filter spec
-            testFilterSpecs.Add(makeSpec(new Object[] { "IntPrimitive", FilterOperator.GREATER_OR_EQUAL, 100000 }));
+            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 100000 }));
             matchedEvents.Add(MakeEvent(9999999, -1));
             unmatchedEvents.Add(MakeEvent(0, -1));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "IntPrimitive", FilterOperator.GREATER_OR_EQUAL, 10, "doublePrimitive", FilterOperator.EQUAL, 0.5 }));
+            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 10, "doublePrimitive", FilterOperator.EQUAL, 0.5 }));
             matchedEvents.Add(MakeEvent(10, 0.5));
             unmatchedEvents.Add(MakeEvent(0, 0.5));
 
@@ -55,27 +55,27 @@ namespace net.esper.filter
             matchedEvents.Add(MakeEvent(-1, 0.8));
             unmatchedEvents.Add(MakeEvent(-1, 0.1));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "doublePrimitive", FilterOperator.EQUAL, 99.99, "IntPrimitive", FilterOperator.LESS, 1 }));
+            testFilterSpecs.Add(makeSpec(new Object[] { "doublePrimitive", FilterOperator.EQUAL, 99.99, "intPrimitive", FilterOperator.LESS, 1 }));
             matchedEvents.Add(MakeEvent(0, 99.99));
             unmatchedEvents.Add(MakeEvent(2, 0.5));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "doublePrimitive", FilterOperator.GREATER, .99, "IntPrimitive", FilterOperator.EQUAL, 5001 }));
+            testFilterSpecs.Add(makeSpec(new Object[] { "doublePrimitive", FilterOperator.GREATER, .99, "intPrimitive", FilterOperator.EQUAL, 5001 }));
             matchedEvents.Add(MakeEvent(5001, 1.1));
             unmatchedEvents.Add(MakeEvent(5002, 0.98));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "IntPrimitive", FilterOperator.LESS, -99000 }));
+            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.LESS, -99000 }));
             matchedEvents.Add(MakeEvent(-99001, -1));
             unmatchedEvents.Add(MakeEvent(-98999, -1));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "IntPrimitive", FilterOperator.GREATER_OR_EQUAL, 11, "doublePrimitive", FilterOperator.GREATER, 888.0 }));
+            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 11, "doublePrimitive", FilterOperator.GREATER, 888.0 }));
             matchedEvents.Add(MakeEvent(11, 888.001));
             unmatchedEvents.Add(MakeEvent(10, 888));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "IntPrimitive", FilterOperator.EQUAL, 973, "doublePrimitive", FilterOperator.EQUAL, 709.0 }));
+            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.EQUAL, 973, "doublePrimitive", FilterOperator.EQUAL, 709.0 }));
             matchedEvents.Add(MakeEvent(973, 709));
             unmatchedEvents.Add(MakeEvent(0, 0.5));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "IntPrimitive", FilterOperator.EQUAL, 973, "doublePrimitive", FilterOperator.EQUAL, 655.0 }));
+            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.EQUAL, 973, "doublePrimitive", FilterOperator.EQUAL, 655.0 }));
             matchedEvents.Add(MakeEvent(973, 655));
             unmatchedEvents.Add(MakeEvent(33838, 655.5));
         }
@@ -205,8 +205,8 @@ namespace net.esper.filter
         private EventBean MakeEvent(int aInt, double aDouble)
         {
             SupportBean bean = new SupportBean();
-            bean.IntPrimitive = aInt;
-            bean.DoublePrimitive = aDouble;
+            bean.intPrimitive = aInt;
+            bean.doublePrimitive = aDouble;
             return SupportEventBeanFactory.createObject(bean);
         }
 

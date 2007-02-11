@@ -35,7 +35,7 @@ namespace net.esper.eql.join
         [Test]
         public virtual void testBuildIndex()
         {
-            EventTable table = JoinSetComposerFactory.buildIndex(0, new String[] { "IntPrimitive", "BoolBoxed" }, streamTypes[0]);
+            EventTable table = JoinSetComposerFactory.buildIndex(0, new String[] { "intPrimitive", "boolBoxed" }, streamTypes[0]);
             Assert.IsTrue(table is PropertyIndexedEventTable);
 
             table = JoinSetComposerFactory.buildIndex(0, new String[0], streamTypes[0]);

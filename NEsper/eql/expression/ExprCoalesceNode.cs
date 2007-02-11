@@ -15,12 +15,9 @@ namespace net.esper.eql.expression
     {
         override public Type ReturnType
         {
-            get
-            {
-                return resultType;
-            }
-
+            get { return resultType; }
         }
+
         private Type resultType;
         private bool[] isNumericCoercion;
 
@@ -56,7 +53,7 @@ namespace net.esper.eql.expression
             
             foreach (ExprNode child in this.ChildNodes)
             {
-                if ((child.ReturnType != resultType) &&
+                if ((TypeHelper.GetBoxedType(child.ReturnType) != resultType) &&
                     (child.ReturnType != null) &&
                     (resultType != null))
                 {
@@ -85,7 +82,7 @@ namespace net.esper.eql.expression
                     // Check if we need to coerce
                     if (isNumericCoercion[count])
                     {
-                        return Convert.ChangeType(value, resultType);
+                        return TypeHelper.CoerceNumber(value, resultType);
                     }
                     return value;
                 }

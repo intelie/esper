@@ -100,7 +100,7 @@ namespace net.esper.regression.view
             Assert.AreEqual(Convert.ToString(7, 2), result[0]);
 
             statementText = "select Int32.Parse(\"6\") " + stream;
-            result = createStatementAndGetProperty(true, "Integer.valueOf(\"6\")");
+            result = createStatementAndGetProperty(true, "Integer.Parse(\"6\")");
             Assert.AreEqual(Int32.Parse("6"), result[0]);
 
             statementText = "select System.String.Parse(\'a\') " + stream;
@@ -133,28 +133,28 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testComplexParameters()
         {
-            statementText = "select String.valueOf(price) " + stream;
-            Object[] result = createStatementAndGetProperty(true, "String.valueOf(price)");
+            statementText = "select Convert.ToString(price) " + stream;
+            Object[] result = createStatementAndGetProperty(true, "Convert.ToString(price)");
             Assert.AreEqual(Convert.ToString(10d), result[0]);
 
-            statementText = "select String.valueOf(2 + 3*5) " + stream;
-            result = createStatementAndGetProperty(true, "String.valueOf((2+(3*5)))");
+            statementText = "select Convert.ToString(2 + 3*5) " + stream;
+            result = createStatementAndGetProperty(true, "Convert.ToString((2+(3*5)))");
             Assert.AreEqual(Convert.ToString(17), result[0]);
 
-            statementText = "select String.valueOf(price*volume +volume) " + stream;
-            result = createStatementAndGetProperty(true, "String.valueOf(((price*volume)+volume))");
+            statementText = "select Convert.ToString(price*volume +volume) " + stream;
+            result = createStatementAndGetProperty(true, "Convert.ToString(((price*volume)+volume))");
             Assert.AreEqual(Convert.ToString(44d), result[0]);
 
-            statementText = "select String.valueOf(Math.pow(price, Integer.valueOf(\"2\"))) " + stream;
-            result = createStatementAndGetProperty(true, "String.valueOf(Math.pow(price, Integer.valueOf(\"2\")))");
+            statementText = "select Convert.ToString(Math.pow(price, Int32.Parse(\"2\"))) " + stream;
+            result = createStatementAndGetProperty(true, "Convert.ToString(Math.Pow(price, Int32.Parse(\"2\")))");
             Assert.AreEqual(Convert.ToString(100d), result[0]);
         }
 
         [Test]
         public virtual void testMultipleMethodInvocations()
         {
-            statementText = "select Math.max(2d, price), Math.max(volume, 4d)" + stream;
-            Object[] props = createStatementAndGetProperty(true, "Math.max(2.0, price)", "Math.max(volume, 4.0)");
+            statementText = "select Math.Max(2d, price), Math.Max(volume, 4d)" + stream;
+            Object[] props = createStatementAndGetProperty(true, "Math.Max(2.0, price)", "Math.Max(volume, 4.0)");
             Assert.AreEqual(10d, props[0]);
             Assert.AreEqual(4d, props[1]);
         }
@@ -163,13 +163,13 @@ namespace net.esper.regression.view
         public virtual void testOtherClauses()
         {
             // where
-            statementText = "select *" + stream + "where Math.pow(price, .5) > 2";
+            statementText = "select *" + stream + "where Math.Pow(price, .5) > 2";
             Assert.AreEqual("IBM", createStatementAndGetProperty(true, "symbol")[0]);
             SendEvent("CAT", 4d, 100);
             Assert.IsNull(getProperty("symbol"));
 
             // group-by
-            statementText = "select symbol, sum(price)" + stream + "group by String.valueOf(symbol)";
+            statementText = "select symbol, sum(price)" + stream + "group by Convert.ToString(symbol)";
             Assert.AreEqual(10d, createStatementAndGetProperty(true, "sum(price)")[0]);
             SendEvent("IBM", 4d, 100);
             Assert.AreEqual(14d, getProperty("sum(price)"));
@@ -177,7 +177,7 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             // having
-            statementText = "select symbol, sum(price)" + stream + "having Math.pow(sum(price), .5) > 3";
+            statementText = "select symbol, sum(price)" + stream + "having Math.Pow(sum(price), .5) > 3";
             Assert.AreEqual(10d, createStatementAndGetProperty(true, "sum(price)")[0]);
             SendEvent("IBM", 100d, 100);
             Assert.AreEqual(110d, getProperty("sum(price)"));

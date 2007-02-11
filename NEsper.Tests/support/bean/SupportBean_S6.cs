@@ -2,56 +2,64 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportBean_S6
 	{
 		virtual public int Id
 		{
-			get
-			{
-				return id;
-			}
-			
+			get { return _id; }
 		}
+
 		virtual public String P60
 		{
-			get
-			{
-				return p60;
-			}
-			
+            get { return _p60; }
 		}
+
 		virtual public String P61
 		{
-			get
-			{
-				return p61;
-			}
-			
+            get { return _p61; }
 		}
+
 		virtual public String P62
 		{
-			get
-			{
-				return p62;
-			}
-			
+            get { return _p62; }
 		}
+
 		virtual public String P63
 		{
-			get
-			{
-				return p63;
-			}
-			
+            get { return _p63; }
 		}
+
+        virtual public int id
+        {
+            get { return _id; }
+        }
+
+        virtual public String p60
+        {
+            get { return _p60; }
+        }
+
+        virtual public String p61
+        {
+            get { return _p61; }
+        }
+
+        virtual public String p62
+        {
+            get { return _p62; }
+        }
+
+        virtual public String p63
+        {
+            get { return _p63; }
+        }
 		private static int idCounter;
-		
-		private int id;
-		private String p60;
-		private String p61;
-		private String p62;
-		private String p63;
+
+        private int _id;
+        private String _p60;
+        private String _p61;
+        private String _p62;
+        private String _p63;
 		
 		public static Object[] makeS6(String propOne, String[] propTwo)
 		{
@@ -67,20 +75,20 @@ namespace net.esper.support.bean
 		
 		public SupportBean_S6(int id)
 		{
-			this.id = id;
+            this._id = id;
 		}
 		
 		public SupportBean_S6(int id, String p60)
 		{
-			this.id = id;
-			this.p60 = p60;
+            this._id = id;
+            this._p60 = p60;
 		}
 		
 		public SupportBean_S6(int id, String p60, String p61)
 		{
-			this.id = id;
-			this.p60 = p60;
-			this.p61 = p61;
+            this._id = id;
+            this._p60 = p60;
+            this._p61 = p61;
 		}
 	}
 }

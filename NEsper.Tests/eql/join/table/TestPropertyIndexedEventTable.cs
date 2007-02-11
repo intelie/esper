@@ -22,7 +22,7 @@ namespace net.esper.eql.join.table
 		[SetUp]
 		public virtual void setUp()
 		{
-			propertyNames = new String[] { "IntPrimitive", "string" };
+			propertyNames = new String[] { "intPrimitive", "StringValue" };
 			eventType = SupportEventTypeFactory.createBeanType( typeof( SupportBean ) );
 			index = new PropertyIndexedEventTable( 1, eventType, propertyNames );
 
@@ -162,7 +162,7 @@ namespace net.esper.eql.join.table
 		private EventBean makeBean( int intValue, String stringValue )
 		{
 			SupportBean bean = new SupportBean();
-			bean.IntPrimitive = intValue;
+			bean.intPrimitive = intValue;
 			bean.StringValue = stringValue;
 			return SupportEventBeanFactory.createObject( bean );
 		}

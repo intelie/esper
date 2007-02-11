@@ -47,7 +47,7 @@ namespace net.esper.filter
         [Test]
         public virtual void testString()
         {
-            FilterParamIndexNotEquals index = new FilterParamIndexNotEquals("string", testEventType);
+            FilterParamIndexNotEquals index = new FilterParamIndexNotEquals("StringValue", testEventType);
 
             index.Put("hello", testEvaluator);
             index.Put("test", testEvaluator);
@@ -70,7 +70,7 @@ namespace net.esper.filter
 
         private void verifyBooleanPrimitive(FilterParamIndex index, bool testValue, int numExpected)
         {
-            testBean.BoolPrimitive = testValue;
+            testBean.boolPrimitive = testValue;
             index.matchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }

@@ -56,7 +56,7 @@ namespace net.esper.regression.view
 			
 			SendEvent("a");
 			Assert.IsFalse(testListener.Invoked);
-			Assert.AreEqual("a", testListenerInsertInto.assertOneGetNewAndReset()["string"]); // insert into unchanged
+			Assert.AreEqual("a", testListenerInsertInto.assertOneGetNewAndReset()["StringValue"]); // insert into unchanged
 			
 			sendEvents(new String[]{"b", "c"});
 			Assert.IsFalse(testListener.Invoked);
@@ -64,9 +64,9 @@ namespace net.esper.regression.view
 			testListenerInsertInto.reset();
 			
 			SendEvent("d");
-			Assert.AreSame("a", testListener.LastNewData[0]["string"]); // receive 'a' as new data
+			Assert.AreSame("a", testListener.LastNewData[0]["StringValue"]); // receive 'a' as new data
 			Assert.IsNull(testListener.LastOldData); // receive no more old data
-			Assert.AreEqual("d", testListenerInsertInto.LastNewData[0]["string"]); // insert into unchanged
+			Assert.AreEqual("d", testListenerInsertInto.LastNewData[0]["StringValue"]); // insert into unchanged
 			Assert.IsNull(testListenerInsertInto.LastOldData); // receive no old data in insert into
 			testListener.reset();
 		}
@@ -89,9 +89,9 @@ namespace net.esper.regression.view
 			Assert.IsFalse(testListenerInsertInto.Invoked);
 			
 			SendEvent("d");
-			Assert.AreSame("a", testListener.LastNewData[0]["string"]); // receive 'a' as new data
+			Assert.AreSame("a", testListener.LastNewData[0]["StringValue"]); // receive 'a' as new data
 			Assert.IsNull(testListener.LastOldData); // receive no more old data
-			Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["string"]); // insert into unchanged
+			Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["StringValue"]); // insert into unchanged
 			Assert.IsNull(testListener.LastOldData); // receive no old data in insert into
 			testListener.reset();
 		}
@@ -99,7 +99,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testRStreamJoin()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("select rstream s1.IntPrimitive as aID, s2.IntPrimitive as bID " + "from " + typeof(SupportBean).FullName + "(string='a').win:length(2) as s1, " + typeof(SupportBean).FullName + "(string='b') as s2" + " where s1.IntPrimitive = s2.IntPrimitive");
+			EPStatement statement = epService.EPAdministrator.createEQL("select rstream s1.intPrimitive as aID, s2.intPrimitive as bID " + "from " + typeof(SupportBean).FullName + "(string='a').win:length(2) as s1, " + typeof(SupportBean).FullName + "(string='b') as s2" + " where s1.intPrimitive = s2.intPrimitive");
 			statement.AddListener(testListener);
 			
 			SendEvent("a", 1);
@@ -141,20 +141,20 @@ namespace net.esper.regression.view
 			statement.AddListener(testListenerInsertInto);
 			
 			SendEvent("a");
-			Assert.AreEqual("a", testListener.assertOneGetNewAndReset()["string"]);
+			Assert.AreEqual("a", testListener.assertOneGetNewAndReset()["StringValue"]);
 			Assert.IsFalse(testListenerInsertInto.Invoked);
 			
 			SendEvent("b");
-			Assert.AreEqual("b", testListener.LastNewData[0]["string"]);
+			Assert.AreEqual("b", testListener.LastNewData[0]["StringValue"]);
 			Assert.IsNull(testListener.LastOldData);
-			Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["string"]);
+			Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["StringValue"]);
 			Assert.IsNull(testListenerInsertInto.LastOldData);
 		}
 		
 		[Test]
 		public virtual void  testIStreamJoin()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("select istream s1.IntPrimitive as aID, s2.IntPrimitive as bID " + "from " + typeof(SupportBean).FullName + "(string='a').win:length(2) as s1, " + typeof(SupportBean).FullName + "(string='b') as s2" + " where s1.IntPrimitive = s2.IntPrimitive");
+			EPStatement statement = epService.EPAdministrator.createEQL("select istream s1.intPrimitive as aID, s2.intPrimitive as bID " + "from " + typeof(SupportBean).FullName + "(string='a').win:length(2) as s1, " + typeof(SupportBean).FullName + "(string='b') as s2" + " where s1.intPrimitive = s2.intPrimitive");
 			statement.AddListener(testListener);
 			
 			SendEvent("a", 1);
@@ -188,7 +188,7 @@ namespace net.esper.regression.view
 		{
 			SupportBean _event = new SupportBean();
 			_event.StringValue = stringValue;
-			_event.IntPrimitive = intPrimitive;
+			_event.intPrimitive = intPrimitive;
 			epService.EPRuntime.SendEvent(_event);
 			return _event;
 		}

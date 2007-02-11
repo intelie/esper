@@ -77,7 +77,7 @@ namespace net.esper.filter
             this.filterOperator = filterOperator;
 
             getter = eventType.GetGetter(propertyName);
-            propertyBoxedType = eventType.GetPropertyType(propertyName);
+            propertyBoxedType = TypeHelper.GetBoxedType(eventType.GetPropertyType(propertyName));
             if (getter == null)
             {
                 throw new ArgumentException("Property named '" + propertyName + "' not valid for event type ");

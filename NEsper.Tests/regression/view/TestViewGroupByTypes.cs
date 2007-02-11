@@ -27,7 +27,7 @@ namespace net.esper.regression.view
 			String viewStmt = "select * from " + typeof(SupportBean).FullName + ".std:groupby('intPrimitive').win:length(4).std:groupby('longBoxed').std:size()";
 			EPStatement stmt = epService.EPAdministrator.createEQL(viewStmt);
 			
-			Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("IntPrimitive"));
+			Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("intPrimitive"));
 			Assert.AreEqual(typeof(Int64), stmt.EventType.GetPropertyType("longBoxed"));
 			Assert.AreEqual(typeof(long), stmt.EventType.GetPropertyType("size"));
 			Assert.AreEqual(3, stmt.EventType.PropertyNames.Count);

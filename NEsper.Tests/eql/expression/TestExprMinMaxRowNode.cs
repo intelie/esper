@@ -7,8 +7,7 @@ using NUnit.Core;
 using NUnit.Framework;
 
 namespace net.esper.eql.expression
-{
-	
+{	
 	[TestFixture]
 	public class TestExprMinMaxRowNode 
 	{
@@ -38,9 +37,9 @@ namespace net.esper.eql.expression
 		{
 			minMaxNode.AddChildNode(new SupportExprNode(9d));
 			minMaxNode.AddChildNode(new SupportExprNode(6));
-			Assert.AreEqual("max(9.0,6)", minMaxNode.ExpressionString);
+			Assert.AreEqual("max(9,6)", minMaxNode.ExpressionString);
 			minMaxNode.AddChildNode(new SupportExprNode(0.5d));
-			Assert.AreEqual("max(9.0,6,0.5)", minMaxNode.ExpressionString);
+			Assert.AreEqual("max(9,6,0.5)", minMaxNode.ExpressionString);
 		}
 		
 		[Test]

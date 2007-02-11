@@ -122,16 +122,16 @@ namespace net.esper.regression.view
 			Assert.AreEqual("Error validating expression: Property named 'xxxx' is not valid in any stream [select * from net.esper.support.bean.SupportBean.win:length(1) as aStr left outer join net.esper.support.bean.SupportBean.win:length(1) on xxxx=yyyy]", exceptionText);
 			
 			// invalid outer join for 3 streams - not a symbol
-			exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) as s0 " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s1 on s0.IntPrimitive = s1.IntPrimitive " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s2 on s0.IntPrimitive = s2.yyyy");
-			Assert.AreEqual("Error validating expression: Failed to resolve property 's2.yyyy' to a stream or nested property in a stream [select * from net.esper.support.bean.SupportBean.win:length(1) as s0 left outer join net.esper.support.bean.SupportBean.win:length(1) as s1 on s0.IntPrimitive = s1.IntPrimitive left outer join net.esper.support.bean.SupportBean.win:length(1) as s2 on s0.IntPrimitive = s2.yyyy]", exceptionText);
+			exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) as s0 " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s1 on s0.intPrimitive = s1.intPrimitive " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s2 on s0.intPrimitive = s2.yyyy");
+			Assert.AreEqual("Error validating expression: Failed to resolve property 's2.yyyy' to a stream or nested property in a stream [select * from net.esper.support.bean.SupportBean.win:length(1) as s0 left outer join net.esper.support.bean.SupportBean.win:length(1) as s1 on s0.intPrimitive = s1.intPrimitive left outer join net.esper.support.bean.SupportBean.win:length(1) as s2 on s0.intPrimitive = s2.yyyy]", exceptionText);
 			
 			// invalid outer join for 3 streams - wrong stream, the properties in on-clause don't refer to streams
-			exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) as s0 " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s1 on s0.IntPrimitive = s1.IntPrimitive " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s2 on s0.IntPrimitive = s1.IntPrimitive");
-			Assert.AreEqual("Error validating expression: Outer join ON-clause must refer to at least one property of the joined stream for stream 2 [select * from net.esper.support.bean.SupportBean.win:length(1) as s0 left outer join net.esper.support.bean.SupportBean.win:length(1) as s1 on s0.IntPrimitive = s1.IntPrimitive left outer join net.esper.support.bean.SupportBean.win:length(1) as s2 on s0.IntPrimitive = s1.IntPrimitive]", exceptionText);
+			exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) as s0 " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s1 on s0.intPrimitive = s1.intPrimitive " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s2 on s0.intPrimitive = s1.intPrimitive");
+			Assert.AreEqual("Error validating expression: Outer join ON-clause must refer to at least one property of the joined stream for stream 2 [select * from net.esper.support.bean.SupportBean.win:length(1) as s0 left outer join net.esper.support.bean.SupportBean.win:length(1) as s1 on s0.intPrimitive = s1.intPrimitive left outer join net.esper.support.bean.SupportBean.win:length(1) as s2 on s0.intPrimitive = s1.intPrimitive]", exceptionText);
 			
 			// invalid outer join - referencing next stream
-			exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) as s0 " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s1 on s2.IntPrimitive = s1.IntPrimitive " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s2 on s1.IntPrimitive = s2.IntPrimitive");
-			Assert.AreEqual("Error validating expression: Outer join ON-clause invalid scope for property 'intPrimitive', expecting the current or a prior stream scope [select * from net.esper.support.bean.SupportBean.win:length(1) as s0 left outer join net.esper.support.bean.SupportBean.win:length(1) as s1 on s2.IntPrimitive = s1.IntPrimitive left outer join net.esper.support.bean.SupportBean.win:length(1) as s2 on s1.IntPrimitive = s2.IntPrimitive]", exceptionText);
+			exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) as s0 " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s1 on s2.intPrimitive = s1.intPrimitive " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) as s2 on s1.intPrimitive = s2.intPrimitive");
+			Assert.AreEqual("Error validating expression: Outer join ON-clause invalid scope for property 'intPrimitive', expecting the current or a prior stream scope [select * from net.esper.support.bean.SupportBean.win:length(1) as s0 left outer join net.esper.support.bean.SupportBean.win:length(1) as s1 on s2.intPrimitive = s1.intPrimitive left outer join net.esper.support.bean.SupportBean.win:length(1) as s2 on s1.intPrimitive = s2.intPrimitive]", exceptionText);
 			
 			// invalid outer join - same properties
 			exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length(1) as aStr " + "left outer join " + EVENT_ALLTYPES + ".win:length(1) on string=string");
@@ -146,16 +146,16 @@ namespace net.esper.regression.view
 			Assert.AreEqual("Error Starting view: Wildcard not allowed in combination with insert-into [insert into Google select * from net.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
 			
 			// insert into with duplicate column names
-			exceptionText = getStatementExceptionView("insert into Google (a, b, a) select BoolBoxed, boolPrimitive, intBoxed from " + EVENT_NUM + ".win:length(1) as aStr");
-			Assert.AreEqual("Error Starting view: Property name 'a' appears more then once in insert-into clause [insert into Google (a, b, a) select BoolBoxed, boolPrimitive, intBoxed from net.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
+			exceptionText = getStatementExceptionView("insert into Google (a, b, a) select boolBoxed, boolPrimitive, intBoxed from " + EVENT_NUM + ".win:length(1) as aStr");
+			Assert.AreEqual("Error Starting view: Property name 'a' appears more then once in insert-into clause [insert into Google (a, b, a) select boolBoxed, boolPrimitive, intBoxed from net.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
 			
 			// insert into mismatches selected columns
-			exceptionText = getStatementExceptionView("insert into Google (a, b, c) select BoolBoxed, boolPrimitive from " + EVENT_NUM + ".win:length(1) as aStr");
-			Assert.AreEqual("Error Starting view: Number of supplied values in the select clause does not match insert-into clause [insert into Google (a, b, c) select BoolBoxed, boolPrimitive from net.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
+			exceptionText = getStatementExceptionView("insert into Google (a, b, c) select boolBoxed, boolPrimitive from " + EVENT_NUM + ".win:length(1) as aStr");
+			Assert.AreEqual("Error Starting view: Number of supplied values in the select clause does not match insert-into clause [insert into Google (a, b, c) select boolBoxed, boolPrimitive from net.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
 			
 			// mismatched type on coalesce columns
-			exceptionText = getStatementExceptionView("select coalesce(BoolBoxed, string) from " + typeof(SupportBean).FullName + ".win:length(1) as aStr");
-			Assert.AreEqual("Error Starting view: Implicit conversion not allowed: Cannot coerce to Boolean type System.String [select coalesce(BoolBoxed, string) from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+			exceptionText = getStatementExceptionView("select coalesce(boolBoxed, string) from " + typeof(SupportBean).FullName + ".win:length(1) as aStr");
+			Assert.AreEqual("Error Starting view: Implicit conversion not allowed: Cannot coerce to Boolean type System.String [select coalesce(boolBoxed, string) from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
 			
 			// mismatched case compare type
 			exceptionText = getStatementExceptionView("select case boolPrimitive when 1 then true end from " + typeof(SupportBean).FullName + ".win:length(1) as aStr");
@@ -184,12 +184,12 @@ namespace net.esper.regression.view
 			tryInvalid("select * from " + eventClass + ".dummy:length(3)");
 			
 			tryInvalid("select djdjdj from " + eventClass + ".win:length(3)");
-			tryValid("select BoolBoxed as xx, intPrimitive from " + eventClass + ".win:length(3)");
-			tryInvalid("select BoolBoxed as xx, intPrimitive as xx from " + eventClass + ".win:length(3)");
-			tryValid("select BoolBoxed as xx, intPrimitive as yy from " + eventClass + "().win:length(3)");
+			tryValid("select boolBoxed as xx, intPrimitive from " + eventClass + ".win:length(3)");
+			tryInvalid("select boolBoxed as xx, intPrimitive as xx from " + eventClass + ".win:length(3)");
+			tryValid("select boolBoxed as xx, intPrimitive as yy from " + eventClass + "().win:length(3)");
 			
-			tryValid("select BoolBoxed as xx, intPrimitive as yy from " + eventClass + "().win:length(3)" + " where BoolBoxed = true");
-			tryInvalid("select BoolBoxed as xx, intPrimitive as yy from " + eventClass + "().win:length(3)" + " where xx = true");
+			tryValid("select boolBoxed as xx, intPrimitive as yy from " + eventClass + "().win:length(3)" + " where boolBoxed = true");
+			tryInvalid("select boolBoxed as xx, intPrimitive as yy from " + eventClass + "().win:length(3)" + " where xx = true");
 		}
 		
 		private void  tryInvalid(String viewStmt)

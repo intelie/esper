@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.util;
+
 namespace net.esper.eql.core
 {
     /// <summary>
@@ -42,7 +44,7 @@ namespace net.esper.eql.core
             // Attempt to retrieve the class with the name as-is
             try
             {
-                return Type.GetType(className);
+                return TypeHelper.ResolveType(className);
             }
             catch (Exception)
             {
@@ -54,7 +56,7 @@ namespace net.esper.eql.core
                 String prefixedClassName = String.Format( "{0}.{1}", nspace, className ) ;
                 try
                 {
-                    return Type.GetType(prefixedClassName);
+                    return TypeHelper.ResolveType(prefixedClassName);
                 }
                 catch (Exception)
                 {

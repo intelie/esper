@@ -14,10 +14,7 @@ namespace net.esper.eql.expression
     {
         override public Type ReturnType
         {
-            get
-            {
-                return typeof(Boolean);
-            }
+            get { return typeof(bool?); }
         }
 
         public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)

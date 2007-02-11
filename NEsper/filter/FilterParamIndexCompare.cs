@@ -40,7 +40,7 @@ namespace net.esper.filter
         	EventType eventType)
             : base(propertyName, filterOperator, eventType)
         {
-            constantsMap = new ETreeDictionary<Object, EventEvaluator>();
+            constantsMap = new ETreeDictionary<Object, EventEvaluator>(sm_doubleComparer);
             constantsMapRWLock = new ReaderWriterLock();
 
             if ((filterOperator != FilterOperator.GREATER) && 
@@ -62,16 +62,16 @@ namespace net.esper.filter
             get
             {
                 checkType(filterConstant);
-                return constantsMap.Fetch(filterConstant, null);
+                Double constant = Convert.ToDouble(filterConstant);
+                return constantsMap.Fetch(constant, null);
             }
 
             set
             {
                 checkType(filterConstant);
-                constantsMap[filterConstant] = value;
-
-                // Update bounds
                 Double constant = Convert.ToDouble(filterConstant);
+                constantsMap[constant] = value;
+
                 if ((lowerBounds == null) || (constant < lowerBounds))
                 {
                     lowerBounds = constant;
@@ -86,7 +86,8 @@ namespace net.esper.filter
 
         public override bool Remove(Object filterConstant)
         {
-        	if (! constantsMap.Remove(filterConstant))
+            Double constant = Convert.ToDouble(filterConstant);
+        	if (! constantsMap.Remove(constant))
             {
                 return false;
             }
@@ -128,7 +129,7 @@ namespace net.esper.filter
             }
 
             FilterOperator filterOperator = this.FilterOperator;
-            Double propertyValueDouble = Convert.ToDouble(((ValueType)propertyValue));
+            Double propertyValueDouble = Convert.ToDouble(propertyValue);
 
             if (log.IsDebugEnabled)
             {
@@ -163,18 +164,18 @@ namespace net.esper.filter
                 (filterOperator == FilterOperator.GREATER_OR_EQUAL))
             {
                 // At the head of the map are those with a lower numeric constants
-                subMap = constantsMap.Head(propertyValue);
+                subMap = constantsMap.Head(propertyValueDouble);
             }
             else
             {
-                subMap = constantsMap.Tail(propertyValue);
+                subMap = constantsMap.Tail(propertyValueDouble);
             }
 
             // All entries in the subMap are elgibile, with an exception
             EventEvaluator exactEquals = null;
             if (filterOperator == FilterOperator.LESS)
             {
-                exactEquals = constantsMap[propertyValue];
+                exactEquals = constantsMap.Fetch(propertyValueDouble);
             }
 
             foreach (EventEvaluator matcher in subMap.Values)
@@ -192,7 +193,7 @@ namespace net.esper.filter
 
             if (filterOperator == FilterOperator.GREATER_OR_EQUAL)
             {
-                EventEvaluator matcher = constantsMap[propertyValue];
+                EventEvaluator matcher = constantsMap.Fetch(propertyValueDouble);
                 if (matcher != null)
                 {
                     matcher.matchEvent(eventBean, matches);
@@ -217,13 +218,25 @@ namespace net.esper.filter
 
         private void checkType(Object filterConstant)
         {
-            if (this.PropertyBoxedType != filterConstant.GetType())
+            if (this.PropertyBoxedType != TypeHelper.GetBoxedType(filterConstant.GetType()))
             {
                 throw new ArgumentException(
                     "Invalid type of filter constant of " + filterConstant.GetType().FullName + 
                     " for property " + this.PropertyName);
             }
         }
+
+        internal class DoubleComparer : IComparer<Object>
+        {
+            public int Compare(Object valueA, Object valueB)
+            {
+                Double v1 = Convert.ToDouble(valueA);
+                Double v2 = Convert.ToDouble(valueB);
+                return v1.CompareTo(v2);
+            }
+        }
+
+        private static DoubleComparer sm_doubleComparer = new DoubleComparer();
 
         private static readonly Log log = LogFactory.GetLog(typeof(FilterParamIndexCompare));
     }

@@ -105,19 +105,21 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testCoalesceInvalid()
         {
-            String viewExpr = "select coalesce(null, null) as result" + " from " + typeof(SupportBean).FullName + ".win:length(3) ";
+            String viewExpr =
+                "select coalesce(null, null) as result" +
+                " from " + typeof(SupportBean).FullName + ".win:length(3) ";
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             Assert.AreEqual(null, selectTestView.EventType.GetPropertyType("result"));
 
             tryCoalesceInvalid("coalesce(intPrimitive)");
-            tryCoalesceInvalid("coalesce(intPrimitive, string)");
+            tryCoalesceInvalid("coalesce(intPrimitive, StringValue)");
             tryCoalesceInvalid("coalesce(intPrimitive, xxx)");
-            tryCoalesceInvalid("coalesce(intPrimitive, booleanBoxed)");
+            tryCoalesceInvalid("coalesce(intPrimitive, BooleanBoxed)");
             tryCoalesceInvalid("coalesce(charPrimitive, longBoxed)");
-            tryCoalesceInvalid("coalesce(charPrimitive, string, string)");
-            tryCoalesceInvalid("coalesce(string, longBoxed)");
+            tryCoalesceInvalid("coalesce(charPrimitive, StringValue, StringValue)");
+            tryCoalesceInvalid("coalesce(StringValue, longBoxed)");
             tryCoalesceInvalid("coalesce(null, longBoxed, string)");
-            tryCoalesceInvalid("coalesce(null, null, BoolBoxed, 1l)");
+            tryCoalesceInvalid("coalesce(null, null, boolBoxed, 1l)");
         }
 
         private void tryCoalesceInvalid(String coalesceExpr)
@@ -170,7 +172,9 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testOperators()
         {
-            String viewExpr = "select longBoxed % intBoxed as myMod " + " from " + typeof(SupportBean).FullName + ".win:length(3) where not(longBoxed > intBoxed)";
+            String viewExpr =
+                "select longBoxed % intBoxed as myMod " + 
+                " from " + typeof(SupportBean).FullName + ".win:length(3) where not(longBoxed > intBoxed)";
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);
 
@@ -189,7 +193,9 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testConcat()
         {
-            String viewExpr = "select p00 || p01 as c1, p00 || p01 || p02 as c2, p00 || '|' || p01 as c3" + " from " + typeof(SupportBean_S0).FullName + ".win:length(10)";
+            String viewExpr =
+                "select p00 || p01 as c1, p00 || p01 || p02 as c2, p00 || '|' || p01 as c3" + 
+                " from " + typeof(SupportBean_S0).FullName + ".win:length(10)";
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);
 
@@ -214,7 +220,12 @@ namespace net.esper.regression.view
 
         private void setUpMinMax()
         {
-            String viewExpr = "select max(longBoxed, intBoxed) as myMax, " + "max(longBoxed, intBoxed, shortBoxed) as myMaxEx," + "min(longBoxed, intBoxed) as myMin," + "min(longBoxed, intBoxed, shortBoxed) as myMinEx" + " from " + typeof(SupportBean).FullName + ".win:length(3) ";
+            String viewExpr = 
+                "select max(longBoxed, intBoxed) as myMax, " +
+                "max(longBoxed, intBoxed, shortBoxed) as myMaxEx," +
+                "min(longBoxed, intBoxed) as myMin," +
+                "min(longBoxed, intBoxed, shortBoxed) as myMinEx" + 
+                " from " + typeof(SupportBean).FullName + ".win:length(3) ";
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);
         }
@@ -233,32 +244,32 @@ namespace net.esper.regression.view
         }
 
         private void sendBoxedEvent(
-            Nullable<Int64> longBoxed,
-            Nullable<Int32> intBoxed, 
-            Nullable<Int16> shortBoxed)
+            long? longBoxed,
+            int? intBoxed,
+            short? shortBoxed)
         {
             SupportBean bean = new SupportBean();
-            bean.LongBoxed = longBoxed;
-            bean.IntBoxed = intBoxed;
-            bean.ShortBoxed = shortBoxed;
+            bean.longBoxed = longBoxed;
+            bean.intBoxed = intBoxed;
+            bean.shortBoxed = shortBoxed;
             epService.EPRuntime.SendEvent(bean);
         }
 
         private void sendEventWithDouble(
-            SByte? byteBoxed,
-            Nullable<Int16> shortBoxed,
-            Nullable<Int32> intBoxed,
-            Nullable<Int64> longBoxed, 
+            sbyte? byteBoxed,
+            short? shortBoxed,
+            int? intBoxed,
+            long? longBoxed, 
             Single? floatBoxed, 
             Double? doubleBoxed)
         {
             SupportBean bean = new SupportBean();
-            bean.ByteBoxed = byteBoxed;
-            bean.ShortBoxed = shortBoxed;
-            bean.IntBoxed = intBoxed;
-            bean.LongBoxed = longBoxed;
-            bean.FloatBoxed = floatBoxed;
-            bean.DoubleBoxed = doubleBoxed;
+            bean.byteBoxed = byteBoxed;
+            bean.shortBoxed = shortBoxed;
+            bean.intBoxed = intBoxed;
+            bean.longBoxed = longBoxed;
+            bean.floatBoxed = floatBoxed;
+            bean.doubleBoxed = doubleBoxed;
             epService.EPRuntime.SendEvent(bean);
         }
 

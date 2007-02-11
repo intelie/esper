@@ -25,27 +25,27 @@ namespace net.esper.filter
 		public virtual void  testCreateIndex()
 		{
 			// Create a "greater" index
-			FilterParamIndex index = IndexFactory.createIndex(eventType, "IntPrimitive", FilterOperator.GREATER);
+			FilterParamIndex index = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
 			
 			Assert.IsTrue(index != null);
 			Assert.IsTrue(index is FilterParamIndexCompare);
-			Assert.IsTrue(index.PropertyName.Equals("IntPrimitive"));
+			Assert.IsTrue(index.PropertyName.Equals("intPrimitive"));
 			Assert.IsTrue(index.FilterOperator == FilterOperator.GREATER);
 			
 			// Create an "equals" index
-			index = IndexFactory.createIndex(eventType, "string", FilterOperator.EQUAL);
+			index = IndexFactory.createIndex(eventType, "StringValue", FilterOperator.EQUAL);
 			
 			Assert.IsTrue(index != null);
 			Assert.IsTrue(index is FilterParamIndexEquals);
-			Assert.IsTrue(index.PropertyName.Equals("string"));
+			Assert.IsTrue(index.PropertyName.Equals("StringValue"));
 			Assert.IsTrue(index.FilterOperator == FilterOperator.EQUAL);
 			
 			// Create an "not equals" index
-			index = IndexFactory.createIndex(eventType, "string", FilterOperator.NOT_EQUAL);
+			index = IndexFactory.createIndex(eventType, "StringValue", FilterOperator.NOT_EQUAL);
 			
 			Assert.IsTrue(index != null);
 			Assert.IsTrue(index is FilterParamIndexNotEquals);
-			Assert.IsTrue(index.PropertyName.Equals("string"));
+			Assert.IsTrue(index.PropertyName.Equals("StringValue"));
 			Assert.IsTrue(index.FilterOperator == FilterOperator.NOT_EQUAL);
 			
 			// Create a range index

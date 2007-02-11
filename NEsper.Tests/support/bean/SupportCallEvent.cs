@@ -6,57 +6,67 @@ namespace net.esper.support.bean
 	{
 		virtual public long CallId
 		{
-			get
-			{
-				return callId;
-			}
+            get { return _callId; }
 		}
 		
 		virtual public String Source
 		{
-			get
-			{
-				return source;
-			}
+            get { return _source; }
 		}
 		
 		virtual public String Dest
 		{
-			get
-			{
-				return dest;
-			}
+            get { return _dest; }
 		}
 		
 		virtual public long StartTime
 		{
-			get
-			{
-				return startTime;
-			}
+            get { return _startTime; }
 		}
 
 		virtual public long EndTime
 		{
-			get
-			{
-				return endTime;
-			}
+			get { return _endTime; }
 		}
-		
-		private long callId;
-		private String source;
-		private String dest;
-		private long startTime;
-		private long endTime;
+
+        virtual public long callId
+        {
+            get { return _callId; }
+        }
+
+        virtual public String source
+        {
+            get { return _source; }
+        }
+
+        virtual public String dest
+        {
+            get { return _dest; }
+        }
+
+        virtual public long startTime
+        {
+            get { return _startTime; }
+        }
+
+        virtual public long endTime
+        {
+            get { return _endTime; }
+        }
+
+        private long _callId;
+        private String _source;
+        private String _dest;
+		private long _startTime;
+		private long _endTime;
 		
 		public SupportCallEvent(long callId, String source, String destination, long startTime, long endTime)
 		{
-			this.callId = callId;
-			this.source = source;
-			this.dest = destination;
-			this.startTime = startTime;
-			this.endTime = endTime;
+            this._callId = callId;
+            this._source = source;
+            this._dest = destination;
+            this._startTime = startTime;
+            this._endTime = endTime;
 		}
 	}
 }

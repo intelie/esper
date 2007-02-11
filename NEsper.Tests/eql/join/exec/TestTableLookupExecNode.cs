@@ -22,7 +22,7 @@ namespace net.esper.eql.join.exec
 		public virtual void setUp()
 		{
 			EventType eventTypeIndex = SupportEventTypeFactory.createBeanType( typeof( SupportBean ) );
-			index = new PropertyIndexedEventTable( 0, eventTypeIndex, new String[] { "string" } );
+			index = new PropertyIndexedEventTable( 0, eventTypeIndex, new String[] { "StringValue" } );
 
 			EventType eventTypeKeyGen = SupportEventTypeFactory.createBeanType( typeof( SupportMarketDataBean ) );
 

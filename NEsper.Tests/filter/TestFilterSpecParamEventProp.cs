@@ -18,11 +18,11 @@ namespace net.esper.filter
 		public virtual void testEquals()
 		{
 			FilterSpecParamEventProp[] _params = new FilterSpecParamEventProp[5];
-			_params[0] = makeParam( "a", "IntBoxed" );
-			_params[1] = makeParam( "b", "IntBoxed" );
-			_params[2] = makeParam( "a", "IntPrimitive" );
-			_params[3] = makeParam( "c", "IntPrimitive" );
-			_params[4] = makeParam( "a", "IntBoxed" );
+			_params[0] = makeParam( "a", "intBoxed" );
+			_params[1] = makeParam( "b", "intBoxed" );
+			_params[2] = makeParam( "a", "intPrimitive" );
+			_params[3] = makeParam( "c", "intPrimitive" );
+			_params[4] = makeParam( "a", "intBoxed" );
 
 			Assert.AreEqual( _params[0], _params[4] );
 			Assert.AreEqual( _params[4], _params[0] );
@@ -34,12 +34,12 @@ namespace net.esper.filter
 		[Test]
 		public virtual void testGetFilterValueClass()
 		{
-			FilterSpecParamEventProp param = makeParam( "asName", "IntBoxed" );
+			FilterSpecParamEventProp param = makeParam( "asName", "intBoxed" );
 
 			EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
 			taggedEventTypes.Put( "asName", SupportEventTypeFactory.createBeanType( typeof( SupportBean ) ) );
 
-			Assert.AreEqual( typeof( Int32 ), param.getFilterValueClass( taggedEventTypes ) );
+			Assert.AreEqual( typeof( int? ), param.getFilterValueClass( taggedEventTypes ) );
 
 			try
 			{
@@ -65,10 +65,10 @@ namespace net.esper.filter
 		[Test]
 		public virtual void testGetFilterValue()
 		{
-			FilterSpecParamEventProp _params = makeParam( "asName", "IntBoxed" );
+			FilterSpecParamEventProp _params = makeParam( "asName", "intBoxed" );
 
 			SupportBean eventBean = new SupportBean();
-			eventBean.IntBoxed = 1000;
+			eventBean.intBoxed = 1000;
 			EventBean _event = SupportEventBeanFactory.createObject( eventBean );
 
 			MatchedEventMap matchedEvents = new MatchedEventMap();
@@ -99,7 +99,7 @@ namespace net.esper.filter
 
 		private FilterSpecParamEventProp makeParam( String eventAsName, String property )
 		{
-			return new FilterSpecParamEventProp( "IntPrimitive", FilterOperator.EQUAL, eventAsName, property );
+			return new FilterSpecParamEventProp( "intPrimitive", FilterOperator.EQUAL, eventAsName, property );
 		}
 	}
 }

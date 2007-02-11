@@ -80,12 +80,12 @@ namespace net.esper.view.std
         public virtual void testEventType()
         {
             SupportBeanClassView topView = new SupportBeanClassView(typeof(SupportBean));
-            GroupByView groupByView = new GroupByView("IntPrimitive");
+            GroupByView groupByView = new GroupByView("intPrimitive");
 
             SizeView sizeView = new SizeView();
             sizeView.ViewServiceContext = SupportViewContextFactory.makeContext();
 
-            MergeView mergeView = new MergeView(new String[] { "IntPrimitive" });
+            MergeView mergeView = new MergeView(new String[] { "intPrimitive" });
             mergeView.ViewServiceContext = SupportViewContextFactory.makeContext();
 
             topView.AddView(groupByView);
@@ -98,7 +98,7 @@ namespace net.esper.view.std
             mergeView.ParentAware = parents;
 
             EventType eventType = mergeView.EventType;
-            Assert.AreEqual(typeof(int), eventType.GetPropertyType("IntPrimitive"));
+            Assert.AreEqual(typeof(int), eventType.GetPropertyType("intPrimitive"));
         }
 
         private EventBean makeTradeBean(String symbol, int price)

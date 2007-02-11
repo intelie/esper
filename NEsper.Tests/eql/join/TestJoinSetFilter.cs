@@ -46,8 +46,8 @@ namespace net.esper.eql.join
 		private EventBean MakeEvent( int intPrimitive, int intBoxed, String stringValue )
 		{
 			SupportBean _event = new SupportBean();
-			_event.IntPrimitive = intPrimitive;
-			_event.IntBoxed = intBoxed;
+			_event.intPrimitive = intPrimitive;
+			_event.intBoxed = intBoxed;
 			_event.StringValue = stringValue;
 			return SupportEventBeanFactory.createObject( _event );
 		}

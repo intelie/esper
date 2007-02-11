@@ -21,12 +21,14 @@ using org.apache.commons.logging;
 
 namespace net.esper.eql.parse
 {
-
 	[TestFixture]
 	public class TestEQLTreeWalker
 	{
 		private static String CLASSNAME = typeof( SupportBean ).FullName;
-		private static String EXPRESSION = "select * from " + CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," + CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
+		private static String EXPRESSION = 
+            "select * from " +
+            CLASSNAME + "(StringValue='a').win:length(10).std:lastevent() as win1," +
+            CLASSNAME + "(StringValue='b').win:length(10).std:lastevent() as win2 ";
 
 		[Test]
 		public virtual void testWalkEQLSimpleWhere()
@@ -63,7 +65,12 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testWalkEQLWhereWithAnd()
 		{
-			String expression = "select * from " + CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," + CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2, " + CLASSNAME + "(string='c').win:length(3).std:lastevent() as win3 " + "where win1.f1=win2.f2 and win3.f3=f4";
+			String expression =
+                "select * from " +
+                CLASSNAME + "(StringValue='a').win:length(10).std:lastevent() as win1," + 
+                CLASSNAME + "(StringValue='b').win:length(9).std:lastevent() as win2, " +
+                CLASSNAME + "(StringValue='c').win:length(3).std:lastevent() as win3 " +
+                "where win1.f1=win2.f2 and win3.f3=f4";
 
 			EQLTreeWalker walker = parseAndWalkEQL( expression );
 
@@ -154,7 +161,10 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testWalkEQLInsertInto()
 		{
-			String expression = "insert into MyAlias select * from " + CLASSNAME + "().win:length(10).std:lastevent() as win1," + CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2";
+			String expression =
+                "insert into MyAlias select * from " +
+                CLASSNAME + "().win:length(10).std:lastevent() as win1," +
+                CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2";
 
 			EQLTreeWalker walker = parseAndWalkEQL( expression );
 
@@ -163,7 +173,10 @@ namespace net.esper.eql.parse
 			Assert.AreEqual( "MyAlias", desc.EventTypeAlias );
 			Assert.AreEqual( 0, desc.ColumnNames.Count );
 
-			expression = "insert rstream into MyAlias(a, b, c) select * from " + CLASSNAME + "().win:length(10).std:lastevent() as win1," + CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2";
+			expression =
+                "insert rstream into MyAlias(a, b, c) select * from " +
+                CLASSNAME + "().win:length(10).std:lastevent() as win1," +
+                CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2";
 
 			walker = parseAndWalkEQL( expression );
 
@@ -175,7 +188,9 @@ namespace net.esper.eql.parse
 			Assert.AreEqual( "b", desc.ColumnNames[1] );
 			Assert.AreEqual( "c", desc.ColumnNames[2] );
 
-			expression = "insert istream into Test2 select * from " + CLASSNAME + "().win:length(10)";
+			expression =
+                "insert istream into Test2 select * from " +
+                CLASSNAME + "().win:length(10)";
 			walker = parseAndWalkEQL( expression );
 			desc = walker.StatementSpec.InsertIntoDesc;
 			Assert.IsTrue( desc.IsStream );
@@ -188,7 +203,7 @@ namespace net.esper.eql.parse
 		{
 			String text =
                 "select * from " + typeof( SupportBean ).FullName +
-                "(string=\"IBM\").win:length(10, 1.1, \"a\").stat:uni('price', false)";
+                "(StringValue=\"IBM\").win:length(10, 1.1, \"a\").stat:uni('price', false)";
 
 			EQLTreeWalker walker = parseAndWalkEQL( text );
             FilterSpec filterSpec = ((FilterStreamSpec)walker.StatementSpec.StreamSpecs[0]).FilterSpec;
@@ -305,7 +320,11 @@ namespace net.esper.eql.parse
 			parseAndWalkEQL( text );
 
 			// try min-max aggregate versus row functions
-			text = "select max(intPrimitive), min(intPrimitive)," + "max(intPrimitive,intBoxed), min(intPrimitive,intBoxed)," + "max(distinct intPrimitive), min(distinct intPrimitive)" + fromClause;
+            text =
+                "select max(intPrimitive), min(intPrimitive)," +
+                "max(intPrimitive,intBoxed), min(intPrimitive,intBoxed)," +
+                "max(distinct intPrimitive), min(distinct intPrimitive)" + 
+                fromClause;
 			EQLTreeWalker walker = parseAndWalkEQL( text );
 			IList<SelectExprElementUnnamedSpec> select = walker.StatementSpec.SelectListExpressions;
 			Assert.IsTrue( select[0].SelectExpression is ExprMinMaxAggrNode );
@@ -317,7 +336,7 @@ namespace net.esper.eql.parse
 
 			try
 			{
-				parseAndWalkEQL( "select max(distinct intPrimitive, intboxed)" );
+				parseAndWalkEQL( "select max(distinct intPrimitive, Intboxed)" );
 				Assert.Fail();
 			}
 			catch ( System.Exception )
@@ -329,7 +348,9 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testGroupBy()
 		{
-			String text = "select sum(intPrimitive) from SupportBean_N().win:length(10) as win1 where intBoxed > 5 " + "group by intBoxed, 3 * doubleBoxed, max(2, doublePrimitive)";
+			String text =
+                "select sum(intPrimitive) from SupportBean_N().win:length(10) as win1 where intBoxed > 5 " +
+                "group by intBoxed, 3 * doubleBoxed, max(2, doublePrimitive)";
 			EQLTreeWalker walker = parseAndWalkEQL( text );
 
 			IList<ExprNode> groupByList = walker.StatementSpec.GroupByExpressions;
@@ -350,7 +371,9 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testHaving()
 		{
-			String text = "select sum(intPrimitive) from SupportBean_N().win:length(10) as win1 where intBoxed > 5 " + "group by intBoxed having sum(intPrimitive) > 5";
+			String text = 
+                "select sum(intPrimitive) from SupportBean_N().win:length(10) as win1 where intBoxed > 5 " + 
+                "group by intBoxed having sum(intPrimitive) > 5";
 			EQLTreeWalker walker = parseAndWalkEQL( text );
 
 			ExprNode havingNode = walker.StatementSpec.HavingExprRootNode;
@@ -359,7 +382,9 @@ namespace net.esper.eql.parse
 			Assert.IsTrue( havingNode.ChildNodes[0] is ExprSumNode );
 			Assert.IsTrue( havingNode.ChildNodes[1] is ExprConstantNode );
 
-			text = "select sum(intPrimitive) from SupportBean_N().win:length(10) as win1 where intBoxed > 5 " + "having intPrimitive < avg(intPrimitive)";
+			text =
+                "select sum(intPrimitive) from SupportBean_N().win:length(10) as win1 where intBoxed > 5 " + 
+                "having intPrimitive < avg(intPrimitive)";
 			walker = parseAndWalkEQL( text );
 
 			havingNode = walker.StatementSpec.HavingExprRootNode;
@@ -379,7 +404,10 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testComplexProperty()
 		{
-			String text = "select array [ 1 ],s0.map('a'),nested.nested2, a[1].b as x " + " from SupportBean_N().win:length(10) as win1 " + " where a[1].b('a').nested.c[0] = 4";
+			String text = 
+                "select array [ 1 ],s0.map('a'),nested.nested2, a[1].b as x " +
+                " from SupportBean_N().win:length(10) as win1 " + 
+                " where a[1].b('a').nested.c[0] = 4";
 			EQLTreeWalker walker = parseAndWalkEQL( text );
 
 			ExprIdentNode identNode = (ExprIdentNode) walker.StatementSpec.SelectListExpressions[0].SelectExpression;
@@ -406,7 +434,8 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testBitWise()
 		{
-			String text = "select intPrimitive & intBoxed from " + typeof( SupportBean ).FullName + "().win:length(10) as stream0";
+			String text =
+                "select intPrimitive & intBoxed from " + typeof( SupportBean ).FullName + "().win:length(10) as stream0";
 			EQLTreeWalker walker = parseAndWalkEQL( text );
 			IList<SelectExprElementUnnamedSpec> selectExpressions = walker.StatementSpec.SelectListExpressions;
 			Assert.AreEqual( 1, selectExpressions.Count );
@@ -476,17 +505,17 @@ namespace net.esper.eql.parse
 		public virtual void testIfThenElseCase()
 		{
 			String text;
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end from " + typeof( SupportBean ).FullName + "().win:length(10) as win";
+            text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end from " + typeof(SupportBean).FullName + "().win:length(10) as win";
 			parseAndWalkEQL( text );
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end as p1 from " + typeof( SupportBean ).FullName + "().win:length(10) as win";
+            text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end as p1 from " + typeof(SupportBean).FullName + "().win:length(10) as win";
 			parseAndWalkEQL( text );
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) else shortPrimitive end from " + typeof( SupportBean ).FullName + "().win:length(10) as win";
+            text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) else shortPrimitive end from " + typeof(SupportBean).FullName + "().win:length(10) as win";
 			parseAndWalkEQL( text );
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) when longPrimitive > intPrimitive then count(longPrimitive) else shortPrimitive end from " + typeof( SupportBean ).FullName + "().win:length(10) as win";
+            text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) when longPrimitive > intPrimitive then count(longPrimitive) else shortPrimitive end from " + typeof(SupportBean).FullName + "().win:length(10) as win";
 			parseAndWalkEQL( text );
-			text = "select case intPrimitive  when 1 then count(intPrimitive) end from " + typeof( SupportBean ).FullName + "().win:length(10) as win";
+            text = "select case intPrimitive  when 1 then count(intPrimitive) end from " + typeof(SupportBean).FullName + "().win:length(10) as win";
 			parseAndWalkEQL( text );
-			text = "select case intPrimitive when longPrimitive then (intPrimitive + longPrimitive) end" + " from " + typeof( SupportBean ).FullName + ".win:length(3)";
+            text = "select case intPrimitive when longPrimitive then (intPrimitive + longPrimitive) end" + " from " + typeof(SupportBean).FullName + ".win:length(3)";
 			parseAndWalkEQL( text );
 		}
 
@@ -531,7 +560,7 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testWalkPattern()
 		{
-			String text = "every g=" + typeof( SupportBean ).FullName + "(string=\"IBM\", intPrimitive != 1) where timer:within(20)";
+			String text = "every g=" + typeof( SupportBean ).FullName + "(StringValue=\"IBM\", intPrimitive != 1) where timer:within(20)";
 
 			EQLTreeWalker walker = parseAndWalkPattern( text );
 
@@ -554,7 +583,7 @@ namespace net.esper.eql.parse
 			Assert.AreEqual( "g", filterNode.EventAsName );
 			Assert.AreEqual( 0, filterNode.ChildNodes.Count );
 			Assert.AreEqual( 2, filterNode.FilterSpec.Parameters.Count );
-			Assert.AreEqual( "IntPrimitive", filterNode.FilterSpec.Parameters[1].PropertyName );
+			Assert.AreEqual( "intPrimitive", filterNode.FilterSpec.Parameters[1].PropertyName );
 			Assert.AreEqual( FilterOperator.NOT_EQUAL, filterNode.FilterSpec.Parameters[1].FilterOperator );
 			Assert.AreEqual( 1, filterNode.FilterSpec.Parameters[1].getFilterValue( null ) );
 

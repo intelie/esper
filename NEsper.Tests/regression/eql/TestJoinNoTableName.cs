@@ -41,7 +41,7 @@ namespace net.esper.regression.eql
 
 				SupportBean _event = new SupportBean();
 				_event.StringValue = "IBM";
-				_event.LongBoxed = (long) i ;
+				_event.longBoxed = (long) i ;
 				setTwo[i] = _event;
 			}
 		}
