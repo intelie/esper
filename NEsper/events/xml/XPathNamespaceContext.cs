@@ -16,12 +16,12 @@ namespace net.esper.events.xml
         {
             XmlNameTable nsTable = new NameTable() ;
             XmlNamespaceManager nsManager = new XmlNamespaceManager( nsTable ) ;
-        	nsManager.AddNamespace(
-            	XMLConstants.XML_NS_PREFIX,
-            	XMLConstants.XML_NS_URI ) ;
             nsManager.AddNamespace(
-        		XMLConstants.XMLNS_ATTRIBUTE,
-        		XMLConstants.XMLNS_ATTRIBUTE_NS_URI ) ;
+                XMLConstants.XML_NS_PREFIX,
+                XMLConstants.XML_NS_URI ) ;
+            //nsManager.AddNamespace(
+            //    XMLConstants.XMLNS_ATTRIBUTE,
+            //    XMLConstants.XMLNS_ATTRIBUTE_NS_URI ) ;
 
             return nsManager ;
         }

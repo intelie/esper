@@ -57,5 +57,23 @@ namespace net.esper.compat
 		{
 			return new DateTime( MillisToTicks( millis ) );
 		}
+
+        /// <summary>
+        /// Returns the current time in millis
+        /// </summary>
+
+        public static long GetCurrentTimeMillis()
+        {
+            return TimeInMillis(DateTime.Now);
+        }
+        
+        /// <summary>
+        /// Returns the current time in millis
+        /// </summary>
+
+        public static long CurrentTimeMillis
+        {
+            get { return TimeInMillis(DateTime.Now); }
+        }
 	}
 }

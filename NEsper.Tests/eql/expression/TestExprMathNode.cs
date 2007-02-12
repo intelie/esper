@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace net.esper.eql.expression
 {
-
     [TestFixture]
     public class TestExprMathNode
     {

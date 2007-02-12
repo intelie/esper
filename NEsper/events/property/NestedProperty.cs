@@ -46,14 +46,92 @@ namespace net.esper.events.property
 		
 		public virtual EventPropertyGetter GetGetter(BeanEventType eventType)
 		{
-			IList<EventPropertyGetter> getters = new ELinkedList<EventPropertyGetter>();
+			IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
+
+            IEnumerator<Property> propertyEnum = properties.GetEnumerator() ;
+            if (propertyEnum.MoveNext())
+            {
+                bool hasNext = true;
+
+                do
+                {
+                    Property property = propertyEnum.Current;
+                    EventPropertyGetter getter = property.GetGetter(eventType);
+                    if (getter == null)
+                    {
+                        return null;
+                    }
+
+                    hasNext = propertyEnum.MoveNext();
+                    if ( hasNext )
+                    {
+                        Type type = property.GetPropertyType(eventType);
+                        if (type == null)
+                        {
+                            // if the property is not valid, return null
+                            return null;
+                        }
+
+                        // DataDictionary cannot be used to further nest as the type cannot be determined
+                        if (type == typeof(IDataDictionary))
+                        {
+                            return null;
+                        }
+
+                        if (type.IsArray)
+                        {
+                            return null;
+                        }
+                        eventType = (BeanEventType)beanEventAdapter.CreateOrGetBeanType(type);
+                    }
+
+                    getters.Add(getter);
+                } while (hasNext);
+            }
+
 			return new NestedPropertyGetter(getters, beanEventAdapter);
 		}
 		
 		public virtual Type GetPropertyType(BeanEventType eventType)
 		{
 			Type result = null;
-			return result;
+
+            IEnumerator<Property> propertyEnum = properties.GetEnumerator();
+            if (propertyEnum.MoveNext())
+            {
+                bool hasNext = true;
+
+                do
+                {
+                    Property property = propertyEnum.Current;
+                    result = property.GetPropertyType(eventType);
+
+                    if (result == null)
+                    {
+                        // property not found, return null
+                        return null;
+                    }
+
+                    hasNext = propertyEnum.MoveNext();
+                    if (hasNext)
+                    {
+                        // Map cannot be used to further nest as the type cannot be determined
+                        if (result == typeof(IDataDictionary))
+                        {
+                            return null;
+                        }
+
+                        if (result.IsArray)
+                        {
+                            return null;
+                        }
+
+                        eventType = beanEventAdapter.CreateOrGetBeanType(result);
+                    }
+                } while (hasNext);
+            }
+            
+            return result;
 		}
 	}
 }

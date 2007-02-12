@@ -74,8 +74,8 @@ namespace net.esper.regression.view
         public virtual void testNoParameters()
         {
             Int64 startTime = DateTime.Now.Ticks ;
-            statementText = "select System.currentTimeMillis() " + stream;
-            Int64 result = (Int64)createStatementAndGet("System.currentTimeMillis()");
+            statementText = "select net.esper.compat.DateTimeHelper.GetCurrentTimeMillis() " + stream;
+            Int64 result = (Int64)createStatementAndGet("net.esper.compat.DateTimeHelper.GetCurrentTimeMillis()");
             Int64 finishTime = DateTime.Now.Ticks;
             Assert.IsTrue(startTime <= result);
             Assert.IsTrue(result <= finishTime);
@@ -111,11 +111,11 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testTwoParameters()
         {
-            statementText = "select Math.max(2, 3) " + stream;
-            Assert.AreEqual(3, createStatementAndGetProperty(true, "Math.max(2, 3)")[0]);
+            statementText = "select Math.Max(2, 3) " + stream;
+            Assert.AreEqual(3, createStatementAndGetProperty(true, "Math.Max(2, 3)")[0]);
 
-            statementText = "select Math.max(2, 3d) " + stream;
-            Assert.AreEqual(3d, createStatementAndGetProperty(true, "Math.max(2, 3.0)")[0]);
+            statementText = "select Math.Max(2, 3d) " + stream;
+            Assert.AreEqual(3d, createStatementAndGetProperty(true, "Math.Max(2, 3.0)")[0]);
 
             statementText = "select Int64.Parse(\"123\", 10)" + stream;
             Object expected = 123L ;
@@ -145,7 +145,7 @@ namespace net.esper.regression.view
             result = createStatementAndGetProperty(true, "Convert.ToString(((price*volume)+volume))");
             Assert.AreEqual(Convert.ToString(44d), result[0]);
 
-            statementText = "select Convert.ToString(Math.pow(price, Int32.Parse(\"2\"))) " + stream;
+            statementText = "select Convert.ToString(Math.Pow(price, Int32.Parse(\"2\"))) " + stream;
             result = createStatementAndGetProperty(true, "Convert.ToString(Math.Pow(price, Int32.Parse(\"2\")))");
             Assert.AreEqual(Convert.ToString(100d), result[0]);
         }

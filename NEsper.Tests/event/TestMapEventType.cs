@@ -133,7 +133,7 @@ namespace net.esper.events
             {
                 eventBean = SupportEventBeanFactory.createObject(new Object());
                 Object temp = getter.GetValue(eventBean);
-                Assert.IsTrue(false);
+                Assert.Fail();
             }
             catch (PropertyAccessException ex)
             {
@@ -156,7 +156,7 @@ namespace net.esper.events
             mapTwo.Put("mySupportBean", typeof(SupportBean));
             mapTwo.Put("myNullableSupportBean", typeof(SupportBean));
             mapTwo.Put("myComplexBean", typeof(SupportBeanComplexProps));
-            Assert.IsFalse((new MapEventType(mapTwo, eventAdapterService)).Equals(eventType));
+            Assert.AreNotEqual(new MapEventType(mapTwo, eventAdapterService), eventType);
             mapTwo.Put("myString", typeof(String));
             mapTwo.Put("myNullableString", typeof(String));
 
@@ -164,16 +164,16 @@ namespace net.esper.events
             Assert.AreEqual(new MapEventType(mapTwo, eventAdapterService), eventType);
 
             mapTwo.Put("xx", typeof(int));
-            Assert.IsFalse(eventType.Equals(new MapEventType(mapTwo, eventAdapterService)));
+            Assert.AreNotEqual(eventType, new MapEventType(mapTwo, eventAdapterService));
             mapTwo.Remove("xx");
-            Assert.IsTrue(eventType.Equals(new MapEventType(mapTwo, eventAdapterService)));
+            Assert.AreEqual(eventType, new MapEventType(mapTwo, eventAdapterService));
 
-            mapTwo.Put("myInt", typeof(Int32));
-            Assert.IsFalse(eventType.Equals(new MapEventType(mapTwo, eventAdapterService)));
+            mapTwo.Put("myInt", typeof(int?));
+            Assert.AreNotEqual(eventType, new MapEventType(mapTwo, eventAdapterService));
             mapTwo.Remove("myInt");
-            Assert.IsFalse(eventType.Equals(new MapEventType(mapTwo, eventAdapterService)));
+            Assert.AreNotEqual(eventType, new MapEventType(mapTwo, eventAdapterService));
             mapTwo.Put("myInt", typeof(int));
-            Assert.IsTrue(eventType.Equals(new MapEventType(mapTwo, eventAdapterService)));
+            Assert.AreEqual(eventType,new MapEventType(mapTwo, eventAdapterService));
         }
 
         private static readonly Log log = LogFactory.GetLog(typeof(TestMapEventType));

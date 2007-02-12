@@ -60,7 +60,7 @@ namespace net.esper.events
         {
             EventType eventType = beanEventAdapter.CreateOrGetBeanType(typeof(SupportBeanComplexProps));
 
-            Assert.AreTrue(eventType.GetPropertyType("mapProperty") is IDataDictionary);
+            Assert.IsTrue(eventType.GetPropertyType("mapProperty") is IDataDictionary);
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("mapped('x')"));
             Assert.AreEqual(typeof(int), eventType.GetPropertyType("indexed[1]"));
             Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), eventType.GetPropertyType("nested"));

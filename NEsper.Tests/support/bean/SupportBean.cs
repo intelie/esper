@@ -251,8 +251,101 @@ namespace net.esper.support.bean
 		private double? m_doubleBoxed;
 
         private SupportEnum m_enumValue;
-		
-		public SupportBean()
+
+        virtual public string getString()
+        {
+            return m_stringValue;
+        }
+
+        #region "Primitive Accessors"
+
+        virtual public bool getBoolPrimitive()
+        {
+            return m_boolPrimitive;
+        }
+
+        virtual public int getIntPrimitive()
+        {
+            return m_intPrimitive;
+        }
+
+        virtual public long getLongPrimitive()
+        {
+            return m_longPrimitive;
+        }
+
+        virtual public char getCharPrimitive()
+        {
+            return m_charPrimitive;
+        }
+
+        virtual public short getShortPrimitive()
+        {
+            return m_shortPrimitive;
+        }
+
+        virtual public sbyte getBytePrimitive()
+        {
+            return m_bytePrimitive;
+        }
+
+        virtual public float getFloatPrimitive()
+        {
+            return m_floatPrimitive;
+        }
+
+        virtual public double getDoublePrimitive()
+        {
+            return m_doublePrimitive;
+        }
+
+        #endregion
+
+        #region "Boxed Accessors"
+
+        virtual public bool? getBoolBoxed()
+        {
+            return m_boolBoxed;
+        }
+
+        virtual public int? getIntBoxed()
+        {
+            return m_intBoxed;
+        }
+
+        virtual public long? getLongBoxed()
+        {
+            return m_longBoxed;
+        }
+
+        virtual public char? getCharBoxed()
+        {
+            return m_charBoxed;
+        }
+
+        virtual public short? getShortBoxed()
+        {
+            return m_shortBoxed;
+        }
+
+        virtual public sbyte? getByteBoxed()
+        {
+            return m_byteBoxed;
+        }
+
+        virtual public float? getFloatBoxed()
+        {
+            return m_floatBoxed;
+        }
+
+        virtual public double? getDoubleBoxed()
+        {
+            return m_doubleBoxed;
+        }
+
+        #endregion
+
+        public SupportBean()
 		{
 		}
 		

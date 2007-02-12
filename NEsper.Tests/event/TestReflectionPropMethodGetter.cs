@@ -30,7 +30,7 @@ namespace net.esper.events
         [Test]
         public virtual void testGetter()
         {
-            ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getintPrimitive");
+            ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getIntPrimitive");
             Assert.AreEqual(10, getter.GetValue(unitTestBean));
 
             getter = makeGetter(typeof(SupportBean), "getString");
@@ -55,7 +55,7 @@ namespace net.esper.events
         [Test]
         public virtual void testPerformance()
         {
-            ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getintPrimitive");
+            ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getIntPrimitive");
 
             log.Info(".testPerformance Starting test");
 
@@ -71,12 +71,7 @@ namespace net.esper.events
 
         private ReflectionPropMethodGetter makeGetter(Type clazz, String methodName)
         {
-            MethodInfo method = clazz.GetMethod(
-                methodName,
-                new Type[] { } == null ?
-                new Type[0] :
-                new Type[] { });
-
+            MethodInfo method = clazz.GetMethod( methodName, new Type[]{} ) ;
             ReflectionPropMethodGetter getter = new ReflectionPropMethodGetter(method);
 
             return getter;
