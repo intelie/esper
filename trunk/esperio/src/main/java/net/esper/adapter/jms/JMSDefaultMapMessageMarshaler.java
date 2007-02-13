@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Created for ESPER.
  */
-public class JMSDefaultMapMessageMarshaler
+public class JMSDefaultMapMessageMarshaler implements JMSMapMessageMarshaler
 {
 
   private final Log log = LogFactory.getLog(this.getClass());

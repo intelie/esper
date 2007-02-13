@@ -19,7 +19,7 @@ import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.Message;
 import javax.jms.Session;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Created for ESPER.
@@ -31,9 +31,6 @@ public class SpringJMSTemplateOutputAdapter
 
   private final AdapterStateManager stateManager = new AdapterStateManager();
   private EPServiceProviderSPI spi;
-  private EPRuntime runtime;
-  private EventAdapterService evAdaptSvc;
-  private FilterService filterService;
   private EventBean lastEvent;
   private int eventCount;
   private long startTime;
@@ -41,6 +38,8 @@ public class SpringJMSTemplateOutputAdapter
   private JmsTemplate jmsTemplate;
   private JMSDefaultMapMessageMarshaler jmsMarshaler;
   private String eventTypeAlias;
+  private SpringMessageCreator messageCreator;
+  private Set<String> subscriptionSet;
 
   private final Log log = LogFactory.getLog(this.getClass());
 
@@ -73,6 +72,16 @@ public class SpringJMSTemplateOutputAdapter
   public void setEventTypeAlias(String eventTypeAlias)
   {
     this.eventTypeAlias = eventTypeAlias;
+  }
+
+  public Set getSubscriptionSet()
+  {
+    return subscriptionSet;
+  }
+
+  public void setSubscriptionSet(Set subscriptionSet)
+  {
+    this.subscriptionSet = subscriptionSet;
   }
 
   public EventTypeListener getEventTypeListener()
@@ -108,20 +117,12 @@ public class SpringJMSTemplateOutputAdapter
       throw new IllegalArgumentException("Invalid type of EPServiceProvider");
     }
     spi = (EPServiceProviderSPI)epService;
-    evAdaptSvc = spi.getEventAdapterService();
-    runtime = spi.getEPRuntime();
-    filterService = spi.getFilterService();
-  }
-
-  public EPRuntime getRuntime()
-  {
-    return runtime;
   }
 
   public void start() throws EPException
   {
     log.debug(".start");
-    if (runtime == null)
+    if (spi.getEPRuntime() == null)
     {
       throw new EPException(
         "Attempting to start an Adapter that hasn't had the epService provided");
@@ -131,12 +132,13 @@ public class SpringJMSTemplateOutputAdapter
     stateManager.start();
     if (spi != null)
     {
-      EventType eventType = evAdaptSvc.getEventType(eventTypeAlias);
+      EventType eventType =
+        spi.getEventAdapterService().getEventType(eventTypeAlias);
       FilterValueSet fvs = new FilterSpec(
         eventType, new LinkedList<FilterSpecParam>()).getValueSet(null);
-      if (filterService != null)
+      if (spi.getFilterService() != null)
       {
-        filterService.add(fvs, this);
+        spi.getFilterService().add(fvs, this);
       }
     }
 
@@ -151,32 +153,26 @@ public class SpringJMSTemplateOutputAdapter
 
   public void registeredEventType(String eventTypeAlias, EventType eventType)
   {
-    if (filterService == null)
+    if (spi.getFilterService() == null)
     {
       return;
     }
     FilterValueSet fvs =
       new FilterSpec(eventType, new LinkedList<FilterSpecParam>()).getValueSet(
         null);
-    filterService.add(fvs, this);
+    spi.getFilterService().add(fvs, this);
   }
 
-  public void send(final EventBean eventBean_) throws EPException
+  public void send(final EventBean eventBean) throws EPException
   {
     if (jmsTemplate != null)
     {
-      jmsTemplate.send(
-        new MessageCreator()
-        {
-          public Message createMessage(Session session_)
-          {
-            Message msg =
-              jmsMarshaler.marshal(eventBean_, session_, getCurrentTime());
-            log.debug("Creating jms message from event." + msg.toString());
-            return msg;
-          }
-        }
-      );
+      if (messageCreator == null)
+      {
+        messageCreator = new SpringMessageCreator();
+      }
+      messageCreator.setMessageParameters(eventBean);
+      jmsTemplate.send(messageCreator);
     }
   }
 
@@ -220,4 +216,25 @@ public class SpringJMSTemplateOutputAdapter
     return System.currentTimeMillis();
   }
 
+  private class SpringMessageCreator implements MessageCreator
+  {
+    EventBean eventBean;
+
+    public void setMessageParameters(EventBean eventBean)
+    {
+      this.eventBean = eventBean;
+    }
+
+    public Message createMessage(Session session)
+    {
+      if (eventBean == null)
+      {
+        return null;
+      }
+      Message msg =
+        jmsMarshaler.marshal(eventBean, session, getCurrentTime());
+      log.debug("Creating jms message from event." + msg.toString());
+      return msg;
+    }
+  }
 }
