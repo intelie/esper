@@ -64,9 +64,9 @@ namespace net.esper.view
             return children;
         }
 
-        public virtual Boolean HasViews()
+        public virtual Boolean HasViews
         {
-            return (children.Count > 0);
+            get { return (children.Count > 0); }
         }
 
         /// <summary>
@@ -156,8 +156,8 @@ namespace net.esper.view
                 }
 
                 // Remove properties that would and could not be copied
-                properties.Remove("Views");
-                properties.Remove("Parent");
+                //properties.Remove("Views");
+                //properties.Remove("Parent");
 
                 copied = (View) Activator.CreateInstance( viewType ) ;
 
@@ -264,14 +264,18 @@ namespace net.esper.view
             {
                 if (view == descendentView)
                 {
-                	return new List<View>( stack ) ;
+                	List<View> viewList = new List<View>( stack ) ;
+                    viewList.Reverse();
+                    return viewList;
                 }
 
                 found = findDescendentRecusive(view, descendentView, stack);
 
                 if (found)
                 {
-                	return new List<View>( stack );
+                	List<View> viewList = new List<View>( stack );
+                    viewList.Reverse();
+                    return viewList;
                 }
             }
 
@@ -352,7 +356,11 @@ namespace net.esper.view
         /// metadata for the objects in the collection
         /// </returns>
 
-        abstract public EventType EventType { get; }
+        abstract public EventType EventType
+        {
+            get;
+            set; // Allows sub-classes to define this otherwise many things fail
+        }
 
         #endregion
 

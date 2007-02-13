@@ -25,7 +25,7 @@ namespace net.esper.view
         public Viewable CreateView(EventStream eventStream, IList<ViewSpec> viewSpecDefinitions, ViewServiceContext context)
         {
             // Clone the view spec list to prevent parameter modification
-            IList<ViewSpec> viewSpecList = new ELinkedList<ViewSpec>(viewSpecDefinitions);
+            IList<ViewSpec> viewSpecList = new List<ViewSpec>(viewSpecDefinitions);
 
             // Inspect views and add merge views if required
             ViewServiceHelper.AddMergeViews(viewSpecList);
@@ -89,7 +89,7 @@ namespace net.esper.view
         public void Remove(EventStream eventStream, Viewable viewToRemove)
         {
             // If the viewToRemove to remove has child viewToRemove, don't disconnect - the child viewToRemove(s) need this viewToRemove
-            if (viewToRemove.HasViews())
+            if (viewToRemove.HasViews)
             {
                 return;
             }

@@ -95,7 +95,7 @@ namespace net.esper.eql.db
         {
             pollExecStrategy.Start();
 
-            IList<EventBean>[] resultPerInputRow = new ELinkedList<EventBean>[lookupEventsPerStream.Length];
+            IList<EventBean>[] resultPerInputRow = new List<EventBean>[lookupEventsPerStream.Length];
 
             // Get input parameters for each row
             for (int row = 0; row < lookupEventsPerStream.Length; row++)
@@ -155,9 +155,9 @@ namespace net.esper.eql.db
             throw new NotSupportedException("Subviews not supported");
         }
 
-        public virtual bool HasViews()
+        public virtual bool HasViews
         {
-            return false;
+            get { return false; }
         }
 
         public virtual EventType EventType

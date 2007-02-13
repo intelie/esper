@@ -23,7 +23,7 @@ namespace net.esper.eql.expression
 		public ExprNodeIdentifierVisitor( bool visitAggregateNodes )
 		{
 			this.isVisitAggregateNodes = visitAggregateNodes;
-			this.exprProperties = new ELinkedList<Pair<Int32, String>>();
+            this.exprProperties = new List<Pair<Int32, String>>();
 		}
 
 		public virtual bool isVisit( ExprNode exprNode )

@@ -185,6 +185,7 @@ namespace net.esper.view.ext
                 // The schema is the parent view's schema
                 return parent.EventType;
             }
+            set { }
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -251,7 +252,7 @@ namespace net.esper.view.ext
             }
 
             // If there are child views, fire update method
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 EventBean[] expiredArr = null;
                 if (removedEvents.Count > 0)

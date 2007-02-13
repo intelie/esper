@@ -38,6 +38,7 @@ namespace net.esper.view.stat
                 }
                 return eventType;
             }
+            set { }
 		}
 		
 		public override String ToString()

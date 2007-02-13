@@ -84,7 +84,7 @@ namespace net.esper.core
             // Give the timer thread a little moment to Start up
             try
             {
-                Thread.Sleep(new TimeSpan((long)10000 * 100));
+                Thread.Sleep( 100 ) ;
             }
             catch (ThreadInterruptedException)
             {
@@ -101,20 +101,48 @@ namespace net.esper.core
             foreach (string property in properties.Keys)
             {
             	String typeName = properties[property];
-                if ( String.Equals( typeName, "string", StringComparison.InvariantCultureIgnoreCase ) )
-                {
-                    typeName = typeof(String).Name;
-                }
+                Type type = null;
 
-                Type type = null ;
-
-                try
+                switch (typeName.ToLowerInvariant())
                 {
-                    type = TypeHelper.ResolveType(typeName);
-                }
-                catch (Exception ex)
-                {
-                    throw new EventAdapterException("Unable to load type '" + typeName + "'", ex);
+                    case "string":
+                        type = typeof(string);
+                        break;
+                    case "char":
+                        type = typeof(char);
+                        break;
+                    case "bool":
+                    case "boolean":
+                        type = typeof(bool);
+                        break;
+                    case "sbyte":
+                        type = typeof(sbyte);
+                        break;
+                    case "short":
+                        type = typeof(short);
+                        break;
+                    case "int":   
+                        type = typeof(int);
+                        break;
+                    case "long":
+                        type = typeof(long);
+                        break;
+                    case "double":
+                        type = typeof(double);
+                        break;
+                    case "float":
+                        type = typeof(float);
+                        break;
+                    default:
+                        try
+                        {
+                            type = TypeHelper.ResolveType(typeName);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new EventAdapterException("Unable to load type '" + typeName + "'", ex);
+                        }
+                        break;
                 }
 
                 propertyTypes[property] = type;
@@ -137,7 +165,7 @@ namespace net.esper.core
                 String aliasName = entry.Key;
                 String className = entry.Value;
                 ConfigurationEventTypeLegacy legacyDef = configSnapshot.LegacyAliases.Fetch(aliasName);
-                if ( legacyDef == null )
+                if ( legacyDef != null )
                 {
                     classLegacyInfo[className] = legacyDef;
                 }

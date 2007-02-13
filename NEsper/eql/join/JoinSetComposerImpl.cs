@@ -92,7 +92,7 @@ namespace net.esper.eql.join
                 {
                     for (int j = 0; j < repositories[i].Length; j++)
                     {
-                        repositories[i][j].Add((newDataPerStream[i]));
+                        repositories[i][j].Add(newDataPerStream[i]);
                     }
                 }
             }

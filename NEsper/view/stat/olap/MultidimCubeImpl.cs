@@ -84,23 +84,31 @@ namespace net.esper.view.stat.olap
 
 			for ( int i = 0 ; i < numDimensions ; i++ )
 			{
-				this.dimensionMembers[i] = new ELinkedList<Object>() ;
+				this.dimensionMembers[i] = new List<Object>() ;
 			}
 		}
 
 		public void SetMembers( int dimension, Type enumType )
 		{
-			Array enumConstants = Enum.GetValues( enumType ) ;
-			if ( enumConstants != null )
-			{
-				SetMembers( dimension, enumConstants ) ;
-			}
+            if (enumType.IsEnum)
+            {
+                Array enumConstants = Enum.GetValues(enumType);
+                if (enumConstants != null)
+                {
+                    SetMembers(dimension, enumConstants);
+                }
+            }
 		}
 
         public void SetMembers(int dimension, Array members)
         {
-            IList<Object> arrayMembers = (IList<Object>)members;
-            SetMembers(dimension, arrayMembers);
+            List<Object> tempList = new List<Object>();
+            foreach (Object temp in members)
+            {
+                tempList.Add(temp);
+            }
+
+            SetMembers(dimension, tempList);
         }
 
 		public void SetMembers( int dimension, IList<Object> members )
@@ -306,13 +314,22 @@ namespace net.esper.view.stat.olap
 				}
 			}
 
-			// Change references to old ordinals
-			foreach ( KeyValuePair<MultiKeyUntyped, Int32> entry in ordinals )
-			{
-				int oldOrdinal = entry.Value;
-				int newOrdinal = newOrdinals[oldOrdinal];
-				ordinals.Add( entry.Key, newOrdinal );
-			}
+            if (ordinals.Count != 0)
+            {
+                List<KeyValuePair<MultiKeyUntyped, Int32>> tempList = new List<KeyValuePair<MultiKeyUntyped, int>>();
+                // Change references to old ordinals
+                foreach (KeyValuePair<MultiKeyUntyped, Int32> entry in ordinals)
+                {
+                    tempList.Add(entry);
+                }
+
+                foreach (KeyValuePair<MultiKeyUntyped, Int32> entry in tempList)
+                {
+                    int oldOrdinal = entry.Value;
+                    int newOrdinal = newOrdinals[oldOrdinal];
+                    ordinals[entry.Key] = newOrdinal;
+                }
+            }
 
 			this.cells = newFacts;
 		}

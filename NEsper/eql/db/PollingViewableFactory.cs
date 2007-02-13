@@ -114,7 +114,7 @@ namespace net.esper.eql.db
 
             #region "Determine input parameters"
             // Interrogate prepared statement - parameters and result
-            IList<String> inputParameters = new ELinkedList<String>();
+            IList<String> inputParameters = new List<String>();
             try
             {
             	IDataParameterCollection parameterMetaData = prepared.Parameters;

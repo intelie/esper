@@ -8,12 +8,12 @@ using org.apache.commons.logging;
 
 namespace net.esper.support.view
 {
-
     public abstract class SupportBaseView : ViewSupport
     {
         public override EventType EventType
         {
             get { return eventType; }
+            set { eventType = value; }
         }
 
         virtual public EventBean[] LastNewData
@@ -57,11 +57,6 @@ namespace net.esper.support.view
 			isInvoked = false;
 			return invoked;
 		}
-
-		public void SetEventType( EventType value )
-        {
-            this.eventType = value;
-        }
 
         public override String AttachesTo(Viewable _object)
         {

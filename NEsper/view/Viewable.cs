@@ -36,7 +36,7 @@ namespace net.esper.view
         /// <summary> Test is there are any views to the Viewable.</summary>
         /// <returns> true indicating there are child views, false indicating there are no child views
         /// </returns>
-        
-        bool HasViews();
+
+        bool HasViews { get; }
     }
 }

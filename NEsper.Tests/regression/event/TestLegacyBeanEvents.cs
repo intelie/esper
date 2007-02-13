@@ -12,13 +12,13 @@ using NUnit.Framework;
 
 namespace net.esper.regression.events
 {
-	[TestFixture]
-    public class TestLegacyBeanEvents 
+    [TestFixture]
+    public class TestLegacyBeanEvents
     {
         private SupportLegacyBean legacyBean;
         private EPServiceProvider epService;
 
-	[SetUp]
+        [SetUp]
         public virtual void setUp()
         {
             EDictionary<String, String> mappedProperty = new EHashDictionary<String, String>();
@@ -99,7 +99,29 @@ namespace net.esper.regression.events
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test1" + codeGeneration, config);
             epService.Initialize();
 
-            String statementText = "select " + "fieldLegacyVal as fieldSimple," + "fieldStringArray as fieldArr," + "fieldStringArray[1] as fieldArrIndexed," + "fieldMapped as fieldMap," + "fieldNested as fieldNested," + "fieldNested.readNestedValue as fieldNestedVal," + "readLegacyBeanVal as simple," + "readLegacyNested as nestedObject," + "readLegacyNested.readNestedValue as nested," + "readStringArray[0] as array," + "readStringIndexed[1] as indexed," + "readMapByKey('key1') as mapped," + "readMap as mapItself," + "explicitFSimple, " + "explicitFIndexed[0], " + "explicitFNested, " + "explicitMSimple, " + "explicitMArray[0], " + "explicitMIndexed[1], " + "explicitMMapped('key2')" + " from MyLegacyEvent.win:length(5)";
+            String statementText =
+                "select " + 
+                "fieldLegacyVal as fieldSimple," + 
+                "fieldStringArray as fieldArr," + 
+                "fieldStringArray[1] as fieldArrIndexed," + 
+                "fieldMapped as fieldMap," + 
+                "fieldNested as fieldNested," + 
+                "fieldNested.readNestedValue as fieldNestedVal," + 
+                "readLegacyBeanVal as simple," + 
+                "readLegacyNested as nestedObject," + 
+                "readLegacyNested.readNestedValue as nested," +
+                "readStringArray[0] as array," +
+                "readStringIndexed[1] as indexed," + 
+                "readMapByKey('key1') as mapped," +
+                "readMap as mapItself," +
+                "explicitFSimple, " + 
+                "explicitFIndexed[0], " + 
+                "explicitFNested, " +
+                "explicitMSimple, " + 
+                "explicitMArray[0], " +
+                "explicitMIndexed[1], " +
+                "explicitMMapped('key2')" +
+                " from MyLegacyEvent.win:length(5)";
 
             EPStatement statement = epService.EPAdministrator.createEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
@@ -109,7 +131,7 @@ namespace net.esper.regression.events
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("fieldSimple"));
             Assert.AreEqual(typeof(String[]), eventType.GetPropertyType("fieldArr"));
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("fieldArrIndexed"));
-            Assert.AreEqual(typeof(System.Collections.IDictionary), eventType.GetPropertyType("fieldMap"));
+            Assert.AreEqual(typeof(IDictionary<String, String>), eventType.GetPropertyType("fieldMap"));
             Assert.AreEqual(typeof(SupportLegacyBean.LegacyNested), eventType.GetPropertyType("fieldNested"));
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("fieldNestedVal"));
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("simple"));
@@ -178,7 +200,11 @@ namespace net.esper.regression.events
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test2" + codeGeneration, config);
             epService.Initialize();
 
-            String statementText = "select " + "explicitFNested.fieldNestedClassValue as fnested, " + "explicitMNested.readNestedClassValue as mnested" + " from MyLegacyEvent.win:length(5)";
+            String statementText =
+                "select " +
+                "explicitFNested.fieldNestedClassValue as fnested, " +
+                "explicitMNested.readNestedClassValue as mnested" + 
+                " from MyLegacyEvent.win:length(5)";
 
             EPStatement statement = epService.EPAdministrator.createEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
@@ -210,11 +236,11 @@ namespace net.esper.regression.events
             Configuration config = new Configuration();
 
             ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
-			legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.NATIVE;
+            legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.NATIVE;
             legacyDef.CodeGeneration = codeGeneration;
-            legacyDef.addFieldProperty("explicitFInt", "fieldintPrimitive");
-            legacyDef.addMethodProperty("explicitMGetInt", "getintPrimitive");
-            legacyDef.addMethodProperty("explicitMReadInt", "readintPrimitive");
+            legacyDef.addFieldProperty("explicitFInt", "fieldIntPrimitive");
+            legacyDef.addMethodProperty("explicitMGetInt", "getIntPrimitive");
+            legacyDef.addMethodProperty("explicitMReadInt", "readIntPrimitive");
             config.addEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBeanInt).FullName, legacyDef);
 
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test3" + codeGeneration, config);

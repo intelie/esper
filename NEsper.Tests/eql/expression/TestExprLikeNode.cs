@@ -65,7 +65,7 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testEvaluate()
         {
-            // Build :      s0.string like "%abc__"  (with or witout escape)
+            // Build :      s0.str like "%abc__"  (with or witout escape)
             Assert.IsFalse((bool)likeNodeNormal.Evaluate(MakeEvent("abcx")));
             Assert.IsTrue((bool)likeNodeNormal.Evaluate(MakeEvent("dskfsljkdfabcxx")));
             Assert.IsTrue((bool)likeNodeNot.Evaluate(MakeEvent("abcx")));

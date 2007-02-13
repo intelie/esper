@@ -52,7 +52,7 @@ namespace net.esper.eql.spec
 		{
 			this.isStream = isStream;
 			this.eventTypeAlias = eventTypeAlias;
-			this.columnNames = new ELinkedList < String >();
+			this.columnNames = new List < String >();
 		}
 		
 		/// <summary> Add a column name to the insert-into clause.</summary>

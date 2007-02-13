@@ -33,7 +33,7 @@ namespace net.esper.eql.join.assemble
 		{
 			get
 			{
-				IList<Int32> substreams = new ELinkedList<Int32>();
+				IList<Int32> substreams = new List<Int32>();
 				recusiveAddSubstreams( substreams );
 
 				// copy to array
@@ -151,7 +151,7 @@ namespace net.esper.eql.join.assemble
 		/// </returns>
 		public static IList<BaseAssemblyNode> GetDescendentNodesBottomUp( BaseAssemblyNode topNode )
 		{
-			IList<BaseAssemblyNode> result = new ELinkedList<BaseAssemblyNode>();
+			IList<BaseAssemblyNode> result = new List<BaseAssemblyNode>();
 
 			// Map to hold per level of the node (1 to N depth) of node a list of nodes, if any
 			// exist at that level
@@ -197,7 +197,7 @@ namespace net.esper.eql.join.assemble
 			IList<BaseAssemblyNode> aggregates = nodesPerLevel.Fetch( currentLevel, null ) ;
 			if ( aggregates == null )
 			{
-				aggregates = new ELinkedList<BaseAssemblyNode>();
+				aggregates = new List<BaseAssemblyNode>();
 				nodesPerLevel[currentLevel] = aggregates ;
 			}
 			aggregates.Add( currentNode );

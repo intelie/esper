@@ -56,7 +56,7 @@ namespace net.esper.view
 
             Assert.AreEqual(2, child1_1_1.GetViews().Count);
             Assert.AreEqual(2, child2_1_1.GetViews().Count);
-            Assert.IsTrue(child2_1_1.GetViews()[0] != child2_1_1.GetViews()[0]);
+            Assert.IsTrue(child2_1_1.GetViews()[0] != child2_1_1.GetViews()[1]);
 
             // Create one more view chain
             View child3_1 = streamOne.GetViews()[0];

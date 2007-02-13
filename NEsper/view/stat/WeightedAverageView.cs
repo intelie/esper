@@ -8,10 +8,11 @@ using net.esper.view;
 
 namespace net.esper.view.stat
 {
-    /// <summary> View for computing a weighted average. The view uses 2 fields within the parent view to compute the weighted average.
-    /// The X field and weight field. In a price-volume example it calculates the volume-weighted average price
-    /// as   (sum(price * volume) / sum(volume)).
-    /// Example: weighted_avg("price", "volume")
+    /// <summary>
+    /// View for computing a weighted average. The view uses 2 fields within the parent view to compute
+    /// the weighted average. The X field and weight field. In a price-volume example it calculates the
+    /// volume-weighted average price as (sum(price * volume) / sum(volume)).
+    ///     Example: weighted_avg("price", "volume")
     /// </summary>
     public sealed class WeightedAverageView : ViewSupport, ContextAwareView
     {
@@ -155,7 +156,7 @@ namespace net.esper.view.stat
             }
 
             // If there are child view, fire update method
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 EDataDictionary newDataMap = new EDataDictionary();
                 newDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = currentValue;
@@ -172,6 +173,7 @@ namespace net.esper.view.stat
         public override EventType EventType
         {
             get { return eventType; }
+            set { }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
@@ -183,7 +185,9 @@ namespace net.esper.view.stat
 
         public override String ToString()
         {
-            return this.GetType().FullName + " fieldName=" + fieldNameX + " fieldNameWeight=" + fieldNameWeight;
+            return this.GetType().FullName + 
+                " fieldName=" + fieldNameX +
+                " fieldNameWeight=" + fieldNameWeight;
         }
     }
 }

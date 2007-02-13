@@ -103,7 +103,7 @@ namespace net.esper.view.stat
         {
             // If we have child views, keep a reference to the old values, so we can fire them as old data event.
             EventBean oldDataMap = null;
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 oldDataMap = populateMap(baseStatisticsBean, viewServiceContext.EventAdapterService, eventType);
             }
@@ -129,7 +129,7 @@ namespace net.esper.view.stat
             }
 
             // If there are child view, fire update method
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 EventBean newDataMap = populateMap(baseStatisticsBean, viewServiceContext.EventAdapterService, eventType);
                 updateChildren(new EventBean[] { newDataMap }, new EventBean[] { oldDataMap });
@@ -139,6 +139,7 @@ namespace net.esper.view.stat
         public override EventType EventType
         {
             get { return eventType; }
+            set { }
         }
 
         /// <summary>

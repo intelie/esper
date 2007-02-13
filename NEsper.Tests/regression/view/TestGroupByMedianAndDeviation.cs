@@ -44,7 +44,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testSumJoin()
         {
-            String viewExpr = "select symbol," + "median(price) as myMedian," + "median(distinct price) as myDistMedian," + "stddev(price) as myStdev," + "avedev(price) as myAvedev " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.string = two.symbol " + "group by symbol";
+            String viewExpr = "select symbol," + "median(price) as myMedian," + "median(distinct price) as myDistMedian," + "stddev(price) as myStdev," + "avedev(price) as myAvedev " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.str = two.symbol " + "group by symbol";
 
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);

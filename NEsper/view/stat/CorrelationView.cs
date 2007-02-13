@@ -1,8 +1,8 @@
 using System;
 using EventType = net.esper.events.EventType;
+
 namespace net.esper.view.stat
-{
-	
+{	
 	/// <summary> A view that calculates correlation on two fields. The view uses internally a {@link CorrelationBean}
 	/// instance for the calculations, it also returns this bean as the result.
 	/// This class accepts most of its behaviour from its parent, {@link net.esper.view.stat.BaseBivariateStatisticsView}. It adds
@@ -37,6 +37,7 @@ namespace net.esper.view.stat
                 }
                 return eventType;
             }
+            set { }
 		}
 		
 		public override String ToString()

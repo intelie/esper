@@ -70,7 +70,7 @@ namespace net.esper.pattern
             }
 
             this.everyChildNode = everyChildNode;
-            this.spawnedNodes = new ELinkedList<EvalStateNode>();
+            this.spawnedNodes = new List<EvalStateNode>();
             this.beginState = beginState.shallowCopy();
             this.context = context;
 

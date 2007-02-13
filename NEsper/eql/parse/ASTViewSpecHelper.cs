@@ -23,7 +23,7 @@ namespace net.esper.eql.parse
             String objectNamespace = node.getFirstChild().getText();
             String objectName = node.getFirstChild().getNextSibling().getText();
 
-            IList<Object> objectParams = new ELinkedList<Object>();
+            IList<Object> objectParams = new List<Object>();
 
             AST child = node.getFirstChild().getNextSibling().getNextSibling();
             while (child != null)

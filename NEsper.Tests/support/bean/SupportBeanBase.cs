@@ -7,27 +7,25 @@ namespace net.esper.support.bean
 	{
 		virtual public String Id
 		{
-			get
-			{
-				return id;
-			}
-			
-			set
-			{
-				this.id = value;
-			}
-			
+            get { return _id; }
+            set { this._id = value; }
 		}
-		private String id;
+
+        virtual public String id
+        {
+            get { return _id; }
+        }
+
+		private String _id;
 		
 		public SupportBeanBase(String id)
 		{
-			this.id = id;
+            this._id = id;
 		}
 		
 		public override String ToString()
 		{
-			return "id=" + id;
+            return "id=" + _id;
 		}
 	}
 }

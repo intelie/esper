@@ -25,9 +25,9 @@ namespace net.esper.regression.events
         public virtual void setUp()
         {
             properties = new EHashDictionary<string,string>();
-            properties[(String)"myInt"] = (String)"int";
-            properties[(String)"myString"] = (String)"str";
-            properties[(String)"beanA"] = (String)typeof(SupportBeanComplexProps).FullName;
+            properties[(String)"myInt"] = "int";
+            properties[(String)"myString"] = "String";
+            properties[(String)"beanA"] = typeof(SupportBeanComplexProps).FullName;
 
             map = new EDataDictionary() ;
             map.Put("myInt", 3);
@@ -89,7 +89,7 @@ namespace net.esper.regression.events
             properties["double"] = "double";
             properties["boolean"] = "boolean";
             properties["long"] = "long";
-            properties["astring"] = "str";
+            properties["astring"] = "string";
 
             Configuration configuration = new Configuration();
             configuration.addEventTypeAlias("MyPrimMapEvent", properties);
@@ -155,7 +155,7 @@ namespace net.esper.regression.events
             Assert.AreEqual(4, listener.LastNewData[0]["myInt"]);
             Assert.AreEqual("string2", listener.LastNewData[0]["myString"]);
 
-            // send IDictionary<String, String> event, works too since not querying the fields
+            // send EDataDictionary event, works too since not querying the fields
             EDataDictionary mapStrings = new EDataDictionary();
             mapStrings.Put("myInt", "5");
             mapStrings.Put("myString", "string3");

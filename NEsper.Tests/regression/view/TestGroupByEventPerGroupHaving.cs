@@ -34,7 +34,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testSumJoin()
 		{
-			String viewExpr = "select symbol, sum(price) as mySum " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + " " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE')" + "       and one.string = two.symbol " + "group by symbol " + "having sum(price) >= 100";
+			String viewExpr = "select symbol, sum(price) as mySum " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + " " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE')" + "       and one.str = two.symbol " + "group by symbol " + "having sum(price) >= 100";
 			
 			selectTestView = epService.EPAdministrator.createEQL(viewExpr);
 			selectTestView.AddListener(testListener);

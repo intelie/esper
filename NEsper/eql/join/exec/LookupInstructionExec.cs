@@ -57,8 +57,8 @@ namespace net.esper.eql.join.exec
             resultPerStream = new ISet<EventBean>[numSubStreams];
 
             // Build a separate array for the required and for the optional streams
-            IList<Int32> required = new ELinkedList<Int32>();
-            IList<Int32> optional = new ELinkedList<Int32>();
+            IList<Int32> required = new List<Int32>();
+            IList<Int32> optional = new List<Int32>();
             foreach (int stream in toStreams)
             {
                 if (requiredPerStream[stream])

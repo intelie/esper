@@ -12,7 +12,7 @@ namespace net.esper.type
         [Test]
         public virtual void testAddDouble()
         {
-            MathArithTypeEnum.Computer computer = MathArithTypeEnum.ADD.getComputer(typeof(Double));
+            MathArithTypeEnum.Computer computer = MathArithTypeEnum.ADD.getComputer(typeof(double?));
             Assert.AreEqual(12.1d, computer(5.5, 6.6));
         }
 
@@ -41,7 +41,7 @@ namespace net.esper.type
                 foreach (MathArithTypeEnum type in MathArithTypeEnum.Values)
                 {
                     MathArithTypeEnum.Computer computer = type.getComputer(testType);
-                    ValueType result = computer(3, 4);
+                    Object result = computer(3, 4);
                     Assert.AreEqual(testType, result.GetType());
 
                     if (type == MathArithTypeEnum.ADD)

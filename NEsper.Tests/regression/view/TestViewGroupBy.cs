@@ -11,9 +11,8 @@ using NUnit.Framework;
 
 namespace net.esper.regression.view
 {
-
-	[TestFixture]
-    public class TestViewGroupBy 
+    [TestFixture]
+    public class TestViewGroupBy
     {
         private static String SYMBOL_CISCO = "CSCO.O";
         private static String SYMBOL_IBM = "IBM.N";

@@ -45,7 +45,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCountJoin()
 		{
-			String viewExpr = "select symbol, " + "count(*) as countAll," + "count(distinct volume) as countDistVol," + "count(volume) as countVol " + " from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "  and one.string = two.symbol " + "group by symbol";
+			String viewExpr = "select symbol, " + "count(*) as countAll," + "count(distinct volume) as countDistVol," + "count(volume) as countVol " + " from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "  and one.str = two.symbol " + "group by symbol";
 			
 			selectTestView = epService.EPAdministrator.createEQL(viewExpr);
 			selectTestView.AddListener(testListener);

@@ -46,7 +46,7 @@ namespace net.esper.view.window
         /// Gets or sets the reference point to use to anchor interval Start and end dates to.
         /// </summary>
 
-        public long InitialReferencePoint
+        public long? InitialReferencePoint
         {
             get { return initialReferencePoint; }
             set { this.initialReferencePoint = value; }
@@ -66,7 +66,7 @@ namespace net.esper.view.window
 
         // View parameters
         private long msecIntervalSize;
-        private long initialReferencePoint;
+        private long? initialReferencePoint;
 
         // Current running parameters
         private long? currentReferencePoint;
@@ -102,7 +102,7 @@ namespace net.esper.view.window
         public TimeBatchView(int secIntervalSize, long? referencePoint)
             : this(secIntervalSize)
         {
-            this.initialReferencePoint = referencePoint.GetValueOrDefault(0);
+            this.initialReferencePoint = referencePoint;
         }
 
         /// <summary> Constructor.</summary>
@@ -137,7 +137,7 @@ namespace net.esper.view.window
         public TimeBatchView(double secIntervalSize, long? referencePoint)
             : this(secIntervalSize)
         {
-            this.initialReferencePoint = referencePoint.GetValueOrDefault(0);
+            this.initialReferencePoint = referencePoint;
         }
 
         /// <summary> Constructor.</summary>
@@ -160,6 +160,7 @@ namespace net.esper.view.window
         public override EventType EventType
         {
             get { return parent.EventType; }
+            set { }
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -228,7 +229,7 @@ namespace net.esper.view.window
             }
 
             // If there are child views and the batch was filled, fire update method
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 // Convert to object arrays
                 EventBean[] newData = null;
@@ -277,7 +278,10 @@ namespace net.esper.view.window
 
         public override String ToString()
         {
-            return this.GetType().FullName + " msecIntervalSize=" + msecIntervalSize + " initialReferencePoint=" + initialReferencePoint;
+            return
+                this.GetType().FullName +
+                " msecIntervalSize=" + msecIntervalSize +
+                " initialReferencePoint=" + initialReferencePoint;
         }
 
         private void ScheduleCallback()
@@ -287,7 +291,12 @@ namespace net.esper.view.window
 
             if (log.IsDebugEnabled)
             {
-                log.Debug(".scheduleCallback Scheduled new callback for " + " afterMsec=" + afterMSec + " now=" + current + " currentReferencePoint=" + currentReferencePoint + " initialReferencePoint=" + initialReferencePoint + " msecIntervalSize=" + msecIntervalSize);
+                log.Debug(".scheduleCallback Scheduled new callback for " + 
+                    " afterMsec=" + afterMSec +
+                    " now=" + current + 
+                    " currentReferencePoint=" + currentReferencePoint +
+                    " initialReferencePoint=" + initialReferencePoint + 
+                    " msecIntervalSize=" + msecIntervalSize);
             }
 
             ScheduleCallback callback = new ScheduleCallbackImpl(SendBatch);

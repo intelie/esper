@@ -67,7 +67,7 @@ namespace net.esper.core
             String[] streamNames = determineStreamNames(statementSpec.StreamSpecs);
             EventType[] streamTypes = new EventType[statementSpec.StreamSpecs.Count];
             Viewable[] streamViews = new Viewable[streamTypes.Length];
-            IList<StopCallback> stopCallbacks = new ELinkedList<StopCallback>();
+            IList<StopCallback> stopCallbacks = new List<StopCallback>();
 
             // Create streams and views
             for (int i = 0; i < statementSpec.StreamSpecs.Count; i++)
@@ -272,7 +272,7 @@ namespace net.esper.core
                     statementSpec.FilterExprRootNode = optionalFilterNode;
 
                     // Make sure there is no aggregation in the where clause
-                    IList<ExprAggregateNode> aggregateNodes = new ELinkedList<ExprAggregateNode>();
+                    IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
                     ExprAggregateNode.getAggregatesBottomUp(optionalFilterNode, aggregateNodes);
                     if (aggregateNodes.Count > 0)
                     {

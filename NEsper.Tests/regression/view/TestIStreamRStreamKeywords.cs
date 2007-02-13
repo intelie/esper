@@ -48,7 +48,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testRStreamInsertInto()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("insert into NextStream " + "select rstream s0.string as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0");
+			EPStatement statement = epService.EPAdministrator.createEQL("insert into NextStream " + "select rstream s0.str as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0");
 			statement.AddListener(testListener);
 			
 			statement = epService.EPAdministrator.createEQL("select * from NextStream");
@@ -74,7 +74,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testRStreamInsertIntoRStream()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("insert rstream into NextStream " + "select rstream s0.string as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0");
+			EPStatement statement = epService.EPAdministrator.createEQL("insert rstream into NextStream " + "select rstream s0.str as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0");
 			statement.AddListener(testListener);
 			
 			statement = epService.EPAdministrator.createEQL("select * from NextStream");
@@ -134,7 +134,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testIStreamInsertIntoRStream()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("insert rstream into NextStream " + "select istream a.string as string from " + typeof(SupportBean).FullName + ".win:length(1) as a");
+			EPStatement statement = epService.EPAdministrator.createEQL("insert rstream into NextStream " + "select istream a.str as string from " + typeof(SupportBean).FullName + ".win:length(1) as a");
 			statement.AddListener(testListener);
 			
 			statement = epService.EPAdministrator.createEQL("select * from NextStream");

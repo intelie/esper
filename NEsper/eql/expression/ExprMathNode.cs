@@ -75,7 +75,7 @@ namespace net.esper.eql.expression
             }
 
             // arithTypeEnumComputer is initialized by validation
-            Object result = arithTypeEnumComputer((ValueType) valueChildOne, (ValueType) valueChildTwo);
+            Object result = arithTypeEnumComputer(valueChildOne, valueChildTwo);
             return result;
         }
 

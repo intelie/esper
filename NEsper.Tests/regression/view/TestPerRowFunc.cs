@@ -32,7 +32,11 @@ namespace net.esper.regression.view
         public virtual void testCoalesceBeans()
         {
             epService.Initialize();
-            String viewExpr = "select coalesce(a.string, b.string) as myString, coalesce(a, b) as myBean" + " from pattern [every (a=" + typeof(SupportBean).FullName + "(string='s0') or b=" + typeof(SupportBean).FullName + "(string='s1'))]";
+            String viewExpr =
+		 "select coalesce(a.str, b.str) as myString, coalesce(a, b) as myBean" +
+		 " from pattern [every (a=" + typeof(SupportBean).FullName +
+		 "(string='s0') or b=" + typeof(SupportBean).FullName +
+		 "(string='s1'))]";
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);
 
@@ -51,7 +55,7 @@ namespace net.esper.regression.view
         public virtual void testCoalesceLong()
         {
             setupCoalesce("coalesce(longBoxed, intBoxed, shortBoxed)");
-            Assert.AreEqual(typeof(Int64), selectTestView.EventType.GetPropertyType("result"));
+            Assert.AreEqual(typeof(long?), selectTestView.EventType.GetPropertyType("result"));
 
             SendEvent(1L, 2, (short)3);
             Assert.AreEqual(1L, testListener.assertOneGetNewAndReset()["result"]);
@@ -70,7 +74,7 @@ namespace net.esper.regression.view
         public virtual void testCoalesceDouble()
         {
             setupCoalesce("coalesce(null, byteBoxed, shortBoxed, intBoxed, longBoxed, floatBoxed, doubleBoxed)");
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("result"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("result"));
 
             sendEventWithDouble(null, null, null, null, null, null);
             Assert.AreEqual(null, testListener.assertOneGetNewAndReset()["result"]);
@@ -142,10 +146,10 @@ namespace net.esper.regression.view
             setUpMinMax();
             EventType type = selectTestView.EventType;
             log.Debug(".testGetEventType properties=" + CollectionHelper.Render(type.PropertyNames));
-            Assert.AreEqual(typeof(Int64), type.GetPropertyType("myMax"));
-            Assert.AreEqual(typeof(Int64), type.GetPropertyType("myMin"));
-            Assert.AreEqual(typeof(Int64), type.GetPropertyType("myMinEx"));
-            Assert.AreEqual(typeof(Int64), type.GetPropertyType("myMaxEx"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMax"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMin"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMinEx"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMaxEx"));
         }
 
         [Test]

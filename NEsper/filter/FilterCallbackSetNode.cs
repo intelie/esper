@@ -31,7 +31,7 @@ namespace net.esper.filter
         public FilterCallbackSetNode()
         {
             callbackSet = new LinkedHashSet<FilterCallback>();
-            indizes = new ELinkedList<FilterParamIndex>();
+            indizes = new List<FilterParamIndex>();
             nodeRWLock = new ReaderWriterLock();
         }
 

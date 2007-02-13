@@ -6,19 +6,25 @@ namespace net.esper.support.bean
 	{
 		virtual public int intPrimitive
 		{
-			get { return _fieldIntPrimitive; }
+			get { return fieldIntPrimitive; }
 			
 		}
-		public int _fieldIntPrimitive;
+
+		public int fieldIntPrimitive;
 		
 		public SupportLegacyBeanInt(int fieldIntPrimitive)
 		{
-			this._fieldIntPrimitive = fieldIntPrimitive;
+			this.fieldIntPrimitive = fieldIntPrimitive;
 		}
-		
+
+        public virtual int getIntPrimitive()
+        {
+            return fieldIntPrimitive;
+        }
+
 		public virtual int readIntPrimitive()
 		{
-			return _fieldIntPrimitive;
+			return fieldIntPrimitive;
 		}
 	}
 }

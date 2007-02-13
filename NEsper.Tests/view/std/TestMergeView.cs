@@ -12,9 +12,8 @@ using NUnit.Framework;
 
 namespace net.esper.view.std
 {
-
-	[TestFixture]
-    public class TestMergeView 
+    [TestFixture]
+    public class TestMergeView
     {
         private MergeView myView;
         private SupportBeanClassView childView;
@@ -69,7 +68,7 @@ namespace net.esper.view.std
             EventType someEventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
             SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
             myView.Parent = parent;
-            myView.SetEventType(someEventType);
+            myView.EventType = someEventType;
 
             MergeView copied = (MergeView)ViewSupport.shallowCopyView(myView);
             Assert.AreEqual(myView.GroupFieldNames, copied.GroupFieldNames);

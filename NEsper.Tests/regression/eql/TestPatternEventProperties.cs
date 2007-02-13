@@ -57,7 +57,7 @@ namespace net.esper.regression.eql
 		[Test]
 		public virtual void  testPropertiesSimplePattern()
 		{
-			setupSimplePattern("a, a as myEvent, a.intPrimitive as myInt, a.string");
+			setupSimplePattern("a, a as myEvent, a.intPrimitive as myInt, a.str");
 			
 			SupportBean _event = new SupportBean();
 			_event.intPrimitive = 1;
@@ -68,13 +68,13 @@ namespace net.esper.regression.eql
 			Assert.AreSame(_event, eventBean["a"]);
 			Assert.AreSame(_event, eventBean["myEvent"]);
 			Assert.AreEqual(1, eventBean["myInt"]);
-			Assert.AreEqual("test", eventBean["a.string"]);
+			Assert.AreEqual("test", eventBean["a.str"]);
 		}
 		
 		[Test]
 		public virtual void  testPropertiesOrPattern()
 		{
-			setupOrPattern("a, a as myAEvent, b, b as myBEvent, a.intPrimitive as myInt, " + "a.string, b.simpleProperty as simple, b.indexed[0] as indexed, b.nested.nestedValue as nestedVal");
+			setupOrPattern("a, a as myAEvent, b, b as myBEvent, a.intPrimitive as myInt, " + "a.str, b.simpleProperty as simple, b.indexed[0] as indexed, b.nested.nestedValue as nestedVal");
 			
 			Object _event = SupportBeanComplexProps.makeDefaultBean();
 			epService.EPRuntime.SendEvent(_event);
@@ -86,7 +86,7 @@ namespace net.esper.regression.eql
 			Assert.IsNull(eventBean["a"]);
 			Assert.IsNull(eventBean["myAEvent"]);
 			Assert.IsNull(eventBean["myInt"]);
-			Assert.IsNull(eventBean["a.string"]);
+			Assert.IsNull(eventBean["a.str"]);
 			
 			SupportBean eventTwo = new SupportBean();
 			eventTwo.intPrimitive = 2;
@@ -94,7 +94,7 @@ namespace net.esper.regression.eql
 			epService.EPRuntime.SendEvent(eventTwo);
 			eventBean = updateListener.assertOneGetNewAndReset();
 			Assert.AreEqual(2, eventBean["myInt"]);
-			Assert.AreEqual("test2", eventBean["a.string"]);
+			Assert.AreEqual("test2", eventBean["a.str"]);
 			Assert.IsNull(eventBean["b"]);
 			Assert.IsNull(eventBean["myBEvent"]);
 			Assert.IsNull(eventBean["simple"]);

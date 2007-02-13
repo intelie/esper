@@ -138,6 +138,7 @@ namespace net.esper.view.window
                 // The schema is the parent view's schema
                 return parent.EventType;
             }
+            set { }
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -163,7 +164,7 @@ namespace net.esper.view.window
             }
 
             // If there are child views, fire update method
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 if ((expired != null) && (expired.Count > 0))
                 {

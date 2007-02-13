@@ -75,14 +75,14 @@ namespace net.esper.eql.core
             }
 
             // Inspect having clause for aggregation
-            IList<ExprAggregateNode> aggregateNodesHaving = new ELinkedList<ExprAggregateNode>();
+            IList<ExprAggregateNode> aggregateNodesHaving = new List<ExprAggregateNode>();
             if (optionalHavingNode != null)
             {
                 ExprAggregateNode.getAggregatesBottomUp(optionalHavingNode, aggregateNodesHaving);
             }
 
             // Inspect sort-by clause for aggregation
-            IList<ExprAggregateNode> aggregateNodesSortBy = new ELinkedList<ExprAggregateNode>();
+            IList<ExprAggregateNode> aggregateNodesSortBy = new List<ExprAggregateNode>();
             foreach (ExprNode node in sortByNodes)
             {
                 ExprAggregateNode.getAggregatesBottomUp(node, aggregateNodesSortBy);

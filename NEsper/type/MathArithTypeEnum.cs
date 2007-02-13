@@ -84,7 +84,7 @@ namespace net.esper.type
         /**
          * Interface for number cruncher.
          */
-        public delegate ValueType Computer(ValueType d1, ValueType d2);
+        public delegate Object Computer(Object d1, Object d2);
 
         private String expressionText;
 
@@ -122,7 +122,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType AddDouble(ValueType d1, ValueType d2)
+        public static Object AddDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) + Convert.ToDouble(d2);
             return result;
@@ -130,7 +130,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType AddSingle(ValueType d1, ValueType d2)
+        public static Object AddSingle(Object d1, Object d2)
         {
             float? result = Convert.ToSingle(d1) + Convert.ToSingle(d2);
             return result;
@@ -138,7 +138,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType AddInt64(ValueType d1, ValueType d2)
+        public static Object AddInt64(Object d1, Object d2)
         {
             long? result = Convert.ToInt64(d1) + Convert.ToInt64(d2);
             return result;
@@ -146,7 +146,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType AddInt32(ValueType d1, ValueType d2)
+        public static Object AddInt32(Object d1, Object d2)
         {
             int? result = Convert.ToInt32(d1) + Convert.ToInt32(d2);
             return result;
@@ -155,7 +155,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType SubtractDouble(ValueType d1, ValueType d2)
+        public static Object SubtractDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) - Convert.ToDouble(d2);
             return result;
@@ -163,7 +163,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType SubtractSingle(ValueType d1, ValueType d2)
+        public static Object SubtractSingle(Object d1, Object d2)
         {
             float? result = Convert.ToSingle(d1) - Convert.ToSingle(d2);
             return result;
@@ -171,7 +171,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType SubtractInt64(ValueType d1, ValueType d2)
+        public static Object SubtractInt64(Object d1, Object d2)
         {
             long? result = Convert.ToInt64(d1) - Convert.ToInt64(d2);
             return result;
@@ -179,7 +179,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType SubtractInt32(ValueType d1, ValueType d2)
+        public static Object SubtractInt32(Object d1, Object d2)
         {
             int? result = Convert.ToInt32(d1) - Convert.ToInt32(d2);
             return result;
@@ -188,7 +188,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType DivideDouble(ValueType d1, ValueType d2)
+        public static Object DivideDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) / Convert.ToDouble(d2);
             return result;
@@ -196,7 +196,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType DivideSingle(ValueType d1, ValueType d2)
+        public static Object DivideSingle(Object d1, Object d2)
         {
             float? result = Convert.ToSingle(d1) / Convert.ToSingle(d2);
             return result;
@@ -204,7 +204,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-		public static ValueType DivideInt64( ValueType d1, ValueType d2 )
+		public static Object DivideInt64( Object d1, Object d2 )
         {
             long? result = Convert.ToInt64(d1) / Convert.ToInt64(d2);
             return result;
@@ -212,7 +212,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType DivideInt32(ValueType d1, ValueType d2)
+        public static Object DivideInt32(Object d1, Object d2)
         {
             int? result = Convert.ToInt32(d1) / Convert.ToInt32(d2);
             return result;
@@ -221,7 +221,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType MultiplyDouble(ValueType d1, ValueType d2)
+        public static Object MultiplyDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) * Convert.ToDouble(d2);
             return result;
@@ -229,7 +229,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType MultiplySingle(ValueType d1, ValueType d2)
+        public static Object MultiplySingle(Object d1, Object d2)
         {
             float? result = Convert.ToSingle(d1) * Convert.ToSingle(d2);
             return result;
@@ -237,7 +237,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-		public static ValueType MultiplyInt64( ValueType d1, ValueType d2 )
+		public static Object MultiplyInt64( Object d1, Object d2 )
         {
             long? result = Convert.ToInt64(d1) * Convert.ToInt64(d2);
             return result;
@@ -245,7 +245,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType MultiplyInt32(ValueType d1, ValueType d2)
+        public static Object MultiplyInt32(Object d1, Object d2)
         {
             int? result = Convert.ToInt32(d1) * Convert.ToInt32(d2);
             return result;
@@ -254,7 +254,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType ModuloDouble(ValueType d1, ValueType d2)
+        public static Object ModuloDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) % Convert.ToDouble(d2);
             return result;
@@ -262,7 +262,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType ModuloSingle(ValueType d1, ValueType d2)
+        public static Object ModuloSingle(Object d1, Object d2)
         {
             float result = Convert.ToSingle(d1) % Convert.ToSingle(d2);
             return result;
@@ -270,7 +270,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-		public static ValueType ModuloInt64( ValueType d1, ValueType d2 )
+		public static Object ModuloInt64( Object d1, Object d2 )
         {
             long result = Convert.ToInt64(d1) % Convert.ToInt64(d2);
             return result;
@@ -278,7 +278,7 @@ namespace net.esper.type
         /**
          * Computer for type-specific arith. operations.
          */
-        public static ValueType ModuloInt32(ValueType d1, ValueType d2)
+        public static Object ModuloInt32(Object d1, Object d2)
         {
             int result = Convert.ToInt32(d1) % Convert.ToInt32(d2);
             return result;

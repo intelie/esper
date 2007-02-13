@@ -49,7 +49,7 @@ namespace net.esper.regression.eql
 				"insert into Event_1 (delta, product) " +
 				"select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
 				"from " + typeof( SupportBean ).FullName + ".win:length(100) as s0," + typeof( SupportBean_A ).FullName + ".win:length(100) as s1 " +
-				" where s0.string = s1.id";
+				" where s0.str = s1.id";
 
 			runAsserts( stmtText );
 		}
@@ -72,7 +72,7 @@ namespace net.esper.regression.eql
 				"insert into Event_1 " +
 				"select intPrimitive - intBoxed as delta, intPrimitive * intBoxed as product " +
 				"from " + typeof( SupportBean ).FullName + ".win:length(100) as s0," + typeof( SupportBean_A ).FullName + ".win:length(100) as s1 " +
-				" where s0.string = s1.id";
+				" where s0.str = s1.id";
 
 			runAsserts( stmtText );
 		}

@@ -97,7 +97,7 @@ namespace net.esper.eql.expression
                     return;
                 }
                 numDataPoints++;
-                sum += Convert.ToDouble(((ValueType)_object));
+                sum += Convert.ToDouble(_object);
             }
 
             public virtual void leave(Object _object)
@@ -107,7 +107,7 @@ namespace net.esper.eql.expression
                     return;
                 }
                 numDataPoints--;
-                sum -= Convert.ToDouble(((ValueType)_object));
+                sum -= Convert.ToDouble(_object);
             }
 
             public virtual Aggregator newAggregator()

@@ -87,6 +87,7 @@ namespace net.esper.view.std
                 // The schema is the parent view's schema
                 return parent.EventType;
             }
+            set { }
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -99,7 +100,7 @@ namespace net.esper.view.std
 
             ELinkedList<EventBean> postOldData = null;
 
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 postOldData = new ELinkedList<EventBean>();
             }
@@ -112,7 +113,7 @@ namespace net.esper.view.std
                     Object uniqueValue = uniqueFieldGetter.GetValue(newData[i]);
 
                     // If there are no child views, just update the own collection
-                    if (!this.HasViews())
+                    if (!this.HasViews)
                     {
                         mostRecentEvents[uniqueValue] = newData[i];
                         continue;
@@ -151,7 +152,7 @@ namespace net.esper.view.std
 
 
             // If there are child views, fire update method
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 if (postOldData.Count == 0)
                 {

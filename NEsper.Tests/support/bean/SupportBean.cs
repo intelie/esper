@@ -230,6 +230,11 @@ namespace net.esper.support.bean
             set { this.m_enumValue = value; }
 		}
 
+        virtual public SupportEnum enumValue
+        {
+            get { return m_enumValue; }
+        }
+
         private String m_stringValue;
 
         private bool m_boolPrimitive;

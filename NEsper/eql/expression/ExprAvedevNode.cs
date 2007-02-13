@@ -110,7 +110,7 @@ namespace net.esper.eql.expression
                     return;
                 }
 
-                double value = Convert.ToDouble(((ValueType)_object));
+                double value = Convert.ToDouble(_object);
                 valueSet.Add(value);
                 sum += value;
             }
@@ -122,7 +122,7 @@ namespace net.esper.eql.expression
                     return;
                 }
 
-                double value = Convert.ToDouble(((ValueType)_object));
+                double value = Convert.ToDouble(_object);
                 valueSet.Remove(value);
                 sum -= value;
             }

@@ -102,7 +102,7 @@ namespace net.esper.view
 				return "Parent view does not contain a field named '" + longFieldName + "'";
 			}
 			
-			if ((clazz != typeof(long)) && (clazz != typeof(long)))
+			if ((clazz != typeof(long)) && (clazz != typeof(long?)))
 			{
 				return "Parent view field named '" + longFieldName + "' is not of type long";
 			}

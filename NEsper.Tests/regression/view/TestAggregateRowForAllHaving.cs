@@ -45,7 +45,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testSumJoin()
 		{
-			String viewExpr = "select sum(longBoxed) as mySum " + "from " + typeof(SupportBeanString).FullName + ".win:time(10 seconds) as one, " + typeof(SupportBean).FullName + ".win:time(10 seconds) as two " + "where one.string = two.string " + "having sum(longBoxed) > 10";
+			String viewExpr = "select sum(longBoxed) as mySum " + "from " + typeof(SupportBeanString).FullName + ".win:time(10 seconds) as one, " + typeof(SupportBean).FullName + ".win:time(10 seconds) as two " + "where one.str = two.str " + "having sum(longBoxed) > 10";
 			
 			selectTestView = epService.EPAdministrator.createEQL(viewExpr);
 			selectTestView.AddListener(testListener);

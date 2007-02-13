@@ -42,6 +42,7 @@ namespace net.esper.view.internal_Renamed
         public override EventType EventType
         {
             get { return parent.EventType; }
+            set { }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()

@@ -118,7 +118,7 @@ namespace net.esper.view.stat
 		{
 			// If we have child views, keep a reference to the old values, so we can fire them as old data event.
 			BaseStatisticsBean oldValues = null;
-			if ( this.HasViews() )
+			if ( this.HasViews )
 			{
 				oldValues = (BaseStatisticsBean) statisticsBean.Clone();
 			}
@@ -146,7 +146,7 @@ namespace net.esper.view.stat
 			}
 
 			// If there are child view, fire update method
-			if ( this.HasViews() )
+			if ( this.HasViews )
 			{
 				// Make a copy of the current values since if we change the values subsequently, the handed-down
 				// values should not change

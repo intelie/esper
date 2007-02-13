@@ -29,8 +29,8 @@ namespace net.esper.eql.parse
             assertIsInvalid(classname + "(dummy=4)");
             assertIsInvalid(classname + "(boolPrimitive=4)");
             assertIsInvalid(classname + "(intPrimitive=false)");
-            assertIsInvalid(classname + "(string in [2:2])");
-            assertIsInvalid(classname + "(string=\"a\", string=\"b\")"); // Same attribute twice should be a problem
+            assertIsInvalid(classname + "(str in [2:2])");
+            assertIsInvalid(classname + "(str=\"a\", str=\"b\")"); // Same attribute twice should be a problem
         }
 
         [Test]
@@ -48,7 +48,7 @@ namespace net.esper.eql.parse
         [Test]
         public virtual void testValidWithParams()
         {
-            String expression = "name=" + typeof(SupportBean).FullName + "(intPrimitive>4, string=\"test\", doublePrimitive in [1:4])";
+            String expression = "name=" + typeof(SupportBean).FullName + "(intPrimitive>4, str=\"test\", doublePrimitive in [1:4])";
 
             FilterSpec spec = getFilterSpec(expression, null);
             Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);

@@ -80,8 +80,8 @@ namespace net.esper.view.stat
 		[Test]
 		public virtual void testGetSchema()
 		{
-			Assert.IsTrue( myView.EventType.GetPropertyType( ViewFieldEnum.REGRESSION__SLOPE.Name ) == typeof( double ) );
-			Assert.IsTrue( myView.EventType.GetPropertyType( ViewFieldEnum.REGRESSION__YINTERCEPT.Name ) == typeof( double ) );
+			Assert.AreEqual( myView.EventType.GetPropertyType( ViewFieldEnum.REGRESSION__SLOPE.Name ), typeof( double ) );
+			Assert.AreEqual( myView.EventType.GetPropertyType( ViewFieldEnum.REGRESSION__YINTERCEPT.Name ), typeof( double ) );
 		}
 
 		[Test]

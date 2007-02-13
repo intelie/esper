@@ -119,6 +119,7 @@ namespace net.esper.view.window
 		public override EventType EventType
 		{
             get { return parent.EventType; }
+            set { }
 		}
 		
 		public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -152,7 +153,7 @@ namespace net.esper.view.window
 			}
 			
 			// update child views
-			if (this.HasViews())
+			if (this.HasViews)
 			{
 				updateChildren(newData, null);
 			}
@@ -175,7 +176,7 @@ namespace net.esper.view.window
             List<EventBean> expired = timeWindow.ExpireEvents(expireBeforeTimestamp);
 			
 			// If there are child views, fire update method
-			if (this.HasViews())
+			if (this.HasViews)
 			{
 				if ((expired != null) && (expired.Count > 0))
 				{

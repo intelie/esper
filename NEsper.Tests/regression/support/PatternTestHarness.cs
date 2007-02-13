@@ -58,7 +58,7 @@ namespace net.esper.regression.support
             EPRuntime runtime = serviceProvider.EPRuntime;
             runtime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
-            // Send the Start time to the runtime
+            // Send the start time to the runtime
             if (sendEventCollection.getTime(EventCollection.ON_START_EVENT_ID) != null)
             {
                 TimerEvent startTime = new CurrentTimeEvent(sendEventCollection.getTime(EventCollection.ON_START_EVENT_ID).GetValueOrDefault());
@@ -93,14 +93,14 @@ namespace net.esper.regression.support
                     Assert.Fail();
                 }
 
-                // We Stop the statement again and Start after the first listener was added.
+                // We stop the statement again and start after the first listener was added.
                 // Thus we can handle patterns that fire on Startup.
                 statement.Stop();
 
                 expressions[index] = statement;
                 expressions[index].AddListener(listeners[index]);
 
-                // Start the statement again: listeners now got called for on-Start events such as for a "not"
+                // Start the statement again: listeners now got called for on-start events such as for a "not"
                 statement.Start();
 
                 index++;

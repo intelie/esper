@@ -53,8 +53,17 @@ namespace net.esper.support.view
             {
                 return null;
             }
-
+            set { }
         }
+
+        public override Viewable Parent
+        {
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         private String someReadWriteValue;
         private String someReadOnlyValue;
         private String someWriteOnlyValue;
@@ -73,11 +82,6 @@ namespace net.esper.support.view
         public override String AttachesTo(Viewable parentViewable)
         {
             return null;
-        }
-
-        public virtual void setParent()
-        {
-            throw new System.NotSupportedException();
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)

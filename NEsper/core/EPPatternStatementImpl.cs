@@ -51,7 +51,7 @@ namespace net.esper.core
 		/// <param name="eventAdapterService">- service for generating events or event wrappers and types</param>
 		/// <param name="StartMethod">- method to Start the pattern</param>
 
-		public EPPatternStatementImpl( String expressionText, EventType eventType, DispatchService dispatchService, EventAdapterService eventAdapterService, EPPatternStmtStartMethod StartMethod )
+		public EPPatternStatementImpl( String expressionText, EventType eventType, DispatchService dispatchService, EventAdapterService eventAdapterService, EPPatternStmtStartMethod startMethod )
 		{
 			this.expressionText = expressionText;
 			this.eventType = eventType;

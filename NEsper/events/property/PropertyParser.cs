@@ -52,7 +52,7 @@ namespace net.esper.events.property
             }
 
             AST child = ast.getFirstChild();
-            IList<Property> properties = new ELinkedList<Property>();
+            IList<Property> properties = new List<Property>();
 
             do
             {

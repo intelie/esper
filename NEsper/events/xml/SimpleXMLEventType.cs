@@ -4,6 +4,7 @@ using System.Xml;
 using System.Xml.XPath;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.events;
 
 namespace net.esper.events.xml
@@ -24,7 +25,7 @@ namespace net.esper.events.xml
     /// </author>
     public class SimpleXMLEventType : BaseXMLEventType
     {
-        private IDictionary<String, TypedEventPropertyGetter> propertyGetterCache;
+        private EDictionary<String, TypedEventPropertyGetter> propertyGetterCache;
 
         /// <summary> Ctor.</summary>
         /// <param name="configurationEventTypeXMLDOM">configures the event type
@@ -33,7 +34,7 @@ namespace net.esper.events.xml
             : base(configurationEventTypeXMLDOM.RootElementName)
         {
             base.setExplicitProperties(configurationEventTypeXMLDOM.XPathProperties.Values);
-            propertyGetterCache = new Dictionary<String, TypedEventPropertyGetter>();
+            propertyGetterCache = new EHashDictionary<String, TypedEventPropertyGetter>();
         }
 
         internal override Type doResolvePropertyType(String property)
@@ -43,7 +44,7 @@ namespace net.esper.events.xml
 
         internal override EventPropertyGetter doResolvePropertyGetter(String property)
         {
-            TypedEventPropertyGetter getter = propertyGetterCache[property];
+            TypedEventPropertyGetter getter = propertyGetterCache.Fetch(property);
             if (getter != null)
             {
                 return getter;

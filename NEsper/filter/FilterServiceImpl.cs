@@ -47,7 +47,7 @@ namespace net.esper.filter
             Interlocked.Increment(ref numEventsEvaluated);
 
             // Finds all matching filters and return their callbacks
-            IList<FilterCallback> matches = new ELinkedList<FilterCallback>();
+            IList<FilterCallback> matches = new List<FilterCallback>();
             eventTypeIndex.matchEvent(eventBean, matches);
 
             if (matches.Count == 0)

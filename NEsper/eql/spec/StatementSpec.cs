@@ -120,14 +120,14 @@ namespace net.esper.eql.spec
         }
         private InsertIntoDesc insertIntoDesc;
         private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
-        private IList<SelectExprElementUnnamedSpec> selectListExpressions = new ELinkedList<SelectExprElementUnnamedSpec>();
-        private IList<StreamSpec> streamSpecs = new ELinkedList<StreamSpec>();
-        private IList<OuterJoinDesc> outerJoinDescList = new ELinkedList<OuterJoinDesc>();
+        private IList<SelectExprElementUnnamedSpec> selectListExpressions = new List<SelectExprElementUnnamedSpec>();
+        private IList<StreamSpec> streamSpecs = new List<StreamSpec>();
+        private IList<OuterJoinDesc> outerJoinDescList = new List<OuterJoinDesc>();
         private ExprNode filterExprRootNode;
-        private IList<ExprNode> groupByExpressions = new ELinkedList<ExprNode>();
+        private IList<ExprNode> groupByExpressions = new List<ExprNode>();
         private ExprNode havingExprRootNode;
         private OutputLimitSpec outputLimitSpec;
-        private IList<Pair<ExprNode, Boolean>> orderByList = new ELinkedList<Pair<ExprNode, Boolean>>();
+        private IList<Pair<ExprNode, Boolean>> orderByList = new List<Pair<ExprNode, Boolean>>();
 
         /// <summary> Returns the FROM-clause stream definitions.</summary>
         /// <returns> list of stream specifications

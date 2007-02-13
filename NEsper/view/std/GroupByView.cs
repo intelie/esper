@@ -127,6 +127,7 @@ namespace net.esper.view.std
                 // The schema is the parent view's schema
                 return parent.EventType;
             }
+            set { }
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -231,7 +232,7 @@ namespace net.esper.view.std
         
         public static IList<View> makeSubViews(GroupByView groupView, Object[] groupByValues, ViewServiceContext viewServiceContext)
         {
-            if (!groupView.HasViews())
+            if (!groupView.HasViews)
             {
                 String message = "Unexpected empty list of child nodes for group view";
                 log.Fatal(".copySubViews " + message);

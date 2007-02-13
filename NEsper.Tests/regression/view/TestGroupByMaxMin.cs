@@ -45,7 +45,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testMinMaxJoin()
 		{
-			String viewExpr = "select symbol, " + "min(volume) as minVol," + "max(volume) as maxVol," + "min(distinct volume) as minDistVol," + "max(distinct volume) as maxDistVol" + " from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "  and one.string = two.symbol " + "group by symbol";
+			String viewExpr = "select symbol, " + "min(volume) as minVol," + "max(volume) as maxVol," + "min(distinct volume) as minDistVol," + "max(distinct volume) as maxDistVol" + " from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "  and one.str = two.symbol " + "group by symbol";
 			
 			selectTestView = epService.EPAdministrator.createEQL(viewExpr);
 			selectTestView.AddListener(testListener);

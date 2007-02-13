@@ -37,7 +37,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testAcrossJoin()
         {
-            String statementString = "select symbol, string from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by price";
+            String statementString = "select symbol, string from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -46,7 +46,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol", "str" });
             clearValues();
 
-            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by string, price";
+            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by string, price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesBySymbolPrice();
@@ -152,7 +152,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testExpressionsJoin()
         {
-            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by (price * 6) + 5";
+            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by (price * 6) + 5";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -162,7 +162,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by (price * 6) + 5, price";
+            statementString = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by (price * 6) + 5, price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -172,7 +172,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, 1+volume*23 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by (price * 6) + 5, price, volume";
+            statementString = "select symbol, 1+volume*23 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by (price * 6) + 5, price, volume";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -182,7 +182,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by volume*price, symbol";
+            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by volume*price, symbol";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesBySymbol();
@@ -192,7 +192,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by volume*sum(price), symbol";
+            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by volume*sum(price), symbol";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesBySymbol();
@@ -241,7 +241,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testInvalidJoin()
         {
-            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by sum(price)";
+            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by sum(price)";
             try
             {
                 createAndSend(statementString);
@@ -252,7 +252,7 @@ namespace net.esper.regression.view
                 // expected
             }
 
-            statementString = "select sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by sum(price + 6)";
+            statementString = "select sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by sum(price + 6)";
             try
             {
                 createAndSend(statementString);
@@ -263,7 +263,7 @@ namespace net.esper.regression.view
                 // expected
             }
 
-            statementString = "select sum(price + 6) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by sum(price)";
+            statementString = "select sum(price + 6) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by sum(price)";
             try
             {
                 createAndSend(statementString);
@@ -346,7 +346,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testMultipleKeysJoin()
         {
-            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by symbol, price";
+            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by symbol, price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesBySymbolPrice();
@@ -354,7 +354,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol" });
             clearValues();
 
-            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by price, symbol, volume";
+            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price, symbol, volume";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceSymbol();
@@ -362,7 +362,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol" });
             clearValues();
 
-            statementString = "select symbol, volume*2 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by price, volume";
+            statementString = "select symbol, volume*2 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price, volume";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -424,7 +424,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testSimpleJoin()
         {
-            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by price";
+            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -432,7 +432,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol" });
             clearValues();
 
-            statementString = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by price";
+            statementString = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -441,7 +441,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol", "price" });
             clearValues();
 
-            statementString = "select symbol, volume from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by price";
+            statementString = "select symbol, volume from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -450,7 +450,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol", "volume" });
             clearValues();
 
-            statementString = "select symbol, volume*2 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by price";
+            statementString = "select symbol, volume*2 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -459,7 +459,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol", "(volume*2)" });
             clearValues();
 
-            statementString = "select symbol, volume from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by symbol";
+            statementString = "select symbol, volume from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by symbol";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesBySymbol();
@@ -468,7 +468,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol", "volume" });
             clearValues();
 
-            statementString = "select price from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by symbol, price";
+            statementString = "select price from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by symbol, price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesBySymbolJoin();
@@ -503,7 +503,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testWildcardJoin()
         {
-            String statementString = "select * from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by price";
+            String statementString = "select * from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -512,7 +512,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select * from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by symbol, price";
+            statementString = "select * from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by symbol, price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesBySymbolJoin();
@@ -553,7 +553,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testNoOutputClauseJoin()
         {
-            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "order by price";
+            String statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "order by price";
             createAndSend(statementString);
             sendJoinEvents();
             symbols.Add("KGB");
@@ -572,7 +572,7 @@ namespace net.esper.regression.view
             // Set Start time
             sendTimeEvent(0);
 
-            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:time_batch(1) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "order by price, symbol";
+            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:time_batch(1) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "order by price, symbol";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();

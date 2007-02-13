@@ -19,7 +19,7 @@ namespace net.esper.eql.parse
 
 		public ListParameter()
 		{
-			this.parameters = new ELinkedList<NumberSetParameter>();
+			this.parameters = new List<NumberSetParameter>();
 		}
 
 		/// <summary> Add to the list a further parameter.</summary>

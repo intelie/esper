@@ -164,14 +164,14 @@ namespace net.esper.eql.join.assemble
 
         private void postCartesian(IList<EventBean[]>[] rowsPerStream, Node node)
         {
-            IList<EventBean[]> result = new ELinkedList<EventBean[]>();
+            IList<EventBean[]> result = new List<EventBean[]>();
             CartesianUtil.ComputeCartesian(rowsPerStream[0], subStreamsNumsPerChild[0], rowsPerStream[1], subStreamsNumsPerChild[1], result);
 
             if (rowsPerStream.Length > 2)
             {
                 for (int i = 0; i < subStreamsNumsPerChild.Length - 2; i++)
                 {
-                    IList<EventBean[]> product = new ELinkedList<EventBean[]>();
+                    IList<EventBean[]> product = new List<EventBean[]>();
                     CartesianUtil.ComputeCartesian(result, combinedSubStreams[i], rowsPerStream[i + 2], subStreamsNumsPerChild[i + 2], product);
                     result = product;
                 }
@@ -203,7 +203,7 @@ namespace net.esper.eql.join.assemble
                 IList<EventBean[]> streamRows = singleResultRowsPerStream[childStreamArrIndex];
                 if (streamRows == null)
                 {
-                    streamRows = new ELinkedList<EventBean[]>();
+                    streamRows = new List<EventBean[]>();
                     singleResultRowsPerStream[childStreamArrIndex] = streamRows;
                 }
 
@@ -250,7 +250,7 @@ namespace net.esper.eql.join.assemble
                 IList<EventBean[]> rows = rowsPerStream[fromStreamIndex];
                 if (rows == null)
                 {
-                    rows = new ELinkedList<EventBean[]>();
+                    rows = new List<EventBean[]>();
                     rowsPerStream[fromStreamIndex] = rows;
                 }
 

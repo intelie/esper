@@ -75,7 +75,7 @@ namespace net.esper.eql.parse
 			
 			// Create parameter list
 			AST paramNodeAST = startNode.getNextSibling();
-			IList<FilterSpecParam> parameters = new ELinkedList<FilterSpecParam>();
+			IList<FilterSpecParam> parameters = new List<FilterSpecParam>();
 			while (paramNodeAST != null)
 			{
 				if (paramNodeAST.Type != EqlTokenTypes.EVENT_FILTER_PARAM)

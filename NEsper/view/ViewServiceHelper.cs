@@ -29,7 +29,7 @@ namespace net.esper.view
 				log.Debug( ".addMergeViews Incoming specifications=" + specifications ) ;
 			}
 
-			ELinkedList<ViewSpec> mergeViewSpecs = new ELinkedList<ViewSpec>();
+            ELinkedList<ViewSpec> mergeViewSpecs = new ELinkedList<ViewSpec>();
 
 			foreach ( ViewSpec spec in specifications )
 			{
@@ -98,7 +98,7 @@ namespace net.esper.view
                 ParentAwareView parentAwareView = currentView as ParentAwareView;
                 if ( parentAwareView != null )
 				{
-					IList<View> parentViewList = new ELinkedList<View>();
+					IList<View> parentViewList = new List<View>();
 					CollectionHelper.AddAll( parentViewList, existingParentViews );
 					CollectionHelper.AddAll( parentViewList, newViews );
                     parentAwareView.ParentAware = parentViewList;
@@ -121,10 +121,10 @@ namespace net.esper.view
 		/// </returns>
 		public static IList<View> RemoveChainLeafView( Viewable parentViewable, Viewable viewToRemove )
 		{
-			IList<View> removedViews = new ELinkedList<View>();
+            IList<View> removedViews = new List<View>();
 
 			// The view to remove must be a leaf node - non-leaf views are just not removed
-			if ( viewToRemove.HasViews() )
+			if ( viewToRemove.HasViews )
 			{
 				return removedViews;
 			}
@@ -171,7 +171,7 @@ namespace net.esper.view
 				}
 
 				// If the parent views has more child views, we are done
-				if ( viewPathArray[index].HasViews() )
+				if ( viewPathArray[index].HasViews )
 				{
 					break;
 				}
@@ -216,7 +216,7 @@ namespace net.esper.view
             IList<ViewSpec> specifications )
 		{
 			Viewable currentParent = rootViewable;
-			IList<View> matchedViewList = new ELinkedList<View>();
+            IList<View> matchedViewList = new List<View>();
 
 			bool foundMatch = false;
 

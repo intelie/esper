@@ -141,7 +141,7 @@ namespace net.esper.eql.expression
                 throw new ExprValidationException("Case node must have at least 2 child nodes");
             }
 
-            whenThenNodeList = new ELinkedList<UniformPair<ExprNode>>();
+            whenThenNodeList = new List<UniformPair<ExprNode>>();
             int numWhenThen = children.Count / 2;
             for (int i = 0; i < numWhenThen; i++)
             {
@@ -172,7 +172,7 @@ namespace net.esper.eql.expression
 
             optionalCompareExprNode = children[0];
 
-            whenThenNodeList = new ELinkedList<UniformPair<ExprNode>>();
+            whenThenNodeList = new List<UniformPair<ExprNode>>();
             int numWhenThen = (children.Count - 1) / 2;
             for (int i = 0; i < numWhenThen; i++)
             {

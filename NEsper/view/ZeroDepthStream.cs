@@ -81,9 +81,9 @@ namespace net.esper.view
             return isRemoved;
         }
 
-        public Boolean HasViews()
+        public Boolean HasViews
         {
-            return (children.Count > 0);
+            get { return (children.Count > 0); }
         }
 
         private static readonly Log log = LogFactory.GetLog(typeof(ZeroDepthStream));

@@ -38,7 +38,7 @@ namespace net.esper.pattern
 			}
 			
 			this.orNodeChildNodes = orNodeChildNodes;
-			this.childNodes = new ELinkedList < EvalStateNode >();
+			this.childNodes = new List < EvalStateNode >();
 			
 			// In an "or" expression we need to create states for all child expressions/listeners,
 			// since all are going to be Started

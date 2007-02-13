@@ -141,9 +141,9 @@ namespace net.esper.support.view
             return isRemoved;
         }
 
-        public virtual bool HasViews()
+        public virtual bool HasViews
         {
-            return (childViews.Count > 0);
+            get { return (childViews.Count > 0); }
         }
 
         private static readonly Log log = LogFactory.GetLog(typeof(SupportStreamImpl));

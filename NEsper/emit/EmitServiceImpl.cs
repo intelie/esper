@@ -70,7 +70,7 @@ namespace net.esper.emit
 			IList<EmittedListener> listeners = channelEmitListeners.Fetch( channel, null ) ;
 			if (listeners == null)
 			{
-				listeners = new ELinkedList<EmittedListener>();
+                listeners = new List<EmittedListener>();
 				channelEmitListeners[channel] = listeners;
 			}
 			

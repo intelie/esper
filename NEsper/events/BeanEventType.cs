@@ -234,7 +234,7 @@ namespace net.esper.events
 
 		public static IList<EventType> GetSuperTypes( Type type, BeanEventAdapter beanEventAdapter )
 		{
-			IList<Type> superclasses = new ELinkedList<Type>();
+			IList<Type> superclasses = new List<Type>();
 
 			// add superclass
 			Type superClass = type.BaseType;

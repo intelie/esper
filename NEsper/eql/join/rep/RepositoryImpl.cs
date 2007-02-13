@@ -73,7 +73,7 @@ namespace net.esper.eql.join.rep
                 IList<Node> nodes = nodesPerStream[resultStream];
                 if (nodes == null)
                 {
-                    nodes = new ELinkedList<Node>();
+                    nodes = new List<Node>();
                     nodesPerStream[resultStream] = nodes;
                 }
 
@@ -89,7 +89,7 @@ namespace net.esper.eql.join.rep
             IList<Node> _nodes = nodesPerStream[resultStream];
             if (_nodes == null)
             {
-                _nodes = new ELinkedList<Node>();
+                _nodes = new List<Node>();
                 nodesPerStream[resultStream] = _nodes;
             }
 

@@ -7,6 +7,8 @@ namespace net.esper.support.view
 {
     public class SupportSchemaNeutralView : SupportBaseView
     {
+        private string _viewName;
+
         override public Viewable Parent
         {
             set
@@ -14,21 +16,27 @@ namespace net.esper.support.view
                 base.Parent = value;
                 if (value != null)
                 {
-                    SetEventType(value.EventType);
+                    EventType = value.EventType;
                 }
                 else
                 {
-                    SetEventType(null);
+                    EventType = null;
                 }
             }
-
         }
+
+        public string ViewName
+        {
+            get { return ViewName; }
+        }
+
         public SupportSchemaNeutralView()
         {
         }
 
         public SupportSchemaNeutralView(String viewName)
         {
+            this._viewName = viewName;
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)

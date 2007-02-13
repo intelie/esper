@@ -20,16 +20,16 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				if (dataPoints == 0)
+                if (_dataPoints == 0)
 				{
 					return Double.NaN;
 				}
-				
-				double temp = (sumXSq - sumX * sumX / dataPoints) / dataPoints;
-				return System.Math.Sqrt(temp);
+
+                double temp = (_sumXSq - _sumX * _sumX / _dataPoints) / _dataPoints;
+				return Math.Sqrt(temp);
 			}
-			
 		}
+
 		/// <summary> Calculates standard deviation for Y based on the entire population given as arguments.
 		/// Equivalent to Microsoft Excel formula STDEVPA.
 		/// </summary>
@@ -39,16 +39,16 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				if (dataPoints == 0)
+                if (_dataPoints == 0)
 				{
 					return Double.NaN;
 				}
-				
-				double temp = (sumYSq - sumY * sumY / dataPoints) / dataPoints;
-				return System.Math.Sqrt(temp);
+
+                double temp = (_sumYSq - _sumY * _sumY / _dataPoints) / _dataPoints;
+				return Math.Sqrt(temp);
 			}
-			
 		}
+
 		/// <summary> Calculates standard deviation for X based on the sample data points supplied.
 		/// Equivalent to Microsoft Excel formula STDEV.
 		/// </summary>
@@ -58,16 +58,16 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				if (dataPoints < 2)
+                if (_dataPoints < 2)
 				{
 					return Double.NaN;
 				}
 				
 				double variance = XVariance;
-				return System.Math.Sqrt(variance);
+				return Math.Sqrt(variance);
 			}
-			
 		}
+
 		/// <summary> Calculates standard deviation for Y based on the sample data points supplied.
 		/// Equivalent to Microsoft Excel formula STDEV.
 		/// </summary>
@@ -77,16 +77,16 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				if (dataPoints < 2)
+                if (_dataPoints < 2)
 				{
 					return Double.NaN;
 				}
 				
 				double variance = YVariance;
-				return System.Math.Sqrt(variance);
+				return Math.Sqrt(variance);
 			}
-			
 		}
+
 		/// <summary> Calculates standard deviation for X based on the sample data points supplied.
 		/// Equivalent to Microsoft Excel formula STDEV.
 		/// </summary>
@@ -96,16 +96,21 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				if (dataPoints < 2)
+                if (_dataPoints < 2)
 				{
 					return Double.NaN;
 				}
-				
-				double variance = (sumXSq - sumX * sumX / dataPoints) / (dataPoints - 1);
+
+                double variance = (_sumXSq - _sumX * _sumX / _dataPoints) / (_dataPoints - 1);
 				return variance;
 			}
-			
 		}
+
+        virtual public double xvariance
+        {
+            get { return this.XVariance; }
+        }
+
 		/// <summary> Calculates standard deviation for Y based on the sample data points supplied.
 		/// Equivalent to Microsoft Excel formula STDEV.
 		/// </summary>
@@ -115,12 +120,12 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				if (dataPoints < 2)
+                if (_dataPoints < 2)
 				{
 					return Double.NaN;
 				}
-				
-				double variance = (sumYSq - sumY * sumY / dataPoints) / (dataPoints - 1);
+
+                double variance = (_sumYSq - _sumY * _sumY / _dataPoints) / (_dataPoints - 1);
 				return variance;
 			}
 			
@@ -132,10 +137,10 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				return dataPoints;
+                return _dataPoints;
 			}
-			
 		}
+
 		/// <summary> Returns the sum of all X data points.</summary>
 		/// <returns> sum of X data points
 		/// </returns>
@@ -143,10 +148,15 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				return sumX;
-			}
-			
+                return _sumX;
+			}			
 		}
+
+        virtual public double xsum
+        {
+            get { return this.XSum; }
+        }
+
 		/// <summary> Returns the sum of all Y data points.</summary>
 		/// <returns> sum of Y data points
 		/// </returns>
@@ -154,42 +164,57 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				return sumY;
+                return _sumY;
 			}
-			
 		}
-		/// <summary> Returns the average of all X data points.</summary>
+
+        virtual public double ysum
+        {
+            get { return this.YSum; }
+        }
+        
+        /// <summary> Returns the average of all X data points.</summary>
 		/// <returns> average of X data points
 		/// </returns>
 		virtual public double XAverage
 		{
 			get
 			{
-				if (dataPoints == 0)
+                if (_dataPoints == 0)
 				{
 					return Double.NaN;
 				}
-				
-				return sumX / dataPoints;
-			}
-			
+
+                return _sumX / _dataPoints;
+			}			
 		}
-		/// <summary> Returns the average of all Y data points.</summary>
+
+        virtual public double xaverage
+        {
+            get { return this.XAverage; }
+        }
+        
+        /// <summary> Returns the average of all Y data points.</summary>
 		/// <returns> average of Y data points
 		/// </returns>
 		virtual public double YAverage
 		{
 			get
 			{
-				if (dataPoints == 0)
+                if (_dataPoints == 0)
 				{
 					return Double.NaN;
 				}
-				
-				return sumY / dataPoints;
-			}
-			
+
+                return _sumY / _dataPoints;
+			}			
 		}
+
+        virtual public double yaverage
+        {
+            get { return this.YAverage; }
+        }
+
 		/// <summary> For use by subclasses, returns sum (X * X).</summary>
 		/// <returns> sum of X squared
 		/// </returns>
@@ -197,10 +222,10 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				return sumXSq;
-			}
-			
+                return _sumXSq;
+			}			
 		}
+
 		/// <summary> For use by subclasses, returns sum (Y * Y).</summary>
 		/// <returns> sum of Y squared
 		/// </returns>
@@ -208,10 +233,10 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				return sumYSq;
-			}
-			
+                return _sumYSq;
+			}			
 		}
+
 		/// <summary> For use by subclasses, returns sum (X * Y).</summary>
 		/// <returns> sum of X times Y
 		/// </returns>
@@ -219,25 +244,25 @@ namespace net.esper.view.stat
 		{
 			get
 			{
-				return sumXY;
+                return _sumXY;
 			}
-			
-		}
-		private double sumX;
-		private double sumXSq;
-		private double sumY;
-		private double sumYSq;
-		private double sumXY;
-		private long dataPoints;
+        }
+
+		private double _sumX;
+        private double _sumXSq;
+        private double _sumY;
+        private double _sumYSq;
+        private double _sumXY;
+        private long _dataPoints;
 		
 		private void  Initialize()
 		{
-			sumX = 0;
-			sumXSq = 0;
-			sumY = 0;
-			sumYSq = 0;
-			sumXY = 0;
-			dataPoints = 0;
+            _sumX = 0;
+            _sumXSq = 0;
+            _sumY = 0;
+            _sumYSq = 0;
+            _sumXY = 0;
+            _dataPoints = 0;
 		}
 		
 		/// <summary> Add a data point for the X data set only.</summary>
@@ -245,9 +270,9 @@ namespace net.esper.view.stat
 		/// </param>
 		public void AddPoint(double x)
 		{
-			dataPoints++;
-			sumX += x;
-			sumXSq += x * x;
+            _dataPoints++;
+            _sumX += x;
+            _sumXSq += x * x;
 		}
 		
 		/// <summary> Add a data point.</summary>
@@ -257,12 +282,12 @@ namespace net.esper.view.stat
 		/// </param>
 		public void AddPoint(double x, double y)
 		{
-			dataPoints++;
-			sumX += x;
-			sumXSq += x * x;
-			sumY += y;
-			sumYSq += y * y;
-			sumXY += x * y;
+            _dataPoints++;
+            _sumX += x;
+            _sumXSq += x * x;
+            _sumY += y;
+            _sumYSq += y * y;
+            _sumXY += x * y;
 		}
 		
 		/// <summary> Remove a X data point only.</summary>
@@ -270,15 +295,15 @@ namespace net.esper.view.stat
 		/// </param>
 		public void RemovePoint(double x)
 		{
-			dataPoints--;
-			if (dataPoints <= 0)
+            _dataPoints--;
+            if (_dataPoints <= 0)
 			{
 				Initialize();
 			}
 			else
 			{
-				sumX -= x;
-				sumXSq -= x * x;
+                _sumX -= x;
+                _sumXSq -= x * x;
 			}
 		}
 		
@@ -289,18 +314,18 @@ namespace net.esper.view.stat
 		/// </param>
 		public void RemovePoint(double x, double y)
 		{
-			dataPoints--;
-			if (dataPoints <= 0)
+            _dataPoints--;
+            if (_dataPoints <= 0)
 			{
 				Initialize();
 			}
 			else
 			{
-				sumX -= x;
-				sumXSq -= x * x;
-				sumY -= y;
-				sumYSq -= y * y;
-				sumXY -= x * y;
+                _sumX -= x;
+                _sumXSq -= x * x;
+                _sumY -= y;
+                _sumYSq -= y * y;
+                _sumXY -= x * y;
 			}
 		}
 		
@@ -319,12 +344,12 @@ namespace net.esper.view.stat
 		public override String ToString()
 		{
 			return
-                "datapoints=" + this.dataPoints +
-                "  sumX=" + this.sumX +
-                "  sumXSq=" + this.sumXSq +
-                "  sumY=" + this.sumY +
-                "  sumYSq=" + this.sumYSq + 
-                "  sumXY=" + this.sumXY;
+                "datapoints=" + this._dataPoints +
+                "  sumX=" + this._sumX +
+                "  sumXSq=" + this._sumXSq +
+                "  sumY=" + this._sumY +
+                "  sumYSq=" + this._sumYSq +
+                "  sumXY=" + this._sumXY;
 		}
 	}
 }

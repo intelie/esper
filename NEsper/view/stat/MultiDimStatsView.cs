@@ -308,7 +308,7 @@ namespace net.esper.view.stat
 				}
 			}
 
-			if ( HasViews() )
+			if ( HasViews )
 			{
 				EventBean postNewData = populateEvent();
 				updateChildren( new EventBean[] { postNewData }, null );
@@ -318,6 +318,7 @@ namespace net.esper.view.stat
         public override EventType EventType
 		{
             get { return eventType; }
+            set { }
 		}
 
         public override IEnumerator<EventBean> GetEnumerator()

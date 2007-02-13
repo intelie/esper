@@ -63,6 +63,9 @@ namespace net.esper.view.window
                 // The event type is the parent view's event type
                 return parent.EventType;
             }
+            set
+            {
+            }
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -90,7 +93,7 @@ namespace net.esper.view.window
             }
 
             // If there are child views, fire update method
-            if (this.HasViews())
+            if (this.HasViews)
             {
                 updateChildren(newData, expiredArr);
             }

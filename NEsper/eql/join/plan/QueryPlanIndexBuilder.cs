@@ -31,7 +31,7 @@ namespace net.esper.eql.join.plan
             for (int streamIndexed = 0; streamIndexed < numStreams; streamIndexed++)
             {
                 ISet<MultiKey<String>> indexesSet = new EHashSet<MultiKey<String>>();
-                IList<String[]> indexesList = new ELinkedList<String[]>();
+                IList<String[]> indexesList = new List<String[]>();
 
                 // Look at the index from the viewpoint of the stream looking up in the index
                 for (int streamLookup = 0; streamLookup < numStreams; streamLookup++)

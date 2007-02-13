@@ -58,7 +58,7 @@ namespace net.esper.filter
         /// </returns>
         public FilterValueSet getValueSet(MatchedEventMap matchedEvents)
         {
-            IList<FilterValueSetParam> valueList = new ELinkedList<FilterValueSetParam>();
+            IList<FilterValueSetParam> valueList = new List<FilterValueSetParam>();
 
             // Ask each filter specification parameter for the actual value to filter for
             foreach (FilterSpecParam specParam in parameters)

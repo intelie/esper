@@ -44,7 +44,7 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testSumJoin()
 		{
-			String viewExpr = "select symbol, price, avg(price) as avgPrice " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + "where one.string = two.symbol " + "having price < avg(price)";
+			String viewExpr = "select symbol, price, avg(price) as avgPrice " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + "where one.str = two.symbol " + "having price < avg(price)";
 			
 			selectTestView = epService.EPAdministrator.createEQL(viewExpr);
 			selectTestView.AddListener(testListener);

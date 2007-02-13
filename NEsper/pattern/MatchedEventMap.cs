@@ -55,7 +55,7 @@ namespace net.esper.pattern
 		
 		public EventBean getMatchingEvent(String tag)
 		{
-			return events[tag];
+			return events.Fetch(tag);
 		}
 		
 		public override bool Equals(Object otherObject)
@@ -138,7 +138,7 @@ namespace net.esper.pattern
 		
 		public void merge(MatchedEventMap other)
 		{
-			foreach ( KeyValuePair<String, EventBean> entry in events )
+			foreach ( KeyValuePair<String, EventBean> entry in other.events )
 			{
 				events.Put( entry.Key, entry.Value ) ;
 			}

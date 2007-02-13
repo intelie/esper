@@ -45,7 +45,7 @@ namespace net.esper.eql.join
                 prototype[forStream] = ev;
 
                 // Perform execution
-                IList<EventBean[]> results = new ELinkedList<EventBean[]>();
+                IList<EventBean[]> results = new List<EventBean[]>();
                 execNode.Process(ev, prototype, results);
 
                 // Convert results into unique set

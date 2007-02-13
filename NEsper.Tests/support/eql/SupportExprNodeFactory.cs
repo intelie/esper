@@ -185,7 +185,7 @@ namespace net.esper.support.eql
 		
 		public static ExprRegexpNode makeRegexpNode(bool isNot)
 		{
-			// Build :      s0.string regexp "[a-z][a-z]"  (with not)
+			// Build :      s0.str regexp "[a-z][a-z]"  (with not)
 			ExprRegexpNode node = new ExprRegexpNode(isNot);
 			node.AddChildNode(makeIdentNode("str", "s0"));
 			node.AddChildNode(new SupportExprNode("[a-z][a-z]"));
@@ -195,7 +195,7 @@ namespace net.esper.support.eql
 		
 		public static ExprLikeNode makeLikeNode(bool isNot, String optionalEscape)
 		{
-			// Build :      s0.string like "%abc__"  (with or witout escape)
+			// Build :      s0.str like "%abc__"  (with or witout escape)
 			ExprLikeNode node = new ExprLikeNode(isNot);
 			node.AddChildNode(makeIdentNode("str", "s0"));
 			node.AddChildNode(new SupportExprNode("%abc__"));

@@ -13,7 +13,6 @@ namespace net.esper.eql.view
 
     public class InternalRouteView : ViewSupport
     {
-
         // Do we route the insert stream (new) events, or the remove stream (old) events
         private readonly bool isStream;
         private readonly InternalEventRouter internalEventRouter;
@@ -60,6 +59,7 @@ namespace net.esper.eql.view
         public override EventType EventType
         {
             get { return parent.EventType; }
+            set { }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()

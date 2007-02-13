@@ -98,7 +98,7 @@ namespace net.esper.eql.join.plan
 					QueryGraph queryGraph,
 					QueryPlanIndex[] indexSpecs )
 		{
-			IList<LookupInstructionPlan> result = new ELinkedList<LookupInstructionPlan>();
+			IList<LookupInstructionPlan> result = new List<LookupInstructionPlan>();
 
 			foreach ( KeyValuePair<int,int[]> kvPair in substreamsPerStream )
 			{

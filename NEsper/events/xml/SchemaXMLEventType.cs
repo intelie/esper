@@ -129,7 +129,7 @@ namespace net.esper.events.xml
 
         internal override EventPropertyGetter doResolvePropertyGetter(String property)
         {
-            TypedEventPropertyGetter getter = propertyGetterCache[property];
+            TypedEventPropertyGetter getter = propertyGetterCache.Fetch(property);
             if (getter != null)
             {
                 return getter;

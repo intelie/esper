@@ -47,7 +47,7 @@ namespace net.esper.eql.parse
         private readonly EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
         // Stores types for filters with tags
         private FilterSpec filterSpec;
-        private readonly IList<ViewSpec> viewSpecs = new ELinkedList<ViewSpec>();
+        private readonly IList<ViewSpec> viewSpecs = new List<ViewSpec>();
 
         // Pattern indicator dictates behavior for some AST nodes
         private bool isProcessingPattern;
@@ -345,7 +345,7 @@ namespace net.esper.eql.parse
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.FirstValue;
 
-            PatternStreamSpec streamSpec = new PatternStreamSpec(evalNode, taggedEventTypes, new ELinkedList<ViewSpec>(), null);
+            PatternStreamSpec streamSpec = new PatternStreamSpec(evalNode, taggedEventTypes, new List<ViewSpec>(), null);
             statementSpec.StreamSpecs.Add(streamSpec);
 
             taggedEventTypes.Clear();

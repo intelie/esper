@@ -91,15 +91,6 @@ namespace net.esper.view.std
             this.groupFieldNames = groupFieldNames;
         }
 
-        /// <summary> Sets event type - required for successful view copy.</summary>
-        /// <param name="eventType">is the event type
-        /// </param>
-
-        public void SetEventType(EventType eventType)
-        {
-            this.eventType = eventType;
-        }
-
         /// <summary> Add a parent data merge view.</summary>
         /// <param name="parentView">is the parent data merge view to add
         /// </param>
@@ -155,6 +146,10 @@ namespace net.esper.view.std
                 // The schema is the parent view's schema plus the added field
                 return eventType;
             }
+            set
+            {
+                this.eventType = value;
+            }
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -171,7 +166,7 @@ namespace net.esper.view.std
         public override IEnumerator<EventBean> GetEnumerator()
         {
             // The merge data view has multiple parent views which are AddPropertyValueView
-            IList<IEnumerable<EventBean>> iterables = new ELinkedList<IEnumerable<EventBean>>();
+            IList<IEnumerable<EventBean>> iterables = new List<IEnumerable<EventBean>>();
 
             foreach (View dataView in parentViews)
             {

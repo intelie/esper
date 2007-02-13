@@ -54,8 +54,8 @@ namespace net.esper.regression.eql
 		public virtual void  testEventType()
 		{
 			EventType result = joinView.EventType;
-			Assert.AreEqual(typeof(Double), result.GetPropertyType("s0.doubleBoxed"));
-			Assert.AreEqual(typeof(Double), result.GetPropertyType("div"));
+			Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.doubleBoxed"));
+			Assert.AreEqual(typeof(double?), result.GetPropertyType("div"));
 			Assert.AreEqual(2, joinView.EventType.PropertyNames.Count);
 		}
 		

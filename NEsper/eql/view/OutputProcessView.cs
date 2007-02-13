@@ -22,7 +22,6 @@ namespace net.esper.eql.view
 
     public class OutputProcessView : ViewSupport, JoinSetIndicator
     {
-
         private readonly ResultSetProcessor resultSetProcessor;
         private readonly Boolean outputLastOnly;
         private readonly OutputCondition outputCondition;
@@ -221,6 +220,9 @@ namespace net.esper.eql.view
                 {
                     return parent.EventType;
                 }
+            }
+            set
+            {
             }
         }
 

@@ -162,6 +162,7 @@ namespace net.esper.view.std
         public override EventType EventType
         {
             get { return eventType; }
+            set { }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()

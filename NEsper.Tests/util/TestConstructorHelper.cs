@@ -38,7 +38,7 @@ namespace net.esper.util
 				ConstructorHelper.invokeConstructor(typeof(SupportCtorNone), new Object[0]);
 				Assert.Fail();
 			}
-			catch (MethodAccessException)
+			catch (MissingMethodException)
 			{
 				// Expected
 			}
@@ -49,7 +49,7 @@ namespace net.esper.util
 				ConstructorHelper.invokeConstructor(typeof(SupportCtorInt), new Object[0]);
 				Assert.Fail();
 			}
-			catch (MethodAccessException)
+            catch (MethodAccessException)
 			{
 				// Expected
 			}
@@ -60,7 +60,7 @@ namespace net.esper.util
 				ConstructorHelper.invokeConstructor(typeof(SupportCtorInt), new Object[]{"a"});
 				Assert.Fail();
 			}
-			catch (System.MethodAccessException ex)
+			catch (MethodAccessException ex)
 			{
 				// Expected
 			}

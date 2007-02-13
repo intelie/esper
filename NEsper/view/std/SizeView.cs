@@ -51,6 +51,7 @@ namespace net.esper.view.std
         public override EventType EventType
         {
             get { return eventType; }
+            set { }
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -69,7 +70,7 @@ namespace net.esper.view.std
             }
 
             // If there are child views, fire update method
-            if ((this.HasViews()) && (priorSize != size))
+            if ((this.HasViews) && (priorSize != size))
             {
                 EDataDictionary postNewData = new EDataDictionary();
                 postNewData[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = size;

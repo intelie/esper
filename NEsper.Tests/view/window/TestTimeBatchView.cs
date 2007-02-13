@@ -272,7 +272,7 @@ namespace net.esper.view.window
 			Assert.AreEqual( 8120, myView.MsecIntervalSize );
 			Assert.IsNull( myView.InitialReferencePoint );
 
-			myView = new TimeBatchView( 0.23, 1000L ) ;
+			myView = new TimeBatchView( 0.23, 10000L ) ;
 			Assert.AreEqual( 230, myView.MsecIntervalSize );
 			Assert.AreEqual( 10000L, (long) myView.InitialReferencePoint );
 

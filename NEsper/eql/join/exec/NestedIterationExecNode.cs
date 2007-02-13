@@ -57,7 +57,7 @@ namespace net.esper.eql.join.exec
          */
         protected void recursiveNestedJoin(EventBean lookupEvent, int nestingOrderIndex, EventBean[] currentPath, IList<EventBean[]> result)
         {
-            IList<EventBean[]> nestedResult = new ELinkedList<EventBean[]>();
+            IList<EventBean[]> nestedResult = new List<EventBean[]>();
             ExecNode nestedExecNode = childNodes[nestingOrderIndex];
             nestedExecNode.Process(lookupEvent, currentPath, nestedResult);
             Boolean isLastStream = (nestingOrderIndex == nestingOrderLength - 1);

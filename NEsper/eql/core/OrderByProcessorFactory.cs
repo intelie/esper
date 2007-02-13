@@ -52,14 +52,14 @@ namespace net.esper.eql.core
             }
 
             // Determine aggregate functions used in select, if any
-            IList<ExprAggregateNode> selectAggNodes = new ELinkedList<ExprAggregateNode>();
+            IList<ExprAggregateNode> selectAggNodes = new List<ExprAggregateNode>();
             foreach (SelectExprElementNamedSpec element in selectionList)
             {
                 ExprAggregateNode.getAggregatesBottomUp(element.SelectExpression, selectAggNodes);
             }
 
             // Get all the aggregate functions occuring in the order-by clause
-            IList<ExprAggregateNode> orderAggNodes = new ELinkedList<ExprAggregateNode>();
+            IList<ExprAggregateNode> orderAggNodes = new List<ExprAggregateNode>();
             foreach (ExprNode orderByNode in orderByNodes)
             {
                 ExprAggregateNode.getAggregatesBottomUp(orderByNode, orderAggNodes);

@@ -37,7 +37,7 @@ namespace net.esper.pattern
             }
 
             this.childNodes = childNodes;
-            this.activeChildNodes = new ELinkedList<EvalStateNode>();
+            this.activeChildNodes = new List<EvalStateNode>();
             this.eventsPerChild = new EHashDictionary<EvalStateNode, IList<MatchedEventMap>>();
 
             // In an "and" expression we need to create a state for all child listeners
@@ -84,7 +84,7 @@ namespace net.esper.pattern
             IList<MatchedEventMap> eventList = eventsPerChild.Fetch(fromNode);
             if (eventList == null)
             {
-                eventList = new ELinkedList<MatchedEventMap>();
+                eventList = new List<MatchedEventMap>();
                 eventsPerChild[fromNode] = eventList;
             }
             eventList.Add(matchEvent);
@@ -150,7 +150,7 @@ namespace net.esper.pattern
             }
 
             // Recusively generate MatchedEventMap instances for all accumulated events
-            IList<MatchedEventMap> results = new ELinkedList<MatchedEventMap>();
+            IList<MatchedEventMap> results = new List<MatchedEventMap>();
             GenerateMatchEvents(listArray, 0, results, matchEvent);
 
             return results;

@@ -66,14 +66,14 @@ namespace net.esper.core
         public override EventType EventType
         {
             get { return null; }
+            set { }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return null;
         }
-
-
+        
         public virtual void execute()
         {
             isDispatchWaiting = false;

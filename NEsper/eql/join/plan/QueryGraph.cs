@@ -282,8 +282,8 @@ namespace net.esper.eql.join.plan
 			/// <summary> Ctor.</summary>
 			public GraphValue()
 			{
-				propertiesLeft = new ELinkedList<String>();
-				propertiesRight = new ELinkedList<String>();
+				propertiesLeft = new List<String>();
+				propertiesRight = new List<String>();
 			}
 
 			/// <summary> Add key and index property.</summary>

@@ -99,10 +99,10 @@ namespace net.esper.schedule
             // current time we just add one to the current time for getting the head map
             ETreeDictionary<Int64, ETreeDictionary<ScheduleSlot, ScheduleCallback>> headMap = timeCallbackMap.Head( currentTime + 1 );
 
-            IList<ScheduleCallback> triggerables = new ELinkedList<ScheduleCallback>();
+            IList<ScheduleCallback> triggerables = new List<ScheduleCallback>();
 
             // First determine all triggers to shoot
-            IList<Int64> removeKeys = new ELinkedList<Int64>();
+            IList<Int64> removeKeys = new List<Int64>();
             foreach (KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleCallback>> entry in headMap)
             {
                 removeKeys.Add(entry.Key);

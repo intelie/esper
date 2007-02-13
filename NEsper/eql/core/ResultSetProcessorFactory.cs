@@ -86,7 +86,7 @@ namespace net.esper.eql.core
             expandAliases(selectionList, orderByList);
 
             // Validate selection expressions, if any (could be wildcard i.e. empty list)
-            IList<SelectExprElementNamedSpec> namedSelectionList = new ELinkedList<SelectExprElementNamedSpec>();
+            IList<SelectExprElementNamedSpec> namedSelectionList = new List<SelectExprElementNamedSpec>();
             for (int i = 0; i < selectionList.Count; i++)
             {
                 // validate element
@@ -141,7 +141,7 @@ namespace net.esper.eql.core
             }
 
             // Determine aggregate functions used in select, if any
-            IList<ExprAggregateNode> selectAggregateExprNodes = new ELinkedList<ExprAggregateNode>();
+            IList<ExprAggregateNode> selectAggregateExprNodes = new List<ExprAggregateNode>();
             foreach (SelectExprElementNamedSpec element in namedSelectionList)
             {
                 ExprAggregateNode.getAggregatesBottomUp(element.SelectExpression, selectAggregateExprNodes);
@@ -164,7 +164,7 @@ namespace net.esper.eql.core
             ISet<Pair<Int32, String>> nonAggregatedProps = getNonAggregatedProps(selectNodes);
 
             // Determine if we have a having clause with aggregation
-            IList<ExprAggregateNode> havingAggregateExprNodes = new ELinkedList<ExprAggregateNode>();
+            IList<ExprAggregateNode> havingAggregateExprNodes = new List<ExprAggregateNode>();
             ISet<Pair<Int32, String>> propertiesAggregatedHaving = new EHashSet<Pair<Int32, String>>();
             if (optionalHavingNode != null)
             {
@@ -295,7 +295,7 @@ namespace net.esper.eql.core
         ExprNode havingNode)
         {
             // All aggregation functions in the having node must match with an aggregation function in the select
-            IList<ExprAggregateNode> aggregateNodesHaving = new ELinkedList<ExprAggregateNode>();
+            IList<ExprAggregateNode> aggregateNodesHaving = new List<ExprAggregateNode>();
             if (aggregateNodesHaving != null)
             {
                 ExprAggregateNode.getAggregatesBottomUp(havingNode, aggregateNodesHaving);
@@ -343,7 +343,7 @@ namespace net.esper.eql.core
         	ISet<Pair<Int32, String>> propertiesGroupedBy)
         {
             // Make sure there is no aggregate function in group-by
-            IList<ExprAggregateNode> aggNodes = new ELinkedList<ExprAggregateNode>();
+            IList<ExprAggregateNode> aggNodes = new List<ExprAggregateNode>();
             foreach (ExprNode groupByNode in groupByNodes)
             {
                 ExprAggregateNode.getAggregatesBottomUp(groupByNode, aggNodes);
