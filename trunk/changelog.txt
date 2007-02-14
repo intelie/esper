@@ -3,12 +3,12 @@ Esper Changelog
 
 Changes in version 1.6
 ----------------------
-* Added support for array use in EQL (Enhancement Request ESPER-76 Java array initialization syntax for constants)
-* Added support for group-by and previous (TODO)
-* Added length window batch (TODO)
+* Added support for group-by and previous (ESPER-80 Prev function to consider grouped windows)
+* Added length window batch (ESPER-27 jumping/tumbling window)
+* Added support for array definition (Enhancement Request ESPER-76 Java array initialization syntax for constants)
 * Removed dependency on Apache Common BeanUtils library (commons-beanutils-1.7.0)
 * Fixed issue ESPER-78 "Insert-into streams not using correct event type when same-typed streams"
-* documentation: output model, extensive description of build-in views
+* Docs: Output model illustrations for time windows and event model; Extensive description of built-in views
 
 Changes in version 1.5.0
 ----------------------
