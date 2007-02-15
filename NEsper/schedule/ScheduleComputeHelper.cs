@@ -65,10 +65,10 @@ namespace net.esper.schedule
 				log.Debug(
 					".computeNextOccurance Completed," +
 					"  result=" + result.ToString("r") +
-					"  long=" + result.Ticks);
+					"  long=" + DateTimeHelper.TimeInMillis(result) ) ;
 			}
-			
-			return result.Ticks;
+
+            return DateTimeHelper.TimeInMillis(result);
 		}
 		
 		private static DateTime Compute(ScheduleSpec spec, long afterTimeInMillis)
@@ -94,7 +94,7 @@ namespace net.esper.schedule
 			if (isSecondsSpecified)
 			{
                 result.Second = NextValue(secondsSet, after.Second);
-				if (result.Second == - 1)
+				if (result.Second == -1)
 				{
                     result.Second = NextValue(secondsSet, 0);
 					after = after.AddMinutes(1) ;
@@ -118,7 +118,7 @@ namespace net.esper.schedule
                 result.Second = NextValue(secondsSet, 0);
                 result.Minute = NextValue(minutesSet, 0);
 			}
-			if (result.Hour == - 1)
+			if (result.Hour == -1)
 			{
                 result.Hour = NextValue(hoursSet, 0);
 				after = after.AddDays(1) ;
@@ -140,8 +140,8 @@ namespace net.esper.schedule
 					after = after.AddMonths(1) ;
 				}
 			}
-			
-			int currentMonth = after.Month + 1 ;
+
+            int currentMonth = after.Month ;
             result.Month = NextValue(monthsSet, currentMonth);
 			if (result.Month != currentMonth)
 			{
@@ -150,7 +150,7 @@ namespace net.esper.schedule
 				result.Hour = NextValue(hoursSet, 0);
 				result.DayOfMonth = DetermineDayOfMonth(spec, after, result);
 			}
-			if (result.Month == - 1)
+			if (result.Month == -1)
 			{
                 result.Month = NextValue(monthsSet, 0);
 				after = after.AddYears(1) ;
@@ -158,7 +158,7 @@ namespace net.esper.schedule
 			
 			// Perform a last valid date check, if failing, try to compute a new date based on this altered after date
 			int year = after.Year;
-            if (!CheckDayValidInMonth(result.DayOfMonth, result.Month - 1, year))
+            if (!CheckDayValidInMonth(result.DayOfMonth, result.Month, year))
 			{
 				return Compute( spec, DateTimeHelper.TimeInMillis( after ) );
 			}
@@ -315,22 +315,22 @@ namespace net.esper.schedule
 		/// If the valueSet passed is null it is treated as a wildcard and the same StartValue is returned
 		/// </summary>
 		/// <param name="valueSet"></param>
-		/// <param name="StartValue"></param>
+		/// <param name="startValue"></param>
 		/// <returns></returns>
 
-		private static int NextValue(ETreeSet<Int32> valueSet, int StartValue)
+		private static int NextValue(ETreeSet<Int32> valueSet, int startValue)
         {
             if (valueSet == null)
             {
-                return StartValue;
+                return startValue;
             }
 
-            if (valueSet.Contains(StartValue))
+            if (valueSet.Contains(startValue))
             {
-                return StartValue;
+                return startValue;
             }
 
-            ETreeSet<Int32> tailSet = valueSet.TailSet(StartValue + 1);
+            ETreeSet<Int32> tailSet = valueSet.TailSet(startValue + 1);
 
             if (tailSet.Count == 0)
             {

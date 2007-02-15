@@ -113,7 +113,7 @@ namespace net.esper.eql.expression
 			{
 				this.minMaxTypeEnum = minMaxTypeEnum;
 				this.returnType = returnType;
-				this.refSet = new SortedRefCountedSet<Object>();
+                this.refSet = new SortedRefCountedSet<Object>();
 			}
 			
 			public virtual void enter(Object _object)

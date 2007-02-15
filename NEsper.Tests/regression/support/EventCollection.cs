@@ -36,7 +36,7 @@ namespace net.esper.regression.support
             return testEvents.Fetch(eventId);
         }
 
-        public virtual Int64? getTime(String eventId)
+        public virtual Int64? GetTime(String eventId)
         {
             Int64 value;
             if (testEventTimes.TryGetValue(eventId, out value))

@@ -19,7 +19,14 @@ namespace net.esper.collection
 		
 		public SortedRefCountedSet()
 		{
-			refSet = new C5.TreeDictionary<K, int>() ;
+            if (typeof(K) is IComparable)
+            {
+                refSet = new C5.TreeDictionary<K, int>();
+            }
+            else
+            {
+                refSet = new C5.TreeDictionary<K, int>( new DefaultComparer() ) ;
+            }            
 		}
 		
 		/// <summary> Add a key to the set. Add with a reference count of one if the key didn't exist in the set.
@@ -93,5 +100,14 @@ namespace net.esper.collection
         			( default(K) ) ;
         	}
 		}
+
+        sealed class DefaultComparer : IComparer<K>
+        {
+            public int Compare(K x, K y)
+            {
+                IComparable xx = (IComparable)x;
+                return xx.CompareTo(y);
+            }
+        }
 	}
 }

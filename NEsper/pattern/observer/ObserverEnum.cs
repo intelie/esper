@@ -83,7 +83,8 @@ namespace net.esper.pattern.observer
         {
             foreach (ObserverEnum observerEnum in ObserverEnum.Values)
             {
-                if ((observerEnum.Namespace.Equals(nspace)) && (observerEnum.Name.Equals(name)))
+                if ((observerEnum.Namespace == nspace) &&
+                    (observerEnum.Name == name))
                 {
                     return observerEnum;
                 }

@@ -97,14 +97,17 @@ namespace net.esper.schedule
         {
             // Get the values on or before the current time - to get those that are exactly on the
             // current time we just add one to the current time for getting the head map
-            ETreeDictionary<Int64, ETreeDictionary<ScheduleSlot, ScheduleCallback>> headMap = timeCallbackMap.Head( currentTime + 1 );
+            IEnumerator<KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleCallback>>> headMapEnum ;
 
             IList<ScheduleCallback> triggerables = new List<ScheduleCallback>();
 
             // First determine all triggers to shoot
             IList<Int64> removeKeys = new List<Int64>();
-            foreach (KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleCallback>> entry in headMap)
+
+            for( headMapEnum = timeCallbackMap.HeadFast(currentTime + 1) ; headMapEnum.MoveNext() ; )
             {
+                KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleCallback>> entry = headMapEnum.Current ;
+
                 removeKeys.Add(entry.Key);
                 foreach (ScheduleCallback callback in entry.Value.Values)
                 {
@@ -120,8 +123,10 @@ namespace net.esper.schedule
             }
 
             // Next remove all callbacks
-            foreach (KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleCallback>> entry in headMap)
+            for (headMapEnum = timeCallbackMap.HeadFast(currentTime + 1); headMapEnum.MoveNext(); )
             {
+                KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleCallback>> entry = headMapEnum.Current;
+
                 foreach (ScheduleCallback callback in entry.Value.Values)
                 {
                     callbackSetMap.Remove(callback);

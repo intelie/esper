@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using net.esper.compat;
 
@@ -130,18 +131,30 @@ namespace net.esper.events
 			
 			public Object GetValue( EventBean obj )
 			{
-				IDataDictionary map = obj.Underlying as IDataDictionary ;
-				if ( map == null )
-				{
+                EventBean wrapper = null;
+
+                // Underlying just be a type of dictionary.  We don't care if its generic
+                // or the old style dictionary, but it must cast to one.
+
+                Object underlying = obj.Underlying;
+                if ( underlying is IDictionary<string,EventBean> )
+                {
+                    IDictionary<string, EventBean> tempDict = (IDictionary<string, EventBean>) underlying;
+                    tempDict.TryGetValue(tag, out wrapper);
+                }
+                else if (underlying is System.Collections.IDictionary)
+                {
+                    wrapper = ((System.Collections.IDictionary)underlying)[tag] as EventBean;
+                }
+                else
+                {
 					throw new PropertyAccessException(
 						"Mismatched property getter to event bean type, " +
-						"the underlying data object is not of type IDataDictionary");
+						"the underlying data object is not of type IDictionary");
 				}
-	
-	
+
 				// If the map does not contain the key, this is allowed and represented as null
-				EventBean wrapper = (EventBean) map.Fetch( tag, null ) ;
-				if (wrapper !=  null)
+				if (wrapper != null)
 				{
 					return wrapper.Underlying;
 				}
@@ -168,16 +181,29 @@ namespace net.esper.events
 			
 			public Object GetValue( EventBean obj )
 			{
-				IDataDictionary map = obj.Underlying as IDataDictionary ;
-				if ( map == null )
-				{
-					throw new PropertyAccessException(
-						"Mismatched property getter to event bean type, " +
-						"the underlying data object is not of type IDataDictionary");
-				}
+                EventBean wrapper = null;
+
+                // Underlying just be a type of dictionary.  We don't care if its generic
+                // or the old style dictionary, but it must cast to one.
+
+                Object underlying = obj.Underlying;
+                if (underlying is IDictionary<string, EventBean>)
+                {
+                    IDictionary<string, EventBean> tempDict = (IDictionary<string, EventBean>)underlying;
+                    tempDict.TryGetValue(tag, out wrapper);
+                }
+                else if (underlying is System.Collections.IDictionary)
+                {
+                    wrapper = ((System.Collections.IDictionary)underlying)[tag] as EventBean;
+                }
+                else
+                {
+                    throw new PropertyAccessException(
+                        "Mismatched property getter to event bean type, " +
+                        "the underlying data object is not of type IDictionary");
+                }
 
 				// If the map does not contain the key, this is allowed and represented as null
-				EventBean wrapper = (EventBean) map.Fetch( tag, null ) ;
 				if (wrapper !=  null)
 				{
 					return nestedGetter.GetValue(wrapper);

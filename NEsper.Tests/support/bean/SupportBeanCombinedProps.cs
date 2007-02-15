@@ -10,7 +10,12 @@ namespace net.esper.support.bean
     
     public class SupportBeanCombinedProps
     {
-        virtual public NestedLevOne[] Array
+        public NestedLevOne[] array
+        {
+            get { return indexed; }
+        }
+        
+        public NestedLevOne[] Array
         {
             get { return indexed; }
         }
@@ -75,17 +80,19 @@ namespace net.esper.support.bean
         {
             virtual public String Value
             {
-                get
-                {
-                    return value;
-                }
-
+                get { return _value;  }
             }
-            private String value;
+
+            virtual public String value
+            {
+                get { return _value; }
+            }
+
+            private String _value;
 
             public NestedLevTwo(String value)
             {
-                this.value = value;
+                this._value = value;
             }
         }
     }

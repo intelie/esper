@@ -32,6 +32,22 @@ namespace net.esper.compat
 			child.AddAll( m_subDictionary.RangeTo( key ) ) ;
 			return new ETreeDictionary<K, V>( child ) ;
 		}
+
+        /// <summary>
+        /// Retrieves the list of key-value pairs for all elements in the
+        /// dictionary less than or equal to the key.  This operation is less
+        /// expensive that the Head() method.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+
+        public virtual IEnumerator<KeyValuePair<K,V>> HeadFast(K key)
+        {
+            foreach (C5.KeyValuePair<K, V> keyValuePair in m_subDictionary.RangeTo(key))
+            {
+                yield return new KeyValuePair<K, V>(keyValuePair.Key, keyValuePair.Value);
+            }
+        }
 		
 		/// <summary>
 		/// Retrieves a dictionary that includes all elements greater than
@@ -46,6 +62,23 @@ namespace net.esper.compat
 			child.AddAll( m_subDictionary.RangeFrom( key ) ) ;
 			return new ETreeDictionary<K, V>( child ) ;
 		}
+
+
+        /// <summary>
+        /// Retrieves the list of key-value pairs for all elements in the
+        /// dictionary greater than or equal to the key.  This operation is less
+        /// expensive that the Tail() method.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+
+        public virtual IEnumerator<KeyValuePair<K, V>> TailFast(K key)
+        {
+            foreach (C5.KeyValuePair<K, V> keyValuePair in m_subDictionary.RangeFrom(key))
+            {
+                yield return new KeyValuePair<K, V>(keyValuePair.Key, keyValuePair.Value);
+            }
+        }
 
 		/// <summary>
 		/// Retrieves a dictionary that includes all elements greater than

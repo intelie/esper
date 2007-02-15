@@ -10,7 +10,6 @@ using NUnit.Framework;
 
 namespace net.esper.regression.pattern
 {
-
     [TestFixture]
     public class TestRepeatRouteEvent
     {

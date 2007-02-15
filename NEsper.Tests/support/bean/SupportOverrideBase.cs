@@ -6,12 +6,12 @@ namespace net.esper.support.bean
 	{
 		virtual public String Val
 		{
-			get { return val; }
+			get { return _val; }
 		}
 
         virtual public String val
         {
-            get { return this.Val; }
+            get { return _val; }
         }
 
 		private String _val;

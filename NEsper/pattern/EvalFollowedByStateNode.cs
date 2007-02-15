@@ -56,7 +56,8 @@ namespace net.esper.pattern
 				throw new SystemException( "Followed by state node is inactive" );
 			}
 
-			foreach ( EvalStateNode child in nodes.Keys )
+            List<EvalStateNode> temp = new List<EvalStateNode>(nodes.Keys);
+			foreach ( EvalStateNode child in temp )
 			{
 				child.Start();
 			}

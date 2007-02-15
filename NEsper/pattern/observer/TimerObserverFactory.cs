@@ -1,17 +1,38 @@
 using System;
-using PatternContext = net.esper.pattern.PatternContext;
-using MatchedEventMap = net.esper.pattern.MatchedEventMap;
-using ScheduleSpec = net.esper.schedule.ScheduleSpec;
-using TimePeriodParameter = net.esper.eql.parse.TimePeriodParameter;
+
+using net.esper.eql.parse;
+using net.esper.pattern;
+using net.esper.schedule;
+
 namespace net.esper.pattern.observer
 {
+	/// <summary>
+    /// Factory for making observer instances.
+    /// </summary>
 	
-	/// <summary> Factory for making observer instances.</summary>
-	public class TimerObserverFactory : ObserverFactory
+    public class TimerObserverFactory : ObserverFactory
 	{
 		private ScheduleSpec scheduleSpec;
 		private long msec;
-		
+
+        public TimerObserverFactory(Object[] args)
+        {
+            Object value = args[0];
+
+            if ( value is TimePeriodParameter)
+            {
+                this.msec = (long)Math.Round(((TimePeriodParameter)value).NumSeconds * 1000d);
+            }
+            else if (value is int)
+            {
+                this.msec = (long)Math.Round((int)value * 1000d);
+            }
+            else if (value is double)
+            {
+                this.msec = (long)Math.Round((double) value * 1000d);
+            }
+        }
+
 		/// <summary> Ctor.</summary>
 		/// <param name="scheduleSpec">- schedule definition.
 		/// </param>
@@ -33,8 +54,7 @@ namespace net.esper.pattern.observer
 		/// </param>
 		public TimerObserverFactory(double seconds)
 		{
-			//UPGRADE_TODO: Method 'java.lang.Math.round' was converted to 'System.Math.Round' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javalangMathround_double'"
-			this.msec = (long) System.Math.Round(seconds * 1000d);
+			this.msec = (long) Math.Round(seconds * 1000d);
 		}
 		
 		/// <summary> Ctor.</summary>
@@ -42,8 +62,7 @@ namespace net.esper.pattern.observer
 		/// </param>
 		public TimerObserverFactory(TimePeriodParameter timePeriodParameter)
 		{
-			//UPGRADE_TODO: Method 'java.lang.Math.round' was converted to 'System.Math.Round' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javalangMathround_double'"
-			this.msec = (long) System.Math.Round(timePeriodParameter.NumSeconds * 1000d);
+			this.msec = (long) Math.Round(timePeriodParameter.NumSeconds * 1000d);
 		}
 		
 		public virtual EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)

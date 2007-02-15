@@ -1132,7 +1132,7 @@ namespace net.esper.eql.parse
             ObserverFactory observerFactory = null;
             try
             {
-                Object obsFactory = ConstructorHelper.invokeConstructor(observerEnum.Clazz, observerParameters);
+                Object obsFactory = ConstructorHelper.invokeConstructor(observerEnum.Clazz, new Object[] { observerParameters });
                 observerFactory = (ObserverFactory)obsFactory;
 
                 if (log.IsDebugEnabled)
