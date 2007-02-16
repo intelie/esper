@@ -20,7 +20,7 @@
 		<orderedlist spacing="compact">
 			<listitem>
 				<para>
-					Operators that control pattern finder creation and termination: <literal>every</literal>
+					Operators that control pattern sub-expression repetition: <literal>every</literal>
 				</para>
 			</listitem>
 			<listitem>
@@ -346,7 +346,7 @@ else
 				</listitem>
 				<listitem>
 					<para>
-						Filter criteria can list the same event property only once. 
+						Filter criteria can list the same event property only once. That is, a filter such as <literal>(price &gt;= 10, price &lt;= 20)</literal> is not allowed but can be expressed as <literal>(price between 10 and 20)</literal>.
 					</para>
 				</listitem>
 				<listitem>
@@ -370,20 +370,20 @@ else
            <title>Every</title>
     
             <para>				
-				The <literal>every</literal> operator indicates that the pattern expression should restart when the pattern matches.
-				Without the <literal>every</literal> operator the pattern expressions matcher stops when the pattern matches once.
+				The <literal>every</literal> operator indicates that the pattern sub-expression should restart when the sub-expression qualified by the <literal>every</literal> keyword evaluates to true or false.
+				Without the <literal>every</literal> operator the pattern sub-expression stops when the pattern sub-expression evaluates to true or false.
             </para>
 				
             <para>
-				Thus the <literal>every</literal> operator works like a factory for the pattern expression contained within. When the pattern expression within it 
-				fires and thus quits checking for events, the <literal>every</literal> causes the start of a new pattern matcher listening for more occurances of the same
+				Thus the <literal>every</literal> operator works like a factory for the pattern sub-expression contained within. When the pattern sub-expression within it 
+				fires and thus quits checking for events, the <literal>every</literal> causes the start of a new pattern sub-expression listening for more occurances of the same
 				event or set of events.
             </para>				
 
             <para>
-				Every time a pattern expression within an <literal>every</literal> operator turns true a new active pattern matcher is started looking 
-				for more event(s) or timing conditions that match the pattern expression. If the <literal>every</literal> operator is not specified for an expression, 
-				the expression stops after the first match was found.
+				Every time a pattern sub-expression within an <literal>every</literal> operator turns true the engine starts a new active sub-expression looking 
+				for more event(s) or timing conditions that match the pattern sub-expression. If the <literal>every</literal> operator is not specified for a sub-expression, 
+				the sub-expression stops after the first match was found.
             </para>
             
             <para>
@@ -550,6 +550,45 @@ else
 				The examples show that it is possible that a pattern fires for multiple combinations of events that match a pattern expression.
 				Each combination is posted as an <literal>EventBean</literal> instance to the <literal>update</literal> method in the <literal>UpdateListener</literal> implementation.
             </para>
+            
+            <para>
+				Let's consider the <literal>every</literal> operator in conjunction with a sub-expression that matches 3 events that follow each other:
+            </para>
+			<programlisting><![CDATA[every (A -> B -> C)]]></programlisting>
+  
+            <para>
+				The pattern first looks for event A. When event A arrives, it looks for event B. After event B arrives, the pattern looks for event C. Finally when event C arrives the pattern fires. The engine then starts looking for event A again.
+            </para>
+
+            <para>
+				Assume that between event B and event C a second event A<subscript>2</subscript> arrives. The pattern would ignore the A<subscript>2</subscript> entirely since it's then looking for event C.
+				As observed in the prior example, the <literal>every</literal> operator restarts the sub-expression <literal>A -> B -> C</literal> only when the sub-expression fires.
+            </para>
+
+            <para>
+				In the next statement the <literal>every</literal> operator applies only to the A event, not the whole sub-expression:
+            </para>
+			<programlisting><![CDATA[every A -> B -> C]]></programlisting>
+ 
+            <para>
+				This pattern now matches for any event A that is followed by an event B and then event C, regardless of when the event A arrives. Oftentimes this can be practical in combination with the <literal>and not</literal> syntax and the <literal>timer:within</literal> syntax as the
+				next example shows. 
+            </para>
+				
+            <para>
+				This example looks at temperature sensor events named Sample. The pattern detects when 3 sensor events indicate a temperature of more then 50 degrees uninterrupted within 90 seconds of the first event, considering events for the same sensor only.
+            </para>
+
+			<programlisting><![CDATA[every sample=Sample(temp > 50) ->
+  ( (Sample(sensor=sample.sensor, temp > 50) and not Sample(sensor=sample.sensor, temp <= 50))   
+      ->
+    (Sample(sensor=sample.sensor, temp > 50) and not Sample(sensor=sample.sensor, temp <= 50))   
+  ) where timer:within(90 seconds))]]></programlisting>
+
+            <para>
+				The pattern starts a new sub-expression in the round braces after the first followed-by operator for each time a sensor indicated more then 50 degrees. Each sub-expression then lives a maximum of 90 seconds. Each sub-expression ends if a temperature of 50 degress or less is encountered for the same sensor. Only if 3 temperature events in a row indicate more then 50 degrees, and within 90 seconds of the first event, and for the same sensor, does this pattern fire.
+            </para>
+
         </sect2>
 
         <sect2 id="pattern-logical-and" >
