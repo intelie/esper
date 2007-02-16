@@ -1,0 +1,57 @@
+package net.esper.view.internal;
+
+import junit.framework.TestCase;
+import net.esper.support.view.SupportBeanClassView;
+import net.esper.support.bean.SupportBean_A;
+import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.event.SupportEventBeanFactory;
+import net.esper.event.EventBean;
+import net.esper.view.internal.PriorEventBufferSingle;
+
+public class TestPriorEventView extends TestCase
+{
+    private PriorEventBufferSingle buffer;
+    private PriorEventView view;
+    private SupportBeanClassView childView;
+
+    public void setUp()
+    {
+        buffer = new PriorEventBufferSingle(1);
+        view = new PriorEventView(buffer);
+        childView = new SupportBeanClassView(SupportMarketDataBean.class);
+        view.addView(childView);
+    }
+
+    public void testUpdate()
+    {
+        // Send some data
+        EventBean newEventsOne[] = makeBeans("a", 2);
+        view.update(newEventsOne, null);
+
+        // make sure received
+        assertSame(newEventsOne, childView.getLastNewData());
+        assertNull(childView.getLastOldData());
+        childView.reset();
+
+        // Assert random access
+        assertSame(newEventsOne[0], buffer.getRelativeToEvent(newEventsOne[1], 0));
+
+        EventBean[] newEventsTwo = makeBeans("b", 3);
+        view.update(newEventsTwo, null);
+
+        assertSame(newEventsTwo[1], buffer.getRelativeToEvent(newEventsTwo[2], 0));
+        assertSame(newEventsTwo[0], buffer.getRelativeToEvent(newEventsTwo[1], 0));
+        assertSame(newEventsOne[1], buffer.getRelativeToEvent(newEventsTwo[0], 0));
+    }
+
+    private EventBean[] makeBeans(String id, int numTrades)
+    {
+        EventBean[] trades = new EventBean[numTrades];
+        for (int i = 0; i < numTrades; i++)
+        {
+            SupportBean_A bean = new SupportBean_A(id + i);
+            trades[i] = SupportEventBeanFactory.createObject(bean);
+        }
+        return trades;
+    }
+}
