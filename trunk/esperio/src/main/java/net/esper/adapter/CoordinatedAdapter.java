@@ -7,7 +7,7 @@ import net.esper.schedule.ScheduleSlot;
 /** 
  * An Adapter that can be coordinated by an AdapterCoordinator.
  */
-public interface CoordinatedAdapter extends InputAdapter
+public interface CoordinatedAdapter extends Adapter
 {
 	/**
 	 * Get the next event in line to be sent into the runtime , or null if there is no available event.

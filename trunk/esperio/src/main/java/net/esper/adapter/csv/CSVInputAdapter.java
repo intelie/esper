@@ -1,36 +1,22 @@
 
 package net.esper.adapter.csv;
 
-import java.io.EOFException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import net.esper.adapter.*;
+import net.esper.client.*;
+import net.esper.core.*;
+import net.esper.event.*;
+import net.esper.util.*;
+import net.sf.cglib.reflect.*;
+import org.apache.commons.logging.*;
 
-import net.esper.adapter.AbstractCoordinatedAdapter;
-import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.AdapterState;
-import net.esper.adapter.InputAdapter;
-import net.esper.adapter.SendableEvent;
-import net.esper.adapter.SendableMapEvent;
-import net.esper.client.EPException;
-import net.esper.client.EPServiceProvider;
-import net.esper.core.EPServiceProviderSPI;
-import net.esper.event.EventAdapterService;
-import net.esper.event.EventType;
-import net.esper.util.JavaClassHelper;
-import net.sf.cglib.reflect.FastClass;
-import net.sf.cglib.reflect.FastConstructor;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * An event Adapter that uses a CSV file for a source.
  */
-public class CSVInputAdapter extends AbstractCoordinatedAdapter implements InputAdapter
+public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Adapter
 {
 	private static final Log log = LogFactory.getLog(CSVInputAdapter.class);
 

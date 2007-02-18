@@ -1,27 +1,15 @@
 package net.esper.regression.adapter;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import junit.framework.*;
+import net.esper.adapter.*;
+import net.esper.adapter.csv.*;
+import net.esper.client.*;
+import net.esper.client.time.*;
+import net.esper.event.*;
+import net.esper.support.util.*;
 
-import junit.framework.TestCase;
-import net.esper.adapter.AdapterInputSource;
-import net.esper.adapter.AdapterState;
-import net.esper.adapter.InputAdapter;
-import net.esper.adapter.csv.CSVInputAdapter;
-import net.esper.adapter.csv.CSVInputAdapterSpec;
-import net.esper.client.Configuration;
-import net.esper.client.EPAdministrator;
-import net.esper.client.EPException;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
-import net.esper.client.time.CurrentTimeEvent;
-import net.esper.client.time.TimerControlEvent;
-import net.esper.event.EventBean;
-import net.esper.support.util.SupportUpdateListener;
+import java.io.*;
+import java.util.*;
 
 public class TestCSVAdapter extends TestCase
 {
@@ -29,7 +17,7 @@ public class TestCSVAdapter extends TestCase
 	private String eventTypeAlias;
 	private EPServiceProvider epService;
 	private long currentTime;
-	private InputAdapter adapter;
+	private Adapter adapter;
 	private String[] propertyOrderTimestamps;
 	private String[] propertyOrderNoTimestamps;
 	private Map<String, Class> propertyTypes;

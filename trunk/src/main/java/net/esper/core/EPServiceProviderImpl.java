@@ -115,7 +115,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         engine = new EPServiceEngine(services, runtime, admin);
 
         // Set up ouput adapter EPService Provider.
-        setEPServiceProviderAdapters(this, configSnapshot);
+        setEPServiceProviderAdapters(configSnapshot);
     }
 
     private static Map<String, Class> createPropertyTypes(Properties properties)
@@ -254,27 +254,47 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return databaseConfigService;
     }
 
-    private static void setEPServiceProviderAdapters(EPServiceProviderSPI spi,
-                                                           ConfigurationSnapshot configSnapshot)
+  private void setEPServiceProviderAdapters(ConfigurationSnapshot configSnapshot)
+  {
+    List<AdapterLoader> adapterLoaders = configSnapshot.getAdapterLoaders();
+    if (adapterLoaders == null) return;
+    try
     {
-      List<AdapterLoader> adapterLoaders = configSnapshot.getAdapterLoaders();
-      if (adapterLoaders == null) return;
-      try
+      for (Iterator<AdapterLoader> adapterLoaderIt = adapterLoaders.iterator(); adapterLoaderIt.hasNext(); )
       {
-        for (Iterator<AdapterLoader> adapterLoaderIt = adapterLoaders.iterator(); adapterLoaderIt.hasNext(); )
-        {
-          Class[] types = new Class[]{ net.esper.core.EPServiceProviderSPI.class};
-          AdapterLoader adapterLoader = adapterLoaderIt.next();
-          Method method = adapterLoader.getClass().getMethod("setEPServiceProvider", types);
-          Object[] args = new Object[] {spi};
-          method.invoke(adapterLoader, args);
-        }
-      }
-      catch (Exception ex)
-      {
-        throw new EPException("Could not set Service Provider for ouptut adapters");
+        Class[] types = new Class[]{ net.esper.core.EPServiceProviderSPI.class};
+        AdapterLoader adapterLoader = adapterLoaderIt.next();
+        Method method = adapterLoader.getClass().getMethod("setEPServiceProvider", types);
+        Object[] args = new Object[] {this};
+        method.invoke(adapterLoader, args);
       }
     }
+    catch (Exception ex)
+    {
+      throw new EPException("Could not set Service Provider for ouptut adapters");
+    }
+  }
+
+  public void setEPServiceProviderAdapters(Configuration configuration)
+  {
+    List<AdapterLoader> adapterLoaders = configuration.getAdapterLoaders();
+    if (adapterLoaders == null) return;
+    try
+    {
+      for (Iterator<AdapterLoader> adapterLoaderIt = adapterLoaders.iterator(); adapterLoaderIt.hasNext(); )
+      {
+        Class[] types = new Class[]{ net.esper.core.EPServiceProviderSPI.class};
+        AdapterLoader adapterLoader = adapterLoaderIt.next();
+        Method method = adapterLoader.getClass().getMethod("setEPServiceProvider", types);
+        Object[] args = new Object[] {this};
+        method.invoke(adapterLoader, args);
+      }
+    }
+    catch (Exception ex)
+    {
+      throw new EPException("Could not set Service Provider for ouptut adapters");
+    }
+  }
 
     /**
      * Snapshot of Configuration is held for re-initializing engine state

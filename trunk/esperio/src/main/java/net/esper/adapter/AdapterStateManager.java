@@ -1,7 +1,7 @@
 package net.esper.adapter;
 
 /**
- * A utility to manage the state transitions for an InputAdapter.
+ * A utility to manage the state transitions for an Adapter.
  */
 public class AdapterStateManager
 {

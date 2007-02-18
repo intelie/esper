@@ -1,9 +1,9 @@
 package net.esper.adapter;
 
-import net.esper.client.EPException;
+import net.esper.client.*;
 
 /**
- * An InputAdapter takes some external data, converts it into events,
+ * An Adapter takes some external data, converts it into events,
  * and sends it into the runtime engine.
  */
 public interface Adapter
@@ -21,7 +21,7 @@ public interface Adapter
     public void pause() throws EPException;
 
     /**
-     * Resume sending events after the InputAdapter has been paused.
+     * Resume sending events after the Adapter has been paused.
      * @throws EPException in case of errors processing the events
      */
     public void resume() throws EPException;
@@ -34,13 +34,13 @@ public interface Adapter
     public void stop() throws EPException;
 
     /**
-     * Destroy the InputAdapter, stopping the sending of all events and releasing all the
-     * resources, and disallowing any further state changes on the InputAdapter.
+     * Destroy the Adapter, stopping the sending of all events and releasing all the
+     * resources, and disallowing any further state changes on the Adapter.
      */
     public void destroy() throws EPException;
 
     /**
-     * Get the state of this InputAdapter.
+     * Get the state of this Adapter.
      * @return state
      */
     public AdapterState getState();

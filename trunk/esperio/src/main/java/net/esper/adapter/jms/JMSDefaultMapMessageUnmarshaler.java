@@ -25,7 +25,7 @@ public class JMSDefaultMapMessageUnmarshaler
   public EventBean unmarshal(EventAdapterService eventAdapterService, Message message,
     long totalDelay, ScheduleSlot scheduleSlot) throws EPException
   {
-    JMSEventBean eventBean = null;
+    EventBean eventBean = null;
     try
     {
       if ((message != null) && (message instanceof MapMessage))

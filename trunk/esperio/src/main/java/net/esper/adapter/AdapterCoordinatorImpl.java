@@ -83,27 +83,27 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 	/* (non-Javadoc)
 	 * @see net.esper.adapter.AdapterCoordinator#add(net.esper.adapter.Adapter)
 	 */
-	public void coordinate(InputAdapter inputAdapter)
+	public void coordinate(Adapter adapter)
 	{
-		if(inputAdapter == null)
+		if(adapter == null)
 		{
 			throw new NullPointerException("AdapterSpec cannot be null");
 		}
 
-		if(!(inputAdapter instanceof CoordinatedAdapter))
+		if(!(adapter instanceof CoordinatedAdapter))
 		{
-			throw new IllegalArgumentException("Cannot coordinate a Adapter of type " + inputAdapter.getClass());
+			throw new IllegalArgumentException("Cannot coordinate a Adapter of type " + adapter.getClass());
 		}
-		CoordinatedAdapter adapter = (CoordinatedAdapter)inputAdapter;
-		if(eventsFromAdapters.values().contains(adapter) || emptyAdapters.contains(adapter))
+		CoordinatedAdapter coordinatedAdapter = (CoordinatedAdapter)adapter;
+		if(eventsFromAdapters.values().contains(coordinatedAdapter) || emptyAdapters.contains(coordinatedAdapter))
 		{
 			return;
 		}
-		adapter.disallowStateTransitions();
-		adapter.setEPService(epService);
-		adapter.setUsingEngineThread(usingEngineThread);
-		adapter.setScheduleSlot(scheduleBucket.allocateSlot());
-		addNewEvent(adapter);
+		coordinatedAdapter.disallowStateTransitions();
+		coordinatedAdapter.setEPService(epService);
+		coordinatedAdapter.setUsingEngineThread(usingEngineThread);
+		coordinatedAdapter.setScheduleSlot(scheduleBucket.allocateSlot());
+		addNewEvent(coordinatedAdapter);
 	}
 
 	/**

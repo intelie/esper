@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.client;
 
-import net.esper.core.EPServiceProviderImpl;
+import net.esper.core.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,13 +58,21 @@ public final class EPServiceProviderManager
      */
     public static EPServiceProvider getProvider(String uri, Configuration configuration) throws ConfigurationException
     {
+        EPServiceProvider runtime;
+
         if (runtimes.containsKey(uri))
         {
-            return runtimes.get(uri);
+           runtime = runtimes.get(uri);
+           if (runtime instanceof EPServiceProviderImpl)
+           {
+            EPServiceProviderImpl spi = (EPServiceProviderImpl) runtime;
+            spi.setEPServiceProviderAdapters(configuration);
+           }
+           return runtime;
         }
 
         // New runtime
-        EPServiceProvider runtime = new EPServiceProviderImpl(configuration);
+        runtime = new EPServiceProviderImpl(configuration);
         runtimes.put(uri, runtime);
 
         return runtime;

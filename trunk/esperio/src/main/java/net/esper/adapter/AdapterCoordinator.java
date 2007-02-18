@@ -5,11 +5,11 @@ package net.esper.adapter;
  * send into the runtime engine arrive in some well-defined order, in
  * effect making the several Adapters into one large sending Adapter.
  */
-public interface AdapterCoordinator extends InputAdapter
+public interface AdapterCoordinator extends Adapter
 {
 	/**
-	 * Coordinate an InputAdapter.
-	 * @param adapter - the InputAdapter to coordinate
+	 * Coordinate an Adapter.
+	 * @param adapter - the Adapter to coordinate
 	 */
-	public void coordinate(InputAdapter adapter);
+	public void coordinate(Adapter adapter);
 }

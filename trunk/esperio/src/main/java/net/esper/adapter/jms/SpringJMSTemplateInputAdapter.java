@@ -77,7 +77,7 @@ public class SpringJMSTemplateInputAdapter extends AbstractCoordinatedAdapter
 
   public SendableEvent read()
   {
-    JMSEventBean evBean = null;
+    EventBean evBean = null;
 
     if (stateManager.getState() == AdapterState.DESTROYED)
     {
@@ -96,7 +96,8 @@ public class SpringJMSTemplateInputAdapter extends AbstractCoordinatedAdapter
           evBean = null;
         }
         updateTotalDelay();
-        return evBean;
+        return null;
+        //return evBean;
       }
       else
       {

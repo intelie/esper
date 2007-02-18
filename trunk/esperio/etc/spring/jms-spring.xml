@@ -69,34 +69,45 @@
         </property>
     </bean>
 
-    <bean id="jmsMarshaler" class="net.esper.adapter.jms.JMSDefaultMapMessageMarshaler"/>
+    <bean id="jmsMessageMarshaler" class="net.esper.adapter.jms.JMSDefaultMapMessageMarshaler"/>
+    <bean id="myCustomMarshaler" class="net.esper.adapter.jms.JMSDefaultMapMessageMarshaler"/>
     
-    <bean id="jmsInputAdapterEventType" class="net.esper.adapter.jms.JMSMapEventType">
-    	<constructor-arg type="java.util.Map">
-    		<map>
-			<entry key="myInt" value="java.lang.Integer"/>
-			<entry key="myDouble" value="java.lang.Double"/>
-			<entry key="myString" value="java.lang.String"/>
-		</map>
-	</constructor-arg>
+    <bean id="subscriptionOne" class="net.esper.adapter.jms.JMSSubscription"> 
+    	<property name="alias"><idref local="subscriptionOne"/></property>
+    	<property name="eventTypeAlias" value="MyMapEvent" />
     </bean>
-    
+
+    <bean id="subscriptionTwo" class="net.esper.adapter.jms.JMSSubscription"> 
+    	<property name="eventTypeAlias" value="MyMapEventTwo" />
+        <property name="jmsMessageMarshaler">
+        	<ref bean="myCustomMarshaler"/>
+        </property>    	
+    </bean>
+
     <bean id="jmsOutputAdapter" class="net.esper.adapter.jms.SpringJMSTemplateOutputAdapter">
     	<property name="jmsTemplate">
         	<ref bean="jmsTemplate"/>
         </property>        
-        <property name="eventTypeAlias" value="MyMapEvent" />
-        <property name="subscriptionSet">
-             <set>
-                 <value>1</value>
-                 <value>2</value>
-             </set>
+        <property name="subscriptionMap">
+             <map>
+             	<entry>
+             	  <key>
+             	  	<idref local="subscriptionOne"/>
+             	  </key>
+		  <ref bean="subscriptionOne"/>
+             	</entry>
+             	<entry>
+             	  <key>
+             	  	<idref local="subscriptionTwo"/>
+             	  </key>
+		  <ref bean="subscriptionTwo"/>
+             	</entry>
+             </map>
          </property>               
-        <property name="jmsMarshaler">
-        	<ref bean="jmsMarshaler"/>
+        <property name="jmsMessageMarshaler">
+        	<ref bean="jmsMessageMarshaler"/>
         </property>
     </bean>
-    
 
     <!--bean id="jmsInputAdapter" class="net.esper.adapter.jms.JMSAdapter">
     	<property name="role" value="RECEIVER"/>
