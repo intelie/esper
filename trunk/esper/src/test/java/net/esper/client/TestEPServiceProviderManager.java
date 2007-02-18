@@ -23,6 +23,12 @@ public class TestEPServiceProviderManager extends TestCase
         assertTrue(runtimeA1 == runtimeA3);
         assertFalse(runtimeA1 == runtimeDef1);
         assertFalse(runtimeA1 == runtimeB);
+
+        assertEquals("A", runtimeA1.getURI());
+        assertEquals("A", runtimeA2.getURI());
+        assertEquals("B", runtimeB.getURI());
+        assertNull(runtimeDef1.getURI());
+        assertNull(runtimeDef2.getURI());
     }
 
     public void testInvalid()

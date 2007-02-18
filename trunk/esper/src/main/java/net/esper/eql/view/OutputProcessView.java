@@ -213,7 +213,12 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
     {
     	if(resultSetProcessor != null)
     	{
-    		return resultSetProcessor.getResultEventType();
+            EventType eventType = resultSetProcessor.getResultEventType();
+            if (eventType != null)
+            {
+                return eventType;
+            }
+            return parent.getEventType();
     	}
     	else 
     	{

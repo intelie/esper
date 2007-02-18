@@ -10,8 +10,6 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.event.EventBean;
 
-// TODO: test previous op and previous grouped
-// TODO: javadocs and docs
 public class TestViewLengthBatch extends TestCase
 {
     private EPServiceProvider epService;

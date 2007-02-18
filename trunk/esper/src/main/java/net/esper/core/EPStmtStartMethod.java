@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Starts and provides the stop method for EQL statements.
  */
-public class EPEQLStmtStartMethod
+public class EPStmtStartMethod
 {
     private final StatementSpec statementSpec;
     private final String eqlStatement;
@@ -55,7 +55,7 @@ public class EPEQLStmtStartMethod
      * @param services is the service instances for dependency injection
      * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
-    public EPEQLStmtStartMethod(StatementSpec statementSpec,
+    public EPStmtStartMethod(StatementSpec statementSpec,
                                 String eqlStatement,
                                 EPServicesContext services,
                                 EPStatementHandle epStatementHandle)
@@ -407,5 +407,5 @@ public class EPEQLStmtStartMethod
         return finalView;
     }
 
-    private static final Log log = LogFactory.getLog(EPEQLStmtStartMethod.class);
+    private static final Log log = LogFactory.getLog(EPStmtStartMethod.class);
 }

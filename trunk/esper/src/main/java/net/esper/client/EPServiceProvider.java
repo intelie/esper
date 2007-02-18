@@ -30,4 +30,10 @@ public interface EPServiceProvider
      * Stops and destroys any event filters, patterns, expressions, views.
      */
     public void initialize();
+
+    /**
+     * Returns the provider URI, or null if this is the default provider.
+     * @return provider URI
+     */
+    public String getURI();
 }

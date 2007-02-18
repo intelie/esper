@@ -1,0 +1,128 @@
+package net.esper.core;
+
+import net.esper.client.EPStatement;
+import net.esper.client.EPStatementState;
+import net.esper.dispatch.DispatchService;
+import net.esper.event.EventBean;
+import net.esper.event.EventType;
+import net.esper.view.Viewable;
+
+import java.util.Iterator;
+
+/**
+ * Statement implementation for EQL statements.
+ */
+public class EPStatementImpl extends EPStatementSupport implements EPStatement
+{
+    private final String statementId;
+    private final String statementName;
+    private final String expressionText;
+    private boolean isPattern;
+    private UpdateDispatchView dispatchChildView;
+    private StatementLifecycleSvc statementLifecycleSvc;
+
+    private Viewable parentView;
+    private EPStatementState currentState;
+    private EventType eventType;
+
+    /**
+     * Ctor.
+     * @param expressionText expression
+     * @param dispatchService for dispatching
+     */
+    public EPStatementImpl(String statementId,
+                              String statementName,
+                              String expressionText,
+                              boolean isPattern,
+                              DispatchService dispatchService,
+                              StatementLifecycleSvc statementLifecycleSvc)
+    {
+        this.isPattern = isPattern;
+        this.statementId = statementId;
+        this.statementName = statementName;
+        this.expressionText = expressionText;
+        this.statementLifecycleSvc = statementLifecycleSvc;
+        this.dispatchChildView = new UpdateDispatchView(this.getListeners(), dispatchService);
+        this.currentState = EPStatementState.STOPPED;
+    }
+
+    public void start()
+    {
+        statementLifecycleSvc.start(statementId);
+    }
+
+    public void stop()
+    {
+        statementLifecycleSvc.stop(statementId);
+        dispatchChildView.clear();
+    }
+
+    public void destroy()
+    {
+        statementLifecycleSvc.destroy(statementId);
+    }
+
+    public void initialize()
+    {
+        parentView = null;
+        eventType = null;
+        dispatchChildView = null;
+    }
+
+    public EPStatementState getState()
+    {
+        return currentState;
+    }
+
+    public void setCurrentState(EPStatementState currentState)
+    {
+        this.currentState = currentState;
+    }
+
+    public void setParentView(Viewable viewable)
+    {
+        if (viewable == null)
+        {
+            parentView.removeView(dispatchChildView);
+            parentView = null;
+        }
+        else
+        {
+            parentView = viewable;
+            parentView.addView(dispatchChildView);
+            eventType = parentView.getEventType(); 
+        }
+    }
+
+    public String getText()
+    {
+        return expressionText;
+    }
+
+    public String getName()
+    {
+        return statementName;
+    }
+
+    public Iterator<EventBean> iterator()
+    {
+        // Return null if not started
+        if (parentView == null)
+        {
+            return null;
+        }
+        if (isPattern)
+        {
+            return dispatchChildView.iterator();        // Which simply keeps the last event
+        }
+        else
+        {
+            return parentView.iterator();
+        }
+    }
+
+    public EventType getEventType()
+    {
+        return eventType;
+    }
+}

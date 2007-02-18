@@ -139,9 +139,16 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         testCase.add("C1");
         testCaseList.addTest(testCase);
 
+        /**
+         * As of release 1.6 this no longer updates listeners when the statement is started.
+         * The reason is that the dispatch view only gets attached after a pattern started, therefore
+         * ZeroDepthEventStream looses the event.
+         * There should be no use case requiring this
+         *
         testCase = new EventExpressionCase("not timer:at(22, 8, *, *, *, 1)");
         testCase.add(EventCollection.ON_START_EVENT_ID);
         testCaseList.addTest(testCase);
+         */
 
         testCase = new EventExpressionCase("timer:at(*, 9, *, *, *) and timer:at(55, *, *, *, *)");
         testCase.add("D1");

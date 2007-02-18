@@ -6,36 +6,44 @@ import net.esper.eql.core.AutoImportServiceImpl;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.db.DatabaseConfigServiceImpl;
 import net.esper.event.EventAdapterException;
-import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
-import net.esper.util.JavaClassHelper;
-import net.esper.util.ManagedReadWriteLock;
+import net.esper.event.EventAdapterServiceImpl;
+import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
-import net.esper.schedule.ScheduleBucket;
+import net.esper.util.JavaClassHelper;
+import net.esper.util.ManagedReadWriteLock;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
  */
 public class EPServiceProviderImpl implements EPServiceProviderSPI
 {
-    private volatile EPServiceEngine engine;
+    private final String engineURI;
     private final ConfigurationSnapshot configSnapshot;
+
+    private volatile EPServiceEngine engine;
 
     /**
      * Constructor - initializes services.
+     * @param engineURI is the provider URI, or null for the default provider
      * @param configuration is the engine configuration
      * @throws ConfigurationException is thrown to indicate a configuraton error
      */
-    public EPServiceProviderImpl(Configuration configuration) throws ConfigurationException
+    public EPServiceProviderImpl(String engineURI, Configuration configuration) throws ConfigurationException
     {
+        this.engineURI = engineURI;
         configSnapshot = new ConfigurationSnapshot(configuration);
         initialize();
+    }
+
+    public String getURI()
+    {
+        return engineURI;
     }
 
     public EPRuntime getEPRuntime()
@@ -94,8 +102,10 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         services.setInternalEventRouter(runtime);
         services.getTimerService().setCallback(runtime);
 
+        StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(services, eventProcessingRWLock);
+        
         // New admin
-        EPAdministratorImpl admin = new EPAdministratorImpl(services, eventProcessingRWLock);
+        EPAdministratorImpl admin = new EPAdministratorImpl(services, statementLifecycleSvc);
 
         // Start clocking
         services.getTimerService().startInternalClock();

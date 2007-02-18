@@ -11,6 +11,8 @@ import net.esper.core.EPServiceProviderImpl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Factory for instances of {@link EPServiceProvider}.
@@ -18,7 +20,7 @@ import java.util.Map;
 public final class EPServiceProviderManager
 {
     @SuppressWarnings({"CollectionWithoutInitialCapacity"})
-    private static Map<String, EPServiceProvider> runtimes = new HashMap<String, EPServiceProvider>();
+    private static Map<String, EPServiceProvider> runtimes = Collections.synchronizedMap(new HashMap<String, EPServiceProvider>());
 
     /**
      * Returns the default EPServiceProvider.
@@ -65,7 +67,7 @@ public final class EPServiceProviderManager
         }
 
         // New runtime
-        EPServiceProvider runtime = new EPServiceProviderImpl(configuration);
+        EPServiceProvider runtime = new EPServiceProviderImpl(uri, configuration);
         runtimes.put(uri, runtime);
 
         return runtime;

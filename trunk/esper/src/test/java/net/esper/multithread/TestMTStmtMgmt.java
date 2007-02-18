@@ -44,7 +44,9 @@ public class TestMTStmtMgmt extends TestCase
     public void testPatterns() throws Exception
     {
         int numThreads = 3;
-        Object[][] statements = new Object[][] {STMT[10]};
+        Object[][] statements;
+
+        statements = new Object[][] {STMT[10]};
         tryStatementCreateSendAndStop(numThreads, statements, 500);
 
         statements = new Object[][] {STMT[10], STMT[11]};

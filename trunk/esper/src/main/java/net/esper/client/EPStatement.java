@@ -23,9 +23,28 @@ public interface EPStatement extends EPListenable, EPIterable
     public void stop();
 
     /**
+     * Destroy the statement releasing all statement resources.
+     * <p>
+     * A destroyed statement cannot be started again.
+     */
+    public void destroy();
+
+    /**
+     * Returns the statement's current state.
+     * @return state enum
+     */
+    public EPStatementState getState();
+
+    /**
      * Returns the underlying expression text or XML.
      * @return expression text
      */
     public String getText();
+
+    /**
+     * Returns the statement name.
+     * @return statement name
+     */
+    public String getName();
 }
 
