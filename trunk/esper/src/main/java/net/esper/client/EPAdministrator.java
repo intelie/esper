@@ -69,13 +69,20 @@ public interface EPAdministrator
     public String[] getStatementNames();
 
     /**
-     * Stops all statements.
+     * Starts all statements that are in stopped state. Statements in started state
+     * are not affected by this method.
+     * @throws EPException when an error occured starting statements. 
+     */
+    public void startAllStatements() throws EPException;
+
+    /**
+     * Stops all statements that are in started state. Statements in stopped state are not affected by this method.
      * @throws EPException when an error occured stopping statements
      */
     public void stopAllStatements() throws EPException;
 
     /**
-     * Stop and destroys all statements.
+     * Stops and destroys all statements.
      * @throws EPException when an error occured stopping or destroying statements
      */
     public void destroyAllStatements() throws EPException;

@@ -25,28 +25,22 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private final ManagedReadWriteLock eventProcessingRWLock;
     
     private final Map<String, String> stmtNameToIdMap;
-    private final ManagedLock stmtCollectionsLock;
-
-    private final Map<String, EPStatementImpl> stmtIdToEQLStatementMap;
-    private final Map<String, EPStmtStartMethod> stmtIdToStartMethodMap;
-    private final Map<String, EPStatementStopMethod> stmtIdToStopMethodMap;
-    
+    private final Map<String, EPStatementDesc> stmtIdToDescMap;
     private final Map<String, EPStatement> stmtNameToStmtMap;
 
     public StatementLifecycleSvcImpl(EPServicesContext services, ManagedReadWriteLock eventProcessingRWLock)
     {
         this.services = services;
-        this.eventProcessingRWLock = eventProcessingRWLock;
-        this.stmtIdToEQLStatementMap = new HashMap<String, EPStatementImpl>();
-        this.stmtIdToStartMethodMap = new HashMap<String, EPStmtStartMethod>();
-        this.stmtIdToStopMethodMap = new HashMap<String, EPStatementStopMethod>();
 
-        this.stmtNameToIdMap = new HashMap<String, String>();
+        // lock for starting and stopping statements
+        this.eventProcessingRWLock = eventProcessingRWLock;
+
+        this.stmtIdToDescMap = new HashMap<String, EPStatementDesc>();
         this.stmtNameToStmtMap = new HashMap<String, EPStatement>();
-        this.stmtCollectionsLock = new ManagedLock("StmtCollectionsLock");
+        this.stmtNameToIdMap = new HashMap<String, String>();
     }
 
-    public EPStatement createAndStart(StatementSpec statementSpec, String expression, boolean isPattern, String optStatementName)
+    public synchronized EPStatement createAndStart(StatementSpec statementSpec, String expression, boolean isPattern, String optStatementName)
     {
         // Generate statement id
         String statementId = UuidGenerator.generate(expression);
@@ -69,19 +63,19 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             // create statement
             statement = new EPStatementImpl(statementId, statementName, expression, isPattern, services.getDispatchService(), this);
-            stmtIdToEQLStatementMap.put(statementId, statement);
 
             // create start method
             startMethod = new EPStmtStartMethod(statementSpec, expression, services, epStatementHandle);
-            stmtIdToStartMethodMap.put(statementId, startMethod);
+            
+            EPStatementDesc desc = new EPStatementDesc(statement, startMethod, null);
+            stmtIdToDescMap.put(statementId, desc);
 
             // try to start the statement - may fail for compilation errors
             start(statementId);
         }
         catch (RuntimeException ex)
         {
-            stmtIdToStartMethodMap.remove(statementId);
-            stmtIdToEQLStatementMap.remove(statementId);
+            stmtIdToDescMap.remove(statementId);
             stmtNameToIdMap.remove(statementName);
             stmtNameToStmtMap.remove(statementName);
             throw ex;
@@ -92,45 +86,29 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
 
         // save new statement
-        stmtCollectionsLock.acquireLock();
-        try
-        {
-            stmtNameToStmtMap.put(statementName, statement);
-        }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
-        finally
-        {
-            stmtCollectionsLock.releaseLock();
-        }
-
+        stmtNameToStmtMap.put(statementName, statement);
         return statement;
     }
         
-    public void start(String statementId)
+    public synchronized void start(String statementId)
     {
-        EPStatementImpl statement = stmtIdToEQLStatementMap.get(statementId);
-        if (statement == null)
-        {
-            throw new IllegalStateException("Statement not found for id " + statementId);
-        }
-        EPStmtStartMethod startMethod = stmtIdToStartMethodMap.get(statementId);
-        if (startMethod == null)
-        {
-            throw new IllegalStateException("Statement start method not found for id " + statementId);
-        }
-
         // Acquire a lock for event processing as threads may be in the views used by the statement
         // and that could conflict with the destroy of views
         eventProcessingRWLock.acquireWriteLock();
         try
         {
-            if (statement.getState() == EPStatementState.DESTROYED)
+            EPStatementDesc desc = stmtIdToDescMap.get(statementId);
+
+            if (desc == null)
             {
                 throw new IllegalStateException("Cannot start statement, statement is in destroyed state");
             }
+            if (desc.getStartMethod() == null)
+            {
+                throw new IllegalStateException("Statement start method not found for id " + statementId);
+            }
+            
+            EPStatementImpl statement = desc.getEpStatement();
             if (statement.getState() == EPStatementState.STARTED)
             {
                 throw new IllegalStateException("Statement already started");
@@ -139,7 +117,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             Pair<Viewable, EPStatementStopMethod> pair;
             try
             {
-                pair = startMethod.start();
+                pair = desc.getStartMethod().start();
             }
             catch (ExprValidationException ex)
             {
@@ -154,7 +132,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
             Viewable parentView = pair.getFirst();
             EPStatementStopMethod stopMethod = pair.getSecond();
-            stmtIdToStopMethodMap.put(statementId, stopMethod);
+            desc.setStopMethod(stopMethod);
             statement.setParentView(parentView);
 
             statement.setCurrentState(EPStatementState.STARTED);
@@ -169,29 +147,26 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
-    public void stop(String statementId)
+    public synchronized void stop(String statementId)
     {
-        EPStatementImpl statement = stmtIdToEQLStatementMap.get(statementId);
-        if (statement == null)
-        {
-            throw new IllegalStateException("Statement not found for id " + statementId);
-        }
-        
-        EPStatementStopMethod stopMethod = stmtIdToStopMethodMap.get(statementId);
-        if (stopMethod == null)
-        {
-            throw new IllegalStateException("Stop method not found for statement " + statementId);
-        }
-
         // Acquire a lock for event processing as threads may be in the views used by the statement
         // and that could conflict with the destroy of views
         eventProcessingRWLock.acquireWriteLock();
         try
         {
-            if (statement.getState() == EPStatementState.DESTROYED)
+            EPStatementDesc desc = stmtIdToDescMap.get(statementId);
+            if (desc == null)
             {
                 throw new IllegalStateException("Cannot stop statement, statement is in destroyed state");
             }
+
+            EPStatementImpl statement = desc.getEpStatement();
+            EPStatementStopMethod stopMethod = desc.getStopMethod();
+            if (stopMethod == null)
+            {
+                throw new IllegalStateException("Stop method not found for statement " + statementId);
+            }
+
             if (statement.getState() == EPStatementState.STOPPED)
             {
                 throw new IllegalStateException("Statement already stopped");
@@ -199,6 +174,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
             statement.setParentView(null);
             stopMethod.stop();
+            desc.setStopMethod(null);
 
             statement.setCurrentState(EPStatementState.STOPPED);
         }
@@ -212,29 +188,33 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
-    public void destroy(String statementId)
+    public synchronized void destroy(String statementId)
     {
-        EPStatementImpl statement = stmtIdToEQLStatementMap.get(statementId);
-
         // Acquire a lock for event processing as threads may be in the views used by the statement
         // and that could conflict with the destroy of views
         eventProcessingRWLock.acquireWriteLock();
         try
         {
-            if (statement.getState() == EPStatementState.DESTROYED)
+            EPStatementDesc desc = stmtIdToDescMap.get(statementId);
+            if (desc == null)
             {
                 throw new IllegalStateException("Statement already destroyed");
             }
 
+            EPStatementImpl statement = desc.getEpStatement();
             if (statement.getState() == EPStatementState.STARTED)
             {
-                EPStatementStopMethod stopMethod = stmtIdToStopMethodMap.get(statementId);
+                EPStatementStopMethod stopMethod = desc.getStopMethod();
                 statement.setParentView(null);
                 stopMethod.stop();
             }
 
             statement.setCurrentState(EPStatementState.DESTROYED);
             statement.initialize();
+
+            stmtNameToStmtMap.remove(statement.getName());
+            stmtNameToIdMap.remove(statement.getName());
+            stmtIdToDescMap.remove(statementId);
         }
         catch (RuntimeException ex)
         {
@@ -246,89 +226,129 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
-    public EPStatement getStatement(String name)
+    public synchronized EPStatement getStatement(String name)
     {
         return stmtNameToStmtMap.get(name);
     }
 
-    public String[] getStatementNames()
+    public synchronized String[] getStatementNames()
     {
-        stmtCollectionsLock.acquireLock();
-
-        String[] statements;
-        try
+        String[] statements = new String[stmtNameToStmtMap.size()];
+        int count = 0;
+        for (String key : stmtNameToStmtMap.keySet())
         {
-            statements = new String[stmtNameToStmtMap.size()];
-            int count = 0;
-            for (String key : stmtNameToStmtMap.keySet())
-            {
-                statements[count++] = key;
-            }
+            statements[count++] = key;
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
-        finally
-        {
-            stmtCollectionsLock.releaseLock();
-        }
-
         return statements;
     }
 
-    public void stopAllStatements() throws EPException
+    public synchronized void startAllStatements() throws EPException
     {
-        // TODO
-        //To change body of implemented methods use File | Settings | File Templates.
+        String[] statementIds = getStatementIds();
+        for (int i = 0; i < statementIds.length; i++)
+        {
+            EPStatement statement = stmtIdToDescMap.get(statementIds[i]).getEpStatement();
+            if (statement.getState() == EPStatementState.STOPPED)
+            {
+                start(statementIds[i]);
+            }
+        }
     }
 
-    public void destroyAllStatements() throws EPException
+    public synchronized void stopAllStatements() throws EPException
     {
-        // TODO
-        //To change body of implemented methods use File | Settings | File Templates.
+        String[] statementIds = getStatementIds();
+        for (int i = 0; i < statementIds.length; i++)
+        {
+            EPStatement statement = stmtIdToDescMap.get(statementIds[i]).getEpStatement();
+            if (statement.getState() == EPStatementState.STARTED)
+            {
+                stop(statementIds[i]);
+            }
+        }
+    }
+
+    public synchronized void destroyAllStatements() throws EPException
+    {
+        String[] statementIds = getStatementIds();
+        for (int i = 0; i < statementIds.length; i++)
+        {
+            destroy(statementIds[i]);            
+        }
+    }
+
+    private String[] getStatementIds()
+    {
+        String[] statementIds = new String[stmtNameToStmtMap.size()];
+        int count = 0;
+        for (String id : stmtNameToIdMap.values())
+        {
+            statementIds[count++] = id;
+        }
+        return statementIds;
     }
 
     private String getUniqueStatementName(String statementName, String statementId)
     {
         String finalStatementName;
 
-        stmtCollectionsLock.acquireLock();
-        try
+        if (stmtNameToIdMap.containsKey(statementName))
         {
-            if (stmtNameToIdMap.containsKey(statementName))
+            int count = 0;
+            while(true)
             {
-                int count = 0;
-                while(true)
+                finalStatementName = statementName + "--" + count;
+                if (!(stmtNameToIdMap.containsKey(finalStatementName)))
                 {
-                    finalStatementName = statementName + "--" + count;
-                    if (!(stmtNameToIdMap.containsKey(finalStatementName)))
-                    {
-                        break;
-                    }
-                    if (count > Integer.MAX_VALUE - 2)
-                    {
-                        throw new EPException("Failed to establish a unique statement name");
-                    }
-                    count++;
+                    break;
                 }
+                if (count > Integer.MAX_VALUE - 2)
+                {
+                    throw new EPException("Failed to establish a unique statement name");
+                }
+                count++;
             }
-            else
-            {
-                finalStatementName = statementName;
-            }
-
-            stmtNameToIdMap.put(finalStatementName, statementId);
         }
-        catch (RuntimeException ex)
+        else
         {
-            throw ex;
-        }
-        finally
-        {
-            stmtCollectionsLock.releaseLock();
+            finalStatementName = statementName;
         }
 
+        stmtNameToIdMap.put(finalStatementName, statementId);
         return finalStatementName;
+    }
+
+    public class EPStatementDesc
+    {
+        private EPStatementImpl epStatement;
+        private EPStmtStartMethod startMethod;
+        private EPStatementStopMethod stopMethod;
+
+        public EPStatementDesc(EPStatementImpl epStatement, EPStmtStartMethod startMethod, EPStatementStopMethod stopMethod)
+        {
+            this.epStatement = epStatement;
+            this.startMethod = startMethod;
+            this.stopMethod = stopMethod;
+        }
+
+        public EPStatementImpl getEpStatement()
+        {
+            return epStatement;
+        }
+
+        public EPStmtStartMethod getStartMethod()
+        {
+            return startMethod;
+        }
+
+        public EPStatementStopMethod getStopMethod()
+        {
+            return stopMethod;
+        }
+
+        public void setStopMethod(EPStatementStopMethod stopMethod)
+        {
+            this.stopMethod = stopMethod;
+        }
     }
 }

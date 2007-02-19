@@ -179,6 +179,11 @@ public class EPAdministratorImpl implements EPAdministrator
         return statementLifecycleSvc.getStatementNames();
     }
 
+    public void startAllStatements() throws EPException
+    {
+        statementLifecycleSvc.startAllStatements();
+    }
+
     public void stopAllStatements() throws EPException
     {
         statementLifecycleSvc.stopAllStatements();

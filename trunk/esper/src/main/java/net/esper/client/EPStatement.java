@@ -8,7 +8,18 @@
 package net.esper.client;
 
 /**
- * Interface to add and remove update listeners receiving events for an EP statement.
+ * Statement interface that provides methods to start, stop and destroy a statement as well as
+ * get statement information such as statement name, expression text and current state.
+ * <p>
+ * Statements have 3 states: STARTED, STOPPED and DESTROYED.
+ * <p>
+ * In started state, statements are actively evaluating event streams according to the statement expression. Started
+ * statements can be stopped and destroyed.
+ * <p>
+ * In stopped state, statements are inactive. Stopped statements can either be started, in which case
+ * they begin to actively evaluate event streams, or destroyed.
+ * <p>
+ * Destroyed statements have relinguished all statement resources and cannot be started or stopped. 
  */
 public interface EPStatement extends EPListenable, EPIterable
 {
@@ -36,7 +47,7 @@ public interface EPStatement extends EPListenable, EPIterable
     public EPStatementState getState();
 
     /**
-     * Returns the underlying expression text or XML.
+     * Returns the underlying expression text.
      * @return expression text
      */
     public String getText();

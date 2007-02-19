@@ -15,6 +15,7 @@ public interface StatementLifecycleSvc
 
     public EPStatement getStatement(String name);
     public String[] getStatementNames();
+    public void startAllStatements() throws EPException;
     public void stopAllStatements() throws EPException;
     public void destroyAllStatements() throws EPException;
 }

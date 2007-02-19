@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPStatementState;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.bean.SupportBean;
@@ -19,6 +20,44 @@ public class TestEPAdministrator extends TestCase
         testListener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
+    }
+
+    public void test1kValidStmts()
+    {
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++)
+        {
+            String text = "select * from " + SupportBean.class.getName();
+            EPStatement stmt = epService.getEPAdministrator().createEQL(text, "s1");
+            assertEquals("s1", stmt.getName());
+            stmt.stop();
+            stmt.start();
+            stmt.stop();
+            stmt.destroy();
+        }
+        long end = System.currentTimeMillis();
+        long delta = end - start;
+        assertTrue(".test10kValid delta=" + delta, delta < 2000);
+    }
+
+    public void test1kInvalidStmts()
+    {
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++)
+        {
+            try
+            {
+                String text = "select xxx from " + SupportBean.class.getName();
+                epService.getEPAdministrator().createEQL(text, "s1");
+            }
+            catch (Exception ex)
+            {
+                // expected
+            }
+        }
+        long end = System.currentTimeMillis();
+        long delta = end - start;
+        assertTrue(".test1kInvalid delta=" + delta, delta < 2000);
     }
 
     public void testGetStmtByName()
@@ -150,6 +189,100 @@ public class TestEPAdministrator extends TestCase
         {
             // expected
         }
+    }
+
+    public void testDestroyAll()
+    {
+        EPStatement[] stmts = createStmts(new String[] {"s1", "s2", "s3"});
+        stmts[0].addListener(testListener);
+        stmts[1].addListener(testListener);
+        stmts[2].addListener(testListener);
+        sendEvent();
+        assertEquals(3, testListener.getNewDataList().size());
+        testListener.reset();
+
+        epService.getEPAdministrator().destroyAllStatements();
+        assertDestroyed(stmts);
+    }
+
+    public void testStopStartAll()
+    {
+        EPStatement[] stmts = createStmts(new String[] {"s1", "s2", "s3"});
+        stmts[0].addListener(testListener);
+        stmts[1].addListener(testListener);
+        stmts[2].addListener(testListener);
+
+        assertStarted(stmts);
+
+        epService.getEPAdministrator().stopAllStatements();
+        assertStopped(stmts);
+
+        epService.getEPAdministrator().startAllStatements();
+        assertStarted(stmts);
+
+        epService.getEPAdministrator().destroyAllStatements();
+        assertDestroyed(stmts);
+    }
+
+    public void testStopStartSome()
+    {
+        EPStatement[] stmts = createStmts(new String[] {"s1", "s2", "s3"});
+        stmts[0].addListener(testListener);
+        stmts[1].addListener(testListener);
+        stmts[2].addListener(testListener);
+        assertStarted(stmts);
+
+        stmts[0].stop();
+        sendEvent();
+        assertEquals(2, testListener.getNewDataList().size());
+        testListener.reset();
+
+        epService.getEPAdministrator().stopAllStatements();
+        assertStopped(stmts);
+
+        stmts[1].start();
+        sendEvent();
+        assertEquals(1, testListener.getNewDataList().size());
+        testListener.reset();
+
+        epService.getEPAdministrator().startAllStatements();
+        assertStarted(stmts);
+
+        epService.getEPAdministrator().destroyAllStatements();
+        assertDestroyed(stmts);
+    }
+
+    private void assertStopped(EPStatement[] stmts)
+    {
+        for (int i = 0; i < stmts.length; i++)
+        {
+            assertEquals(EPStatementState.STOPPED, stmts[i].getState());            
+        }
+        sendEvent();
+        assertEquals(0, testListener.getNewDataList().size());
+        testListener.reset();
+    }
+
+    private void assertStarted(EPStatement[] stmts)
+    {
+        for (int i = 0; i < stmts.length; i++)
+        {
+            assertEquals(EPStatementState.STARTED, stmts[i].getState());
+        }
+        sendEvent();
+        assertEquals(stmts.length, testListener.getNewDataList().size());
+        testListener.reset();
+    }
+
+    private void assertDestroyed(EPStatement[] stmts)
+    {
+        for (int i = 0; i < stmts.length; i++)
+        {
+            assertEquals(EPStatementState.DESTROYED, stmts[i].getState());
+        }
+        sendEvent();
+        assertEquals(0, testListener.getNewDataList().size());
+        testListener.reset();
     }
 
     private EPStatement[] createStmts(String[] statementNames)
