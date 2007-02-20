@@ -8,6 +8,25 @@ namespace net.esper.compat
 	{
 		private Dictionary<T, T> m_dataTable = new Dictionary<T, T>() ;
 
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		
+		public EHashSet() 
+		{
+		}
+		
+		/// <summary>
+		/// Constructor with set for source data.
+		/// </summary>
+		/// <param name="sourceData"></param>
+		
+		public EHashSet( ISet<T> sourceData )
+		{
+			AddAll( sourceData ) ;
+		}
+		
+		
         #region ISet<T> Members
 
 		/// <summary>

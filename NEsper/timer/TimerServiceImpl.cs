@@ -1,5 +1,7 @@
 using System;
-using System.Timers;
+using System.Threading;
+
+using net.esper.compat;
 
 using org.apache.commons.logging;
 
@@ -19,13 +21,32 @@ namespace net.esper.timer
             }
         }
 
+#if true
+        private HighResolutionTimer timer ;
+#else
         private Timer timer;
+#endif
+
         private TimerCallback timerCallback;
-        private EQLTimerTask timerTask;
+        private bool timerTaskCancelled;
 
         /// <summary> Constructor.</summary>
         protected internal TimerServiceImpl()
         {
+            timerTaskCancelled = false;
+        }
+
+        /// <summary>
+        /// Handles the timer event
+        /// </summary>
+        /// <param name="state">The user state object.</param>
+
+        private void OnTimerElapsed(Object state)
+        {
+            if (! timerTaskCancelled)
+            {
+                timerCallback.TimerCallback();
+            }
         }
 
         public void StartInternalClock()
@@ -46,12 +67,12 @@ namespace net.esper.timer
                 throw new SystemException("Timer callback not set");
             }
 
-            timer = new Timer();
-            timerTask = new EQLTimerTask(timerCallback);
-            // With no delay Start every INTERNAL_CLOCK_RESOLUTION_MSEC
-            timer.Interval = TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC;
-            timer.Elapsed += timerTask.Run;
-            timer.Start();
+            timerTaskCancelled = false;
+#if true
+            timer = new HighResolutionTimer(OnTimerElapsed, null, 0, TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC);
+#else
+            timer = new Timer(OnTimerElapsed, null, 0, TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC);
+#endif
         }
 
         public void StopInternalClock(bool warnIfNotStarted)
@@ -70,13 +91,13 @@ namespace net.esper.timer
                 log.Debug(".StopInternalClock Stopping internal clock daemon thread");
             }
 
-            timerTask.Cancelled = true;
-            timer.Stop();
+            timerTaskCancelled = true;
+            timer.Dispose();
 
             try
             {
-                // Sleep for 100 ms to await the internal timer
-                System.Threading.Thread.Sleep(new System.TimeSpan((long)10000 * 100));
+                // Sleep for at least 100 ms to await the internal timer
+                Thread.Sleep(100);
             }
             catch (System.Threading.ThreadInterruptedException)
             {

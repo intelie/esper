@@ -12,7 +12,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.regression.view
 {
-
     [TestFixture]
     public class TestOutputLimitlEventPerGroup
     {
@@ -71,7 +70,12 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testNoJoinAll()
         {
-            String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol " + "output all every 2 events";
+            String viewExpr =
+                "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " +
+                "from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " + 
+                "where symbol='DELL' or symbol='IBM' or symbol='GE' " + 
+                "group by symbol " +
+                "output all every 2 events";
 
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);
@@ -82,7 +86,15 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testJoinLast()
         {
-            String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.str = two.symbol " + "group by symbol " + "output last every 2 events";
+            String viewExpr =
+                "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + 
+                "from " +
+                typeof(SupportBeanString).FullName + ".win:length(100) as one, " + 
+                typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + 
+                "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + 
+                "       and one.str = two.symbol " +
+                "group by symbol " +
+                "output last every 2 events";
 
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);
@@ -97,7 +109,15 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testJoinAll()
         {
-            String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.str = two.symbol " + "group by symbol " + "output all every 2 events";
+            String viewExpr =
+                "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + 
+                "from " + 
+                typeof(SupportBeanString).FullName + ".win:length(100) as one, " + 
+                typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + 
+                "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + 
+                "       and one.str = two.symbol " +
+                "group by symbol " +
+                "output all every 2 events";
 
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);
@@ -113,8 +133,8 @@ namespace net.esper.regression.view
         {
             // assert select result type
             Assert.AreEqual(typeof(String), selectTestView.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("myAvg"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myAvg"));
 
             SendEvent(SYMBOL_DELL, 10);
             Assert.IsFalse(testListener.Invoked);
@@ -134,8 +154,8 @@ namespace net.esper.regression.view
         {
             // assert select result type
             Assert.AreEqual(typeof(String), selectTestView.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("myAvg"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myAvg"));
 
             SendEvent(SYMBOL_DELL, 10);
             Assert.IsTrue(testListener.Invoked);
@@ -150,22 +170,25 @@ namespace net.esper.regression.view
         {
             // assert select result type
             Assert.AreEqual(typeof(String), selectTestView.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("myAvg"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myAvg"));
 
             SendEvent(SYMBOL_IBM, 70);
             Assert.IsFalse(testListener.Invoked);
 
             SendEvent(SYMBOL_DELL, 10);
-            assertEvents(SYMBOL_IBM, 0, 0, 70d, 70d, SYMBOL_DELL, null, null, 10d, 10d);
+            assertEvents(
+                SYMBOL_IBM, null, null, 70d, 70d,
+                SYMBOL_DELL, null, null, 10d, 10d);
             testListener.reset();
 
             SendEvent(SYMBOL_DELL, 20);
             Assert.IsFalse(testListener.Invoked);
 
-
             SendEvent(SYMBOL_DELL, 100);
-            assertEvents(SYMBOL_IBM, 0, 0, 70d, 70d, SYMBOL_DELL, 10d, 10d, 130d, 130d / 3d);
+            assertEvents(
+                SYMBOL_IBM, null, null, 70d, 70d,
+                SYMBOL_DELL, 10d, 10d, 130d, 130d / 3d);
         }
 
         private void assertEvent(

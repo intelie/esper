@@ -28,7 +28,7 @@ namespace net.esper.regression.eql
 			resultListenerProduct = new SupportUpdateListener();
 
 			// Use external clocking for the test
-			epService.EPRuntime.SendEvent( new TimerControlEvent( TimerControlEvent.ClockType.CLOCK_EXTERNAL ) );
+			epService.EPRuntime.SendEvent( new TimerControlEvent( TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL ) );
 		}
 
 		[Test]

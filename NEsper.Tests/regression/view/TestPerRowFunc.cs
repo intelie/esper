@@ -33,10 +33,10 @@ namespace net.esper.regression.view
         {
             epService.Initialize();
             String viewExpr =
-		 "select coalesce(a.str, b.str) as myString, coalesce(a, b) as myBean" +
-		 " from pattern [every (a=" + typeof(SupportBean).FullName +
-		 "(string='s0') or b=" + typeof(SupportBean).FullName +
-		 "(string='s1'))]";
+		         "select coalesce(a.str, b.str) as myString, coalesce(a, b) as myBean" +
+		         " from pattern [every (a=" + typeof(SupportBean).FullName +
+		         "(string='s0') or b=" + typeof(SupportBean).FullName +
+		         "(string='s1'))]";
             selectTestView = epService.EPAdministrator.createEQL(viewExpr);
             selectTestView.AddListener(testListener);
 

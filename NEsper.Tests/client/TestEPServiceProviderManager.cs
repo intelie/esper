@@ -34,7 +34,7 @@ namespace net.esper.client
         public virtual void testInvalid()
         {
             Configuration configuration = new Configuration();
-            configuration.addEventTypeAlias("x", "xxx.noclass");
+            configuration.AddEventTypeAlias("x", "xxx.noclass");
 
             try
             {

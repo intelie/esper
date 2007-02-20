@@ -44,12 +44,12 @@ namespace net.esper.regression.events
             xmlDOMEventTypeDesc.AddXPathProperty("xpathAttrString", "/myevent/element3/@attrString", XPathResultType.String);
             xmlDOMEventTypeDesc.AddXPathProperty("xpathAttrNum", "/myevent/element3/@attrNum", XPathResultType.Number);
             xmlDOMEventTypeDesc.AddXPathProperty("xpathAttrBool", "/myevent/element3/@attrBool", XPathResultType.Boolean);
-			configuration.addEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
+			configuration.AddEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 			
 			epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
 			epService.Initialize();
 			updateListener = new SupportUpdateListener();
-			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 			
 			String stmt = "select element1," + "element4.element41 as nestedElement," + "element2.element21('e21_2') as mappedElement," + "element2.element21[2] as indexedElement," + "xpathElement1, xpathCountE21, xpathAttrString, xpathAttrNum, xpathAttrBool, " + "invalidelement," + "element3.myattribute as invalidattr " + "from TestXMLNoSchemaType.win:length(100)";
 			

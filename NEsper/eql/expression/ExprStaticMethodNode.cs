@@ -142,7 +142,7 @@ namespace net.esper.eql.expression
             // Try to resolve the method
             try
             {
-                MethodInfo method = StaticMethodResolver.resolveMethod(typeName, methodName, paramTypes, autoImportService);
+                MethodInfo method = StaticMethodResolver.ResolveMethod(typeName, methodName, paramTypes, autoImportService);
                 staticMethod = method;
             }
             catch (System.Exception e)

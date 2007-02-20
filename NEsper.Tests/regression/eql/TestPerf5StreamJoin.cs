@@ -1,6 +1,7 @@
 using System;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.util;
@@ -12,7 +13,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.regression.eql
 {
-	
 	[TestFixture]
 	public class TestPerf5StreamJoin 
 	{
@@ -31,21 +31,31 @@ namespace net.esper.regression.eql
 		[Test]
 		public virtual void  testPerfAllProps()
 		{
-			String statement = "select * from " + typeof(SupportBean_S0).FullName + ".win:length(100000) as s0," + typeof(SupportBean_S1).FullName + ".win:length(100000) as s1," + typeof(SupportBean_S2).FullName + ".win:length(100000) as s2," + typeof(SupportBean_S3).FullName + ".win:length(100000) as s3," + typeof(SupportBean_S4).FullName + ".win:length(100000) as s4" + " where s0.p00 = s1.p10 " + "and s1.p10 = s2.p20 " + "and s2.p20 = s3.p30 " + "and s3.p30 = s4.p40 ";
+			String statement = 
+                "select * from " + 
+                typeof(SupportBean_S0).FullName + ".win:length(100000) as s0," +
+                typeof(SupportBean_S1).FullName + ".win:length(100000) as s1," + 
+                typeof(SupportBean_S2).FullName + ".win:length(100000) as s2," +
+                typeof(SupportBean_S3).FullName + ".win:length(100000) as s3," + 
+                typeof(SupportBean_S4).FullName + ".win:length(100000) as s4" + 
+                " where s0.p00 = s1.p10 " +
+                "and s1.p10 = s2.p20 " + 
+                "and s2.p20 = s3.p30 " + 
+                "and s3.p30 = s4.p40 ";
 			
 			joinView = epService.EPAdministrator.createEQL(statement);
 			joinView.AddListener(updateListener);
 			
 			log.Info(".testPerfAllProps Preloading events");
-			long startTime = DateTime.Now.Ticks ;
+            long startTime = DateTimeHelper.CurrentTimeMillis ;
 			for (int i = 0; i < 1000; i++)
 			{
 				sendEvents(new int[]{0, 0, 0, 0, 0}, new String[]{"s0" + i, "s1" + i, "s2" + i, "s3" + i, "s4" + i});
 			}
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
 			log.Info(".testPerfAllProps delta=" + (endTime - startTime));
-			Assert.IsTrue((endTime - startTime) < 15000000);
+			Assert.IsTrue((endTime - startTime) < 1500);
 			
 			// test if join returns data
 			Assert.IsNull(updateListener.LastNewData);

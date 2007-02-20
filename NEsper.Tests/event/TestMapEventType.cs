@@ -71,7 +71,7 @@ namespace net.esper.events
         [Test]
         public virtual void testGetUnderlyingType()
         {
-            Assert.AreEqual(typeof(IDataDictionary), eventType.UnderlyingType);
+            Assert.AreEqual(typeof(System.Collections.IDictionary), eventType.UnderlyingType);
         }
 
         [Test]

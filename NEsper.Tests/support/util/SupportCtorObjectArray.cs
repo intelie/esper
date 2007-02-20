@@ -2,7 +2,6 @@ using System;
 
 namespace net.esper.support.util
 {
-	
 	public class SupportCtorObjectArray
 	{
 		virtual public Object[] Arguments

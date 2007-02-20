@@ -29,18 +29,22 @@ namespace net.esper.type
         [Test]
         public virtual void testAllComputers()
         {
-            Type[] testClasses = new Type[]{
-                typeof(float?),
-                typeof(double?), 
-                typeof(int?), 
-                typeof(long?)
+            Type[,] testClasses = new Type[,]{
+                { typeof(float), typeof(float?) },
+                { typeof(double), typeof(double?) },
+                { typeof(int), typeof(int?) },
+                { typeof(long), typeof(long?) }
             };
 
-            foreach (Type testType in testClasses)
+            int length = testClasses.Length / 2;
+            for( int ii = 0 ; ii < length ; ii++ )
             {
+                Type testType = testClasses[ii,0] ;
+                Type nullType = testClasses[ii,1];
+
                 foreach (MathArithTypeEnum type in MathArithTypeEnum.Values)
                 {
-                    MathArithTypeEnum.Computer computer = type.getComputer(testType);
+                    MathArithTypeEnum.Computer computer = type.getComputer(nullType);
                     Object result = computer(3, 4);
                     Assert.AreEqual(testType, result.GetType());
 
@@ -58,13 +62,13 @@ namespace net.esper.type
                     }
                     if (type == MathArithTypeEnum.DIVIDE)
                     {
-                        if ((testType == typeof(int?)) || (testType == typeof(long?)))
+                        if ((testType == typeof(int)) || (testType == typeof(long)))
                         {
                             Assert.AreEqual(0d, Convert.ToDouble(result), "clazz=" + testType);
                         }
                         else
                         {
-                            Assert.AreEqual(3 / 4d, Convert.ToDouble(result), "clazz=" + testType);
+                            Assert.AreEqual(3.0d / 4.0d, Convert.ToDouble(result), "clazz=" + testType);
                         }
                     }
                 }

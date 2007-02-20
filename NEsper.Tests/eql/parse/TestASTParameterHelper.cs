@@ -46,7 +46,7 @@ namespace net.esper.eql.parse
 
             ast = makeArrayAst(
                 new int[] { EqlEvalTokenTypes.BOOL_TYPE, EqlEvalTokenTypes.BOOL_TYPE },
-                new String[] { "true", "false" });
+                new String[] { "True", "False" });
             bool[] boolArr = (bool[])convert(ast);
             Assert.AreEqual(true, boolArr[0]);
             Assert.AreEqual(false, boolArr[1]);

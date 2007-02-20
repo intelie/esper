@@ -122,7 +122,7 @@ namespace net.esper.schedule
         public virtual void testWaitAndSpecTogether()
         {
             DateTime startDateTime = new DateTime(2004, 11, 9, 15, 27, 10, 500);
-            long startTime = DateTimeHelper.TicksToMillis(startDateTime.Ticks);
+            long startTime = DateTimeHelper.TimeInMillis(startDateTime);
 
             service.Time = startTime;
 

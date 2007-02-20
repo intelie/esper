@@ -65,8 +65,8 @@ namespace net.esper.regression.view
         {
             // assert select result type
             Assert.AreEqual(typeof(String), selectTestView.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("mySum"));
-            Assert.AreEqual(typeof(Int64), selectTestView.EventType.GetPropertyType("volume"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(long?), selectTestView.EventType.GetPropertyType("volume"));
 
             SendEvent(SYMBOL_DELL, 10, 100);
             Assert.IsTrue(testListener.Invoked);

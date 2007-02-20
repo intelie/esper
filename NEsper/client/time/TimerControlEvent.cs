@@ -11,11 +11,13 @@ using System;
 
 namespace net.esper.client.time
 {
-    /// <summary> Event for controlling clocking, i.e. to enable and disable external clocking.</summary>
+    /// <summary>
+    /// Event for controlling clocking, i.e. to enable and disable external clocking.
+    /// </summary>
 
     public sealed class TimerControlEvent : TimerEvent
     {
-        public enum ClockType
+        public enum ClockTypeEnum
         {
             /// <summary> For external clocking.</summary>
             CLOCK_EXTERNAL,
@@ -23,12 +25,12 @@ namespace net.esper.client.time
             CLOCK_INTERNAL
         };
 
-        private readonly ClockType clockType;
+        private readonly ClockTypeEnum clockType;
 
         /// <summary> Constructor takes a clocking type as parameter.</summary>
         /// <param name="clockType">for internal or external clocking
         /// </param>
-        public TimerControlEvent(ClockType clockType)
+        public TimerControlEvent(ClockTypeEnum clockType)
         {
             this.clockType = clockType;
         }
@@ -36,9 +38,9 @@ namespace net.esper.client.time
         /// <summary> Returns clocking type.</summary>
         /// <returns> clocking type
         /// </returns>
-        public ClockType getClockType()
+        public ClockTypeEnum ClockType
         {
-            return clockType;
+            get { return clockType; }
         }
     }
 }

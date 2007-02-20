@@ -112,19 +112,35 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testLikeRegexNumericAndNull()
         {
-            String caseExpr = "select intBoxed like '%01%' as r1, " + " doubleBoxed regexp '[0-9][0-9].[0-9]' as r2 " + " from " + typeof(SupportBean).FullName;
+            String caseExpr =
+                "select " +
+                " intBoxed like '%01%' as r1, " +
+                " doubleBoxed regexp '[0-9][0-9].[0-9]' as r2 " +
+                " from " + typeof(SupportBean).FullName;
 
             EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
             selectTestFixture.AddListener(testListener);
 
             sendSupportBeanEvent(101, 1.1);
-            assertReceived(new Object[][] { new Object[] { "r1", true }, new Object[] { "r2", false } });
+            assertReceived(
+                new Object[][] {
+                    new Object[] { "r1", true },
+                    new Object[] { "r2", false }
+                });
 
             sendSupportBeanEvent(102, 11d);
-            assertReceived(new Object[][] { new Object[] { "r1", false }, new Object[] { "r2", true } });
+            assertReceived(
+                new Object[][] { 
+                    new Object[] { "r1", false }, 
+                    new Object[] { "r2", true }
+                });
 
             sendSupportBeanEvent(0, 0);
-            assertReceived(new Object[][] { new Object[] { "r1", null }, new Object[] { "r2", null } });
+            assertReceived(
+                new Object[][] {
+                    new Object[] { "r1", null },
+                    new Object[] { "r2", null }
+                });
         }
 
         private void tryInvalid(String expr)

@@ -89,21 +89,14 @@ namespace net.esper.view.std
             }
         }
 
-        /// <summary> Returns the field name that provides the key valie by which to group by.</summary>
-        /// <returns> field name providing group-by key.
-        /// </returns>
+        /// <summary>
+        /// Gets or sets the field name that provides the key valie by which to group by.
+        /// </summary>
 
-        public String[] getGroupFieldNames()
+        public String[] GroupFieldNames
         {
-            return groupFieldNames;
-        }
-
-        /// <summary> Sets the field name that provides the key valie by which to group by.</summary>
-        /// <param name="groupFieldNames">the the field names providing the group-by key values.
-        /// </param>
-        public void setGroupFieldNames(String[] groupFieldNames)
-        {
-            this.groupFieldNames = groupFieldNames;
+            get { return groupFieldNames; }
+            set { groupFieldNames = value; }
         }
 
         public override String AttachesTo(Viewable parentView)
@@ -257,7 +250,7 @@ namespace net.esper.view.std
                 subViewList.Add(copyChildView);
 
                 // Make the sub views for child copying from the original to the child
-                copySubViews(groupView.getGroupFieldNames(), groupByValues, originalChildView, copyChildView, viewServiceContext);
+                copySubViews(groupView.GroupFieldNames, groupByValues, originalChildView, copyChildView, viewServiceContext);
             }
 
             return subViewList;

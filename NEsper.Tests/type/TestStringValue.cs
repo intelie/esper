@@ -11,10 +11,10 @@ namespace net.esper.type
 		[Test]
 		public virtual void  testParse()
 		{
-			Assert.AreEqual("a", StringValue.parseString("\"a\""));
-			Assert.AreEqual("", StringValue.parseString("\"\""));
-			Assert.AreEqual("", StringValue.parseString("''"));
-			Assert.AreEqual("b", StringValue.parseString("'b'"));
+			Assert.AreEqual("a", StringValue.ParseString("\"a\""));
+			Assert.AreEqual("", StringValue.ParseString("\"\""));
+			Assert.AreEqual("", StringValue.ParseString("''"));
+			Assert.AreEqual("b", StringValue.ParseString("'b'"));
 		}
 		
 		[Test]
@@ -28,7 +28,7 @@ namespace net.esper.type
 		{
 			try
 			{
-				StringValue.parseString(invalidString);
+				StringValue.ParseString(invalidString);
 			}
 			catch (ArgumentException ex)
 			{

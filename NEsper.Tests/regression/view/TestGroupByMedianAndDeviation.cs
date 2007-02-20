@@ -60,10 +60,10 @@ namespace net.esper.regression.view
         {
             // assert select result type
             Assert.AreEqual(typeof(String), selectTestView.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("myMedian"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("myDistMedian"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("myStdev"));
-            Assert.AreEqual(typeof(Double), selectTestView.EventType.GetPropertyType("myAvedev"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myMedian"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myDistMedian"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myStdev"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myAvedev"));
 
             SendEvent(SYMBOL_DELL, 10);
             assertEvents(SYMBOL_DELL, null, null, null, null, 10d, 10d, null, 0d);

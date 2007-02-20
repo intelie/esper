@@ -12,7 +12,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.regression.eql
 {
-
     [TestFixture]
     public class TestInvalidEQL
     {
@@ -30,7 +29,8 @@ namespace net.esper.regression.eql
             String EVENT = typeof(SupportBean_N).FullName;
 
             String exceptionText = getSyntaxExceptionEQL("select * from *");
-            Assert.AreEqual("unexpected token: * near line 1, column 15 [select * from *]", exceptionText);
+            Assert.AreEqual(@"unexpected token: [""*"",<140>,line=1,col=15] near line 1, column 15 [select * from *]", exceptionText);
+            //Assert.AreEqual("unexpected token: * near line 1, column 15 [select * from *]", exceptionText);
         }
 
         [Test]
@@ -56,15 +56,15 @@ namespace net.esper.regression.eql
 
             // try constants
             tryValid(streamDef + "sa.intPrimitive=5");
-            tryValid(streamDef + "sa.StringValue='4'");
-            tryValid(streamDef + "sa.StringValue=\"4\"");
+            tryValid(streamDef + "sa.str='4'");
+            tryValid(streamDef + "sa.str=\"4\"");
             tryValid(streamDef + "sa.boolPrimitive=false");
             tryValid(streamDef + "sa.longPrimitive=-5L");
             tryValid(streamDef + "sa.doubleBoxed=5.6d");
             tryValid(streamDef + "sa.floatPrimitive=-5.6f");
 
             tryInvalid(streamDef + "sa.intPrimitive='5'");
-            tryInvalid(streamDef + "sa.StringValue=5");
+            tryInvalid(streamDef + "sa.str=5");
             tryInvalid(streamDef + "sa.boolBoxed=f");
             tryInvalid(streamDef + "sa.intPrimitive=x");
             tryValid(streamDef + "sa.intPrimitive=5.5");
@@ -79,7 +79,7 @@ namespace net.esper.regression.eql
             tryValid(streamDef + "sa.intPrimitive > sa.intBoxed and sb.doublePrimitive < sb.doubleBoxed");
             tryValid(streamDef + "sa.intPrimitive >= sa.intBoxed and sa.doublePrimitive <= sa.doubleBoxed");
             tryValid(streamDef + "sa.intPrimitive > (sa.intBoxed + sb.doublePrimitive)");
-            tryInvalid(streamDef + "sa.intPrimitive >= sa.StringValue");
+            tryInvalid(streamDef + "sa.intPrimitive >= sa.str");
             tryInvalid(streamDef + "sa.boolBoxed >= sa.boolPrimitive");
 
             // Try some nested
@@ -103,7 +103,7 @@ namespace net.esper.regression.eql
             tryInvalid(outerJoinDef + "on sa.XX = sb.intBoxed");
             tryInvalid(outerJoinDef + "on sa.boolBoxed = sb.intBoxed");
             tryValid(outerJoinDef + "on sa.boolPrimitive = sb.boolBoxed");
-            tryInvalid(outerJoinDef + "on sa.boolPrimitive = sb.StringValue");
+            tryInvalid(outerJoinDef + "on sa.boolPrimitive = sb.str");
             tryInvalid(outerJoinDef + "on sa.intPrimitive <= sb.intBoxed");
             tryInvalid(outerJoinDef + "on sa.intPrimitive = sa.intBoxed");
             tryInvalid(outerJoinDef + "on sb.intPrimitive = sb.intBoxed");

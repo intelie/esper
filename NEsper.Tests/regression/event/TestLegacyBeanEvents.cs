@@ -89,12 +89,12 @@ namespace net.esper.regression.events
             legacyDef.addMethodProperty("explicitMArray", "readStringArray");
             legacyDef.addMethodProperty("explicitMIndexed", "readStringIndexed");
             legacyDef.addMethodProperty("explicitMMapped", "readMapByKey");
-            config.addEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
+            config.AddEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.PUBLIC;
             legacyDef.CodeGeneration = ConfigurationEventTypeLegacy.CodeGenerationEnum.DISABLED;
-            config.addEventTypeAlias("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).FullName, legacyDef);
+            config.AddEventTypeAlias("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).FullName, legacyDef);
 
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test1" + codeGeneration, config);
             epService.Initialize();
@@ -183,19 +183,19 @@ namespace net.esper.regression.events
             legacyDef.CodeGeneration = codeGeneration;
             legacyDef.addFieldProperty("explicitFNested", "fieldNested");
             legacyDef.addMethodProperty("explicitMNested", "readLegacyNested");
-            config.addEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
+            config.AddEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
             legacyDef.addFieldProperty("fieldNestedClassValue", "fieldNestedValue");
             legacyDef.addMethodProperty("readNestedClassValue", "readNestedValue");
-            config.addEventTypeAlias("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).FullName, legacyDef);
+            config.AddEventTypeAlias("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).FullName, legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
-            config.addEventTypeAlias("MySupportBean", typeof(SupportBean).FullName, legacyDef);
+            config.AddEventTypeAlias("MySupportBean", typeof(SupportBean).FullName, legacyDef);
 
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test2" + codeGeneration, config);
             epService.Initialize();
@@ -241,7 +241,7 @@ namespace net.esper.regression.events
             legacyDef.addFieldProperty("explicitFInt", "fieldIntPrimitive");
             legacyDef.addMethodProperty("explicitMGetInt", "getIntPrimitive");
             legacyDef.addMethodProperty("explicitMReadInt", "readIntPrimitive");
-            config.addEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBeanInt).FullName, legacyDef);
+            config.AddEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBeanInt).FullName, legacyDef);
 
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test3" + codeGeneration, config);
             epService.Initialize();
@@ -276,7 +276,7 @@ namespace net.esper.regression.events
             ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.NATIVE;
             legacyDef.CodeGeneration = codeGeneration;
-            config.addEventTypeAlias("MyFinalEvent", typeof(SupportBeanFinal).FullName, legacyDef);
+            config.AddEventTypeAlias("MyFinalEvent", typeof(SupportBeanFinal).FullName, legacyDef);
 
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test4" + codeGeneration);
             epService.Initialize();

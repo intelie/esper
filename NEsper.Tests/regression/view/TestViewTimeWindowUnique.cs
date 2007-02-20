@@ -30,7 +30,7 @@ namespace net.esper.regression.view
 			windowUniqueView.AddListener(testListener);
 			
 			// External clocking
-			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 		}
 		
 		// Make sure the timer and dispatch works for externally timed events and views

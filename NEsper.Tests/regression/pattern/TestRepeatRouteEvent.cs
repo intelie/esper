@@ -70,7 +70,7 @@ namespace net.esper.regression.pattern
         [Test]
         public virtual void testRouteTimer()
         {
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
 
             // define time-based pattern and listener

@@ -13,7 +13,6 @@ using NUnit.Framework;
 
 namespace net.esper.view.ext
 {
-	
 	[TestFixture]
 	public class TestSortWindowView 
 	{
@@ -22,7 +21,7 @@ namespace net.esper.view.ext
 		private Object[] propertiesAndDirections;
 		
 		[SetUp]
-		public virtual void  setUp()
+		public virtual void setUp()
 		{
 			// Set up length window view and a test child view
 			propertiesAndDirections = new Object[]{"volume", false};
@@ -32,7 +31,7 @@ namespace net.esper.view.ext
 		}
 		
 		[Test]
-		public virtual void  testConstructor()
+		public virtual void testConstructor()
 		{
 			propertiesAndDirections = new Object[]{"volume", false, "mother", true};
 			myView = new SortWindowView(propertiesAndDirections, 5);
@@ -49,7 +48,7 @@ namespace net.esper.view.ext
 		}
 		
 		[Test]
-		public virtual void  testIncorrectUse()
+		public virtual void testIncorrectUse()
 		{
 			try
 			{
@@ -97,7 +96,7 @@ namespace net.esper.view.ext
 		}
 		
 		[Test]
-		public virtual void  testViewOneProperty()
+		public virtual void testViewOneProperty()
 		{
 			// Set up a feed for the view under test - the depth is 10 events so bean[10] will cause bean[0] to go old
 			SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 10);
@@ -149,7 +148,7 @@ namespace net.esper.view.ext
 		}
 		
 		[Test]
-		public virtual void  testViewTwoProperties()
+		public virtual void testViewTwoProperties()
 		{
 			// Set up a sort windows that sorts on two properties
 			propertiesAndDirections = new Object[]{"volume", false, "price", true};
@@ -207,7 +206,7 @@ namespace net.esper.view.ext
 		}
 		
 		[Test]
-		public virtual void  testViewAttachesTo()
+		public virtual void testViewAttachesTo()
 		{
 			SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
 			
@@ -224,7 +223,7 @@ namespace net.esper.view.ext
 		}
 		
 		[Test]
-		public virtual void  testCopyView()
+		public virtual void testCopyView()
 		{
 			SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
             myView.Parent = parent;

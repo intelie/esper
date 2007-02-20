@@ -90,19 +90,19 @@ namespace net.esper.eql.parse
 			switch (node.Type)
 			{
 				case EqlEvalTokenTypes.NUM_INT:
-                    return IntValue.parseString(node.getText());
+                    return IntValue.ParseString(node.getText());
 				case EqlEvalTokenTypes.INT_TYPE:
-                    return IntValue.parseString(node.getText());
+                    return IntValue.ParseString(node.getText());
 				case EqlEvalTokenTypes.LONG_TYPE:
-                    return LongValue.parseString(node.getText());
+                    return LongValue.ParseString(node.getText());
 				case EqlEvalTokenTypes.BOOL_TYPE:
-                    return BoolValue.parseString(node.getText());
+                    return BoolValue.ParseString(node.getText());
 				case EqlEvalTokenTypes.FLOAT_TYPE:
-                    return FloatValue.parseString(node.getText());
+                    return FloatValue.ParseString(node.getText());
 				case EqlEvalTokenTypes.DOUBLE_TYPE:
-                    return DoubleValue.parseString(node.getText());
+                    return DoubleValue.ParseString(node.getText());
 				case EqlEvalTokenTypes.STRING_TYPE:
-                    return StringValue.parseString(node.getText());
+                    return StringValue.ParseString(node.getText());
 				case EqlEvalTokenTypes.NULL_TYPE:
                     return null;
 				default: 

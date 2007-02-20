@@ -258,7 +258,7 @@ namespace net.esper.events.xml
 						throw new PropertyAccessException( "Element " + child.getFirstChild().getText() + " is not a collection, cannot be used as mapped property" );
 					}
 					
-					String key = StringValue.parseString( child.getFirstChild().getNextSibling().getText() );
+					String key = StringValue.ParseString( child.getFirstChild().getNextSibling().getText() );
                     return new Pair<String, XmlQualifiedName>("/" + prefix + child.getFirstChild().getText() + "[@id='" + key + "']", type);
 
 				case EVENT_PROP_INDEXED:
@@ -267,7 +267,7 @@ namespace net.esper.events.xml
 						throw new PropertyAccessException( "Element " + child.getFirstChild().getText() + " is not a collection, cannot be used as mapped property" );
 					}
                     
-					int index = IntValue.parseString( child.getFirstChild().getNextSibling().getText() );
+					int index = IntValue.ParseString( child.getFirstChild().getNextSibling().getText() );
 					int xPathPosition = index + 1;
 					return new Pair<String, XmlQualifiedName>( "/" + prefix + child.getFirstChild().getText() + "[position() = " + xPathPosition + "]", type );
 

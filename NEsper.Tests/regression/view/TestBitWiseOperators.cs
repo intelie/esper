@@ -26,17 +26,25 @@ namespace net.esper.regression.view
         private SupportUpdateListener _testListener;
         private EPStatement _selectTestView;
 
+        [SetUp]
+        public virtual void setUp()
+        {
+            _testListener = new SupportUpdateListener();
+            _epService = EPServiceProviderManager.GetDefaultProvider();
+            _epService.Initialize();
+        }
+
         [Test]
         public virtual void testGetEventType()
         {
             setUpBitWiseStmt();
             EventType type = _selectTestView.EventType;
             log.Debug(".testGetEventType properties=" + CollectionHelper.Render(type.PropertyNames));
-            Assert.AreEqual(typeof(SByte), type.GetPropertyType("myFirstProperty"));
-            Assert.AreEqual(typeof(Int16), type.GetPropertyType("mySecondProperty"));
-            Assert.AreEqual(typeof(Int32), type.GetPropertyType("myThirdProperty"));
-            Assert.AreEqual(typeof(Int64), type.GetPropertyType("myFourthProperty"));
-            Assert.AreEqual(typeof(bool), type.GetPropertyType("myFithProperty"));
+            Assert.AreEqual(typeof(sbyte?), type.GetPropertyType("myFirstProperty"));
+            Assert.AreEqual(typeof(short?), type.GetPropertyType("mySecondProperty"));
+            Assert.AreEqual(typeof(int?), type.GetPropertyType("myThirdProperty"));
+            Assert.AreEqual(typeof(long?), type.GetPropertyType("myFourthProperty"));
+            Assert.AreEqual(typeof(bool?), type.GetPropertyType("myFithProperty"));
         }
 
         [Test]
@@ -58,14 +66,6 @@ namespace net.esper.regression.view
             Assert.IsTrue(((Int32)(received["myThirdProperty"]) & FIRST_EVENT) == FIRST_EVENT);
             Assert.AreEqual(7L, (received["myFourthProperty"]));
             Assert.AreEqual(false, (received["myFithProperty"]));
-        }
-
-        [SetUp]
-        public virtual void setUp()
-        {
-            _testListener = new SupportUpdateListener();
-            _epService = EPServiceProviderManager.GetDefaultProvider();
-            _epService.Initialize();
         }
 
         private void setUpBitWiseStmt()

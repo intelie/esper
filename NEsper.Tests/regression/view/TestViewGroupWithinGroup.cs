@@ -11,9 +11,8 @@ using NUnit.Framework;
 
 namespace net.esper.regression.view
 {
-
-	[TestFixture]
-    public class TestViewGroupWithinGroup 
+    [TestFixture]
+    public class TestViewGroupWithinGroup
     {
         private String SYMBOL_MSFT = "MSFT";
         private String SYMBOL_GE = "GE";
@@ -33,7 +32,7 @@ namespace net.esper.regression.view
 
             // Listen to all ticks
             viewGrouped = epService.EPAdministrator.createEQL(
-				"select * from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').std:groupby('feed').std:groupby('volume').std:size()");
+                "select * from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').std:groupby('feed').std:groupby('volume').std:size()");
 
             // Counts per symbol, feed and volume the events
             viewGrouped.AddListener(listener);
@@ -46,7 +45,7 @@ namespace net.esper.regression.view
 
             // Set up a map of expected values
 
-			EDictionary<String, Object>[] expectedValues = new EHashDictionary<String, Object>[10];
+            EDictionary<String, Object>[] expectedValues = new EHashDictionary<String, Object>[10];
             for (int i = 0; i < expectedValues.Length; i++)
             {
                 expectedValues[i] = new EHashDictionary<String, Object>();

@@ -153,11 +153,11 @@ namespace net.esper.util
 
         public static Object CoerceNumber(Object numToCoerce, Type resultType)
         {
-            if (numToCoerce.GetType() == resultType)
+            if (TypeHelper.GetBoxedType(numToCoerce.GetType()) == resultType)
             {
                 return numToCoerce;
             }
-            
+
             if (resultType == typeof(double?))
             {
                 double? value = Convert.ToDouble(numToCoerce);
@@ -175,7 +175,7 @@ namespace net.esper.util
             }
             if (resultType == typeof(int?))
             {
-                int? value = Convert.ToInt32(numToCoerce); 
+                int? value = Convert.ToInt32(numToCoerce);
                 return value;
             }
             if (resultType == typeof(short?))
@@ -532,7 +532,7 @@ namespace net.esper.util
         /// </summary>
         /// <param name="assemblyQualifiedTypeName">Name of the assembly qualified type.</param>
         /// <returns></returns>
-        
+
         public static Type ResolveType(String assemblyQualifiedTypeName)
         {
             return ResolveType(assemblyQualifiedTypeName, AppDomain.CurrentDomain.GetAssemblies());

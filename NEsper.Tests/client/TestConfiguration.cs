@@ -49,7 +49,7 @@ namespace net.esper.client
 		[Test]
 		public virtual void testAddEventTypeAlias()
 		{
-			config.addEventTypeAlias( "AEventType", "BClassName" );
+			config.AddEventTypeAlias( "AEventType", "BClassName" );
 
 			Assert.AreEqual( 1, config.EventTypeAliases.Count );
 			Assert.AreEqual( "BClassName", config.EventTypeAliases.Fetch( "AEventType" ) );

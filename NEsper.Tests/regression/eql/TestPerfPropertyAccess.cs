@@ -1,6 +1,7 @@
 using System;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
 
@@ -11,7 +12,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.regression.eql
 {
-	
 	[TestFixture]
 	public class TestPerfPropertyAccess 
 	{
@@ -32,7 +32,10 @@ namespace net.esper.regression.eql
 		{
 			String methodName = ".testPerfPropertyAccess";
 			
-			String joinStatement = "select * from " + typeof(SupportBeanCombinedProps).FullName + ".win:length(1)" + " where indexed[0].mapped('a').value = 'dummy'";
+			String joinStatement =
+                "select * from " +
+                typeof(SupportBeanCombinedProps).FullName + ".win:length(1)" +
+                " where indexed[0].mapped('a').value = 'dummy'";
 			
 			joinView = epService.EPAdministrator.createEQL(joinStatement);
 			joinView.AddListener(updateListener);
@@ -40,19 +43,19 @@ namespace net.esper.regression.eql
 			// Send events for each stream
 			SupportBeanCombinedProps _event = SupportBeanCombinedProps.makeDefaultBean();
 			log.Info(methodName + " Sending events");
-			
-			long startTime = DateTime.Now.Ticks ;
+
+            long startTime = DateTimeHelper.CurrentTimeMillis;
 			for (int i = 0; i < 10000; i++)
 			{
 				SendEvent(_event);
 			}
 			log.Info(methodName + " Done sending events");
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
 			log.Info(methodName + " delta=" + (endTime - startTime));
 			
 			// Stays at 250, below 500ms
-			Assert.IsTrue((endTime - startTime) < 10000000);
+			Assert.IsTrue((endTime - startTime) < 1000);
 		}
 		
 		private void  SendEvent(Object _event)

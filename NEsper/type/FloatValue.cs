@@ -39,8 +39,13 @@ namespace net.esper.type
 		/// </param>
 		/// <returns> parsed value
 		/// </returns>
-		public static float parseString(String value)
+		public static float ParseString(String value)
 		{
+            if (value.EndsWith("f"))
+            {
+                value = value.Substring(0, value.Length - 1);
+            }
+
 			return Single.Parse(value);
 		}
 		
@@ -49,19 +54,19 @@ namespace net.esper.type
 		/// </param>
 		/// <returns> typed array
 		/// </returns>
-		public static float[] parseString(String[] values)
+		public static float[] ParseString(String[] values)
 		{
 			float[] result = new float[values.Length];
 			for (int i = 0; i < result.Length; i++)
 			{
-				result[i] = parseString(values[i]);
+				result[i] = ParseString(values[i]);
 			}
 			return result;
 		}
 		
 		public override void  parse(String value)
 		{
-			floatValue = parseString(value);
+			floatValue = ParseString(value);
 		}
 		
 		public override String ToString()

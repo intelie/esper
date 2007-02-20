@@ -82,18 +82,17 @@ namespace net.esper.eql.expression
                         total += entry.Value * Math.Abs(entry.Key - avg);
                     }
 
-                    return total / datapoints;
+                    double? value = total / datapoints;
+                    return value;
                 }
 
             }
+
             virtual public Type ValueType
             {
-                get
-                {
-                    return typeof(Double);
-                }
-
+                get { return typeof(double?); }
             }
+
             private RefCountedSet<Double> valueSet;
             private double sum;
 

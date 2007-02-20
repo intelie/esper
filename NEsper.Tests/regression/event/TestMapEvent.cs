@@ -35,7 +35,7 @@ namespace net.esper.regression.events
             map.Put("beanA", SupportBeanComplexProps.makeDefaultBean());
 
             Configuration configuration = new Configuration();
-            configuration.addEventTypeAlias("myMapEvent", properties);
+            configuration.AddEventTypeAlias("myMapEvent", properties);
 
             epService = EPServiceProviderManager.GetProvider("myProvider", configuration);
         }
@@ -92,7 +92,7 @@ namespace net.esper.regression.events
             properties["astring"] = "string";
 
             Configuration configuration = new Configuration();
-            configuration.addEventTypeAlias("MyPrimMapEvent", properties);
+            configuration.AddEventTypeAlias("MyPrimMapEvent", properties);
 
             epService = EPServiceProviderManager.GetProvider("testPrimitivesTypes", configuration);
         }
@@ -104,7 +104,7 @@ namespace net.esper.regression.events
             properties[(String)"astring"] = (String)"XXXX";
 
             Configuration configuration = new Configuration();
-            configuration.addEventTypeAlias("MyInvalidEvent", properties);
+            configuration.AddEventTypeAlias("MyInvalidEvent", properties);
 
             try
             {

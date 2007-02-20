@@ -52,8 +52,8 @@ namespace net.esper.events
 			}
 			
 			// Take apart the nested property into a map key and a nested value class property name
-			String propertyMap = propertyName.Substring(0, (index) - (0));
-			String propertyNested = propertyName.Substring(index + 1, (propertyName.Length) - (index + 1));
+			String propertyMap = propertyName.Substring(0, index);
+            String propertyNested = propertyName.Substring(index + 1, propertyName.Length - index - 1);
             result = taggedEventTypes.Fetch(propertyMap);
             if (result == null)
 			{
@@ -82,8 +82,8 @@ namespace net.esper.events
 			}
 			
 			// Take apart the nested property into a map key and a nested value class property name
-			String propertyMap = propertyName.Substring(0, (index) - (0));
-			String propertyNested = propertyName.Substring(index + 1, (propertyName.Length) - (index + 1));
+			String propertyMap = propertyName.Substring(0, index);
+			String propertyNested = propertyName.Substring(index + 1, propertyName.Length - index - 1);
 
             EventType result2 = taggedEventTypes.Fetch(propertyMap);
 			if ( result2 == null )

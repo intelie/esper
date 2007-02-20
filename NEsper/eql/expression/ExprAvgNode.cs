@@ -75,7 +75,9 @@ namespace net.esper.eql.expression
                     {
                         return null;
                     }
-                    return sum / numDataPoints;
+
+                    double? value = sum / numDataPoints;
+                    return value;
                 }
 
             }
@@ -83,7 +85,7 @@ namespace net.esper.eql.expression
             {
                 get
                 {
-                    return typeof(Double);
+                    return typeof(double?);
                 }
 
             }

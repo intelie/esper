@@ -55,7 +55,7 @@ namespace net.esper.type
             {
                 for (int i = 0; i < _params.Length; i++)
                 {
-                    RelationalOpEnum.Computer computer = op.getComputer(typeof(Int64));
+                    RelationalOpEnum.Computer computer = op.getComputer(typeof(long?));
                     bool result = computer(_params[i][0], _params[i][1]);
                     Assert.AreEqual(expected[ordinal][i], result,
                         "op=" + op.ToString() + ",i=" + i);
@@ -80,7 +80,7 @@ namespace net.esper.type
             {
                 for (int i = 0; i < _params.Length; i++)
                 {
-                    RelationalOpEnum.Computer computer = op.getComputer(typeof(Double));
+                    RelationalOpEnum.Computer computer = op.getComputer(typeof(double?));
                     bool result = computer(_params[i][0], _params[i][1]);
                     Assert.AreEqual(expected[ordinal][i], result,
                         "op=" + op.ToString() + ",i=" + i );

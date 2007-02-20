@@ -32,7 +32,7 @@ namespace net.esper.eql.join.rep
 			Assert.IsTrue( it.MoveNext() );
 			Cursor cursor = it.Current;
 			Assert.AreSame( s0Event, cursor.Event );
-			Assert.AreSame( 0, cursor.Stream );
+			Assert.AreEqual( 0, cursor.Stream );
 
 			Assert.IsFalse( it.MoveNext() );
 			tryIteratorEmpty( it );
@@ -43,7 +43,7 @@ namespace net.esper.eql.join.rep
 				repository.GetCursors( 2 );
 				Assert.Fail();
 			}
-			catch ( System.NullReferenceException ex )
+			catch ( NullReferenceException ex )
 			{
 				// expected
 			}
@@ -70,7 +70,7 @@ namespace net.esper.eql.join.rep
 				repository.AddResult( CollectionHelper.Next(repository.GetCursors( 0 )), null, 1 );
 				Assert.Fail();
 			}
-			catch ( System.NullReferenceException ex )
+			catch ( NullReferenceException ex )
 			{
 				// expected
 			}
@@ -118,7 +118,7 @@ namespace net.esper.eql.join.rep
 				Object generatedAux = it.Current;
 				Assert.Fail();
 			}
-			catch ( System.ArgumentOutOfRangeException ex )
+			catch ( ArgumentOutOfRangeException ex )
 			{
 				// expected
 			}

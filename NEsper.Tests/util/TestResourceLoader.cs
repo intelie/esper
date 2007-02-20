@@ -7,7 +7,6 @@ using NUnit.Framework;
 
 namespace net.esper.util
 {
-    [TestFixture]
     public class TestResourceLoader
     {
         private const String TEST_RESOURCE = "regression/esper.test.readconfig.cfg.xml";

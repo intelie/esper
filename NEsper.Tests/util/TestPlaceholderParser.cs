@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace net.esper.util
 {
-
     [TestFixture]
     public class TestPlaceholderParser
     {
@@ -41,18 +40,18 @@ namespace net.esper.util
 
         public virtual void testParseValid(Object[] inputAndResults)
         {
-            String parseString = (String)inputAndResults[0];
+            String ParseString = (String)inputAndResults[0];
             Object[] expected = (Object[])inputAndResults[1];
 
-            IList<PlaceholderParser.Fragment> result = PlaceholderParser.parsePlaceholder(parseString);
+            IList<PlaceholderParser.Fragment> result = PlaceholderParser.parsePlaceholder(ParseString);
 
             Assert.AreEqual(expected.Length, result.Count,
-                "Incorrect count for '" + parseString + "'");
+                "Incorrect count for '" + ParseString + "'");
 
             for (int i = 0; i < expected.Length; i++)
             {
                 Assert.AreEqual(expected[i], result[i],
-                    "Incorrect value for '" + parseString + "' at " + i);
+                    "Incorrect value for '" + ParseString + "' at " + i);
             }
         }
 

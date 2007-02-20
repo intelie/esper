@@ -76,13 +76,14 @@ namespace net.esper.eql.expression
 					}
 
 					double variance = ( sumSq - sum * sum / numDataPoints ) / ( numDataPoints - 1 );
-					return System.Math.Sqrt( variance );
+                    double? stddev = Math.Sqrt( variance );
+                    return stddev;
 				}
 			}
 
 			virtual public Type ValueType
 			{
-				get { return typeof( Double ); }
+				get { return typeof( double? ); }
 			}
 
 			private double sum;

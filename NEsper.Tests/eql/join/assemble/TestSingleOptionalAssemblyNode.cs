@@ -51,7 +51,7 @@ namespace net.esper.eql.join.assemble
 			EventBean[] row = parentNode.getRowsList()[0];
 			Assert.AreEqual( 4, row.Length );
 			Node nodeTwo = resultMultipleEvents[1][1];
-			IEnumerator<EventBean> enumTwo = nodeOne.Events.GetEnumerator();
+			IEnumerator<EventBean> enumTwo = nodeTwo.Events.GetEnumerator();
 			Assert.IsTrue( enumTwo.MoveNext() );
 			Assert.AreEqual( enumTwo.Current, row[1] );
 		}

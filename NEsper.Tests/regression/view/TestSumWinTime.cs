@@ -40,7 +40,7 @@ namespace net.esper.regression.view
             selectTestView = epService.EPAdministrator.createEQL(sumTimeExpr);
             selectTestView.AddListener(testListener);
 
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             runAssertion();
         }
@@ -54,7 +54,7 @@ namespace net.esper.regression.view
             selectTestView = epService.EPAdministrator.createEQL(sumTimeUniExpr);
             selectTestView.AddListener(testListener);
 
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             runGroupByAssertions();
         }
@@ -68,7 +68,7 @@ namespace net.esper.regression.view
             selectTestView = epService.EPAdministrator.createEQL(sumTimeUniExpr);
             selectTestView.AddListener(testListener);
 
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             runSingleAssertion();
         }

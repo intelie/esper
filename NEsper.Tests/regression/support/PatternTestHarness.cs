@@ -56,7 +56,7 @@ namespace net.esper.regression.support
             serviceProvider.Initialize();
 
             EPRuntime runtime = serviceProvider.EPRuntime;
-            runtime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            runtime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             // Send the start time to the runtime
             if (sendEventCollection.GetTime(EventCollection.ON_START_EVENT_ID) != null)

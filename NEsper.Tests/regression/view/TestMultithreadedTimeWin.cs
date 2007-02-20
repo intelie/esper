@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.events;
 using net.esper.support.bean;
 
@@ -12,8 +13,8 @@ using org.apache.commons.logging;
 
 namespace net.esper.regression.view
 {
-
-    /// <summary> Test for N threads feeding events that affect M statements which employ a small time window.
+    /// <summary>
+    /// Test for N threads feeding events that affect M statements which employ a small time window.
     /// Each of the M statements is associated with a symbol and each event send hits exactly one
     /// statement only.
     /// <p>
@@ -25,8 +26,9 @@ namespace net.esper.regression.view
     /// (2) an application thread during SendEvent() inside of the listener, causes assertion to fail
     /// (3) the timer thread, causes an exception to be logged and assertion *may* fail
     /// </summary>
-	[TestFixture]
-    public class TestMultithreadedTimeWin 
+
+    [TestFixture]
+    public class TestMultithreadedTimeWin
     {
         private Thread[] threads;
         private ResultUpdateListener[] listeners;
@@ -43,7 +45,7 @@ namespace net.esper.regression.view
             setUp(numSymbols, numThreads, numEventsPerThread, timeWindowSize);
 
             // Start threads
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
             foreach (Thread thread in threads)
             {
                 thread.Start();
@@ -54,7 +56,7 @@ namespace net.esper.regression.view
             {
                 thread.Join();
             }
-            long endTime = DateTime.Now.Ticks ;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
 
             // Check listener results
             long totalReceived = 0;
@@ -63,7 +65,7 @@ namespace net.esper.regression.view
                 totalReceived += listener.NumReceived;
                 Assert.IsFalse(listener.CaughtRuntimeException);
             }
-            double numTimeWindowAdvancements = (endTime - startTime) / 10000000 / timeWindowSize;
+            double numTimeWindowAdvancements = (endTime - startTime) / 1000 / timeWindowSize;
 
             log.Info("Completed, expected=" + numEventsPerThread * numThreads + " numTimeWindowAdvancements=" + numTimeWindowAdvancements + " totalReceived=" + totalReceived);
             Assert.IsTrue(totalReceived < numEventsPerThread * numThreads + numTimeWindowAdvancements + 1);
@@ -125,7 +127,7 @@ namespace net.esper.regression.view
 
                     Object _event = new SupportMarketDataBean(symbol, -1, volume, null);
 
-                    lock( sharedLock )
+                    lock (sharedLock)
                     {
                         epRuntime.SendEvent(_event);
                     }
@@ -137,27 +139,20 @@ namespace net.esper.regression.view
         {
             virtual public int NumReceived
             {
-                get
-                {
-                    return numReceived;
-                }
-
+                get { return numReceived; }
             }
+
             virtual public bool CaughtRuntimeException
             {
-                get
-                {
-                    return isCaughtRuntimeException;
-                }
-
+                get { return isCaughtRuntimeException; }
             }
+
             private bool isCaughtRuntimeException;
             private int numReceived = 0;
             private String lastSymbol = null;
 
             public virtual void Update(EventBean[] newEvents, EventBean[] oldEvents)
             {
-
                 if ((newEvents == null) || (newEvents.Length == 0))
                 {
                     return;

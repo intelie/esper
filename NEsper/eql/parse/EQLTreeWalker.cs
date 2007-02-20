@@ -440,7 +440,7 @@ namespace net.esper.eql.parse
             {
                 AST dbchildNode = node.getFirstChild().getFirstChild();
                 String dbName = dbchildNode.getText();
-                String sqlWithParams = StringValue.parseString(dbchildNode.getNextSibling().getText().Trim());
+                String sqlWithParams = StringValue.ParseString(dbchildNode.getNextSibling().getText().Trim());
                 streamSpec = new DBStatementStreamSpec(streamName, viewSpecs, dbName, sqlWithParams);
             }
             else

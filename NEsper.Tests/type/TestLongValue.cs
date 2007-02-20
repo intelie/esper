@@ -87,7 +87,7 @@ namespace net.esper.type
 
         private void tryValid(String strLong, long expected)
         {
-            long result = LongValue.parseString(strLong);
+            long result = LongValue.ParseString(strLong);
             Assert.IsTrue(result == expected);
         }
 
@@ -95,7 +95,7 @@ namespace net.esper.type
         {
             try
             {
-                LongValue.parseString(strLong);
+                LongValue.ParseString(strLong);
                 Assert.IsTrue(false);
             }
             catch (System.Exception ex)

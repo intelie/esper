@@ -10,6 +10,8 @@ namespace net.esper.collection
 
 	public class RefCountedSet<K>
 	{
+        private bool hasNullEntry;
+        private int nullEntry;
 		private IDictionary<K, int> refSet;
 		private int numValues;
 
@@ -22,6 +24,27 @@ namespace net.esper.collection
 			refSet = new Dictionary<K, Int32>();
 		}
 
+        /// <summary>
+        /// Adds a key to the set, but the key is null.  It behaves the same, but has its own
+        /// variables that need to be incremented.
+        /// </summary>
+
+        private bool AddNull()
+        {
+            if (!hasNullEntry)
+            {
+                hasNullEntry = true;
+                numValues++;
+                nullEntry = 0;
+                return true;
+            }
+
+            numValues++;
+            nullEntry++;
+
+            return false;
+        }
+
 		/// <summary> Add a key to the set. Add with a reference count of one if the key didn't exist in the set.
 		/// Increase the reference count by one if the key already exists.
 		/// Return true if this is the first time the key was encountered, or false if key is already in set.
@@ -32,7 +55,12 @@ namespace net.esper.collection
 		/// </returns>
 		public virtual bool Add( K key )
 		{
-			int value;
+            if (key == null)
+            {
+                return AddNull();
+            }
+
+            int value;
 			if ( !refSet.TryGetValue( key, out value ) )
 			{
 				refSet[key] = 1 ;
@@ -46,6 +74,25 @@ namespace net.esper.collection
 			return false;
 		}
 
+        /// <summary>
+        /// Removes the null key
+        /// </summary>
+
+        private bool RemoveNull()
+        {
+            if (nullEntry == 1)
+            {
+                hasNullEntry = false;
+                nullEntry--;
+                return true;
+            }
+
+            nullEntry--;
+            numValues--;
+
+            return false;
+        }
+
 		/// <summary> Removed a key to the set. Removes the key if the reference count is one.
 		/// Decreases the reference count by one if the reference count is more then one.
 		/// Return true if the reference count was one and the key thus removed, or false if key is stays in set.
@@ -58,6 +105,11 @@ namespace net.esper.collection
 
 		public virtual bool Remove( K key )
 		{
+            if (key == null)
+            {
+                return RemoveNull();
+            }
+
 			int value;
 			if ( !refSet.TryGetValue( key, out value ) )
 			{
@@ -83,7 +135,15 @@ namespace net.esper.collection
 
 		public IEnumerator<KeyValuePair<K, int>> GetEnumerator()
 		{
-			return refSet.GetEnumerator();
+            if (hasNullEntry)
+            {
+                yield return new KeyValuePair<K, int>(default(K), nullEntry);
+            }
+            
+            foreach (KeyValuePair<K, int> value in refSet)
+            {
+                yield return value;
+            }
 		}
 
 		/// <summary> Returns the number of values in the collection.</summary>

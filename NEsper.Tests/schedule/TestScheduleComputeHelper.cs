@@ -5,11 +5,12 @@ using NUnit.Framework;
 
 using org.apache.commons.logging;
 
+using net.esper.compat;
+
 namespace net.esper.schedule
 {
-
-	[TestFixture]
-    public class TestScheduleComputeHelper 
+    [TestFixture]
+    public class TestScheduleComputeHelper
     {
         private static readonly String timeFormat = @"yyyy-MM-dd HH:mm:ss";
 
@@ -284,17 +285,17 @@ namespace net.esper.schedule
         public virtual void checkCorrect(ScheduleSpec spec, String now, String expected)
         {
             DateTime nowDate = DateTime.Parse(now);
-            DateTime expectedDate = DateTime.Parse( expected ) ;
+            DateTime expectedDate = DateTime.Parse(expected);
 
-            long result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate.Ticks);
-            DateTime resultDate = new DateTime(result);
+            long result = ScheduleComputeHelper.ComputeNextOccurance(spec, DateTimeHelper.TimeInMillis(nowDate));
+            DateTime resultDate = DateTimeHelper.TimeFromMillis(result);
 
             if (!(resultDate.Equals(expectedDate)))
             {
                 log.Debug(".checkCorrect Difference in result found, spec=" + spec);
-                log.Debug(".checkCorrect      now=" + nowDate.ToString( timeFormat ) + " long=" + nowDate.Ticks);
-                log.Debug(".checkCorrect expected=" + expectedDate.ToString( timeFormat ) + " long=" + expectedDate.Ticks);
-                log.Debug(".checkCorrect   result=" + resultDate.ToString( timeFormat ) + " long=" + resultDate.Ticks);
+                log.Debug(".checkCorrect      now=" + nowDate.ToString(timeFormat) + " long=" + DateTimeHelper.TimeInMillis(nowDate));
+                log.Debug(".checkCorrect expected=" + expectedDate.ToString(timeFormat) + " long=" + DateTimeHelper.TimeInMillis(expectedDate));
+                log.Debug(".checkCorrect   result=" + resultDate.ToString(timeFormat) + " long=" + DateTimeHelper.TimeInMillis(resultDate));
                 Assert.IsTrue(false);
             }
         }

@@ -30,7 +30,7 @@ namespace net.esper.collection
             {
                 if (currentEnumerator == null)
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new InvalidOperationException();
                 }
 
                 return currentEnumerator.Current;

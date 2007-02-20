@@ -4,6 +4,7 @@ using System.Threading;
 
 using net.esper.client;
 using net.esper.client.time;
+using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
 
@@ -53,19 +54,19 @@ namespace net.esper.regression.view
                 log.Info("Sending batch " + loopCount);
 
                 // send events
-                long startTime = DateTime.Now.Ticks ;
+                long startTime = DateTimeHelper.CurrentTimeMillis;
                 for (int i = 0; i < 5000; i++)
                 {
                     double price = 50 + 49 * random.Next(100) / 100.0;
                     SendEvent(price);
                 }
-                long endTime = DateTime.Now.Ticks;
+                long endTime = DateTimeHelper.CurrentTimeMillis;
 
                 // sleep remainder of 1 second
-                long delta = startTime - endTime;
-                if (delta < 9500000)
+                long delta = endTime - startTime;
+                if (delta < 950)
                 {
-                    Thread.Sleep((int)((9500000 - delta) / 10000));
+                    Thread.Sleep((int) (950 - delta));
                 }
 
                 listener.reset();
@@ -79,7 +80,7 @@ namespace net.esper.regression.view
 
         private void sendClockingExternal()
         {
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             Process thisProcess = Process.GetCurrentProcess();
 

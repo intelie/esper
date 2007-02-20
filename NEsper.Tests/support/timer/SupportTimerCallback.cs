@@ -7,7 +7,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.support.timer
 {
-	
 	public class SupportTimerCallback : net.esper.timer.TimerCallback
 	{
 		virtual public int Count
@@ -29,7 +28,7 @@ namespace net.esper.support.timer
 		public virtual void TimerCallback()
 		{
             int current = (int) Interlocked.Increment(ref numInvoked);
-			log.Debug(".timerCallback numInvoked=" + current + " thread=" + Thread.CurrentThread) ;
+            log.Debug(".timerCallback numInvoked=" + current + " thread=" + Thread.CurrentThread);
 		}
 		
 		private static readonly Log log = LogFactory.GetLog(typeof(SupportTimerCallback));

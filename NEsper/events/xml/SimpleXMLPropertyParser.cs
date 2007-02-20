@@ -67,11 +67,11 @@ namespace net.esper.events.xml
 					return "/" + child.getFirstChild().getText();
 				
 				case EqlTokenTypes.EVENT_PROP_MAPPED: 
-					String key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
+					String key = StringValue.ParseString(child.getFirstChild().getNextSibling().getText());
 					return "/" + child.getFirstChild().getText() + "[@id='" + key + "']";
 				
 				case EqlTokenTypes.EVENT_PROP_INDEXED: 
-					int index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
+					int index = IntValue.ParseString(child.getFirstChild().getNextSibling().getText());
 					return "/" + child.getFirstChild().getText() + "[position() = " + index + "]";
 				
 				default: 

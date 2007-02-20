@@ -169,10 +169,10 @@ namespace net.esper.core
                 services.FilterService.Evaluate(eventBean);
 
                 // Dispatch internal work items and results
-                dispatch();
+                Dispatch();
 
                 // Work off the event queue if any events accumulated in there via a Route()
-                processThreadWorkQueue();
+                ProcessThreadWorkQueue();
             }
             catch (SystemException ex)
             {
@@ -189,7 +189,7 @@ namespace net.esper.core
             if (_event is TimerControlEvent)
             {
                 TimerControlEvent timerControlEvent = (TimerControlEvent)_event;
-                if (timerControlEvent.getClockType() == TimerControlEvent.ClockType.CLOCK_INTERNAL)
+                if (timerControlEvent.ClockType == TimerControlEvent.ClockTypeEnum.CLOCK_INTERNAL)
                 {
                     // Start internal clock which supplies CurrentTimeEvent events every 100ms
                     // This may be done without delay thus the write lock indeed must be reentrant.
@@ -221,10 +221,10 @@ namespace net.esper.core
                 services.SchedulingService.Evaluate();
 
                 // Let listeners know of results
-                dispatch();
+                Dispatch();
 
                 // Work off the event queue if any events accumulated in there via a Route()
-                processThreadWorkQueue();
+                ProcessThreadWorkQueue();
             }
             catch (SystemException ex)
             {
@@ -236,7 +236,7 @@ namespace net.esper.core
             }
         }
 
-        private void processThreadWorkQueue()
+        private void ProcessThreadWorkQueue()
         {
             Object _event;
             while ((_event = threadWorkQueue.Next()) != null)
@@ -253,11 +253,11 @@ namespace net.esper.core
 
                 services.FilterService.Evaluate(eventBean);
 
-                dispatch();
+                Dispatch();
             }
         }
 
-        private void dispatch()
+        private void Dispatch()
         {
             try
             {

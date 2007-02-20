@@ -13,24 +13,24 @@ namespace net.esper.util
         [Test]
         public void testCoerceNumber()
         {
-            Assert.AreEqual(1d, TypeHelper.CoerceNumber(1d, typeof(double?)));
-            Assert.AreEqual(5d, TypeHelper.CoerceNumber(5, typeof(double?)));
-            Assert.AreEqual(6d, TypeHelper.CoerceNumber((sbyte)6, typeof(double?)));
-            Assert.AreEqual(3f, TypeHelper.CoerceNumber((long)3, typeof(float?)));
-            Assert.AreEqual((short)2, TypeHelper.CoerceNumber((long)2, typeof(short?)));
-            Assert.AreEqual(4, TypeHelper.CoerceNumber((long)4, typeof(int?)));
-            Assert.AreEqual((sbyte)5, TypeHelper.CoerceNumber((long)5, typeof(sbyte?)));
-            Assert.AreEqual(8l, TypeHelper.CoerceNumber((long)8, typeof(long?)));
+	        Assert.AreEqual(1d, TypeHelper.CoerceNumber(1d, typeof(double?)));
+	        Assert.AreEqual(5d, TypeHelper.CoerceNumber(5, typeof(double?)));
+	        Assert.AreEqual(6d, TypeHelper.CoerceNumber((byte) 6, typeof(double?)));
+	        Assert.AreEqual(3f, TypeHelper.CoerceNumber((long) 3, typeof(float?)));
+	        Assert.AreEqual((short) 2, TypeHelper.CoerceNumber((long) 2, typeof(short?)));
+	        Assert.AreEqual(4, TypeHelper.CoerceNumber((long) 4, typeof(int?)));
+	        Assert.AreEqual((byte) 5, TypeHelper.CoerceNumber((long) 5, typeof(sbyte?)));
+	        Assert.AreEqual(8l, TypeHelper.CoerceNumber((long) 8, typeof(long?)));
 
-            try
-            {
-                TypeHelper.CoerceNumber(10, typeof(int));
-                Assert.Fail();
-            }
-            catch (ArgumentException)
-            {
-                // Expected
-            }
+	        try
+	        {
+	        	TypeHelper.CoerceNumber(10, typeof(int));
+	            Assert.Fail();
+	        }
+	        catch (ArgumentException ex)
+	        {
+	            // Expected
+	        }
         }
 
         [Test]
@@ -208,7 +208,7 @@ namespace net.esper.util
                 {typeof(char?).FullName, typeof(char).FullName}
             };
 
-            for (int i = 0; i < tests.Length; i++)
+            for (int i = 0; i < tests.Length / 2; i++)
             {
                 Assert.AreEqual(tests[i,0], TypeHelper.GetBoxedTypeName(tests[i,1]));
             }

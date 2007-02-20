@@ -24,8 +24,8 @@ namespace net.esper.eql.expression
 		[Test]
 		public virtual void  testGetType()
 		{
-			Assert.AreEqual(typeof(Int64), validatedNodeToTest.ReturnType);
-			Assert.AreEqual(typeof(Int64), wildcardCount.ReturnType);
+			Assert.AreEqual(typeof(long?), validatedNodeToTest.ReturnType);
+			Assert.AreEqual(typeof(long?), wildcardCount.ReturnType);
 		}
 		
 		[Test]

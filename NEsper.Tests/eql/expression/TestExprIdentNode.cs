@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.support.bean;
@@ -137,15 +138,15 @@ namespace net.esper.eql.expression
             EventBean[] events = SupportStreamTypeSvc3Stream.SampleEvents;
             identNodes[2].validate(streamTypeService, null);
 
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 100000; i++)
             {
                 identNodes[2].Evaluate(events);
             }
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
             log.Info(".testEvaluate delta=" + delta);
-            Assert.IsTrue(delta < 2000000);
+            Assert.IsTrue(delta < 200);
         }
 
         [Test]

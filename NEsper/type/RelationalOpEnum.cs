@@ -64,9 +64,9 @@ namespace net.esper.type
          */
         public RelationalOpEnum.Computer getComputer(Type coercedType)
         {
-            if ((coercedType != typeof(double)) &&
-                 (coercedType != typeof(long)) &&
-                 (coercedType != typeof(String)))
+            if ((coercedType != typeof(double?)) &&
+                (coercedType != typeof(long?)) &&
+                (coercedType != typeof(String)))
             {
                 throw new ArgumentException("Unsupported type for relational op compare, type " + coercedType);
             }

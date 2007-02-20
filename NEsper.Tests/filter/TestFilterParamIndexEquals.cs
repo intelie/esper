@@ -11,9 +11,8 @@ using NUnit.Framework;
 
 namespace net.esper.filter
 {
-
-	[TestFixture]
-    public class TestFilterParamIndexEquals 
+    [TestFixture]
+    public class TestFilterParamIndexEquals
     {
         private SupportEventEvaluator testEvaluator;
         private SupportBean testBean;
@@ -36,15 +35,15 @@ namespace net.esper.filter
         {
             FilterParamIndexEquals index = new FilterParamIndexEquals("shortBoxed", testEventType);
 
-            index.Put(1, testEvaluator);
-            index.Put(20, testEvaluator);
+            index.Put((short) 1, testEvaluator);
+            index.Put((short) 20, testEvaluator);
 
             verifyShortBoxed(index, (short)10, 0);
             verifyShortBoxed(index, (short)1, 1);
             verifyShortBoxed(index, (short)20, 1);
             verifyShortBoxed(index, null, 0);
 
-            Assert.AreEqual(testEvaluator, index[(short) 1]);
+            Assert.AreEqual(testEvaluator, index[(short)1]);
             Assert.IsTrue(index.ReadWriteLock != null);
             Assert.IsTrue(index.Remove((short)1));
             Assert.IsFalse(index.Remove((short)1));

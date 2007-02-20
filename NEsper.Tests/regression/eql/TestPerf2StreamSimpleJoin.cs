@@ -1,6 +1,7 @@
 using System;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
 
@@ -38,7 +39,7 @@ namespace net.esper.regression.eql
 
             // Send events for each stream
             log.Info(methodName + " Preloading events");
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++)
             {
                 SendEvent(makeMarketEvent("IBM_" + i));
@@ -46,11 +47,11 @@ namespace net.esper.regression.eql
             }
             log.Info(methodName + " Done preloading");
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
             log.Info(methodName + " delta=" + (endTime - startTime));
 
             // Stay below 500 ms
-            Assert.IsTrue((endTime - startTime) < 5000000);
+            Assert.IsTrue((endTime - startTime) < 500);
         }
 
         [Test]
@@ -66,14 +67,14 @@ namespace net.esper.regression.eql
             }
             log.Info(methodName + " Done preloading");
 
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
             SendEvent(makeSupportEvent("IBM_10"));
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
             log.Info(methodName + " delta=" + (endTime - startTime));
 
             Assert.AreEqual(1, updateListener.LastNewData.Length);
             // Stay below 50 ms
-            Assert.IsTrue((endTime - startTime) < 500000);
+            Assert.IsTrue((endTime - startTime) < 500);
         }
 
         [Test]
@@ -89,17 +90,17 @@ namespace net.esper.regression.eql
             }
             log.Info(methodName + " Done preloading");
 
-            long startTime = DateTime.Now.Ticks ;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
 
             updateListener.reset();
             SendEvent(makeMarketEvent("IBM_" + 10));
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
             log.Info(methodName + " delta=" + (endTime - startTime));
 
             Assert.AreEqual(1, updateListener.LastNewData.Length);
             // Stay below 50 ms
-            Assert.IsTrue((endTime - startTime) < 250000);
+            Assert.IsTrue((endTime - startTime) < 250);
         }
 
         private void SendEvent(Object _event)

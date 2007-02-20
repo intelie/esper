@@ -1,6 +1,7 @@
 using System;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
 
@@ -59,19 +60,19 @@ namespace net.esper.regression.eql
 			
 			// Send events for each stream
 			log.Info(methodName + " Preloading events");
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
 			for (int i = 0; i < 1000; i++)
 			{
 				SendEvent(new SupportBean_A("CSCO_" + i));
 				SendEvent(new SupportBean_B("IBM_" + i));
 			}
 			log.Info(methodName + " Done preloading");
-			
-			long endTime = DateTime.Now.Ticks;
+
+            long endTime = DateTimeHelper.CurrentTimeMillis;
 			log.Info(methodName + " delta=" + (endTime - startTime));
 			
 			// Stay below 500, no index would be 4 sec plus
-			Assert.IsTrue((endTime - startTime) < 5000000);
+			Assert.IsTrue((endTime - startTime) < 500);
 		}
 		
 		private void  tryJoinPerf3Streams(String joinStatement)
@@ -83,7 +84,7 @@ namespace net.esper.regression.eql
 			
 			// Send events for each stream
 			log.Info(methodName + " Preloading events");
-			long startTime = DateTime.Now.Ticks ;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
 			for (int i = 0; i < 100; i++)
 			{
 				SendEvent(new SupportBean_A("CSCO_" + i));
@@ -92,11 +93,11 @@ namespace net.esper.regression.eql
 			}
 			log.Info(methodName + " Done preloading");
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
 			log.Info(methodName + " delta=" + (endTime - startTime));
 			
 			// Stay below 500, no index would be 4 sec plus
-			Assert.IsTrue((endTime - startTime) < 5000000);
+			Assert.IsTrue((endTime - startTime) < 500);
 		}
 		
 		private void  SendEvent(Object _event)

@@ -87,7 +87,7 @@ namespace net.esper.client
         /// <param name="javaEventClassName">fully-qualified class name of the event type
         /// </param>
 
-        public virtual void addEventTypeAlias(String eventTypeAlias, String javaEventClassName)
+        public virtual void AddEventTypeAlias(String eventTypeAlias, String javaEventClassName)
         {
             eventClasses[eventTypeAlias] = javaEventClassName;
         }
@@ -97,9 +97,9 @@ namespace net.esper.client
         /// </param>
         /// <param name="javaEventClass">is the Java event class for which to create the alias
         /// </param>
-        public virtual void addEventTypeAlias(String eventTypeAlias, Type javaEventClass)
+        public virtual void AddEventTypeAlias(String eventTypeAlias, Type javaEventClass)
         {
-            addEventTypeAlias(eventTypeAlias, javaEventClass.FullName);
+            AddEventTypeAlias(eventTypeAlias, javaEventClass.FullName);
         }
 
         /// <summary> Add an alias for an event type that represents java.util.Map events.</summary>
@@ -107,7 +107,7 @@ namespace net.esper.client
         /// </param>
         /// <param name="typeMap">maps the name of each property in the Map event to the type (as a string) of its value in the Map object
         /// </param>
-        public virtual void addEventTypeAlias(String eventTypeAlias, EDictionary<string,string> typeMap)
+        public virtual void AddEventTypeAlias(String eventTypeAlias, EDictionary<string,string> typeMap)
         {
             mapAliases[eventTypeAlias] = typeMap;
         }
@@ -117,7 +117,7 @@ namespace net.esper.client
         /// </param>
         /// <param name="xmlDOMEventTypeDesc">descriptor containing property and mapping information for XML-DOM events
         /// </param>
-        public virtual void addEventTypeAlias(String eventTypeAlias, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
+        public virtual void AddEventTypeAlias(String eventTypeAlias, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
         {
             eventTypesXMLDOM[eventTypeAlias] = xmlDOMEventTypeDesc;
         }
@@ -127,7 +127,7 @@ namespace net.esper.client
         /// </param>
         /// <param name="configurationDBRef">descriptor containing database connection and access policy information
         /// </param>
-        public virtual void addDatabaseReference(String name, ConfigurationDBRef configurationDBRef)
+        public virtual void AddDatabaseReference(String name, ConfigurationDBRef configurationDBRef)
         {
             databaseReferences[name] = configurationDBRef;
         }
@@ -139,16 +139,18 @@ namespace net.esper.client
         /// </param>
         /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for Legacy Java type events
         /// </param>
-        public virtual void addEventTypeAlias(String eventTypeAlias, String javaEventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        public virtual void AddEventTypeAlias(String eventTypeAlias, String javaEventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
         {
             eventClasses[eventTypeAlias] = javaEventClass;
             eventTypesLegacy[eventTypeAlias] = legacyEventTypeDesc;
         }
 
-        /// <summary> Add an import (a class or package). Adding will suppress the use of the default imports.</summary>
+        /// <summary>
+        /// Add a namespace. Adding will suppress the use of the default namespaces.
+        /// </summary>
         /// <param name="autoImport">- the import to add
         /// </param>
-        public virtual void addImport(String autoImport)
+        public virtual void AddImport(String autoImport)
         {
             if (isUsingDefaultImports)
             {

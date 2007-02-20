@@ -119,7 +119,7 @@ namespace net.esper.view.std
                         continue;
                     }
                     GroupByView candidateGroupByView = (GroupByView)parentView;
-                    if (ArrayHelper.AreEqual(candidateGroupByView.getGroupFieldNames(), this.GroupFieldNames))
+                    if (ArrayHelper.AreEqual(candidateGroupByView.GroupFieldNames, this.GroupFieldNames))
                     {
                         groupByView = candidateGroupByView;
                     }

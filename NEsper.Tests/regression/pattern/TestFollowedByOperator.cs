@@ -100,13 +100,13 @@ namespace net.esper.regression.pattern
         public virtual void testFollowedByWithNot()
         {
             Configuration config = new Configuration();
-            config.addEventTypeAlias("A", typeof(SupportBean_A).FullName);
-            config.addEventTypeAlias("B", typeof(SupportBean_B).FullName);
-            config.addEventTypeAlias("C", typeof(SupportBean_C).FullName);
+            config.AddEventTypeAlias("A", typeof(SupportBean_A).FullName);
+            config.AddEventTypeAlias("B", typeof(SupportBean_B).FullName);
+            config.AddEventTypeAlias("C", typeof(SupportBean_C).FullName);
 
             EPServiceProvider epService = EPServiceProviderManager.GetProvider("TestCheckinStmt", config);
             epService.Initialize();
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             String stmt = "select * from pattern [" + " every a=A -> (timer:interval(10 seconds) and not (B(id=a.id) or C(id=a.id)))" + "] ";
 
@@ -153,7 +153,7 @@ namespace net.esper.regression.pattern
         public virtual void testFollowedByTimer()
         {
             Configuration config = new Configuration();
-            config.addEventTypeAlias("CallEvent", typeof(SupportCallEvent).FullName);
+            config.AddEventTypeAlias("CallEvent", typeof(SupportCallEvent).FullName);
             EPServiceProvider epService = EPServiceProviderManager.GetProvider("testFollowedByTimer", config);
             epService.Initialize();
 

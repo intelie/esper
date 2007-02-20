@@ -26,10 +26,10 @@ namespace net.esper.view
             String[] s_1_3 = new String[] { "\"price\"", "1" };
 
             Type[] c_2 = new Type[] { typeof(bool), typeof(String), typeof(Int64) };
-            String[] s_2_0 = new String[] { "true", "\"symbol\"", "1" };
-            String[] s_2_1 = new String[] { "true", "\"price\"", "1" };
-            String[] s_2_2 = new String[] { "true", "\"price\"", "2" };
-            String[] s_2_3 = new String[] { "false", "\"price\"", "1" };
+            String[] s_2_0 = new String[] { "True", "\"symbol\"", "1" };
+            String[] s_2_1 = new String[] { "True", "\"price\"", "1" };
+            String[] s_2_2 = new String[] { "True", "\"price\"", "2" };
+            String[] s_2_3 = new String[] { "False", "\"price\"", "1" };
 
             EDictionary<int, ViewSpec> specs = new EHashDictionary<int, ViewSpec>();
             specs.Put(1, SupportViewSpecFactory.makeSpec("ext", "sort", null, null));

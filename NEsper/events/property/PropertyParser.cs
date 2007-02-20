@@ -74,11 +74,11 @@ namespace net.esper.events.property
                     return new SimpleProperty(child.getFirstChild().getText());
 
                 case EqlTokenTypes.EVENT_PROP_MAPPED:
-                    String key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
+                    String key = StringValue.ParseString(child.getFirstChild().getNextSibling().getText());
                     return new MappedProperty(child.getFirstChild().getText(), key);
 
                 case EqlTokenTypes.EVENT_PROP_INDEXED:
-                    int index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
+                    int index = IntValue.ParseString(child.getFirstChild().getNextSibling().getText());
                     return new IndexedProperty(child.getFirstChild().getText(), index);
 
                 default:

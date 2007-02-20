@@ -71,12 +71,9 @@ namespace net.esper.filter
 			{
 				return false;
 			}
-			
-			if (this.filterConstant != other.filterConstant)
-			{
-				return false;
-			}
-			return true;
+
+            bool result = Object.Equals(this.filterConstant, other.filterConstant);
+            return result;
 		}
 
         public override int GetHashCode()

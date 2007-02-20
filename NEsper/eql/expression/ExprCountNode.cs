@@ -82,7 +82,8 @@ namespace net.esper.eql.expression
 			{
 				get
 				{
-					return numDataPoints;
+                    long? value = numDataPoints;
+                    return value;
 				}
 
 			}
@@ -90,7 +91,7 @@ namespace net.esper.eql.expression
 			{
 				get
 				{
-					return typeof( long );
+					return typeof( long? );
 				}
 
 			}
@@ -119,7 +120,8 @@ namespace net.esper.eql.expression
 			{
 				get
 				{
-					return numDataPoints;
+                    long? value = numDataPoints;
+                    return value;
 				}
 
 			}
@@ -127,7 +129,7 @@ namespace net.esper.eql.expression
 			{
 				get
 				{
-					return typeof( long );
+					return typeof( long? );
 				}
 
 			}

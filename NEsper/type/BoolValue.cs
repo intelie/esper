@@ -53,33 +53,35 @@ namespace net.esper.type
 		/// </param>
 		/// <returns> parsed boolean
 		/// </returns>
-		public static bool parseString(String value)
-		{
-			if (!(value.Equals("true")) && (!(value.Equals("false"))))
-			{
-				throw new ArgumentException("Boolean value '" + value + "' cannot be converted to boolean");
-			}
-			return Boolean.Parse(value);
-		}
+        public static bool ParseString(String value)
+        {
+            bool rvalue;
+            if (!Boolean.TryParse(value, out rvalue))
+            {
+                throw new ArgumentException("Boolean value '" + value + "' cannot be converted to boolean");
+            }
+
+            return rvalue;
+        }
 		
 		/// <summary> Parse the string array returning a boolean array.</summary>
 		/// <param name="values">- string array
 		/// </param>
 		/// <returns> typed array
 		/// </returns>
-		public static bool[] parseString(String[] values)
+		public static bool[] ParseString(String[] values)
 		{
 			bool[] result = new bool[values.Length];
 			for (int i = 0; i < result.Length; i++)
 			{
-				result[i] = parseString(values[i]);
+				result[i] = ParseString(values[i]);
 			}
 			return result;
 		}
 		
 		public override void  parse(String value)
 		{
-			boolValue = parseString(value);
+			boolValue = ParseString(value);
 		}
 		
 		public override String ToString()

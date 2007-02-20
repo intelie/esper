@@ -20,7 +20,7 @@ namespace net.esper.eql.expression
 		[Test]
 		public virtual void testGetType()
 		{
-			Assert.AreEqual( typeof( Double ), validatedNodeToTest.ReturnType );
+			Assert.AreEqual( typeof( double? ), validatedNodeToTest.ReturnType );
 		}
 
 		[Test]
@@ -40,7 +40,7 @@ namespace net.esper.eql.expression
 		public virtual void testAggregateFunction()
 		{
 			Aggregator agg = validatedNodeToTest.AggregationFunction;
-			Assert.AreEqual( typeof( Double ), agg.ValueType );
+			Assert.AreEqual( typeof( double? ), agg.ValueType );
 
 			Assert.IsNull( agg.Value );
 

@@ -33,7 +33,7 @@ namespace net.esper.regression.events
 				eventTypeMeta.SchemaResource = schemaUri;
 				eventTypeMeta.AddNamespacePrefix("ss", "samples:schemas:simpleSchema");
                 eventTypeMeta.AddXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathResultType.Number);
-				configuration.addEventTypeAlias("TestXMLSchemaType", eventTypeMeta);
+				configuration.AddEventTypeAlias("TestXMLSchemaType", eventTypeMeta);
 				
 				return configuration;
 			}

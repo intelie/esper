@@ -133,14 +133,14 @@ namespace net.esper.eql.parse
 
         private static Object makeFrequency(AST node)
         {
-            int frequency = IntValue.parseString(node.getFirstChild().getText());
+            int frequency = IntValue.ParseString(node.getFirstChild().getText());
             return new FrequencyParameter(frequency);
         }
 
         private static Object makeRange(AST node)
         {
-            int low = IntValue.parseString(node.getFirstChild().getText());
-            int high = IntValue.parseString(node.getFirstChild().getNextSibling().getText());
+            int low = IntValue.ParseString(node.getFirstChild().getText());
+            int high = IntValue.ParseString(node.getFirstChild().getNextSibling().getText());
             return new RangeParameter(low, high);
         }
 
@@ -199,31 +199,31 @@ namespace net.esper.eql.parse
                 child = child.getNextSibling();
             }
 
-            Object result = parseStringArray(node.getFirstChild().Type, values);
+            Object result = ParseStringArray(node.getFirstChild().Type, values);
             return result;
         }
 
-        private static Object parseStringArray(int nodeType, String[] nodeValues)
+        private static Object ParseStringArray(int nodeType, String[] nodeValues)
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".parseStringArray Node type=" + nodeType + " values=" + CollectionHelper.Render(nodeValues));
+                log.Debug(".ParseStringArray Node type=" + nodeType + " values=" + CollectionHelper.Render(nodeValues));
             }
 
             switch (nodeType)
             {
 
-                case EqlEvalTokenTypes.INT_TYPE: return IntValue.parseString(nodeValues);
+                case EqlEvalTokenTypes.INT_TYPE: return IntValue.ParseString(nodeValues);
 
-                case EqlEvalTokenTypes.LONG_TYPE: return LongValue.parseString(nodeValues);
+                case EqlEvalTokenTypes.LONG_TYPE: return LongValue.ParseString(nodeValues);
 
-                case EqlEvalTokenTypes.BOOL_TYPE: return BoolValue.parseString(nodeValues);
+                case EqlEvalTokenTypes.BOOL_TYPE: return BoolValue.ParseString(nodeValues);
 
-                case EqlEvalTokenTypes.FLOAT_TYPE: return FloatValue.parseString(nodeValues);
+                case EqlEvalTokenTypes.FLOAT_TYPE: return FloatValue.ParseString(nodeValues);
 
-                case EqlEvalTokenTypes.DOUBLE_TYPE: return DoubleValue.parseString(nodeValues);
+                case EqlEvalTokenTypes.DOUBLE_TYPE: return DoubleValue.ParseString(nodeValues);
 
-                case EqlEvalTokenTypes.STRING_TYPE: return StringValue.parseString(nodeValues);
+                case EqlEvalTokenTypes.STRING_TYPE: return StringValue.ParseString(nodeValues);
 
                 default:
                     throw new SystemException("Unexpected constant of type " + nodeType + " encountered");

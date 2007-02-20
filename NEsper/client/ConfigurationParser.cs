@@ -91,7 +91,7 @@ namespace net.esper.client
                 if (classNode != null)
                 {
                     optionalClassName = classNode.InnerText;
-                    configuration.addEventTypeAlias(name, optionalClassName);
+                    configuration.AddEventTypeAlias(name, optionalClassName);
                 }
                 HandleSubElement(name, optionalClassName, configuration, nodes.Item(i));
             }
@@ -129,7 +129,7 @@ namespace net.esper.client
                 String clazz = ((XmlAttributeCollection)propertyList.Item(i).Attributes).GetNamedItem("class").InnerText;
                 propertyTypeNames[name] = clazz;
             }
-            configuration.addEventTypeAlias(aliasName, propertyTypeNames);
+            configuration.AddEventTypeAlias(aliasName, propertyTypeNames);
         }
 
         private static void HandleXMLDOM(String aliasName, Configuration configuration, XmlElement xmldomElement)
@@ -144,7 +144,7 @@ namespace net.esper.client
             xmlDOMEventTypeDesc.SchemaResource = schemaResource;
             xmlDOMEventTypeDesc.RootElementNamespace = rootElementNamespace;
             xmlDOMEventTypeDesc.DefaultNamespace = defaultNamespace;
-            configuration.addEventTypeAlias(aliasName, xmlDOMEventTypeDesc);
+            configuration.AddEventTypeAlias(aliasName, xmlDOMEventTypeDesc);
 
             ElementEnumerator propertyNodeEnumerator = new ElementEnumerator(xmldomElement.ChildNodes);
             while (propertyNodeEnumerator.MoveNext())
@@ -199,7 +199,7 @@ namespace net.esper.client
             ConfigurationEventTypeLegacy legacyDesc = new ConfigurationEventTypeLegacy();
             legacyDesc.AccessorStyle = (ConfigurationEventTypeLegacy.AccessorStyleEnum) Enum.Parse( typeof( ConfigurationEventTypeLegacy.AccessorStyleEnum ), accessorStyle, true ) ;
             legacyDesc.CodeGeneration = (ConfigurationEventTypeLegacy.CodeGenerationEnum) Enum.Parse( typeof( ConfigurationEventTypeLegacy.CodeGenerationEnum ), codeGeneration, true ) ;
-            configuration.addEventTypeAlias(aliasName, className, legacyDesc);
+            configuration.AddEventTypeAlias(aliasName, className, legacyDesc);
 
             ElementEnumerator propertyNodeEnumerator = new ElementEnumerator(xmldomElement.ChildNodes);
             while (propertyNodeEnumerator.MoveNext())
@@ -230,7 +230,7 @@ namespace net.esper.client
             for (int i = 0; i < importNodes.Count; i++)
             {
                 String name = ((XmlAttributeCollection)importNodes.Item(i).Attributes).GetNamedItem("import-name").InnerText;
-                configuration.addImport(name);
+                configuration.AddImport(name);
             }
         }
 
@@ -241,7 +241,7 @@ namespace net.esper.client
             {
                 String name = ((XmlAttributeCollection)dbRefNodes.Item(i).Attributes).GetNamedItem("name").InnerText;
                 ConfigurationDBRef configDBRef = new ConfigurationDBRef();
-                configuration.addDatabaseReference(name, configDBRef);
+                configuration.AddDatabaseReference(name, configDBRef);
 
                 ElementEnumerator nodeEnumerator = new ElementEnumerator(dbRefNodes.Item(i).ChildNodes);
                 while (nodeEnumerator.MoveNext())

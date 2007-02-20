@@ -28,7 +28,7 @@ namespace net.esper.regression.view
 			testListener = new SupportUpdateListener();
 			epService = EPServiceProviderManager.GetDefaultProvider();
 			epService.Initialize();
-			epService.EPRuntime.SendEvent( new TimerControlEvent( TimerControlEvent.ClockType.CLOCK_EXTERNAL ) );
+			epService.EPRuntime.SendEvent( new TimerControlEvent( TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL ) );
 
 			String viewExpr = "select str, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" + " from " + typeof( SupportBean ).FullName + ".win:length(3) " + " where boolBoxed = true";
 			selectTestView = epService.EPAdministrator.createEQL( viewExpr );

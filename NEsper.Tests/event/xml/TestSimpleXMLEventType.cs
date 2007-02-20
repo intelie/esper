@@ -66,7 +66,7 @@ namespace net.esper.events.xml
 		[Test]
 		public virtual void  testNestedProperties()
 		{
-			Assert.AreEqual("true", _event["nested1.prop2"]);
+			Assert.AreEqual("True", _event["nested1.prop2"]);
 		}
 		
 		[Test]

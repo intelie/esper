@@ -72,17 +72,20 @@ namespace net.esper.eql.expression
 					}
 					if ( vector.Count == 1 )
 					{
-						return vector[0];
+                        double? value = vector[0];
+                        return value;
 					}
 
 					int middle = vector.Count / 2;
 					if ( vector.Count % 2 == 0 )
 					{
-						return ( vector[middle - 1] + vector[middle] ) / 2;
-					}
+                        double? value = (vector[middle - 1] + vector[middle]) / 2;
+                        return value;
+                    }
 					else
 					{
-						return vector[middle];
+                        double? value = vector[middle];
+                        return value;
 					}
 				}
 
@@ -90,12 +93,9 @@ namespace net.esper.eql.expression
 
 			virtual public Type ValueType
 			{
-				get
-				{
-					return typeof( Double );
-				}
-
+				get { return typeof( double? ); }
 			}
+
 			private SortedDoubleVector vector;
 
 			/// <summary> Ctor.</summary>

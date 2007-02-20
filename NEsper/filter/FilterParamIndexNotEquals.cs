@@ -4,6 +4,7 @@ using System.Threading;
 
 using net.esper.compat;
 using net.esper.events;
+using net.esper.util;
 
 using org.apache.commons.logging;
 
@@ -94,9 +95,10 @@ namespace net.esper.filter
 
         private void checkType(Object filterConstant)
         {
-            if (this.PropertyBoxedType != filterConstant.GetType())
+            Type filterConstantType = TypeHelper.GetBoxedType(filterConstant.GetType());            
+            if (this.PropertyBoxedType != filterConstantType)
             {
-                throw new ArgumentException("Invalid type of filter constant of " + filterConstant.GetType().FullName + " for property " + this.PropertyName);
+                throw new ArgumentException("Invalid type of filter constant of " + filterConstantType.FullName + " for property " + this.PropertyName);
             }
         }
 

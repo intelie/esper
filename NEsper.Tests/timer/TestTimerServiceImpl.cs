@@ -40,6 +40,7 @@ namespace net.esper.timer
             sleep(RESOLUTION);
             Assert.IsTrue(callback.GetAndResetCount() == 0);
 
+
             // Loop for some clock cycles
             service.StartInternalClock();
             sleep(RESOLUTION / 10);

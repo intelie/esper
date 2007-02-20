@@ -48,12 +48,12 @@ namespace net.esper.type
 		/// <returns> typed array
 		/// </returns>
 		
-		public static int[] parseString(String[] values)
+		public static int[] ParseString(String[] values)
 		{
 			int[] result = new int[values.Length];
 			for (int i = 0; i < result.Length; i++)
 			{
-				result[i] = parseString(values[i]);
+				result[i] = ParseString(values[i]);
 			}
 			
 			return result;
@@ -65,7 +65,7 @@ namespace net.esper.type
 		/// <returns> parsed value
 		/// </returns>
 		
-		public static int parseString(String value)
+		public static int ParseString(String value)
 		{
 			return Int32.Parse(value);
 		}

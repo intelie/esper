@@ -13,7 +13,6 @@ using NUnit.Framework;
 
 namespace net.esper.view.ext
 {
-
     [TestFixture]
     public class TestSortWindowIterator
     {
@@ -61,7 +60,8 @@ namespace net.esper.view.ext
             IEnumerator<EventBean> it = new SortWindowIterator(testMap);
             ArrayAssertionUtil.assertEqualsExactOrder(it, new EventBean[] {
                 events.Fetch("a"), 
-                events.Fetch("a") });
+                events.Fetch("b")
+                });
         }
 
         [Test]
@@ -80,7 +80,8 @@ namespace net.esper.view.ext
             IEnumerator<EventBean> it = new SortWindowIterator(testMap);
             ArrayAssertionUtil.assertEqualsExactOrder(it, new EventBean[] {
                 events.Fetch("b"),
-                events.Fetch("b") });
+                events.Fetch("a")
+				});
         }
 
         [Test]
@@ -101,9 +102,10 @@ namespace net.esper.view.ext
             IEnumerator<EventBean> it = new SortWindowIterator(testMap);
             ArrayAssertionUtil.assertEqualsExactOrder(it, new EventBean[] {
                 events.Fetch("a"), 
-                events.Fetch("a"),
-                events.Fetch("a"),
-                events.Fetch("a") });
+                events.Fetch("b"),
+                events.Fetch("c"),
+                events.Fetch("d")
+                });
         }
 
 
@@ -131,11 +133,12 @@ namespace net.esper.view.ext
             IEnumerator<EventBean> it = new SortWindowIterator(testMap);
             ArrayAssertionUtil.assertEqualsExactOrder(it, new EventBean[] {
                 events.Fetch("a"),
-                events.Fetch("a"),
-                events.Fetch("a"), 
-                events.Fetch("a"),
-                events.Fetch("a"),
-                events.Fetch("a") });
+                events.Fetch("c"),
+                events.Fetch("d"), 
+                events.Fetch("e"),
+                events.Fetch("f"),
+                events.Fetch("g")
+                });
         }
     }
 }

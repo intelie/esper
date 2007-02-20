@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace net.esper.view.stat.olap
 {
-
     [TestFixture]
     public class TestCubeImpl
     {

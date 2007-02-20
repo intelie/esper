@@ -49,19 +49,19 @@ namespace net.esper.type
 		/// </param>
 		/// <returns> typed array
 		/// </returns>
-		public static String[] parseString(String[] values)
+		public static String[] ParseString(String[] values)
 		{
 			String[] result = new String[values.Length];
 			for (int i = 0; i < result.Length; i++)
 			{
-				result[i] = parseString(values[i]);
+				result[i] = ParseString(values[i]);
 			}
 			return result;
 		}
 		
 		public override void  parse(String value)
 		{
-			stringValue = parseString(value);
+			stringValue = ParseString(value);
 		}
 		
 		public override String ToString()
@@ -78,13 +78,13 @@ namespace net.esper.type
 		/// </param>
 		/// <returns> parsed value
 		/// </returns>
-		public static String parseString(String value)
+		public static String ParseString(String value)
 		{
 			if ((value.StartsWith("\"")) & (value.EndsWith("\"")) || (value.StartsWith("'")) & (value.EndsWith("'")))
 			{
 				if (value.Length > 1)
 				{
-					String stringValue = value.Substring(1, (value.Length - 1) - (1));
+                    String stringValue = value.Substring(1, value.Length - 2);
 					return stringValue;
 				}
 			}

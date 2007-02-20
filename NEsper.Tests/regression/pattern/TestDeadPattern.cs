@@ -1,6 +1,7 @@
 using System;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.support.bean;
 
 using NUnit.Core;
@@ -10,8 +11,7 @@ using org.apache.commons.logging;
 
 namespace net.esper.regression.pattern
 {
-
-    [TestFixture]
+        [TestFixture]
     public class TestDeadPattern
     {
         private EPServiceProvider epService;
@@ -20,9 +20,9 @@ namespace net.esper.regression.pattern
         public virtual void setUp()
         {
             Configuration config = new Configuration();
-            config.addEventTypeAlias("A", typeof(SupportBean_A).FullName);
-            config.addEventTypeAlias("B", typeof(SupportBean_B).FullName);
-            config.addEventTypeAlias("C", typeof(SupportBean_C).FullName);
+            config.AddEventTypeAlias("A", typeof(SupportBean_A).FullName);
+            config.AddEventTypeAlias("B", typeof(SupportBean_B).FullName);
+            config.AddEventTypeAlias("C", typeof(SupportBean_C).FullName);
 
             epService = EPServiceProviderManager.GetProvider("TestDeadPattern", config);
             epService.Initialize();
@@ -40,9 +40,9 @@ namespace net.esper.regression.pattern
 
             epService.EPRuntime.SendEvent(new SupportBean_C("C1"));
 
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
             epService.EPRuntime.SendEvent(new SupportBean_A("A1"));
-            long delta = (DateTime.Now.Ticks - startTime) / 10000;
+            long delta = DateTimeHelper.CurrentTimeMillis - startTime;
 
             log.Info(".testDeadPattern delta=" + delta);
             Assert.IsTrue(delta < 20, "performance: delta=" + delta);

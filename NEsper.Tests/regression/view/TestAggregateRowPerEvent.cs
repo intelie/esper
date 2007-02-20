@@ -90,7 +90,7 @@ namespace net.esper.regression.view
         private void runAssert()
         {
             // assert select result type
-            Assert.AreEqual(typeof(Int64), selectTestView.EventType.GetPropertyType("mySum"));
+            Assert.AreEqual(typeof(long?), selectTestView.EventType.GetPropertyType("mySum"));
 
             SendEvent(10);
             Assert.AreEqual(10L, testListener.getAndResetLastNewData()[0]["mySum"]);

@@ -28,7 +28,7 @@ namespace net.esper.type
 
         public override void parse(String value)
         {
-            longValue = parseString(value);
+            longValue = ParseString(value);
         }
 
         /// <summary> Parse the string containing a long value.</summary>
@@ -36,11 +36,11 @@ namespace net.esper.type
         /// </param>
         /// <returns> long value
         /// </returns>
-        public static long parseString(String value)
+        public static long ParseString(String value)
         {
             if ((value.EndsWith("L")) || ((value.EndsWith("l"))))
             {
-                value = value.Substring(0, (value.Length - 1) - (0));
+                value = value.Substring(0, value.Length - 1);
             }
             if (value.StartsWith("+"))
             {
@@ -54,12 +54,12 @@ namespace net.esper.type
         /// </param>
         /// <returns> typed array
         /// </returns>
-        public static long[] parseString(String[] values)
+        public static long[] ParseString(String[] values)
         {
             long[] result = new long[values.Length];
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = parseString(values[i]);
+                result[i] = ParseString(values[i]);
             }
             return result;
         }

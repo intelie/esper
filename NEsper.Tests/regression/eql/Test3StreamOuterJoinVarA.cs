@@ -27,7 +27,7 @@ namespace net.esper.regression.eql
 		public virtual void setUp()
 		{
 			epService = EPServiceProviderManager.GetDefaultProvider();
-			epService.EPRuntime.SendEvent( new TimerControlEvent( TimerControlEvent.ClockType.CLOCK_EXTERNAL ) );
+			epService.EPRuntime.SendEvent( new TimerControlEvent( TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL ) );
 			epService.Initialize();
 			updateListener = new SupportUpdateListener();
 		}

@@ -161,6 +161,7 @@ namespace net.esper.regression.pattern
             PatternTestHarness util = new PatternTestHarness(events, testCaseList);
             util.runTest();
         }
+
         static TestSuperAndInterfaces()
         {
             INTERFACE_A = typeof(ISupportA).FullName;

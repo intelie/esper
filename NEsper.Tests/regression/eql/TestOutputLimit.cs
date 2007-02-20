@@ -222,7 +222,7 @@ namespace net.esper.regression.eql
 			epService.Initialize();
 			
 			// turn off external clocking
-			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 			
 			// set the clock to 0
 			currentTime = 0;

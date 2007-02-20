@@ -12,20 +12,14 @@ namespace net.esper.eql.expression
     {
 		override protected internal String AggregationFunctionName
         {
-            get
-            {
-                return "sum";
-            }
-
+            get { return "sum"; }
         }
+
         override public Type ReturnType
         {
-            get
-            {
-                return computer.ValueType;
-            }
-
+            get { return computer.ValueType; }
         }
+        
         private Aggregator computer;
 
         /// <summary> Ctor.</summary>
@@ -72,19 +66,19 @@ namespace net.esper.eql.expression
         /// </returns>
         private Aggregator getSumComputer(Type type)
         {
-            if ((type == typeof(long)) || (type == typeof(long)))
+            if ((type == typeof(long?)) || (type == typeof(long)))
             {
                 return new LongSum();
             }
-            if ((type == typeof(Int32)) || (type == typeof(int)))
+            if ((type == typeof(int?)) || (type == typeof(int)))
             {
                 return new IntegerSum();
             }
-            if ((type == typeof(Double)) || (type == typeof(double)))
+            if ((type == typeof(double?)) || (type == typeof(double)))
             {
                 return new DoubleSum();
             }
-            if ((type == typeof(Single)) || (type == typeof(float)))
+            if ((type == typeof(float?)) || (type == typeof(float)))
             {
                 return new FloatSum();
             }
@@ -102,15 +96,15 @@ namespace net.esper.eql.expression
                     {
                         return null;
                     }
-                    return sum;
+                    int? value = sum;
+                    return value;
                 }
-
             }
             virtual public Type ValueType
             {
                 get
                 {
-                    return typeof(Int32);
+                    return typeof(int?);
                 }
 
             }
@@ -156,18 +150,20 @@ namespace net.esper.eql.expression
                     {
                         return null;
                     }
-                    return sum;
-                }
 
+                    int? value = sum;
+                    return value;
+                }
             }
+
             virtual public Type ValueType
             {
                 get
                 {
-                    return typeof(Int32);
+                    return typeof(int?);
                 }
-
             }
+
             private int sum;
             private long numDataPoints;
 
@@ -208,18 +204,19 @@ namespace net.esper.eql.expression
                     {
                         return null;
                     }
-                    return sum;
+                    double? value = sum;
+                    return value;
                 }
-
             }
+
             virtual public Type ValueType
             {
                 get
                 {
-                    return typeof(Double);
+                    return typeof(double?);
                 }
-
             }
+
             private double sum;
             private long numDataPoints;
 
@@ -260,18 +257,20 @@ namespace net.esper.eql.expression
                     {
                         return null;
                     }
-                    return sum;
-                }
 
+                    long? value = sum;
+                    return value;
+                }
             }
+
             virtual public Type ValueType
             {
                 get
                 {
-                    return typeof(long);
+                    return typeof(long?);
                 }
-
             }
+
             private long sum;
             private long numDataPoints;
 
@@ -312,18 +311,19 @@ namespace net.esper.eql.expression
                     {
                         return null;
                     }
-                    return sum;
+                    float? value = sum;
+                    return value;
                 }
-
             }
+
             virtual public Type ValueType
             {
                 get
                 {
-                    return typeof(Single);
+                    return typeof(float?);
                 }
-
             }
+
             private float sum;
             private long numDataPoints;
 

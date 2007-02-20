@@ -74,7 +74,7 @@ namespace net.esper.regression.eql
             EPStatement statement = epService.EPAdministrator.createEQL(stmtText);
 
             statement.AddListener(updateListener);
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
 
             SendEvent(1, "e1a");

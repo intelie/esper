@@ -35,7 +35,7 @@ namespace net.esper.regression.view
 
             EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
             selectTestFixture.AddListener(testListener);
-            Assert.AreEqual(typeof(Double), selectTestFixture.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(double?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendMarketDataEvent("DELL", 10000, 50);
             EventBean _event = testListener.assertOneGetNewAndReset();
@@ -63,7 +63,7 @@ namespace net.esper.regression.view
 
             EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
             selectTestFixture.AddListener(testListener);
-            Assert.AreEqual(typeof(Int64), selectTestFixture.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(long?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendMarketDataEvent("CSCO", 4000, 0);
             EventBean _event = testListener.assertOneGetNewAndReset();
@@ -82,7 +82,7 @@ namespace net.esper.regression.view
 
             EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
             selectTestFixture.AddListener(testListener);
-            Assert.AreEqual(typeof(Double), selectTestFixture.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(double?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendMarketDataEvent("DELL", 10000, 0);
             EventBean _event = testListener.assertOneGetNewAndReset();
@@ -104,7 +104,7 @@ namespace net.esper.regression.view
 
             EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
             selectTestFixture.AddListener(testListener);
-            Assert.AreEqual(typeof(Double), selectTestFixture.EventType.GetPropertyType("p1"));
+            Assert.AreEqual(typeof(double?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             // intPrimitive = longPrimitive
             // case result is intPrimitive + longPrimitive
@@ -134,22 +134,22 @@ namespace net.esper.regression.view
             // Test of the various coercion user cases.
             String caseExpr =
               "select case intPrimitive" +
-              " when 1 then Boolean.toString(boolPrimitive) " +
-              " when 2 then Boolean.toString(boolBoxed) " +
-              " when 3 then Integer.toString(intPrimitive) " +
-              " when 4 then Integer.toString(intBoxed)" +
-              " when 5 then Long.toString(longPrimitive) " +
-              " when 6 then Long.toString(longBoxed) " +
-              " when 7 then Character.toString(charPrimitive) " +
-              " when 8 then Character.toString(charBoxed) " +
-              " when 9 then Short.toString(shortPrimitive) " +
-              " when 10 then Short.toString(shortBoxed) " +
-              " when 11 then Byte.toString(bytePrimitive) " +
-              " when 12 then Byte.toString(byteBoxed) " +
-              " when 13 then Float.toString(floatPrimitive) " +
-              " when 14 then Float.toString(floatBoxed) " +
-              " when 15 then Double.toString(doublePrimitive) " +
-              " when 16 then Double.toString(doubleBoxed) " +
+              " when 1 then System.Convert.ToString(boolPrimitive) " +
+              " when 2 then System.Convert.ToString(boolBoxed) " +
+              " when 3 then System.Convert.ToString(intPrimitive) " +
+              " when 4 then System.Convert.ToString(intBoxed)" +
+              " when 5 then System.Convert.ToString(longPrimitive) " +
+              " when 6 then System.Convert.ToString(longBoxed) " +
+              " when 7 then System.Convert.ToString(charPrimitive) " +
+              " when 8 then System.Convert.ToString(charBoxed) " +
+              " when 9 then System.Convert.ToString(shortPrimitive) " +
+              " when 10 then System.Convert.ToString(shortBoxed) " +
+              " when 11 then System.Convert.ToString(bytePrimitive) " +
+              " when 12 then System.Convert.ToString(byteBoxed) " +
+              " when 13 then System.Convert.ToString(floatPrimitive) " +
+              " when 14 then System.Convert.ToString(floatBoxed) " +
+              " when 15 then System.Convert.ToString(doublePrimitive) " +
+              " when 16 then System.Convert.ToString(doubleBoxed) " +
               " when 17 then str " +
               " else 'x' end as p1 " +
               " from " + typeof(SupportBean).FullName + ".win:length(1)";
@@ -160,11 +160,11 @@ namespace net.esper.regression.view
 
             sendSupportBeanEvent(true, false, 1, 0, 0L, 0L, '0', 'a', (short)0, (short)0, (sbyte)0, (sbyte)0, 0.0f, (float)0, 0.0, (double)0.0, null, SupportEnum.ENUM_VALUE_1);
             EventBean _event = testListener.getAndResetLastNewData()[0];
-            Assert.AreEqual("true", _event["p1"]);
+            Assert.AreEqual("True", _event["p1"]);
 
             sendSupportBeanEvent(true, false, 2, 0, 0L, 0L, '0', 'a', (short)0, (short)0, (sbyte)0, (sbyte)0, 0.0f, (float)0, 0.0, (double)0.0, null, SupportEnum.ENUM_VALUE_1);
             _event = testListener.getAndResetLastNewData()[0];
-            Assert.AreEqual("false", _event["p1"]);
+            Assert.AreEqual("False", _event["p1"]);
 
             sendSupportBeanEvent(true, false, 3, 0, 0L, 0L, '0', 'a', (short)0, (short)0, (sbyte)0, (sbyte)0, 0.0f, (float)0, 0.0, (double)0.0, null, SupportEnum.ENUM_VALUE_1);
             _event = testListener.getAndResetLastNewData()[0];
@@ -208,19 +208,19 @@ namespace net.esper.regression.view
 
             sendSupportBeanEvent(true, false, 13, 0, 0L, 0L, 'A', 'a', (short)9, (short)10, (sbyte)11, (sbyte)12, 13.0f, (float)14, 15.0, (double)16.0, "testCoercion", SupportEnum.ENUM_VALUE_1);
             _event = testListener.getAndResetLastNewData()[0];
-            Assert.AreEqual("13.0", _event["p1"]);
+            Assert.AreEqual("13", _event["p1"]);
 
             sendSupportBeanEvent(true, false, 14, 0, 0L, 0L, 'A', 'a', (short)9, (short)10, (sbyte)11, (sbyte)12, 13.0f, (float)14, 15.0, (double)16.0, "testCoercion", SupportEnum.ENUM_VALUE_1);
             _event = testListener.getAndResetLastNewData()[0];
-            Assert.AreEqual("14.0", _event["p1"]);
+            Assert.AreEqual("14", _event["p1"]);
 
             sendSupportBeanEvent(true, false, 15, 0, 0L, 0L, 'A', 'a', (short)9, (short)10, (sbyte)11, (sbyte)12, 13.0f, (float)14, 15.0, (double)16.0, "testCoercion", SupportEnum.ENUM_VALUE_1);
             _event = testListener.getAndResetLastNewData()[0];
-            Assert.AreEqual("15.0", _event["p1"]);
+            Assert.AreEqual("15", _event["p1"]);
 
             sendSupportBeanEvent(true, false, 16, 0, 0L, 0L, 'A', 'a', (short)9, (short)10, (sbyte)11, (sbyte)12, 13.0f, (float)14, 15.0, (double)16.0, "testCoercion", SupportEnum.ENUM_VALUE_1);
             _event = testListener.getAndResetLastNewData()[0];
-            Assert.AreEqual("16.0", _event["p1"]);
+            Assert.AreEqual("16", _event["p1"]);
 
             sendSupportBeanEvent(true, false, 17, 0, 0L, 0L, 'A', 'a', (short)9, (short)10, (sbyte)11, (sbyte)12, 13.0f, (float)14, 15.0, (double)16.0, "testCoercion", SupportEnum.ENUM_VALUE_1);
             _event = testListener.getAndResetLastNewData()[0];
@@ -407,8 +407,8 @@ namespace net.esper.regression.view
         {
             String caseExpr =
                 "select case supportEnum " +
-                " when net.esper.support.bean.SupportEnum.getValueForEnum(0) then 1 " +
-                " when net.esper.support.bean.SupportEnum.getValueForEnum(1) then 2 " +
+                " when net.esper.support.bean.SupportEnumHelper.GetValueForEnum(0) then 1 " +
+                " when net.esper.support.bean.SupportEnumHelper.GetValueForEnum(1) then 2 " +
                 " end as p1 " + " from " + typeof(SupportBeanWithEnum).FullName +
                 ".win:length(10)";
 
@@ -434,9 +434,9 @@ namespace net.esper.regression.view
         {
             String caseExpr =
                 "select case intPrimitive * 2 " +
-                " when 2 then net.esper.support.bean.SupportEnum.getValueForEnum(0) " +
-                " when 4 then net.esper.support.bean.SupportEnum.getValueForEnum(1) " +
-                " else net.esper.support.bean.SupportEnum.getValueForEnum(2) " +
+                " when 2 then net.esper.support.bean.SupportEnumHelper.GetValueForEnum(0) " +
+                " when 4 then net.esper.support.bean.SupportEnumHelper.GetValueForEnum(1) " +
+                " else net.esper.support.bean.SupportEnumHelper.GetValueForEnum(2) " +
                 " end as p1 " +
                 " from " + typeof(SupportBean).FullName + ".win:length(10)";
 
@@ -476,13 +476,13 @@ namespace net.esper.regression.view
 
         private void sendSupportBeanEvent(
             bool b_, bool boolBoxed_,
-            int i_, Int32 intBoxed_,
-            long l_, Int64 longBoxed_,
-            char c_, char charBoxed_,
-            short s_, Int16 shortBoxed_,
-            sbyte by_, SByte byteBoxed_,
-            float f_, Single floatBoxed_,
-            double d_, double doubleBoxed_,
+            int i_, int? intBoxed_,
+            long l_, long? longBoxed_,
+            char c_, char? charBoxed_,
+            short s_, short? shortBoxed_,
+            sbyte by_, sbyte? byteBoxed_,
+            float f_, float? floatBoxed_,
+            double d_, double? doubleBoxed_,
             String str_, SupportEnum enum_)
         {
             SupportBean _event = new SupportBean();

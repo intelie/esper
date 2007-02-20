@@ -179,7 +179,7 @@ namespace net.esper.regression.pattern
 			epService.Initialize();
 			
 			// External clocking
-			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 			sendTimer(0, epService);
 			
 			// Set up a timer:within

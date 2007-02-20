@@ -1,6 +1,7 @@
 using System;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
 
@@ -38,7 +39,7 @@ namespace net.esper.regression.eql
 
             // Send events for each stream
             log.Info(methodName + " Preloading events");
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++)
             {
                 SendEvent(makeMarketEvent("IBM_" + i, 1));
@@ -46,11 +47,11 @@ namespace net.esper.regression.eql
             }
             log.Info(methodName + " Done preloading");
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
             log.Info(methodName + " delta=" + (endTime - startTime));
 
             // Stay at 250, belwo 500ms
-            Assert.IsTrue((endTime - startTime) < 5000000);
+            Assert.IsTrue((endTime - startTime) < 500);
         }
 
         [Test]
@@ -65,7 +66,7 @@ namespace net.esper.regression.eql
 
             // Send events for each stream
             log.Info(methodName + " Preloading events");
-            long startTime = DateTime.Now.Ticks;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++)
             {
                 SendEvent(makeMarketEvent("IBM_" + i, 1));
@@ -73,11 +74,11 @@ namespace net.esper.regression.eql
             }
             log.Info(methodName + " Done preloading");
 
-            long endTime = DateTime.Now.Ticks;
+            long endTime = DateTimeHelper.CurrentTimeMillis;
             log.Info(methodName + " delta=" + (endTime - startTime));
 
             // Stay at 250, belwo 500ms
-            Assert.IsTrue((endTime - startTime) < 5000000);
+            Assert.IsTrue((endTime - startTime) < 500);
         }
 
         private void SendEvent(Object _event)

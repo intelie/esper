@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.eql;
@@ -12,8 +13,8 @@ using NUnit.Framework;
 
 namespace net.esper.regression.view
 {
-	[TestFixture]
-    public class TestStaticFunctions 
+    [TestFixture]
+    public class TestStaticFunctions
     {
         private EPServiceProvider epService;
         private String stream;
@@ -21,7 +22,7 @@ namespace net.esper.regression.view
         private EPStatement statement;
         private SupportUpdateListener listener;
 
-				[SetUp]
+        [SetUp]
         public virtual void setUp()
         {
             epService = EPServiceProviderManager.GetDefaultProvider();
@@ -49,7 +50,7 @@ namespace net.esper.regression.view
         public virtual void testAutoImports()
         {
             Configuration configuration = new Configuration();
-            configuration.addImport("mull");
+            configuration.AddImport("mull");
             epService = EPServiceProviderManager.GetProvider("1", configuration);
 
             statementText = "select Integer.toBinaryString(7) " + stream;
@@ -63,7 +64,7 @@ namespace net.esper.regression.view
                 // expected
             }
 
-            configuration.addImport("java.lang.*");
+            configuration.AddImport("System");
             epService = EPServiceProviderManager.GetProvider("2", configuration);
 
             Object[] result = createStatementAndGetProperty(true, "Integer.toBinaryString(7)");
@@ -73,10 +74,10 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testNoParameters()
         {
-            Int64 startTime = DateTime.Now.Ticks ;
+            long startTime = DateTimeHelper.CurrentTimeMillis;
             statementText = "select net.esper.compat.DateTimeHelper.GetCurrentTimeMillis() " + stream;
-            Int64 result = (Int64)createStatementAndGet("net.esper.compat.DateTimeHelper.GetCurrentTimeMillis()");
-            Int64 finishTime = DateTime.Now.Ticks;
+            long? result = (long)createStatementAndGet("net.esper.compat.DateTimeHelper.GetCurrentTimeMillis()");
+            long finishTime = DateTimeHelper.CurrentTimeMillis;
             Assert.IsTrue(startTime <= result);
             Assert.IsTrue(result <= finishTime);
 
@@ -111,14 +112,14 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testTwoParameters()
         {
-            statementText = "select Math.Max(2, 3) " + stream;
-            Assert.AreEqual(3, createStatementAndGetProperty(true, "Math.Max(2, 3)")[0]);
+            statementText = "select System.Math.Max(2, 3) " + stream;
+            Assert.AreEqual(3, createStatementAndGetProperty(true, "System.Math.Max(2, 3)")[0]);
 
-            statementText = "select Math.Max(2, 3d) " + stream;
-            Assert.AreEqual(3d, createStatementAndGetProperty(true, "Math.Max(2, 3.0)")[0]);
+            statementText = "select System.Math.Max(2, 3d) " + stream;
+            Assert.AreEqual(3d, createStatementAndGetProperty(true, "System.Math.Max(2, 3.0)")[0]);
 
             statementText = "select Int64.Parse(\"123\", 10)" + stream;
-            Object expected = 123L ;
+            Object expected = 123L;
             Assert.AreEqual(expected, createStatementAndGetProperty(true, "Int64.Parse(\"123\", 10)")[0]);
         }
 
@@ -133,28 +134,31 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testComplexParameters()
         {
-            statementText = "select Convert.ToString(price) " + stream;
-            Object[] result = createStatementAndGetProperty(true, "Convert.ToString(price)");
+            statementText = "select System.Convert.ToString(price) " + stream;
+            Object[] result = createStatementAndGetProperty(true, "System.Convert.ToString(price)");
             Assert.AreEqual(Convert.ToString(10d), result[0]);
 
-            statementText = "select Convert.ToString(2 + 3*5) " + stream;
-            result = createStatementAndGetProperty(true, "Convert.ToString((2+(3*5)))");
+            statementText = "select System.Convert.ToString(2 + 3*5) " + stream;
+            result = createStatementAndGetProperty(true, "System.Convert.ToString((2+(3*5)))");
             Assert.AreEqual(Convert.ToString(17), result[0]);
 
-            statementText = "select Convert.ToString(price*volume +volume) " + stream;
-            result = createStatementAndGetProperty(true, "Convert.ToString(((price*volume)+volume))");
+            statementText = "select System.Convert.ToString(price*volume +volume) " + stream;
+            result = createStatementAndGetProperty(true, "System.Convert.ToString(((price*volume)+volume))");
             Assert.AreEqual(Convert.ToString(44d), result[0]);
 
-            statementText = "select Convert.ToString(Math.Pow(price, Int32.Parse(\"2\"))) " + stream;
-            result = createStatementAndGetProperty(true, "Convert.ToString(Math.Pow(price, Int32.Parse(\"2\")))");
+            statementText = "select System.Convert.ToString(Math.Pow(price, Int32.Parse(\"2\"))) " + stream;
+            result = createStatementAndGetProperty(true, "System.Convert.ToString(Math.Pow(price, Int32.Parse(\"2\")))");
             Assert.AreEqual(Convert.ToString(100d), result[0]);
         }
 
         [Test]
         public virtual void testMultipleMethodInvocations()
         {
-            statementText = "select Math.Max(2d, price), Math.Max(volume, 4d)" + stream;
-            Object[] props = createStatementAndGetProperty(true, "Math.Max(2.0, price)", "Math.Max(volume, 4.0)");
+            statementText = "select System.Math.Max(2d, price), System.Math.Max(volume, 4d)" + stream;
+            Object[] props = createStatementAndGetProperty(
+                true, 
+                "System.Math.Max(2.0, price)",
+                "System.Math.Max(volume, 4.0)");
             Assert.AreEqual(10d, props[0]);
             Assert.AreEqual(4d, props[1]);
         }
@@ -163,13 +167,13 @@ namespace net.esper.regression.view
         public virtual void testOtherClauses()
         {
             // where
-            statementText = "select *" + stream + "where Math.Pow(price, .5) > 2";
+            statementText = "select *" + stream + "where System.Math.Pow(price, .5) > 2";
             Assert.AreEqual("IBM", createStatementAndGetProperty(true, "symbol")[0]);
             SendEvent("CAT", 4d, 100);
             Assert.IsNull(getProperty("symbol"));
 
             // group-by
-            statementText = "select symbol, sum(price)" + stream + "group by Convert.ToString(symbol)";
+            statementText = "select symbol, sum(price)" + stream + "group by System.Convert.ToString(symbol)";
             Assert.AreEqual(10d, createStatementAndGetProperty(true, "sum(price)")[0]);
             SendEvent("IBM", 4d, 100);
             Assert.AreEqual(14d, getProperty("sum(price)"));
@@ -177,13 +181,13 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             // having
-            statementText = "select symbol, sum(price)" + stream + "having Math.Pow(sum(price), .5) > 3";
+            statementText = "select symbol, sum(price)" + stream + "having System.Math.Pow(sum(price), .5) > 3";
             Assert.AreEqual(10d, createStatementAndGetProperty(true, "sum(price)")[0]);
             SendEvent("IBM", 100d, 100);
             Assert.AreEqual(110d, getProperty("sum(price)"));
 
             // order-by
-            statementText = "select symbol, price" + stream + "output every 3 events order by Math.pow(price, 2)";
+            statementText = "select symbol, price" + stream + "output every 3 events order by System.Math.Pow(price, 2)";
             createStatementAndGetProperty(false, "symbol");
             SendEvent("CAT", 10d, 0L);
             SendEvent("MAT", 3d, 0L);

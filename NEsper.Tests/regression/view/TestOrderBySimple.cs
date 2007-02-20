@@ -37,7 +37,7 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testAcrossJoin()
         {
-            String statementString = "select symbol, string from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price";
+            String statementString = "select symbol, str from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesByPriceJoin();
@@ -46,7 +46,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol", "str" });
             clearValues();
 
-            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by string, price";
+            statementString = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by str, price";
             createAndSend(statementString);
             sendJoinEvents();
             orderValuesBySymbolPrice();
@@ -536,7 +536,7 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             // Set manual clocking
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             // Set Start time
             sendTimeEvent(0);
@@ -567,7 +567,7 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             // Set manual clocking
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             // Set Start time
             sendTimeEvent(0);

@@ -14,7 +14,7 @@ namespace net.esper.events
     {
         virtual public Type UnderlyingType
         {
-            get { return typeof(IDataDictionary); }
+            get { return typeof(System.Collections.IDictionary); }
         }
 
         virtual public ICollection<String> PropertyNames
@@ -73,18 +73,24 @@ namespace net.esper.events
         	
 			public object GetValue(EventBean eventBean)
 			{
-	            // The underlying is expected to be a map
-	            IDataDictionary map = eventBean.Underlying as IDataDictionary;
-	            if ( map == null )
-	            {
+                Object underlying = eventBean.Underlying;
+                if (underlying is IDictionary<String, Object>)
+                {
+                    Object value = null;
+                    ((IDictionary<String, Object>)underlying).TryGetValue(name, out value);
+                    return value;
+                }
+                else if (underlying is System.Collections.IDictionary)
+                {
+                    Object value = ((System.Collections.IDictionary)underlying)[name];
+                    return value;
+                }
+                else
+                {
 	                throw new PropertyAccessException(
 	                    "Mismatched property getter to event bean type, " +
-	                    "the underlying data object is not of type IDataDictionary" );
+	                    "the underlying data object is not of type IDictionary" );
 	            }
-	
-	            // If the map does not contain the key, this is allowed and represented as null
-	            Object value = map.Fetch( name, null ) ;
-	            return value;
 			}
         }
         
@@ -110,8 +116,8 @@ namespace net.esper.events
             }
 
             // Take apart the nested property into a map key and a nested value class property name
-            String propertyMap = propertyName.Substring(0, (index) - (0));
-            String propertyNested = propertyName.Substring(index + 1, (propertyName.Length) - (index + 1));
+            String propertyMap = propertyName.Substring(0, index);
+            String propertyNested = propertyName.Substring(index + 1, propertyName.Length - index - 1);
 
             if ( ! types.TryGetValue( propertyMap, out result ) )
             {
@@ -145,8 +151,8 @@ namespace net.esper.events
             }
 
             // Take apart the nested property into a map key and a nested value class property name
-            String propertyMap = propertyName.Substring(0, (index) - (0));
-            String propertyNested = propertyName.Substring(index + 1, (propertyName.Length) - (index + 1));
+            String propertyMap = propertyName.Substring(0, index);
+            String propertyNested = propertyName.Substring(index + 1, propertyName.Length - index - 1);
 
             Type result = types.Fetch(propertyMap, null);
             if (result == null)
@@ -192,17 +198,24 @@ namespace net.esper.events
         	
 			public object GetValue(EventBean eventBean)
 			{
-	            // The underlying is expected to be a map
-	            IDataDictionary map = eventBean.Underlying as IDataDictionary;
-	            if ( map == null )
-	            {
-	                throw new PropertyAccessException(
-	                    "Mismatched property getter to event bean type, " +
-	                    "the underlying data object is not of type DataDictionary" );
-	            }
+                Object value = null;
+                Object underlying = eventBean.Underlying;
+                if (underlying is IDictionary<String, Object>)
+                {
+                    ((IDictionary<String, Object>)underlying).TryGetValue(propertyMap, out value);
+                }
+                else if (underlying is System.Collections.IDictionary)
+                {
+                    value = ((System.Collections.IDictionary)underlying)[propertyMap];
+                }
+                else
+                {
+                    throw new PropertyAccessException(
+                        "Mismatched property getter to event bean type, " +
+                        "the underlying data object is not of type IDictionary");
+                }
 
 	            // If the map does not contain the key, this is allowed and represented as null
-                Object value = map.Fetch(propertyMap);
                 if (value == null)
                 {
                     return null;

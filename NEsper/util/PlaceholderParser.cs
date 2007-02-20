@@ -19,7 +19,7 @@ namespace net.esper.util
 		/// a parameter fragment "thing", a text fragement " is " and a parameter
 		/// fragment "color".
 		/// </summary>
-		/// <param name="parseString">is the string to parse
+		/// <param name="ParseString">is the string to parse
 		/// </param>
 		/// <returns> list of fragements that can be either text fragments or placeholder fragments
 		/// </returns>
@@ -44,7 +44,7 @@ namespace net.esper.util
                     // no more parameters, add any remainder of string
                     if (currOutputIndex < parseString.Length)
                     {
-                        String endString = parseString.Substring(currOutputIndex, parseString.Length);
+                        String endString = parseString.Substring(currOutputIndex);
                         TextFragment textFragment = new TextFragment(endString);
                         result.Add(textFragment);
                     }
@@ -53,7 +53,7 @@ namespace net.esper.util
                 // add text so far
                 if (startIndex > 0)
                 {
-                    String textSoFar = parseString.Substring(currOutputIndex, startIndex);
+                    String textSoFar = parseString.Substring(currOutputIndex, startIndex - currOutputIndex);
                     if (textSoFar.Length != 0)
                     {
                         result.Add(new TextFragment(textSoFar));
@@ -70,11 +70,11 @@ namespace net.esper.util
                 int endIndex = parseString.IndexOf("}", startIndex);
                 if (endIndex == -1)
                 {
-                    throw new PlaceholderParseException("Syntax error in property: " + parseString.Substring(startIndex, parseString.Length));
+                    throw new PlaceholderParseException("Syntax error in property: " + parseString.Substring(startIndex));
                 }
 
                 // add placeholder
-                String between = parseString.Substring(startIndex + 2, endIndex);
+                String between = parseString.Substring(startIndex + 2, endIndex - startIndex - 2);
                 ParameterFragment parameterFragment = new ParameterFragment(between);
                 result.Add(parameterFragment);
                 currOutputIndex = endIndex + 1;

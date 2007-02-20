@@ -23,7 +23,7 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             // External clocking
-            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+            epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
         }
 
         [Test]

@@ -72,8 +72,9 @@ namespace net.esper.events.property
                             return null;
                         }
 
-                        // DataDictionary cannot be used to further nest as the type cannot be determined
-                        if (type == typeof(IDataDictionary))
+                        if ((type.IsAssignableFrom(typeof(System.Collections.IDictionary))) ||
+                            (type.IsAssignableFrom(typeof(System.Collections.Generic.IDictionary<string, Object>))) ||
+                            (type.IsAssignableFrom(typeof(System.Collections.Generic.IDictionary<string, EventBean>))))
                         {
                             return null;
                         }
@@ -82,6 +83,7 @@ namespace net.esper.events.property
                         {
                             return null;
                         }
+
                         eventType = (BeanEventType)beanEventAdapter.CreateOrGetBeanType(type);
                     }
 
@@ -116,7 +118,9 @@ namespace net.esper.events.property
                     if (hasNext)
                     {
                         // Map cannot be used to further nest as the type cannot be determined
-                        if (result == typeof(IDataDictionary))
+                        if ((result.IsAssignableFrom(typeof(System.Collections.IDictionary))) ||
+                            (result.IsAssignableFrom(typeof(System.Collections.Generic.IDictionary<string, Object>))) ||
+                            (result.IsAssignableFrom(typeof(System.Collections.Generic.IDictionary<string, EventBean>))))
                         {
                             return null;
                         }
