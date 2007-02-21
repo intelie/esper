@@ -18,7 +18,7 @@ namespace net.esper.events.property
 		private SupportBeanComplexProps bean;
 		
 		[SetUp]
-		public virtual void  setUp()
+		public virtual void setUp()
 		{
 			bean = SupportBeanComplexProps.makeDefaultBean();
 			_event = SupportEventBeanFactory.createObject(bean);
@@ -30,7 +30,7 @@ namespace net.esper.events.property
 		}
 		
 		[Test]
-		public virtual void  testGet()
+		public virtual void testGet()
 		{
             Assert.AreEqual(bean.getIndexed(1), getter.GetValue(_event));
 			

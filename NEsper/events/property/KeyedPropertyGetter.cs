@@ -41,6 +41,10 @@ namespace net.esper.events.property
 			{
 				throw new PropertyAccessException(e);
 			}
+			catch (TargetException e)
+			{
+				throw new PropertyAccessException(e);
+			}
 			catch (UnauthorizedAccessException e)
 			{
 				throw new PropertyAccessException(e);

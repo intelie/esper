@@ -59,7 +59,11 @@ namespace net.esper.events.property
 
         public override Object GetValue(object component, object index)
         {
-            return accessorMethod.Invoke(component, new Object[] { index });
+        	try {
+            	return accessorMethod.Invoke(component, new Object[] { index });
+        	} catch( TargetException e ) {
+        		throw new PropertyAccessException( e ) ;
+        	}
         }
 
         /// <summary>
