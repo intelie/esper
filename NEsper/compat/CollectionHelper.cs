@@ -133,17 +133,17 @@ namespace net.esper.compat
 			string fieldDelimiter = String.Empty ;
 			
 			StringBuilder builder = new StringBuilder() ;
-			builder.Append( '{' ) ;
+			builder.Append( '[' ) ;
 			
 			IEnumerator sourceEnum = source.GetEnumerator() ;
 			while( sourceEnum.MoveNext() )
 			{
-				builder.Append( Convert.ToString( sourceEnum.Current ) ) ;
 				builder.Append( fieldDelimiter ) ;
-				fieldDelimiter = "," ;
+				builder.Append( Convert.ToString( sourceEnum.Current ) ) ;
+				fieldDelimiter = ", " ;
 			}
 			
-			builder.Append( '}' ) ;
+			builder.Append( ']' ) ;
 			return builder.ToString() ;
 		}
 

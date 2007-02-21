@@ -44,7 +44,7 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testMaxIntInt()
         {
-            ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max");
+            ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Max");
             root.AddChildNode(intThree);
             root.AddChildNode(intFive);
             validate(root);
@@ -59,8 +59,8 @@ namespace net.esper.eql.expression
 		{
             Type thisType = GetType() ;
             MethodInfo staticMethod = thisType.GetMethod("staticIntMethod", new Type[] { typeof(int) });
-			ExprStaticMethodNode parent = new ExprStaticMethodNode(thisType.Name, "staticIntMethod");
-			ExprNode child = new ExprStaticMethodNode("Math", "max");
+			ExprStaticMethodNode parent = new ExprStaticMethodNode(thisType.FullName, "staticIntMethod");
+			ExprNode child = new ExprStaticMethodNode("Math", "Max");
 			child.AddChildNode(intThree);
 			child.AddChildNode(intFive);
 			parent.AddChildNode(child);
@@ -88,7 +88,7 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testMaxDoubleInt()
         {
-            ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max");
+            ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Max");
             root.AddChildNode(doubleEight);
             root.AddChildNode(intFive);
             validate(root);
@@ -101,7 +101,7 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testMaxDoubleDouble()
         {
-            ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max");
+            ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Max");
             root.AddChildNode(doubleEight);
             root.AddChildNode(doubleFour);
             validate(root);
@@ -114,8 +114,8 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testPowDoubleDouble()
         {
-            MethodInfo pow = typeof(Math).GetMethod("pow", new Type[] { typeof(double), typeof(double) });
-            ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "pow");
+            MethodInfo pow = typeof(Math).GetMethod("Pow", new Type[] { typeof(double), typeof(double) });
+            ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Pow");
             root.AddChildNode(doubleEight);
             root.AddChildNode(doubleFour);
             validate(root);

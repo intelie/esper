@@ -23,7 +23,7 @@ namespace net.esper.eql.core
         private OutputLimitSpec outputLimitSpecLast;
         private OutputLimitSpec outputLimitSpecAll;
 
-				[SetUp]
+		[SetUp]
         public void setUp()
         {
             selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, SupportEventAdapterService.Service);
@@ -38,6 +38,7 @@ namespace net.esper.eql.core
             outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, true);
         }
 
+        [Test]
         public void testUpdateAll()
         {
             Assert.IsNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[])null, false, false));
@@ -69,6 +70,7 @@ namespace net.esper.eql.core
             Assert.AreEqual(12, oldEvents[1]["resultTwo"]);
         }
 
+        [Test]
         public void testProcessAll()
         {
             Assert.IsNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new EHashSet<MultiKey<EventBean>>(), false, false));
@@ -118,6 +120,7 @@ namespace net.esper.eql.core
             return SupportEventBeanFactory.createObject(bean);
         }
 
+        [Test]
         public void testProcessLast()
         {
             Assert.IsNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new EHashSet<MultiKey<EventBean>>(), false, false));
@@ -145,6 +148,7 @@ namespace net.esper.eql.core
             Assert.AreEqual(12, oldEvents[0]["resultTwo"]);
         }
 
+        [Test]
         public void testUpdateLast()
         {
             Assert.IsNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[])null, false, false));

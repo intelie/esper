@@ -33,7 +33,7 @@ namespace net.esper.pattern
 		
 		public void Add(String tag, EventBean eventBean)
 		{
-			events.Add(tag, eventBean);
+			events.Put(tag, eventBean);
 		}
 		
 		/// <summary> Returns a Hashtable containing the events where the key is the event tag string and the value is the event

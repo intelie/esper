@@ -110,8 +110,10 @@ namespace net.esper.eql.db
             // keys that must be removed.
             IList<MultiKey<Object>> deadKeyList = null ;
             // Iterate through the cache
-            foreach( MultiKey<Object> itemKey in cache.Keys )
+            IEnumerator<MultiKey<Object>> itemKeyEnum = cache.KeysEnum ;
+            while( itemKeyEnum.MoveNext() )
             {
+            	MultiKey<Object> itemKey = itemKeyEnum.Current;
             	Item item = cache[itemKey] ;
                 if ((now - item.Time) > maxAgeMSec)
                 {
@@ -127,7 +129,9 @@ namespace net.esper.eql.db
             if ( deadKeyList != null ) {
             	foreach( MultiKey<Object> itemKey in deadKeyList ) {
             		cache.Remove( itemKey ) ;
-            	}            	
+            	}
+            	
+            	cache.RemoveCollectedEntries() ;
             }
 
             isScheduled = false;

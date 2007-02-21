@@ -15,6 +15,8 @@ namespace net.esper.compat
 
     public class LinkedDictionary<K,V> : EDictionary<K,V>
     {
+        public delegate bool EntryEventHandler(KeyValuePair<K, V> entry);
+        
         /// <summary>
         /// A list of all key-value pairs added to the table.  The list
         /// preserves insertion order and is used to preserve enumeration
@@ -30,6 +32,23 @@ namespace net.esper.compat
         /// </summary>
 
         private Dictionary<K, LinkedListNode<Pair<K, V>>> m_hashTable;
+
+        /// <summary>
+        /// Shuffles items on access
+        /// </summary>
+
+        private bool m_shuffleOnAccess;
+
+        /// <summary>
+        /// Returns a value indicating if items should be shuffled (pushed to the
+        /// head of the list) on access requests.
+        /// </summary>
+
+        public bool ShuffleOnAccess
+        {
+            get { return m_shuffleOnAccess; }
+            set { m_shuffleOnAccess = value; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LinkedDictionary&lt;K, V&gt;"/> class.
@@ -118,7 +137,9 @@ namespace net.esper.compat
 			}
 		}
 		#endregion
-		
+
+        public event EntryEventHandler RemoveEldest;
+
         #region IDictionary<K,V> Members
 
         /// <summary>
@@ -140,6 +161,28 @@ namespace net.esper.compat
             Pair<K, V> keyValuePair = new Pair<K, V>(key, value);
             LinkedListNode<Pair<K, V>> linkedListNode = m_hashList.AddLast(keyValuePair);
             m_hashTable.Add(key, linkedListNode);
+
+            CheckEldest();
+        }
+
+        /// <summary>
+        /// Checks the eldest entry and see if we should remove it.
+        /// </summary>
+        
+        private void CheckEldest()
+        {
+            if (RemoveEldest != null)
+            {
+                LinkedListNode<Pair<K, V>> linkedListNode = m_hashList.First;
+                KeyValuePair<K, V> eldest = new KeyValuePair<K, V>(
+                    linkedListNode.Value.First,
+                    linkedListNode.Value.Second);
+                if (RemoveEldest(eldest))
+                {
+                    m_hashList.Remove(linkedListNode);
+                    m_hashTable.Remove(linkedListNode.Value.First);
+                }
+            }
         }
 
         /// <summary>
@@ -212,6 +255,8 @@ namespace net.esper.compat
             if (m_hashTable.TryGetValue(key, out linkedListNode))
             {
                 value = linkedListNode.Value.Second ;
+                m_hashList.Remove(linkedListNode);
+                m_hashList.AddLast(linkedListNode);
                 return true;
             }
 
@@ -251,6 +296,8 @@ namespace net.esper.compat
             {
                 LinkedListNode<Pair<K, V>> linkedListNode = null;
                 linkedListNode = m_hashTable[key];
+                m_hashList.Remove(linkedListNode);
+                m_hashList.AddLast(linkedListNode);
                 return linkedListNode.Value.Second;
             }
             set
@@ -266,6 +313,8 @@ namespace net.esper.compat
                     linkedListNode = m_hashList.AddLast(keyValuePair);
                     m_hashTable.Add(key, linkedListNode);
                 }
+
+                CheckEldest();
             }
         }
 

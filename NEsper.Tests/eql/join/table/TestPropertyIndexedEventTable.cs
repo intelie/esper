@@ -63,15 +63,18 @@ namespace net.esper.eql.join.table
 		{
 			// Add event without these properties should fail
 			EventBean _event = SupportEventBeanFactory.createObject( new SupportBean_A( "d" ) );
-			try
-			{
-				index.Add( new EventBean[] { _event } );
-				Assert.Fail();
-			}
-			catch ( PropertyAccessException )
-			{
-				// Expected
-			}
+            try
+            {
+                index.Add(new EventBean[] { _event });
+                Assert.Fail();
+            }
+            catch (PropertyAccessException)
+            {
+                // Expected
+            }
+            catch (Exception e)
+            {
+            }
 
 			// Add null should fail
 			try

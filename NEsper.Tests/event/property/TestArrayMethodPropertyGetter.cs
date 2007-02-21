@@ -11,7 +11,6 @@ using NUnit.Framework;
 
 namespace net.esper.events.property
 {
-	
 	[TestFixture]
 	public class TestArrayMethodPropertyGetter 
 	{
@@ -21,7 +20,7 @@ namespace net.esper.events.property
 		private SupportBeanComplexProps bean;
 		
 		[SetUp]
-		public virtual void  setUp()
+		public virtual void setUp()
 		{
 			bean = SupportBeanComplexProps.makeDefaultBean();
 			_event = SupportEventBeanFactory.createObject(bean);
@@ -30,11 +29,11 @@ namespace net.esper.events.property
 		}
 		
 		[Test]
-		public virtual void  testCtor()
+		public virtual void testCtor()
 		{
 			try
 			{
-				makeGetter(- 1);
+				makeGetter(-1);
 				Assert.Fail();
 			}
 			catch (ArgumentException ex)
@@ -44,7 +43,7 @@ namespace net.esper.events.property
 		}
 		
 		[Test]
-		public virtual void  testGet()
+		public virtual void testGet()
 		{
             Assert.AreEqual(bean.ArrayProperty[0], getter.GetValue(_event));
 			

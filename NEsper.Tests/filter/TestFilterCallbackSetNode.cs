@@ -34,14 +34,14 @@ namespace net.esper.filter
             Assert.IsFalse(testNode.Contains(exprOne));
             Assert.AreEqual(0, testNode.FilterCallbackCount);
             Assert.AreEqual(0, testNode.Indizes.Count);
-            Assert.IsTrue(testNode.Count == 0);
+            Assert.IsTrue(testNode.IsEmpty);
 
             testNode.Add(exprOne);
 
             // Check after add
             Assert.IsTrue(testNode.Contains(exprOne));
             Assert.AreEqual(1, testNode.FilterCallbackCount);
-            Assert.IsFalse(testNode.Count == 0);
+            Assert.IsFalse(testNode.IsEmpty);
 
             // Add an indexOne
             FilterParamIndex indexOne = new SupportFilterParamIndex();
@@ -53,11 +53,11 @@ namespace net.esper.filter
 
             // Check removes
             Assert.IsTrue(testNode.Remove(exprOne));
-            Assert.IsFalse(testNode.Count == 0);
+            Assert.IsFalse(testNode.IsEmpty);
             Assert.IsFalse(testNode.Remove(exprOne));
             Assert.IsTrue(testNode.Remove(indexOne));
             Assert.IsFalse(testNode.Remove(indexOne));
-            Assert.IsTrue(testNode.Count == 0);
+            Assert.IsTrue(testNode.IsEmpty);
         }
 
         [Test]

@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 namespace net.esper.events
 {
-	[TestFixture]
 	public abstract class TestCompositeEventBase
 	{
 		protected internal EventType eventType;
@@ -17,7 +16,6 @@ namespace net.esper.events
 		protected internal EventBean eventBeanInComplete;
 		protected internal SupportBean _event;
 
-		[SetUp]
 		public virtual void setUp()
 		{
 			EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();

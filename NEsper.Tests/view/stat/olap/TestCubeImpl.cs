@@ -13,7 +13,8 @@ namespace net.esper.view.stat.olap
     {
         internal CubeImpl testCube;
 
-        protected internal virtual void setUp()
+        [SetUp]
+        public virtual void setUp()
         {
             String[] measureList = new String[] { "count" };
             testCube = new CubeImpl(SupportCubeFactory.make2DimSchema(), measureList);

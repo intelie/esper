@@ -4,43 +4,44 @@ using System.Collections.Generic;
 namespace net.esper.compat
 {
     /// <summary>
-    /// A generic dictionary, which allows both its keys and values
+    /// A generic dictionary, which allows its keys
     /// to be garbage collected if there are no other references
     /// to them than from the dictionary itself.
     /// </summary>
     ///
     /// <remarks>
-    /// If either the key or value of a particular entry in the dictionary
-    /// has been collected, then both the key and value become effectively
+    /// If the key of a particular entry in the dictionary has been
+    /// collected, then both the key and value become effectively
     /// unreachable. However, left-over WeakReference objects for the key
-    /// and value will physically remain in the dictionary until
-    /// RemoveCollectedEntries is called. This will lead to a discrepancy
-    /// between the Count property and the number of iterations required
-    /// to visit all of the elements of the dictionary using its
-    /// enumerator or those of the Keys ansd Values collections. Similarly,
-    /// CopyTo will copy fewer than Count elements in this situation.
+    /// will physically remain in the dictionary until RemoveCollectedEntries
+    /// is called. This will lead to a discrepancy between the Count property
+    /// and the number of iterations required to visit all of the elements of
+    /// the dictionary using its enumerator or those of the Keys and Values
+    /// collections. Similarly, CopyTo will copy fewer than Count elements
+    /// in this situation.
     /// </remarks>
     
     public sealed class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey : class
         where TValue : class
     {
-        private Dictionary<object, WeakReference<TValue>> dictionary;
+    	private C5.HashDictionary<Object, TValue> dictionary;
+        //private Dictionary<object, TValue> dictionary;
         private WeakKeyComparer<TKey> comparer;
 
         public WeakDictionary()
-            : this(0, null) { }
+            : this(16, null) { }
 
         public WeakDictionary(int capacity)
             : this(capacity, null) { }
 
         public WeakDictionary(IEqualityComparer<TKey> comparer)
-            : this(0, comparer) { }
+            : this(16, comparer) { }
 
         public WeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
         {
             this.comparer = new WeakKeyComparer<TKey>(comparer);
-            this.dictionary = new Dictionary<object, WeakReference<TValue>>(capacity, this.comparer);
+            this.dictionary = new C5.HashDictionary<object, TValue>(capacity, 0.6, this.comparer);
         }
 
         // WARNING: The count returned here may include entries for which
@@ -57,13 +58,12 @@ namespace net.esper.compat
         {
             if (key == null) throw new ArgumentNullException("key");
             WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, this.comparer);
-            WeakReference<TValue> weakValue = WeakReference<TValue>.Create(value);
-            this.dictionary.Add(weakKey, weakValue);
+            this.dictionary.Add(weakKey, value);
         }
 
         public bool ContainsKey(TKey key)
         {
-            return this.dictionary.ContainsKey(key);
+        	return this.dictionary.Contains( key ) ;
         }
 
         public bool Remove(TKey key)
@@ -73,20 +73,28 @@ namespace net.esper.compat
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            WeakReference<TValue> weakValue;
-            if (this.dictionary.TryGetValue(key, out weakValue))
-            {
-                value = weakValue.Target;
-                return weakValue.IsAlive;
-            }
-            value = null;
-            return false;
+        	Object tempKey = key ;
+        	TValue rvalue = null ;
+        	if ( this.dictionary.Find( ref tempKey, out rvalue ) )
+        	{
+        		WeakReference<TKey> weakKey = (WeakReference<TKey>) tempKey ;
+        		if ( weakKey.IsAlive )
+        		{
+        			value = rvalue ;
+        			return true ;
+        		}
+        		
+        		this.dictionary.Remove( key ) ;            		
+        	}
+        	
+        	value = default(TValue);
+        	return false ;
         }
 
         private void SetValue(TKey key, TValue value)
         {
             WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, this.comparer);
-            this.dictionary[weakKey] = WeakReference<TValue>.Create(value);
+            this.dictionary[weakKey] = value;
         }
 
         public void Clear()
@@ -96,14 +104,15 @@ namespace net.esper.compat
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            foreach (KeyValuePair<object, WeakReference<TValue>> kvp in this.dictionary)
+            foreach (C5.KeyValuePair<object, TValue> kvp in this.dictionary)
             {
                 WeakReference<TKey> weakKey = (WeakReference<TKey>)(kvp.Key);
-                WeakReference<TValue> weakValue = kvp.Value;
                 TKey key = weakKey.Target;
-                TValue value = weakValue.Target;
-                if (weakKey.IsAlive && weakValue.IsAlive)
+                TValue value = kvp.Value;
+                if (weakKey.IsAlive)
+                {
                     yield return new KeyValuePair<TKey, TValue>(key, value);
+                }
             }
         }
 
@@ -115,15 +124,16 @@ namespace net.esper.compat
         public void RemoveCollectedEntries()
         {
             List<object> toRemove = null;
-            foreach (KeyValuePair<object, WeakReference<TValue>> pair in this.dictionary)
+            foreach (C5.KeyValuePair<object, TValue> pair in this.dictionary)
             {
                 WeakReference<TKey> weakKey = (WeakReference<TKey>)(pair.Key);
-                WeakReference<TValue> weakValue = pair.Value;
 
-                if (!weakKey.IsAlive || !weakValue.IsAlive)
+                if (!weakKey.IsAlive)
                 {
-                    if (toRemove == null)
+                	if (toRemove == null)
+                	{
                         toRemove = new List<object>();
+                	}
                     toRemove.Add(weakKey);
                 }
             }
@@ -131,15 +141,41 @@ namespace net.esper.compat
             if (toRemove != null)
             {
                 foreach (object key in toRemove)
+                {
                     this.dictionary.Remove(key);
+                }
             }
         }
 
+        public IEnumerator<TKey> KeysEnum {
+        	get 
+        	{
+        		foreach( WeakReference<TKey> weakKey in this.dictionary.Keys )
+        		{
+        			if ( weakKey.IsAlive )
+        			{
+        				yield return weakKey.Target;
+        			}
+        		}
+        	}
+        }
+        
+        
         #region IDictionary<TKey,TValue> Members
 
         public ICollection<TKey> Keys
         {
-            get { throw new Exception("The method or operation is not implemented."); }
+            get
+            {
+        		List<TKey> keyList = new List<TKey>() ;
+        		IEnumerator<TKey> keyEnum = this.KeysEnum ;
+        		while( keyEnum.MoveNext() )
+        		{
+        			keyList.Add( keyEnum.Current ) ;
+        		}
+        		
+        		return keyList ;
+        	}
         }
 
         public ICollection<TValue> Values
@@ -151,21 +187,26 @@ namespace net.esper.compat
         {
             get
             {
-                WeakReference<TValue> weakValue = this.dictionary[key];
-                if (!weakValue.IsAlive)
-                {
-                    this.dictionary.Remove(key);
-                    throw new KeyNotFoundException();
-                }
-
-                return weakValue.Target;
+            	Object tempKey = key ;
+            	TValue rvalue = null ;
+            	if ( this.dictionary.Find( ref tempKey, out rvalue ) )
+            	{
+            		WeakReference<TKey> weakKey = (WeakReference<TKey>) tempKey ;
+            		if ( weakKey.IsAlive )
+            		{
+            			return rvalue ;
+            		}
+            		
+            		this.dictionary.Remove( key ) ;            		
+            	}
+            	
+            	throw new KeyNotFoundException( "Key '" + key + "' not found" ) ;
             }
             set
             {
                 if (key == null) throw new ArgumentNullException("key");
                 WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, this.comparer);
-                WeakReference<TValue> weakValue = WeakReference<TValue>.Create(value);
-                this.dictionary[weakKey] = weakValue;
+                this.dictionary[weakKey] = value;
             }
         }
 
@@ -194,16 +235,19 @@ namespace net.esper.compat
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            WeakReference<TValue> weakValue;
-            if (this.dictionary.TryGetValue(item.Key, out weakValue))
-            {
-                Object value = weakValue.Target;
-                if (weakValue.IsAlive)
-                {
-                    return Object.Equals(value, item.Value);
-                }
-            }
-
+            Object tempKey = item.Key ;
+            
+        	TValue value ;
+        	if ( this.dictionary.Find( ref tempKey, out value ) ) {
+        		WeakReference<TKey> weakKey = (WeakReference<TKey>) tempKey ;
+            	if ( weakKey.IsAlive )
+            	{
+            		return Object.Equals( value, item.Value ) ;
+            	}
+            	
+            	this.dictionary.Remove( item.Key ) ;
+        	}
+            
             return false;
         }
 

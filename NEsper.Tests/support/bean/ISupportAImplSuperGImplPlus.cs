@@ -3,7 +3,7 @@ using System;
 namespace net.esper.support.bean
 {
 	[Serializable]
-	public class ISupportAImplSuperGImplPlus:ISupportAImplSuperG, ISupportB, ISupportC
+	public class ISupportAImplSuperGImplPlus : ISupportAImplSuperG, ISupportB, ISupportC
 	{
 		override public String g
 		{

@@ -35,6 +35,10 @@ namespace net.esper.events
             {
                 throw new PropertyAccessException(e);
             }
+            catch (Exception e)
+            {
+                throw new PropertyAccessException(e);
+            }
         }
 		
 		public override String ToString()

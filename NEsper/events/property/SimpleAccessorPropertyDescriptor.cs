@@ -55,7 +55,14 @@ namespace net.esper.events.property
 		
 		public override Object GetValue(object component)
 		{
-			return accessorMethod.Invoke( component, null ) ;
+            try
+            {
+                return accessorMethod.Invoke(component, null);
+            }
+            catch (TargetException e)
+            {
+                throw new ArgumentException("component");
+            }
 		}
 		
 		/// <summary>

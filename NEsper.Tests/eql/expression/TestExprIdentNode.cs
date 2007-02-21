@@ -146,7 +146,7 @@ namespace net.esper.eql.expression
             long endTime = DateTimeHelper.CurrentTimeMillis;
             long delta = endTime - startTime;
             log.Info(".testEvaluate delta=" + delta);
-            Assert.IsTrue(delta < 200);
+            Assert.IsTrue(delta < 300);
         }
 
         [Test]

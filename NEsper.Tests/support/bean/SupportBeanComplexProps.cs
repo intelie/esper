@@ -14,7 +14,15 @@ namespace net.esper.support.bean
         private int[] _arrayProperty;
 
         public static String[] PROPERTIES = {
-    	    "simpleProperty", "mapped()", "indexed[]", "mapProperty", "arrayProperty", "nested"
+    	    "simpleProperty",
+    	    "mapped()",
+    	    "indexed[]",
+    	    "mapProperty",
+    	    "MapProperty",
+    	    "arrayProperty",
+    	    "ArrayProperty",
+    	    "nested",
+    	    "Nested"
         };
 
         public static SupportBeanComplexProps makeDefaultBean()
@@ -102,6 +110,10 @@ namespace net.esper.support.bean
             get { return _arrayProperty; }
         }
 
+        public int[] getArrayProperty() {
+        	return _arrayProperty;
+        }
+        
         public void setIndexed(int index, int value)
         {
             _indexedProps[index] = value;

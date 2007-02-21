@@ -69,13 +69,13 @@ namespace net.esper.eql.join.assemble
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(1, results.Count);
             ArrayAssertionUtil.assertEqualsExactOrder(
-		new EventBean[] {
-			rowsA[0][0],
-			rowsB[0][1],
-			null,
-			rowsA[0][3]
-		},
-		results[0]);
+				new EventBean[] {
+					rowsA[0][0],
+					rowsB[0][1],
+					null,
+					rowsA[0][3]
+				},
+				results[0]);
 
             // test A=2 rows and B=1 row
             rowsA = makeRowsA(2);
@@ -83,21 +83,21 @@ namespace net.esper.eql.join.assemble
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(2, results.Count);
             ArrayAssertionUtil.assertEqualsAnyOrder(
-		new EventBean[][] {
-			new EventBean[] {
-				rowsA[0][0],
-				rowsB[0][1],
-				null,
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0],
-				rowsB[0][1],
-				null,
-				rowsA[0][3]
-			}
-		},
-		SupportJoinResultNodeFactory.convertTo2DimArr(results));
+				new EventBean[][] {
+					new EventBean[] {
+						rowsA[0][0],
+						rowsB[0][1],
+						null,
+						rowsA[0][3]
+					},
+					new EventBean[] {
+						rowsA[1][0],
+						rowsB[0][1],
+						null,
+						rowsA[1][3]
+					}
+				},
+				SupportJoinResultNodeFactory.convertTo2DimArr(results));
 
             // test A=1 rows and B=2 row
             rowsA = makeRowsA(1);
@@ -105,21 +105,21 @@ namespace net.esper.eql.join.assemble
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(2, results.Count);
             ArrayAssertionUtil.assertEqualsAnyOrder(
-		new EventBean[][] {
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null, 
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null, 
-				rowsA[0][3]
-			}
-		},
-		SupportJoinResultNodeFactory.convertTo2DimArr(results));
+				new EventBean[][] {
+					new EventBean[] {
+						rowsA[0][0], 
+						rowsB[0][1], 
+						null, 
+						rowsA[0][3]
+					},
+					new EventBean[] {
+						rowsA[0][0], 
+						rowsB[1][1], 
+						null, 
+						rowsA[0][3]
+					}
+				},
+				SupportJoinResultNodeFactory.convertTo2DimArr(results));
 
             // test A=2 rows and B=2 row
             rowsA = makeRowsA(2);
@@ -127,33 +127,33 @@ namespace net.esper.eql.join.assemble
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(4, results.Count);
             ArrayAssertionUtil.assertEqualsAnyOrder(
-		new EventBean[][] { 
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null, 
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			}
-		},
-		SupportJoinResultNodeFactory.convertTo2DimArr(results));
+				new EventBean[][] { 
+					new EventBean[] {
+						rowsA[0][0], 
+						rowsB[0][1], 
+						null, 
+						rowsA[0][3]
+					},
+					new EventBean[] {
+						rowsA[0][0], 
+						rowsB[1][1], 
+						null,
+						rowsA[0][3]
+					},
+					new EventBean[] {
+						rowsA[1][0], 
+						rowsB[0][1], 
+						null,
+						rowsA[1][3]
+					},
+					new EventBean[] {
+						rowsA[1][0], 
+						rowsB[1][1], 
+						null,
+						rowsA[1][3]
+					}
+				},
+				SupportJoinResultNodeFactory.convertTo2DimArr(results));
 
             // test A=2 rows and B=3 row
             rowsA = makeRowsA(2);
@@ -161,45 +161,45 @@ namespace net.esper.eql.join.assemble
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(6, results.Count);
             ArrayAssertionUtil.assertEqualsAnyOrder(
-		new EventBean[][] {
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			},
-			new EventBean[] {
-				rowsA[0][0], 
-				rowsB[0][1], 
-				null,
-				rowsA[0][3]
-			}
-		},
-		SupportJoinResultNodeFactory.convertTo2DimArr(results));
+				new EventBean[][] {
+					new EventBean[] {
+						rowsA[0][0], 
+						rowsB[0][1], 
+						null,
+						rowsA[0][3]
+					},
+					new EventBean[] {
+						rowsA[0][0], 
+						rowsB[1][1], 
+						null,
+						rowsA[0][3]
+					},
+					new EventBean[] {
+						rowsA[0][0], 
+						rowsB[2][1], 
+						null,
+						rowsA[0][3]
+					},
+					new EventBean[] {
+						rowsA[1][0], 
+						rowsB[0][1], 
+						null,
+						rowsA[1][3]
+					},
+					new EventBean[] {
+						rowsA[1][0], 
+						rowsB[1][1], 
+						null,
+						rowsA[1][3]
+					},
+					new EventBean[] {
+						rowsA[1][0], 
+						rowsB[2][1], 
+						null,
+						rowsA[1][3]
+					}
+				},
+				SupportJoinResultNodeFactory.convertTo2DimArr(results));
         }
 
         private void tryCompute(IList<EventBean[]> rowsOne, IList<EventBean[]> rowsTwo)

@@ -52,10 +52,10 @@ namespace net.esper.filter
         /// code.
         /// </summary>
 
-        public int Count
-        {
-            get { return callbackSet.Count; }
-        }
+//        public int Count
+//        {
+//            get { return callbackSet.Count; }
+//        }
 
         /**
          * Returns the number of filter callbacks stored.

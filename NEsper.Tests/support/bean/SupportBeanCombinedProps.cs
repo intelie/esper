@@ -20,7 +20,11 @@ namespace net.esper.support.bean
             get { return indexed; }
         }
 
-        public static String[] PROPERTIES = new String[] { "indexed[]", "array" };
+        public static String[] PROPERTIES = new String[] {
+        	"indexed[]",
+        	"array",
+        	"Array"
+        };
 
         public static SupportBeanCombinedProps makeDefaultBean()
         {

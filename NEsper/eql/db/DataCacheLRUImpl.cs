@@ -26,15 +26,10 @@ namespace net.esper.eql.db
             this.cacheSize = cacheSize;
             int hashTableCapacity = (int)Math.Ceiling(cacheSize / hashTableLoadFactor) + 1;
             this.cache = new LinkedDictionary<MultiKey<Object>, IList<EventBean>>( hashTableCapacity ) ;
-
-            // TODO
-            //{
-            //private static final long serialVersionUID = 1;
-            //
-            //@Override protected boolean removeEldestEntry (Map.Entry<MultiKey<Object>,List<EventBean>> eldest)
-            //{
-            //    return size() > DataCacheLRUImpl.this.cacheSize;
-            //}
+            this.cache.RemoveEldest += new LinkedDictionary<MultiKey<Object>, IList<EventBean>>.EntryEventHandler(
+                delegate( KeyValuePair<MultiKey<Object>, IList<EventBean>> eldest ) {
+                    return this.cache.Count > this.cacheSize ;
+                }) ;
         }
 
         /// <summary> Retrieves an entry from the cache.

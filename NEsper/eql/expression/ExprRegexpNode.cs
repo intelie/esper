@@ -74,7 +74,7 @@ namespace net.esper.eql.expression
                 }
                 try
                 {
-                	pattern = new Regex(patternText);
+                   	pattern = new Regex(String.Format( "^{0}$", patternText ));
                 }
                 catch (ArgumentException ex)
                 {
@@ -92,7 +92,7 @@ namespace net.esper.eql.expression
                     }
                     try
                     {
-                        pattern = new Regex(patternText);
+                    	pattern = new Regex(String.Format( "^{0}$", patternText ));
                     }
                     catch (ArgumentException ex)
                     {
