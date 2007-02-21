@@ -65,6 +65,7 @@ public class EPAdministratorImpl implements EPAdministrator
     /**
      * Constructor - takes the services context as argument.
      * @param services - references to services
+     * @param statementLifecycleSvc - service for statement management
      */
     public EPAdministratorImpl(EPServicesContext services,
                                StatementLifecycleSvc statementLifecycleSvc)

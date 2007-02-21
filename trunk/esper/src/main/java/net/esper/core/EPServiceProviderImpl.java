@@ -13,10 +13,10 @@ import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.ManagedReadWriteLock;
+import net.esper.view.ViewResolutionService;
+import net.esper.view.ViewResolutionServiceImpl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
@@ -87,10 +87,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         EventAdapterService eventAdapterService = makeEventAdapterService(configSnapshot);
         AutoImportService autoImportService = makeAutoImportService(configSnapshot);
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
+        ViewResolutionService viewResolutionService = makeViewResolutionService(configSnapshot);
 
         // New services context
         EPServicesContext services = new EPServicesContext(schedulingService,
-                eventAdapterService, autoImportService, databaseConfigService);
+                eventAdapterService, autoImportService, databaseConfigService, viewResolutionService);
 
         // New read-write lock for concurrent event processing
         ManagedReadWriteLock eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock");
@@ -122,6 +123,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
 
         // Save engine instance
         engine = new EPServiceEngine(services, runtime, admin);
+    }
+
+    private ViewResolutionService makeViewResolutionService(ConfigurationSnapshot configSnapshot) throws ConfigurationException
+    {
+        return new ViewResolutionServiceImpl(configSnapshot.getPlugInViews());
     }
 
     private static Map<String, Class> createPropertyTypes(Properties properties)
@@ -272,6 +278,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         private String[] autoImports;
         private Map<String, Properties> mapAliases = new HashMap<String, Properties>();
         private Map<String, ConfigurationDBRef> databaseRefs = new HashMap<String, ConfigurationDBRef>();
+        private List<ConfigurationPlugInView> plugInViews = new LinkedList<ConfigurationPlugInView>();
 
         /**
          * Ctor.
@@ -288,6 +295,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             mapAliases.putAll(configuration.getEventTypesMapEvents());
             legacyAliases.putAll(configuration.getEventTypesLegacy());
             databaseRefs.putAll(configuration.getDatabaseReferences());
+            plugInViews.addAll(configuration.getPlugInViews());
         }
 
         /**
@@ -342,6 +350,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         public Map<String, ConfigurationDBRef> getDatabaseRefs()
         {
             return databaseRefs;
+        }
+
+        public List<ConfigurationPlugInView> getPlugInViews()
+        {
+            return plugInViews;
         }
     }
 

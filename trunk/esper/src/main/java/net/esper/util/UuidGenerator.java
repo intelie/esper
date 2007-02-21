@@ -61,8 +61,7 @@ public class UuidGenerator {
 
     /**
      * Initializes the factory.
-     *
-     * @param obj
+     * @param obj is used to determine a hash code to include in the UUID generation
      */
     private synchronized static void initialize(final Object obj) {
         try {
@@ -79,12 +78,6 @@ public class UuidGenerator {
         s_initialized = true;
     }
 
-    /**
-     * Utility method.
-     *
-     * @param abyte
-     * @return
-     */
     private static int getInt(final byte[] abyte) {
         int i = 0;
         int j = 24;
@@ -96,25 +89,11 @@ public class UuidGenerator {
         return i;
     }
 
-    /**
-     * Utility method.
-     *
-     * @param i
-     * @param j
-     * @return
-     */
     private static String hexFormat(final int i, final int j) {
         String s = Integer.toHexString(i);
         return padHex(s, j) + s;
     }
 
-    /**
-     * Utility method.
-     *
-     * @param str
-     * @param i
-     * @return
-     */
     private static String padHex(final String str, final int i) {
         StringBuffer buf = new StringBuffer();
         if (str.length() < i) {

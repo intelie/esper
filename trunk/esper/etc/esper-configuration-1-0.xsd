@@ -8,6 +8,7 @@
 				<xs:element ref="event-type" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="auto-import" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="database-reference" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="plugin-view" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -183,6 +184,13 @@
 		<xs:complexType>
 			<xs:attribute name="max-age-seconds" type="xs:double" use="required"/>
 			<xs:attribute name="purge-interval-seconds" type="xs:double" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="plugin-view">
+		<xs:complexType>
+			<xs:attribute name="namespace" type="xs:string" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="factory-class" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

@@ -70,7 +70,7 @@ public class EPStmtStartMethod
         scheduleBucket = services.getSchedulingService().allocateBucket();
 
         viewContext = new ViewServiceContext(services.getSchedulingService(),
-                scheduleBucket, services.getEventAdapterService(), epStatementHandle);
+                scheduleBucket, services.getEventAdapterService(), epStatementHandle, services.getViewResolutionService());
     }
 
     /**

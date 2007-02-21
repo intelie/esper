@@ -32,7 +32,7 @@ public final class ViewServiceImpl implements ViewService
         ViewServiceHelper.addMergeViews(viewSpecList);
 
         // Instantiate factories, not making them aware of each other yet
-        List<ViewFactory> viewFactories = ViewServiceHelper.instantiateFactories(viewSpecList);
+        List<ViewFactory> viewFactories = ViewServiceHelper.instantiateFactories(viewSpecList, context.getViewResultionService());
 
         ViewFactory parentViewFactory = null;
         List<ViewFactory> attachedViewFactories = new LinkedList<ViewFactory>();

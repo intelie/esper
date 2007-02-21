@@ -225,10 +225,11 @@ public class ViewServiceHelper
      * The view factories are not yet aware of each other after leaving this method (so not yet chained logically).
      * They are simply instantiated and assigned view parameters.
      * @param viewSpecList is the view definition
+     * @param viewResolutionService to resolve view namespace and name to actual view factory
      * @return list of view factories
      * @throws ViewProcessingException if the factory cannot be creates such as for invalid view spec
      */
-    public static List<ViewFactory> instantiateFactories(List<ViewSpec> viewSpecList)
+    public static List<ViewFactory> instantiateFactories(List<ViewSpec> viewSpecList, ViewResolutionService viewResolutionService)
             throws ViewProcessingException
     {
         List<ViewFactory> factoryChain = new ArrayList<ViewFactory>();
@@ -236,7 +237,7 @@ public class ViewServiceHelper
         for (ViewSpec spec : viewSpecList)
         {
             // Create the new view factory
-            ViewFactory viewFactory = ViewFactoryFactory.create(spec);
+            ViewFactory viewFactory = viewResolutionService.create(spec);
             factoryChain.add(viewFactory);
 
             // Set view factory parameters

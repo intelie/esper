@@ -14,6 +14,7 @@ import net.esper.timer.TimerService;
 import net.esper.timer.TimerServiceProvider;
 import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
+import net.esper.view.ViewResolutionService;
 import net.esper.view.stream.StreamFactoryService;
 import net.esper.view.stream.StreamFactoryServiceProvider;
 
@@ -32,6 +33,7 @@ public final class EPServicesContext
     private final EventAdapterService eventAdapterService;
     private final AutoImportService autoImportService;
     private final DatabaseConfigService databaseConfigService;
+    private final ViewResolutionService viewResolutionService;
 
     // Must be set
     private InternalEventRouter internalEventRouter;
@@ -46,7 +48,8 @@ public final class EPServicesContext
     public EPServicesContext(SchedulingService schedulingService,
                              EventAdapterService eventAdapterService,
                              AutoImportService autoImportService,
-                             DatabaseConfigService databaseConfigService)
+                             DatabaseConfigService databaseConfigService,
+                             ViewResolutionService viewResolutionService)
     {
         this.schedulingService = schedulingService;
         this.eventAdapterService = eventAdapterService;
@@ -59,6 +62,7 @@ public final class EPServicesContext
         this.dispatchService = DispatchServiceProvider.newService();
         this.viewService = ViewServiceProvider.newService();
         this.streamFactoryService = StreamFactoryServiceProvider.newService();
+        this.viewResolutionService = viewResolutionService;
     }
 
     /**
@@ -167,5 +171,10 @@ public final class EPServicesContext
     public DatabaseConfigService getDatabaseRefService()
     {
         return databaseConfigService;
+    }
+
+    public ViewResolutionService getViewResolutionService()
+    {
+        return viewResolutionService;
     }
 }

@@ -14,6 +14,7 @@ public final class ViewServiceContext
     private final ScheduleBucket scheduleBucket;
     private final EventAdapterService eventAdapterService;
     private final EPStatementHandle epStatementHandle;
+    private final ViewResolutionService viewResultionService;
 
     /**
      * Constructor.
@@ -21,16 +22,19 @@ public final class ViewServiceContext
      * @param scheduleBucket is for ordering scheduled callbacks within the view statements
      * @param eventAdapterService service for generating events and handling event types
      * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
+     * @param viewResultionService is a service for resolving view namespace and name to a view factory
      */
     public ViewServiceContext(SchedulingService schedulingService,
                               ScheduleBucket scheduleBucket,
                               EventAdapterService eventAdapterService,
-                              EPStatementHandle epStatementHandle)
+                              EPStatementHandle epStatementHandle,
+                              ViewResolutionService viewResultionService)
     {
         this.schedulingService = schedulingService;
         this.eventAdapterService = eventAdapterService;
         this.scheduleBucket = scheduleBucket;
         this.epStatementHandle = epStatementHandle;
+        this.viewResultionService = viewResultionService;
     }
 
     /**
@@ -67,5 +71,10 @@ public final class ViewServiceContext
     public EPStatementHandle getEpStatementHandle()
     {
         return epStatementHandle;
+    }
+
+    public ViewResolutionService getViewResultionService()
+    {
+        return viewResultionService;
     }
 }

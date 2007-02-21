@@ -38,7 +38,7 @@ public interface EPAdministrator
      * The statement name is optimally a unique name. If a statement of the same name
      * has already been created, the engine assigns a postfix to create a unique statement name. 
      * @param onExpression must follow the documented syntax for pattern statements
-     * @param statementName is a statement name
+     * @param statementName is the name to assign to the statement for use in manageing the statement
      * @return EPStatement to poll data from or to add listeners to
      * @throws EPException when the expression was not valid
      */
@@ -46,7 +46,11 @@ public interface EPAdministrator
 
     /**
      * Create and starts an EQL statement.
+     * <p>
+     * The statement name is optimally a unique name. If a statement of the same name
+     * has already been created, the engine assigns a postfix to create a unique statement name.
      * @param eqlStatement is the query language statement
+     * @param statementName is the name to assign to the statement for use in manageing the statement
      * @return EPStatement to poll data from or to add listeners to
      * @throws EPException when the expression was not valid
      */
