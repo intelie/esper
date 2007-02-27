@@ -68,7 +68,7 @@ namespace net.esper.core
             this.services = services;
         }
 
-        public virtual EPStatement createPattern(String expression)
+        public virtual EPStatement CreatePattern(String expression)
         {
             // Parse and walk
             AST ast = ParseHelper.parse(expression, patternParseRule);
@@ -80,12 +80,12 @@ namespace net.esper.core
             }
             catch (ASTWalkException ex)
             {
-                log.Debug(".createPattern Error validating expression", ex);
+                log.Debug(".CreatePattern Error validating expression", ex);
                 throw new EPStatementException(ex.Message, expression);
             }
             catch (SystemException ex)
             {
-                log.Debug(".createPattern Error validating expression", ex);
+                log.Debug(".CreatePattern Error validating expression", ex);
                 throw new EPStatementException(ex.Message, expression);
             }
 
@@ -116,7 +116,7 @@ namespace net.esper.core
             return patternStatement;
         }
 
-        public virtual EPStatement createEQL(String eqlStatement)
+        public virtual EPStatement CreateEQL(String eqlStatement)
         {
             AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
             EQLTreeWalker walker = new EQLTreeWalker(services.EventAdapterService);
@@ -127,12 +127,12 @@ namespace net.esper.core
             }
             catch (ASTWalkException ex)
             {
-                log.Debug(".createEQL Error validating expression", ex);
+                log.Debug(".CreateEQL Error validating expression", ex);
                 throw new EPStatementException(ex.Message, eqlStatement);
             }
             catch (SystemException ex)
             {
-                log.Debug(".createEQL Error validating expression", ex);
+                log.Debug(".CreateEQL Error validating expression", ex);
                 throw new EPStatementException(ex.Message, eqlStatement);
             }
 

@@ -32,7 +32,7 @@ namespace net.esper.eql.db
             this.scheduleBucket = scheduleBucket;
         }
 		
-		public virtual ConnectionCache getConnectionCache(String databaseName, String preparedStatementText)
+		public virtual ConnectionCache GetConnectionCache(String databaseName, String preparedStatementText)
 		{
             ConfigurationDBRef config = null;
             if ( ! mapDatabaseRef.TryGetValue(databaseName, out config ) )
@@ -40,7 +40,7 @@ namespace net.esper.eql.db
 				throw new DatabaseConfigException("Cannot locate configuration information for database '" + databaseName + "'");
 			}
 			
-			DatabaseConnectionFactory connectionFactory = getConnectionFactory(databaseName);
+			DatabaseConnectionFactory connectionFactory = GetConnectionFactory(databaseName);
 			
 			if ( config.ConnectionLifecycle == ConnectionLifecycleEnum.RETAIN)
 			{
@@ -52,11 +52,11 @@ namespace net.esper.eql.db
 			}
 		}
 		
-		public virtual DatabaseConnectionFactory getConnectionFactory(String databaseName)
+		public virtual DatabaseConnectionFactory GetConnectionFactory(String databaseName)
 		{
 			// check if we already have a reference
             DatabaseConnectionFactory factory = null;
-            if ( ! connectionFactories.TryGetValue(databaseName, out factory ) )
+            if ( connectionFactories.TryGetValue(databaseName, out factory ) )
 			{
 				return factory;
 			}
@@ -83,7 +83,7 @@ namespace net.esper.eql.db
 			return factory;
 		}
 		
-		public virtual DataCache getDataCache(String databaseName)
+		public virtual DataCache GetDataCache(String databaseName)
 		{
             ConfigurationDBRef config = null;
             if ( ! mapDatabaseRef.TryGetValue(databaseName, out config ) )

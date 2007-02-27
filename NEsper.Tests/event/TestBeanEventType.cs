@@ -185,11 +185,8 @@ namespace net.esper.events
         {
             BeanEventType type = new BeanEventType(typeof(ISupportAImplSuperGImplPlus), beanEventAdapter, null);
 
-            IList<EventType> deepSuperTypes = new List<EventType>();
-            foreach( EventType eventType in type.DeepSuperTypes )
-            {
-                deepSuperTypes.Add(eventType) ;
-            }
+            List<EventType> deepSuperTypes = new List<EventType>();
+            deepSuperTypes.AddRange(type.DeepSuperTypes);
 
             Assert.AreEqual(5, deepSuperTypes.Count);
             ArrayAssertionUtil.assertEqualsAnyOrder(
@@ -209,7 +206,9 @@ namespace net.esper.events
             LinkedHashSet<Type> classes = new LinkedHashSet<Type>();
             BeanEventType.GetSuper(typeof(ISupportAImplSuperGImplPlus), classes);
 
-            Assert.AreEqual(7, classes.Count);
+            List<Type> listOfClasses = new List<Type>(classes);
+
+            Assert.AreEqual(6, classes.Count);
             ArrayAssertionUtil.assertEqualsAnyOrder(
                 (ICollection<Type>) classes.ToArray(),
                 (ICollection<Type>) new Type[] {
@@ -218,7 +217,6 @@ namespace net.esper.events
                     typeof(ISupportA),
                     typeof(ISupportB),
                     typeof(ISupportC),
-                    typeof(ISerializable),
                     typeof(Object)
                 });
 
@@ -233,10 +231,12 @@ namespace net.esper.events
             eventTypeSimple = new BeanEventType(typeof(ISupportAImplSuperGImplPlus), beanEventAdapter, null);
 
             List<EventType> superTypes = new List<EventType>(eventTypeSimple.SuperTypes);
-            Assert.AreEqual(3, superTypes.Count);
+            Assert.AreEqual(5, superTypes.Count);
             Assert.AreEqual(typeof(ISupportAImplSuperG), superTypes[0].UnderlyingType);
-            Assert.AreEqual(typeof(ISupportB), superTypes[1].UnderlyingType);
-            Assert.AreEqual(typeof(ISupportC), superTypes[2].UnderlyingType);
+            Assert.AreEqual(typeof(ISupportA), superTypes[1].UnderlyingType);
+            Assert.AreEqual(typeof(ISupportBaseAB), superTypes[2].UnderlyingType);
+            Assert.AreEqual(typeof(ISupportB), superTypes[3].UnderlyingType);
+            Assert.AreEqual(typeof(ISupportC), superTypes[4].UnderlyingType);
 
             eventTypeSimple = new BeanEventType(typeof(Object), beanEventAdapter, null);
             superTypes = new List<EventType>(eventTypeSimple.SuperTypes);

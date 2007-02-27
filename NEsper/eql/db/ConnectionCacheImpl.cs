@@ -7,8 +7,10 @@ using org.apache.commons.logging;
 
 namespace net.esper.eql.db
 {
-
-    /// <summary> Caches the Connection and DbCommand instance for reuse.</summary>
+    /// <summary>
+    /// Caches the Connection and DbCommand instance for reuse.
+    /// </summary>
+    
     public class ConnectionCacheImpl : ConnectionCache
     {
         private Pair<DbConnection, DbCommand> cache;
@@ -24,25 +26,25 @@ namespace net.esper.eql.db
         {
         }
 
-        public override Pair<DbConnection, DbCommand> getConnection()
+        public override Pair<DbConnection, DbCommand> GetConnection()
         {
             if (cache == null)
             {
-                cache = makeNew();
+                cache = MakeNew();
             }
             return cache;
         }
 
-        public override void doneWith(Pair<DbConnection, DbCommand> pair)
+        public override void DoneWith(Pair<DbConnection, DbCommand> pair)
         {
             // no need to implement
         }
 
-        public override void destroy()
+        public override void Destroy()
         {
             if (cache != null)
             {
-                close(cache);
+                Close(cache);
             }
             cache = null;
         }

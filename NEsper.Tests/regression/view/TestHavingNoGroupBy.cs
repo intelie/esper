@@ -38,8 +38,8 @@ namespace net.esper.regression.view
                 typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
                 "having price < avg(price)";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             runAssertion();
         }
@@ -55,8 +55,8 @@ namespace net.esper.regression.view
                 "where one.str = two.symbol " + 
                 "having price < avg(price)";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
 
@@ -85,8 +85,8 @@ namespace net.esper.regression.view
                 filterClause + 
                 " Math.Max(a.price, b.price) - Math.Min(a.price, b.price) >= 1.4";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             sendPriceEvent("SYM1", 20);
             Assert.IsFalse(testListener.Invoked);

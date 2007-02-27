@@ -33,8 +33,8 @@ namespace net.esper.regression.eql
                 eventB + "(str='s1').win:length(3) as s1" +
                 " where s0.doubleBoxed = s1.doubleBoxed";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 		}
 		
 		[Test]

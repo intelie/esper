@@ -8,6 +8,12 @@ namespace net.esper.events
     [TestFixture]
     public class TestCompositeEventBean : TestCompositeEventBase
     {
+    	[SetUp]
+		public override void setUp()
+		{
+			base.setUp();
+		}
+    	
         [Test]
         public virtual void testGet()
         {

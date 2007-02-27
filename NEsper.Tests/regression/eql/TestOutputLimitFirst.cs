@@ -39,9 +39,9 @@ namespace net.esper.regression.eql
 			
 			// Create the eql statement and add a listener
 			String statementText = "select symbol, sum(volume) from " + EVENT_NAME + ".win:length(5) output first every 3 seconds";
-			EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+			EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
 			updateListener = new SupportUpdateListener();
-			statement.AddListener(updateListener);
+            statement.AddListener(updateListener.Update);
 			updateListener.reset();
 			
 			// Send the first event of the batch; should be output
@@ -92,9 +92,9 @@ namespace net.esper.regression.eql
 		{
 			// Create the eql statement and add a listener
 			String statementText = "select symbol, sum(volume) from " + EVENT_NAME + ".win:length(5) output first every 3 events";
-			EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+			EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
 			updateListener = new SupportUpdateListener();
-			statement.AddListener(updateListener);
+            statement.AddListener(updateListener.Update);
 			updateListener.reset();
 			
 			// Send the first event of the batch, should be output

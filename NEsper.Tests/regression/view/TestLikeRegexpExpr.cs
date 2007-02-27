@@ -35,8 +35,8 @@ namespace net.esper.regression.view
                 " p02 regexp p03 as r3 " +
                 " from " + typeof(SupportBean_S0).FullName;
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
 
             sendS0Event("a", "b", "c", "d");
             assertReceived(new Object[][]{
@@ -115,11 +115,11 @@ namespace net.esper.regression.view
             String caseExpr =
                 "select " +
                 " intBoxed like '%01%' as r1, " +
-                " doubleBoxed regexp '[0-9][0-9].[0-9]' as r2 " +
+                " doubleBoxed regexp '[0-9][0-9].[0-9][0-9]' as r2 " +
                 " from " + typeof(SupportBean).FullName;
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
 
             sendSupportBeanEvent(101, 1.1);
             assertReceived(
@@ -135,7 +135,7 @@ namespace net.esper.regression.view
                     new Object[] { "r2", true }
                 });
 
-            sendSupportBeanEvent(0, 0);
+            sendSupportBeanEvent(null, null);
             assertReceived(
                 new Object[][] {
                     new Object[] { "r1", null },
@@ -148,7 +148,7 @@ namespace net.esper.regression.view
             try
             {
                 String statement = "select " + expr + " from " + typeof(SupportBean).FullName;
-                epService.EPAdministrator.createEQL(statement);
+                epService.EPAdministrator.CreateEQL(statement);
                 Assert.Fail();
             }
             catch (EPException ex)
@@ -174,7 +174,7 @@ namespace net.esper.regression.view
             epService.EPRuntime.SendEvent(bean);
         }
 
-        private void sendSupportBeanEvent(Int32 intBoxed, Double doubleBoxed)
+        private void sendSupportBeanEvent(int? intBoxed, double? doubleBoxed)
         {
             SupportBean bean = new SupportBean();
             bean.intBoxed = intBoxed;

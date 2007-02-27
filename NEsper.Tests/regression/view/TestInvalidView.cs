@@ -58,7 +58,7 @@ namespace net.esper.regression.view
 
             // where-clause equals has invalid type compare
             exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length(1) where doublePrimitive=true");
-            Assert.AreEqual("Error validating expression: Implicit conversion from datatype 'java.lang.Double' to 'java.lang.Boolean' is not allowed [select * from net.esper.support.bean.SupportBean_N.win:length(1) where doublePrimitive=true]", exceptionText);
+            Assert.AreEqual("Error validating expression: Implicit conversion from datatype '" + typeof(double?).FullName + "' to '" + typeof(bool?).FullName + "' is not allowed [select * from net.esper.support.bean.SupportBean_N.win:length(1) where doublePrimitive=true]", exceptionText);
 
             // where-clause relational op has invalid type
             exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) where string > 5");
@@ -154,15 +154,15 @@ namespace net.esper.regression.view
 
             // mismatched type on coalesce columns
             exceptionText = getStatementExceptionView("select coalesce(boolBoxed, string) from " + typeof(SupportBean).FullName + ".win:length(1) as aStr");
-            Assert.AreEqual("Error Starting view: Implicit conversion not allowed: Cannot coerce to Boolean type System.String [select coalesce(boolBoxed, string) from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+            Assert.AreEqual("Error Starting view: Implicit conversion not allowed: Cannot coerce to bool type System.String [select coalesce(boolBoxed, string) from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
 
             // mismatched case compare type
             exceptionText = getStatementExceptionView("select case boolPrimitive when 1 then true end from " + typeof(SupportBean).FullName + ".win:length(1) as aStr");
-            Assert.AreEqual("Error Starting view: Implicit conversion not allowed: Cannot coerce to Boolean type Int32 [select case boolPrimitive when 1 then true end from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+            Assert.AreEqual("Error Starting view: Implicit conversion not allowed: Cannot coerce to bool type " + typeof(int?).FullName + " [select case boolPrimitive when 1 then true end from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
 
             // mismatched case result type
             exceptionText = getStatementExceptionView("select case when 1=2 then 1 when 1=3 then true end from " + typeof(SupportBean).FullName + ".win:length(1) as aStr");
-            Assert.AreEqual("Error Starting view: Implicit conversion not allowed: Cannot coerce types Int32 and Boolean [select case when 1=2 then 1 when 1=3 then true end from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+            Assert.AreEqual("Error Starting view: Implicit conversion not allowed: Cannot coerce types " + typeof(int?).FullName + " and " + typeof(bool?).FullName + " [select case when 1=2 then 1 when 1=3 then true end from net.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
 
             // case expression not returning bool
             exceptionText = getStatementExceptionView("select case when 3 then 1 end from " + typeof(SupportBean).FullName + ".win:length(1) as aStr");
@@ -195,7 +195,7 @@ namespace net.esper.regression.view
         {
             try
             {
-                epService.EPAdministrator.createEQL(viewStmt);
+                epService.EPAdministrator.CreateEQL(viewStmt);
                 Assert.Fail();
             }
             catch (ASTFilterSpecValidationException ex)
@@ -213,7 +213,7 @@ namespace net.esper.regression.view
             String exceptionText = null;
             try
             {
-                epService.EPAdministrator.createEQL(expression);
+                epService.EPAdministrator.CreateEQL(expression);
                 Assert.Fail();
             }
             catch (EPStatementSyntaxException ex)
@@ -236,7 +236,7 @@ namespace net.esper.regression.view
             String exceptionText = null;
             try
             {
-                epService.EPAdministrator.createEQL(expression);
+                epService.EPAdministrator.CreateEQL(expression);
                 Assert.Fail();
             }
             catch (EPStatementSyntaxException es)
@@ -258,7 +258,7 @@ namespace net.esper.regression.view
 
         private void tryValid(String viewStmt)
         {
-            epService.EPAdministrator.createEQL(viewStmt);
+            epService.EPAdministrator.CreateEQL(viewStmt);
         }
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

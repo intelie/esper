@@ -67,7 +67,7 @@ namespace net.esper.core
 
 			foreach ( UpdateListener listener in listeners )
 			{
-				listener.Update( eventArray, null );
+				listener( eventArray, null );
 			}
 		}
 

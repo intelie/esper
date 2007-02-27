@@ -96,7 +96,36 @@ namespace net.esper.events.property
 		{
 			throw new NotSupportedException() ;
 		}
-		
+
+        /// <summary>
+        /// Returns true if the objects are equal.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+
+        public override bool Equals(object obj)
+        {
+            SimpleAccessorPropertyDescriptor temp = obj as SimpleAccessorPropertyDescriptor;
+            if (temp != null)
+            {
+                return
+                    //Object.Equals(this.Name, temp.Name) &&
+                    Object.Equals(this.accessorMethod, temp.accessorMethod);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns a hahscode for the object.
+        /// </summary>
+        /// <returns></returns>
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
 		/// <summary>
 		/// Constructor
 		/// </summary>

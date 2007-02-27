@@ -14,16 +14,13 @@ namespace net.esper.client
 	/// Interface to add and remove update listeners receiving events for an EP statement.
 	/// </summary>
     
-	public interface EPStatement : EPListenable, EPIterable
+	public interface EPStatement : EPIterable, EPListenable
     {
         /// <summary> Returns the underlying expression text or XML.</summary>
         /// <returns> expression text
         /// </returns>
         
-        String Text
-        {
-            get;
-        }
+        String Text { get ; }
 
         /// <summary> Start the statement.</summary>
         void Start();

@@ -44,17 +44,17 @@ namespace net.esper.regression.view
 
             String filter = "select * from " + typeof(SupportMarketDataBean).FullName;
 
-            priceLast3Stats = epAdmin.createEQL(filter + ".std:groupby('symbol').win:length(3).stat:uni('price')");
-            priceLast3Stats.AddListener(priceLast3StatsListener);
+            priceLast3Stats = epAdmin.CreateEQL(filter + ".std:groupby('symbol').win:length(3).stat:uni('price')");
+            priceLast3Stats.AddListener(priceLast3StatsListener.Update);
 
-            volumeLast3Stats = epAdmin.createEQL(filter + ".std:groupby('symbol').win:length(3).stat:uni('volume')");
-            volumeLast3Stats.AddListener(volumeLast3StatsListener);
+            volumeLast3Stats = epAdmin.CreateEQL(filter + ".std:groupby('symbol').win:length(3).stat:uni('volume')");
+            volumeLast3Stats.AddListener(volumeLast3StatsListener.Update);
 
-            priceAllStats = epAdmin.createEQL(filter + ".std:groupby('symbol').stat:uni('price')");
-            priceAllStats.AddListener(priceAllStatsListener);
+            priceAllStats = epAdmin.CreateEQL(filter + ".std:groupby('symbol').stat:uni('price')");
+            priceAllStats.AddListener(priceAllStatsListener.Update);
 
-            volumeAllStats = epAdmin.createEQL(filter + ".std:groupby('symbol').stat:uni('volume')");
-            volumeAllStats.AddListener(volumeAllStatsListener);
+            volumeAllStats = epAdmin.CreateEQL(filter + ".std:groupby('symbol').stat:uni('volume')");
+            volumeAllStats.AddListener(volumeAllStatsListener.Update);
         }
 
         [Test]

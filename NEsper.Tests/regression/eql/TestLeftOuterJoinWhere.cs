@@ -145,8 +145,8 @@ namespace net.esper.regression.eql
 				typeof( SupportBean_S1 ).FullName + ".win:length(5) as s1" + " on s0.p00 = s1.p10 " +
 				whereClause;
 
-			EPStatement outerJoinView = epService.EPAdministrator.createEQL( joinStatement );
-			outerJoinView.AddListener( updateListener );
+			EPStatement outerJoinView = epService.EPAdministrator.CreateEQL( joinStatement );
+            outerJoinView.AddListener(updateListener.Update);
 			return outerJoinView;
 		}
 

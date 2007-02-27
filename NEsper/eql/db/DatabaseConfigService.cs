@@ -13,7 +13,7 @@ namespace net.esper.eql.db
 		/// <returns> is a connection factory to use to get connections to the database
 		/// </returns>
 		/// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
-		DatabaseConnectionFactory getConnectionFactory(String databaseName);
+		DatabaseConnectionFactory GetConnectionFactory(String databaseName);
 		
 		/// <summary> Returns true to indicate a setting to retain connections between lookups.</summary>
 		/// <param name="databaseName">is the name of the database
@@ -23,7 +23,7 @@ namespace net.esper.eql.db
 		/// <returns> a cache implementation to cache connection and prepared statements
 		/// </returns>
 		/// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
-		ConnectionCache getConnectionCache(String databaseName, String preparedStatementText);
+		ConnectionCache GetConnectionCache(String databaseName, String preparedStatementText);
 		
 		/// <summary> Returns a new cache implementation for this database.</summary>
 		/// <param name="databaseName">is the name of the database to return a new cache implementation for for
@@ -31,6 +31,6 @@ namespace net.esper.eql.db
 		/// <returns> cache implementation
 		/// </returns>
 		/// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
-		DataCache getDataCache(String databaseName);
+		DataCache GetDataCache(String databaseName);
 	}
 }

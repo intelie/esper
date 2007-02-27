@@ -37,8 +37,8 @@ namespace net.esper.regression.view
 		         " from pattern [every (a=" + typeof(SupportBean).FullName +
 		         "(string='s0') or b=" + typeof(SupportBean).FullName +
 		         "(string='s1'))]";
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             SupportBean _event = SendEvent("s0");
             EventBean eventReceived = testListener.assertOneGetNewAndReset();
@@ -102,8 +102,8 @@ namespace net.esper.regression.view
         {
             epService.Initialize();
             String viewExpr = "select " + coalesceExpr + " as result" + " from " + typeof(SupportBean).FullName + ".win:length(1000) ";
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace net.esper.regression.view
             String viewExpr =
                 "select coalesce(null, null) as result" +
                 " from " + typeof(SupportBean).FullName + ".win:length(3) ";
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
             Assert.AreEqual(null, selectTestView.EventType.GetPropertyType("result"));
 
             tryCoalesceInvalid("coalesce(intPrimitive)");
@@ -132,7 +132,7 @@ namespace net.esper.regression.view
 
             try
             {
-                selectTestView = epService.EPAdministrator.createEQL(viewExpr);
+                selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
             }
             catch (EPStatementException ex)
             {
@@ -179,8 +179,8 @@ namespace net.esper.regression.view
             String viewExpr =
                 "select longBoxed % intBoxed as myMod " + 
                 " from " + typeof(SupportBean).FullName + ".win:length(3) where not(longBoxed > intBoxed)";
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             SendEvent(1, 1, (short)0);
             Assert.AreEqual(0L, testListener.LastNewData[0]["myMod"]);
@@ -200,8 +200,8 @@ namespace net.esper.regression.view
             String viewExpr =
                 "select p00 || p01 as c1, p00 || p01 || p02 as c2, p00 || '|' || p01 as c3" + 
                 " from " + typeof(SupportBean_S0).FullName + ".win:length(10)";
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "a", "b", "c"));
             assertConcat("ab", "abc", "a|b");
@@ -230,8 +230,8 @@ namespace net.esper.regression.view
                 "min(longBoxed, intBoxed) as myMin," +
                 "min(longBoxed, intBoxed, shortBoxed) as myMinEx" + 
                 " from " + typeof(SupportBean).FullName + ".win:length(3) ";
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
         }
 
         private SupportBean SendEvent(String stringValue)

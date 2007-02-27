@@ -18,7 +18,7 @@ namespace net.esper.eql.db
     /// This is not a pool - a cache is associated with one client class and that
     /// class is expected to use cache methods in well-defined order of get, done-with and destroy.
     /// </summary>
-    public abstract class ConnectionCache
+    public abstract class ConnectionCache : IDisposable
     {
         private DatabaseConnectionFactory databaseConnectionFactory;
         private String sql;
@@ -26,15 +26,15 @@ namespace net.esper.eql.db
         /// <summary> Returns a cached or new connection and statement pair.</summary>
         /// <returns> connection and statement pair
         /// </returns>
-        public abstract Pair<DbConnection, DbCommand> getConnection();
+        public abstract Pair<DbConnection, DbCommand> GetConnection();
 
         /// <summary> Indicate to return the connection and statement pair after use.</summary>
         /// <param name="pair">is the resources to return
         /// </param>
-        public abstract void doneWith(Pair<DbConnection, DbCommand> pair);
+        public abstract void DoneWith(Pair<DbConnection, DbCommand> pair);
 
         /// <summary> Destroys cache closing all resources cached, if any.</summary>
-        public abstract void destroy();
+        public abstract void Destroy();
 
         /// <summary> Ctor.</summary>
         /// <param name="databaseConnectionFactory">- connection factory</param>
@@ -50,7 +50,7 @@ namespace net.esper.eql.db
         /// <param name="pair">is the resources to close.
         /// </param>
         
-        protected void close(Pair<DbConnection, DbCommand> pair)
+        protected void Close(Pair<DbConnection, DbCommand> pair)
         {
             log.Info(".close Closing statement and connection");
             try
@@ -84,7 +84,7 @@ namespace net.esper.eql.db
         /// <returns> pair of resources
         /// </returns>
         
-        protected Pair<DbConnection, DbCommand> makeNew()
+        protected Pair<DbConnection, DbCommand> MakeNew()
         {
             log.Info(".makeNew Obtaining new connection and statement");
             DbConnection connection = null;
@@ -102,6 +102,7 @@ namespace net.esper.eql.db
             {
                 preparedStatement = connection.CreateCommand() ;
                 preparedStatement.CommandText = sql ;
+                preparedStatement.Prepare() ;
             }
             catch (DbException ex)
             {
@@ -112,5 +113,14 @@ namespace net.esper.eql.db
         }
 
         private static Log log = LogFactory.GetLog(typeof(ConnectionCache));
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        
+        public void Dispose()
+        {
+            Destroy() ;
+        }
     }
 }

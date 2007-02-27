@@ -18,11 +18,11 @@ namespace net.esper.eql.join.plan
         [Test]
         public virtual void testGetPlan()
         {
-            IList<OuterJoinDesc> descList = new ELinkedList<OuterJoinDesc>();
+            IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
             OuterJoinDesc joinDesc = SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT);
             descList.Add(joinDesc);
 
-            QueryPlan plan = QueryPlanBuilder.getPlan(2, new ELinkedList<OuterJoinDesc>(), null, null);
+            QueryPlan plan = QueryPlanBuilder.getPlan(2, new List<OuterJoinDesc>(), null, null);
             assertPlan(plan);
 
             plan = QueryPlanBuilder.getPlan(2, descList, null, null);
@@ -31,7 +31,7 @@ namespace net.esper.eql.join.plan
             plan = QueryPlanBuilder.getPlan(2, descList, SupportExprNodeFactory.makeEqualsNode(), null);
             assertPlan(plan);
 
-            plan = QueryPlanBuilder.getPlan(2, new ELinkedList<OuterJoinDesc>(), SupportExprNodeFactory.makeEqualsNode(), null);
+            plan = QueryPlanBuilder.getPlan(2, new List<OuterJoinDesc>(), SupportExprNodeFactory.makeEqualsNode(), null);
             assertPlan(plan);
         }
 

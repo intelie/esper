@@ -114,7 +114,7 @@ namespace net.esper.regression.eql
         {
             try
             {
-                epService.EPAdministrator.createEQL(eqlInvalidEQL);
+                epService.EPAdministrator.CreateEQL(eqlInvalidEQL);
                 Assert.Fail();
             }
             catch (EPException)
@@ -125,7 +125,7 @@ namespace net.esper.regression.eql
 
         private void tryValid(String eqlInvalidEQL)
         {
-            epService.EPAdministrator.createEQL(eqlInvalidEQL);
+            epService.EPAdministrator.CreateEQL(eqlInvalidEQL);
         }
 
         private String getSyntaxExceptionEQL(String expression)
@@ -133,7 +133,7 @@ namespace net.esper.regression.eql
             String exceptionText = null;
             try
             {
-                epService.EPAdministrator.createEQL(expression);
+                epService.EPAdministrator.CreateEQL(expression);
                 Assert.Fail();
             }
             catch (EPStatementSyntaxException ex)

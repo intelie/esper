@@ -168,6 +168,7 @@ namespace net.esper.client
             private String name;
             private String xpath;
             private XPathResultType type;
+            private Type nativeType;
 
             /// <summary> Returns the event property name.</summary>
             /// <returns> event property name
@@ -191,9 +192,18 @@ namespace net.esper.client
             /// <returns> type infomation
             /// </returns>
 
-            virtual public XPathResultType Type
+            virtual public XPathResultType ResultType
             {
                 get { return type; }
+            }
+
+            /// <summary>
+            /// Returns the native data type representing the event property.
+            /// </summary>
+
+            virtual public Type ResultDataType
+            {
+                get { return nativeType; }
             }
 
             /// <summary> Ctor.</summary>
@@ -209,6 +219,20 @@ namespace net.esper.client
                 this.name = name;
                 this.xpath = xpath;
                 this.type = type;
+                this.nativeType = typeof(string);
+
+                switch (type)
+                {
+                    case XPathResultType.Boolean:
+                        this.nativeType = typeof(bool);
+                        break;
+                    case XPathResultType.String:
+                        this.nativeType = typeof(string);
+                        break;
+                    case XPathResultType.Number:
+                        this.nativeType = typeof(double);
+                        break;
+                }
             }
         }
     }

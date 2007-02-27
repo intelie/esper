@@ -33,7 +33,7 @@ namespace net.esper.collection
         /// </summary>
         /// <param name="window">is the time-slotted collection</param>
 
-        public TimeWindowIterator(ELinkedList<Pair<Int64, List<EventBean>>> window)
+        public TimeWindowIterator(LinkedList<Pair<Int64, List<EventBean>>> window)
         {
             keyIterator = window.GetEnumerator();
             if (keyIterator.MoveNext())

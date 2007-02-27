@@ -36,8 +36,8 @@ namespace net.esper.regression.view
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String viewExpr = "select symbol, sum(distinct volume) as volSum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) ";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             // assert select result type
             Assert.AreEqual(typeof(String), selectTestView.EventType.GetPropertyType("symbol"));

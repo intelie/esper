@@ -25,7 +25,7 @@ namespace net.esper.collection
         [Test]
         public virtual void testEmpty()
         {
-            ELinkedList<Pair<Int64, List<EventBean>>> testWindow = new ELinkedList<Pair<Int64, List<EventBean>>>();
+            LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             IEnumerator<EventBean> it = new TimeWindowIterator(testWindow);
             ArrayAssertionUtil.assertEqualsExactOrder(it, (EventBean[])null);
         }
@@ -33,7 +33,7 @@ namespace net.esper.collection
         [Test]
         public virtual void testOneElement()
         {
-            ELinkedList<Pair<Int64, List<EventBean>>> testWindow = new ELinkedList<Pair<Int64, List<EventBean>>>();
+            LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             List<EventBean> list = new List<EventBean>();
             list.Add(events.Fetch("avalue"));
             addToWindow(testWindow, 10L, list);
@@ -47,7 +47,7 @@ namespace net.esper.collection
         [Test]
         public virtual void testTwoInOneEntryElement()
         {
-            ELinkedList<Pair<Int64, List<EventBean>>> testWindow = new ELinkedList<Pair<Int64, List<EventBean>>>();
+            LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             List<EventBean> list = new List<EventBean>();
             list.Add(events.Fetch("a"));
             list.Add(events.Fetch("b"));
@@ -66,7 +66,7 @@ namespace net.esper.collection
         [Test]
         public virtual void testTwoSeparateEntryElement()
         {
-            ELinkedList<Pair<Int64, List<EventBean>>> testWindow = new ELinkedList<Pair<Int64, List<EventBean>>>();
+            LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             List<EventBean> list2 = new List<EventBean>();
             list2.Add(events.Fetch("b"));
             addToWindow(testWindow, 5L, list2); // Actually before list1
@@ -88,7 +88,7 @@ namespace net.esper.collection
         [Test]
         public virtual void testTwoByTwoEntryElement()
         {
-            ELinkedList<Pair<Int64, List<EventBean>>> testWindow = new ELinkedList<Pair<Int64, List<EventBean>>>();
+            LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
 
             List<EventBean> list1 = new List<EventBean>();
             list1.Add(events.Fetch("a"));
@@ -115,7 +115,7 @@ namespace net.esper.collection
         [Test]
         public virtual void testMixedEntryElement()
         {
-            ELinkedList<Pair<Int64, List<EventBean>>> testWindow = new ELinkedList<Pair<Int64, List<EventBean>>>();
+            LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
 
             List<EventBean> list1 = new List<EventBean>();
             list1.Add(events.Fetch("a"));
@@ -147,11 +147,11 @@ namespace net.esper.collection
         }
 
         private void addToWindow(
-            ELinkedList<Pair<Int64, List<EventBean>>> testWindow,
+            LinkedList<Pair<Int64, List<EventBean>>> testWindow,
             Int64 key,
             List<EventBean> value)
         {
-            testWindow.Add(new Pair<Int64, List<EventBean>>(key, value));
+            testWindow.AddLast(new Pair<Int64, List<EventBean>>(key, value));
         }
 
         /// <summary>

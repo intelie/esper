@@ -38,8 +38,8 @@ namespace net.esper.regression.eql
 				eventB + "().win:length(3) as streamB" + 
 				" where streamA.id = streamB.id";
 
-			joinView = epService.EPAdministrator.createEQL( joinStatement );
-			joinView.AddListener( updateListener );
+			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
+			joinView.AddListener(updateListener.Update);
 
 			for ( int i = 0 ; i < eventsA.Length ; i++ )
 			{

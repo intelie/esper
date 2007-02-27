@@ -54,7 +54,7 @@ namespace net.esper.eql.join.exec
         [Test]
         public virtual void testLookup()
         {
-            IList<EventBean[]> result = new ELinkedList<EventBean[]>();
+            IList<EventBean[]> result = new List<EventBean[]>();
             EventBean[] prefill = new EventBean[4];
             prefill[2] = streamEvents[2][0];
 

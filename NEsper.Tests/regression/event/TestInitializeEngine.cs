@@ -21,9 +21,9 @@ namespace net.esper.regression.events
 			String eqlTwo = "insert into A(a, b) select 1,2 from " + typeof(SupportBean).FullName + ".win:length(100)";
 			
 			// Asserting that the engine allows to use the new event stream A with more properties then the old A
-			epService.EPAdministrator.createEQL(eqlOne);
+			epService.EPAdministrator.CreateEQL(eqlOne);
 			epService.Initialize();
-			epService.EPAdministrator.createEQL(eqlTwo);
+			epService.EPAdministrator.CreateEQL(eqlTwo);
 		}
 	}
 }

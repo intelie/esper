@@ -77,8 +77,8 @@ namespace net.esper.regression.view
                 "(longPrimitive ^ longBoxed) as myFourthProperty, " + 
                 "(boolPrimitive & boolBoxed) as myFithProperty " + 
                 " from " + typeof(SupportBean).FullName + ".win:length(3) ";
-            _selectTestView = _epService.EPAdministrator.createEQL(viewExpr);
-            _selectTestView.AddListener(_testListener);
+            _selectTestView = _epService.EPAdministrator.CreateEQL(viewExpr);
+            _selectTestView.AddListener(_testListener.Update);
         }
 
         protected internal virtual void SendEvent(

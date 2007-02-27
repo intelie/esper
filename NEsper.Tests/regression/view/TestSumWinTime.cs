@@ -37,8 +37,8 @@ namespace net.esper.regression.view
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String sumTimeExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30)";
 
-            selectTestView = epService.EPAdministrator.createEQL(sumTimeExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(sumTimeExpr);
+            selectTestView.AddListener(testListener.Update);
 
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
@@ -51,8 +51,8 @@ namespace net.esper.regression.view
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String sumTimeUniExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30) group by symbol";
 
-            selectTestView = epService.EPAdministrator.createEQL(sumTimeUniExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(sumTimeUniExpr);
+            selectTestView.AddListener(testListener.Update);
 
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
@@ -65,8 +65,8 @@ namespace net.esper.regression.view
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String sumTimeUniExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + "(symbol = 'IBM').win:time(30)";
 
-            selectTestView = epService.EPAdministrator.createEQL(sumTimeUniExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(sumTimeUniExpr);
+            selectTestView.AddListener(testListener.Update);
 
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 

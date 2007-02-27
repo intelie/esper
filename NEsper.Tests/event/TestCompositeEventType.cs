@@ -10,6 +10,12 @@ namespace net.esper.events
 {
 	public class TestCompositeEventType : TestCompositeEventBase
 	{
+		[SetUp]
+		public override void setUp()
+		{
+			base.setUp();
+		}
+		
 		[Test]
 		public virtual void testGetPropertyType()
 		{

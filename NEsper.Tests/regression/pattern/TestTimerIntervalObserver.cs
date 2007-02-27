@@ -171,10 +171,10 @@ namespace net.esper.regression.pattern
             sendTimer(0, epService);
 
             // Set up a timer:within
-            EPStatement statement = epService.EPAdministrator.createEQL("select * from pattern [timer:interval(1 minute 2 seconds)]");
+            EPStatement statement = epService.EPAdministrator.CreateEQL("select * from pattern [timer:interval(1 minute 2 seconds)]");
 
             SupportUpdateListener testListener = new SupportUpdateListener();
-            statement.AddListener(testListener);
+            statement.AddListener(testListener.Update);
 
             sendTimer(62 * 1000 - 1, epService);
             Assert.IsFalse(testListener.Invoked);

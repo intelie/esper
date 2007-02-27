@@ -486,7 +486,10 @@ namespace net.esper.regression.view
             assertValues(symbols, "symbol");
             assertValues(prices, "price");
             assertValues(volumes, "volume");
-            assertOnlyProperties(new String[] { "symbol", "volume", "price", "feed" });
+            assertOnlyProperties(new String[] {
+                "symbol", "volume", "price", "feed",
+                "Symbol", "Volume", "Price", "Feed"
+            });
             clearValues();
 
             statementString = "select * from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " + "output every 6 events " + "order by symbol";
@@ -495,11 +498,13 @@ namespace net.esper.regression.view
             assertValues(symbols, "symbol");
             assertValues(prices, "price");
             assertValues(volumes, "volume");
-            assertOnlyProperties(new String[] { "symbol", "volume", "price", "feed" });
+            assertOnlyProperties(new String[] { 
+                "symbol", "volume", "price", "feed",
+                "Symbol", "Volume", "Price", "Feed"
+            });
             clearValues();
         }
-
-
+        
         [Test]
         public virtual void testWildcardJoin()
         {
@@ -632,8 +637,8 @@ namespace net.esper.regression.view
         private void createAndSend(String statementString)
         {
             testListener = new SupportUpdateListener();
-            EPStatement statement = epService.EPAdministrator.createEQL(statementString);
-            statement.AddListener(testListener);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementString);
+            statement.AddListener(testListener.Update);
             SendEvent("IBM", 2);
             SendEvent("KGB", 1);
             SendEvent("CMU", 3);

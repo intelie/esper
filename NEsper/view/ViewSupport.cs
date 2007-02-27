@@ -22,6 +22,17 @@ namespace net.esper.view
 
     public abstract class ViewSupport : View
     {
+        private Guid m_id = Guid.NewGuid();
+
+        /// <summary>
+        /// Gets the unique id for the view
+        /// </summary>
+
+        public Guid Id
+        {
+            get { return m_id; }
+        }
+
         /// <summary>
         /// Parent viewable to this view - directly accessible by subclasses.
         /// </summary>
@@ -139,6 +150,7 @@ namespace net.esper.view
                     {
                         case "Views":
                         case "Parent":
+                        case "EventType":
                             // Case statement represents specific properties we with to
                             // ignore.
                             break;

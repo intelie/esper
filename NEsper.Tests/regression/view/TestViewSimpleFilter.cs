@@ -26,8 +26,8 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testNotEqualsOp()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + "(str != 'a')");
-			statement.AddListener(testListener);
+			EPStatement statement = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + "(str != 'a')");
+			statement.AddListener(testListener.Update);
 			
 			SendEvent("a");
 			Assert.IsFalse(testListener.Invoked);
@@ -45,8 +45,8 @@ namespace net.esper.regression.view
 		[Test]
 		public virtual void  testCombinationEqualsOp()
 		{
-			EPStatement statement = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + "(str != 'a', intPrimitive=0)");
-			statement.AddListener(testListener);
+			EPStatement statement = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + "(str != 'a', intPrimitive=0)");
+			statement.AddListener(testListener.Update);
 			
 			SendEvent("b", 1);
 			Assert.IsFalse(testListener.Invoked);

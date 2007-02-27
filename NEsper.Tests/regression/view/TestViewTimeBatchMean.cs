@@ -31,8 +31,8 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             // Set up a 2 second time window
-            timeBatchMean = epService.EPAdministrator.createEQL("select * from " + typeof(SupportMarketDataBean).FullName + "(symbol='" + SYMBOL + "').win:time_batch(2).stat:uni('volume')");
-            timeBatchMean.AddListener(testListener);
+            timeBatchMean = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportMarketDataBean).FullName + "(symbol='" + SYMBOL + "').win:time_batch(2).stat:uni('volume')");
+            timeBatchMean.AddListener(testListener.Update);
         }
 
         [Test]

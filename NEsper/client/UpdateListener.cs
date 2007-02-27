@@ -16,8 +16,8 @@ namespace net.esper.client
     /// Defines an interface to notify of new and old events.
     /// </summary>
 	
-    public interface UpdateListener
-	{
+//    public interface UpdateListener
+//	{
 		/// <summary> Notify that new events are available or old events are removed.
 		/// If the call to update contains new (inserted) events, then the first argument will be a non-empty list and
 		/// the second will be empty. Similarly, if the call is a notification of deleted events, then the first argument
@@ -33,6 +33,8 @@ namespace net.esper.client
 		/// </param>
 		/// <param name="oldEvents">is any old events. This will be null or empty if the update is for new events only.
 		/// </param>
-		void Update(EventBean[] newEvents, EventBean[] oldEvents);
-	}
+//		void Update(EventBean[] newEvents, EventBean[] oldEvents);
+//	}
+
+    public delegate void UpdateListener(EventBean[] newEvents, EventBean[] oldEvents);
 }

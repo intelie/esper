@@ -1,5 +1,7 @@
 using System;
 using System.Configuration;
+using System.Data.Common;
+using System.IO;
 
 using net.esper.client;
 using net.esper.compat;
@@ -10,19 +12,27 @@ namespace net.esper.support.eql
 {
 	public class SupportDatabaseService
 	{
-        public const String DBCONNECTION_STRING =
-            "LocalSqlServer: data source=127.0.0.1" +
-            ";Integrated Security=SSPI" +
-            ";Initial Catalog=aspnetdb";
+        public const String DBCONNECTION_STRING = "Server=localhost;Database=test;Uid=nesper;Pwd=nesper-test;";
+        public const String DBCONNECTION2_STRING = "Server=localhost;Database=test;Uid=nesper;Pwd=nesper-test;";
 
-		public const String DBPROVIDER = "System.Data.SqlClient";
+        public const String DBPROVIDER = "MySql.Data.MySqlClient";
 
         public const String DBNAME_FULL = "mydb";
+        public const String DBNAME_PART = "mydb_part";
 
+        public const String DBUSER = "nesper";
+        public const String DBPWD = "nesper-test";
+
+        private static void ExecuteNonQuery( DbConnection dbConnection, String command ) {
+        	DbCommand dbCommand = dbConnection.CreateCommand() ;
+        	dbCommand.CommandText = command ;
+        	dbCommand.ExecuteNonQuery() ;
+        }
+        
 		public static DatabaseConfigServiceImpl makeService()
 		{
 			EDictionary<String, ConfigurationDBRef> configs = new EHashDictionary<String, ConfigurationDBRef>();
-
+			
             ConnectionStringSettings settings;
 
             settings = new ConnectionStringSettings();
@@ -30,7 +40,7 @@ namespace net.esper.support.eql
             settings.ConnectionString = DBCONNECTION_STRING;
 
 			ConfigurationDBRef config = new ConfigurationDBRef();
-			config.setDatabaseProviderConnection( settings ) ;
+            config.SetDatabaseProviderConnection(settings);
 			configs.Put( DBNAME_FULL, config );
 
 			return new DatabaseConfigServiceImpl( configs, new SupportSchedulingServiceImpl(), null );

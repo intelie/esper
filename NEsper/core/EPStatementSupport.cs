@@ -24,9 +24,9 @@ namespace net.esper.core
         /// <returns> statement listeners
         /// </returns>
         
-		public ISet<UpdateListener> Listeners
+        public ISet<UpdateListener> Listeners
         {
-			get { return listeners; }
+            get { return listeners; }
         }
 
         /// <summary> Add a listener to the statement.</summary>

@@ -50,7 +50,7 @@ namespace net.esper.events
 		[Test]
 		public virtual void testGetType()
 		{
-			adapterService.AddBeanType( "NAME", typeof( TestEventAdapterServiceImpl ).Name );
+			adapterService.AddBeanType( "NAME", typeof( TestEventAdapterServiceImpl ).FullName );
 
 			EventType type = adapterService.GetEventType( "NAME" );
 			Assert.AreEqual( typeof( TestEventAdapterServiceImpl ), type.UnderlyingType );

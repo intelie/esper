@@ -111,8 +111,8 @@ namespace net.esper.regression.pattern
             String stmt = "select * from pattern [" + " every a=A -> (timer:interval(10 seconds) and not (B(id=a.id) or C(id=a.id)))" + "] ";
 
             SupportUpdateListener listener = new SupportUpdateListener();
-            EPStatement statement = epService.EPAdministrator.createEQL(stmt);
-            statement.AddListener(listener);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(stmt);
+            statement.AddListener(listener.Update);
 
             // test case where no Completed or Cancel event arrives
             sendTimer(0, epService);
@@ -158,9 +158,9 @@ namespace net.esper.regression.pattern
             epService.Initialize();
 
             String expression = "select * from pattern " + "[every A=CallEvent -> every B=CallEvent(dest=A.dest, startTime in [A.startTime:A.endTime]) where timer:within (7200000)]" + "where B.source != A.source";
-            EPStatement statement = epService.EPAdministrator.createEQL(expression);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(expression);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
 
             SupportCallEvent eventOne = SendEvent(epService.EPRuntime, 2000002601, "18", "123456789014795", dateToLong("2005-09-26 13:02:53.200"), dateToLong("2005-09-26 13:03:34.400"));
             SupportCallEvent eventTwo = SendEvent(epService.EPRuntime, 2000002607, "20", "123456789014795", dateToLong("2005-09-26 13:03:17.300"), dateToLong("2005-09-26 13:03:58.600"));

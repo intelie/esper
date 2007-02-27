@@ -26,6 +26,7 @@ namespace net.esper.eql.db
             this.cacheSize = cacheSize;
             int hashTableCapacity = (int)Math.Ceiling(cacheSize / hashTableLoadFactor) + 1;
             this.cache = new LinkedDictionary<MultiKey<Object>, IList<EventBean>>( hashTableCapacity ) ;
+            this.cache.ShuffleOnAccess = true;
             this.cache.RemoveEldest += new LinkedDictionary<MultiKey<Object>, IList<EventBean>>.EntryEventHandler(
                 delegate( KeyValuePair<MultiKey<Object>, IList<EventBean>> eldest ) {
                     return this.cache.Count > this.cacheSize ;

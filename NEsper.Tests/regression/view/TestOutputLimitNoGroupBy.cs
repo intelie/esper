@@ -86,8 +86,8 @@ namespace net.esper.regression.view
         {
             epService.Initialize();
             SupportUpdateListener updateListener = new SupportUpdateListener();
-            EPStatement view = epService.EPAdministrator.createEQL(viewExpr);
-            view.AddListener(updateListener);
+            EPStatement view = epService.EPAdministrator.CreateEQL(viewExpr);
+            view.AddListener(updateListener.Update);
 
             return updateListener;
         }
@@ -203,8 +203,8 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             SupportUpdateListener updateListener = new SupportUpdateListener();
-            EPStatement view = epService.EPAdministrator.createEQL(viewExpr);
-            view.AddListener(updateListener);
+            EPStatement view = epService.EPAdministrator.CreateEQL(viewExpr);
+            view.AddListener(updateListener.Update);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(JOIN_KEY));
 

@@ -28,9 +28,9 @@ namespace net.esper.regression.eql
 		{
 			String viewExpr = "select a, b from " + typeof(ISupportA).FullName + ".win:length(10), " + typeof(ISupportB).FullName + ".win:length(10)" + " where a = b";
 			
-			EPStatement testView = epService.EPAdministrator.createEQL(viewExpr);
+			EPStatement testView = epService.EPAdministrator.CreateEQL(viewExpr);
 			testListener = new SupportUpdateListener();
-			testView.AddListener(testListener);
+			testView.AddListener(testListener.Update);
 			
 			epService.EPRuntime.SendEvent(new ISupportAImpl("1", "ab1"));
 			epService.EPRuntime.SendEvent(new ISupportBImpl("2", "ab2"));

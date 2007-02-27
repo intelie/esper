@@ -35,8 +35,8 @@ namespace net.esper.regression.view
         {
             String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             runAssertion();
         }
@@ -46,8 +46,8 @@ namespace net.esper.regression.view
         {
             String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.str = two.symbol " + "group by symbol";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));

@@ -44,8 +44,8 @@ namespace net.esper.regression.view
                 "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
                 "group by symbol";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             runAssertion();
         }
@@ -66,8 +66,8 @@ namespace net.esper.regression.view
                 "  and one.str = two.symbol " + 
                 " group by symbol";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));

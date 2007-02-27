@@ -116,11 +116,11 @@ namespace net.esper.events
             testTypesMap.Put("b", typeof(SupportBean_A));
             EventType eventType = SupportEventAdapterService.Service.CreateAnonymousMapType(testTypesMap);
 
-            EDataDictionary events = new EDataDictionary();
+            EDictionary<String,EventBean> events = new EHashDictionary<String,EventBean>();
             events.Put("a", eventOne);
             events.Put("b", eventTwo);
 
-            MapEventBean _event = new MapEventBean(events, eventType);
+            MapEventBean _event = new MapEventBean(eventType, events);
             Assert.IsTrue(_event["a"] == beanOne);
             Assert.IsTrue(_event["b"] == beanTwo);
         }

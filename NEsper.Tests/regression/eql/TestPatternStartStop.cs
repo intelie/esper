@@ -25,8 +25,8 @@ namespace net.esper.regression.eql
             updateListener = new SupportUpdateListener();
 
             String stmtText = "select * from pattern [every(a=" + typeof(SupportBean).FullName + " or b=" + typeof(SupportBeanComplexProps).FullName + ")]";
-            statement = epService.EPAdministrator.createEQL(stmtText);
-            statement.AddListener(updateListener);
+            statement = epService.EPAdministrator.CreateEQL(stmtText);
+            statement.AddListener(updateListener.Update);
         }
 
         [Test]

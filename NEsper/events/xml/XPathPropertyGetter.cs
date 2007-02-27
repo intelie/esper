@@ -51,6 +51,42 @@ namespace net.esper.events.xml
             {
                 XPathNavigator navigator = node.CreateNavigator();
                 Object result = navigator.Evaluate(expression);
+
+                // The result of the expression (Boolean, number, string, or node set).
+                // This maps to Boolean, Double, String, or XPathNodeIterator objects
+                // respectively. 
+
+                switch (expression.ReturnType)
+                {
+                    case XPathResultType.Boolean:
+                    case XPathResultType.Number:
+                    case XPathResultType.String:
+                    case XPathResultType.Any:
+                        result = Convert.ChangeType(result, resultType);
+                        break;
+                    case XPathResultType.NodeSet:
+                        {
+                            XPathNodeIterator iterator = result as XPathNodeIterator;
+                            if (iterator.MoveNext())
+                            {
+                                XPathNavigator current = iterator.Current;
+                                if (resultType == typeof(XmlNode))
+                                {
+                                    result = current.UnderlyingObject;
+                                }
+                                else
+                                {
+                                    result = Convert.ChangeType(iterator.Current.Value, resultType);
+                                }
+                            }
+                            else
+                            {
+                                result = String.Empty;
+                            }
+                        }
+                        break;
+                }
+
                 //Object result = expression.Evaluate(und, resultType);
                 return result;
             }

@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 using StreamTypeService = net.esper.eql.core.StreamTypeService;
@@ -109,7 +110,25 @@ namespace net.esper.eql.expression
 
             if (isNumericValue)
             {
-                evalValue = evalValue.ToString();
+                if (evalValue is double)
+                {
+                    double tempValue = (double)evalValue;
+                    evalValue = tempValue.ToString("F");
+                }
+                else if (evalValue is float)
+                {
+                    float tempValue = (float)evalValue;
+                    evalValue = tempValue.ToString("F");
+                }
+                else if (evalValue is decimal)
+                {
+                    decimal tempValue = (decimal)evalValue;
+                    evalValue = tempValue.ToString("F");
+                }
+                else
+                {
+                    evalValue = evalValue.ToString();
+                }
             }
 
             Boolean result = pattern.IsMatch((String) evalValue);

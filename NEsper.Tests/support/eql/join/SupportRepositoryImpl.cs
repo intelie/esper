@@ -9,9 +9,9 @@ namespace net.esper.support.eql.join
 {
     public class SupportRepositoryImpl : Repository
     {
-        private IList<Cursor> cursorList = new ELinkedList<Cursor>();
-        private IList<ISet<EventBean>> lookupResultsList = new ELinkedList<ISet<EventBean>>();
-        private IList<int> resultStreamList = new ELinkedList<int>();
+        private IList<Cursor> cursorList = new List<Cursor>();
+        private IList<ISet<EventBean>> lookupResultsList = new List<ISet<EventBean>>();
+        private IList<int> resultStreamList = new List<int>();
 
         public IEnumerator<Cursor> GetCursors(int lookupStream)
         {

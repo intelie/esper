@@ -29,7 +29,7 @@ namespace net.esper.eql.db
         /// <returns>viewable providing poll functionality</returns>
         /// <throws>ExprValidationException if the validation failed </throws>
 
-        public static HistoricalEventViewable createDBStatementView(
+        public static HistoricalEventViewable CreateDBStatementView(
             int streamNumber,
             DBStatementStreamSpec databaseStreamSpec,
             DatabaseConfigService databaseConfigService,
@@ -49,20 +49,19 @@ namespace net.esper.eql.db
             }
             #endregion
 
-            #region "Constructing the database connection"
             // Assemble a DbCommand and parameter list
-            String preparedStatementText = createDbCommand(sqlFragments);
-            String[] parameters = getParameters(sqlFragments);
+            String preparedStatementText = CreateDbCommand(sqlFragments);
+            String[] parameters = GetParameters(sqlFragments);
             log.Debug(
                 ".createDBEventStream preparedStatementText=" + preparedStatementText +
-                " parameters=" + CollectionHelper.Render( parameters ) ) ;
+                " parameters=" + CollectionHelper.Render(parameters));
 
             // Get a database connection
             String databaseName = databaseStreamSpec.DatabaseName;
             DatabaseConnectionFactory databaseConnectionFactory = null;
             try
             {
-                databaseConnectionFactory = databaseConfigService.getConnectionFactory(databaseName);
+                databaseConnectionFactory = databaseConfigService.GetConnectionFactory(databaseName);
             }
             catch (DatabaseConfigException ex)
             {
@@ -71,195 +70,121 @@ namespace net.esper.eql.db
                 throw new ExprValidationException(text + ", reason: " + ex.Message);
             }
 
-            DbConnection connection = null;
             try
             {
-                connection = databaseConnectionFactory.Connection;
+                using (DbConnection connection = databaseConnectionFactory.Connection)
+                {
+                    try
+                    {
+                        using (DbCommand prepared = connection.CreateCommand())
+                        {
+                            prepared.CommandText = preparedStatementText;
+
+                            // Parameters need to be bound in order for the dataReader to
+                            // be usable.  This seems like it may just be a broken implementation
+                            // in one specific provider.
+
+                            // Interrogate prepared statement - parameters and result
+                            IList<String> inputParameters = new List<String>();
+                            try
+                            {
+                                DbParameterCollection parameterMetaData = prepared.Parameters;
+                                foreach (DbParameter parameter in parameterMetaData)
+                                {
+                                    inputParameters.Add(parameter.ParameterName);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                String text = "Error obtaining parameter metadata from prepared statement '" + preparedStatementText + "'";
+                                log.Error(text, ex);
+                                throw new ExprValidationException(text + ", please check the statement, reason: " + ex.Message);
+                            }
+
+
+                            using (DbDataReader reader = prepared.ExecuteReader(CommandBehavior.SchemaOnly))
+                            {
+
+                                IDictionary<String, DBOutputTypeDesc> outputProperties = new Dictionary<String, DBOutputTypeDesc>();
+                                try
+                                {
+                                    DataTable schemaTable = reader.GetSchemaTable();
+                                    foreach (DataRow dataRow in schemaTable.Rows)
+                                    {
+                                        String columnName = (String)dataRow["ColumnName"];
+                                        Type columnType = (Type)dataRow["DataType"];
+                                        int providerType = (int)dataRow["ProviderType"];
+
+                                        DBOutputTypeDesc outputType = new DBOutputTypeDesc(providerType, columnType);
+                                        outputProperties[columnName] = outputType;
+                                    }
+
+                                    reader.Close();
+                                }
+                                catch (Exception ex)
+                                {
+                                    String text = "Error in statement '" + preparedStatementText + "', failed to obtain result metadata";
+                                    log.Error(text, ex);
+                                    throw new ExprValidationException(text + ", please check the statement, reason: " + ex.Message);
+                                }
+
+                                log.Debug(
+                                    ".createDBEventStream" +
+                                    " in=" + inputParameters.ToString() +
+                                    " out=" + outputProperties.ToString());
+
+                                // Create event type
+                                // Construct an event type from SQL query result metadata
+                                EDictionary<String, Type> eventTypeFields = new EHashDictionary<String, Type>();
+                                foreach (String name in outputProperties.Keys)
+                                {
+                                    DBOutputTypeDesc dbOutputDesc = outputProperties[name];
+                                    Type clazz = dbOutputDesc.DataType;
+                                    eventTypeFields[name] = clazz;
+                                }
+
+                                EventType eventType = eventAdapterService.CreateAnonymousMapType(eventTypeFields);
+
+                                // Get a proper connection and data cache
+                                ConnectionCache connectionCache = null;
+                                DataCache dataCache = null;
+                                try
+                                {
+                                    connectionCache = databaseConfigService.GetConnectionCache(databaseName, preparedStatementText);
+                                    dataCache = databaseConfigService.GetDataCache(databaseName);
+                                }
+                                catch (DatabaseConfigException e)
+                                {
+                                    String text = "Error obtaining cache configuration";
+                                    log.Error(text, e);
+                                    throw new ExprValidationException(text + ", reason: " + e.Message);
+                                }
+
+                                PollExecStrategyDBQuery dbPollStrategy = new PollExecStrategyDBQuery(eventAdapterService, eventType, connectionCache, preparedStatementText, outputProperties);
+
+                                return new PollingViewable(streamNumber, inputParameters, dbPollStrategy, dataCache, eventType);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        String text = "Error executing statement '" + preparedStatementText + "'";
+                        log.Error(text, ex);
+                        throw new ExprValidationException(text + ", reason: " + ex.Message);
+                    }
+
+                    connection.Close();
+                }
             }
-            catch (DatabaseConfigException ex)
+            catch (Exception ex)
             {
                 String text = "Error connecting to database '" + databaseName + "'";
                 log.Error(text, ex);
                 throw new ExprValidationException(text + ", reason: " + ex.Message);
             }
-            #endregion
-
-            #region "Construct the database command and request the schema"
-            // Execute prepared statement
-            DbCommand prepared = null;
-            DbDataReader reader = null;
-            try
-            {
-            	prepared = connection.CreateCommand() ;
-            	prepared.CommandText = preparedStatementText;
-                reader = prepared.ExecuteReader(CommandBehavior.SchemaOnly);
-            }
-            catch (DbException ex)
-            {
-                try
-                {
-                	connection.Close() ;
-                	connection.Dispose() ;
-                }
-                catch (DbException)
-                {
-                    // don't handle
-                }
-                
-                String text = "Error executing statement '" + preparedStatementText + "'";
-                log.Error(text, ex);
-                throw new ExprValidationException(text + ", reason: " + ex.Message);
-            }
-            #endregion
-
-            #region "Determine input parameters"
-            // Interrogate prepared statement - parameters and result
-            IList<String> inputParameters = new List<String>();
-            try
-            {
-            	IDataParameterCollection parameterMetaData = prepared.Parameters;
-            	foreach( IDataParameter parameter in parameterMetaData )
-                {
-                    inputParameters.Add(parameter.ParameterName);
-                }
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                	prepared.Dispose() ;
-                }
-                catch (DbException)
-                {
-                    // don't handle
-                }
-                try
-                {
-                	connection.Close() ;
-                	connection.Dispose() ;
-                }
-                catch (DbException)
-                {
-                    // don't handle
-                }
-                String text = "Error obtaining parameter metadata from prepared statement '" + preparedStatementText + "'";
-                log.Error(text, ex);
-                throw new ExprValidationException(text + ", please check the statement, reason: " + ex.Message);
-            }
-            #endregion
-
-            IDictionary<String, DBOutputTypeDesc> outputProperties = new Dictionary<String, DBOutputTypeDesc>();
-            try
-            {
-                DataTable schemaTable = reader.GetSchemaTable();
-                foreach( DataRow dataRow in schemaTable.Rows )
-                {
-                    String columnName = (String) dataRow["ColumnName"] ;
-                    Type columnType = (Type) dataRow["DataType"] ;
-                    int providerType = (int) dataRow["ProviderType"];
-
-                    DBOutputTypeDesc outputType = new DBOutputTypeDesc(providerType, columnType);
-                    outputProperties[columnName] = outputType;
-                }
-
-                reader.Close();
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                	prepared.Dispose() ;
-                }
-                catch (DbException)
-                {
-                    // don't handle
-                }
-                try
-                {
-                	connection.Close() ;
-                	connection.Dispose() ;
-                }
-                catch (DbException)
-                {
-                    // don't handle
-                }
-
-                String text = "Error in statement '" + preparedStatementText + "', failed to obtain result metadata";
-                log.Error(text, ex);
-                throw new ExprValidationException(text + ", please check the statement, reason: " + ex.Message);
-            }
-
-            log.Debug(
-                ".createDBEventStream" +
-                " in=" + inputParameters.ToString() +
-                " out=" + outputProperties.ToString());
-
-            // Close statement
-            try
-            {
-                prepared.Dispose();
-            }
-            catch (DbException e)
-            {
-                try
-                {
-                	connection.Close() ;
-                	connection.Dispose() ;
-                }
-                catch (DbException)
-                {
-                    // don't handle
-                }
-                String text = "Error clsoing prepared statement";
-                log.Error(text, e);
-                throw new ExprValidationException(text + ", reason: " + e.Message);
-            }
-
-            // Close connection
-            try
-            {
-				connection.Close() ;
-				connection.Dispose() ;
-            }
-            catch (DbException e)
-            {
-                String text = "Error closing connection";
-                log.Error(text, e);
-                throw new ExprValidationException(text + ", reason: " + e.Message);
-            }
-
-            // Create event type
-            // Construct an event type from SQL query result metadata
-            EDictionary<String, Type> eventTypeFields = new EHashDictionary<String, Type>();
-            foreach (String name in outputProperties.Keys)
-            {
-                DBOutputTypeDesc dbOutputDesc = outputProperties[name];
-                Type clazz = dbOutputDesc.DataType;
-                eventTypeFields[name] = clazz;
-            }
-            EventType eventType = eventAdapterService.CreateAnonymousMapType(eventTypeFields);
-
-            // Get a proper connection and data cache
-            ConnectionCache connectionCache = null;
-            DataCache dataCache = null;
-            try
-            {
-                connectionCache = databaseConfigService.getConnectionCache(databaseName, preparedStatementText);
-                dataCache = databaseConfigService.getDataCache(databaseName);
-            }
-            catch (DatabaseConfigException e)
-            {
-                String text = "Error obtaining cache configuration";
-                log.Error(text, e);
-                throw new ExprValidationException(text + ", reason: " + e.Message);
-            }
-
-            PollExecStrategyDBQuery dbPollStrategy = new PollExecStrategyDBQuery(eventAdapterService, eventType, connectionCache, preparedStatementText, outputProperties);
-
-            return new PollingViewable(streamNumber, inputParameters, dbPollStrategy, dataCache, eventType);
         }
 
-        private static String createDbCommand(IEnumerable<PlaceholderParser.Fragment> parseFragments)
+        private static String CreateDbCommand(IEnumerable<PlaceholderParser.Fragment> parseFragments)
         {
             StringBuilder buffer = new StringBuilder();
             foreach (PlaceholderParser.Fragment fragment in parseFragments)
@@ -277,7 +202,7 @@ namespace net.esper.eql.db
             return buffer.ToString();
         }
 
-        private static String[] getParameters(IEnumerable<PlaceholderParser.Fragment> parseFragements)
+        private static String[] GetParameters(IEnumerable<PlaceholderParser.Fragment> parseFragements)
         {
             List<String> eventPropertyParams = new List<String>();
             foreach (PlaceholderParser.Fragment fragment in parseFragements)

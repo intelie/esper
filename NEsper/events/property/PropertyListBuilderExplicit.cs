@@ -38,7 +38,7 @@ namespace net.esper.events.property
 		/// <param name="type">type to introspect</param>
 		/// <returns>list of event property descriptors</returns>
         
-        public IList<EventPropertyDescriptor> assessProperties(Type type)
+        public IList<EventPropertyDescriptor> AssessProperties(Type type)
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             getExplicitProperties(result, type, legacyConfig);

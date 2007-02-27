@@ -55,9 +55,9 @@ namespace net.esper.regression.eql
 			String eventName = typeof(SupportMarketDataBean).FullName;
 			String statementString =
 				"select symbol, sum(price) from " + eventName + ".win:length(5) group by symbol output every 5 events";
-			EPStatement statement = epService.EPAdministrator.createEQL(statementString);
+			EPStatement statement = epService.EPAdministrator.CreateEQL(statementString);
 			SupportUpdateListener updateListener = new SupportUpdateListener();
-			statement.AddListener(updateListener);
+            statement.AddListener(updateListener.Update);
 			
 			// send some events and check that only the most recent  
 			// ones are kept
@@ -92,13 +92,13 @@ namespace net.esper.regression.eql
 			String outputStmt1 = joinStatement + " output every 1 events";
 			String outputStmt3 = joinStatement + " output every 3 events";
 			
-			EPStatement fireEvery1 = epService.EPAdministrator.createEQL(outputStmt1);
-			EPStatement fireEvery3 = epService.EPAdministrator.createEQL(outputStmt3);
+			EPStatement fireEvery1 = epService.EPAdministrator.CreateEQL(outputStmt1);
+			EPStatement fireEvery3 = epService.EPAdministrator.CreateEQL(outputStmt3);
 			
 			SupportUpdateListener updateListener1 = new SupportUpdateListener();
-			fireEvery1.AddListener(updateListener1);
+            fireEvery1.AddListener(updateListener1.Update);
 			SupportUpdateListener updateListener3 = new SupportUpdateListener();
-			fireEvery3.AddListener(updateListener3);
+            fireEvery3.AddListener(updateListener3.Update);
 			
 			// send event 1
 			sendJoinEvents("s1");
@@ -147,12 +147,12 @@ namespace net.esper.regression.eql
 			String statement2 = selectStmt + " output every 2 events";
 			String statement3 = selectStmt + " output every 3 events";
 			
-			EPStatement rateLimitStmt1 = epService.EPAdministrator.createEQL(statement1);
-			rateLimitStmt1.AddListener(updateListener1);
-			EPStatement rateLimitStmt2 = epService.EPAdministrator.createEQL(statement2);
-			rateLimitStmt2.AddListener(updateListener2);
-			EPStatement rateLimitStmt3 = epService.EPAdministrator.createEQL(statement3);
-			rateLimitStmt3.AddListener(updateListener3);
+			EPStatement rateLimitStmt1 = epService.EPAdministrator.CreateEQL(statement1);
+			rateLimitStmt1.AddListener(updateListener1.Update);
+			EPStatement rateLimitStmt2 = epService.EPAdministrator.CreateEQL(statement2);
+            rateLimitStmt2.AddListener(updateListener2.Update);
+			EPStatement rateLimitStmt3 = epService.EPAdministrator.CreateEQL(statement3);
+            rateLimitStmt3.AddListener(updateListener3.Update);
 			
 			// send event 1
 			SendEvent("s1");
@@ -229,9 +229,9 @@ namespace net.esper.regression.eql
 			sendTimeEvent(0);
 			
 			// create the eql statement and add a listener
-			EPStatement statement = epService.EPAdministrator.createEQL(statementString);
+			EPStatement statement = epService.EPAdministrator.CreateEQL(statementString);
 			SupportUpdateListener updateListener = new SupportUpdateListener();
-			statement.AddListener(updateListener);
+            statement.AddListener(updateListener.Update);
 			updateListener.reset();
 			
 			// send an event

@@ -55,8 +55,8 @@ namespace net.esper.regression.eql
 					" left outer join " + 
 				EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 ";
 
-			joinView = epService.EPAdministrator.createEQL( joinStatement );
-			joinView.AddListener( updateListener );
+			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
+			joinView.AddListener(updateListener.Update);
 
 			runAsserts();
 		}
@@ -77,8 +77,8 @@ namespace net.esper.regression.eql
 					" left outer join " + 
 				EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 ";
 
-			joinView = epService.EPAdministrator.createEQL( joinStatement );
-			joinView.AddListener( updateListener );
+			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
+			joinView.AddListener(updateListener.Update);
 
 			runAsserts();
 		}
@@ -99,8 +99,8 @@ namespace net.esper.regression.eql
 					" left outer join " + 
 				EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 ";
 
-			joinView = epService.EPAdministrator.createEQL( joinStatement );
-			joinView.AddListener( updateListener );
+			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
+			joinView.AddListener(updateListener.Update);
 
 			runAsserts();
 		}

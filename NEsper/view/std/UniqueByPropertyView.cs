@@ -43,7 +43,7 @@ namespace net.esper.view.std
         private String uniqueFieldName;
         private EventPropertyGetter uniqueFieldGetter;
 
-        private readonly EDictionary<Object, EventBean> mostRecentEvents = new LinkedDictionary<Object, EventBean>();
+        private readonly EDictionary<Object, EventBean> mostRecentEvents ;
 
         /// <summary>
         /// Default constructor - required by all views to adhere to the Java bean specification.
@@ -51,6 +51,7 @@ namespace net.esper.view.std
 
         public UniqueByPropertyView()
         {
+            this.mostRecentEvents = new LinkedDictionary<Object, EventBean>();
         }
 
         /// <summary> Constructor.</summary>
@@ -59,6 +60,7 @@ namespace net.esper.view.std
 
         public UniqueByPropertyView(String uniqueFieldName)
         {
+            this.mostRecentEvents = new LinkedDictionary<Object, EventBean>();
             this.uniqueFieldName = uniqueFieldName;
         }
 
@@ -98,11 +100,11 @@ namespace net.esper.view.std
                 dumpUpdateParams("UniqueByPropertyView", newData, oldData);
             }
 
-            ELinkedList<EventBean> postOldData = null;
+            List<EventBean> postOldData = null;
 
             if (this.HasViews)
             {
-                postOldData = new ELinkedList<EventBean>();
+                postOldData = new List<EventBean>();
             }
 
             if (newData != null)

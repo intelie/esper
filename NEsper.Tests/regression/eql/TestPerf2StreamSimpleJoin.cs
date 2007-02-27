@@ -28,8 +28,8 @@ namespace net.esper.regression.eql
 
             String joinStatement = "select * from " + typeof(SupportMarketDataBean).FullName + ".win:length(1000000)," + typeof(SupportBean).FullName + ".win:length(1000000)" + " where symbol=string";
 
-            joinView = epService.EPAdministrator.createEQL(joinStatement);
-            joinView.AddListener(updateListener);
+            joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+            joinView.AddListener(updateListener.Update);
         }
 
         [Test]

@@ -117,8 +117,8 @@ namespace net.esper.regression.view
         private void createAndSend(String statementString)
         {
             testListener = new SupportUpdateListener();
-            EPStatement statement = epService.EPAdministrator.createEQL(statementString);
-            statement.AddListener(testListener);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementString);
+            statement.AddListener(testListener.Update);
             SendEvent("IBM", 2);
             SendEvent("KGB", 1);
             SendEvent("CMU", 3);
@@ -203,8 +203,8 @@ namespace net.esper.regression.view
         private void createAndSendAggregate(String statementString)
         {
             testListener = new SupportUpdateListener();
-            EPStatement statement = epService.EPAdministrator.createEQL(statementString);
-            statement.AddListener(testListener);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementString);
+            statement.AddListener(testListener.Update);
             SendEvent("IBM", 3);
             SendEvent("IBM", 4);
             SendEvent("CMU", 1);

@@ -56,6 +56,7 @@ namespace net.esper.compat
         
         public LinkedDictionary()
         {
+            this.m_shuffleOnAccess = false;
             this.m_hashList = new LinkedList<Pair<K,V>>() ;
             this.m_hashTable = new Dictionary<K, LinkedListNode<Pair<K, V>>>() ;
         }
@@ -255,8 +256,11 @@ namespace net.esper.compat
             if (m_hashTable.TryGetValue(key, out linkedListNode))
             {
                 value = linkedListNode.Value.Second ;
-                m_hashList.Remove(linkedListNode);
-                m_hashList.AddLast(linkedListNode);
+                if (ShuffleOnAccess)
+                {
+                    m_hashList.Remove(linkedListNode);
+                    m_hashList.AddLast(linkedListNode);
+                }
                 return true;
             }
 
@@ -296,8 +300,12 @@ namespace net.esper.compat
             {
                 LinkedListNode<Pair<K, V>> linkedListNode = null;
                 linkedListNode = m_hashTable[key];
-                m_hashList.Remove(linkedListNode);
-                m_hashList.AddLast(linkedListNode);
+                if (ShuffleOnAccess)
+                {
+                    m_hashList.Remove(linkedListNode);
+                    m_hashList.AddLast(linkedListNode);
+                }
+
                 return linkedListNode.Value.Second;
             }
             set

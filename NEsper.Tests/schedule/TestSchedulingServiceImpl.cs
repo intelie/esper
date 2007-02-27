@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace net.esper.schedule
 {
-
     [TestFixture]
     public class TestSchedulingServiceImpl
     {
@@ -29,6 +28,7 @@ namespace net.esper.schedule
             {
                 slots[i] = new ScheduleSlot[2];
             }
+
             for (int i = 0; i < buckets.Length; i++)
             {
                 buckets[i] = service.allocateBucket();
@@ -121,7 +121,7 @@ namespace net.esper.schedule
         [Test]
         public virtual void testWaitAndSpecTogether()
         {
-            DateTime startDateTime = new DateTime(2004, 11, 9, 15, 27, 10, 500);
+            DateTime startDateTime = new DateTime(2004, 12, 9, 15, 27, 10, 500, DateTimeKind.Local);
             long startTime = DateTimeHelper.TimeInMillis(startDateTime);
 
             service.Time = startTime;

@@ -6,7 +6,7 @@ namespace net.esper.type
 	/// Placeholder for a boolean value in an event expression.
 	/// </summary>
 	
-	public sealed class BoolValue:PrimitiveValueBase
+	public sealed class BoolValue : PrimitiveValueBase
 	{
 		override public PrimitiveValueType Type
 		{
@@ -25,12 +25,10 @@ namespace net.esper.type
 			}
 			
 		}
+		
 		override public bool _Boolean
 		{
-			set
-			{
-				this.boolValue = value;
-			}
+			set { this.boolValue = value; }
 		}
 		
 		private bool? boolValue;

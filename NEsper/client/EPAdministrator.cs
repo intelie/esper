@@ -19,7 +19,7 @@ namespace net.esper.client
 		/// <returns> EPStatement to poll data from or to add listeners to
 		/// </returns>
 		/// <throws>  EPException when the expression was not valid </throws>
-		EPStatement createPattern(String onExpression);
+		EPStatement CreatePattern(String onExpression);
 		
 		/// <summary> Create a query language statement.</summary>
 		/// <param name="eqlStatement">is the query language statement
@@ -27,6 +27,6 @@ namespace net.esper.client
 		/// <returns> EPStatement to poll data from or to add listeners to
 		/// </returns>
 		/// <throws>  EPException when the expression was not valid </throws>
-		EPStatement createEQL(String eqlStatement);
+		EPStatement CreateEQL(String eqlStatement);
 	}
 }

@@ -107,8 +107,8 @@ namespace net.esper.regression.eql
 			String stmtText =
 				"select " + selectCriteria +
 				" from pattern [a=" + typeof(SupportBean).FullName + "]";
-			EPStatement stmt = epService.EPAdministrator.createEQL(stmtText);
-			stmt.AddListener(updateListener);
+			EPStatement stmt = epService.EPAdministrator.CreateEQL(stmtText);
+            stmt.AddListener(updateListener.Update);
 		}
 		
 		private void  setupOrPattern(String selectCriteria)
@@ -117,8 +117,8 @@ namespace net.esper.regression.eql
 				"select " + selectCriteria +
 				" from pattern [every(a=" + typeof(SupportBean).FullName +
 				" or b=" + typeof(SupportBeanComplexProps).FullName + ")]";
-			EPStatement stmt = epService.EPAdministrator.createEQL(stmtText);
-			stmt.AddListener(updateListener);
+			EPStatement stmt = epService.EPAdministrator.CreateEQL(stmtText);
+            stmt.AddListener(updateListener.Update);
 		}
 	}
 }

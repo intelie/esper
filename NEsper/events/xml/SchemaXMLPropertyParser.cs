@@ -33,7 +33,20 @@ namespace net.esper.events.xml
 		
 		public static Type GetTypeForName( XmlQualifiedName name )
 		{
-			throw new NotSupportedException() ;
+            switch (name.Name)
+            {
+                case "boolean":
+                    return typeof(bool);
+                case "int":
+                    return typeof(double);
+                case "ID":
+                case "string":
+                    return typeof(string);
+                case "node":
+                    return typeof(XmlNode);
+                default:
+                    return typeof(string);
+            }
 		}
 		
 		/// <summary>
@@ -173,7 +186,7 @@ namespace net.esper.events.xml
 			}
 		}
 
-		private static Pair<String, XmlQualifiedName> makeAttributeProperty(
+        private static Pair<String, XmlQualifiedName> makeAttributeProperty(
             XmlSchemaAttribute use,
             AST child,
             XmlNamespaceManager nsManager )
@@ -203,7 +216,7 @@ namespace net.esper.events.xml
 			}
 		}
 
-		private static Pair<String, XmlQualifiedName> makeElementProperty(
+        private static Pair<String, XmlQualifiedName> makeElementProperty(
             XmlSchemaElement elementDecl,
             AST child,
             XmlNamespaceManager nsManager )
@@ -218,7 +231,14 @@ namespace net.esper.events.xml
 			else
 			{
 				XmlSchemaComplexType complexDeclType = elementDeclType as XmlSchemaComplexType ;
-				type = elementDeclType.QualifiedName;
+                if (complexDeclType.ContentType == XmlSchemaContentType.TextOnly)
+                {
+                    type = new XmlQualifiedName("string", "http://www.w3.org/2001/XMLSchema");
+                }
+                else
+                {
+                    type = new XmlQualifiedName("node", "http://www.w3.org/2001/XMLSchema");
+                }
 				
 				//XSComplexTypeDefinition complex = (XSComplexTypeDefinition) decl.getTypeDefinition();
 				//if ( complex.getSimpleType() != null )

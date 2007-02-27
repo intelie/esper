@@ -181,7 +181,7 @@ namespace net.esper.events
         private void Initialize()
         {
             PropertyListBuilder propertyListBuilder = PropertyListBuilderFactory.createBuilder(optionalLegacyDef);
-            IList<EventPropertyDescriptor> properties = propertyListBuilder.assessProperties(type);
+            IList<EventPropertyDescriptor> properties = propertyListBuilder.AssessProperties(type);
 
             this.propertyNames = new String[properties.Count];
             this.simplePropertyTypes = new EHashDictionary<String, Type>();
@@ -243,7 +243,10 @@ namespace net.esper.events
                 superclasses.Add(superClass);
             }
 
-            // add interfaces
+            // Add interfaces.  Under the CLR, implemented interfaces are flattened
+            // directly under the type so the hierarchy that exists in Java is broken
+            // by this method.  This is something to remember should there be issues.
+
             Type[] interfaces = type.GetInterfaces();
             for (int i = 0; i < interfaces.Length; i++)
             {
@@ -304,7 +307,7 @@ namespace net.esper.events
 
             foreach (Type type in classes)
             {
-                if (type.Name.StartsWith("System"))
+                if (type.FullName.StartsWith("System"))
                 {
                     deadList.Add(type);
                 }

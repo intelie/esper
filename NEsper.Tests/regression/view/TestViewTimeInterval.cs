@@ -42,9 +42,9 @@ namespace net.esper.regression.view
         public virtual void testTimeBatchNoRefPoint()
         {
             // Set up a time window with a unique view attached
-            EPStatement view = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + ".win:time_batch(10 minutes)");
+            EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:time_batch(10 minutes)");
             testListener = new SupportUpdateListener();
-            view.AddListener(testListener);
+            view.AddListener(testListener.Update);
 
             sendTimer(0);
 
@@ -59,9 +59,9 @@ namespace net.esper.regression.view
         public virtual void testTimeBatchRefPoint()
         {
             // Set up a time window with a unique view attached
-            EPStatement view = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + ".win:time_batch(10 minutes, 10L)");
+            EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:time_batch(10 minutes, 10L)");
             testListener = new SupportUpdateListener();
-            view.AddListener(testListener);
+            view.AddListener(testListener.Update);
 
             sendTimer(10);
 
@@ -76,9 +76,9 @@ namespace net.esper.regression.view
         public virtual void testExternallyTimed()
         {
             // Set up a time window with a unique view attached
-            EPStatement view = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + ".win:ext_timed('longPrimitive', 10 minutes)");
+            EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:ext_timed('longPrimitive', 10 minutes)");
             testListener = new SupportUpdateListener();
-            view.AddListener(testListener);
+            view.AddListener(testListener.Update);
 
             sendExtTimeEvent(0);
 
@@ -94,9 +94,9 @@ namespace net.esper.regression.view
         private void tryTimeWindow(String intervalSpec)
         {
             // Set up a time window with a unique view attached
-            EPStatement view = epService.EPAdministrator.createEQL("select * from " + typeof(SupportBean).FullName + ".win:time(" + intervalSpec + ")");
+            EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:time(" + intervalSpec + ")");
             testListener = new SupportUpdateListener();
-            view.AddListener(testListener);
+            view.AddListener(testListener.Update);
 
             sendTimer(0);
 

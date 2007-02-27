@@ -70,7 +70,7 @@ namespace net.esper.client
             ConfigurationEventTypeXMLDOM noSchemaDesc = config.EventTypesXMLDOM.Fetch("MyNoSchemaXMLEventAlias");
             Assert.AreEqual("MyNoSchemaEvent", noSchemaDesc.RootElementName);
             Assert.AreEqual("/myevent/element1", noSchemaDesc.XPathProperties.Fetch("element1").XPath);
-            Assert.AreEqual(XPathResultType.Number, noSchemaDesc.XPathProperties.Fetch("element1").Type);
+            Assert.AreEqual(XPathResultType.Number, noSchemaDesc.XPathProperties.Fetch("element1").ResultType);
 
             // assert XML DOM - with schema
             ConfigurationEventTypeXMLDOM schemaDesc = config.EventTypesXMLDOM.Fetch("MySchemaXMLEventAlias");
@@ -79,7 +79,7 @@ namespace net.esper.client
             Assert.AreEqual("samples:schemas:simpleSchema", schemaDesc.RootElementNamespace);
             Assert.AreEqual("default-name-space", schemaDesc.DefaultNamespace);
             Assert.AreEqual("/myevent/element1", schemaDesc.XPathProperties.Fetch("element1").XPath);
-            Assert.AreEqual(XPathResultType.Number, schemaDesc.XPathProperties.Fetch("element1").Type);
+            Assert.AreEqual(XPathResultType.Number, schemaDesc.XPathProperties.Fetch("element1").ResultType);
             Assert.AreEqual(1, schemaDesc.NamespacePrefixes.Count);
             Assert.AreEqual("samples:schemas:simpleSchema", schemaDesc.NamespacePrefixes.Fetch("ss"));
 

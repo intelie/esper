@@ -43,7 +43,7 @@ namespace net.esper.events.property
         [Test]
         public virtual void testBuildPropList()
         {
-            IList<EventPropertyDescriptor> descList = builder.assessProperties(typeof(SupportLegacyBean));
+            IList<EventPropertyDescriptor> descList = builder.AssessProperties(typeof(SupportLegacyBean));
 
             IList<EventPropertyDescriptor> expected = new List<EventPropertyDescriptor>();
             expected.Add(new EventPropertyDescriptor("f_legVal", "f_legVal", typeof(SupportLegacyBean).GetField("fieldLegacyVal", bindings), EventPropertyType.SIMPLE));
@@ -79,7 +79,7 @@ namespace net.esper.events.property
 
             try
             {
-                builder.assessProperties(clazz);
+                builder.AssessProperties(clazz);
             }
             catch (ConfigurationException ex)
             {
@@ -96,7 +96,7 @@ namespace net.esper.events.property
 
             try
             {
-                builder.assessProperties(clazz);
+                builder.AssessProperties(clazz);
             }
             catch (ConfigurationException ex)
             {

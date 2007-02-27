@@ -32,8 +32,8 @@ namespace net.esper.regression.eql
 				typeof( SupportBean ).FullName + ".win:length(3)" +
 				" where symbol=string and volume=longBoxed";
 
-			joinView = epService.EPAdministrator.createEQL( joinStatement );
-			joinView.AddListener( updateListener );
+			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
+			joinView.AddListener(updateListener.Update);
 
 			for ( int i = 0 ; i < setOne.Length ; i++ )
 			{

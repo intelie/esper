@@ -15,12 +15,9 @@ namespace net.esper.compat
     /// timers with the post on CodeProject.
     /// </summary>
 
-    public class HighResolutionTimer : IDisposable
+    public class HighResolutionTimer : ITimer
     {
         public delegate void TimerEventHandler(uint id, uint msg, IntPtr userCtx, uint rsv1, uint rsv2);
-
-        [DllImport("winmm.dll", SetLastError = true)]
-        static extern uint timeGetDevCaps(ref TimeCaps timeCaps, uint sizeTimeCaps);
 
         [DllImport("WinMM.dll", SetLastError = true)]
         private static extern uint timeSetEvent(uint msDelay, uint msResolution, TimerEventHandler handler, IntPtr userCtx, uint eventType);
@@ -66,7 +63,7 @@ namespace net.esper.compat
         /// <param name="dueTime">The due time.</param>
         /// <param name="period">The period.</param>
         
-        public HighResolutionTimer( 
+        public HighResolutionTimer(
             TimerCallback timerCallback,
             Object state,
             int dueTime,
@@ -129,7 +126,7 @@ namespace net.esper.compat
                     timer.m_timerCallback(timer.m_state);
                 }
             }
-            catch (Exception xx)
+            catch (Exception)
             {
             }
         }
@@ -222,12 +219,5 @@ namespace net.esper.compat
                 Thread.Sleep(100);
             }
         }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct TimeCaps
-        {
-            public UInt32 wPeriodMin;
-            public UInt32 wPeriodMax;
-        };
     }
 }

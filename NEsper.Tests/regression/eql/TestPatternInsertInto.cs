@@ -28,13 +28,13 @@ namespace net.esper.regression.eql
 		public virtual void  testPropsWildcard()
 		{
 			String stmtText = "insert into MyThirdStream(es0id, es1id) " + "select es0.id, es1.id " + "from " + "pattern [every (es0=" + typeof(SupportBean_S0).FullName + " or es1=" + typeof(SupportBean_S1).FullName + ")]";
-			epService.EPAdministrator.createEQL(stmtText);
+			epService.EPAdministrator.CreateEQL(stmtText);
 			
 			String stmtTwoText = "select * from MyThirdStream";
-			EPStatement statement = epService.EPAdministrator.createEQL(stmtTwoText);
+			EPStatement statement = epService.EPAdministrator.CreateEQL(stmtTwoText);
 			
 			updateListener = new SupportUpdateListener();
-			statement.AddListener(updateListener);
+            statement.AddListener(updateListener.Update);
 			
 			sendEventsAndAssert();
 		}
@@ -43,13 +43,13 @@ namespace net.esper.regression.eql
 		public virtual void  testProps()
 		{
 			String stmtText = "insert into MySecondStream(s0, s1) " + "select es0, es1 " + "from " + "pattern [every (es0=" + typeof(SupportBean_S0).FullName + " or es1=" + typeof(SupportBean_S1).FullName + ")]";
-			epService.EPAdministrator.createEQL(stmtText);
+			epService.EPAdministrator.CreateEQL(stmtText);
 			
 			String stmtTwoText = "select s0.id as es0id, s1.id as es1id from MySecondStream";
-			EPStatement statement = epService.EPAdministrator.createEQL(stmtTwoText);
+			EPStatement statement = epService.EPAdministrator.CreateEQL(stmtTwoText);
 			
 			updateListener = new SupportUpdateListener();
-			statement.AddListener(updateListener);
+            statement.AddListener(updateListener.Update);
 			
 			sendEventsAndAssert();
 		}
@@ -58,13 +58,13 @@ namespace net.esper.regression.eql
 		public virtual void  testNoProps()
 		{
 			String stmtText = "insert into MyStream " + "select es0, es1 " + "from " + "pattern [every (es0=" + typeof(SupportBean_S0).FullName + " or es1=" + typeof(SupportBean_S1).FullName + ")]";
-			epService.EPAdministrator.createEQL(stmtText);
+			epService.EPAdministrator.CreateEQL(stmtText);
 			
 			String stmtTwoText = "select es0.id as es0id, es1.id as es1id from MyStream.win:length(10)";
-			EPStatement statement = epService.EPAdministrator.createEQL(stmtTwoText);
+			EPStatement statement = epService.EPAdministrator.CreateEQL(stmtTwoText);
 			
 			updateListener = new SupportUpdateListener();
-			statement.AddListener(updateListener);
+            statement.AddListener(updateListener.Update);
 			
 			sendEventsAndAssert();
 		}

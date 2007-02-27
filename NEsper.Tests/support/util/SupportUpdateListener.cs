@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace net.esper.support.util
 {
-    public class SupportUpdateListener : UpdateListener
+    public class SupportUpdateListener
     {
         virtual public EventBean[] LastNewData
         {

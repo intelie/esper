@@ -35,8 +35,8 @@ namespace net.esper.regression.view
         {
             String statementText = "select price, min(price) as minPrice " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30)" + "having price >= min(price) * (1.02)";
 
-            EPStatement testView = epService.EPAdministrator.createEQL(statementText);
-            testView.AddListener(listener);
+            EPStatement testView = epService.EPAdministrator.CreateEQL(statementText);
+            testView.AddListener(listener.Update);
 
             sendClockingInternal();
 

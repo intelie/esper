@@ -183,10 +183,10 @@ namespace net.esper.regression.pattern
 			sendTimer(0, epService);
 			
 			// Set up a timer:within
-			EPStatement statement = epService.EPAdministrator.createEQL("select * from pattern [(every " + typeof(SupportBean).FullName + ") where timer:within(10 min)]");
+			EPStatement statement = epService.EPAdministrator.CreateEQL("select * from pattern [(every " + typeof(SupportBean).FullName + ") where timer:within(10 min)]");
 			
 			SupportUpdateListener testListener = new SupportUpdateListener();
-			statement.AddListener(testListener);
+			statement.AddListener(testListener.Update);
 			
 			SendEvent(epService);
 			testListener.assertOneGetNewAndReset();

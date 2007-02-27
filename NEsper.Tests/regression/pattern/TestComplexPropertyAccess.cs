@@ -96,8 +96,8 @@ namespace net.esper.regression.pattern
             String type = typeof(SupportBeanComplexProps).FullName;
             String pattern = "every a=" + type + "(indexed[0]=3)";
 
-            EPStatement stmt = epService.EPAdministrator.createPattern(pattern);
-            stmt.AddListener(testListener);
+            EPStatement stmt = epService.EPAdministrator.CreatePattern(pattern);
+            stmt.AddListener(testListener.Update);
 
             Object _event = new SupportBeanComplexProps(new int[] { 3, 4 });
             epService.EPRuntime.SendEvent(_event);
@@ -122,8 +122,8 @@ namespace net.esper.regression.pattern
             String type = typeof(SupportBeanComplexProps).FullName;
             String pattern = "every a=" + type + " -> b=" + type + "(indexed[0] = a.indexed[0])";
 
-            EPStatement stmt = epService.EPAdministrator.createPattern(pattern);
-            stmt.AddListener(testListener);
+            EPStatement stmt = epService.EPAdministrator.CreatePattern(pattern);
+            stmt.AddListener(testListener.Update);
 
             Object eventOne = new SupportBeanComplexProps(new int[] { 3 });
             epService.EPRuntime.SendEvent(eventOne);

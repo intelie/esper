@@ -156,8 +156,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select intPrimitive in (shortBoxed, intBoxed, longBoxed) as result from " + typeof(SupportBean).FullName;
 
-            EPStatement selectTestCase = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestCase.AddListener(testListener);
+            EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestCase.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
             sendAndAssert(1, 2, 3, 4L, false);
@@ -176,8 +176,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select intBoxed in (floatBoxed, doublePrimitive, longBoxed) as result from " + typeof(SupportBean).FullName;
 
-            EPStatement selectTestCase = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestCase.AddListener(testListener);
+            EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestCase.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
             sendAndAssert(1, 2f, 3d, 4L, false);
@@ -196,8 +196,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select intPrimitive between shortBoxed and longBoxed as result from " + typeof(SupportBean).FullName;
 
-            EPStatement selectTestCase = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestCase.AddListener(testListener);
+            EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestCase.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
             sendAndAssert(1, 2, 3l, false);
@@ -217,8 +217,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select intBoxed between floatBoxed and doublePrimitive as result from " + typeof(SupportBean).FullName;
 
-            EPStatement selectTestCase = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestCase.AddListener(testListener);
+            EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestCase.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
             sendAndAssert(1, 2f, 3d, false);
@@ -295,8 +295,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select " + expr + " as result from " + typeof(SupportBean).FullName;
 
-            EPStatement selectTestCase = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestCase.AddListener(testListener);
+            EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestCase.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
             for (int i = 0; i < input.Length ; i++)
@@ -313,8 +313,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select " + expr + " as result from " + typeof(SupportBean).FullName;
 
-            EPStatement selectTestCase = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestCase.AddListener(testListener);
+            EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestCase.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
             for (int i = 0; i < input.Length; i++)
@@ -331,8 +331,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select " + expression + " as result from " + typeof(SupportBean).FullName;
 
-            EPStatement selectTestCase = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestCase.AddListener(testListener);
+            EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestCase.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
             for (int i = 0; i < input.Length; i++)

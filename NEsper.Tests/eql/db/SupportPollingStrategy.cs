@@ -20,16 +20,16 @@ namespace net.esper.eql.db
         {
         }
 
-        public IList<EventBean> poll(Object[] lookupValues)
+        public IList<EventBean> Poll(Object[] lookupValues)
         {
             return results.Fetch(new MultiKey<Object>(lookupValues));
         }
 
-        public void done()
+        public void Done()
         {
         }
 
-        public void destroy()
+        public void Destroy()
         {
         }
 	}

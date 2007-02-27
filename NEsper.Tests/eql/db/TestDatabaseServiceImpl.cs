@@ -32,7 +32,7 @@ namespace net.esper.eql.db
             settings.ConnectionString = SupportDatabaseService.DBCONNECTION_STRING;
 
 			ConfigurationDBRef config = new ConfigurationDBRef();
-            config.setDatabaseProviderConnection( settings ) ;
+            config.SetDatabaseProviderConnection( settings ) ;
 			configs.Put( "name1", config );
 
             settings = new ConnectionStringSettings();
@@ -41,7 +41,7 @@ namespace net.esper.eql.db
             settings.ConnectionString = SupportDatabaseService.DBCONNECTION_STRING;
 
 			config = new ConfigurationDBRef();
-            config.setDatabaseProviderConnection(settings);
+            config.SetDatabaseProviderConnection(settings);
 			config.LRUCache = 10000;
 			configs.Put( "name2", config );
 
@@ -51,7 +51,7 @@ namespace net.esper.eql.db
             settings.ConnectionString = SupportDatabaseService.DBCONNECTION_STRING;
 
 			config = new ConfigurationDBRef();
-            config.setDatabaseProviderConnection(settings);
+            config.SetDatabaseProviderConnection(settings);
 			config.setExpiryTimeCache( 1, 3 );
 			configs.Put( "name3", config );
 
@@ -65,22 +65,23 @@ namespace net.esper.eql.db
 		{
 			DatabaseConnectionFactory factory ;
             
-            factory = databaseServiceImpl.getConnectionFactory( "name1" );
+            factory = databaseServiceImpl.GetConnectionFactory( "name1" );
+            Object foo = factory.GetType();
 			Assert.IsTrue( factory is DatabaseProviderConnFactory ) ;
 
-            factory = databaseServiceImpl.getConnectionFactory("name2");
+            factory = databaseServiceImpl.GetConnectionFactory("name2");
             Assert.IsTrue(factory is DatabaseProviderConnFactory);
         }
 
 		[Test]
 		public virtual void testGetCache()
 		{
-			Assert.IsTrue( databaseServiceImpl.getDataCache( "name1" ) is DataCacheNullImpl );
+			Assert.IsTrue( databaseServiceImpl.GetDataCache( "name1" ) is DataCacheNullImpl );
 
-			DataCacheLRUImpl lru = (DataCacheLRUImpl) databaseServiceImpl.getDataCache( "name2" );
+			DataCacheLRUImpl lru = (DataCacheLRUImpl) databaseServiceImpl.GetDataCache( "name2" );
 			Assert.AreEqual( 10000, lru.CacheSize );
 
-			DataCacheExpiringImpl exp = (DataCacheExpiringImpl) databaseServiceImpl.getDataCache( "name3" );
+			DataCacheExpiringImpl exp = (DataCacheExpiringImpl) databaseServiceImpl.GetDataCache( "name3" );
 			Assert.AreEqual( 1000, exp.MaxAgeMSec );
 			Assert.AreEqual( 3000, exp.PurgeIntervalMSec );
 		}
@@ -90,7 +91,7 @@ namespace net.esper.eql.db
 		{
 			try
 			{
-				databaseServiceImpl.getConnectionFactory( "xxx" );
+				databaseServiceImpl.GetConnectionFactory( "xxx" );
 				Assert.Fail();
 			}
 			catch ( DatabaseConfigException ex )

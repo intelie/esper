@@ -24,17 +24,17 @@ namespace net.esper.eql.db
         {
         }
 
-        public override Pair<DbConnection, DbCommand> getConnection()
+        public override Pair<DbConnection, DbCommand> GetConnection()
         {
-            return makeNew();
+            return MakeNew();
         }
 
-        public override void doneWith(Pair<DbConnection, DbCommand> pair)
+        public override void DoneWith(Pair<DbConnection, DbCommand> pair)
         {
-            close(pair);
+            Close(pair);
         }
 
-        public override void destroy()
+        public override void Destroy()
         {
             // no resources held
         }

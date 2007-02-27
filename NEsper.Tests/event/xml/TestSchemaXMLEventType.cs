@@ -16,7 +16,6 @@ namespace net.esper.events.xml
 	[TestFixture]
 	public class TestSchemaXMLEventType
 	{
-		
 		private EventBean eventSchemaOne;
 		
 		[SetUp]
@@ -31,8 +30,7 @@ namespace net.esper.events.xml
 			SchemaXMLEventType eventTypeNoNS = new SchemaXMLEventType(configNoNS);
 
             XmlDocument noNSDoc = new XmlDocument();
-
-            using (Stream stream = WebRequest.Create(schemaUrl).GetResponse().GetResponseStream())
+            using( Stream stream = ResourceManager.GetResourceAsStream("regression/simpleWithSchema.xml") )
             {
                 noNSDoc.Load( stream ) ;
             }

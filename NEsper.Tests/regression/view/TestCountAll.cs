@@ -29,8 +29,8 @@ namespace net.esper.regression.view
 		public virtual void  testCount()
 		{
 			String statementText = "select count(*) as cnt from " + typeof(SupportMarketDataBean).FullName + ".win:time(1)";
-			selectTestView = epService.EPAdministrator.createEQL(statementText);
-			selectTestView.AddListener(listener);
+			selectTestView = epService.EPAdministrator.CreateEQL(statementText);
+            selectTestView.AddListener(listener.Update);
 			
 			SendEvent("DELL", 1L);
 			Assert.IsTrue(listener.getAndClearIsInvoked());

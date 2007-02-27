@@ -18,7 +18,7 @@ namespace net.esper.collection
 
     public sealed class TimeWindow : IEnumerable<EventBean>
     {
-        private readonly ELinkedList<Pair<long, List<EventBean>>> window;
+        private readonly LinkedList<Pair<long, List<EventBean>>> window;
         private long? oldestTimestamp;
 
         /// <summary> Returns the oldest timestamp in the collection if there is at least one entry,
@@ -52,7 +52,7 @@ namespace net.esper.collection
 
         public TimeWindow()
         {
-            this.window = new ELinkedList<Pair<Int64, List<EventBean>>>();
+            this.window = new LinkedList<Pair<Int64, List<EventBean>>>();
             this.oldestTimestamp = null;
         }
 
@@ -77,11 +77,11 @@ namespace net.esper.collection
                 listOfBeans.Add(bean);
                 
                 Pair<long, List<EventBean>> pair = new Pair<long, List<EventBean>>(timestamp, listOfBeans);
-                window.Add(pair);
+                window.AddLast(pair);
                 return;
             }
 
-            Pair<long, List<EventBean>> lastPair = window.Last;
+            Pair<long, List<EventBean>> lastPair = window.Last.Value;
 
             // Windows last timestamp matches the one supplied
             if (lastPair.First == timestamp)
@@ -95,7 +95,7 @@ namespace net.esper.collection
             _listOfBeans.Add(bean);
 
             Pair<long, List<EventBean>> _pair = new Pair<long, List<EventBean>>(timestamp, _listOfBeans);
-            window.Add(_pair);
+            window.AddLast(_pair);
         }
 
         /// <summary> Return and remove events in time-slots earlier (less) then the timestamp passed in,
@@ -113,7 +113,7 @@ namespace net.esper.collection
                 return null;
             }
 
-            Pair<Int64, List<EventBean>> pair = window.First;
+            Pair<Int64, List<EventBean>> pair = window.First.Value;
 
             // If the first entry's timestamp is after the expiry date, nothing to expire
             if (pair.First >= expireBefore)
@@ -134,7 +134,7 @@ namespace net.esper.collection
                     break;
                 }
 
-                pair = window.First;
+                pair = window.First.Value;
             }
             while (pair.First < expireBefore);
 

@@ -35,7 +35,7 @@ namespace net.esper.regression.pattern
             // Adjust to 20000 to better test the limit
             for (int i = 0; i < 1000; i++)
             {
-                epService.EPAdministrator.createPattern(pattern);
+                epService.EPAdministrator.CreatePattern(pattern);
             }
 
             epService.EPRuntime.SendEvent(new SupportBean_C("C1"));

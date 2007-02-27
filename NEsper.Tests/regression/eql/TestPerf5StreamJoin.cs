@@ -43,8 +43,8 @@ namespace net.esper.regression.eql
                 "and s2.p20 = s3.p30 " + 
                 "and s3.p30 = s4.p40 ";
 			
-			joinView = epService.EPAdministrator.createEQL(statement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(statement);
+			joinView.AddListener(updateListener.Update);
 			
 			log.Info(".testPerfAllProps Preloading events");
             long startTime = DateTimeHelper.CurrentTimeMillis ;

@@ -40,7 +40,7 @@ namespace net.esper.events
         public MapEventBean(IDataDictionary properties, EventType eventType)
         {
         	this.properties = new EDataDictionary() ;
-        	this.properties.PutAll( properties ) ;
+            this.properties.PutAll(properties);
             this.eventType = eventType;
         }
 
@@ -52,7 +52,7 @@ namespace net.esper.events
         /// <param name="events">are the event property constisting of events
         /// </param>
 
-        internal MapEventBean(EventType eventType, IDictionary<String, EventBean> events)
+        public MapEventBean(EventType eventType, IDictionary<String, EventBean> events)
         {
             this.properties = new EDataDictionary();
 

@@ -26,7 +26,7 @@ namespace net.esper.eql.join.assemble
         {
             substreamsA = new int[] { 0, 3 };
             substreamsB = new int[] { 1 };
-            results = new ELinkedList<EventBean[]>();
+            results = new List<EventBean[]>();
         }
 
         [Test]
@@ -39,13 +39,13 @@ namespace net.esper.eql.join.assemble
             Assert.IsTrue(results.Count == 0);
 
             // test no rows A
-            rowsA = new ELinkedList<EventBean[]>();
+            rowsA = new List<EventBean[]>();
             tryCompute(rowsA, rowsB);
             Assert.IsTrue(results.Count == 0);
 
             // test no rows B
             rowsA = null;
-            rowsB = new ELinkedList<EventBean[]>();
+            rowsB = new List<EventBean[]>();
             tryCompute(rowsA, rowsB);
             Assert.IsTrue(results.Count == 0);
 
@@ -221,7 +221,7 @@ namespace net.esper.eql.join.assemble
 
         private static IList<EventBean[]> makeRows(int numRows, int[] substreamsPopulated)
         {
-            IList<EventBean[]> result = new ELinkedList<EventBean[]>();
+            IList<EventBean[]> result = new List<EventBean[]>();
             for (int i = 0; i < numRows; i++)
             {
                 EventBean[] row = new EventBean[NUM_COL];

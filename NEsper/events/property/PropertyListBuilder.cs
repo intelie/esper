@@ -18,6 +18,6 @@ namespace net.esper.events.property
 		/// <param name="type">type to introspect</param>
 		/// <returns>list of event property descriptors</returns>
 
-        IList<EventPropertyDescriptor> assessProperties(Type type);
+        IList<EventPropertyDescriptor> AssessProperties(Type type);
 	}
 }

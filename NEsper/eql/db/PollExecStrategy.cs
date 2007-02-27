@@ -6,8 +6,8 @@ using net.esper.events;
 namespace net.esper.eql.db
 {
 
-    /// <summary> Interface for polling data from a data source such as a relational database.
-    /// <p>
+    /// <summary>
+    /// Interface for polling data from a data source such as a relational database.
     /// Lifecycle methods are for managing connection resources.
     /// </summary>
     public interface PollExecStrategy
@@ -21,12 +21,12 @@ namespace net.esper.eql.db
         /// <returns> a list of events for the keys
         /// </returns>
 
-        IList<EventBean> poll(Object[] lookupValues);
+        IList<EventBean> Poll(Object[] lookupValues);
 
         /// <summary> Indicate we are done polling and can release resources.</summary>
-        void done();
+        void Done();
 
         /// <summary> Indicate we are no going to use this object again.</summary>
-        void destroy();
+        void Destroy();
     }
 }

@@ -33,8 +33,8 @@ namespace net.esper.regression.view
         public virtual void testSumOneView()
         {
             String viewExpr = "select longPrimitive, sum(longBoxed) as mySum " + "from " + typeof(SupportBean).FullName + ".win:length(3)";
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             runAssert();
         }
@@ -44,8 +44,8 @@ namespace net.esper.regression.view
         {
             String viewExpr = "select longPrimitive, sum(longBoxed) as mySum " + "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " + typeof(SupportBean).FullName + ".win:length(3) as two " + "where one.str = two.str";
 
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(JOIN_KEY));
 
@@ -56,8 +56,8 @@ namespace net.esper.regression.view
         public virtual void testSumAvgWithWhere()
         {
             String viewExpr = "select 'IBM stats' as title, volume, avg(volume) as myAvg, sum(volume) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3)" + "where symbol='IBM'";
-            selectTestView = epService.EPAdministrator.createEQL(viewExpr);
-            selectTestView.AddListener(testListener);
+            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+            selectTestView.AddListener(testListener.Update);
 
             sendMarketDataEvent("GE", 10L);
             Assert.IsFalse(testListener.Invoked);

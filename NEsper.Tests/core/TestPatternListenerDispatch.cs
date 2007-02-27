@@ -25,7 +25,7 @@ namespace net.esper.core
 		public virtual void setUp()
 		{
 			ISet<UpdateListener> listeners = new EHashSet<UpdateListener>();
-			listeners.Add( listener );
+            listeners.Add(listener.Update);
 			dispatch = new PatternListenerDispatch( listeners );
 		}
 

@@ -84,7 +84,7 @@ namespace net.esper.regression.eql
 				"insert into Event_1 (delta, product) " +
 				"select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
 				"from " + typeof( SupportBean ).FullName + ".win:length(100)";
-			epService.EPAdministrator.createEQL( stmtText );
+			epService.EPAdministrator.CreateEQL( stmtText );
 
 			try
 			{
@@ -92,7 +92,7 @@ namespace net.esper.regression.eql
 					"insert into Event_1 (delta) " +
 					"select intPrimitive - intBoxed as deltaTag " +
 					"from " + typeof( SupportBean ).FullName + ".win:length(100)";
-				epService.EPAdministrator.createEQL( stmtText );
+				epService.EPAdministrator.CreateEQL( stmtText );
 				Assert.Fail();
 			}
 			catch ( EPStatementException ex )
@@ -110,11 +110,11 @@ namespace net.esper.regression.eql
 				"insert rstream into StockTicks(mySymbol, myPrice) " +
 				"select symbol, price from " + typeof( SupportMarketDataBean ).FullName + ".win:time(60) " + "output every 5 seconds " +
 				"order by symbol asc";
-			epService.EPAdministrator.createEQL( stmtText );
+			epService.EPAdministrator.CreateEQL( stmtText );
 
 			stmtText = "select mySymbol, sum(myPrice) as pricesum from StockTicks.win:length(100)";
-			EPStatement statement = epService.EPAdministrator.createEQL( stmtText );
-			statement.AddListener( feedListener );
+			EPStatement statement = epService.EPAdministrator.CreateEQL( stmtText );
+            statement.AddListener(feedListener.Update);
 
 			epService.EPRuntime.SendEvent( new CurrentTimeEvent( 0 ) );
 			SendEvent( "IBM", 50 );
@@ -161,8 +161,8 @@ namespace net.esper.regression.eql
 		private void runAsserts( String stmtText )
 		{
 			// Attach listener to feed
-			EPStatement stmt = epService.EPAdministrator.createEQL( stmtText );
-			stmt.AddListener( feedListener );
+			EPStatement stmt = epService.EPAdministrator.CreateEQL( stmtText );
+            stmt.AddListener(feedListener.Update);
 
 			// send event for joins to match on
 			epService.EPRuntime.SendEvent( new SupportBean_A( "myId" ) );
@@ -171,15 +171,15 @@ namespace net.esper.regression.eql
 			stmtText =
 				"select min(delta) as minD, max(delta) as maxD " +
 				"from Event_1.win:time(60 seconds)";
-			stmt = epService.EPAdministrator.createEQL( stmtText );
-			stmt.AddListener( resultListenerDelta );
+			stmt = epService.EPAdministrator.CreateEQL( stmtText );
+            stmt.AddListener(resultListenerDelta.Update);
 
 			// Attach prodict statement to statement and add listener
 			stmtText =
 				"select min(product) as minP, max(product) as maxP " +
 				"from Event_1.win:time(60 seconds)";
-			stmt = epService.EPAdministrator.createEQL( stmtText );
-			stmt.AddListener( resultListenerProduct );
+			stmt = epService.EPAdministrator.CreateEQL( stmtText );
+            stmt.AddListener(resultListenerProduct.Update);
 
 			epService.EPRuntime.SendEvent( new CurrentTimeEvent( 0 ) ); // Set the time to 0 seconds
 

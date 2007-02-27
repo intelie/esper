@@ -89,6 +89,35 @@ namespace net.esper.events.property
 		{
 			throw new NotSupportedException() ;
 		}
+
+        /// <summary>
+        /// Returns true if the objects are equal.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+
+        public override bool Equals(object obj)
+        {
+            SimpleFieldPropertyDescriptor temp = obj as SimpleFieldPropertyDescriptor;
+            if (temp != null)
+            {
+                return
+                    Object.Equals( this.Name, temp.Name ) &&
+                    Object.Equals( this.fieldInfo, temp.fieldInfo ) ;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns a hahscode for the object.
+        /// </summary>
+        /// <returns></returns>
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
 		
 		/// <summary>
 		/// Constructor

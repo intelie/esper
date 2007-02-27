@@ -32,7 +32,7 @@ namespace net.esper.events.property
             this.legacyConfig = legacyConfig;
         }
 
-        public IList<EventPropertyDescriptor> assessProperties(Type type)
+        public IList<EventPropertyDescriptor> AssessProperties(Type type)
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             PropertyListBuilderExplicit.getExplicitProperties(result, type, legacyConfig);

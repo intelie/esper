@@ -126,7 +126,7 @@ namespace net.esper.schedule
 			
 			// This call may change second, minute and/or hour parameters
 			// They may be reset to minimum values if the day rolled
-			result.DayOfMonth = DetermineDayOfMonth(spec, after, result);
+			result.DayOfMonth = DetermineDayOfMonth(spec, ref after, result);
 			
 			bool dayMatchRealDate = false;
 			while (!dayMatchRealDate)
@@ -148,7 +148,7 @@ namespace net.esper.schedule
                 result.Second = NextValue(secondsSet, 0);
                 result.Minute = NextValue(minutesSet, 0);
 				result.Hour = NextValue(hoursSet, 0);
-				result.DayOfMonth = DetermineDayOfMonth(spec, after, result);
+				result.DayOfMonth = DetermineDayOfMonth(spec, ref after, result);
 			}
 			if (result.Month == -1)
 			{
@@ -176,7 +176,7 @@ namespace net.esper.schedule
 		/// <param name="result"></param>
 		/// <returns></returns>
 		
-		private static int DetermineDayOfMonth(ScheduleSpec spec, DateTime after, ScheduleCalendar result)
+		private static int DetermineDayOfMonth(ScheduleSpec spec, ref DateTime after, ScheduleCalendar result)
 		{
             ETreeSet<Int32> daysOfMonthSet = spec.UnitValues.Fetch(ScheduleUnit.DAYS_OF_MONTH);
             ETreeSet<Int32> daysOfWeekSet = spec.UnitValues.Fetch(ScheduleUnit.DAYS_OF_WEEK);

@@ -48,12 +48,11 @@ namespace net.esper.eql.expression
 
 		public virtual void visit( ExprNode exprNode )
 		{
-			if ( !( exprNode is ExprIdentNode ) )
+			ExprIdentNode identNode = exprNode as ExprIdentNode ;
+			if ( identNode == null )
 			{
 				return;
 			}
-
-			ExprIdentNode identNode = (ExprIdentNode) exprNode;
 
 			int streamId = identNode.StreamId;
 			String propertyName = identNode.ResolvedPropertyName;

@@ -37,9 +37,9 @@ namespace net.esper.regression.eql
 				" where mapped('keyOne') = indexed[2].mapped('2ma').value and" +
 				" indexed[0].mapped('0ma').value = '0ma0'";
 
-			EPStatement testView = epService.EPAdministrator.createEQL( viewExpr );
+			EPStatement testView = epService.EPAdministrator.CreateEQL( viewExpr );
 			testListener = new SupportUpdateListener();
-			testView.AddListener( testListener );
+            testView.AddListener(testListener.Update);
 
 			epService.EPRuntime.SendEvent( combined );
 			epService.EPRuntime.SendEvent( complex );
@@ -59,9 +59,9 @@ namespace net.esper.regression.eql
 				typeof( SupportBeanCombinedProps ).FullName + ".win:length(3) s1" + 
 				" on mapped('keyOne') = indexed[2].mapped('2ma').value";
 
-			EPStatement testView = epService.EPAdministrator.createEQL( viewExpr );
+			EPStatement testView = epService.EPAdministrator.CreateEQL( viewExpr );
 			testListener = new SupportUpdateListener();
-			testView.AddListener( testListener );
+            testView.AddListener(testListener.Update);
 
 			SupportBeanCombinedProps combined = SupportBeanCombinedProps.makeDefaultBean();
 			epService.EPRuntime.SendEvent( combined );

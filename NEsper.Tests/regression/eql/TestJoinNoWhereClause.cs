@@ -44,8 +44,8 @@ namespace net.esper.regression.eql
 				typeof( SupportMarketDataBean ).FullName + ".win:length(3)," +
 				typeof( SupportBean ).FullName + "().win:length(3)";
 
-			joinView = epService.EPAdministrator.createEQL( joinStatement );
-			joinView.AddListener( updateListener );
+			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
+            joinView.AddListener(updateListener.Update);
 
 			// Send 2 events, should join on second one
 			SendEvent( setOne[0] );

@@ -37,8 +37,8 @@ namespace net.esper.regression.eql
                 typeof(SupportBeanCombinedProps).FullName + ".win:length(1)" +
                 " where indexed[0].mapped('a').value = 'dummy'";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			// Send events for each stream
 			SupportBeanCombinedProps _event = SupportBeanCombinedProps.makeDefaultBean();

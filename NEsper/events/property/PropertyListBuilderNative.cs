@@ -25,7 +25,7 @@ namespace net.esper.events.property
 			this.optionalLegacyConfig = optionalLegacyConfig;
 		}
 		
-        public IList<EventPropertyDescriptor> assessProperties(Type type)
+        public IList<EventPropertyDescriptor> AssessProperties(Type type)
         {
             IList<EventPropertyDescriptor> result = PropertyHelper.GetProperties(type);
             if (optionalLegacyConfig != null)

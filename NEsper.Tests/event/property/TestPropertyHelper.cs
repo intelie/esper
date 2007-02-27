@@ -42,9 +42,12 @@ namespace net.esper.events.property
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             PropertyHelper.AddSimpleProperties(typeof(SupportBeanPropertyNames), result);
-
+            Assert.AreEqual(8, result.Count);
+            PropertyHelper.AddIndexedProperties(typeof(SupportBeanPropertyNames), result);
+            
             foreach (EventPropertyDescriptor desc in result)
             {
+            	Console.WriteLine("desc=" + desc.PropertyName);
                 log.Debug("desc=" + desc.PropertyName);
             }
 
@@ -73,8 +76,7 @@ namespace net.esper.events.property
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             result.Add(new EventPropertyDescriptor("x", "x", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
-            result.Add(new EventPropertyDescriptor("Type", "Type", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
-            result.Add(new EventPropertyDescriptor("HashCode", "HashCode", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
+            result.Add(new EventPropertyDescriptor("GetHashCode", "GetHashCode", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
             result.Add(new EventPropertyDescriptor("ToString", "ToString", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
             result.Add(new EventPropertyDescriptor("GetType", "GetType", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
 
@@ -88,7 +90,7 @@ namespace net.esper.events.property
         public virtual void testGetGetter()
         {
             EventBean bean = SupportEventBeanFactory.createObject(new SupportBeanPropertyNames());
-            MethodInfo method = typeof(SupportBeanPropertyNames).GetMethod("getA") ;
+            MethodInfo method = typeof(SupportBeanPropertyNames).GetMethod("getA", new Type[]{}) ;
             PropertyDescriptor descriptor = new SimpleAccessorPropertyDescriptor(method.Name, method);
             EventPropertyGetter getter = PropertyHelper.GetGetter(descriptor);
             Assert.AreEqual("", getter.GetValue(bean));

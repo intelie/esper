@@ -48,7 +48,7 @@ namespace net.esper.events.property
         [Test]
         public virtual void testBuildPropList()
         {
-            IList<EventPropertyDescriptor> descList = builder.assessProperties(typeof(SupportLegacyBean));
+            IList<EventPropertyDescriptor> descList = builder.AssessProperties(typeof(SupportLegacyBean));
 
             IList<EventPropertyDescriptor> expected = new List<EventPropertyDescriptor>();
             expected.Add(new EventPropertyDescriptor(
@@ -85,12 +85,12 @@ namespace net.esper.events.property
             expected.Add(new EventPropertyDescriptor(
                 "readStringIndexed",
                 "readStringIndexed",
-                MakeDescriptor(typeof(SupportLegacyBean).GetMethod("readStringIndexed", new Type[] { typeof(int) } )),
+                typeof(SupportLegacyBean).GetMethod("readStringIndexed", new Type[] { typeof(int) }),
                 EventPropertyType.INDEXED));
             expected.Add(new EventPropertyDescriptor(
                 "readMapByKey",
                 "readMapByKey",
-                MakeDescriptor(typeof(SupportLegacyBean).GetMethod("readMapByKey", new Type[] { typeof(String) } )),
+                typeof(SupportLegacyBean).GetMethod("readMapByKey", new Type[] { typeof(String) }),
                 EventPropertyType.MAPPED));
             expected.Add(new EventPropertyDescriptor(
                 "readMap", 

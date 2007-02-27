@@ -110,7 +110,7 @@ namespace net.esper.core
                 else if (streamSpec is DBStatementStreamSpec)
                 {
                     DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec)streamSpec;
-                    HistoricalEventViewable historicalEventViewable = PollingViewableFactory.createDBStatementView(
+                    HistoricalEventViewable historicalEventViewable = PollingViewableFactory.CreateDBStatementView(
                         i,
                         sqlStreamSpec,
                         services.DatabaseRefService,

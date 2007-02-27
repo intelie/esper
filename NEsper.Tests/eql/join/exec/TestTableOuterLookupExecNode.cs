@@ -28,7 +28,7 @@ namespace net.esper.eql.join.exec
 		public virtual void testFlow()
 		{
 			EventBean[] lookupEvents = SupportEventBeanFactory.makeMarketDataEvents( new String[] { "a2" } );
-			IList<EventBean[]> result = new ELinkedList<EventBean[]>();
+			IList<EventBean[]> result = new List<EventBean[]>();
 			EventBean[] prefill = new EventBean[] { lookupEvents[0], null };
 
 			// Test lookup on empty index, expect 1 row

@@ -50,8 +50,8 @@ namespace net.esper.regression.eql
 				" where streamA.intPrimitive = streamB.intPrimitive " +
 				"and streamA.intBoxed = streamB.intBoxed";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			for (int i = 0; i < eventData.Length; i++)
 			{

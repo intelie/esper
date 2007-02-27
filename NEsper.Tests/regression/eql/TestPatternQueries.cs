@@ -31,8 +31,8 @@ namespace net.esper.regression.eql
         public virtual void testWhere()
         {
             String stmtText = "select s0.id as idS0, s1.id as idS1 " + "from pattern [every s0=" + typeof(SupportBean_S0).FullName + " or every s1=" + typeof(SupportBean_S1).FullName + "] " + "where (s0.id is not null and s0.id < 100) or (s1.id is not null and s1.id >= 100)";
-            EPStatement statement = epService.EPAdministrator.createEQL(stmtText);
-            statement.AddListener(updateListener);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
+            statement.AddListener(updateListener.Update);
 
             sendEventS0(1);
             assertEventIds(1, null);
@@ -51,8 +51,8 @@ namespace net.esper.regression.eql
         public virtual void testAggregation()
         {
             String stmtText = "select sum(s0.id) as sumS0, sum(s1.id) as sumS1, sum(s0.id + s1.id) as sumS0S1 " + "from pattern [every s0=" + typeof(SupportBean_S0).FullName + " or every s1=" + typeof(SupportBean_S1).FullName + "]";
-            EPStatement statement = epService.EPAdministrator.createEQL(stmtText);
-            statement.AddListener(updateListener);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
+            statement.AddListener(updateListener.Update);
 
             sendEventS0(1);
             assertEventSums(1, null, null);
@@ -71,9 +71,9 @@ namespace net.esper.regression.eql
         public virtual void testFollowedByAndWindow()
         {
             String stmtText = "select a.id as idA, b.id as idB, " + "a.p00 as p00A, b.p00 as p00B from pattern [every a=" + typeof(SupportBean_S0).FullName + " -> every b=" + typeof(SupportBean_S0).FullName + "(p00=a.p00)].win:time(1)";
-            EPStatement statement = epService.EPAdministrator.createEQL(stmtText);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
 
-            statement.AddListener(updateListener);
+            statement.AddListener(updateListener.Update);
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
 

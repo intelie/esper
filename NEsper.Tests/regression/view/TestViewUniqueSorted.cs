@@ -37,8 +37,8 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             // Get the top 3 volumes for each symbol
-            top3Prices = epService.EPAdministrator.createEQL("select * from " + typeof(SupportMarketDataBean).FullName + ".std:unique('symbol').ext:sort('price', true, 3)");
-            top3Prices.AddListener(testListener);
+            top3Prices = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportMarketDataBean).FullName + ".std:unique('symbol').ext:sort('price', true, 3)");
+            top3Prices.AddListener(testListener.Update);
         }
 
         [Test]

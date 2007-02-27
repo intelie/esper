@@ -253,7 +253,7 @@ namespace net.esper.client
                         settings.Name = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("provider").InnerText;
                         settings.ProviderName = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("provider").InnerText;
                         settings.ConnectionString = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("connection-string").InnerText;
-                        configDBRef.setDatabaseProviderConnection(settings);
+                        configDBRef.SetDatabaseProviderConnection(settings);
                     }
                     else if (subElement.Name.Equals("connection-lifecycle"))
                     {

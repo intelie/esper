@@ -34,7 +34,7 @@ namespace net.esper.events.property
         [Test]
         public virtual void testBuildPropList()
         {
-            IList<EventPropertyDescriptor> descList = builder.assessProperties(typeof(SupportLegacyBean));
+            IList<EventPropertyDescriptor> descList = builder.AssessProperties(typeof(SupportLegacyBean));
 
             IList<EventPropertyDescriptor> expected = new List<EventPropertyDescriptor>();
             expected.Add(new EventPropertyDescriptor("x", "x", typeof(SupportLegacyBean).GetField("fieldNested"), EventPropertyType.SIMPLE));

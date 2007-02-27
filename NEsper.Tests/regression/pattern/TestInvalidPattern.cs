@@ -119,7 +119,7 @@ namespace net.esper.regression.pattern
         {
             try
             {
-                epService.EPAdministrator.createPattern(eqlInvalidPattern);
+                epService.EPAdministrator.CreatePattern(eqlInvalidPattern);
                 Assert.Fail();
             }
             catch (EPException ex)
@@ -133,7 +133,7 @@ namespace net.esper.regression.pattern
             String exceptionText = null;
             try
             {
-                epService.EPAdministrator.createPattern(expression);
+                epService.EPAdministrator.CreatePattern(expression);
                 Assert.Fail();
             }
             catch (EPStatementSyntaxException ex)
@@ -156,7 +156,7 @@ namespace net.esper.regression.pattern
             String exceptionText = null;
             try
             {
-                epService.EPAdministrator.createPattern(expression);
+                epService.EPAdministrator.CreatePattern(expression);
                 Assert.Fail();
             }
             catch (EPStatementSyntaxException es)
@@ -178,7 +178,7 @@ namespace net.esper.regression.pattern
 
         private void tryValid(String eqlInvalidPattern)
         {
-            epService.EPAdministrator.createPattern(eqlInvalidPattern);
+            epService.EPAdministrator.CreatePattern(eqlInvalidPattern);
         }
 
         private static Log log = LogFactory.GetLog(typeof(TestInvalidPattern));

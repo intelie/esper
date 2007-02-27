@@ -53,10 +53,10 @@ namespace net.esper.regression.view
             configuration.AddImport("mull");
             epService = EPServiceProviderManager.GetProvider("1", configuration);
 
-            statementText = "select Integer.toBinaryString(7) " + stream;
+            statementText = "select Convert.ToString(7, 2) " + stream;
             try
             {
-                createStatementAndGetProperty(true, "Integer.toBinaryString(7)");
+                createStatementAndGetProperty(true, "Convert.ToString(7, 2)");
                 Assert.Fail();
             }
             catch (EPStatementException)
@@ -67,7 +67,7 @@ namespace net.esper.regression.view
             configuration.AddImport("System");
             epService = EPServiceProviderManager.GetProvider("2", configuration);
 
-            Object[] result = createStatementAndGetProperty(true, "Integer.toBinaryString(7)");
+            Object[] result = createStatementAndGetProperty(true, "Convert.ToString(7, 2)");
             Assert.AreEqual(Convert.ToString(7, 2), result[0]);
         }
 
@@ -96,16 +96,16 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testSingleParameter()
         {
-            statementText = "select Int32.toBinaryString(7) " + stream;
-            Object[] result = createStatementAndGetProperty(true, "Integer.toBinaryString(7)");
+            statementText = "select Convert.ToString(7, 2) " + stream;
+            Object[] result = createStatementAndGetProperty(true, "Convert.ToString(7, 2)");
             Assert.AreEqual(Convert.ToString(7, 2), result[0]);
 
             statementText = "select Int32.Parse(\"6\") " + stream;
-            result = createStatementAndGetProperty(true, "Integer.Parse(\"6\")");
+            result = createStatementAndGetProperty(true, "Int32.Parse(\"6\")");
             Assert.AreEqual(Int32.Parse("6"), result[0]);
 
-            statementText = "select System.String.Parse(\'a\') " + stream;
-            result = createStatementAndGetProperty(true, "System.String.valueOf(\"a\")");
+            statementText = "select Convert.ToString(\'a\') " + stream;
+            result = createStatementAndGetProperty(true, "Convert.ToString(\"a\")" ) ;
             Assert.AreEqual(Convert.ToString('a'), result[0]);
         }
 
@@ -116,11 +116,11 @@ namespace net.esper.regression.view
             Assert.AreEqual(3, createStatementAndGetProperty(true, "System.Math.Max(2, 3)")[0]);
 
             statementText = "select System.Math.Max(2, 3d) " + stream;
-            Assert.AreEqual(3d, createStatementAndGetProperty(true, "System.Math.Max(2, 3.0)")[0]);
+            Assert.AreEqual(3d, createStatementAndGetProperty(true, "System.Math.Max(2, 3)")[0]);
 
-            statementText = "select Int64.Parse(\"123\", 10)" + stream;
+            statementText = "select System.Convert.ToInt64(\"123\", 10)" + stream;
             Object expected = 123L;
-            Assert.AreEqual(expected, createStatementAndGetProperty(true, "Int64.Parse(\"123\", 10)")[0]);
+            Assert.AreEqual(expected, createStatementAndGetProperty(true, "System.Convert.ToInt64(\"123\", 10)")[0]);
         }
 
         [Test]
@@ -157,8 +157,8 @@ namespace net.esper.regression.view
             statementText = "select System.Math.Max(2d, price), System.Math.Max(volume, 4d)" + stream;
             Object[] props = createStatementAndGetProperty(
                 true, 
-                "System.Math.Max(2.0, price)",
-                "System.Math.Max(volume, 4.0)");
+                "System.Math.Max(2, price)",
+                "System.Math.Max(volume, 4)");
             Assert.AreEqual(10d, props[0]);
             Assert.AreEqual(4d, props[1]);
         }
@@ -201,9 +201,9 @@ namespace net.esper.regression.view
 
         private Object createStatementAndGet(String propertyName)
         {
-            statement = epService.EPAdministrator.createEQL(statementText);
+            statement = epService.EPAdministrator.CreateEQL(statementText);
             listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
             epService.EPRuntime.SendEvent(new SupportMarketDataBean("IBM", 10d, 4L, ""));
             return getProperty(propertyName);
         }
@@ -223,9 +223,9 @@ namespace net.esper.regression.view
 
         private Object[] createStatementAndGetProperty(bool expectResult, params string[] propertyNames)
         {
-            statement = epService.EPAdministrator.createEQL(statementText);
+            statement = epService.EPAdministrator.CreateEQL(statementText);
             listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
             SendEvent("IBM", 10d, 4L);
 
             if (expectResult)

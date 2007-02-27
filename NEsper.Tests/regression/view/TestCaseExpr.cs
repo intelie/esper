@@ -33,8 +33,8 @@ namespace net.esper.regression.view
             // Furthermore the test checks the different when clauses and actions related.
             String caseExpr = "select case " + " when symbol='GE' then volume " + " when symbol='DELL' then sum(price) " + "end as p1 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(double?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendMarketDataEvent("DELL", 10000, 50);
@@ -61,8 +61,8 @@ namespace net.esper.regression.view
             // when a CSCO ticker is sent the property for the else expression is selected
             String caseExpr = "select case " + " when symbol='DELL' then 3 * volume " + " else volume " + "end as p1 from " + typeof(SupportMarketDataBean).FullName + ".win:length(3)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(long?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendMarketDataEvent("CSCO", 4000, 0);
@@ -80,8 +80,8 @@ namespace net.esper.regression.view
             // Same test but the where clause doesn't match any of the condition of the case expresssion
             String caseExpr = "select case " + " when (symbol='GE') then volume " + " when (symbol='DELL') then volume / 2.0 " + " when (symbol='MSFT') then volume / 3.0 " + " end as p1 from " + typeof(SupportMarketDataBean).FullName;
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(double?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendMarketDataEvent("DELL", 10000, 0);
@@ -102,8 +102,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select case intPrimitive " + " when longPrimitive then (intPrimitive + longPrimitive) " + " when doublePrimitive then intPrimitive * doublePrimitive" + " when floatPrimitive then floatPrimitive / doublePrimitive " + " else (intPrimitive + longPrimitive + floatPrimitive + doublePrimitive) end as p1 " + " from " + typeof(SupportBean).FullName + ".win:length(10)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(double?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             // intPrimitive = longPrimitive
@@ -154,8 +154,8 @@ namespace net.esper.regression.view
               " else 'x' end as p1 " +
               " from " + typeof(SupportBean).FullName + ".win:length(1)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(String), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent(true, false, 1, 0, 0L, 0L, '0', 'a', (short)0, (short)0, (sbyte)0, (sbyte)0, 0.0f, (float)0, 0.0, (double)0.0, null, SupportEnum.ENUM_VALUE_1);
@@ -236,8 +236,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select case string " + " when null then true " + " when '' then false end as p1" + " from " + typeof(SupportBean).FullName + ".win:length(100)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent("x");
@@ -258,8 +258,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select case " + " when string = null then true " + " when string = '' then false end as p1" + " from " + typeof(SupportBean).FullName + ".win:length(100)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(bool?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent("x");
@@ -280,8 +280,8 @@ namespace net.esper.regression.view
         {
             String caseExpr = "select case intPrimitive " + " when 1 then null " + " when 2 then 1.0" + " when 3 then null " + " else 2 " + " end as p1 from " + typeof(SupportBean).FullName + ".win:length(100)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(double?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent(4);
@@ -304,8 +304,8 @@ namespace net.esper.regression.view
                 " when false then 3 " +
                 " end as p1 from " + typeof(SupportBean).FullName + ".win:length(100)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(long?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent(null);
@@ -325,8 +325,8 @@ namespace net.esper.regression.view
                 " when 4/2.0 then 'x'" +
                 " end as p1 from " + typeof(SupportBean).FullName + ".win:length(100)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(String), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent(1);
@@ -347,8 +347,8 @@ namespace net.esper.regression.view
                 " else 10 end) as p1 " +
                 " from " + typeof(SupportBean).FullName + ".win:length(1)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(int?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent(1);
@@ -373,8 +373,8 @@ namespace net.esper.regression.view
                 " else sum(intPrimitive) end as p1 " +
                 " from " + typeof(SupportBean).FullName + ".win:length(10)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(float?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent(1, 10L, 3.0f, 4.0);
@@ -412,8 +412,8 @@ namespace net.esper.regression.view
                 " end as p1 " + " from " + typeof(SupportBeanWithEnum).FullName +
                 ".win:length(10)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(int?), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent("a", SupportEnum.ENUM_VALUE_1);
@@ -440,8 +440,8 @@ namespace net.esper.regression.view
                 " end as p1 " +
                 " from " + typeof(SupportBean).FullName + ".win:length(10)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(SupportEnum), selectTestFixture.EventType.GetPropertyType("p1"));
 
             sendSupportBeanEvent(1);
@@ -465,8 +465,8 @@ namespace net.esper.regression.view
                 "select " + caseSubExpr +
                 " from " + typeof(SupportBean).FullName + ".win:length(10)";
 
-            EPStatement selectTestFixture = epService.EPAdministrator.createEQL(caseExpr);
-            selectTestFixture.AddListener(testListener);
+            EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
+            selectTestFixture.AddListener(testListener.Update);
             Assert.AreEqual(typeof(int?), selectTestFixture.EventType.GetPropertyType(caseSubExpr));
 
             sendSupportBeanEvent(1);

@@ -80,11 +80,11 @@ namespace net.esper.regression.support
                     if (useEQL)
                     {
                         expressionText = "select * from pattern [" + expressionText + "]";
-                        statement = serviceProvider.EPAdministrator.createEQL(expressionText);
+                        statement = serviceProvider.EPAdministrator.CreateEQL(expressionText);
                     }
                     else
                     {
-                        statement = serviceProvider.EPAdministrator.createPattern(expressionText);
+                        statement = serviceProvider.EPAdministrator.CreatePattern(expressionText);
                     }
                 }
                 catch (Exception ex)
@@ -98,7 +98,7 @@ namespace net.esper.regression.support
                 statement.Stop();
 
                 expressions[index] = statement;
-                expressions[index].AddListener(listeners[index]);
+                expressions[index].AddListener(listeners[index].Update);
 
                 // Start the statement again: listeners now got called for on-start events such as for a "not"
                 statement.Start();

@@ -19,7 +19,7 @@ namespace net.esper.eql.join.plan
         [Test]
         public virtual void testGraphOuterJoins()
         {
-            IList<OuterJoinDesc> descList = new ELinkedList<OuterJoinDesc>();
+            IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
             descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.RIGHT));
             descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.FULL));
 

@@ -30,10 +30,10 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             // Set up a 1 second time window
-            weightedAvgView = epService.EPAdministrator.createEQL(
+            weightedAvgView = epService.EPAdministrator.CreateEQL(
                 "select * from " + typeof(SupportMarketDataBean).FullName + 
                 "(symbol='" + SYMBOL + "').win:time(3.0).stat:weighted_avg('price', 'volume')");
-            weightedAvgView.AddListener(testListener);
+            weightedAvgView.AddListener(testListener.Update);
         }
 
         [Test]

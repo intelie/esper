@@ -28,9 +28,9 @@ namespace net.esper.regression.view
 		{
 			String viewExpr = "select mapped('keyOne') as a," + "indexed[1] as b, nested.nestedNested.nestedNestedValue as c, mapProperty, " + "arrayProperty[0] " + "  from " + typeof(SupportBeanComplexProps).FullName + ".win:length(3) " + " where mapped('keyOne') = 'valueOne' and " + " indexed[1] = 2 and " + " nested.nestedNested.nestedNestedValue = 'nestedNestedValue'";
 			
-			EPStatement testView = epService.EPAdministrator.createEQL(viewExpr);
+			EPStatement testView = epService.EPAdministrator.CreateEQL(viewExpr);
 			testListener = new SupportUpdateListener();
-			testView.AddListener(testListener);
+			testView.AddListener(testListener.Update);
 			
 			SupportBeanComplexProps eventObject = SupportBeanComplexProps.makeDefaultBean();
 			epService.EPRuntime.SendEvent(eventObject);

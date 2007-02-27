@@ -96,8 +96,8 @@ namespace net.esper.events
         {
             PropertyDescriptor descriptor =
                 (propertyType == EventPropertyType.SIMPLE) ?
-                ((PropertyDescriptor)(new SimpleAccessorPropertyDescriptor(methodInfo))) :
-                ((PropertyDescriptor)(new IndexedAccessorPropertyDescriptor(methodInfo)));
+                ((PropertyDescriptor)(new SimpleAccessorPropertyDescriptor(propertyName, methodInfo))) :
+                ((PropertyDescriptor)(new IndexedAccessorPropertyDescriptor(propertyName, methodInfo)));
 
             this.propertyName = propertyName;
             this.listedName = listedName;

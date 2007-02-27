@@ -29,8 +29,8 @@ namespace net.esper.regression.view
             epService.Initialize();
 
             String viewExpr = "select * from " + typeof(SupportMarketDataBean).FullName + "(symbol='" + SYMBOL + "').win:length(3).stat:uni('price')";
-            priceStatsView = epService.EPAdministrator.createEQL(viewExpr);
-            priceStatsView.AddListener(testListener);
+            priceStatsView = epService.EPAdministrator.CreateEQL(viewExpr);
+            priceStatsView.AddListener(testListener.Update);
         }
 
         [Test]

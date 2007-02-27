@@ -87,8 +87,8 @@ namespace net.esper.regression.events
                 "nested3.nested4[2].id as attrTwoProp" + 
                 " from TestXMLSchemaType.win:length(100)";
 			
-			EPStatement joinView = epService.EPAdministrator.createEQL(stmt);
-			joinView.AddListener(updateListener);
+			EPStatement joinView = epService.EPAdministrator.CreateEQL(stmt);
+			joinView.AddListener(updateListener.Update);
 		}
 		
 		[Test]
@@ -103,7 +103,7 @@ namespace net.esper.regression.events
 		{
 			try
 			{
-				epService.EPAdministrator.createEQL("select element1 from TestXMLSchemaType.win:length(100)");
+				epService.EPAdministrator.CreateEQL("select element1 from TestXMLSchemaType.win:length(100)");
 				Assert.Fail();
 			}
 			catch (EPStatementException ex)

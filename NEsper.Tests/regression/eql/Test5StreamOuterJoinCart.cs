@@ -59,8 +59,8 @@ namespace net.esper.regression.eql
 				EVENT_S3 + ".win:length(1000) as s3 on s1.p10 = s3.p30 " + " left outer join " + 
 				EVENT_S4 + ".win:length(1000) as s4 on s1.p10 = s4.p40 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}
@@ -83,8 +83,8 @@ namespace net.esper.regression.eql
 				EVENT_S4 + ".win:length(1000) as s4 on s1.p10 = s4.p40 " + " left outer join " + 
 				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s1.p10 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}
@@ -107,8 +107,8 @@ namespace net.esper.regression.eql
 				EVENT_S4 + ".win:length(1000) as s4 on s1.p10 = s4.p40 " + " left outer join " + 
 				EVENT_S3 + ".win:length(1000) as s3 on s1.p10 = s3.p30 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}
@@ -131,8 +131,8 @@ namespace net.esper.regression.eql
 				EVENT_S4 + ".win:length(1000) as s4 on s1.p10 = s4.p40 " + " left outer join " + 
 				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s1.p10 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}
@@ -155,8 +155,8 @@ namespace net.esper.regression.eql
 				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s1.p10 " + " left outer join " + 
 				EVENT_S3 + ".win:length(1000) as s3 on s1.p10 = s3.p30 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}
@@ -179,8 +179,8 @@ namespace net.esper.regression.eql
 				EVENT_S4 + ".win:length(1000) as s4 on s1.p10 = s4.p40 " + " left outer join " + 
 				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s1.p10 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}
@@ -203,8 +203,8 @@ namespace net.esper.regression.eql
 				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s1.p10 " + " left outer join " + 
 				EVENT_S2 + ".win:length(1000) as s2 on s1.p10 = s2.p20 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}
@@ -227,8 +227,8 @@ namespace net.esper.regression.eql
 				EVENT_S2 + ".win:length(1000) as s2 on s1.p10 = s2.p20 " + " left outer join " + 
 				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s1.p10 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}
@@ -251,8 +251,8 @@ namespace net.esper.regression.eql
 				EVENT_S2 + ".win:length(1000) as s2 on s1.p10 = s2.p20 " + " left outer join " + 
 				EVENT_S3 + ".win:length(1000) as s3 on s1.p10 = s3.p30 ";
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			runAsserts();
 		}

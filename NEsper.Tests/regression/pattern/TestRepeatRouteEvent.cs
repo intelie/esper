@@ -24,7 +24,7 @@ namespace net.esper.regression.pattern
 
             String viewExpr = "every tag=" + typeof(SupportBean).FullName;
 
-            patternStmt = epService.EPAdministrator.createPattern(viewExpr);
+            patternStmt = epService.EPAdministrator.CreatePattern(viewExpr);
         }
 
         /// <summary> Test route of an event within a listener.
@@ -35,7 +35,7 @@ namespace net.esper.regression.pattern
         public virtual void testRouteSingle()
         {
             SingleRouteUpdateListener listener = new SingleRouteUpdateListener(this);
-            patternStmt.AddListener(listener);
+            patternStmt.AddListener(listener.Update);
 
             // Send first event that triggers the loop
             SendEvent(0);
@@ -52,7 +52,7 @@ namespace net.esper.regression.pattern
         public virtual void testRouteCascade()
         {
             CascadeRouteUpdateListener listener = new CascadeRouteUpdateListener(this);
-            patternStmt.AddListener(listener);
+            patternStmt.AddListener(listener.Update);
 
             // Send first event that triggers the loop
             SendEvent(2); // the 2 translates to number of new events routed
@@ -75,13 +75,13 @@ namespace net.esper.regression.pattern
 
             // define time-based pattern and listener
             String viewExpr = "timer:at(*,*,*,*,*,*)";
-            EPStatement atPatternStmt = epService.EPAdministrator.createPattern(viewExpr);
+            EPStatement atPatternStmt = epService.EPAdministrator.CreatePattern(viewExpr);
             SingleRouteUpdateListener timeListener = new SingleRouteUpdateListener(this);
-            atPatternStmt.AddListener(timeListener);
+            atPatternStmt.AddListener(timeListener.Update);
 
             // register regular listener
             SingleRouteUpdateListener eventListener = new SingleRouteUpdateListener(this);
-            patternStmt.AddListener(eventListener);
+            patternStmt.AddListener(eventListener.Update);
 
             Assert.AreEqual(0, timeListener.Count);
             Assert.AreEqual(0, eventListener.Count);
@@ -108,7 +108,7 @@ namespace net.esper.regression.pattern
             return _event;
         }
 
-        internal class SingleRouteUpdateListener : UpdateListener
+        internal class SingleRouteUpdateListener
         {
             public SingleRouteUpdateListener(TestRepeatRouteEvent enclosingInstance)
             {
@@ -138,7 +138,7 @@ namespace net.esper.regression.pattern
             }
         }
 
-        internal class CascadeRouteUpdateListener : UpdateListener
+        internal class CascadeRouteUpdateListener
         {
             public CascadeRouteUpdateListener(TestRepeatRouteEvent enclosingInstance)
             {

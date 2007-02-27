@@ -73,7 +73,7 @@ namespace net.esper.events.xml
                 foreach (ConfigurationEventTypeXMLDOM.XPathPropertyDesc property in explicitProperties)
                 {
                     XPathExpression expression = XPathExpression.Compile(property.XPath, nsManager) ;
-                    getters[property.Name] = new XPathPropertyGetter(property.Name, expression, property.GetType());
+                    getters[property.Name] = new XPathPropertyGetter(property.Name, expression, property.ResultDataType);
                 }
             }
             catch (ArgumentException ex)

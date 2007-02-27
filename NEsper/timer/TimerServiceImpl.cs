@@ -21,12 +21,7 @@ namespace net.esper.timer
             }
         }
 
-#if true
-        private HighResolutionTimer timer ;
-#else
-        private Timer timer;
-#endif
-
+        private ITimer timer ;
         private TimerCallback timerCallback;
         private bool timerTaskCancelled;
 
@@ -68,11 +63,8 @@ namespace net.esper.timer
             }
 
             timerTaskCancelled = false;
-#if true
-            timer = new HighResolutionTimer(OnTimerElapsed, null, 0, TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC);
-#else
-            timer = new Timer(OnTimerElapsed, null, 0, TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC);
-#endif
+            timer = TimerFactory.DefaultTimerFactory.CreateTimer(
+                OnTimerElapsed, null, 0, TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC);
         }
 
         public void StopInternalClock(bool warnIfNotStarted)

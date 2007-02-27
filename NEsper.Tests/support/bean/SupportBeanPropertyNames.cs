@@ -4,84 +4,26 @@ namespace net.esper.support.bean
 {
 	public class SupportBeanPropertyNames
 	{
-		virtual public int[] Array
-		{
-			get { return new int[0]; }
-		}
+    	public String getA(String key) { return ""; }
+    	public String getAB(String key) { return ""; }
+    	public String getABC(String key) { return ""; }
+    	public String geta(String key) { return ""; }
+    	public String getab(String key) { return ""; }
+    	public String getabc(String key) { return ""; }
+    	public String getFooBah(String key) { return ""; }
+        public String get(String key) { return ""; }
 
-		public virtual String getA(String key)
-		{
-			return "";
-		}
+    	public String getA() { return ""; }
+    	public String getAB() { return ""; }
+    	public String getABC() { return ""; }
+    	public String geta() { return ""; }
+    	public String getab() { return ""; }
+    	public String getabc() { return ""; }
+    	public String getFooBah() { return ""; }
 
-		public virtual String getAB(String key)
-		{
-			return "";
-		}
+        public String getIndexed(int i) { return ""; }
+        public int[] getArray() { return new int[0]; }
 
-		public virtual String getABC(String key)
-		{
-			return "";
-		}
-
-        public virtual String geta(String key)
-		{
-			return "";
-		}
-		public virtual String getab(String key)
-		{
-			return "";
-		}
-		public virtual String getabc(String key)
-		{
-			return "";
-		}
-		public virtual String getFooBah(String key)
-		{
-			return "";
-		}
-		public virtual String Fetch(String key)
-		{
-			return "";
-		}
-		
-		public virtual String getA()
-		{
-			return "";
-		}
-		public virtual String getAB()
-		{
-			return "";
-		}
-		public virtual String getABC()
-		{
-			return "";
-		}
-		public virtual String geta()
-		{
-			return "";
-		}
-		public virtual String getab()
-		{
-			return "";
-		}
-		public virtual String getabc()
-		{
-			return "";
-		}
-		public virtual String getFooBah()
-		{
-			return "";
-		}
-		
-		public virtual String getIndexed(int i)
-		{
-			return "";
-		}
-		
-		public virtual String Fetch()
-		{
-			return "";
-		}
+        public String get() { return ""; }    
 	}
 }

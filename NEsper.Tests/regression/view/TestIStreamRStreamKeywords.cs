@@ -29,9 +29,9 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testRStreamOnly()
         {
-            EPStatement statement = epService.EPAdministrator.createEQL(
+            EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select rstream * from " + typeof(SupportBean).FullName + ".win:length(3)");
-            statement.AddListener(testListener);
+            statement.AddListener(testListener.Update);
 
             Object _event = SendEvent("a");
             Assert.IsFalse(testListener.Invoked);
@@ -48,14 +48,14 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testRStreamInsertInto()
         {
-            EPStatement statement = epService.EPAdministrator.createEQL(
+            EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "insert into NextStream " +
                 "select rstream s0.str as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0"
                 );
-            statement.AddListener(testListener);
+            statement.AddListener(testListener.Update);
 
-            statement = epService.EPAdministrator.createEQL("select * from NextStream");
-            statement.AddListener(testListenerInsertInto);
+            statement = epService.EPAdministrator.CreateEQL("select * from NextStream");
+            statement.AddListener(testListenerInsertInto.Update);
 
             SendEvent("a");
             Assert.IsFalse(testListener.Invoked);
@@ -77,14 +77,14 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testRStreamInsertIntoRStream()
         {
-            EPStatement statement = epService.EPAdministrator.createEQL(
+            EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "insert rstream into NextStream " +
                 "select rstream s0.str as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0"
                 );
-            statement.AddListener(testListener);
+            statement.AddListener(testListener.Update);
 
-            statement = epService.EPAdministrator.createEQL("select * from NextStream");
-            statement.AddListener(testListenerInsertInto);
+            statement = epService.EPAdministrator.CreateEQL("select * from NextStream");
+            statement.AddListener(testListenerInsertInto.Update);
 
             SendEvent("a");
             Assert.IsFalse(testListener.Invoked);
@@ -105,14 +105,14 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testRStreamJoin()
         {
-            EPStatement statement = epService.EPAdministrator.createEQL(
+            EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select rstream s1.intPrimitive as aID, s2.intPrimitive as bID " +
                 "from " +
                 typeof(SupportBean).FullName + "(str='a').win:length(2) as s1, " +
                 typeof(SupportBean).FullName + "(str='b') as s2" +
                 " where s1.intPrimitive = s2.intPrimitive"
                 );
-            statement.AddListener(testListener);
+            statement.AddListener(testListener.Update);
 
             SendEvent("a", 1);
             SendEvent("b", 1);
@@ -131,9 +131,9 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testIStreamOnly()
         {
-            EPStatement statement = epService.EPAdministrator.createEQL(
+            EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select istream * from " + typeof(SupportBean).FullName + ".win:length(1)");
-            statement.AddListener(testListener);
+            statement.AddListener(testListener.Update);
 
             Object _event = SendEvent("a");
             Assert.AreSame(_event, testListener.assertOneGetNewAndReset().Underlying);
@@ -147,14 +147,14 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testIStreamInsertIntoRStream()
         {
-            EPStatement statement = epService.EPAdministrator.createEQL(
+            EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "insert rstream into NextStream " +
                 "select istream a.str as string from " + typeof(SupportBean).FullName + ".win:length(1) as a"
                 );
-            statement.AddListener(testListener);
+            statement.AddListener(testListener.Update);
 
-            statement = epService.EPAdministrator.createEQL("select * from NextStream");
-            statement.AddListener(testListenerInsertInto);
+            statement = epService.EPAdministrator.CreateEQL("select * from NextStream");
+            statement.AddListener(testListenerInsertInto.Update);
 
             SendEvent("a");
             Assert.AreEqual("a", testListener.assertOneGetNewAndReset()["string"]);
@@ -170,14 +170,14 @@ namespace net.esper.regression.view
         [Test]
         public virtual void testIStreamJoin()
         {
-            EPStatement statement = epService.EPAdministrator.createEQL(
+            EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select istream s1.intPrimitive as aID, s2.intPrimitive as bID " +
                 "from " +
                 typeof(SupportBean).FullName + "(str='a').win:length(2) as s1, " +
                 typeof(SupportBean).FullName + "(str='b') as s2" +
                 " where s1.intPrimitive = s2.intPrimitive"
                 );
-            statement.AddListener(testListener);
+            statement.AddListener(testListener.Update);
 
             SendEvent("a", 1);
             SendEvent("b", 1);

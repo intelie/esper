@@ -54,6 +54,15 @@ namespace net.esper.events.xml
 		public static XmlSchemaElement findRootElement(XmlSchema schema, String namespace_, String elementName)
 		{
             XmlSchemaObjectTable elements = schema.Elements;
+            foreach (XmlQualifiedName qname in elements.Names)
+            {
+            }
+
+            if (String.IsNullOrEmpty(namespace_))
+            {
+                namespace_ = schema.TargetNamespace;
+            }
+
             XmlQualifiedName name = new XmlQualifiedName(elementName, namespace_);
             XmlSchemaElement schemaObj = elements[name] as XmlSchemaElement;
             if (schemaObj != null)

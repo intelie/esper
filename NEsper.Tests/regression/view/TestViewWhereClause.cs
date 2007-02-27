@@ -26,9 +26,9 @@ namespace net.esper.regression.view
             String viewExpr =
                 "select * from " + typeof(SupportMarketDataBean).FullName +
                 ".win:length(3) where Symbol='CSCO'";
-            testView = epService.EPAdministrator.createEQL(viewExpr);
+            testView = epService.EPAdministrator.CreateEQL(viewExpr);
             testListener = new SupportUpdateListener();
-            testView.AddListener(testListener);
+            testView.AddListener(testListener.Update);
         }
 
         [Test]
@@ -59,9 +59,9 @@ namespace net.esper.regression.view
                 ".win:length(3) where " +
                 "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
 
-            testView = epService.EPAdministrator.createEQL(viewExpr);
+            testView = epService.EPAdministrator.CreateEQL(viewExpr);
             testListener = new SupportUpdateListener();
-            testView.AddListener(testListener);
+            testView.AddListener(testListener.Update);
 
             sendSupportBeanEvent(1, 2, 3, 4);
             Assert.IsFalse(testListener.Invoked);

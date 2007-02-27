@@ -123,9 +123,9 @@ namespace net.esper.regression.events
                 "explicitMMapped('key2')" +
                 " from MyLegacyEvent.win:length(5)";
 
-            EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
 
             EventType eventType = statement.EventType;
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("fieldSimple"));
@@ -206,9 +206,9 @@ namespace net.esper.regression.events
                 "explicitMNested.readNestedClassValue as mnested" + 
                 " from MyLegacyEvent.win:length(5)";
 
-            EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
 
             EventType eventType = statement.EventType;
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("fnested"));
@@ -223,7 +223,7 @@ namespace net.esper.regression.events
             {
                 // invalid statement, JavaBean-style getters not exposed
                 statementText = "select intPrimitive from MySupportBean.win:length(5)";
-                epService.EPAdministrator.createEQL(statementText);
+                epService.EPAdministrator.CreateEQL(statementText);
             }
             catch (EPStatementException ex)
             {
@@ -248,9 +248,9 @@ namespace net.esper.regression.events
 
             String statementText = "select intPrimitive, explicitFInt, explicitMGetInt, explicitMReadInt " + " from MyLegacyEvent.win:length(5)";
 
-            EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
             EventType eventType = statement.EventType;
 
             SupportLegacyBeanInt _event = new SupportLegacyBeanInt(10);
@@ -283,9 +283,9 @@ namespace net.esper.regression.events
 
             String statementText = "select intPrimitive " + "from " + typeof(SupportBeanFinal).FullName + ".win:length(5)";
 
-            EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
 
             SupportBeanFinal _event = new SupportBeanFinal(10);
             epService.EPRuntime.SendEvent(_event);

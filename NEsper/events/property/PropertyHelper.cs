@@ -302,6 +302,7 @@ namespace net.esper.events.property
         {
         	foreach( MethodInfo methodInfo in GetAccessors( type ) ) {
         		ParameterInfo[] methodParams = methodInfo.GetParameters() ;
+        		int length = methodParams.Length;
         		if ( methodParams.Length == 0 ) {
         			yield return methodInfo ;
         		}

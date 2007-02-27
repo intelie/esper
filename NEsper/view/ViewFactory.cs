@@ -66,7 +66,7 @@ namespace net.esper.view
 					log.Debug(".create Successfully instantiated view");
 				}
 			}
-			catch (MethodAccessException e)
+			catch (MissingMethodException e)
 			{
 				String message =
 					"Error invoking constructor for view '" + spec.ObjectName +

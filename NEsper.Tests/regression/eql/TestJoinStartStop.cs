@@ -31,8 +31,8 @@ namespace net.esper.regression.eql
 			String joinStatement = "select * from " + typeof(SupportMarketDataBean).FullName + "(symbol='IBM').win:length(3) s0, " + typeof(SupportMarketDataBean).FullName + "(symbol='CSCO').win:length(3) s1" + " where s0.volume=s1.volume";
 			log.Info(".setUp statement=" + joinStatement);
 			
-			joinView = epService.EPAdministrator.createEQL(joinStatement);
-			joinView.AddListener(updateListener);
+			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+			joinView.AddListener(updateListener.Update);
 			
 			long[] volumesOne = new long[]{10, 20, 20, 40, 50};
 			long[] volumesTwo = new long[]{10, 20, 30, 40, 50};

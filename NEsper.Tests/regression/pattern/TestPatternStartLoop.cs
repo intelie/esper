@@ -32,14 +32,16 @@ namespace net.esper.regression.pattern
         [Test]
         public virtual void testStartFireLoop()
         {
+            PatternUpdateListener listener = new PatternUpdateListener(this);
+
             String patternExpr = "not " + typeof(SupportBean).FullName;
-            patternStmt = epService.EPAdministrator.createPattern(patternExpr);
-            patternStmt.AddListener(new PatternUpdateListener(this));
+            patternStmt = epService.EPAdministrator.CreatePattern(patternExpr);
+            patternStmt.AddListener(listener.Update);
             patternStmt.Stop();
             patternStmt.Start();
         }
 
-        internal class PatternUpdateListener : UpdateListener
+        internal class PatternUpdateListener
         {
             public PatternUpdateListener(TestPatternStartLoop enclosingInstance)
             {
@@ -67,8 +69,8 @@ namespace net.esper.regression.pattern
                 {
                     count++;
                     String patternExpr = "not " + typeof(SupportBean).FullName;
-                    Enclosing_Instance.patternStmt = Enclosing_Instance.epService.EPAdministrator.createPattern(patternExpr);
-                    Enclosing_Instance.patternStmt.AddListener(this);
+                    Enclosing_Instance.patternStmt = Enclosing_Instance.epService.EPAdministrator.CreatePattern(patternExpr);
+                    Enclosing_Instance.patternStmt.AddListener(this.Update);
                     Enclosing_Instance.patternStmt.Stop();
                     Enclosing_Instance.patternStmt.Start();
                 }

@@ -87,7 +87,7 @@ namespace net.esper.core
 
             foreach (UpdateListener listener in updateListeners)
             {
-                listener.Update(newEvents, oldEvents);
+                listener(newEvents, oldEvents);
             }
 
             lastNewEvents.Clear();

@@ -596,8 +596,8 @@ namespace net.esper.regression.view
         private void createAndSendAggregate(String statementString)
         {
             testListener = new SupportUpdateListener();
-            EPStatement statement = epService.EPAdministrator.createEQL(statementString);
-            statement.AddListener(testListener);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementString);
+            statement.AddListener(testListener.Update);
             SendEvent("IBM", 3);
             SendEvent("IBM", 4);
             SendEvent("CMU", 1);

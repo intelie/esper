@@ -27,7 +27,7 @@ namespace net.esper.regression.pattern
 
             String viewExpr = "every tag=" + typeof(SupportBean).FullName;
 
-            patternStmt = epService.EPAdministrator.createPattern(viewExpr);
+            patternStmt = epService.EPAdministrator.CreatePattern(viewExpr);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace net.esper.regression.pattern
             // Pattern Started when created
 
             // Add listener
-            patternStmt.AddListener(testListener);
+            patternStmt.AddListener(testListener.Update);
             Assert.IsNull(testListener.LastNewData);
             Assert.IsFalse(patternStmt.GetEnumerator().MoveNext());
 
@@ -74,13 +74,13 @@ namespace net.esper.regression.pattern
             Assert.AreSame(_event, CollectionHelper.First<EventBean>(patternStmt)["tag"]);
 
             // Remove listener
-            patternStmt.RemoveListener(testListener);
+            patternStmt.RemoveListener(testListener.Update);
             _event = SendEvent();
             Assert.AreSame(_event, CollectionHelper.First<EventBean>(patternStmt)["tag"]);
             Assert.IsNull(testListener.LastNewData);
 
             // Add listener back
-            patternStmt.AddListener(testListener);
+            patternStmt.AddListener(testListener.Update);
             _event = SendEvent();
             Assert.AreSame(_event, CollectionHelper.First<EventBean>(patternStmt)["tag"]);
             Assert.AreEqual(_event, testListener.getAndResetLastNewData()[0]["tag"]);

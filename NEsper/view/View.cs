@@ -37,6 +37,11 @@ namespace net.esper.view
 	
     public interface View : EventCollection, Viewable
 	{
+        Guid Id
+        {
+            get;
+        }
+
 		/// <summary> Gets or sets the View's parent Viewable.</summary>
 		/// <returns> viewable
 		/// </returns>

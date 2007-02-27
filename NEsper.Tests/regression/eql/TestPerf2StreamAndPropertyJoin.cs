@@ -34,8 +34,8 @@ namespace net.esper.regression.eql
 
             String joinStatement = "select * from " + typeof(SupportMarketDataBean).FullName + ".win:length(1000000)," + typeof(SupportBean).FullName + ".win:length(1000000)" + " where symbol=string and volume=longBoxed";
 
-            joinView = epService.EPAdministrator.createEQL(joinStatement);
-            joinView.AddListener(updateListener);
+            joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+            joinView.AddListener(updateListener.Update);
 
             // Send events for each stream
             log.Info(methodName + " Preloading events");
@@ -61,8 +61,8 @@ namespace net.esper.regression.eql
 
             String joinStatement = "select * from " + typeof(SupportMarketDataBean).FullName + "().win:length(1000000)," + typeof(SupportBean).FullName + ".win:length(1000000)" + " where symbol=string and volume=longBoxed and doublePrimitive=price";
 
-            joinView = epService.EPAdministrator.createEQL(joinStatement);
-            joinView.AddListener(updateListener);
+            joinView = epService.EPAdministrator.CreateEQL(joinStatement);
+            joinView.AddListener(updateListener.Update);
 
             // Send events for each stream
             log.Info(methodName + " Preloading events");

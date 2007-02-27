@@ -103,7 +103,7 @@ namespace net.esper.eql.expression
                 }
                 else
                 {
-                    throw e;
+                    throw;
                 }
             }
 

@@ -72,12 +72,24 @@ namespace net.esper.client
             connectionSettings = new ConnectionSettings();
         }
 
+		/// <summary>
+		/// Sets the connection factory
+		/// </summary>
+		/// <param name="className"></param>
+		/// <param name="url"></param>
+		/// <param name="connectionArgs"></param>
+		
+		public void SetDatabaseProviderConnection(String providerName, NameValueCollection connectionArgs)
+    	{
+        	connectionFactoryDesc = new DbProviderFactoryConnection(providerName, connectionArgs);
+	    }
+
         /// <summary>
         /// Sets the connection factory to use DbProviderFactory to obtain a connection.
         /// </summary>
         /// <param name="settings">The settings.</param>
         
-		public virtual void setDatabaseProviderConnection( ConnectionStringSettings settings )
+		public virtual void SetDatabaseProviderConnection( ConnectionStringSettings settings )
         {
             connectionFactoryDesc = new DbProviderFactoryConnection( settings ) ;
         }

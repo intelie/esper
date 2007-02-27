@@ -27,7 +27,7 @@ namespace net.esper.regression.view
 
 			String viewExpr = "select * from " + typeof( SupportBean ).FullName + ".std:size()";
 
-			sizeView = epService.EPAdministrator.createEQL( viewExpr );
+			sizeView = epService.EPAdministrator.CreateEQL( viewExpr );
 		}
 
         public virtual T First<T>(IEnumerable<T> item)
@@ -69,7 +69,7 @@ namespace net.esper.regression.view
 			// View is Started when created
 
 			// Add listener send event
-			sizeView.AddListener( testListener );
+            sizeView.AddListener(testListener.Update);
 			Assert.IsNull( testListener.LastNewData );
             Assert.AreEqual(0L, First(sizeView)["size"]);
 			SendEvent();
@@ -83,8 +83,8 @@ namespace net.esper.regression.view
 			Assert.IsNull( testListener.LastNewData );
 
 			// Start again
-			sizeView.RemoveListener( testListener );
-			sizeView.AddListener( testListener );
+            sizeView.RemoveListener(testListener.Update);
+            sizeView.AddListener(testListener.Update);
 			sizeView.Start();
 
 			SendEvent();
@@ -98,12 +98,12 @@ namespace net.esper.regression.view
 			Assert.AreEqual( 1L, testListener.getAndResetLastNewData()[0]["size"] );
 
 			// Remove listener, send event
-			sizeView.RemoveListener( testListener );
+            sizeView.RemoveListener(testListener.Update);
 			SendEvent();
 			Assert.IsNull( testListener.LastNewData );
 
 			// Add listener back, send event
-			sizeView.AddListener( testListener );
+            sizeView.AddListener(testListener.Update);
 			SendEvent();
 			Assert.AreEqual( 3L, testListener.getAndResetLastNewData()[0]["size"] );
 		}

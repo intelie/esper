@@ -54,7 +54,7 @@ namespace net.esper.eql.db
 
         public virtual void Stop()
         {
-            pollExecStrategy.destroy();
+            pollExecStrategy.Destroy();
         }
 
         public virtual void validate(StreamTypeService streamTypeService)
@@ -123,19 +123,19 @@ namespace net.esper.eql.db
                 {
                     try
                     {
-                        result = pollExecStrategy.poll(lookupValues);
+                        result = pollExecStrategy.Poll(lookupValues);
                         resultPerInputRow[row] = result;
                         dataCache.PutCached(lookupValues, result);
                     }
                     catch (EPException ex)
                     {
-                        pollExecStrategy.done();
+                        pollExecStrategy.Done();
                         throw ex;
                     }
                 }
             }
 
-            pollExecStrategy.done();
+            pollExecStrategy.Done();
 
             return resultPerInputRow;
         }

@@ -44,9 +44,9 @@ namespace net.esper.regression.events
         public virtual void testNestedObjects()
         {
             String statementText = "select beanA.simpleProperty as simple," + "beanA.nested.nestedValue as nested," + "beanA.indexed[1] as indexed," + "beanA.nested.nestedNested.nestedNestedValue as nestednested " + "from myMapEvent.win:length(5)";
-            EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
 
             epService.EPRuntime.SendEvent(map, "myMapEvent");
             Assert.AreEqual("nestedValue", listener.LastNewData[0]["nested"]);
@@ -59,9 +59,9 @@ namespace net.esper.regression.events
         public virtual void testQueryFields()
         {
             String statementText = "select myInt + 2 as intVal, 'x' || myString || 'x' as stringVal from myMapEvent.win:length(5)";
-            EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
 
             // send EDictionary<String, Object> event
             epService.EPRuntime.SendEvent(map, "myMapEvent");
@@ -130,9 +130,9 @@ namespace net.esper.regression.events
         public virtual void testSendMapNative()
         {
             String statementText = "select * from myMapEvent.win:length(5)";
-            EPStatement statement = epService.EPAdministrator.createEQL(statementText);
+            EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener);
+            statement.AddListener(listener.Update);
 
             // send EDictionary<String, Object> event
             epService.EPRuntime.SendEvent(map, "myMapEvent");
@@ -170,7 +170,7 @@ namespace net.esper.regression.events
         {
             try
             {
-                epService.EPAdministrator.createEQL(statementText);
+                epService.EPAdministrator.CreateEQL(statementText);
                 Assert.Fail();
             }
             catch (EPException)

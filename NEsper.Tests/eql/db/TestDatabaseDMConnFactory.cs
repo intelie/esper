@@ -1,7 +1,9 @@
 using System;
 using System.Configuration;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 
 using net.esper.client;
 using net.esper.support.eql;
@@ -23,31 +25,33 @@ namespace net.esper.eql.db
         [SetUp]
         public virtual void setUp()
         {
+        	NameValueCollection properties = new NameValueCollection() ;
+
             // driver-manager config 1
             ConfigurationDBRef config = new ConfigurationDBRef();
-            config.setDatabaseProviderConnection(new ConnectionStringSettings(
-                "Connection1",
-                "LocalSqlServer: data source=127.0.0.1;Integrated Security=SSPI;Initial Catalog=aspnetdb",
-                SupportDatabaseService.DBPROVIDER));
-            config.ConnectionAutoCommit = true;
-            config.ConnectionCatalog = "test";
+            properties["Name"] = "Connection1";
+            properties["Server"] = "localhost";
+            properties["Uid"] = "nesper";
+            properties["Pwd"] = "nesper-test";
+            config.SetDatabaseProviderConnection(SupportDatabaseService.DBPROVIDER, properties);
+            config.ConnectionAutoCommit = false; // not supported yet
             config.ConnectionTransactionIsolation = IsolationLevel.Unspecified;
-            config.ConnectionReadOnly = true;
+            config.ConnectionReadOnly = false; // not supported yet
             databaseDMConnFactoryOne = new DatabaseProviderConnFactory((DbProviderFactoryConnection)config.ConnectionFactoryDesc, config.ConnectionSettings);
 
             // driver-manager config 2
             config = new ConfigurationDBRef();
-            config.setDatabaseProviderConnection(new ConnectionStringSettings(
+            config.SetDatabaseProviderConnection(new ConnectionStringSettings(
                 "Connection2",
-                "LocalSqlServer: data source=127.0.0.1;Integrated Security=SSPI;Initial Catalog=aspnetdb",
+                SupportDatabaseService.DBCONNECTION_STRING,
                 SupportDatabaseService.DBPROVIDER));
             databaseDMConnFactoryTwo = new DatabaseProviderConnFactory((DbProviderFactoryConnection)config.ConnectionFactoryDesc, config.ConnectionSettings);
 
             // driver-manager config 3
             config = new ConfigurationDBRef();
-            config.setDatabaseProviderConnection(new ConnectionStringSettings(
+            config.SetDatabaseProviderConnection(new ConnectionStringSettings(
                 "Connection3",
-                "LocalSqlServer: data source=127.0.0.1;Integrated Security=SSPI;Initial Catalog=aspnetdb",
+                SupportDatabaseService.DBCONNECTION_STRING,
                 SupportDatabaseService.DBPROVIDER));
             databaseDMConnFactoryThree = new DatabaseProviderConnFactory((DbProviderFactoryConnection)config.ConnectionFactoryDesc, config.ConnectionSettings);
         }
@@ -67,8 +71,18 @@ namespace net.esper.eql.db
 
         private void tryAndCloseConnection(DbConnection connection)
         {
-            DbCommand stmt = connection.CreateCommand();
-            stmt.CommandText = "select 1 from dual";
+        	DbCommand stmt ;
+        	
+        	stmt = connection.CreateCommand() ;
+        	stmt.CommandText = "CREATE TABLE DUAL (ID INTEGER PRIMARY KEY)" ;
+        	stmt.ExecuteNonQuery() ;
+        	
+        	stmt = connection.CreateCommand() ;
+        	stmt.CommandText = "INSERT INTO DUAL(ID) VALUES(1)" ;
+        	stmt.ExecuteNonQuery() ;
+        	
+            stmt = connection.CreateCommand();
+            stmt.CommandText = "SELECT ID FROM DUAL";
 
             DbDataReader result = stmt.ExecuteReader();
             Assert.IsTrue(result.Read());

@@ -33,7 +33,7 @@ namespace net.esper.view.ext
         private Boolean[] isDescendingValues;
         private int sortWindowSize = 0;
 
-        private ETreeDictionary<MultiKey<Object>, ELinkedList<EventBean>> sortedEvents;
+        private ETreeDictionary<MultiKey<Object>, LinkedList<EventBean>> sortedEvents;
         private int eventCount;
 
         /// <summary> Returns the field names supplying the values to sort by.</summary>
@@ -128,7 +128,7 @@ namespace net.esper.view.ext
             this.sortWindowSize = size;
 
             IComparer<MultiKey<Object>> comparator = new MultiKeyComparator<Object>(isDescendingValues);
-            sortedEvents = new ETreeDictionary<MultiKey<Object>, ELinkedList<EventBean>>(comparator);
+            sortedEvents = new ETreeDictionary<MultiKey<Object>, LinkedList<EventBean>>(comparator);
         }
 
         /// <summary> Ctor.</summary>
@@ -203,7 +203,7 @@ namespace net.esper.view.ext
             {
                 for (int i = 0; i < oldData.Length; i++)
                 {
-                    MultiKey<Object> sortValues = getSortValues(oldData[i]);
+                    MultiKey<Object> sortValues = GetSortValues(oldData[i]);
                     bool result = Remove(sortValues, oldData[i]);
                     if (result)
                     {
@@ -218,7 +218,7 @@ namespace net.esper.view.ext
             {
                 for (int i = 0; i < newData.Length; i++)
                 {
-                    MultiKey<Object> sortValues = getSortValues(newData[i]);
+                    MultiKey<Object> sortValues = GetSortValues(newData[i]);
                     Add(sortValues, newData[i]);
                     eventCount++;
                 }
@@ -232,8 +232,10 @@ namespace net.esper.view.ext
                 {
                     // Remove the last element of the last key - sort order is key and then natural order of arrival
                     MultiKey<Object> lastKey = sortedEvents.LastKey;
-                    ELinkedList<EventBean> events = sortedEvents[lastKey];
-                    EventBean _event = events.RemoveLast();
+                    LinkedList<EventBean> events = sortedEvents[lastKey];
+                    LinkedListNode<EventBean> lastNode = events.Last;
+                    EventBean _event = lastNode.Value;
+                    events.Remove(lastNode);
                     eventCount--;
 
                     // Clear out entry if not used
@@ -276,21 +278,21 @@ namespace net.esper.view.ext
 
         private void Add(MultiKey<Object> key, EventBean bean)
         {
-            ELinkedList<EventBean> listOfBeans;
+            LinkedList<EventBean> listOfBeans;
             if (sortedEvents.TryGetValue(key, out listOfBeans))
             {
                 listOfBeans.AddFirst(bean); // Add to the front of the list as the second sort critertial is ascending arrival order
                 return;
             }
 
-            listOfBeans = new ELinkedList<EventBean>();
-            listOfBeans.Add(bean);
+            listOfBeans = new LinkedList<EventBean>();
+            listOfBeans.AddFirst(bean);
             sortedEvents[key] = listOfBeans;
         }
 
         private bool Remove(MultiKey<Object> key, EventBean bean)
         {
-            ELinkedList<EventBean> listOfBeans;
+            LinkedList<EventBean> listOfBeans;
             if (!sortedEvents.TryGetValue(key, out listOfBeans))
             {
                 return false;
@@ -304,7 +306,7 @@ namespace net.esper.view.ext
             return result;
         }
 
-        private MultiKey<Object> getSortValues(EventBean ev)
+        private MultiKey<Object> GetSortValues(EventBean ev)
         {
             Object[] result = new Object[sortFieldGetters.Length];
             int count = 0;
