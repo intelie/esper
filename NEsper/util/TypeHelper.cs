@@ -41,17 +41,33 @@ namespace net.esper.util
             {
                 return typeof(sbyte?);
             }
+            if (type == typeof(byte))
+            {
+                return typeof(byte?);
+            }
             if (type == typeof(short))
             {
                 return typeof(short?);
+            }
+            if (type == typeof(ushort))
+            {
+                return typeof(ushort?);
             }
             if (type == typeof(int))
             {
                 return typeof(int?);
             }
+            if (type == typeof(uint))
+            {
+                return typeof(uint?);
+            }
             if (type == typeof(long))
             {
                 return typeof(long?);
+            }
+            if (type == typeof(ulong))
+            {
+                return typeof(ulong?);
             }
             return type;
         }
@@ -72,17 +88,33 @@ namespace net.esper.util
             {
                 return typeof(sbyte?).FullName;
             }
+            if (typeName == typeof(byte).FullName)
+            {
+                return typeof(byte?).FullName;
+            }
             if (typeName == typeof(short).FullName)
             {
                 return typeof(short?).FullName;
+            }
+            if (typeName == typeof(ushort).FullName)
+            {
+                return typeof(ushort?).FullName;
             }
             if (typeName == typeof(int).FullName)
             {
                 return typeof(int?).FullName;
             }
+            if (typeName == typeof(uint).FullName)
+            {
+                return typeof(uint?).FullName;
+            }
             if (typeName == typeof(long).FullName)
             {
                 return typeof(long?).FullName;
+            }
+            if (typeName == typeof(ulong).FullName)
+            {
+                return typeof(ulong?).FullName;
             }
             if (typeName == typeof(float).FullName)
             {
@@ -132,14 +164,21 @@ namespace net.esper.util
                 (type == typeof(double?)) ||
                 (type == typeof(float?)) ||
                 (type == typeof(short?)) ||
+                (type == typeof(ushort?)) ||
                 (type == typeof(int?)) ||
+                (type == typeof(uint?)) ||
                 (type == typeof(long?)) ||
+                (type == typeof(ulong?)) ||
                 (type == typeof(sbyte?)) ||
+                (type == typeof(byte?)) ||
                 (type == typeof(double)) ||
                 (type == typeof(float)) ||
                 (type == typeof(short)) ||
+                (type == typeof(ushort)) ||
                 (type == typeof(int)) ||
+                (type == typeof(uint)) ||
                 (type == typeof(long)) ||
+                (type == typeof(ulong)) ||
                 (type == typeof(sbyte))
                 ;
         }
@@ -163,6 +202,11 @@ namespace net.esper.util
                 double? value = Convert.ToDouble(numToCoerce);
                 return value;
             }
+            if (resultType == typeof(ulong?))
+            {
+                ulong? value = Convert.ToUInt64(numToCoerce);
+                return value;
+            }
             if (resultType == typeof(long?))
             {
                 long? value = Convert.ToInt64(numToCoerce);
@@ -173,14 +217,29 @@ namespace net.esper.util
                 float? value = Convert.ToSingle(numToCoerce);
                 return value;
             }
+            if (resultType == typeof(uint?))
+            {
+                uint? value = Convert.ToUInt32(numToCoerce);
+                return value;
+            }
             if (resultType == typeof(int?))
             {
                 int? value = Convert.ToInt32(numToCoerce);
                 return value;
             }
+            if (resultType == typeof(ushort?))
+            {
+                ushort? value = Convert.ToUInt16(numToCoerce);
+                return value;
+            }
             if (resultType == typeof(short?))
             {
                 short? value = Convert.ToInt16(numToCoerce);
+                return value;
+            }
+            if (resultType == typeof(byte?))
+            {
+                byte? value = Convert.ToByte(numToCoerce);
                 return value;
             }
             if (resultType == typeof(sbyte?))
@@ -225,10 +284,20 @@ namespace net.esper.util
             {
                 return typeof(float?);
             }
+            if ((boxedOne == typeof(ulong?)) ||
+                (boxedTwo == typeof(ulong?)))
+            {
+                return typeof(ulong?);
+            }
             if ((boxedOne == typeof(long?)) ||
                 (boxedTwo == typeof(long?)))
             {
                 return typeof(long?);
+            }
+            if ((boxedOne == typeof(uint?)) ||
+                (boxedTwo == typeof(uint?)))
+            {
+                return typeof(uint?);
             }
             return typeof(int?);
         }

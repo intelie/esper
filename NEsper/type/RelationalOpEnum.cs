@@ -51,6 +51,10 @@ namespace net.esper.type
             computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), GE }), GELongComputer);
             computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), LT }), LTLongComputer);
             computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), LE }), LELongComputer);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(ulong?), GT }), GTULongComputer);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(ulong?), GE }), GEULongComputer);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(ulong?), LT }), LTULongComputer);
+            computers.Add(new MultiKey<Object>(new Object[] { typeof(ulong?), LE }), LEULongComputer);
             computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), GT }), GTDoubleComputer);
             computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), GE }), GEDoubleComputer);
             computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), LT }), LTDoubleComputer);
@@ -66,6 +70,7 @@ namespace net.esper.type
         {
             if ((coercedType != typeof(double?)) &&
                 (coercedType != typeof(long?)) &&
+                (coercedType != typeof(ulong?)) &&
                 (coercedType != typeof(String)))
             {
                 throw new ArgumentException("Unsupported type for relational op compare, type " + coercedType);
@@ -153,6 +158,43 @@ namespace net.esper.type
         {
             Int64 s1 = Convert.ToInt64(objOne);
             Int64 s2 = Convert.ToInt64(objTwo);
+            return s1 <= s2;
+        }
+
+        /**
+ * Computer for relational op compare.
+ */
+        public static bool GTULongComputer(Object objOne, Object objTwo)
+        {
+            UInt64 s1 = Convert.ToUInt64(objOne);
+            UInt64 s2 = Convert.ToUInt64(objTwo);
+            return s1 > s2;
+        }
+        /**
+         * Computer for relational op compare.
+         */
+        public static bool GEULongComputer(Object objOne, Object objTwo)
+        {
+            UInt64 s1 = Convert.ToUInt64(objOne);
+            UInt64 s2 = Convert.ToUInt64(objTwo);
+            return s1 >= s2;
+        }
+        /**
+         * Computer for relational op compare.
+         */
+        public static bool LTULongComputer(Object objOne, Object objTwo)
+        {
+            UInt64 s1 = Convert.ToUInt64(objOne);
+            UInt64 s2 = Convert.ToUInt64(objTwo);
+            return s1 < s2;
+        }
+        /**
+         * Computer for relational op compare.
+         */
+        public static bool LEULongComputer(Object objOne, Object objTwo)
+        {
+            UInt64 s1 = Convert.ToUInt64(objOne);
+            UInt64 s2 = Convert.ToUInt64(objTwo);
             return s1 <= s2;
         }
 

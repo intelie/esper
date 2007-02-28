@@ -16,9 +16,6 @@ namespace net.esper.util
     /// functionality over the standard System.Reflection mechanism of retrieving methods.
     /// First, class names can be partial, and if the class name is partial
     /// then import service is searched for the class.
-    /// 
-    /// Unlike the Java version, widening and narrowing conversions do not need to occur.
-    /// As a result, exact matches are required.
     /// </summary>
     
     public class StaticMethodResolver
@@ -218,31 +215,56 @@ namespace net.esper.util
 			StaticMethodResolver.wrappingConversions.Put(typeof(char), charWrappers);
 			StaticMethodResolver.wrappingConversions.Put(typeof(char?), charWrappers);
 			
-			ISet<Type> byteWrappers = new EHashSet<Type>();
-			byteWrappers.Add(typeof(sbyte));
-			byteWrappers.Add(typeof(sbyte?));
-			StaticMethodResolver.wrappingConversions.Put(typeof(sbyte), byteWrappers);
-			StaticMethodResolver.wrappingConversions.Put(typeof(sbyte?), byteWrappers);
-			
+			ISet<Type> sbyteWrappers = new EHashSet<Type>();
+			sbyteWrappers.Add(typeof(sbyte));
+			sbyteWrappers.Add(typeof(sbyte?));
+			StaticMethodResolver.wrappingConversions.Put(typeof(sbyte), sbyteWrappers);
+			StaticMethodResolver.wrappingConversions.Put(typeof(sbyte?), sbyteWrappers);
+
+            ISet<Type> byteWrappers = new EHashSet<Type>();
+            byteWrappers.Add(typeof(byte));
+            byteWrappers.Add(typeof(byte?));
+            StaticMethodResolver.wrappingConversions.Put(typeof(byte), byteWrappers);
+            StaticMethodResolver.wrappingConversions.Put(typeof(byte?), byteWrappers);
+
 			ISet<Type> shortWrappers = new EHashSet<Type>();
 			shortWrappers.Add(typeof(short));
 			shortWrappers.Add(typeof(short?));
 			StaticMethodResolver.wrappingConversions.Put(typeof(short), shortWrappers);
 			StaticMethodResolver.wrappingConversions.Put(typeof(short?), shortWrappers);
-			
+
+            ISet<Type> ushortWrappers = new EHashSet<Type>();
+            ushortWrappers.Add(typeof(ushort));
+            ushortWrappers.Add(typeof(ushort?));
+            StaticMethodResolver.wrappingConversions.Put(typeof(ushort), ushortWrappers);
+            StaticMethodResolver.wrappingConversions.Put(typeof(ushort?), ushortWrappers);
+
 			ISet<Type> intWrappers = new EHashSet<Type>();
 			intWrappers.Add(typeof(int));
 			intWrappers.Add(typeof(int?));
 			StaticMethodResolver.wrappingConversions.Put(typeof(int), intWrappers);
 			StaticMethodResolver.wrappingConversions.Put(typeof(int?), intWrappers);
-			
+
+            ISet<Type> uintWrappers = new EHashSet<Type>();
+            uintWrappers.Add(typeof(uint));
+            uintWrappers.Add(typeof(uint?));
+            StaticMethodResolver.wrappingConversions.Put(typeof(uint), uintWrappers);
+            StaticMethodResolver.wrappingConversions.Put(typeof(uint?), uintWrappers);
+
 			ISet<Type> longWrappers = new EHashSet<Type>();
 			longWrappers.Add(typeof(long));
 			longWrappers.Add(typeof(long?));
 			StaticMethodResolver.wrappingConversions.Put(typeof(long), longWrappers);
 			StaticMethodResolver.wrappingConversions.Put(typeof(long?), longWrappers);
-			
-			ISet<Type> floatWrappers = new EHashSet<Type>();
+
+            ISet<Type> ulongWrappers = new EHashSet<Type>();
+            ulongWrappers.Add(typeof(ulong));
+            ulongWrappers.Add(typeof(ulong?));
+            StaticMethodResolver.wrappingConversions.Put(typeof(ulong), ulongWrappers);
+            StaticMethodResolver.wrappingConversions.Put(typeof(ulong?), ulongWrappers);
+
+            
+            ISet<Type> floatWrappers = new EHashSet<Type>();
 			floatWrappers.Add(typeof(float));
 			floatWrappers.Add(typeof(float?));
 			StaticMethodResolver.wrappingConversions.Put(typeof(float), floatWrappers);
@@ -255,24 +277,36 @@ namespace net.esper.util
 			StaticMethodResolver.wrappingConversions.Put(typeof(double?), doubleWrappers);
 	
 			// Initialize the map of widening conversions
-			ISet<Type> wideningConversions = new EHashSet<Type>(byteWrappers);
+			ISet<Type> wideningConversions = new EHashSet<Type>();
+
+            wideningConversions.AddAll(byteWrappers);
+            wideningConversions.AddAll(sbyteWrappers);
+
 			StaticMethodResolver.wideningConversions.Put(typeof(short), new EHashSet<Type>(wideningConversions));
 			StaticMethodResolver.wideningConversions.Put(typeof(short?), new EHashSet<Type>(wideningConversions));
-			
 			wideningConversions.AddAll(shortWrappers);
 			wideningConversions.AddAll(charWrappers);
-			StaticMethodResolver.wideningConversions.Put(typeof(int), new EHashSet<Type>(wideningConversions));
+
+            StaticMethodResolver.wideningConversions.Put(typeof(ushort), new EHashSet<Type>(wideningConversions));
+            StaticMethodResolver.wideningConversions.Put(typeof(ushort?), new EHashSet<Type>(wideningConversions));
+            wideningConversions.AddAll(ushortWrappers);
+            
+            StaticMethodResolver.wideningConversions.Put(typeof(int), new EHashSet<Type>(wideningConversions));
 			StaticMethodResolver.wideningConversions.Put(typeof(int?), new EHashSet<Type>(wideningConversions));
-			
 			wideningConversions.AddAll(intWrappers);
+
 			StaticMethodResolver.wideningConversions.Put(typeof(long), new EHashSet<Type>(wideningConversions));
 			StaticMethodResolver.wideningConversions.Put(typeof(long?), new EHashSet<Type>(wideningConversions));
-	
-			wideningConversions.AddAll(longWrappers);
+            wideningConversions.AddAll(longWrappers);
+
+            StaticMethodResolver.wideningConversions.Put(typeof(ulong), new EHashSet<Type>(wideningConversions));
+            StaticMethodResolver.wideningConversions.Put(typeof(ulong?), new EHashSet<Type>(wideningConversions));
+			wideningConversions.AddAll(ulongWrappers);
+
 			StaticMethodResolver.wideningConversions.Put(typeof(float), new EHashSet<Type>(wideningConversions));
 			StaticMethodResolver.wideningConversions.Put(typeof(float?), new EHashSet<Type>(wideningConversions));
-		
 			wideningConversions.AddAll(floatWrappers);
+
 			StaticMethodResolver.wideningConversions.Put(typeof(double), new EHashSet<Type>(wideningConversions));
 			StaticMethodResolver.wideningConversions.Put(typeof(double?), new EHashSet<Type>(wideningConversions));
 		}

@@ -227,7 +227,8 @@ namespace net.esper.view
 
 				foreach ( View childView in currentParent.GetViews() )
 				{
-					ViewSpec spec = specificationRepository[ childView ];
+                    ViewSpec spec = null;
+                    specificationRepository.TryGetValue(childView, out spec);
 
 					// It's possible that a child view is not known to this service since the
 					// child view may not be reusable, such as a stateless filter (where-clause),
