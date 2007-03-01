@@ -42,11 +42,11 @@ namespace net.esper.regression.view
             IList<String> testList = new String[]{ "(3*intPrimitive)", "str", "result", "aBool" } ;
 
 			log.Debug( ".testGetEventType properties=" + CollectionHelper.Render( type.PropertyNames ) );
-			Assert.IsTrue( CollectionHelper.AreEqual( type.PropertyNames, testList ) ) ;
+			ArrayAssertionUtil.assertEqualsAnyOrder( type.PropertyNames, testList ) ;
 			Assert.AreEqual( typeof( String ), type.GetPropertyType( "str" ) );
-			Assert.AreEqual( typeof( bool ), type.GetPropertyType( "aBool" ) );
-			Assert.AreEqual( typeof( Single ), type.GetPropertyType( "result" ) );
-			Assert.AreEqual( typeof( Int32 ), type.GetPropertyType( "(3*intPrimitive)" ) );
+			Assert.AreEqual( typeof( bool? ), type.GetPropertyType( "aBool" ) );
+			Assert.AreEqual( typeof( float? ), type.GetPropertyType( "result" ) );
+			Assert.AreEqual( typeof( int? ), type.GetPropertyType( "(3*intPrimitive)" ) );
 		}
 
 		[Test]

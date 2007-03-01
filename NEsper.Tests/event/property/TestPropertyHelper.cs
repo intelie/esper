@@ -47,7 +47,6 @@ namespace net.esper.events.property
             
             foreach (EventPropertyDescriptor desc in result)
             {
-            	Console.WriteLine("desc=" + desc.PropertyName);
                 log.Debug("desc=" + desc.PropertyName);
             }
 

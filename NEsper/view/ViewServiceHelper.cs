@@ -29,7 +29,7 @@ namespace net.esper.view
 				log.Debug( ".addMergeViews Incoming specifications=" + specifications ) ;
 			}
 
-            ELinkedList<ViewSpec> mergeViewSpecs = new ELinkedList<ViewSpec>();
+            LinkedList<ViewSpec> mergeViewSpecs = new LinkedList<ViewSpec>();
 
 			foreach ( ViewSpec spec in specifications )
 			{

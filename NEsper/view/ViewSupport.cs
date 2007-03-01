@@ -150,7 +150,6 @@ namespace net.esper.view
                     {
                         case "Views":
                         case "Parent":
-                        case "EventType":
                             // Case statement represents specific properties we with to
                             // ignore.
                             break;

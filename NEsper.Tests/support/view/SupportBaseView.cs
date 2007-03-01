@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
 using net.esper.events;
 using net.esper.view;
 

@@ -32,7 +32,11 @@ namespace net.esper.regression.view
 
             // Listen to all ticks
             viewGrouped = epService.EPAdministrator.CreateEQL(
-                "select * from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').std:groupby('feed').std:groupby('volume').std:size()");
+                "select * from " + typeof(SupportMarketDataBean).FullName + 
+                ".std:groupby('symbol')" +
+                ".std:groupby('feed')" +
+                ".std:groupby('volume')" +
+                ".std:size()");
 
             // Counts per symbol, feed and volume the events
             viewGrouped.AddListener(listener.Update);

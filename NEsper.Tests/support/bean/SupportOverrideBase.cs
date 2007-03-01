@@ -11,7 +11,7 @@ namespace net.esper.support.bean
 
         virtual public String val
         {
-            get { return _val; }
+        	get { return this.Val; }
         }
 
 		private String _val;
