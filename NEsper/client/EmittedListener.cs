@@ -7,15 +7,12 @@
 /// ************************************************************************************
 /// </summary>
 using System;
+
 namespace net.esper.client
 {
+	/// <summary>
+    /// Called to indicate an event emitted from an EPRuntime.
+    /// </summary>
 	
-	/// <summary> Listener interface for events emitted from an {@link EPRuntime}.</summary>
-	public interface EmittedListener
-	{
-		/// <summary> Called to indicate an event emitted.</summary>
-		/// <param name="event">is the event emitted
-		/// </param>
-		void  emitted(Object _event);
-	}
+    public delegate void EmittedListener( Object _event ) ;
 }

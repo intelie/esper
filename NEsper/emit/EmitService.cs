@@ -23,7 +23,7 @@ namespace net.esper.emit
 		/// </param>
 		/// <param name="channel">is the channel to emit to
 		/// </param>
-		void  emitEvent(Object _object, String channel);
+		void EmitEvent(Object _object, String channel);
 		
 		/// <summary> Add emitted event listener for the specified channel, or the default channel if the channel value is null.
 		/// The listener will be invoked when an event is emitted on the subscribed channel. Listeners subscribed to the
@@ -33,9 +33,9 @@ namespace net.esper.emit
 		/// </param>
 		/// <param name="channel">is the channel to listen to, with null values allowed to indicate the default channel
 		/// </param>
-		void  AddListener(EmittedListener listener, String channel);
+		void AddListener(EmittedListener listener, String channel);
 		
 		/// <summary> Removes all listeners for emitted events.</summary>
-		void  clearListeners();
+		void ClearListeners();
 	}
 }

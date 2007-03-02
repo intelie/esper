@@ -124,12 +124,12 @@ namespace net.esper.core
 
         public virtual void Emit(Object _object)
         {
-            services.EmitService.emitEvent(_object, null);
+            services.EmitService.EmitEvent(_object, null);
         }
 
         public virtual void Emit(Object _object, String channel)
         {
-            services.EmitService.emitEvent(_object, channel);
+            services.EmitService.EmitEvent(_object, channel);
         }
 
         public virtual void AddEmittedListener(EmittedListener listener, String channel)
@@ -139,7 +139,7 @@ namespace net.esper.core
 
         public virtual void ClearEmittedListeners()
         {
-            services.EmitService.clearListeners();
+            services.EmitService.ClearListeners();
         }
 
         private void ProcessEvent(Object _event)

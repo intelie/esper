@@ -79,14 +79,14 @@ namespace net.esper.emit
 			channelEmitListenersRWLock.ReleaseWriterLock();
 		}
 		
-		public void  clearListeners()
+		public void ClearListeners()
 		{
 			channelEmitListenersRWLock.AcquireWriterLock( LockConstants.WriterTimeout );
 			channelEmitListeners.Clear();
 			channelEmitListenersRWLock.ReleaseWriterLock();
 		}
 		
-		public void emitEvent(Object _object, String channel)
+		public void EmitEvent(Object _object, String channel)
 		{
             if (channel == null)
             {
@@ -103,7 +103,7 @@ namespace net.esper.emit
 				{
 					foreach(EmittedListener listener in listeners)
 					{
-						listener.emitted(_object);
+						listener(_object);
 					}
 				}
 			}
@@ -114,7 +114,7 @@ namespace net.esper.emit
 			{
 				foreach(EmittedListener listener in _listeners)
 				{
-					listener.emitted(_object);
+					listener(_object);
 				}
 			}
 			

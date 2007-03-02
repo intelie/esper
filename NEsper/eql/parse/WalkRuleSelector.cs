@@ -1,12 +1,17 @@
 using System;
-using RecognitionException = antlr.RecognitionException;
-using AST = antlr.collections.AST;
-using EQLBaseWalker = net.esper.eql.generated.EQLBaseWalker;
+
+using antlr;
+using antlr.collections;
+
+using net.esper.eql.generated;
+
 namespace net.esper.eql.parse
 {
+	/// <summary>
+    /// For selection of the AST tree walk rule to use.
+    /// </summary>
 	
-	/// <summary> For selection of the AST tree walk rule to use.</summary>
-	public interface WalkRuleSelector
+    public interface WalkRuleSelector
 	{
 		/// <summary> Implementations can invoke a walk rule of their choice on the walker and AST passed in.</summary>
 		/// <param name="walker">- to invoke walk rule on
