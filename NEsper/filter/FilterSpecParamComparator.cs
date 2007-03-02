@@ -40,7 +40,7 @@ namespace net.esper.filter
 			}
 		}
 		
-		private static int indexOf(FilterOperator filterOperator)
+		private static int IndexOf(FilterOperator filterOperator)
 		{
 			for (int i = 0; i < FilterOperator_SortOrder.Length; i++)
 			{
@@ -73,7 +73,7 @@ namespace net.esper.filter
 			filterSortOrder = new int[enumValues.Length];
 			for (int i = 0; i < filterSortOrder.Length; i++)
 			{
-				filterSortOrder[i] = indexOf( (FilterOperator) enumValues.GetValue( i ) ) ;
+				filterSortOrder[i] = IndexOf( (FilterOperator) enumValues.GetValue( i ) ) ;
 			}
 		}
 	}

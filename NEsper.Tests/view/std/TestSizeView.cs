@@ -111,7 +111,7 @@ namespace net.esper.view.std
         [Test]
         public virtual void testCopyView()
         {
-            ViewSupport.shallowCopyView(myView);
+            ViewSupport.ShallowCopyView(myView);
         }
 
         private void checkNewData(long expectedSize)

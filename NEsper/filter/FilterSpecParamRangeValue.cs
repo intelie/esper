@@ -16,13 +16,13 @@ namespace net.esper.filter
         /// <summary> Check the type against the map of event tag and type.</summary>
         /// <param name="taggedEventTypes">map of event tags and types
         /// </param>
-        void checkType(EDictionary<String, EventType> taggedEventTypes);
+        void CheckType(EDictionary<String, EventType> taggedEventTypes);
 
         /// <summary> Returns the filter value representing the endpoint.</summary>
         /// <param name="matchedEvents">is the prior results
         /// </param>
         /// <returns> filter value
         /// </returns>
-        double getFilterValue(MatchedEventMap matchedEvents);
+        double GetFilterValue(MatchedEventMap matchedEvents);
     }
 }

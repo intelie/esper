@@ -70,7 +70,7 @@ namespace net.esper.view.std
             myView.Parent = parent;
             myView.EventType = someEventType;
 
-            MergeView copied = (MergeView)ViewSupport.shallowCopyView(myView);
+            MergeView copied = (MergeView)ViewSupport.ShallowCopyView(myView);
             Assert.AreEqual(myView.GroupFieldNames, copied.GroupFieldNames);
             Assert.AreEqual(myView.EventType, someEventType);
         }

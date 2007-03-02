@@ -86,7 +86,7 @@ namespace net.esper.filter
             // Add all the above filter definitions
             foreach (FilterSpec filterSpec in testFilterSpecs)
             {
-                FilterValueSet filterValues = filterSpec.getValueSet(null);
+                FilterValueSet filterValues = filterSpec.GetValueSet(null);
                 FilterCallback callback = new SupportFilterCallback();
                 filterCallbacks.Add(callback);
                 pathsAddedTo.Add(builder.Add(filterValues, callback, topNode));
@@ -96,7 +96,7 @@ namespace net.esper.filter
             foreach (EventBean _event in unmatchedEvents)
             {
                 IList<FilterCallback> matches = new List<FilterCallback>();
-                topNode.matchEvent(_event, matches);
+                topNode.MatchEvent(_event, matches);
                 Assert.IsTrue(matches.Count == 0);
             }
 
@@ -104,7 +104,7 @@ namespace net.esper.filter
             foreach (EventBean _event in matchedEvents)
             {
                 IList<FilterCallback> matches = new List<FilterCallback>();
-                topNode.matchEvent(_event, matches);
+                topNode.MatchEvent(_event, matches);
                 Assert.IsTrue(matches.Count == 1);
             }
 
@@ -120,7 +120,7 @@ namespace net.esper.filter
             foreach (EventBean _event in matchedEvents)
             {
                 IList<FilterCallback> matches = new List<FilterCallback>();
-                topNode.matchEvent(_event, matches);
+                topNode.MatchEvent(_event, matches);
                 Assert.IsTrue(matches.Count == 0);
             }
         }

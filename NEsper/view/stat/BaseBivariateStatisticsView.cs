@@ -153,7 +153,7 @@ namespace net.esper.view.stat
 				BaseStatisticsBean newValues = (BaseStatisticsBean) statisticsBean.Clone();
 				EventBean newValuesEvent = viewServiceContext.EventAdapterService.AdapterForBean( newValues );
 				EventBean oldValuesEvent = viewServiceContext.EventAdapterService.AdapterForBean( oldValues );
-				updateChildren( new EventBean[] { newValuesEvent }, new EventBean[] { oldValuesEvent } );
+				UpdateChildren( new EventBean[] { newValuesEvent }, new EventBean[] { oldValuesEvent } );
 			}
 		}
 

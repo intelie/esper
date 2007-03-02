@@ -95,7 +95,7 @@ namespace net.esper.view.window
             // If there are child views, fire update method
             if (this.HasViews)
             {
-                updateChildren(newData, expiredArr);
+                UpdateChildren(newData, expiredArr);
             }
         }
 

@@ -128,7 +128,7 @@ namespace net.esper.pattern
 
         /**
          * Generate a list of matching event combinations constisting of the events per child that are passed in.
-         * @param matchEvent can be populated with prior events that must be passed on
+         * @param MatchEvent can be populated with prior events that must be passed on
          * @param fromNode is the EvalStateNode that will not take part in the combinations produced.
          * @param eventsPerChild is the list of events for each child node to the "And" node.
          * @return list of events populated with all possible combinations
@@ -162,7 +162,7 @@ namespace net.esper.pattern
          * @param eventList is an array of lists containing MatchedEventMap instances to combine
          * @param index is the current index into the array
          * @param result is the resulting list of MatchedEventMap
-         * @param matchEvent is the Start MatchedEventMap to generate from
+         * @param MatchEvent is the Start MatchedEventMap to generate from
          */
         public static void GenerateMatchEvents(
         	IList<IList<MatchedEventMap>> eventList,

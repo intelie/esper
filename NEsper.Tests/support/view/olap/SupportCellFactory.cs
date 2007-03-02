@@ -6,12 +6,12 @@ namespace net.esper.support.view.olap
 {
     public class SupportCellFactory : MultidimCubeCellFactory<SupportCell>
 	{
-		public virtual SupportCell newCell()
+		public virtual SupportCell NewCell()
 		{
 			return new SupportCell();
 		}
 		
-		public virtual SupportCell[] newCells(int numElements)
+		public virtual SupportCell[] NewCells(int numElements)
 		{
 			return new SupportCell[numElements];
 		}

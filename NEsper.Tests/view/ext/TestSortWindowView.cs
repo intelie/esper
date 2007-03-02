@@ -228,7 +228,7 @@ namespace net.esper.view.ext
 			SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
             myView.Parent = parent;
 			
-			SortWindowView copied = (SortWindowView) ViewSupport.shallowCopyView(myView);
+			SortWindowView copied = (SortWindowView) ViewSupport.ShallowCopyView(myView);
 			
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) myView.SortFieldNames,

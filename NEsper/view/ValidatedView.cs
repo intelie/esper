@@ -11,6 +11,6 @@ namespace net.esper.view
 		/// <param name="streamTypeService">supplies the types of streams against which to validate
 		/// </param>
 		/// <throws>  ExprValidationException is thrown to indicate an exception in validating the view </throws>
-		void  validate(StreamTypeService streamTypeService);
+		void  Validate(StreamTypeService streamTypeService);
 	}
 }

@@ -44,7 +44,7 @@ namespace net.esper.filter
             IList<FilterCallback> matchesList = new List<FilterCallback>();
 
             // Invoke match
-            testIndex.matchEvent(testEventBean, matchesList);
+            testIndex.MatchEvent(testEventBean, matchesList);
 
             Assert.AreEqual(1, matchesList.Count);
             Assert.AreEqual(filterCallback, matchesList[0]);
@@ -80,7 +80,7 @@ namespace net.esper.filter
             testIndex.Add(testEventType, callbackSetNode);
 
             IList<FilterCallback> matchesList = new List<FilterCallback>();
-            testIndex.matchEvent(testEventBean, matchesList);
+            testIndex.MatchEvent(testEventBean, matchesList);
 
             Assert.AreEqual(1, matchesList.Count);
             Assert.AreEqual(filterCallback, matchesList[0]);
@@ -96,7 +96,7 @@ namespace net.esper.filter
             testIndex.Add(testEventType, callbackSetNode);
 
             IList<FilterCallback> matchesList = new List<FilterCallback>();
-            testIndex.matchEvent(testEventBean, matchesList);
+            testIndex.MatchEvent(testEventBean, matchesList);
 
             Assert.AreEqual(1, matchesList.Count);
             Assert.AreEqual(filterCallback, matchesList[0]);

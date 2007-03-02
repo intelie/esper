@@ -16,7 +16,7 @@ namespace net.esper.type
             LongValue lvp = new LongValue();
 
             Assert.IsTrue(lvp.ValueObject == null);
-            lvp.parse("10");
+            lvp.Parse("10");
             Assert.IsTrue(lvp.ValueObject.Equals(10L));
             Assert.IsTrue(lvp.getLong() == 10L);
             lvp._Long = 200L;

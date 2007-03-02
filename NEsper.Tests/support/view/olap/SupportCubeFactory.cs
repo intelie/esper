@@ -15,12 +15,12 @@ namespace net.esper.support.view.olap
 
         private class MultidimCubeCellFactoryImpl : MultidimCubeCellFactory<BaseStatisticsBean>
         {
-            public virtual BaseStatisticsBean newCell()
+            public virtual BaseStatisticsBean NewCell()
             {
                 return new BaseStatisticsBean();
             }
 
-            public virtual BaseStatisticsBean[] newCells(int numElements)
+            public virtual BaseStatisticsBean[] NewCells(int numElements)
             {
                 return new BaseStatisticsBean[numElements];
             }

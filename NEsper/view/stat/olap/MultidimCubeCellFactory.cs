@@ -8,7 +8,7 @@ namespace net.esper.view.stat.olap
         /// <summary> Supplies an instance of the object representing a cell.</summary>
         /// <returns> cell object
         /// </returns>
-        V newCell();
+        V NewCell();
 
         /// <summary> Supplies an array of the type of object representing a cell. The returned array
         /// should be uninitialized.
@@ -17,6 +17,6 @@ namespace net.esper.view.stat.olap
         /// </param>
         /// <returns> cell object array
         /// </returns>
-        V[] newCells(int numElements);
+        V[] NewCells(int numElements);
     }
 }

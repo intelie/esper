@@ -168,11 +168,11 @@ namespace net.esper.view.window
             {
                 if ((expired != null) && (expired.Count > 0))
                 {
-                	updateChildren(newData, expired.ToArray()) ;
+                	UpdateChildren(newData, expired.ToArray()) ;
                 }
                 else
                 {
-                    updateChildren(newData, null);
+                    UpdateChildren(newData, null);
                 }
             }
         }

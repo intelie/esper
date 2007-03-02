@@ -72,7 +72,7 @@ namespace net.esper.eql.expression
         {
             ExprAvedevNode avedevNode = new ExprAvedevNode(false);
             avedevNode.AddChildNode(new SupportExprNode(value, type));
-            avedevNode.validate(null, null);
+            avedevNode.Validate(null, null);
             return avedevNode;
         }
     }

@@ -33,10 +33,10 @@ namespace net.esper.eql.expression
         public virtual void testValidate()
         {
             ExprCaseNode caseNode = SupportExprNodeFactory.makeCaseSyntax1Node();
-            caseNode.validate(null, null);
+            caseNode.Validate(null, null);
 
             caseNode = SupportExprNodeFactory.makeCaseSyntax2Node();
-            caseNode.validate(null, null);
+            caseNode.Validate(null, null);
 
             // No subnodes: Exception is thrown.
             tryInvalidValidate(new ExprCaseNode(false));
@@ -63,14 +63,14 @@ namespace net.esper.eql.expression
         public virtual void testEvaluate()
         {
             ExprCaseNode caseNode = SupportExprNodeFactory.makeCaseSyntax1Node();
-            caseNode.validate(null, null);
+            caseNode.Validate(null, null);
 
             Assert.AreEqual("a", caseNode.Evaluate(MakeEvent(1)));
             Assert.AreEqual("b", caseNode.Evaluate(MakeEvent(2)));
             Assert.AreEqual("c", caseNode.Evaluate(MakeEvent(3)));
 
             caseNode = SupportExprNodeFactory.makeCaseSyntax2Node();
-            caseNode.validate(null, null);
+            caseNode.Validate(null, null);
 
             Assert.AreEqual("a", caseNode.Evaluate(MakeEvent(1)));
             Assert.AreEqual("b", caseNode.Evaluate(MakeEvent(2)));
@@ -106,7 +106,7 @@ namespace net.esper.eql.expression
         {
             try
             {
-                exprCaseNode.validate(null, null);
+                exprCaseNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

@@ -34,7 +34,7 @@ namespace net.esper.eql.expression
 			// Test success
 			opNode.AddChildNode(new SupportExprNode(typeof(String)));
 			opNode.AddChildNode(new SupportExprNode(typeof(String)));
-			opNode.validate(null, null);
+			opNode.Validate(null, null);
 			
 			opNode.ChildNodes.Clear();
 			opNode.AddChildNode(new SupportExprNode(typeof(String)));
@@ -42,7 +42,7 @@ namespace net.esper.eql.expression
 			// Test too few nodes under this node
 			try
 			{
-				opNode.validate(null, null);
+				opNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (System.SystemException ex)
@@ -54,7 +54,7 @@ namespace net.esper.eql.expression
 			opNode.AddChildNode(new SupportExprNode(typeof(Int32)));
 			try
 			{
-				opNode.validate(null, null);
+				opNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (ExprValidationException ex)
@@ -69,7 +69,7 @@ namespace net.esper.eql.expression
 			
 			try
 			{
-				opNode.validate(null, null);
+				opNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (ExprValidationException ex)
@@ -85,7 +85,7 @@ namespace net.esper.eql.expression
 			SupportExprNode childTwo = new SupportExprNode("c");
 			opNode.AddChildNode(childOne);
 			opNode.AddChildNode(childTwo);
-			opNode.validate(null, null); // Type initialization
+			opNode.Validate(null, null); // Type initialization
 			
 			Assert.AreEqual(true, opNode.Evaluate(null));
 			

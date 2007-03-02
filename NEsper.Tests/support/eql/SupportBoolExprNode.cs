@@ -23,7 +23,7 @@ namespace net.esper.support.eql
 			this.evaluateResult = evaluateResult;
 		}
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
 		{
 		}
 

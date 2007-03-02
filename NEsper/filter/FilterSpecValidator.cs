@@ -22,7 +22,7 @@ namespace net.esper.filter
         /// </param>
         /// <throws>  ArgumentException to indicate validation errors </throws>
 
-        public static void validate(FilterSpec filterSpec, EDictionary<String, EventType> optionalTaggedEventTypes)
+        public static void Validate(FilterSpec filterSpec, EDictionary<String, EventType> optionalTaggedEventTypes)
         {
             EventType eventType = filterSpec.EventType;
 
@@ -40,14 +40,14 @@ namespace net.esper.filter
                 Type type = TypeHelper.GetBoxedType(eventType.GetPropertyType(property));
 
                 // Check value not null
-                if (param.getFilterValueClass(optionalTaggedEventTypes) == null)
+                if (param.GetFilterValueClass(optionalTaggedEventTypes) == null)
                 {
                     throw new ASTFilterSpecValidationException("Null filter-for value supplied for property named '" + property + "'");
                 }
 
                 // Check numeric
-                if (FilterOperatorHelper.isComparisonOperator( _operator ) ||
-                    FilterOperatorHelper.isRangeOperator( _operator ) )
+                if (FilterOperatorHelper.IsComparisonOperator( _operator ) ||
+                    FilterOperatorHelper.IsRangeOperator( _operator ) )
                 {
                     if (!(TypeHelper.IsNumeric(type)))
                     {
@@ -58,16 +58,16 @@ namespace net.esper.filter
                 }
 
                 // Check type of value supplied if the type is supplied
-                if (FilterOperatorHelper.isComparisonOperator( _operator ) || ( _operator == FilterOperator.EQUAL ) )
+                if (FilterOperatorHelper.IsComparisonOperator( _operator ) || ( _operator == FilterOperator.EQUAL ) )
                 {
                     Type boxedType = TypeHelper.GetBoxedType(type);
-                    Type filterValueClass = param.getFilterValueClass(optionalTaggedEventTypes);
+                    Type filterValueClass = param.GetFilterValueClass(optionalTaggedEventTypes);
                     Type boxedFilterValueClass = TypeHelper.GetBoxedType(filterValueClass);
                     if (boxedType != boxedFilterValueClass)
                     {
                         throw new ASTFilterSpecValidationException(
                     		"Type mismatch for property named '" + property +
-                    		"', supplied type of '" + param.getFilterValueClass(optionalTaggedEventTypes).Name +
+                    		"', supplied type of '" + param.GetFilterValueClass(optionalTaggedEventTypes).Name +
                     		"' does not match property type '" + type.FullName + 
                     		"'");
                     }

@@ -90,7 +90,7 @@ namespace net.esper.view.stat
         [Test]
         public virtual void testCopyView()
         {
-            WeightedAverageView copied = (WeightedAverageView)ViewSupport.shallowCopyView(myView);
+            WeightedAverageView copied = (WeightedAverageView)ViewSupport.ShallowCopyView(myView);
             Assert.IsTrue(myView.FieldNameWeight.Equals(copied.FieldNameWeight));
             Assert.IsTrue(myView.FieldNameX.Equals(copied.FieldNameX));
         }

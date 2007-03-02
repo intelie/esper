@@ -74,7 +74,7 @@ namespace net.esper.filter
             EventBean _event = SupportEventBeanFactory.createObject(eventBean);
             MatchedEventMap matchedEvents = new MatchedEventMap();
             matchedEvents.Add("asName", _event);
-            FilterValueSet valueSet = filterSpec.getValueSet(matchedEvents);
+            FilterValueSet valueSet = filterSpec.GetValueSet(matchedEvents);
 
             // Assert the generated filter value container
             Assert.AreSame(eventType, valueSet.EventType);

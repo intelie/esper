@@ -58,7 +58,7 @@ namespace net.esper.view.window
             set
             {
                 this.viewServiceContext = value;
-                this.scheduleSlot = value.ScheduleBucket.allocateSlot();
+                this.scheduleSlot = value.ScheduleBucket.AllocateSlot();
             }
         }
 
@@ -246,7 +246,7 @@ namespace net.esper.view.window
                 // Post new data (current batch) and old data (prior batch)
                 if ((newData != null) || (oldData != null))
                 {
-                    updateChildren(newData, oldData);
+                    UpdateChildren(newData, oldData);
                 }
             }
 

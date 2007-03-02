@@ -95,7 +95,7 @@ namespace net.esper.view.std
             SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
             myView.Parent = parent;
 
-            UniqueByPropertyView copied = (UniqueByPropertyView)ViewSupport.shallowCopyView(myView);
+            UniqueByPropertyView copied = (UniqueByPropertyView)ViewSupport.ShallowCopyView(myView);
             Assert.AreEqual(myView.UniqueFieldName, copied.UniqueFieldName);
         }
 

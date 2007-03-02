@@ -30,7 +30,7 @@ namespace net.esper.type
             {
                 for (int i = 0; i < _params.Length; i++)
                 {
-                    RelationalOpEnum.Computer computer = op.getComputer(typeof(String));
+                    RelationalOpEnum.Computer computer = op.GetComputer(typeof(String));
                     bool result = computer(_params[i][0], _params[i][1]);
                     Assert.AreEqual( expected[ordinal][i], result,
                         "op=" + op.ToString() + ",i=" + i);
@@ -55,7 +55,7 @@ namespace net.esper.type
             {
                 for (int i = 0; i < _params.Length; i++)
                 {
-                    RelationalOpEnum.Computer computer = op.getComputer(typeof(long?));
+                    RelationalOpEnum.Computer computer = op.GetComputer(typeof(long?));
                     bool result = computer(_params[i][0], _params[i][1]);
                     Assert.AreEqual(expected[ordinal][i], result,
                         "op=" + op.ToString() + ",i=" + i);
@@ -80,7 +80,7 @@ namespace net.esper.type
             {
                 for (int i = 0; i < _params.Length; i++)
                 {
-                    RelationalOpEnum.Computer computer = op.getComputer(typeof(double?));
+                    RelationalOpEnum.Computer computer = op.GetComputer(typeof(double?));
                     bool result = computer(_params[i][0], _params[i][1]);
                     Assert.AreEqual(expected[ordinal][i], result,
                         "op=" + op.ToString() + ",i=" + i );
@@ -104,7 +104,7 @@ namespace net.esper.type
         {
             try
             {
-                RelationalOpEnum.GE.getComputer(clazz);
+                RelationalOpEnum.GE.GetComputer(clazz);
                 Assert.Fail();
             }
             catch (ArgumentException)

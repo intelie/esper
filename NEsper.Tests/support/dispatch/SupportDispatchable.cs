@@ -10,7 +10,7 @@ namespace net.esper.support.dispatch
     private static IList<SupportDispatchable> instanceList = new List<SupportDispatchable>();
     private int numExecuted;
 
-    public void execute()
+    public void Execute()
     {
         numExecuted++;
         instanceList.Add(this);

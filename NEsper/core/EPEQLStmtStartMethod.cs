@@ -104,7 +104,7 @@ namespace net.esper.core
                             sourceEventStream.Insert(compositeEvent);
                         });
 
-                    PatternStopCallback patternStopCallback = rootNode.Start(callback, patternContext);
+                    StopCallback patternStopCallback = rootNode.Start(callback, patternContext);
                     stopCallbacks.Add(patternStopCallback);
                 }
                 else if (streamSpec is DBStatementStreamSpec)
@@ -124,7 +124,7 @@ namespace net.esper.core
 							":" + streamSpec.ViewSpecs[0].ObjectName + 
 							"' is not valid in this context");
                     }
-                    stopCallbacks.Add(historicalEventViewable);
+                    stopCallbacks.Add(historicalEventViewable.Stop);
                 }
                 else
                 {
@@ -148,7 +148,7 @@ namespace net.esper.core
                     }
                     foreach (StopCallback stopCallback in stopCallbacks)
                     {
-                        stopCallback.Stop();
+                        stopCallback();
                     }
                 });
 
@@ -161,7 +161,7 @@ namespace net.esper.core
                 if (viewable is ValidatedView)
                 {
                     ValidatedView validatedView = (ValidatedView)viewable;
-                    validatedView.validate(typeService);
+                    validatedView.Validate(typeService);
                 }
             }
 
@@ -182,7 +182,7 @@ namespace net.esper.core
                     autoImportService);
 
             // Validate where-clause filter tree and outer join clause
-            validateNodes(typeService, autoImportService);
+            ValidateNodes(typeService, autoImportService);
 
             // For just 1 event stream without joins, handle the one-table process separatly.
             Viewable finalView = null;
@@ -259,7 +259,7 @@ namespace net.esper.core
             return streamNames;
         }
 
-        private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService)
+        private void ValidateNodes(StreamTypeService typeService, AutoImportService autoImportService)
         {
             if (statementSpec.FilterRootNode != null)
             {
@@ -273,7 +273,7 @@ namespace net.esper.core
 
                     // Make sure there is no aggregation in the where clause
                     IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
-                    ExprAggregateNode.getAggregatesBottomUp(optionalFilterNode, aggregateNodes);
+                    ExprAggregateNode.GetAggregatesBottomUp(optionalFilterNode, aggregateNodes);
                     if (aggregateNodes.Count > 0)
                     {
                         throw new ExprValidationException("An aggregate function may not appear in a WHERE clause (use the HAVING clause)");
@@ -281,7 +281,7 @@ namespace net.esper.core
                 }
                 catch (ExprValidationException ex)
                 {
-                    log.Debug(".validateNodes Validation exception for filter=" + optionalFilterNode.ExpressionString, ex);
+                    log.Debug(".ValidateNodes Validation exception for filter=" + optionalFilterNode.ExpressionString, ex);
                     throw new EPStatementException("Error validating expression: " + ex.Message, eqlStatement);
                 }
             }

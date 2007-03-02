@@ -57,7 +57,7 @@ namespace net.esper.eql.db
             pollExecStrategy.Destroy();
         }
 
-        public virtual void validate(StreamTypeService streamTypeService)
+        public virtual void Validate(StreamTypeService streamTypeService)
         {
             getters = new EventPropertyGetter[inputParameters.Count];
             getterStreamNumbers = new int[inputParameters.Count];
@@ -91,7 +91,7 @@ namespace net.esper.eql.db
             }
         }
 
-        public IList<EventBean>[] poll(EventBean[][] lookupEventsPerStream)
+        public IList<EventBean>[] Poll(EventBean[][] lookupEventsPerStream)
         {
             pollExecStrategy.Start();
 

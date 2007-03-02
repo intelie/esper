@@ -56,14 +56,14 @@ namespace net.esper.filter
         /// </param>
         /// <returns> filter values
         /// </returns>
-        public FilterValueSet getValueSet(MatchedEventMap matchedEvents)
+        public FilterValueSet GetValueSet(MatchedEventMap matchedEvents)
         {
             IList<FilterValueSetParam> valueList = new List<FilterValueSetParam>();
 
             // Ask each filter specification parameter for the actual value to filter for
             foreach (FilterSpecParam specParam in parameters)
             {
-                Object filterForValue = specParam.getFilterValue(matchedEvents);
+                Object filterForValue = specParam.GetFilterValue(matchedEvents);
 
                 FilterValueSetParam valueParam = new FilterValueSetParamImpl(specParam.PropertyName, specParam.FilterOperator, filterForValue);
                 valueList.Add(valueParam);

@@ -19,9 +19,9 @@ namespace net.esper.events
         /// </summary>
         /// <value></value>
 
-        public Object GetValue(EventBean obj)
+        public Object GetValue(EventBean eventBean)
         {
-            Object underlying = obj.Underlying;
+            Object underlying = eventBean.Underlying;
 
             try
             {

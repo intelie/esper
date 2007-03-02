@@ -59,7 +59,7 @@ namespace net.esper.eql.expression
         {
             ExprMedianNode medianNode = new ExprMedianNode(false);
             medianNode.AddChildNode(new SupportExprNode(value, type));
-            medianNode.validate(null, null);
+            medianNode.Validate(null, null);
             return medianNode;
         }
     }

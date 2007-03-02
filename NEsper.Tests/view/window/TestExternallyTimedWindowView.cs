@@ -130,7 +130,7 @@ namespace net.esper.view.window
 			SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportBeanTimestamp), 3);
 			stream.AddView(myView);
 			
-			ExternallyTimedWindowView copied = (ExternallyTimedWindowView) ViewSupport.shallowCopyView(myView);
+			ExternallyTimedWindowView copied = (ExternallyTimedWindowView) ViewSupport.ShallowCopyView(myView);
 			Assert.AreEqual(myView.TimestampFieldName, copied.TimestampFieldName);
 			Assert.AreEqual(myView.MillisecondsBeforeExpiry, copied.MillisecondsBeforeExpiry);
 		}

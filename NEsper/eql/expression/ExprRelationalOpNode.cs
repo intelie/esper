@@ -29,7 +29,7 @@ namespace net.esper.eql.expression
             this.relationalOpEnum = relationalOpEnum;
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             // Must have 2 child nodes
             if (this.ChildNodes.Count != 2)
@@ -54,7 +54,7 @@ namespace net.esper.eql.expression
             }
 
             Type compareType = TypeHelper.GetCompareToCoercionType(typeOne, typeTwo);
-            computer = relationalOpEnum.getComputer(compareType);
+            computer = relationalOpEnum.GetComputer(compareType);
         }
 
         public override Object Evaluate(EventBean[] eventsPerStream)

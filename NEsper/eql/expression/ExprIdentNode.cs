@@ -82,7 +82,7 @@ namespace net.esper.eql.expression
             get { return streamOrPropertyName; }
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
             resolvedStreamName = propertyInfoPair.Second;

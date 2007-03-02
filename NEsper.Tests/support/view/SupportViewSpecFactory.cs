@@ -103,7 +103,7 @@ namespace net.esper.support.view
             for (int i = 0; i < clazz.Length; i++)
             {
                 PrimitiveValue placeholder = PrimitiveValueFactory.create(clazz[i]);
-                placeholder.parse(values[i]);
+                placeholder.Parse(values[i]);
                 Object value = placeholder.ValueObject;
                 _params.Add(value);
             }

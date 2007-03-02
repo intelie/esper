@@ -28,15 +28,13 @@ namespace net.esper.eql.parse
 		
 		public  override bool Equals(Object _object)
 		{
-			if (!(_object is TimePeriodParameter))
-			{
-				return false;
-			}
-			TimePeriodParameter other = (TimePeriodParameter) _object;
-			return other.numSeconds == this.numSeconds;
+			TimePeriodParameter other = _object as TimePeriodParameter;
+			return
+				( other != null ) ?
+				( other.numSeconds == this.numSeconds ) :
+				( false ) ;
 		}
 
-		//UPGRADE_NOTE: The following method implementation was automatically added to preserve functionality. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1306'"
 		public override int GetHashCode()
 		{
 			return base.GetHashCode();

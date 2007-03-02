@@ -25,7 +25,7 @@ namespace net.esper.filter
 		public virtual void  testCreateIndex()
 		{
 			// Create a "greater" index
-			FilterParamIndex index = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
+			FilterParamIndex index = IndexFactory.CreateIndex(eventType, "intPrimitive", FilterOperator.GREATER);
 			
 			Assert.IsTrue(index != null);
 			Assert.IsTrue(index is FilterParamIndexCompare);
@@ -33,7 +33,7 @@ namespace net.esper.filter
 			Assert.IsTrue(index.FilterOperator == FilterOperator.GREATER);
 			
 			// Create an "equals" index
-            index = IndexFactory.createIndex(eventType, "str", FilterOperator.EQUAL);
+            index = IndexFactory.CreateIndex(eventType, "str", FilterOperator.EQUAL);
 			
 			Assert.IsTrue(index != null);
 			Assert.IsTrue(index is FilterParamIndexEquals);
@@ -41,7 +41,7 @@ namespace net.esper.filter
 			Assert.IsTrue(index.FilterOperator == FilterOperator.EQUAL);
 			
 			// Create an "not equals" index
-            index = IndexFactory.createIndex(eventType, "str", FilterOperator.NOT_EQUAL);
+            index = IndexFactory.CreateIndex(eventType, "str", FilterOperator.NOT_EQUAL);
 			
 			Assert.IsTrue(index != null);
 			Assert.IsTrue(index is FilterParamIndexNotEquals);
@@ -49,7 +49,7 @@ namespace net.esper.filter
 			Assert.IsTrue(index.FilterOperator == FilterOperator.NOT_EQUAL);
 			
 			// Create a range index
-			index = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.RANGE_CLOSED);
+			index = IndexFactory.CreateIndex(eventType, "doubleBoxed", FilterOperator.RANGE_CLOSED);
 			Assert.IsTrue(index is FilterParamIndexRange);
 		}
 	}

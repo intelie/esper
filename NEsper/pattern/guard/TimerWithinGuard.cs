@@ -32,7 +32,7 @@ namespace net.esper.pattern.guard
 			this.msec = msec;
 			this.context = context;
 			this.quitable = quitable;
-			this.scheduleSlot = context.ScheduleBucket.allocateSlot();
+			this.scheduleSlot = context.ScheduleBucket.AllocateSlot();
 		}
 		
 		public virtual void  StartGuard()

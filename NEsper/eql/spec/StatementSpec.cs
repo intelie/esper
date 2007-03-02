@@ -101,11 +101,8 @@ namespace net.esper.eql.spec
         /// </param>
         virtual public ExprNode FilterExprRootNode
         {
-            set
-            {
-                this.filterExprRootNode = value;
-            }
-
+        	get { return this.filterExprRootNode ; }
+            set { this.filterExprRootNode = value; }
         }
         /// <summary> Sets the stream selector (rstream/istream/both etc).</summary>
         /// <param name="selectStreamDirEnum">to be set

@@ -42,31 +42,31 @@ namespace net.esper.client
         internal const String ESPER_DEFAULT_CONFIG = "esper.cfg.xml";
 
         /// <summary> Map of event name and fully-qualified Java class name.</summary>
-        protected EDictionary<String, String> eventClasses;
+        private EDictionary<String, String> eventClasses;
 
         /// <summary> Map of event type alias and XML DOM configuration.</summary>
-        protected EDictionary<String, ConfigurationEventTypeXMLDOM> eventTypesXMLDOM;
+        private EDictionary<String, ConfigurationEventTypeXMLDOM> eventTypesXMLDOM;
 
         /// <summary> Map of event type alias and Legacy-type event configuration.</summary>
-        protected EDictionary<String, ConfigurationEventTypeLegacy> eventTypesLegacy;
+        private EDictionary<String, ConfigurationEventTypeLegacy> eventTypesLegacy;
 
         /// <summary> The type aliases for events that result when maps are sent
         /// into the engine.
         /// </summary>
 
-        protected EDictionary<String, EDictionary<string,string>> mapAliases;
+        private EDictionary<String, EDictionary<string,string>> mapAliases;
 
         /// <summary> The java-style class and package name imports that
         /// will be used to resolve partial class names.
         /// </summary>
 
-        protected IList<String> imports;
+        private IList<String> imports;
 
         /// <summary> The java-style class and package name imports that
         /// will be used to resolve partial class names.
         /// </summary>
 
-        protected EDictionary<String, ConfigurationDBRef> databaseReferences;
+        private EDictionary<String, ConfigurationDBRef> databaseReferences;
 
         /// <summary> True until the user calls addAutoImport().</summary>
         private bool isUsingDefaultImports = true;

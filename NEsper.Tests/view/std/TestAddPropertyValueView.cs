@@ -81,7 +81,7 @@ namespace net.esper.view.std
 		[Test]
 		public virtual void testCopyView()
 		{
-			AddPropertyValueView copied = (AddPropertyValueView) ViewSupport.shallowCopyView( myView );
+			AddPropertyValueView copied = (AddPropertyValueView) ViewSupport.ShallowCopyView( myView );
 			Assert.AreEqual( myView.PropertyNames, copied.PropertyNames );
 			Assert.AreEqual( myView.PropertyValues, copied.PropertyValues );
 		}

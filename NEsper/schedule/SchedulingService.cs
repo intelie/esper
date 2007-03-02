@@ -2,7 +2,6 @@ using System;
 
 namespace net.esper.schedule
 {
-
     /// <summary>
     /// Interface for a service that allows to add and remove callbacks for a certain time which are called when
     /// the evaluate method is invoked and the current time is on or after the callback times.

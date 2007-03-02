@@ -95,7 +95,7 @@ namespace net.esper.view.std
         /// <param name="parentView">is the parent data merge view to add
         /// </param>
 
-        public void addParentView(AddPropertyValueView parentView)
+        public void AddParentView(AddPropertyValueView parentView)
         {
             parentViews.Add(parentView);
         }
@@ -160,7 +160,7 @@ namespace net.esper.view.std
                 dumpUpdateParams("MergeView", newData, oldData);
             }
 
-            updateChildren(newData, oldData);
+            UpdateChildren(newData, oldData);
         }
 
         public override IEnumerator<EventBean> GetEnumerator()

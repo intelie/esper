@@ -2,8 +2,13 @@ using System;
 
 namespace net.esper.util
 {
-    /// <summary> General pupose callback to Stop a resource and free it's underlying resources.</summary>
+    /// <summary>
+    ///  General pupose callback to Stop a resource and free it's underlying resources.
+    /// </summary>
 
+    #if true
+    public delegate void StopCallback();
+    #else
     public interface StopCallback
     {
         /// <summary> Stops the underlying resources.</summary>
@@ -17,7 +22,7 @@ namespace net.esper.util
     {
         private StopCallbackDelegate stopDelegate;
 
-        public StopCallbackImpl(StopCallbackDelegate StopDelegate)
+        public StopCallbackImpl(StopCallbackDelegate stopDelegate)
         {
             this.stopDelegate = stopDelegate;
         }
@@ -27,4 +32,5 @@ namespace net.esper.util
             stopDelegate();
         }
     }
+    #endif
 }

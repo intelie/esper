@@ -83,7 +83,7 @@ namespace net.esper.collection
         private void tryPermutation(int numElements, int[][] expectedValues)
         {
             /*
-            Total: 4 * 3 * 2 = 24 = 6!  (6 faculty)
+            Total: 4 * 3 * 2 = 24 = 6!  (6 Faculty)
 
             Example:8
             n / 6 = first number        == index 1, total {1}, remains {0, 2, 3}
@@ -133,8 +133,8 @@ namespace net.esper.collection
 
         public static void testGetPermutation()
         {
-            int[] factors = PermutationEnumeration.getFactors(4);
-            int[] result = PermutationEnumeration.getPermutation(4, 21, factors);
+            int[] factors = PermutationEnumeration.GetFactors(4);
+            int[] result = PermutationEnumeration.GetPermutation(4, 21, factors);
 
             log.Debug(".testGetPermutation result=" + CollectionHelper.Render(result));
             Assert.IsTrue( CollectionHelper.AreEqual(
@@ -145,19 +145,19 @@ namespace net.esper.collection
 
         public static void testGetFactors()
         {
-            int[] factors = PermutationEnumeration.getFactors(5);
+            int[] factors = PermutationEnumeration.GetFactors(5);
             Assert.IsTrue(CollectionHelper.AreEqual(factors, new int[] { 24, 6, 2, 1, 0 }));
 
-            factors = PermutationEnumeration.getFactors(4);
+            factors = PermutationEnumeration.GetFactors(4);
             Assert.IsTrue(CollectionHelper.AreEqual(factors, new int[] { 6, 2, 1, 0 }));
 
-            factors = PermutationEnumeration.getFactors(3);
+            factors = PermutationEnumeration.GetFactors(3);
             Assert.IsTrue(CollectionHelper.AreEqual(factors, new int[] { 2, 1, 0 }));
 
-            factors = PermutationEnumeration.getFactors(2);
+            factors = PermutationEnumeration.GetFactors(2);
             Assert.IsTrue(CollectionHelper.AreEqual(factors, new int[] { 1, 0 }));
 
-            factors = PermutationEnumeration.getFactors(1);
+            factors = PermutationEnumeration.GetFactors(1);
             Assert.IsTrue(CollectionHelper.AreEqual(factors, new int[] { 0 }));
 
             //log.Debug(".testGetFactors " + CollectionHelper.Render(factors));
@@ -165,13 +165,13 @@ namespace net.esper.collection
 
         public static void testFaculty()
         {
-            Assert.AreEqual(0, PermutationEnumeration.faculty(0));
-            Assert.AreEqual(1, PermutationEnumeration.faculty(1));
-            Assert.AreEqual(2, PermutationEnumeration.faculty(2));
-            Assert.AreEqual(6, PermutationEnumeration.faculty(3));
-            Assert.AreEqual(24, PermutationEnumeration.faculty(4));
-            Assert.AreEqual(120, PermutationEnumeration.faculty(5));
-            Assert.AreEqual(720, PermutationEnumeration.faculty(6));
+            Assert.AreEqual(0, PermutationEnumeration.Faculty(0));
+            Assert.AreEqual(1, PermutationEnumeration.Faculty(1));
+            Assert.AreEqual(2, PermutationEnumeration.Faculty(2));
+            Assert.AreEqual(6, PermutationEnumeration.Faculty(3));
+            Assert.AreEqual(24, PermutationEnumeration.Faculty(4));
+            Assert.AreEqual(120, PermutationEnumeration.Faculty(5));
+            Assert.AreEqual(720, PermutationEnumeration.Faculty(6));
         }
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

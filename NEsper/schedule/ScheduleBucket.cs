@@ -29,8 +29,11 @@ namespace net.esper.schedule
 			lastSlot = 0;
 		}
 		
-		/// <summary> ReStart bucket slot numbering wuch as when a statement is reStarted and new slots are allocated.</summary>
-		public virtual void  reStart()
+		/// <summary>
+        /// Restart bucket slot numbering wuch as when a statement is reStarted
+        /// and new slots are allocated.
+        /// </summary>
+		public virtual void Restart()
 		{
 			lastSlot = 0;
 		}
@@ -38,7 +41,7 @@ namespace net.esper.schedule
 		/// <summary> Returns a new slot in the bucket.</summary>
 		/// <returns> slot
 		/// </returns>
-		public virtual ScheduleSlot allocateSlot()
+		public virtual ScheduleSlot AllocateSlot()
 		{
 			return new ScheduleSlot(bucketNum, lastSlot++);
 		}

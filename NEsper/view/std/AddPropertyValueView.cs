@@ -125,7 +125,7 @@ namespace net.esper.view.std
         {
             if (!mustAddProperty)
             {
-                updateChildren(newData, oldData);
+                UpdateChildren(newData, oldData);
                 return;
             }
 
@@ -156,7 +156,7 @@ namespace net.esper.view.std
                 }
             }
 
-            updateChildren(newEvents, oldEvents);
+            UpdateChildren(newEvents, oldEvents);
         }
 
         public override EventType EventType

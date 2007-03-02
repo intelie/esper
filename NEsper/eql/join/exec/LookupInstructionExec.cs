@@ -181,12 +181,12 @@ namespace net.esper.eql.join.exec
                     " requiredSubStreams=" + CollectionHelper.Render(requiredSubStreams) +
                     " optionalSubStreams=" + CollectionHelper.Render(optionalSubStreams));
 
-            writer.incrIndent();
+            writer.IncrIndent();
             for (int i = 0; i < lookupStrategies.Length; i++)
             {
                 writer.WriteLine("lookupStrategies[" + i + "] : " + lookupStrategies[i].ToString());
             }
-            writer.decrIndent();
+            writer.DecrIndent();
         }
     }
 }

@@ -44,7 +44,7 @@ namespace net.esper.support.filter
         private EventBean lastEvent;
         private IList<FilterCallback> lastMatches;
 
-        public void matchEvent(EventBean _event, IList<FilterCallback> matches)
+        public void MatchEvent(EventBean _event, IList<FilterCallback> matches)
         {
             countInvoked++;
             lastEvent = _event;

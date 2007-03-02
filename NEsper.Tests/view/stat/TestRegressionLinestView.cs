@@ -87,7 +87,7 @@ namespace net.esper.view.stat
 		[Test]
 		public virtual void testCopyView()
 		{
-			RegressionLinestView copied = (RegressionLinestView) ViewSupport.shallowCopyView( myView );
+			RegressionLinestView copied = (RegressionLinestView) ViewSupport.ShallowCopyView( myView );
 			Assert.IsTrue( myView.FieldNameX.Equals( copied.FieldNameX ) );
 			Assert.IsTrue( myView.FieldNameY.Equals( copied.FieldNameY ) );
 		}

@@ -17,7 +17,7 @@ namespace net.esper.support.eql
 			topNode.AddChildNode(i1_1);
 			topNode.AddChildNode(i1_2);
 			
-			validate(topNode);
+			Validate(topNode);
 			
 			return topNode;
 		}
@@ -42,7 +42,7 @@ namespace net.esper.support.eql
 			e2.AddChildNode(i2_1);
 			e2.AddChildNode(i2_2);
 			
-			validate(topNode);
+			Validate(topNode);
 			
 			return topNode;
 		}
@@ -73,7 +73,7 @@ namespace net.esper.support.eql
 			equalNodes[2].AddChildNode(i3_1);
 			equalNodes[2].AddChildNode(i3_2);
 			
-			validate(topNode);
+			Validate(topNode);
 			
 			return topNode;
 		}
@@ -81,7 +81,7 @@ namespace net.esper.support.eql
 		public static ExprNode makeIdentNode(String fieldName, String streamName)
 		{
 			ExprIdentNode node = new ExprIdentNode(fieldName, streamName);
-			validate(node);
+			Validate(node);
 			return node;
 		}
 		
@@ -93,7 +93,7 @@ namespace net.esper.support.eql
 			mathNode.AddChildNode(node1);
 			mathNode.AddChildNode(node2);
 			
-			validate(mathNode);
+			Validate(mathNode);
 			
 			return mathNode;
 		}
@@ -103,7 +103,7 @@ namespace net.esper.support.eql
 			ExprMathNode mathNode = new ExprMathNode(operator_);
 			mathNode.AddChildNode(new SupportExprNode(valueLeft_));
 			mathNode.AddChildNode(new SupportExprNode(valueRight_));
-			validate(mathNode);
+			Validate(mathNode);
 			return mathNode;
 		}
 		
@@ -119,7 +119,7 @@ namespace net.esper.support.eql
 			mathNode.AddChildNode(node);
 			mathNode.AddChildNode(sum);
 			
-			validate(mathNode);
+			Validate(mathNode);
 			
 			return mathNode;
 		}
@@ -130,7 +130,7 @@ namespace net.esper.support.eql
 			ExprIdentNode ident = new ExprIdentNode("intPrimitive", "s0");
 			top.AddChildNode(ident);
 			
-			validate(top);
+			Validate(top);
 			
 			return top;
 		}
@@ -140,8 +140,8 @@ namespace net.esper.support.eql
 			ExprCountNode countNode = new ExprCountNode(false);
 			countNode.AddChildNode(new SupportExprNode(value, type));
 			SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[]{10, 20});
-			countNode.setAggregationResultFuture(future, 1);
-			validate(countNode);
+			countNode.SetAggregationResultFuture(future, 1);
+			Validate(countNode);
 			return countNode;
 		}
 		
@@ -150,7 +150,7 @@ namespace net.esper.support.eql
 			ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
 			opNode.AddChildNode(new SupportExprNode(valueLeft_, typeLeft_));
 			opNode.AddChildNode(new SupportExprNode(valueRight_, typeRight_));
-			validate(opNode);
+			Validate(opNode);
 			return opNode;
 		}
 		
@@ -159,7 +159,7 @@ namespace net.esper.support.eql
 			ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
 			opNode.AddChildNode(new SupportExprNode(typeLeft_));
 			opNode.AddChildNode(new SupportExprNode(typeRight_));
-			validate(opNode);
+			Validate(opNode);
 			return opNode;
 		}
 		
@@ -168,7 +168,7 @@ namespace net.esper.support.eql
 			ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
 			opNode.AddChildNode(nodeLeft_);
 			opNode.AddChildNode(nodeRight_);
-			validate(opNode);
+			Validate(opNode);
 			return opNode;
 		}
 		
@@ -179,7 +179,7 @@ namespace net.esper.support.eql
 			inNode.AddChildNode(makeIdentNode("intPrimitive", "s0"));
 			inNode.AddChildNode(new SupportExprNode(1));
 			inNode.AddChildNode(new SupportExprNode(2));
-			validate(inNode);
+			Validate(inNode);
 			return inNode;
 		}
 		
@@ -189,7 +189,7 @@ namespace net.esper.support.eql
 			ExprRegexpNode node = new ExprRegexpNode(isNot);
 			node.AddChildNode(makeIdentNode("str", "s0"));
 			node.AddChildNode(new SupportExprNode("[a-z][a-z]"));
-			validate(node);
+			Validate(node);
 			return node;
 		}
 		
@@ -203,7 +203,7 @@ namespace net.esper.support.eql
 			{
 				node.AddChildNode(new SupportExprNode(optionalEscape));
 			}
-			validate(node);
+			Validate(node);
 			return node;
 		}
 		
@@ -226,7 +226,7 @@ namespace net.esper.support.eql
 			
 			caseNode.AddChildNode(new SupportExprNode("c"));
 			
-			validate(caseNode);
+			Validate(caseNode);
 			
 			return caseNode;
 		}
@@ -248,7 +248,7 @@ namespace net.esper.support.eql
 			caseNode.AddChildNode(new SupportExprNode("b"));
 			caseNode.AddChildNode(new SupportExprNode("c"));
 			
-			validate(caseNode);
+			Validate(caseNode);
 			
 			return (caseNode);
 		}
@@ -263,7 +263,7 @@ namespace net.esper.support.eql
 			return topNode;
 		}
 		
-		private static void  validate(ExprNode topNode)
+		private static void  Validate(ExprNode topNode)
 		{
 			StreamTypeService streamTypeService = new SupportStreamTypeSvc3Stream();
 			topNode.GetValidatedSubtree(streamTypeService, null);

@@ -88,7 +88,7 @@ namespace net.esper.view.std
 		{
 			SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
 			myView.Parent = parent;
-			ViewSupport.shallowCopyView(myView);
+			ViewSupport.ShallowCopyView(myView);
 		}
 	}
 }

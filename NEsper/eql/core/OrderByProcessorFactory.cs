@@ -55,17 +55,17 @@ namespace net.esper.eql.core
             IList<ExprAggregateNode> selectAggNodes = new List<ExprAggregateNode>();
             foreach (SelectExprElementNamedSpec element in selectionList)
             {
-                ExprAggregateNode.getAggregatesBottomUp(element.SelectExpression, selectAggNodes);
+                ExprAggregateNode.GetAggregatesBottomUp(element.SelectExpression, selectAggNodes);
             }
 
             // Get all the aggregate functions occuring in the order-by clause
             IList<ExprAggregateNode> orderAggNodes = new List<ExprAggregateNode>();
             foreach (ExprNode orderByNode in orderByNodes)
             {
-                ExprAggregateNode.getAggregatesBottomUp(orderByNode, orderAggNodes);
+                ExprAggregateNode.GetAggregatesBottomUp(orderByNode, orderAggNodes);
             }
 
-            validateOrderByAggregates(selectAggNodes, orderAggNodes);
+            ValidateOrderByAggregates(selectAggNodes, orderAggNodes);
 
             // Create the type of the order-by event
             EDictionary<String, Type> propertyNamesAndTypes = new EHashDictionary<String, Type>();
@@ -85,7 +85,7 @@ namespace net.esper.eql.core
 
 
 
-        private static void validateOrderByAggregates(IList<ExprAggregateNode> selectAggNodes,
+        private static void ValidateOrderByAggregates(IList<ExprAggregateNode> selectAggNodes,
                                            IList<ExprAggregateNode> orderAggNodes)
 	{
 		// Check that the order-by clause doesn't contain 

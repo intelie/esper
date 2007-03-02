@@ -43,12 +43,12 @@ namespace net.esper.filter
         {
             get
             {
-                checkType(filterConstant);
+                CheckType(filterConstant);
                 return constantsMap.Fetch(filterConstant);
             }
             set
             {
-                checkType(filterConstant);
+                CheckType(filterConstant);
                 constantsMap[filterConstant] = value;
             }
         }
@@ -74,7 +74,7 @@ namespace net.esper.filter
             }
         }
 
-        public override void matchEvent(EventBean eventBean, IList<FilterCallback> matches)
+        public override void MatchEvent(EventBean eventBean, IList<FilterCallback> matches)
         {
             Object attributeValue = this.Getter.GetValue(eventBean);
 
@@ -99,10 +99,10 @@ namespace net.esper.filter
                 return;
             }
 
-            evaluator.matchEvent(eventBean, matches);
+            evaluator.MatchEvent(eventBean, matches);
         }
 
-        private void checkType(Object filterConstant)
+        private void CheckType(Object filterConstant)
         {
             if (this.PropertyBoxedType != TypeHelper.GetBoxedType(filterConstant.GetType()))
             {

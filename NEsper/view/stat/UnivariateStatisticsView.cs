@@ -132,7 +132,7 @@ namespace net.esper.view.stat
             if (this.HasViews)
             {
                 EventBean newDataMap = populateMap(baseStatisticsBean, viewServiceContext.EventAdapterService, eventType);
-                updateChildren(new EventBean[] { newDataMap }, new EventBean[] { oldDataMap });
+                UpdateChildren(new EventBean[] { newDataMap }, new EventBean[] { oldDataMap });
             }
         }
 

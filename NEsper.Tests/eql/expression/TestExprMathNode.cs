@@ -24,7 +24,7 @@ namespace net.esper.eql.expression
         {
             arithNode.AddChildNode(new SupportExprNode(typeof(double?)));
             arithNode.AddChildNode(new SupportExprNode(typeof(int?)));
-            arithNode.validate(null, null);
+            arithNode.Validate(null, null);
             Assert.AreEqual(typeof(double?), arithNode.ReturnType);
         }
 
@@ -49,7 +49,7 @@ namespace net.esper.eql.expression
             // Must have exactly 2 subnodes
             try
             {
-                arithNode.validate(null, null);
+                arithNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -62,7 +62,7 @@ namespace net.esper.eql.expression
             arithNode.AddChildNode(new SupportExprNode(typeof(Int32)));
             try
             {
-                arithNode.validate(null, null);
+                arithNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

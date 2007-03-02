@@ -48,7 +48,7 @@ namespace net.esper.filter
 
             // Finds all matching filters and return their callbacks
             IList<FilterCallback> matches = new List<FilterCallback>();
-            eventTypeIndex.matchEvent(eventBean, matches);
+            eventTypeIndex.MatchEvent(eventBean, matches);
 
             if (matches.Count == 0)
             {

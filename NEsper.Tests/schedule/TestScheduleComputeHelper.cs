@@ -21,7 +21,7 @@ namespace net.esper.schedule
 
             // Try next "5 minutes past the hour"
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.MINUTES, 5);
+            spec.AddValue(ScheduleUnit.MINUTES, 5);
 
             checkCorrect(spec, "2004-12-9 15:45:01", "2004-12-9 16:05:00");
             checkCorrect(spec, "2004-12-9 16:04:59", "2004-12-9 16:05:00");
@@ -32,9 +32,9 @@ namespace net.esper.schedule
 
             // Try next "5, 10 and 15 minutes past the hour"
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.MINUTES, 5);
-            spec.addValue(ScheduleUnit.MINUTES, 10);
-            spec.addValue(ScheduleUnit.MINUTES, 15);
+            spec.AddValue(ScheduleUnit.MINUTES, 5);
+            spec.AddValue(ScheduleUnit.MINUTES, 10);
+            spec.AddValue(ScheduleUnit.MINUTES, 15);
 
             checkCorrect(spec, "2004-12-9 15:45:01", "2004-12-9 16:05:00");
             checkCorrect(spec, "2004-12-9 16:04:59", "2004-12-9 16:05:00");
@@ -45,9 +45,9 @@ namespace net.esper.schedule
 
             // Try next "0 and 30 and 59 minutes past the hour"
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.MINUTES, 0);
-            spec.addValue(ScheduleUnit.MINUTES, 30);
-            spec.addValue(ScheduleUnit.MINUTES, 59);
+            spec.AddValue(ScheduleUnit.MINUTES, 0);
+            spec.AddValue(ScheduleUnit.MINUTES, 30);
+            spec.AddValue(ScheduleUnit.MINUTES, 59);
 
             checkCorrect(spec, "2004-12-9 15:45:01", "2004-12-9 15:59:00");
             checkCorrect(spec, "2004-12-9 15:59:01", "2004-12-9 16:00:00");
@@ -57,10 +57,10 @@ namespace net.esper.schedule
 
             // Try minutes combined with seconds
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.MINUTES, 0);
-            spec.addValue(ScheduleUnit.MINUTES, 30);
-            spec.addValue(ScheduleUnit.SECONDS, 0);
-            spec.addValue(ScheduleUnit.SECONDS, 30);
+            spec.AddValue(ScheduleUnit.MINUTES, 0);
+            spec.AddValue(ScheduleUnit.MINUTES, 30);
+            spec.AddValue(ScheduleUnit.SECONDS, 0);
+            spec.AddValue(ScheduleUnit.SECONDS, 30);
 
             checkCorrect(spec, "2004-12-9 15:59:59", "2004-12-9 16:00:00");
             checkCorrect(spec, "2004-12-9 16:00:00", "2004-12-9 16:00:30");
@@ -74,9 +74,9 @@ namespace net.esper.schedule
             spec = new ScheduleSpec();
             for (int i = 10; i <= 14; i++)
             {
-                spec.addValue(ScheduleUnit.HOURS, i);
+                spec.AddValue(ScheduleUnit.HOURS, i);
             }
-            spec.addValue(ScheduleUnit.SECONDS, 15);
+            spec.AddValue(ScheduleUnit.SECONDS, 15);
 
             checkCorrect(spec, "2004-12-9 15:59:59", "2004-12-10 10:00:15");
             checkCorrect(spec, "2004-12-10 10:00:15", "2004-12-10 10:01:15");
@@ -86,8 +86,8 @@ namespace net.esper.schedule
 
             // Try hours combined with minutes
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.HOURS, 9);
-            spec.addValue(ScheduleUnit.MINUTES, 5);
+            spec.AddValue(ScheduleUnit.HOURS, 9);
+            spec.AddValue(ScheduleUnit.MINUTES, 5);
 
             checkCorrect(spec, "2004-12-9 15:59:59", "2004-12-10 9:05:00");
             checkCorrect(spec, "2004-11-30 15:59:59", "2004-12-1 9:05:00");
@@ -96,7 +96,7 @@ namespace net.esper.schedule
 
             // Try day of month as the 31st
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.DAYS_OF_MONTH, 31);
+            spec.AddValue(ScheduleUnit.DAYS_OF_MONTH, 31);
 
             checkCorrect(spec, "2004-11-30 15:59:59", "2004-12-31 0:00:00");
             checkCorrect(spec, "2004-12-30 15:59:59", "2004-12-31 0:00:00");
@@ -107,7 +107,7 @@ namespace net.esper.schedule
 
             // Try day of month as the 29st, for february testing
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.DAYS_OF_MONTH, 29);
+            spec.AddValue(ScheduleUnit.DAYS_OF_MONTH, 29);
 
             checkCorrect(spec, "2004-11-30 15:59:59", "2004-12-29 0:00:00");
             checkCorrect(spec, "2004-12-29 00:00:00", "2004-12-29 0:01:00");
@@ -118,8 +118,8 @@ namespace net.esper.schedule
 
             // Try 4:00 every day
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.HOURS, 16);
-            spec.addValue(ScheduleUnit.MINUTES, 0);
+            spec.AddValue(ScheduleUnit.HOURS, 16);
+            spec.AddValue(ScheduleUnit.MINUTES, 0);
 
             checkCorrect(spec, "2004-10-01 15:59:59", "2004-10-01 16:00:00");
             checkCorrect(spec, "2004-10-01 00:00:00", "2004-10-01 16:00:00");
@@ -129,11 +129,11 @@ namespace net.esper.schedule
 
             // Try every weekday at 10 am - scrum time!
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.HOURS, 10);
-            spec.addValue(ScheduleUnit.MINUTES, 0);
+            spec.AddValue(ScheduleUnit.HOURS, 10);
+            spec.AddValue(ScheduleUnit.MINUTES, 0);
             for (int i = 1; i <= 5; i++)
             {
-                spec.addValue(ScheduleUnit.DAYS_OF_WEEK, i);
+                spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, i);
             }
 
             checkCorrect(spec, "2004-12-05 09:50:59", "2004-12-06 10:00:00");
@@ -151,12 +151,12 @@ namespace net.esper.schedule
             // Every Monday and also on the 1st and 15th of each month, at midnight
             // (tests the or between DAYS_OF_MONTH and DAYS_OF_WEEK)
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.DAYS_OF_MONTH, 1);
-            spec.addValue(ScheduleUnit.DAYS_OF_MONTH, 15);
-            spec.addValue(ScheduleUnit.HOURS, 0);
-            spec.addValue(ScheduleUnit.MINUTES, 0);
-            spec.addValue(ScheduleUnit.SECONDS, 0);
-            spec.addValue(ScheduleUnit.DAYS_OF_WEEK, 1);
+            spec.AddValue(ScheduleUnit.DAYS_OF_MONTH, 1);
+            spec.AddValue(ScheduleUnit.DAYS_OF_MONTH, 15);
+            spec.AddValue(ScheduleUnit.HOURS, 0);
+            spec.AddValue(ScheduleUnit.MINUTES, 0);
+            spec.AddValue(ScheduleUnit.SECONDS, 0);
+            spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, 1);
 
             checkCorrect(spec, "2004-12-05 09:50:59", "2004-12-06 00:00:00");
             checkCorrect(spec, "2004-12-06 00:00:00", "2004-12-13 00:00:00");
@@ -180,12 +180,12 @@ namespace net.esper.schedule
             spec = new ScheduleSpec();
             for (int i = 1; i <= 12; i += 2)
             {
-                spec.addValue(ScheduleUnit.MONTHS, i);
+                spec.AddValue(ScheduleUnit.MONTHS, i);
             }
             for (int i = 0; i <= 6; i += 2)
             // Adds Sunday, Tuesday, Thursday, Saturday
             {
-                spec.addValue(ScheduleUnit.DAYS_OF_WEEK, i);
+                spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, i);
             }
 
             checkCorrect(spec, "2004-09-01 00:00:00", "2004-09-02 00:00:00"); // Sept 1 2004 is a Wednesday
@@ -202,12 +202,12 @@ namespace net.esper.schedule
             spec = new ScheduleSpec();
             for (int i = 1; i <= 12; i += 2)
             {
-                spec.addValue(ScheduleUnit.MONTHS, i);
+                spec.AddValue(ScheduleUnit.MONTHS, i);
             }
             for (int i = 0; i <= 6; i += 2)
             // Adds Sunday, Tuesday, Thursday, Saturday
             {
-                spec.addValue(ScheduleUnit.DAYS_OF_WEEK, i);
+                spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, i);
             }
 
             checkCorrect(spec, "2004-09-01 00:00:00", "2004-09-02 00:00:00"); // Sept 1 2004 is a Wednesday
@@ -222,15 +222,15 @@ namespace net.esper.schedule
             spec = new ScheduleSpec();
             for (int i = 0; i <= 59; i += 5)
             {
-                spec.addValue(ScheduleUnit.SECONDS, i);
+                spec.AddValue(ScheduleUnit.SECONDS, i);
             }
             for (int i = 1; i <= 5; i++)
             {
-                spec.addValue(ScheduleUnit.DAYS_OF_WEEK, i);
+                spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, i);
             }
             for (int i = 9; i <= 15; i++)
             {
-                spec.addValue(ScheduleUnit.HOURS, i);
+                spec.AddValue(ScheduleUnit.HOURS, i);
             }
 
             checkCorrect(spec, "2004-12-12 20:00:00", "2004-12-13 09:00:00"); // Dec 12 2004 is a Sunday
@@ -249,10 +249,10 @@ namespace net.esper.schedule
 
             // Feb 14, 12pm
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.MONTHS, 2);
-            spec.addValue(ScheduleUnit.DAYS_OF_MONTH, 14);
-            spec.addValue(ScheduleUnit.HOURS, 12);
-            spec.addValue(ScheduleUnit.MINUTES, 0);
+            spec.AddValue(ScheduleUnit.MONTHS, 2);
+            spec.AddValue(ScheduleUnit.DAYS_OF_MONTH, 14);
+            spec.AddValue(ScheduleUnit.HOURS, 12);
+            spec.AddValue(ScheduleUnit.MINUTES, 0);
 
             checkCorrect(spec, "2004-12-12 20:00:00", "2005-02-14 12:00:00");
             checkCorrect(spec, "2003-12-12 20:00:00", "2004-02-14 12:00:00");
@@ -260,21 +260,21 @@ namespace net.esper.schedule
 
             // Dec 31, 23pm and 50 seconds (countdown)
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.MONTHS, 12);
-            spec.addValue(ScheduleUnit.DAYS_OF_MONTH, 31);
-            spec.addValue(ScheduleUnit.HOURS, 23);
-            spec.addValue(ScheduleUnit.MINUTES, 59);
-            spec.addValue(ScheduleUnit.SECONDS, 50);
+            spec.AddValue(ScheduleUnit.MONTHS, 12);
+            spec.AddValue(ScheduleUnit.DAYS_OF_MONTH, 31);
+            spec.AddValue(ScheduleUnit.HOURS, 23);
+            spec.AddValue(ScheduleUnit.MINUTES, 59);
+            spec.AddValue(ScheduleUnit.SECONDS, 50);
 
             checkCorrect(spec, "2004-12-12 20:00:00", "2004-12-31 23:59:50");
             checkCorrect(spec, "2004-12-31 23:59:55", "2005-12-31 23:59:50");
 
             // Feb 29 (2004 leap year), 01pm any minute and 02 seconds
             spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.MONTHS, 2);
-            spec.addValue(ScheduleUnit.DAYS_OF_MONTH, 29);
-            spec.addValue(ScheduleUnit.HOURS, 1);
-            spec.addValue(ScheduleUnit.SECONDS, 2);
+            spec.AddValue(ScheduleUnit.MONTHS, 2);
+            spec.AddValue(ScheduleUnit.DAYS_OF_MONTH, 29);
+            spec.AddValue(ScheduleUnit.HOURS, 1);
+            spec.AddValue(ScheduleUnit.SECONDS, 2);
 
             checkCorrect(spec, "2004-02-18 00:00:00", "2004-02-29 01:00:02");
             checkCorrect(spec, "2004-02-29 01:00:02", "2004-02-29 01:01:02");

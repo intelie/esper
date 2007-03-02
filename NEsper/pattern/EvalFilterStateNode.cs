@@ -136,7 +136,7 @@ namespace net.esper.pattern
 
         private void StartFiltering()
         {
-            FilterValueSet filterValues = filterSpec.getValueSet(beginState);
+            FilterValueSet filterValues = filterSpec.GetValueSet(beginState);
             context.FilterService.Add(filterValues, this);
         }
 

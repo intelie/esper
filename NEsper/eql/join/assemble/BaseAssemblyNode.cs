@@ -136,9 +136,9 @@ namespace net.esper.eql.join.assemble
 			this.Print( indentWriter );
 			foreach ( BaseAssemblyNode child in childNodes )
 			{
-				indentWriter.incrIndent();
+				indentWriter.IncrIndent();
 				child.Print( indentWriter );
-				indentWriter.decrIndent();
+				indentWriter.DecrIndent();
 			}
 		}
 
@@ -158,7 +158,7 @@ namespace net.esper.eql.join.assemble
             ETreeDictionary<Int32, IList<BaseAssemblyNode>> nodesPerLevel = new ETreeDictionary<Int32, IList<BaseAssemblyNode>>();
 
 			// Recursively enter all aggregate functions and their level into map
-			recursiveAggregateEnter( topNode, nodesPerLevel, 1 );
+			RecursiveAggregateEnter( topNode, nodesPerLevel, 1 );
 
 			// Done if none found
 			if ( nodesPerLevel.Count == 0 )
@@ -185,12 +185,12 @@ namespace net.esper.eql.join.assemble
 			return result;
 		}
 
-		private static void recursiveAggregateEnter( BaseAssemblyNode currentNode, EDictionary<Int32, IList<BaseAssemblyNode>> nodesPerLevel, int currentLevel )
+		private static void RecursiveAggregateEnter( BaseAssemblyNode currentNode, EDictionary<Int32, IList<BaseAssemblyNode>> nodesPerLevel, int currentLevel )
 		{
 			// ask all child nodes to enter themselves
 			foreach ( BaseAssemblyNode node in currentNode.ChildNodes )
 			{
-				recursiveAggregateEnter( node, nodesPerLevel, currentLevel + 1 );
+				RecursiveAggregateEnter( node, nodesPerLevel, currentLevel + 1 );
 			}
 
 			// Add myself to list

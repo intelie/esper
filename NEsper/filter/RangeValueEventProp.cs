@@ -29,7 +29,7 @@ namespace net.esper.filter
             this.resultEventProperty = resultEventProperty;
         }
 
-        public void checkType(EDictionary<String, EventType> taggedEventTypes)
+        public void CheckType(EDictionary<String, EventType> taggedEventTypes)
         {
             EventType type = taggedEventTypes.Fetch(resultEventAsName, null);
             if (type == null)
@@ -51,7 +51,7 @@ namespace net.esper.filter
             }
         }
 
-        public double getFilterValue(MatchedEventMap matchedEvents)
+        public double GetFilterValue(MatchedEventMap matchedEvents)
         {
             EventBean ev = matchedEvents.getMatchingEvent(resultEventAsName);
             if (ev == null)

@@ -28,7 +28,7 @@ namespace net.esper.eql.expression
             // Must have exactly 2 subnodes
             try
             {
-                _bitWiseNode.validate(null, null);
+                _bitWiseNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -42,7 +42,7 @@ namespace net.esper.eql.expression
             _bitWiseNode.AddChildNode(new SupportExprNode(typeof(Int32)));
             try
             {
-                _bitWiseNode.validate(null, null);
+                _bitWiseNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -60,7 +60,7 @@ namespace net.esper.eql.expression
             _bitWiseNode.AddChildNode(new SupportExprNode(typeof(Int32)));
             try
             {
-                _bitWiseNode.validate(null, null);
+                _bitWiseNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException)

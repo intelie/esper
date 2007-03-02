@@ -26,7 +26,7 @@ namespace net.esper.type
 
         private long? longValue;
 
-        public override void parse(String value)
+        public override void Parse(String value)
         {
             longValue = ParseString(value);
         }

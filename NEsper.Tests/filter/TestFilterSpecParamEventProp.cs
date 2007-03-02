@@ -39,11 +39,11 @@ namespace net.esper.filter
 			EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
 			taggedEventTypes.Put( "asName", SupportEventTypeFactory.createBeanType( typeof( SupportBean ) ) );
 
-			Assert.AreEqual( typeof( int? ), param.getFilterValueClass( taggedEventTypes ) );
+			Assert.AreEqual( typeof( int? ), param.GetFilterValueClass( taggedEventTypes ) );
 
 			try
 			{
-				param.getFilterValueClass( new EHashDictionary<String, EventType>() );
+				param.GetFilterValueClass( new EHashDictionary<String, EventType>() );
 				Assert.Fail();
 			}
 			catch ( System.SystemException ex )
@@ -53,7 +53,7 @@ namespace net.esper.filter
 
 			try
 			{
-				param.getFilterValueClass( null );
+				param.GetFilterValueClass( null );
 				Assert.Fail();
 			}
 			catch ( System.NullReferenceException ex )
@@ -74,11 +74,11 @@ namespace net.esper.filter
 			MatchedEventMap matchedEvents = new MatchedEventMap();
 			matchedEvents.Add( "asName", _event );
 
-			Assert.AreEqual( 1000, _params.getFilterValue( matchedEvents ) );
+			Assert.AreEqual( 1000, _params.GetFilterValue( matchedEvents ) );
 
 			try
 			{
-				_params.getFilterValue( new MatchedEventMap() );
+				_params.GetFilterValue( new MatchedEventMap() );
 				Assert.Fail();
 			}
 			catch ( System.SystemException ex )
@@ -88,7 +88,7 @@ namespace net.esper.filter
 
 			try
 			{
-				_params.getFilterValue( null );
+				_params.GetFilterValue( null );
 				Assert.Fail();
 			}
 			catch ( System.NullReferenceException ex )

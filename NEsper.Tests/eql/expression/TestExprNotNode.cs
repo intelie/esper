@@ -31,7 +31,7 @@ namespace net.esper.eql.expression
             // fails with zero expressions
             try
             {
-                notNode.validate(null, null);
+                notNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -44,7 +44,7 @@ namespace net.esper.eql.expression
             notNode.AddChildNode(new SupportExprNode(typeof(bool)));
             try
             {
-                notNode.validate(null, null);
+                notNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -57,7 +57,7 @@ namespace net.esper.eql.expression
             notNode.AddChildNode(new SupportExprNode(typeof(String)));
             try
             {
-                notNode.validate(null, null);
+                notNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -68,7 +68,7 @@ namespace net.esper.eql.expression
             // validates
             notNode = new ExprNotNode();
             notNode.AddChildNode(new SupportExprNode(typeof(bool)));
-            notNode.validate(null, null);
+            notNode.Validate(null, null);
         }
 
         [Test]

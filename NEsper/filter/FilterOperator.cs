@@ -46,7 +46,7 @@ namespace net.esper.filter
         /// <summary> Returns true for range operator, false if not a range operator.</summary>
         /// <returns> true for ranges, false for anyting else
         /// </returns>
-        public static bool isRangeOperator( FilterOperator op )
+        public static bool IsRangeOperator( FilterOperator op )
         {
             if ((op == FilterOperator.RANGE_CLOSED) ||
     	        (op == FilterOperator.RANGE_OPEN) ||
@@ -61,7 +61,7 @@ namespace net.esper.filter
         /// <summary> Returns true for relational comparison operators which excludes the = equals operator, else returns false.</summary>
         /// <returns> true for lesser or greater -type operators, false for anyting else
         /// </returns>
-        public static bool isComparisonOperator( FilterOperator op )
+        public static bool IsComparisonOperator( FilterOperator op )
         {
             if ((op == FilterOperator.LESS) ||
             	(op == FilterOperator.LESS_OR_EQUAL) ||
@@ -79,7 +79,7 @@ namespace net.esper.filter
         /// <returns> FilterOperator or null if not valid
         /// </returns>
 
-        public static FilterOperator? parseComparisonOperator(String op)
+        public static FilterOperator? ParseComparisonOperator(String op)
         {
             if (op == null)
             {
@@ -112,7 +112,7 @@ namespace net.esper.filter
         /// </param>
         /// <returns> FilterOperator for the combination inclusive or exclusive
         /// </returns>
-        public static FilterOperator parseRangeOperator(bool isInclusiveFirst, bool isInclusiveLast)
+        public static FilterOperator ParseRangeOperator(bool isInclusiveFirst, bool isInclusiveLast)
         {
             if (isInclusiveFirst && isInclusiveLast)
             {

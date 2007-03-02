@@ -15,7 +15,7 @@ namespace net.esper.eql.expression
 		public virtual void testEvaluate()
 		{
 			SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[]{10, 20});
-			validatedNodeToTest.setAggregationResultFuture(future, 1);
+			validatedNodeToTest.SetAggregationResultFuture(future, 1);
 			
 			Assert.AreEqual(20, validatedNodeToTest.Evaluate(null));
 		}

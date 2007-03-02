@@ -14,8 +14,8 @@ namespace net.esper.type
             {
                 return PrimitiveValueType.DOUBLE;
             }
-
         }
+
         override public Object ValueObject
         {
             get
@@ -58,7 +58,7 @@ namespace net.esper.type
             return Double.Parse(value);
         }
 
-        public override void parse(String value)
+        public override void Parse(String value)
         {
             doubleValue = ParseString(value);
         }

@@ -45,7 +45,7 @@ namespace net.esper.eql.view
                 Route(oldData);
             }
 
-            this.updateChildren(newData, oldData);
+            this.UpdateChildren(newData, oldData);
         }
 
         private void Route(EventBean[] events)

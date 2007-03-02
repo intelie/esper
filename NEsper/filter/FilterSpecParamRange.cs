@@ -32,23 +32,23 @@ namespace net.esper.filter
 			this.min = min;
 			this.max = max;
 			
-			if (! FilterOperatorHelper.isRangeOperator( filterOperator ) )
+			if (! FilterOperatorHelper.IsRangeOperator( filterOperator ) )
 			{
 				throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " + "range filter parameter");
 			}
 		}
 
-		public override Type getFilterValueClass( EDictionary<String, EventType> taggedEventTypes )
+		public override Type GetFilterValueClass( EDictionary<String, EventType> taggedEventTypes )
 		{
-			min.checkType( taggedEventTypes );
-			max.checkType( taggedEventTypes );
+			min.CheckType( taggedEventTypes );
+			max.CheckType( taggedEventTypes );
 			return typeof( DoubleRange );
 		}
 		
-		public override Object getFilterValue(MatchedEventMap matchedEvents)
+		public override Object GetFilterValue(MatchedEventMap matchedEvents)
 		{
-			double begin = min.getFilterValue(matchedEvents);
-			double end = max.getFilterValue(matchedEvents);
+			double begin = min.GetFilterValue(matchedEvents);
+			double end = max.GetFilterValue(matchedEvents);
 			return new DoubleRange(begin, end);
 		}
 		

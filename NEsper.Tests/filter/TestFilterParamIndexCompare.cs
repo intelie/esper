@@ -160,28 +160,28 @@ namespace net.esper.filter
 		private void verifydoublePrimitive( FilterParamIndex index, double testValue, int numExpected )
 		{
 			testBean.doublePrimitive = testValue;
-			index.matchEvent( testEventBean, matchesList );
+			index.MatchEvent( testEventBean, matchesList );
 			Assert.AreEqual( numExpected, testEvaluator.AndResetCountInvoked );
 		}
 
 		private void verifyDoubleBoxed( FilterParamIndex index, Double? testValue, int numExpected )
 		{
 			testBean.doubleBoxed = testValue;
-			index.matchEvent( testEventBean, matchesList );
+			index.MatchEvent( testEventBean, matchesList );
 			Assert.AreEqual( numExpected, testEvaluator.AndResetCountInvoked );
 		}
 
 		private void verifyLongBoxed( FilterParamIndex index, Int64? testValue, int numExpected )
 		{
 			testBean.longBoxed = testValue;
-			index.matchEvent( testEventBean, matchesList );
+			index.MatchEvent( testEventBean, matchesList );
 			Assert.AreEqual( numExpected, testEvaluator.AndResetCountInvoked );
 		}
 
 		private void verifylongPrimitive( FilterParamIndex index, long testValue, int numExpected )
 		{
 			testBean.longPrimitive = testValue;
-			index.matchEvent( testEventBean, matchesList );
+			index.MatchEvent( testEventBean, matchesList );
 			Assert.AreEqual( numExpected, testEvaluator.AndResetCountInvoked );
 		}
 	}

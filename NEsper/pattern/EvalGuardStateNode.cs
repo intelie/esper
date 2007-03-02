@@ -36,7 +36,7 @@ namespace net.esper.pattern
 				log.Debug(".constructor");
 			}
 			
-			guard = guardFactory.makeGuard(context, this);
+			guard = guardFactory.MakeGuard(context, this);
 			
 			this.activeChildNode = singleWithinChildNode.newState(this, beginState, context);
 		}

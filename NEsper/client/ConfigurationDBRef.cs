@@ -23,6 +23,7 @@ namespace net.esper.client
         
 		virtual public bool ConnectionAutoCommit
         {
+			get { return this.connectionSettings.AutoCommit ; }
             set { this.connectionSettings.AutoCommit = value; }
         }
         
@@ -32,6 +33,7 @@ namespace net.esper.client
         
 		virtual public IsolationLevel ConnectionTransactionIsolation
         {
+			get { return this.connectionSettings.TransactionIsolation.GetValueOrDefault() ; }
             set { this.connectionSettings.TransactionIsolation = value ; }
         }
         
@@ -41,6 +43,7 @@ namespace net.esper.client
         
 		virtual public bool ConnectionReadOnly
         {
+			get { return this.connectionSettings.ReadOnly ; }
 			set { this.connectionSettings.ReadOnly = value; }
         }
         

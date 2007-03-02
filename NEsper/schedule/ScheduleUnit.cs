@@ -48,7 +48,7 @@ namespace net.esper.schedule
         /// <summary> Returns minimum valid value for the unit.</summary>
         /// <returns> minimum unit value
         /// </returns>
-        public int min()
+        public int Min()
         {
             return min_;
         }
@@ -56,7 +56,7 @@ namespace net.esper.schedule
         /// <summary> Returns minimum valid value for the unit.</summary>
         /// <returns> maximum unit value
         /// </returns>
-        public int max()
+        public int Max()
         {
             return max_;
         }

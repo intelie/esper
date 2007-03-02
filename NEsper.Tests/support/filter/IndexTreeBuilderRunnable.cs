@@ -78,14 +78,14 @@ namespace net.esper.support.filter
                 while (!ObjectReservationSingleton.Instance.reserve(filterSpec));
 
                 // Add expression
-                FilterValueSet filterValues = filterSpec.getValueSet(null);
+                FilterValueSet filterValues = filterSpec.GetValueSet(null);
                 FilterCallback filterCallback = new SupportFilterCallback();
                 IndexTreeBuilder treeBuilder = new IndexTreeBuilder();
                 IndexTreePath pathAddedTo = treeBuilder.Add(filterValues, filterCallback, topNode);
 
                 // Fire a no-match
                 IList<FilterCallback> matches = new List<FilterCallback>();
-                topNode.matchEvent(unmatchedEvent, matches);
+                topNode.MatchEvent(unmatchedEvent, matches);
 
                 if (matches.Count != 0)
                 {
@@ -94,7 +94,7 @@ namespace net.esper.support.filter
                 }
 
                 // Fire a match
-                topNode.matchEvent(matchedEvent, matches);
+                topNode.MatchEvent(matchedEvent, matches);
 
                 if (matches.Count != 1)
                 {

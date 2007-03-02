@@ -66,7 +66,7 @@ namespace net.esper.type
          * @param coercedType is the object type
          * @return computer for performing the relational op
          */
-        public RelationalOpEnum.Computer getComputer(Type coercedType)
+        public RelationalOpEnum.Computer GetComputer(Type coercedType)
         {
             if ((coercedType != typeof(double?)) &&
                 (coercedType != typeof(long?)) &&

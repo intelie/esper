@@ -47,7 +47,7 @@ namespace net.esper.eql.expression
             c2_1.AddChildNode(c2_1_2);
 
             IList<ExprAggregateNode> aggregates = new List<ExprAggregateNode>();
-            ExprAggregateNode.getAggregatesBottomUp(top, aggregates);
+            ExprAggregateNode.GetAggregatesBottomUp(top, aggregates);
 
             Assert.AreEqual(5, aggregates.Count);
             Assert.AreSame(c2_1_1, aggregates[0]);
@@ -58,7 +58,7 @@ namespace net.esper.eql.expression
 
             // Test no aggregates
             aggregates.Clear();
-            ExprAggregateNode.getAggregatesBottomUp(new SupportExprNode(null), aggregates);
+            ExprAggregateNode.GetAggregatesBottomUp(new SupportExprNode(null), aggregates);
             Assert.IsTrue(aggregates.Count == 0);
         }
     }

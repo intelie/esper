@@ -64,7 +64,7 @@ namespace net.esper.eql.expression
         /// Constructor creates a list of child nodes.
         /// </summary>
 
-        public ExprNode()
+        protected ExprNode()
         {
             childNodes = new List<ExprNode>();
         }
@@ -93,7 +93,7 @@ namespace net.esper.eql.expression
 
             try
             {
-                validate(streamTypeService, autoImportService);
+                Validate(streamTypeService, autoImportService);
             }
             catch (ExprValidationException e)
             {
@@ -221,7 +221,7 @@ namespace net.esper.eql.expression
             // Validate
             try
             {
-                result.validate(streamTypeService, autoImportService);
+                result.Validate(streamTypeService, autoImportService);
             }
             catch (ExprValidationException)
             {
@@ -234,7 +234,7 @@ namespace net.esper.eql.expression
         }
 
         public abstract Object Evaluate(EventBean[] param1);
-        public abstract void validate(StreamTypeService param1, AutoImportService param2);
+        public abstract void Validate(StreamTypeService param1, AutoImportService param2);
 
         private static readonly Log log = LogFactory.GetLog(typeof(ExprNode));
     }

@@ -61,14 +61,14 @@ namespace net.esper.filter
         {
             get
             {
-                checkType(filterConstant);
+                CheckType(filterConstant);
                 Double constant = Convert.ToDouble(filterConstant);
                 return constantsMap.Fetch(constant, null);
             }
 
             set
             {
-                checkType(filterConstant);
+                CheckType(filterConstant);
                 Double constant = Convert.ToDouble(filterConstant);
                 constantsMap[constant] = value;
 
@@ -92,7 +92,7 @@ namespace net.esper.filter
                 return false;
             }
 
-            updateBounds();
+            UpdateBounds();
 
             return true;
         }
@@ -113,7 +113,7 @@ namespace net.esper.filter
             }
         }
 
-        public override void matchEvent(EventBean eventBean, IList<FilterCallback> matches)
+        public override void MatchEvent(EventBean eventBean, IList<FilterCallback> matches)
         {
             Object propertyValue = this.Getter.GetValue(eventBean);
 
@@ -188,7 +188,7 @@ namespace net.esper.filter
                     continue;
                 }
 
-                matcher.matchEvent(eventBean, matches);
+                matcher.MatchEvent(eventBean, matches);
             }
 
             if (filterOperator == FilterOperator.GREATER_OR_EQUAL)
@@ -196,14 +196,14 @@ namespace net.esper.filter
                 EventEvaluator matcher = constantsMap.Fetch(propertyValueDouble);
                 if (matcher != null)
                 {
-                    matcher.matchEvent(eventBean, matches);
+                    matcher.MatchEvent(eventBean, matches);
                 }
             }
 
             constantsMapRWLock.ReleaseReaderLock();
         }
 
-        private void updateBounds()
+        private void UpdateBounds()
         {
             if (constantsMap.Count == 0)
             {
@@ -216,7 +216,7 @@ namespace net.esper.filter
             upperBounds = Convert.ToDouble(constantsMap.LastKey);
         }
 
-        private void checkType(Object filterConstant)
+        private void CheckType(Object filterConstant)
         {
             if (this.PropertyBoxedType != TypeHelper.GetBoxedType(filterConstant.GetType()))
             {

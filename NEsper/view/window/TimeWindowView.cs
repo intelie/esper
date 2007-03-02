@@ -51,7 +51,7 @@ namespace net.esper.view.window
 			set
 			{
 				this.viewServiceContext = value;
-				this.scheduleSlot = value.ScheduleBucket.allocateSlot();
+				this.scheduleSlot = value.ScheduleBucket.AllocateSlot();
 			}
 			
 		}
@@ -155,7 +155,7 @@ namespace net.esper.view.window
 			// update child views
 			if (this.HasViews)
 			{
-				updateChildren(newData, null);
+				UpdateChildren(newData, null);
 			}
 		}
 		
@@ -180,7 +180,7 @@ namespace net.esper.view.window
 			{
 				if ((expired != null) && (expired.Count > 0))
 				{
-					updateChildren(null, expired.ToArray());
+					UpdateChildren(null, expired.ToArray());
 				}
 			}
 			

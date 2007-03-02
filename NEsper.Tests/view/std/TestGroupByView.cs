@@ -141,7 +141,7 @@ namespace net.esper.view.std
 			// Invalid for no child nodes
 			try
 			{
-				GroupByView.makeSubViews(groupView, groupByValue, viewServiceContext);
+				GroupByView.MakeSubViews(groupView, groupByValue, viewServiceContext);
 				Assert.IsTrue(false);
 			}
 			catch (EPException ex)
@@ -154,7 +154,7 @@ namespace net.esper.view.std
 			groupView.AddView(mergeViewOne);
 			try
 			{
-				GroupByView.makeSubViews(groupView, groupByValue, viewServiceContext);
+				GroupByView.MakeSubViews(groupView, groupByValue, viewServiceContext);
 				Assert.IsTrue(false);
 			}
 			catch (EPException ex)
@@ -173,7 +173,7 @@ namespace net.esper.view.std
 			mergeViewOne = new MergeView(new String[]{"symbol"});
 			sizeView_1.AddView(mergeViewOne);
 			
-      IList<View> subViews = GroupByView.makeSubViews(groupView, groupByValue, viewServiceContext);
+      IList<View> subViews = GroupByView.MakeSubViews(groupView, groupByValue, viewServiceContext);
 			
 			Assert.IsTrue(subViews.Count == 1);
 			Assert.IsTrue(subViews[0] is SizeView);

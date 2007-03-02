@@ -129,7 +129,7 @@ namespace net.esper.view.window
             SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
             myView.Parent = parent;
 
-            LengthWindowView copied = (LengthWindowView)ViewSupport.shallowCopyView(myView);
+            LengthWindowView copied = (LengthWindowView)ViewSupport.ShallowCopyView(myView);
             Assert.AreEqual(myView.Size, copied.Size);
         }
 

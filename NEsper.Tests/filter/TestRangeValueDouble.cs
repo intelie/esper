@@ -22,13 +22,13 @@ namespace net.esper.filter
 		[Test]
 		public virtual void  testCheckType()
 		{
-			_params[0].checkType(null);
+			_params[0].CheckType(null);
 		}
 		
 		[Test]
 		public virtual void  testGetFilterValue()
 		{
-			Assert.AreEqual(5.5, _params[0].getFilterValue(null));
+			Assert.AreEqual(5.5, _params[0].GetFilterValue(null));
 		}
 		
 		[Test]

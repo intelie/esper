@@ -35,8 +35,8 @@ namespace net.esper.filter
 			typeOne = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
 			typeTwo = SupportEventTypeFactory.createBeanType(typeof(SupportBeanSimple));
 			
-			valueSetOne = SupportFilterSpecBuilder.build(typeOne, new Object[0]).getValueSet(null);
-			valueSetTwo = SupportFilterSpecBuilder.build(typeTwo, new Object[0]).getValueSet(null);
+			valueSetOne = SupportFilterSpecBuilder.build(typeOne, new Object[0]).GetValueSet(null);
+			valueSetTwo = SupportFilterSpecBuilder.build(typeTwo, new Object[0]).GetValueSet(null);
 			
 			callbackOne = new SupportFilterCallback();
 			callbackTwo = new SupportFilterCallback();

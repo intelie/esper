@@ -30,9 +30,9 @@ namespace net.esper.eql.expression
         {
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
-            Type childType = base.validateSingleNumericChild(streamTypeService);
+            Type childType = base.ValidateSingleNumericChild(streamTypeService);
 
             computer = getSumComputer(childType);
         }

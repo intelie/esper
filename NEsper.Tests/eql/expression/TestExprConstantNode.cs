@@ -29,7 +29,7 @@ namespace net.esper.eql.expression
 		[Test]
 		public virtual void  testValidate()
 		{
-			constantNode.validate(null, null);
+			constantNode.Validate(null, null);
 		}
 		
 		[Test]

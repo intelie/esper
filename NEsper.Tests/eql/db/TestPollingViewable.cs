@@ -36,7 +36,7 @@ namespace net.esper.eql.db
 
 			pollingViewable = new PollingViewable( 1, inputProperties, supportPollingStrategy, dataCache, resultEventType );
 
-			pollingViewable.validate( new SupportStreamTypeSvc3Stream() );
+			pollingViewable.Validate( new SupportStreamTypeSvc3Stream() );
 		}
 
 		[Test]
@@ -50,7 +50,7 @@ namespace net.esper.eql.db
 			EventBean[][] input = tmpArray;
 			input[0] = new EventBean[] { MakeEvent( -1 ), null };
 			input[1] = new EventBean[] { MakeEvent( 500 ), null };
-			IList<EventBean>[] resultRows = pollingViewable.poll( input );
+			IList<EventBean>[] resultRows = pollingViewable.Poll( input );
 
 			// should have joined to two rows
 			Assert.AreEqual( 2, resultRows.Length );

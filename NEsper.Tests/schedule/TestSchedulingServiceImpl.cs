@@ -35,7 +35,7 @@ namespace net.esper.schedule
                 slots[i] = new ScheduleSlot[2];
                 for (int j = 0; j < slots[i].Length; j++)
                 {
-                    slots[i][j] = buckets[i].allocateSlot();
+                    slots[i][j] = buckets[i].AllocateSlot();
                 }
             }
 
@@ -128,15 +128,15 @@ namespace net.esper.schedule
 
             // Add a specification
             ScheduleSpec spec = new ScheduleSpec();
-            spec.addValue(ScheduleUnit.MONTHS, 12);
-            spec.addValue(ScheduleUnit.DAYS_OF_MONTH, 9);
-            spec.addValue(ScheduleUnit.HOURS, 15);
-            spec.addValue(ScheduleUnit.MINUTES, 27);
-            spec.addValue(ScheduleUnit.SECONDS, 20);
+            spec.AddValue(ScheduleUnit.MONTHS, 12);
+            spec.AddValue(ScheduleUnit.DAYS_OF_MONTH, 9);
+            spec.AddValue(ScheduleUnit.HOURS, 15);
+            spec.AddValue(ScheduleUnit.MINUTES, 27);
+            spec.AddValue(ScheduleUnit.SECONDS, 20);
 
             service.Add(spec, callbacks[3], slots[1][1]);
 
-            spec.addValue(ScheduleUnit.SECONDS, 15);
+            spec.AddValue(ScheduleUnit.SECONDS, 15);
             service.Add(spec, callbacks[4], slots[2][0]);
 
             // Add some more callbacks

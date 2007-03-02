@@ -43,7 +43,7 @@ namespace net.esper.eql.expression
 			// Must have 2 or more String subnodes
 			try
 			{
-				concatNode.validate(null, null);
+				concatNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (ExprValidationException ex)
@@ -56,7 +56,7 @@ namespace net.esper.eql.expression
 			concatNode.AddChildNode(new SupportExprNode(typeof(Int32)));
 			try
 			{
-				concatNode.validate(null, null);
+				concatNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (ExprValidationException ex)

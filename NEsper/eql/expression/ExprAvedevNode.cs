@@ -32,9 +32,9 @@ namespace net.esper.eql.expression
         {
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
-            base.validateSingleNumericChild(streamTypeService);
+            base.ValidateSingleNumericChild(streamTypeService);
             computer = new DoubleAvedev();
         }
 

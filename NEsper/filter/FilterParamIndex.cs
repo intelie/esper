@@ -71,7 +71,7 @@ namespace net.esper.filter
         /// <param name="eventType">is the event type the index will handle.
         /// </param>
 
-        public FilterParamIndex(String propertyName, FilterOperator filterOperator, EventType eventType)
+        protected FilterParamIndex(String propertyName, FilterOperator filterOperator, EventType eventType)
         {
             this.propertyName = propertyName;
             this.filterOperator = filterOperator;
@@ -163,6 +163,6 @@ namespace net.esper.filter
         /// <param name="matches">accumulates the matching filter callbacks
         /// </param>
 
-        public abstract void matchEvent(EventBean _event, IList<FilterCallback> matches);
+        public abstract void MatchEvent(EventBean _event, IList<FilterCallback> matches);
     }
 }

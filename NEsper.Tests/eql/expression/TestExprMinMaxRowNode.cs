@@ -24,11 +24,11 @@ namespace net.esper.eql.expression
 		{
 			minMaxNode.AddChildNode(new SupportExprNode(typeof(Double)));
 			minMaxNode.AddChildNode(new SupportExprNode(typeof(Int32)));
-			minMaxNode.validate(null, null);
+			minMaxNode.Validate(null, null);
 			Assert.AreEqual( typeof( double? ), minMaxNode.ReturnType );
 			
 			minMaxNode.AddChildNode(new SupportExprNode(typeof(Double)));
-			minMaxNode.validate(null, null);
+			minMaxNode.Validate(null, null);
 			Assert.AreEqual( typeof( double? ), minMaxNode.ReturnType );
 		}
 		
@@ -48,7 +48,7 @@ namespace net.esper.eql.expression
 			// Must have 2 or more subnodes
 			try
 			{
-				minMaxNode.validate(null, null);
+				minMaxNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (ExprValidationException ex)
@@ -61,7 +61,7 @@ namespace net.esper.eql.expression
 			minMaxNode.AddChildNode(new SupportExprNode(typeof(Int32)));
 			try
 			{
-				minMaxNode.validate(null, null);
+				minMaxNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (ExprValidationException ex)

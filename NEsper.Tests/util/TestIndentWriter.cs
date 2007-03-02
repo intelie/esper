@@ -27,24 +27,24 @@ namespace net.esper.util
 		{
 			writer.WriteLine("a");
 			assertWritten("a");
-			
-			writer.incrIndent();
+
+            writer.IncrIndent();
 			writer.WriteLine("a");
 			assertWritten("  a");
-			
-			writer.incrIndent();
+
+            writer.IncrIndent();
 			writer.WriteLine("a");
 			assertWritten("    a");
 			
-			writer.decrIndent();
+			writer.DecrIndent();
 			writer.WriteLine("a");
 			assertWritten("  a");
-			
-			writer.decrIndent();
+
+            writer.DecrIndent();
 			writer.WriteLine("a");
 			assertWritten("a");
-			
-			writer.decrIndent();
+
+            writer.DecrIndent();
 			writer.WriteLine("a");
 			assertWritten("a");
 		}

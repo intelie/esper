@@ -31,7 +31,7 @@ namespace net.esper.eql.expression
             buffer = new StringBuilder();
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             if (this.ChildNodes.Count < 2)
             {

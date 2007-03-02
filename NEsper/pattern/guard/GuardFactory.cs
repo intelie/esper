@@ -13,6 +13,6 @@ namespace net.esper.pattern.guard
 		/// </param>
 		/// <returns> guard instance
 		/// </returns>
-		Guard makeGuard(PatternContext context, Quitable quitable);
+		Guard MakeGuard(PatternContext context, Quitable quitable);
 	}
 }

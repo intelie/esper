@@ -38,7 +38,7 @@ namespace net.esper.core
 			dispatch.Add( eventOne );
 			Assert.IsTrue( dispatch.hasData() );
 
-			dispatch.execute();
+			dispatch.Execute();
 
 			Assert.IsFalse( dispatch.hasData() );
 			Assert.AreEqual( 1, listener.LastNewData.Length );
@@ -55,7 +55,7 @@ namespace net.esper.core
 			dispatch.Add( eventTwo );
 			Assert.IsTrue( dispatch.hasData() );
 
-			dispatch.execute();
+			dispatch.Execute();
 
 			Assert.IsFalse( dispatch.hasData() );
 			Assert.AreEqual( 2, listener.LastNewData.Length );

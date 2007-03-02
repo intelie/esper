@@ -101,7 +101,7 @@ namespace net.esper.eql.join
                     EqualsNode = new ExprEqualsNode(false);
                     EqualsNode.AddChildNode(outerJoinDesc.LeftNode);
                     EqualsNode.AddChildNode(outerJoinDesc.RightNode);
-                    EqualsNode.validate(null, null);
+                    EqualsNode.Validate(null, null);
                 }
 
                 HistoricalEventViewable viewable = (HistoricalEventViewable)streamViews[polledView];

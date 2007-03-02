@@ -83,7 +83,7 @@ namespace net.esper.support.eql
             this.type = type;
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             // Keep a count for if and when this was validated
             validateCount++;

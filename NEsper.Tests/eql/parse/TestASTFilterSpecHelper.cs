@@ -57,17 +57,17 @@ namespace net.esper.eql.parse
             FilterSpecParam param = spec.Parameters[0];
             Assert.AreEqual("intPrimitive", param.PropertyName);
             Assert.AreEqual(FilterOperator.GREATER, param.FilterOperator);
-            Assert.AreEqual(4, param.getFilterValue(null));
+            Assert.AreEqual(4, param.GetFilterValue(null));
 
             param = spec.Parameters[1];
             Assert.AreEqual("str", param.PropertyName);
             Assert.AreEqual(FilterOperator.EQUAL, param.FilterOperator);
-            Assert.AreEqual("test", param.getFilterValue(null));
+            Assert.AreEqual("test", param.GetFilterValue(null));
 
             param = spec.Parameters[2];
             Assert.AreEqual("doublePrimitive", param.PropertyName);
             Assert.AreEqual(FilterOperator.RANGE_CLOSED, param.FilterOperator);
-            Assert.AreEqual(new DoubleRange(1, 4), param.getFilterValue(null));
+            Assert.AreEqual(new DoubleRange(1, 4), param.GetFilterValue(null));
 
             Assert.AreEqual("name", getEventNameTag(expression));
         }
@@ -135,7 +135,7 @@ namespace net.esper.eql.parse
             FilterSpecParam param = spec.Parameters[0];
             Assert.AreEqual("intPrimitive", param.PropertyName);
             Assert.AreEqual(FilterOperator.RANGE_OPEN, param.FilterOperator);
-            Assert.AreEqual(typeof(DoubleRange), param.getFilterValueClass(taggedEventTypes));
+            Assert.AreEqual(typeof(DoubleRange), param.GetFilterValueClass(taggedEventTypes));
         }
 
         [Test]

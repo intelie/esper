@@ -25,7 +25,6 @@ namespace net.esper.pattern.guard
 		/// </param>
 		public TimerWithinGuardFactory(double seconds)
 		{
-			//UPGRADE_TODO: Method 'java.lang.Math.round' was converted to 'System.Math.Round' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javalangMathround_double'"
 			this.milliseconds = (long) System.Math.Round(seconds * 1000d);
 		}
 		
@@ -43,11 +42,10 @@ namespace net.esper.pattern.guard
 		public TimerWithinGuardFactory(TimePeriodParameter timePeriodParameter)
 		{
 			double milliseconds = timePeriodParameter.NumSeconds * 1000d;
-			//UPGRADE_TODO: Method 'java.lang.Math.round' was converted to 'System.Math.Round' which has a different behavior. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1073_javalangMathround_double'"
 			this.milliseconds = (long) System.Math.Round(milliseconds);
 		}
 		
-		public virtual Guard makeGuard(PatternContext context, Quitable quitable)
+		public virtual Guard MakeGuard(PatternContext context, Quitable quitable)
 		{
 			return new TimerWithinGuard(milliseconds, context, quitable);
 		}

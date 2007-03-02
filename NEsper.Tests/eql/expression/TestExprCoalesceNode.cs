@@ -46,7 +46,7 @@ namespace net.esper.eql.expression
         {
             for (int i = 0; i < coalesceNodes.Length; i++)
             {
-                coalesceNodes[i].validate(null, null);
+                coalesceNodes[i].Validate(null, null);
             }
 
             Assert.AreEqual(typeof(long?), coalesceNodes[0].ReturnType);
@@ -65,7 +65,7 @@ namespace net.esper.eql.expression
             // Test too few nodes under this node
             try
             {
-                coalesceNode.validate(null, null);
+                coalesceNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -77,7 +77,7 @@ namespace net.esper.eql.expression
             coalesceNode.AddChildNode(new SupportExprNode("s"));
             try
             {
-                coalesceNode.validate(null, null);
+                coalesceNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -91,7 +91,7 @@ namespace net.esper.eql.expression
         {
             for (int i = 0; i < coalesceNodes.Length; i++)
             {
-                coalesceNodes[i].validate(null, null);
+                coalesceNodes[i].Validate(null, null);
             }
 
             Assert.AreEqual(4L, coalesceNodes[0].Evaluate(null));

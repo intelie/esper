@@ -7,9 +7,11 @@ using net.esper.pattern;
 
 namespace net.esper.filter
 {
-    /// <summary> This class represents a filter parameter containing a reference to another event's property
+    /// <summary>
+    /// This class represents a filter parameter containing a reference to another event's property
     /// in the event pattern result, for use to describe a filter parameter in a {@link FilterSpec} filter specification.
     /// </summary>
+
     public sealed class FilterSpecParamEventProp : FilterSpecParam
     {
         /// <summary> Returns tag for result event.</summary>
@@ -50,13 +52,13 @@ namespace net.esper.filter
             this.resultEventAsName = resultEventAsName;
             this.resultEventProperty = resultEventProperty;
 
-            if (FilterOperatorHelper.isRangeOperator( filterOperator ))
+            if (FilterOperatorHelper.IsRangeOperator( filterOperator ))
             {
                 throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " + "event property filter parameter");
             }
         }
 
-        public override Type getFilterValueClass(EDictionary<String, EventType> taggedEventTypes)
+        public override Type GetFilterValueClass(EDictionary<String, EventType> taggedEventTypes)
         {
             EventType type = taggedEventTypes.Fetch(resultEventAsName, null);
             if (type == null)
@@ -66,7 +68,7 @@ namespace net.esper.filter
             return type.GetPropertyType(resultEventProperty);
         }
 
-        public override Object getFilterValue(MatchedEventMap matchedEvents)
+        public override Object GetFilterValue(MatchedEventMap matchedEvents)
         {
             EventBean _event = matchedEvents.getMatchingEvent(resultEventAsName);
             if (_event == null)

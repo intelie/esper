@@ -21,7 +21,7 @@ namespace net.esper.eql.expression
         private Type resultType;
         private bool[] isNumericCoercion;
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             if (this.ChildNodes.Count < 2)
             {

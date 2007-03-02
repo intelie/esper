@@ -80,11 +80,11 @@ namespace net.esper.view.std
             {
                 if (oldDataToPost.Count > 0)
                 {
-                	updateChildren(newData, oldDataToPost.ToArray());
+                	UpdateChildren(newData, oldDataToPost.ToArray());
                 }
                 else
                 {
-                    updateChildren(newData, null);
+                    UpdateChildren(newData, null);
                 }
             }
         }

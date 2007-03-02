@@ -19,6 +19,6 @@ namespace net.esper.filter
         /// <param name="matches">accumulates the matching filter callbacks
         /// </param>
 
-        void matchEvent(EventBean _event, IList<FilterCallback> matches);
+        void MatchEvent(EventBean _event, IList<FilterCallback> matches);
     }
 }

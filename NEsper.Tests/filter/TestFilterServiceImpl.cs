@@ -70,10 +70,10 @@ namespace net.esper.filter
 
 
             filterSpecs = new List<FilterValueSet>();
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).getValueSet(null));
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[] { "intPrimitive", FilterOperator.RANGE_CLOSED, 10, 20, "str", FilterOperator.EQUAL, "HELLO", "boolPrimitive", FilterOperator.EQUAL, false, "doubleBoxed", FilterOperator.GREATER, 100d }).getValueSet(null));
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeTwo, new Object[0]).getValueSet(null));
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeTwo, eventTypeTwoArgs).getValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).GetValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[] { "intPrimitive", FilterOperator.RANGE_CLOSED, 10, 20, "str", FilterOperator.EQUAL, "HELLO", "boolPrimitive", FilterOperator.EQUAL, false, "doubleBoxed", FilterOperator.GREATER, 100d }).GetValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeTwo, new Object[0]).GetValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeTwo, eventTypeTwoArgs).GetValueSet(null));
 
             // Create callbacks and add
             filterCallbacks = new List<SupportFilterCallback>();
@@ -148,7 +148,7 @@ namespace net.esper.filter
         {
             try
             {
-                FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeTwo, new Object[] { "myString", FilterOperator.GREATER, 2 }).getValueSet(null);
+                FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeTwo, new Object[] { "myString", FilterOperator.GREATER, 2 }).GetValueSet(null);
                 filterService.Add(spec, new SupportFilterCallback());
                 Assert.IsTrue(false);
             }
@@ -194,7 +194,7 @@ namespace net.esper.filter
         [Test]
         public virtual void testActiveCallbackRemove()
         {
-            FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).getValueSet(null);
+            FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).GetValueSet(null);
             SupportFilterCallback callbackTwo = new SupportFilterCallback();
 
             // callback that removes another matching filter spec callback

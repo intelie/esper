@@ -16,21 +16,21 @@ namespace net.esper.emit
             EmitServiceImpl service = new MyEmitServiceImpl();
 
             SupportEmittedListener listenerOne = new SupportEmittedListener();
-            service.AddListener(listenerOne, "1");
+            service.AddListener(listenerOne.HandleEmit, "1");
 
             SupportEmittedListener listenerTwo = new SupportEmittedListener();
-            service.AddListener(listenerTwo, "2");
+            service.AddListener(listenerTwo.HandleEmit, "2");
 
             SupportEmittedListener listenerThree = new SupportEmittedListener();
-            service.AddListener(listenerThree, null);
-            service.AddListener(listenerThree, "3");
+            service.AddListener(listenerThree.HandleEmit, null);
+            service.AddListener(listenerThree.HandleEmit, "3");
 
             SupportEmittedListener listenerFour = new SupportEmittedListener();
-            service.AddListener(listenerFour, "1");
-            service.AddListener(listenerFour, "2");
+            service.AddListener(listenerFour.HandleEmit, "1");
+            service.AddListener(listenerFour.HandleEmit, "2");
 
             Assert.IsTrue(service.NumEventsEmitted == 0);
-            service.emitEvent("a", null);
+            service.EmitEvent("a", null);
 
             Assert.IsTrue(listenerOne.getEmittedObjects().Count == 0);
             Assert.IsTrue(listenerTwo.getEmittedObjects().Count == 0);
@@ -39,7 +39,7 @@ namespace net.esper.emit
             Assert.IsTrue(listenerFour.getEmittedObjects().Count == 0);
 
             Assert.IsTrue(service.NumEventsEmitted == 1);
-            service.emitEvent("b", "1");
+            service.EmitEvent("b", "1");
 
             Assert.IsTrue(listenerOne.getEmittedObjects().Count == 1);
             Assert.IsTrue(listenerOne.getEmittedObjects()[0] == (Object)"b");
@@ -50,7 +50,7 @@ namespace net.esper.emit
             Assert.IsTrue(listenerFour.getEmittedObjects()[0] == (Object)"b");
 
             Assert.IsTrue(service.NumEventsEmitted == 2);
-            service.emitEvent("c", "3");
+            service.EmitEvent("c", "3");
 
             Assert.IsTrue(listenerOne.getEmittedObjects().Count == 1);
             Assert.IsTrue(listenerTwo.getEmittedObjects().Count == 0);
@@ -58,9 +58,9 @@ namespace net.esper.emit
             Assert.IsTrue(listenerThree.getEmittedObjects()[2] == (Object)"c");
             Assert.IsTrue(listenerFour.getEmittedObjects().Count == 1);
 
-            service.clearListeners();
+            service.ClearListeners();
             Assert.IsTrue(service.NumEventsEmitted == 3);
-            service.emitEvent("c", "3");
+            service.EmitEvent("c", "3");
 
             Assert.IsTrue(listenerOne.getEmittedObjects().Count == 1);
             Assert.IsTrue(listenerTwo.getEmittedObjects().Count == 0);

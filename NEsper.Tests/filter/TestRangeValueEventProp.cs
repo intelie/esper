@@ -36,7 +36,7 @@ namespace net.esper.filter
             tryInvalidCheckType(taggedEventTypes, _params[0]);
             tryInvalidCheckType(taggedEventTypes, _params[1]);
             tryInvalidCheckType(taggedEventTypes, _params[2]);
-            _params[3].checkType(taggedEventTypes);
+            _params[3].CheckType(taggedEventTypes);
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace net.esper.filter
             tryInvalidGetFilterValue(matchedEvents, _params[0]);
             tryInvalidGetFilterValue(matchedEvents, _params[1]);
             tryInvalidGetFilterValue(matchedEvents, _params[2]);
-            Assert.AreEqual(1000.0, _params[3].getFilterValue(matchedEvents));
+            Assert.AreEqual(1000.0, _params[3].GetFilterValue(matchedEvents));
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace net.esper.filter
         {
             try
             {
-                value.checkType(taggedEventTypes);
+                value.CheckType(taggedEventTypes);
                 Assert.Fail();
             }
             catch (System.SystemException ex)
@@ -79,7 +79,7 @@ namespace net.esper.filter
         {
             try
             {
-                value.getFilterValue(matchedEvents);
+                value.GetFilterValue(matchedEvents);
                 Assert.Fail();
             }
             catch (SystemException)

@@ -34,7 +34,7 @@ namespace net.esper.eql.expression
         public virtual void testValidate()
         {
             inNodeNormal = SupportExprNodeFactory.makeInSetNode(true);
-            inNodeNormal.validate(null, null);
+            inNodeNormal.Validate(null, null);
 
             // No subnodes: Exception is thrown.
             tryInvalidValidate(new ExprInNode(true));
@@ -98,7 +98,7 @@ namespace net.esper.eql.expression
         {
             try
             {
-                exprInNode.validate(null, null);
+                exprInNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

@@ -63,7 +63,7 @@ namespace net.esper.type
 		 * @param coercedType - target type
 		 * @return number cruncher
 		 */
-		public Computer getComputer( Type coercedType )
+		public Computer GetComputer( Type coercedType )
 		{
 			if ( ( coercedType != typeof( sbyte? ) ) &&
 				 ( coercedType != typeof( short? ) ) &&

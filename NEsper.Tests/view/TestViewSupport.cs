@@ -53,19 +53,19 @@ namespace net.esper.view
 		{
 			// Copy a view based on a class
 			SupportBeanClassView viewOne = new SupportBeanClassView( typeof( SupportMarketDataBean ) );
-			SupportBeanClassView copyOne = (SupportBeanClassView) ViewSupport.shallowCopyView( viewOne );
+			SupportBeanClassView copyOne = (SupportBeanClassView) ViewSupport.ShallowCopyView( viewOne );
 			Assert.AreEqual( viewOne.EventType, copyOne.EventType );
 
 			// Copy a view based on a map
 			SupportMapView viewTwo = new SupportMapView( new EHashDictionary<String, Type>() );
             viewTwo.Parent = viewOne;
-			View copyTwo = ViewSupport.shallowCopyView( viewTwo );
+			View copyTwo = ViewSupport.ShallowCopyView( viewTwo );
 			Assert.IsTrue( copyTwo.Parent == null );
 			Assert.AreEqual( viewTwo.EventType, copyTwo.EventType );
 
 			// Copy a view with read/write property access
 			SupportShallowCopyView viewThree = new SupportShallowCopyView( "avalue" );
-			SupportShallowCopyView copyThree = (SupportShallowCopyView) ViewSupport.shallowCopyView( viewThree );
+			SupportShallowCopyView copyThree = (SupportShallowCopyView) ViewSupport.ShallowCopyView( viewThree );
 
 			Assert.AreEqual( "avalue", copyThree.SomeReadWriteValue );
 			Assert.AreEqual( null, copyThree.SomeReadOnlyValue );

@@ -39,7 +39,7 @@ namespace net.esper.eql.expression
             this.isNotEquals = isNotEquals;
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             // Must have 2 child nodes
             if (this.ChildNodes.Count != 2)

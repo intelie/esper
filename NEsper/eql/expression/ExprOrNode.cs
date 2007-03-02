@@ -19,7 +19,7 @@ namespace net.esper.eql.expression
             get { return typeof(bool?); }
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             // Sub-nodes must be returning boolean
             foreach (ExprNode child in this.ChildNodes)

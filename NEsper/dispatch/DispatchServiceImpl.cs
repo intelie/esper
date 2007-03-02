@@ -66,7 +66,7 @@ namespace net.esper.dispatch
         {
             // Make sure the same dispatchable is added once.
             // Could this be a performance problem when the list gets large, it should not get large.
-            AssertionFacility.assertFalse(dispatchQueue.Contains(dispatchable), "Dispatchable instance already in queue");
+            AssertionFacility.AssertFalse(dispatchQueue.Contains(dispatchable), "Dispatchable instance already in queue");
 
             dispatchQueue.Enqueue(dispatchable);
         }
@@ -83,7 +83,7 @@ namespace net.esper.dispatch
                 while (dispatchQueue.Count > 0)
                 {
                     Dispatchable next = dispatchQueue.Dequeue();
-                    next.execute();
+                    next.Execute();
                 }
             }
             catch (InvalidOperationException)

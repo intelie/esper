@@ -71,17 +71,17 @@ namespace net.esper.filter
         	}
         }
 
-        public void matchEvent(EventBean ev, IList<FilterCallback> matches)
+        public void MatchEvent(EventBean ev, IList<FilterCallback> matches)
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".matchEvent Event received for matching, event=" + ev);
+                log.Debug(".MatchEvent Event received for matching, event=" + ev);
             }
 
             EventType eventType = ev.EventType;
 
             // Attempt to match exact type
-            matchType(eventType, ev, matches);
+            MatchType(eventType, ev, matches);
 
             // No supertype means we are done
             if (eventType.SuperTypes == null)
@@ -91,11 +91,11 @@ namespace net.esper.filter
 
 			foreach( EventType superType in eventType.DeepSuperTypes )
             {
-                matchType(superType, ev, matches);
+                MatchType(superType, ev, matches);
             }
         }
 
-        private void matchType(EventType eventType, EventBean eventBean, IList<FilterCallback> matches)
+        private void MatchType(EventType eventType, EventBean eventBean, IList<FilterCallback> matches)
         {
             eventTypesRWLock.AcquireReaderLock( LockConstants.ReaderTimeout );
             FilterCallbackSetNode rootNode = null ;
@@ -109,12 +109,12 @@ namespace net.esper.filter
                 if (log.IsDebugEnabled)
                 {
                     String message = "Event type is not known to the filter service, eventType=" + eventType;
-                    log.Debug(".matchEvent " + message);
+                    log.Debug(".MatchEvent " + message);
                 }
                 return;
             }
 
-            rootNode.matchEvent(eventBean, matches);
+            rootNode.MatchEvent(eventBean, matches);
         }
 
         private static readonly Log log = LogFactory.GetLog(typeof(EventTypeIndex));

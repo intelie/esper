@@ -6,6 +6,6 @@ namespace net.esper.dispatch
 	public interface Dispatchable
 	{
 		/// <summary> Execute dispatch. </summary>
-		void  execute();
+		void  Execute();
 	}
 }

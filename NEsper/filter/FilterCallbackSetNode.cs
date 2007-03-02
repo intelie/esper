@@ -93,14 +93,14 @@ namespace net.esper.filter
          * @param eventBean is the event wrapper supplying the event property values
          * @param matches is the list of callbacks to add to for any matches found
          */
-        public void matchEvent(EventBean eventBean, IList<FilterCallback> matches)
+        public void MatchEvent(EventBean eventBean, IList<FilterCallback> matches)
         {
 			nodeRWLock.AcquireReaderLock( LockConstants.ReaderTimeout );
 
             // Ask each of the indizes to match against the attribute values
             foreach (FilterParamIndex index in indizes)
             {
-                index.matchEvent(eventBean, matches);
+                index.MatchEvent(eventBean, matches);
             }
 
             // Add each filter callback stored in this node to the matching list

@@ -17,7 +17,7 @@ namespace net.esper.eql.expression
             get { return typeof(bool?); }
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             // Must have a single child node
             if (this.ChildNodes.Count != 1)

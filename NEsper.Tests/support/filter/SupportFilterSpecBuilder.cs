@@ -23,7 +23,7 @@ namespace net.esper.support.filter
                 String propertyName = (String)objects[index++];
                 FilterOperator filterOperator = (FilterOperator)objects[index++];
 
-                if (!FilterOperatorHelper.isRangeOperator(filterOperator))
+                if (!FilterOperatorHelper.IsRangeOperator(filterOperator))
                 {
                     Object filterForConstant = objects[index++];
                     filterParams.Add(new FilterSpecParamConstant(propertyName, filterOperator, filterForConstant));

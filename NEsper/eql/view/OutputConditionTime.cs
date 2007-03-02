@@ -59,7 +59,7 @@ namespace net.esper.eql.view
 			this.msecIntervalSize = (long) System.Math.Round(1000 * secIntervalSize);
 			this.context = context;
 			this.outputCallback = outputCallback;
-			this.scheduleSlot = context.ScheduleBucket.allocateSlot();
+			this.scheduleSlot = context.ScheduleBucket.AllocateSlot();
 		}
 		
 		public void updateOutputCondition(int newEventsCount, int oldEventsCount)

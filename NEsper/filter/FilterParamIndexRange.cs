@@ -9,7 +9,8 @@ using org.apache.commons.logging;
 
 namespace net.esper.filter
 {
-	/// <summary> Index for filter parameter constants for the range operators (range open/closed/half).
+	/// <summary>
+    /// Index for filter parameter constants for the range operators (range open/closed/half).
 	/// The implementation is based on the SortedDictionary implementation of SortedDictionary and stores only expression
 	/// parameter values of type DoubleRange.
 	/// </summary>
@@ -34,7 +35,7 @@ namespace net.esper.filter
 			ranges = new ETreeDictionary<DoubleRange, EventEvaluator>( new DoubleRangeComparator() );
 			rangesRWLock = new ReaderWriterLock();
 
-			if ( ! FilterOperatorHelper.isRangeOperator( filterOperator ) )
+			if ( ! FilterOperatorHelper.IsRangeOperator( filterOperator ) )
 			{
 				throw new ArgumentException( "Invalid filter operator " + filterOperator );
 			}
@@ -91,7 +92,7 @@ namespace net.esper.filter
             get { return rangesRWLock; }
 		}
 
-		public override void matchEvent( EventBean eventBean, IList<FilterCallback> matches )
+		public override void MatchEvent( EventBean eventBean, IList<FilterCallback> matches )
 		{
 			Object objAttributeValue = this.Getter.GetValue( eventBean );
 
@@ -124,7 +125,7 @@ namespace net.esper.filter
 				{
 					if ( ( attributeValue > entry.Key.Min ) && ( attributeValue < entry.Key.Max ) )
 					{
-						entry.Value.matchEvent( eventBean, matches );
+						entry.Value.MatchEvent( eventBean, matches );
 					}
 				}
 			}
@@ -135,7 +136,7 @@ namespace net.esper.filter
 				{
 					if ( ( attributeValue >= entry.Key.Min ) && ( attributeValue <= entry.Key.Max ) )
 					{
-						entry.Value.matchEvent( eventBean, matches );
+						entry.Value.MatchEvent( eventBean, matches );
 					}
 				}
 			}
@@ -146,7 +147,7 @@ namespace net.esper.filter
 				{
 					if ( ( attributeValue > entry.Key.Min ) && ( attributeValue <= entry.Key.Max ) )
 					{
-						entry.Value.matchEvent( eventBean, matches );
+						entry.Value.MatchEvent( eventBean, matches );
 					}
 				}
 			}
@@ -157,7 +158,7 @@ namespace net.esper.filter
 				{
 					if ( ( attributeValue >= entry.Key.Min ) && ( attributeValue < entry.Key.Max ) )
 					{
-						entry.Value.matchEvent( eventBean, matches );
+						entry.Value.MatchEvent( eventBean, matches );
 					}
 				}
 			}

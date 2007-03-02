@@ -30,7 +30,7 @@ namespace net.esper.events.property
 		/// <param name="propertyName">is the name of the property
 		/// </param>
 		
-        public PropertyBase(String propertyName)
+        protected PropertyBase(String propertyName)
 		{
 			this.propertyName = propertyName;
 		}

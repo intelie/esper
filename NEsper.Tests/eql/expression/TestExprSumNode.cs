@@ -25,17 +25,17 @@ namespace net.esper.eql.expression
         public virtual void testGetType()
         {
             sumNode.AddChildNode(new SupportExprNode(typeof(int)));
-            sumNode.validate(null, null);
+            sumNode.Validate(null, null);
             Assert.AreEqual(typeof(int?), sumNode.ReturnType);
 
             sumNode = new ExprSumNode(false);
             sumNode.AddChildNode(new SupportExprNode(typeof(float)));
-            sumNode.validate(null, null);
+            sumNode.Validate(null, null);
             Assert.AreEqual(typeof(float?), sumNode.ReturnType);
 
             sumNode = new ExprSumNode(false);
             sumNode.AddChildNode(new SupportExprNode(typeof(short)));
-            sumNode.validate(null, null);
+            sumNode.Validate(null, null);
             Assert.AreEqual(typeof(int?), sumNode.ReturnType);
         }
 
@@ -59,7 +59,7 @@ namespace net.esper.eql.expression
             // Must have exactly 1 subnodes
             try
             {
-                sumNode.validate(null, null);
+                sumNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -72,7 +72,7 @@ namespace net.esper.eql.expression
             sumNode.AddChildNode(new SupportExprNode(typeof(int?)));
             try
             {
-                sumNode.validate(null, null);
+                sumNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -102,7 +102,7 @@ namespace net.esper.eql.expression
         {
             ExprSumNode sumNode = new ExprSumNode(false);
             sumNode.AddChildNode(new SupportExprNode(value, type));
-            sumNode.validate(null, null);
+            sumNode.Validate(null, null);
             return sumNode;
         }
     }

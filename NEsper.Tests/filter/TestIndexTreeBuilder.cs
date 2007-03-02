@@ -88,7 +88,7 @@ namespace net.esper.filter
             Assert.IsTrue(topNode.Contains(testFilterCallback[0]));
 
             // Attempt a match
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 1);
             matches.Clear();
 
@@ -99,7 +99,7 @@ namespace net.esper.filter
             Assert.IsTrue(topNode.Indizes[0].Count == 1);
 
             // Match again
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 1);
             matches.Clear();
 
@@ -110,7 +110,7 @@ namespace net.esper.filter
             Assert.IsTrue(topNode.Indizes[0].Count == 2);
 
             // match
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 2);
             matches.Clear();
 
@@ -121,7 +121,7 @@ namespace net.esper.filter
             Assert.IsTrue(topNode.Indizes[0].Count == 2);
             Assert.IsTrue(topNode.Indizes[1].Count == 1);
 
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 3);
             matches.Clear();
 
@@ -132,7 +132,7 @@ namespace net.esper.filter
             Assert.IsTrue(topNode.Indizes[1].Count == 1);
             Assert.IsTrue(topNode.Indizes[2].Count == 1);
 
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 4);
             matches.Clear();
 
@@ -147,14 +147,14 @@ namespace net.esper.filter
             Assert.IsTrue(nextLevelSetNode != null);
             Assert.IsTrue(nextLevelSetNode.Indizes.Count == 1);
 
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 5);
             matches.Clear();
 
             filterSpec = makeFilterValues("doublePrimitive", FilterOperator.LESS, 1.1, "str", FilterOperator.EQUAL, "beta");
             builder.Add(filterSpec, testFilterCallback[6], topNode);
 
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 5);
             matches.Clear();
 
@@ -164,7 +164,7 @@ namespace net.esper.filter
             FilterCallbackSetNode nodeTwo = (FilterCallbackSetNode)nextLevelSetNode.Indizes[0]["jack"];
             Assert.IsTrue(nodeTwo.FilterCallbackCount == 2);
 
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 6);
             matches.Clear();
 
@@ -172,7 +172,7 @@ namespace net.esper.filter
             filterSpec = makeFilterValues("str", FilterOperator.EQUAL, "jack", "longPrimitive", FilterOperator.EQUAL, 10L, "shortPrimitive", FilterOperator.EQUAL, (short)20);
             builder.Add(filterSpec, testFilterCallback[8], topNode);
 
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 7);
             matches.Clear();
 
@@ -186,7 +186,7 @@ namespace net.esper.filter
             filterSpec = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L, "str", FilterOperator.EQUAL, "joe");
             builder.Add(filterSpec, testFilterCallback[11], topNode);
 
-            topNode.matchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 8);
             matches.Clear();
         }
@@ -201,7 +201,7 @@ namespace net.esper.filter
             IndexTreePath pathAddedTo = builder.Add(filterSpecNoParams, testFilterCallback[0], top);
 
             // Try a match
-            top.matchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 1);
             matches.Clear();
 
@@ -209,7 +209,7 @@ namespace net.esper.filter
             builder.Remove(testFilterCallback[0], pathAddedTo, top);
 
             // Match should not be found
-            top.matchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 0);
             matches.Clear();
 
@@ -229,42 +229,42 @@ namespace net.esper.filter
             FilterValueSet filterSpecFive = makeFilterValues("longPrimitive", FilterOperator.EQUAL, 10L);
             IndexTreePath pathAddedToFive = builder.Add(filterSpecFive, testFilterCallback[5], top);
 
-            top.matchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 5);
             matches.Clear();
 
             // Remove some of the nodes
             builder.Remove(testFilterCallback[2], pathAddedToTwo, top);
 
-            top.matchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 4);
             matches.Clear();
 
             // Remove some of the nodes
             builder.Remove(testFilterCallback[4], pathAddedToFour, top);
 
-            top.matchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 3);
             matches.Clear();
 
             // Remove some of the nodes
             builder.Remove(testFilterCallback[5], pathAddedToFive, top);
 
-            top.matchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 2);
             matches.Clear();
 
             // Remove some of the nodes
             builder.Remove(testFilterCallback[1], pathAddedToOne, top);
 
-            top.matchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 1);
             matches.Clear();
 
             // Remove some of the nodes
             builder.Remove(testFilterCallback[3], pathAddedToThree, top);
 
-            top.matchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches);
             Assert.IsTrue(matches.Count == 0);
             matches.Clear();
         }
@@ -272,7 +272,7 @@ namespace net.esper.filter
         private FilterValueSet makeFilterValues(params object[] filterSpecArgs)
         {
             FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterSpecArgs);
-            FilterValueSet filterValues = spec.getValueSet(null);
+            FilterValueSet filterValues = spec.GetValueSet(null);
             return filterValues;
         }
     }

@@ -33,7 +33,7 @@ namespace net.esper.eql.expression
             this.value = value;
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
         }
 

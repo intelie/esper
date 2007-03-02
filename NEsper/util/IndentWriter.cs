@@ -37,13 +37,13 @@ namespace net.esper.util
         }
 
         /// <summary> Increase the indentation one level.</summary>
-        public virtual void incrIndent()
+        public virtual void IncrIndent()
         {
             currentIndent += deltaIndent;
         }
 
         /// <summary> Decrease the indentation one level.</summary>
-        public virtual void decrIndent()
+        public virtual void DecrIndent()
         {
             currentIndent -= deltaIndent;
         }

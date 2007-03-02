@@ -106,7 +106,7 @@ namespace net.esper.eql.db
 			if (config.DataCacheDesc is ExpiryTimeCacheDesc)
 			{
 				ExpiryTimeCacheDesc expCache = (ExpiryTimeCacheDesc) config.DataCacheDesc;
-				return new DataCacheExpiringImpl(expCache.MaxAgeSeconds, expCache.PurgeIntervalSeconds, schedulingService, scheduleBucket.allocateSlot());
+				return new DataCacheExpiringImpl(expCache.MaxAgeSeconds, expCache.PurgeIntervalSeconds, schedulingService, scheduleBucket.AllocateSlot());
 			}
 			
 			throw new SystemException("Cache implementation class not configured");

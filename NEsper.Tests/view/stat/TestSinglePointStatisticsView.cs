@@ -94,7 +94,7 @@ namespace net.esper.view.stat
         [Test]
         public virtual void testCopyView()
         {
-            UnivariateStatisticsView copied = (UnivariateStatisticsView)ViewSupport.shallowCopyView(myView);
+            UnivariateStatisticsView copied = (UnivariateStatisticsView)ViewSupport.ShallowCopyView(myView);
             Assert.IsTrue(myView.FieldName.Equals(copied.FieldName));
         }
 

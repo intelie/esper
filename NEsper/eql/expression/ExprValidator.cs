@@ -30,6 +30,6 @@ namespace net.esper.eql.expression
         /// <param name="autoImportService">- for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 		
-        void validate(StreamTypeService streamTypeService, AutoImportService autoImportService);
+        void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService);
 	}
 }

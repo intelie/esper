@@ -49,7 +49,7 @@ namespace net.esper.core
 			}
 		}
 
-		public virtual void execute()
+		public virtual void Execute()
 		{
 			EventBean[] eventArray = null;
 

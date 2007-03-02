@@ -71,7 +71,7 @@ namespace net.esper.filter
 
             // Check matching without an index node
             IList<FilterCallback> matches = new List<FilterCallback>();
-            testNode.matchEvent(eventBean, matches);
+            testNode.MatchEvent(eventBean, matches);
             Assert.AreEqual(1, matches.Count);
             Assert.AreEqual(expr, matches[0]);
             matches.Clear();
@@ -82,7 +82,7 @@ namespace net.esper.filter
             index["DepositEvent_1"] = testEvaluator;
 
             // Verify matcher instance stored in index is called
-            testNode.matchEvent(eventBean, matches);
+            testNode.MatchEvent(eventBean, matches);
 
             Assert.IsTrue(testEvaluator.AndResetCountInvoked == 1);
             Assert.IsTrue(testEvaluator.LastEvent == eventBean);

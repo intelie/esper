@@ -120,7 +120,7 @@ namespace net.esper.filter
 
             // Need to find an existing index that matches one of the filter parameters
             currentNode.NodeRWLock.AcquireReaderLock( LockConstants.ReaderTimeout );
-            Pair<FilterValueSetParam, FilterParamIndex> pair = IndexHelper.findIndex(remainingParameters, currentNode.Indizes);
+            Pair<FilterValueSetParam, FilterParamIndex> pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);
 
             // Found an index matching a filter parameter
             if (pair != null)
@@ -137,7 +137,7 @@ namespace net.esper.filter
 
             // An index for any of the filter parameters was not found, create one
             currentNode.NodeRWLock.AcquireWriterLock( LockConstants.WriterTimeout );
-            pair = IndexHelper.findIndex(remainingParameters, currentNode.Indizes);
+            pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);
 
             // Attempt to find an index again this time under a write lock
             if (pair != null)
@@ -156,7 +156,7 @@ namespace net.esper.filter
             FilterValueSetParam parameterPickedForIndex = remainingParameters.First;
             remainingParameters.Remove(parameterPickedForIndex);
 
-            FilterParamIndex _index = IndexFactory.createIndex(
+            FilterParamIndex _index = IndexFactory.CreateIndex(
 				eventType,
 				parameterPickedForIndex.PropertyName,
                 parameterPickedForIndex.FilterOperator);
@@ -378,7 +378,7 @@ namespace net.esper.filter
             FilterValueSetParam parameterPickedForIndex = remainingParameters.First;
             remainingParameters.Remove(parameterPickedForIndex);
 
-            FilterParamIndex _nextIndex = IndexFactory.createIndex(
+            FilterParamIndex _nextIndex = IndexFactory.CreateIndex(
 				eventType,
 				parameterPickedForIndex.PropertyName,
                 parameterPickedForIndex.FilterOperator);
@@ -408,7 +408,7 @@ namespace net.esper.filter
             // Check if the next index matches any of the remaining filterCallback parameters
             FilterParamIndex nextIndex = (FilterParamIndex)eventEvaluator;
 
-            FilterValueSetParam parameter = IndexHelper.findParameter(remainingParameters, nextIndex);
+            FilterValueSetParam parameter = IndexHelper.FindParameter(remainingParameters, nextIndex);
             if (parameter != null)
             {
                 remainingParameters.Remove(parameter);

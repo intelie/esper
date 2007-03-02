@@ -71,14 +71,14 @@ namespace net.esper.eql.join.plan
         public override void Print(IndentWriter indentWriter)
         {
             indentWriter.WriteLine("NestedIterationNode with nesting order " + CollectionHelper.Render(nestingOrder));
-            indentWriter.incrIndent();
+            indentWriter.IncrIndent();
 
             foreach (QueryPlanNode child in childNodes)
             {
                 child.Print(indentWriter);
             }
 
-            indentWriter.decrIndent();
+            indentWriter.DecrIndent();
         }
     }
 }

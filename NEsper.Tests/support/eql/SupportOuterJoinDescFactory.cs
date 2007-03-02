@@ -14,8 +14,8 @@ namespace net.esper.support.eql
 			ExprIdentNode identNodeOne = new ExprIdentNode(propOne, streamOne);
 			ExprIdentNode identNodeTwo = new ExprIdentNode(propTwo, streamTwo);
 			
-			identNodeOne.validate(new SupportStreamTypeSvc3Stream(), null);
-			identNodeTwo.validate(new SupportStreamTypeSvc3Stream(), null);
+			identNodeOne.Validate(new SupportStreamTypeSvc3Stream(), null);
+			identNodeTwo.Validate(new SupportStreamTypeSvc3Stream(), null);
 			OuterJoinDesc desc = new OuterJoinDesc(type, identNodeOne, identNodeTwo);
 			
 			return desc;

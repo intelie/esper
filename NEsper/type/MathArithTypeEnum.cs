@@ -109,7 +109,7 @@ namespace net.esper.type
         /// <param name="coercedType">target type</param>
         /// <returns>number cruncher</returns>
 
-        public Computer getComputer(Type coercedType)
+        public Computer GetComputer(Type coercedType)
         {
             if ((coercedType != typeof(double?)) &&
                 (coercedType != typeof(float?)) &&

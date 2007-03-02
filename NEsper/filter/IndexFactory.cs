@@ -19,7 +19,7 @@ namespace net.esper.filter
 		/// </param>
 		/// <returns> the proper index based on the filter operator type
 		/// </returns>
-		public static FilterParamIndex createIndex(
+		public static FilterParamIndex CreateIndex(
 			EventType eventType,
 			String propertyName,
 			FilterOperator filterOperator)
@@ -51,7 +51,7 @@ namespace net.esper.filter
 			}
 			
 			// Handle all RANGE comparisons
-			if (FilterOperatorHelper.isRangeOperator( filterOperator ))
+			if (FilterOperatorHelper.IsRangeOperator( filterOperator ))
 			{
 				index = new FilterParamIndexRange(propertyName, filterOperator, eventType);
 				return index;

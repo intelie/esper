@@ -50,7 +50,7 @@ namespace net.esper.schedule
 
             // Populate Month with all valid values
             ETreeSet<int> monthValues = new ETreeSet<int>();
-            for (int i = ScheduleUnit.MONTHS.min(); i <= ScheduleUnit.MONTHS.max(); i++)
+            for (int i = ScheduleUnit.MONTHS.Min(); i <= ScheduleUnit.MONTHS.Max(); i++)
             {
                 monthValues.Add(i);
             }

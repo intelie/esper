@@ -48,7 +48,7 @@ namespace net.esper.eql.view
 
             if ((filteredNewData != null) || (filteredOldData != null))
             {
-                this.updateChildren(filteredNewData, filteredOldData);
+                this.UpdateChildren(filteredNewData, filteredOldData);
             }
         }
 

@@ -34,12 +34,12 @@ namespace net.esper.view.stat
 
 		internal class AnonMultidimCubeCellFactory : MultidimCubeCellFactory<BaseStatisticsBean>
 		{
-			public BaseStatisticsBean newCell()
+			public BaseStatisticsBean NewCell()
 			{
 				return new BaseStatisticsBean();
 			}
 
-			public BaseStatisticsBean[] newCells( int numElements )
+			public BaseStatisticsBean[] NewCells( int numElements )
 			{
 				return new BaseStatisticsBean[numElements];
 			}
@@ -311,7 +311,7 @@ namespace net.esper.view.stat
 			if ( HasViews )
 			{
 				EventBean postNewData = populateEvent();
-				updateChildren( new EventBean[] { postNewData }, null );
+				UpdateChildren( new EventBean[] { postNewData }, null );
 			}
 		}
 

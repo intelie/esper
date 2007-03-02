@@ -15,12 +15,12 @@ namespace net.esper.view.stat.olap
     {
         private class MultidimCubeCellFactoryImpl : MultidimCubeCellFactory<SupportCell>
         {
-            public SupportCell newCell()
+            public SupportCell NewCell()
             {
                 return new SupportCell();
             }
 
-            public SupportCell[] newCells(int numElements)
+            public SupportCell[] NewCells(int numElements)
             {
                 return new SupportCell[numElements];
             }

@@ -206,7 +206,7 @@ namespace net.esper.view.window
 		{
 			SupportBeanClassView parent = new SupportBeanClassView( typeof( SupportMarketDataBean ) );
             myView.Parent = parent;
-			TimeWindowView copied = (TimeWindowView) ViewSupport.shallowCopyView( myView );
+			TimeWindowView copied = (TimeWindowView) ViewSupport.ShallowCopyView( myView );
 			Assert.AreEqual( myView.MillisecondsBeforeExpiry, copied.MillisecondsBeforeExpiry );
 		}
 

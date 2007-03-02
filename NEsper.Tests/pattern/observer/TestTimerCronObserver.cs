@@ -28,7 +28,7 @@ namespace net.esper.pattern.observer
             PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.Service);
 
             ScheduleSpec scheduleSpec = new ScheduleSpec();
-            scheduleSpec.addValue(ScheduleUnit.SECONDS, 1);
+            scheduleSpec.AddValue(ScheduleUnit.SECONDS, 1);
 
             evaluator = new SupportObserverEvaluator();
 

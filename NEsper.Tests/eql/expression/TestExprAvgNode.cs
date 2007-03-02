@@ -61,7 +61,7 @@ namespace net.esper.eql.expression
         {
             ExprAvgNode avgNode = new ExprAvgNode(isDistinct);
             avgNode.AddChildNode(new SupportExprNode(value, type));
-            avgNode.validate(null, null);
+            avgNode.Validate(null, null);
             return avgNode;
         }
     }

@@ -69,8 +69,8 @@ namespace net.esper.type
 		{
 			return Int32.Parse(value);
 		}
-		
-		public override void parse(String value)
+
+        public override void Parse(String value)
 		{
 			intValue = Int32.Parse(value);
 		}

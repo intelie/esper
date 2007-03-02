@@ -80,7 +80,7 @@ namespace net.esper.view.stat.olap
 
 			this.dimensionNames = dimensionNames;
 			this.multidimCubeCellFactory = multidimCubeCellFactory;
-			this.cells = multidimCubeCellFactory.newCells( 0 );
+			this.cells = multidimCubeCellFactory.NewCells( 0 );
 
 			for ( int i = 0 ; i < numDimensions ; i++ )
 			{
@@ -148,7 +148,7 @@ namespace net.esper.view.stat.olap
 			}
 
 			// Initialize new array
-			V[] newFacts = multidimCubeCellFactory.newCells( newSize );
+			V[] newFacts = multidimCubeCellFactory.NewCells( newSize );
 			if ( currentSize > 0 )
 			{
 				Array.Copy(
@@ -158,7 +158,7 @@ namespace net.esper.view.stat.olap
 			}
 			for ( int i = currentSize ; i < newFacts.Length ; i++ )
 			{
-				newFacts[i] = multidimCubeCellFactory.newCell();
+				newFacts[i] = multidimCubeCellFactory.NewCell();
 			}
 
 			this.cells = newFacts;
@@ -230,8 +230,8 @@ namespace net.esper.view.stat.olap
 				}
 
 				// Add ordinal and fact
-				cells = multidimCubeCellFactory.newCells( 1 );
-				cells[0] = multidimCubeCellFactory.newCell();
+				cells = multidimCubeCellFactory.NewCells( 1 );
+				cells[0] = multidimCubeCellFactory.NewCell();
                 ordinals[coordinates] = 0;
 
 				return cells[0];
@@ -274,7 +274,7 @@ namespace net.esper.view.stat.olap
 
 			// Allocate new array
 			int newSize = CubeDimensionHelper.GetTotalCells( newDimensionSizes );
-			V[] newFacts = multidimCubeCellFactory.newCells( newSize );
+			V[] newFacts = multidimCubeCellFactory.NewCells( newSize );
 
 			// Adding to the last dimension will just grow the array
 			if ( dimension == ( numDimensions - 1 ) )
@@ -282,7 +282,7 @@ namespace net.esper.view.stat.olap
 				Array.Copy( this.cells, 0, newFacts, 0, cells.Length );
 				for ( int i = cells.Length ; i < newFacts.Length ; i++ )
 				{
-					newFacts[i] = multidimCubeCellFactory.newCell();
+					newFacts[i] = multidimCubeCellFactory.NewCell();
 				}
 				this.cells = newFacts;
 				return;
@@ -310,7 +310,7 @@ namespace net.esper.view.stat.olap
 			{
 				if ( newFacts[i] == null )
 				{
-					newFacts[i] = multidimCubeCellFactory.newCell();
+					newFacts[i] = multidimCubeCellFactory.NewCell();
 				}
 			}
 

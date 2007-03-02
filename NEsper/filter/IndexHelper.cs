@@ -28,7 +28,7 @@ namespace net.esper.filter
         /// <returns> A matching pair of filter parameter and index, if any matches were found. Null if no matches were found.
         /// </returns>
 
-        public static Pair<FilterValueSetParam, FilterParamIndex> findIndex(
+        public static Pair<FilterValueSetParam, FilterParamIndex> FindIndex(
         	ETreeSet<FilterValueSetParam> parameters,
         	IList<FilterParamIndex> indizes)
         {
@@ -59,7 +59,7 @@ namespace net.esper.filter
         /// <returns> filter parameter, or null if no matching parameter found.
         /// </returns>
         
-        public static FilterValueSetParam findParameter(ETreeSet<FilterValueSetParam> parameters, FilterParamIndex index)
+        public static FilterValueSetParam FindParameter(ETreeSet<FilterValueSetParam> parameters, FilterParamIndex index)
         {
             String indexProperty = index.PropertyName;
             FilterOperator indexOperator = index.FilterOperator;

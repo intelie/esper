@@ -37,7 +37,7 @@ namespace net.esper.support.filter
             get { return 0; }
         }
 
-        public override void matchEvent(EventBean _event, IList<FilterCallback> matches)
+        public override void MatchEvent(EventBean _event, IList<FilterCallback> matches)
         {
         }
     }

@@ -248,14 +248,14 @@ namespace net.esper.filter
         private void verifydoublePrimitive(FilterParamIndex index, double testValue, int numExpected)
         {
             testBean.doublePrimitive = testValue;
-            index.matchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
 
         private void verifylongPrimitive(FilterParamIndex index, long testValue, int numExpected)
         {
             testBean.longPrimitive = testValue;
-            index.matchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
 

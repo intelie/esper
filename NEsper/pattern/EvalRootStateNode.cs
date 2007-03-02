@@ -8,7 +8,7 @@ namespace net.esper.pattern
     /// It hold the handle to a further state node with subnodes making up a whole evaluation state tree.
     /// </summary>
 
-    public sealed class EvalRootStateNode : EvalStateNode, Evaluator, PatternStopCallback
+    public sealed class EvalRootStateNode : EvalStateNode, Evaluator //, PatternStopCallback
     {
         /// <summary> Hands the callback to use to indicate matching events.</summary>
         /// <param name="callback">is invoked when the event expressions turns true.
@@ -16,6 +16,7 @@ namespace net.esper.pattern
 
         public PatternMatchCallback Callback
         {
+        	get { return this.callback ; }
             set { this.callback = value; }
         }
 

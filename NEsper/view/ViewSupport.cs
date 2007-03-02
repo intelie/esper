@@ -16,7 +16,7 @@ namespace net.esper.view
     /// A common implementation normally does not need to override any of the methods implemented here, their
     /// implementation is generic and should suffice.
     /// 
-    /// The class provides a convenience method for updateing it's children data updateChildren(Object[], Object[]).
+    /// The class provides a convenience method for updateing it's children data UpdateChildren(Object[], Object[]).
     /// This method should be called from within the View.update(Object[], Object[]) methods in the subclasses.
     /// </summary>
 
@@ -82,12 +82,12 @@ namespace net.esper.view
 
         /// <summary>
         /// Updates all the children with new data.Views may want to use the hasViews method on the Viewable interface to determineif there are any child views attached at all, and save the work of constructing the arrays and
-        /// making the call to updateChildren() in case there aren't any children attached.
+        /// making the call to UpdateChildren() in case there aren't any children attached.
         /// </summary>
         /// <param name="newData">is the array of new event data</param>
         /// <param name="oldData">is the array of old event data</param>
 
-        public void updateChildren(EventBean[] newData, EventBean[] oldData)
+        public void UpdateChildren(EventBean[] newData, EventBean[] oldData)
         {
             int size = children.Count;
 
@@ -114,7 +114,7 @@ namespace net.esper.view
         /// <param name="newData">is the array of new event data</param>
         /// <param name="oldData">is the array of old event data</param>
         
-        protected static void updateChildren(IList<View> childViews, EventBean[] newData, EventBean[] oldData)
+        protected static void UpdateChildren(IList<View> childViews, EventBean[] newData, EventBean[] oldData)
         {
             foreach (View child in childViews)
             {
@@ -131,7 +131,7 @@ namespace net.esper.view
         /// copy of the view, populated via Java bean property getter and setter methods
         /// </returns>
 
-        public static View shallowCopyView(View view)
+        public static View ShallowCopyView(View view)
         {
             View copied = null;
 
@@ -181,7 +181,7 @@ namespace net.esper.view
             }
             catch (Exception e)
             {
-            	log.Fatal(".shallowCopyView Failed to copy view " + view.GetType().Name);
+            	log.Fatal(".ShallowCopyView Failed to copy view " + view.GetType().Name);
 				throw e;
             }
 

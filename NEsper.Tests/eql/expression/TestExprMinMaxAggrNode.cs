@@ -27,16 +27,16 @@ namespace net.esper.eql.expression
 		public virtual void  testGetType()
 		{
 			maxNode.AddChildNode(new SupportExprNode(typeof(Int32)));
-			maxNode.validate(null, null);
+			maxNode.Validate(null, null);
 			Assert.AreEqual(typeof(Int32), maxNode.ReturnType);
 			
 			minNode.AddChildNode(new SupportExprNode(typeof(Single)));
-			minNode.validate(null, null);
+			minNode.Validate(null, null);
 			Assert.AreEqual( typeof( Single ), minNode.ReturnType );
 			
 			maxNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MAX);
 			maxNode.AddChildNode(new SupportExprNode(typeof(Int16)));
-			maxNode.validate(null, null);
+			maxNode.Validate(null, null);
 			Assert.AreEqual( typeof( Int16 ), maxNode.ReturnType );
 		}
 		
@@ -60,7 +60,7 @@ namespace net.esper.eql.expression
 			// Must have exactly 1 subnodes
 			try
 			{
-				minNode.validate(null, null);
+				minNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (ExprValidationException ex)
@@ -73,7 +73,7 @@ namespace net.esper.eql.expression
 			minNode.AddChildNode(new SupportExprNode(typeof(Int32)));
 			try
 			{
-				minNode.validate(null, null);
+				minNode.Validate(null, null);
 				Assert.Fail();
 			}
 			catch (ExprValidationException ex)
@@ -101,7 +101,7 @@ namespace net.esper.eql.expression
 		{
 			ExprMinMaxAggrNode minMaxNode = new ExprMinMaxAggrNode(false, minMaxType);
 			minMaxNode.AddChildNode(new SupportExprNode(value, type));
-			minMaxNode.validate(null, null);
+			minMaxNode.Validate(null, null);
 			return minMaxNode;
 		}
 	}

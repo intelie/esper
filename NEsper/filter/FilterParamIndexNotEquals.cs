@@ -10,7 +10,8 @@ using org.apache.commons.logging;
 
 namespace net.esper.filter
 {
-	/// <summary> Index for filter parameter constants to match using the equals (=) operator.
+	/// <summary>
+    /// Index for filter parameter constants to match using the equals (=) operator.
 	/// The implementation is based on a regular HashMap.
 	/// </summary>
     public sealed class FilterParamIndexNotEquals : FilterParamIndex
@@ -34,12 +35,12 @@ namespace net.esper.filter
         {
             get
             {
-                checkType(filterConstant);
+                CheckType(filterConstant);
                 return constantsMap.Fetch(filterConstant, null);
             }
             set
             {
-                checkType(filterConstant);
+                CheckType(filterConstant);
                 constantsMap[filterConstant] = value;
             }
         }
@@ -65,7 +66,7 @@ namespace net.esper.filter
             }
         }
 
-        public override void matchEvent(EventBean eventBean, IList<FilterCallback> matches)
+        public override void MatchEvent(EventBean eventBean, IList<FilterCallback> matches)
         {
             Object attributeValue = this.Getter.GetValue(eventBean);
 
@@ -87,13 +88,13 @@ namespace net.esper.filter
                 if (!entry.Key.Equals(attributeValue))
                 {
                     EventEvaluator evaluator = entry.Value;
-                    evaluator.matchEvent(eventBean, matches);
+                    evaluator.MatchEvent(eventBean, matches);
                 }
             }
             constantsMapRWLock.ReleaseReaderLock();
         }
 
-        private void checkType(Object filterConstant)
+        private void CheckType(Object filterConstant)
         {
             Type filterConstantType = TypeHelper.GetBoxedType(filterConstant.GetType());            
             if (this.PropertyBoxedType != filterConstantType)

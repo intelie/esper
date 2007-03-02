@@ -585,7 +585,7 @@ namespace net.esper.eql.parse
 			Assert.AreEqual( 2, filterNode.FilterSpec.Parameters.Count );
 			Assert.AreEqual( "intPrimitive", filterNode.FilterSpec.Parameters[1].PropertyName );
 			Assert.AreEqual( FilterOperator.NOT_EQUAL, filterNode.FilterSpec.Parameters[1].FilterOperator );
-			Assert.AreEqual( 1, filterNode.FilterSpec.Parameters[1].getFilterValue( null ) );
+			Assert.AreEqual( 1, filterNode.FilterSpec.Parameters[1].GetFilterValue( null ) );
 
 			Assert.AreEqual( 1, patternStreamSpec.TaggedEventTypes.Count );
 			Assert.AreEqual( typeof( SupportBean ), patternStreamSpec.TaggedEventTypes.Fetch( "g" ).UnderlyingType );

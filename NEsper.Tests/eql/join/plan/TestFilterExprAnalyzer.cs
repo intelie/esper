@@ -21,7 +21,7 @@ namespace net.esper.eql.join.plan
 			EqualsNode.DumpDebug("node...");
 			
 			QueryGraph graph = new QueryGraph(2);
-			FilterExprAnalyzer.analyzeEqualsNode(EqualsNode, graph);
+			FilterExprAnalyzer.AnalyzeEqualsNode(EqualsNode, graph);
 			
 			Assert.IsTrue(graph.IsNavigable(0, 1));
 			ArrayAssertionUtil.assertEqualsExactOrder(
@@ -45,7 +45,7 @@ namespace net.esper.eql.join.plan
 			andNode.DumpDebug("node...");
 			
 			QueryGraph graph = new QueryGraph(2);
-			FilterExprAnalyzer.analyzeAndNode(andNode, graph);
+			FilterExprAnalyzer.AnalyzeAndNode(andNode, graph);
 			
 			Assert.IsTrue(graph.IsNavigable(0, 1));
 			ArrayAssertionUtil.assertEqualsExactOrder(

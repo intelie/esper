@@ -43,34 +43,34 @@ namespace net.esper.filter
             IList<FilterParamIndex> indexes = new List<FilterParamIndex>();
 
             // Create index list wity index that doesn't match
-            FilterParamIndex indexOne = IndexFactory.createIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
+            FilterParamIndex indexOne = IndexFactory.CreateIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
             indexes.Add(indexOne);
-            Assert.IsTrue(IndexHelper.findIndex(parameters, indexes) == null);
+            Assert.IsTrue(IndexHelper.FindIndex(parameters, indexes) == null);
 
             // Create index list wity index that doesn't match
-            indexOne = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.GREATER_OR_EQUAL);
+            indexOne = IndexFactory.CreateIndex(eventType, "doubleBoxed", FilterOperator.GREATER_OR_EQUAL);
             indexes.Clear();
             indexes.Add(indexOne);
-            Assert.IsTrue(IndexHelper.findIndex(parameters, indexes) == null);
+            Assert.IsTrue(IndexHelper.FindIndex(parameters, indexes) == null);
 
             // Add an index that does match a parameter
-            FilterParamIndex indexTwo = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.GREATER);
+            FilterParamIndex indexTwo = IndexFactory.CreateIndex(eventType, "doubleBoxed", FilterOperator.GREATER);
             indexes.Add(indexTwo);
-            Pair<FilterValueSetParam, FilterParamIndex> pair = IndexHelper.findIndex(parameters, indexes);
+            Pair<FilterValueSetParam, FilterParamIndex> pair = IndexHelper.FindIndex(parameters, indexes);
             Assert.IsTrue(pair != null);
             Assert.AreEqual(parameterTwo, pair.First);
             Assert.AreEqual(indexTwo, pair.Second);
 
             // Add another index that does match a parameter, should return first match however which is doubleBoxed
-            FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
+            FilterParamIndex indexThree = IndexFactory.CreateIndex(eventType, "intPrimitive", FilterOperator.GREATER);
             indexes.Add(indexThree);
-            pair = IndexHelper.findIndex(parameters, indexes);
+            pair = IndexHelper.FindIndex(parameters, indexes);
             Assert.AreEqual(parameterTwo, pair.First);
             Assert.AreEqual(indexTwo, pair.Second);
 
             // Try again removing one index
             indexes.Remove(indexTwo);
-            pair = IndexHelper.findIndex(parameters, indexes);
+            pair = IndexHelper.FindIndex(parameters, indexes);
             Assert.AreEqual(parameterOne, pair.First);
             Assert.AreEqual(indexThree, pair.Second);
         }
@@ -78,14 +78,14 @@ namespace net.esper.filter
         [Test]
         public virtual void testFindParameter()
         {
-            FilterParamIndex indexOne = IndexFactory.createIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
-            Assert.IsNull(IndexHelper.findParameter(parameters, indexOne));
+            FilterParamIndex indexOne = IndexFactory.CreateIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
+            Assert.IsNull(IndexHelper.FindParameter(parameters, indexOne));
 
-            FilterParamIndex indexTwo = IndexFactory.createIndex(eventType, "str", FilterOperator.EQUAL);
-            Assert.AreEqual(parameterThree, IndexHelper.findParameter(parameters, indexTwo));
+            FilterParamIndex indexTwo = IndexFactory.CreateIndex(eventType, "str", FilterOperator.EQUAL);
+            Assert.AreEqual(parameterThree, IndexHelper.FindParameter(parameters, indexTwo));
 
-            FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
-            Assert.AreEqual(parameterOne, IndexHelper.findParameter(parameters, indexThree));
+            FilterParamIndex indexThree = IndexFactory.CreateIndex(eventType, "intPrimitive", FilterOperator.GREATER);
+            Assert.AreEqual(parameterOne, IndexHelper.FindParameter(parameters, indexThree));
         }
     }
 }

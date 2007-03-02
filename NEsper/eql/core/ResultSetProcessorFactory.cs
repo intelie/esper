@@ -144,7 +144,7 @@ namespace net.esper.eql.core
             IList<ExprAggregateNode> selectAggregateExprNodes = new List<ExprAggregateNode>();
             foreach (SelectExprElementNamedSpec element in namedSelectionList)
             {
-                ExprAggregateNode.getAggregatesBottomUp(element.SelectExpression, selectAggregateExprNodes);
+                ExprAggregateNode.GetAggregatesBottomUp(element.SelectExpression, selectAggregateExprNodes);
             }
 
             // Construct the appropriate aggregation service
@@ -168,17 +168,17 @@ namespace net.esper.eql.core
             ISet<Pair<Int32, String>> propertiesAggregatedHaving = new EHashSet<Pair<Int32, String>>();
             if (optionalHavingNode != null)
             {
-                ExprAggregateNode.getAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
+                ExprAggregateNode.GetAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
                 propertiesAggregatedHaving = getAggregatedProperties(havingAggregateExprNodes);
             }
 
             // Validate that group-by is filled with sensible nodes (identifiers, and not part of aggregates selected, no aggregates)
-            validateGroupBy(groupByNodes, propertiesAggregatedSelect, propertiesGroupBy);
+            ValidateGroupBy(groupByNodes, propertiesAggregatedSelect, propertiesGroupBy);
 
             // Validate the having-clause (selected aggregate nodes and all in group-by are allowed)
             if (optionalHavingNode != null)
             {
-                validateHaving(selectAggregateExprNodes, propertiesGroupBy, optionalHavingNode);
+                ValidateHaving(selectAggregateExprNodes, propertiesGroupBy, optionalHavingNode);
             }
 
             // Determine if any output rate limiting must be performed early while processing results
@@ -290,7 +290,7 @@ namespace net.esper.eql.core
             return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
         }
 
-        private static void validateHaving(IList<ExprAggregateNode> selectAggregateExprNodes,
+        private static void ValidateHaving(IList<ExprAggregateNode> selectAggregateExprNodes,
         ISet<Pair<Int32, String>> propertiesGroupedBy,
         ExprNode havingNode)
         {
@@ -298,7 +298,7 @@ namespace net.esper.eql.core
             IList<ExprAggregateNode> aggregateNodesHaving = new List<ExprAggregateNode>();
             if (aggregateNodesHaving != null)
             {
-                ExprAggregateNode.getAggregatesBottomUp(havingNode, aggregateNodesHaving);
+                ExprAggregateNode.GetAggregatesBottomUp(havingNode, aggregateNodesHaving);
             }
 
             foreach (ExprAggregateNode aggregateNodeHaving in aggregateNodesHaving)
@@ -337,7 +337,7 @@ namespace net.esper.eql.core
             }
         }
 
-        private static void validateGroupBy(
+        private static void ValidateGroupBy(
         	IList<ExprNode> groupByNodes,
         	ISet<Pair<Int32, String>> propertiesAggregated,
         	ISet<Pair<Int32, String>> propertiesGroupedBy)
@@ -346,7 +346,7 @@ namespace net.esper.eql.core
             IList<ExprAggregateNode> aggNodes = new List<ExprAggregateNode>();
             foreach (ExprNode groupByNode in groupByNodes)
             {
-                ExprAggregateNode.getAggregatesBottomUp(groupByNode, aggNodes);
+                ExprAggregateNode.GetAggregatesBottomUp(groupByNode, aggNodes);
                 if (aggNodes.Count > 0)
                 {
                     throw new ExprValidationException("Group-by expressions cannot contain aggregate functions");

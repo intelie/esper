@@ -47,7 +47,7 @@ namespace net.esper.view.stream
             eventStreams[filterSpec] = pair;
 
             // Activate filter
-            FilterValueSet filterValues = filterSpec.getValueSet(null);
+            FilterValueSet filterValues = filterSpec.GetValueSet(null);
             filterService.Add(filterValues, filterCallback);
 
             return eventStream;

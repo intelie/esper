@@ -83,25 +83,25 @@ namespace net.esper.eql.join.plan
                 " rootStream=" + rootStream + 
                 " requiredPerStream=" + CollectionHelper.Render(requiredPerStream));
 
-            writer.incrIndent();
+            writer.IncrIndent();
             for (int i = 0; i < lookupInstructions.Count; i++)
             {
                 writer.WriteLine("lookup step " + i);
-                writer.incrIndent();
+                writer.IncrIndent();
                 lookupInstructions[i].Print(writer);
-                writer.decrIndent();
+                writer.DecrIndent();
             }
-            writer.decrIndent();
+            writer.DecrIndent();
 
-            writer.incrIndent();
+            writer.IncrIndent();
             for (int i = 0; i < assemblyInstructions.Count; i++)
             {
                 writer.WriteLine("assembly step " + i);
-                writer.incrIndent();
+                writer.IncrIndent();
                 assemblyInstructions[i].Print(writer);
-                writer.decrIndent();
+                writer.DecrIndent();
             }
-            writer.decrIndent();
+            writer.DecrIndent();
         }
     }
 }

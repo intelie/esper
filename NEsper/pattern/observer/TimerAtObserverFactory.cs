@@ -58,12 +58,12 @@ namespace net.esper.pattern.observer
             }
 
             NumberSetParameter numberSet = (NumberSetParameter)unitParameter;
-            if (numberSet.IsWildcard(unit.min(), unit.min()))
+            if (numberSet.IsWildcard(unit.Min(), unit.Min()))
             {
                 return null;
             }
 
-            ISet<Int32> _result = numberSet.GetValuesInRange(unit.min(), unit.max());
+            ISet<Int32> _result = numberSet.GetValuesInRange(unit.Min(), unit.Max());
             ETreeSet<Int32> resultSorted = new ETreeSet<Int32>();
             resultSorted.AddAll(_result);
 

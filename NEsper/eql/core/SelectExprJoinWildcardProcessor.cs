@@ -53,7 +53,7 @@ namespace net.esper.eql.core
         	EDataDictionary tuple = new EDataDictionary() ;
             for (int i = 0; i < streamNames.Length; i++)
             {
-                AssertionFacility.assertTrue(streamNames[i] != null, "Event name for stream " + i + " is null");
+                AssertionFacility.AssertTrue(streamNames[i] != null, "Event name for stream " + i + " is null");
 
                 if (eventsPerStream[i] != null)
                 {

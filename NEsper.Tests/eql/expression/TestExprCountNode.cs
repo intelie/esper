@@ -18,7 +18,7 @@ namespace net.esper.eql.expression
 			base.validatedNodeToTest = makeNode(5, typeof(Int32));
 			
 			wildcardCount = new ExprCountNode(false);
-			wildcardCount.validate(null, null);
+			wildcardCount.Validate(null, null);
 		}
 		
 		[Test]
@@ -47,7 +47,7 @@ namespace net.esper.eql.expression
 		{
 			ExprCountNode countNode = new ExprCountNode(false);
 			countNode.AddChildNode(new SupportExprNode(value, type));
-			countNode.validate(null, null);
+			countNode.Validate(null, null);
 			return countNode;
 		}
 	}

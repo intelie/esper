@@ -19,11 +19,14 @@ namespace net.esper.compat
     {
         public delegate void TimerEventHandler(uint id, uint msg, IntPtr userCtx, uint rsv1, uint rsv2);
 
-        [DllImport("WinMM.dll", SetLastError = true)]
-        private static extern uint timeSetEvent(uint msDelay, uint msResolution, TimerEventHandler handler, IntPtr userCtx, uint eventType);
-
-        [DllImport("WinMM.dll", SetLastError = true)]
-        private static extern uint timeKillEvent(uint timerEventId);
+        public class NativeMethods
+        {
+	        [DllImport("WinMM.dll", SetLastError = true)]
+	        public static extern uint timeSetEvent(uint msDelay, uint msResolution, TimerEventHandler handler, IntPtr userCtx, uint eventType);
+	
+	        [DllImport("WinMM.dll", SetLastError = true)]
+	        public static extern uint timeKillEvent(uint timerEventId);
+        }
 
         private const int TIME_ONESHOT    = 0x0000   ; /* program timer for single event */
         private const int TIME_PERIODIC   = 0x0001   ; /* program for continuous periodic event */
@@ -139,7 +142,7 @@ namespace net.esper.compat
         {
             if (m_dueTime == 0)
             {
-                m_timer = timeSetEvent(
+                m_timer = NativeMethods.timeSetEvent(
                     m_period,
                     m_period,
                     m_delegate,
@@ -150,7 +153,7 @@ namespace net.esper.compat
             }
             else
             {
-                m_timer = timeSetEvent(
+                m_timer = NativeMethods.timeSetEvent(
                     m_dueTime,
                     m_period,
                     m_delegate,
@@ -168,10 +171,12 @@ namespace net.esper.compat
         {
             if (m_timer.HasValue)
             {
-                timeKillEvent(m_timer.Value);
+                NativeMethods.timeKillEvent(m_timer.Value);
                 m_timerTable.Remove(m_timer.Value);
                 m_timer = null;
             }
+            
+            GC.SuppressFinalize( this ) ;
         }
 
         /// <summary>
@@ -209,7 +214,7 @@ namespace net.esper.compat
 
                 foreach (uint timerId in m_timerTable.Keys)
                 {
-                    timeKillEvent(timerId);
+                    NativeMethods.timeKillEvent(timerId);
                 }
                 
                 m_timerTable.Clear() ;

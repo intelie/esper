@@ -88,7 +88,7 @@ namespace net.esper.eql.parse
 			}
 			
 			FilterSpec filterSpec = new FilterSpec(eventType, parameters);
-			FilterSpecValidator.validate(filterSpec, optionalTaggedEventTypes);
+			FilterSpecValidator.Validate(filterSpec, optionalTaggedEventTypes);
 			
 			return filterSpec;
 		}
@@ -197,7 +197,7 @@ namespace net.esper.eql.parse
 		
 		private static FilterSpecParam createNonRangeParam(String propertyName, PrimitiveValue primitiveValue, AST filterParamNode)
 		{
-			FilterOperator? _operator = FilterOperatorHelper.parseComparisonOperator(filterParamNode.getText());
+			FilterOperator? _operator = FilterOperatorHelper.ParseComparisonOperator(filterParamNode.getText());
 			
 			// Deal with use-result filter parameters
 			if (filterParamNode.getFirstChild().Type == EqlTokenTypes.EVENT_FILTER_IDENT)
@@ -221,7 +221,7 @@ namespace net.esper.eql.parse
 			String stringValue = constantNode.getText();
 			try
 			{
-				primitiveValue.parse(stringValue);
+				primitiveValue.Parse(stringValue);
 			}
 			catch (SystemException ex)
 			{
@@ -263,7 +263,7 @@ namespace net.esper.eql.parse
 			ast = ast.getNextSibling();
 			bool highInclusive = ast.Type == EqlTokenTypes.RBRACK;
 			
-			FilterOperator _operator = FilterOperatorHelper.parseRangeOperator(lowInclusive, highInclusive);
+			FilterOperator _operator = FilterOperatorHelper.ParseRangeOperator(lowInclusive, highInclusive);
 			
 			return new FilterSpecParamRange(propertyName, _operator, valueMin, valueMax);
 		}
@@ -281,7 +281,7 @@ namespace net.esper.eql.parse
 			{
 				// Parse text node
 				String value = ast.getText();
-				primitiveValue.parse(value);
+				primitiveValue.Parse(value);
 				double dbl = Convert.ToDouble(primitiveValue.ValueObject);
 				return new RangeValueDouble(dbl);
 			}

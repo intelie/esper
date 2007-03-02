@@ -262,7 +262,7 @@ namespace net.esper.view.ext
                     expiredArr = removedEvents.ToArray();
                 }
 
-                updateChildren(newData, expiredArr);
+                UpdateChildren(newData, expiredArr);
             }
         }
 

@@ -135,7 +135,7 @@ namespace net.esper.view.std
             {
                 foreach (EventBean newValue in newData)
                 {
-                    handleEvent(newValue, true);
+                    HandleEvent(newValue, true);
                 }
             }
 
@@ -143,7 +143,7 @@ namespace net.esper.view.std
             {
                 foreach (EventBean oldValue in oldData)
                 {
-                    handleEvent(oldValue, false);
+                    HandleEvent(oldValue, false);
                 }
             }
 
@@ -152,13 +152,13 @@ namespace net.esper.view.std
             {
                 EventBean[] newEvents = EventBeanUtility.ToArray(entry.Value.First);
                 EventBean[] oldEvents = EventBeanUtility.ToArray(entry.Value.Second);
-                ViewSupport.updateChildren(entry.Key, newEvents, oldEvents);
+                ViewSupport.UpdateChildren(entry.Key, newEvents, oldEvents);
             }
 
             groupedEvents.Clear();
         }
 
-        private void handleEvent(EventBean _event, bool isNew)
+        private void HandleEvent(EventBean _event, bool isNew)
         {
             // Get values for group-by, construct MultiKey
             Object[] groupByValues = new Object[groupFieldGetters.Length];
@@ -174,7 +174,7 @@ namespace net.esper.view.std
             // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
             if ( subViews == null )
             {
-                subViews = makeSubViews(this, groupByValuesKey.Array, viewServiceContext);
+                subViews = MakeSubViews(this, groupByValuesKey.Array, viewServiceContext);
                 subViewsPerKey[groupByValuesKey] = subViews;
             }
 
@@ -223,12 +223,12 @@ namespace net.esper.view.std
         /// data merge views added to the copied child leaf views.
         /// </returns>
         
-        public static IList<View> makeSubViews(GroupByView groupView, Object[] groupByValues, ViewServiceContext viewServiceContext)
+        public static IList<View> MakeSubViews(GroupByView groupView, Object[] groupByValues, ViewServiceContext viewServiceContext)
         {
             if (!groupView.HasViews)
             {
                 String message = "Unexpected empty list of child nodes for group view";
-                log.Fatal(".copySubViews " + message);
+                log.Fatal(".MakeSubViews " + message);
                 throw new EPException(message);
             }
 
@@ -240,23 +240,23 @@ namespace net.esper.view.std
                 if (originalChildView is MergeView)
                 {
                     String message = "Unexpected merge view as child of group-by view";
-                    log.Fatal(".copySubViews " + message);
+                    log.Fatal(".CopySubViews " + message);
                     throw new EPException(message);
                 }
 
                 // Shallow copy child node
-                View copyChildView = ViewSupport.shallowCopyView(originalChildView);
+                View copyChildView = ViewSupport.ShallowCopyView(originalChildView);
                 copyChildView.Parent = groupView;
                 subViewList.Add(copyChildView);
 
                 // Make the sub views for child copying from the original to the child
-                copySubViews(groupView.GroupFieldNames, groupByValues, originalChildView, copyChildView, viewServiceContext);
+                CopySubViews(groupView.GroupFieldNames, groupByValues, originalChildView, copyChildView, viewServiceContext);
             }
 
             return subViewList;
         }
 
-        private static void copySubViews(String[] groupFieldNames, Object[] groupByValues, View originalView, View copyView, ViewServiceContext viewServiceContext)
+        private static void CopySubViews(String[] groupFieldNames, Object[] groupByValues, View originalView, View copyView, ViewServiceContext viewServiceContext)
         {
             foreach (View subView in originalView.GetViews())
             {
@@ -277,17 +277,17 @@ namespace net.esper.view.std
                         mergeDataView.AddView(mergeView);
 
                         // Add a parent view to the single merge view instance
-                        mergeView.addParentView(mergeDataView);
+                        mergeView.AddParentView(mergeDataView);
 
                         continue;
                     }
                 }
 
-                View copiedChild = ViewSupport.shallowCopyView(subView);
+                View copiedChild = ViewSupport.ShallowCopyView(subView);
                 copyView.AddView(copiedChild);
 
                 // Make the sub views for child
-                copySubViews(groupFieldNames, groupByValues, subView, copiedChild, viewServiceContext);
+                CopySubViews(groupFieldNames, groupByValues, subView, copiedChild, viewServiceContext);
             }
         }
 

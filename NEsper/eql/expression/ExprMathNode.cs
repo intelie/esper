@@ -32,7 +32,7 @@ namespace net.esper.eql.expression
             this.mathArithTypeEnum = mathArithTypeEnum;
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             if (this.ChildNodes.Count != 2)
             {
@@ -61,7 +61,7 @@ namespace net.esper.eql.expression
                 resultType = TypeHelper.GetArithmaticCoercionType(childTypeOne, childTypeTwo);
             }
 
-            arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType);
+            arithTypeEnumComputer = mathArithTypeEnum.GetComputer(resultType);
         }
 
         public override Object Evaluate(EventBean[] eventsPerStream)

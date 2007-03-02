@@ -5,12 +5,11 @@ using net.esper.client;
 
 namespace net.esper.support.emit
 {
-
-    public class SupportEmittedListener : EmittedListener
+    public class SupportEmittedListener
     {
         IList<Object> emittedObjects = new List<Object>();
 
-        public virtual void emitted(Object _object)
+        public virtual void HandleEmit(Object _object)
         {
             emittedObjects.Add(_object);
         }

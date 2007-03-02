@@ -53,7 +53,7 @@ namespace net.esper.eql.join.plan
                 {
                     // Analyze relationships between streams using the optional filter expression.
                     // Relationships are properties in AND and EQUALS nodes of joins.
-                    FilterExprAnalyzer.analyze(optionalFilterNode, queryGraph);
+                    FilterExprAnalyzer.Analyze(optionalFilterNode, queryGraph);
                     log.Debug(methodName + "After filter expression queryGraph=\n" + queryGraph);
 
                     // Add navigation entries based on key and index property equivalency (a=b, b=c follows a=c)

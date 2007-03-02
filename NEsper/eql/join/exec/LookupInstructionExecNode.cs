@@ -140,25 +140,25 @@ namespace net.esper.eql.join.exec
                 " name=" + rootStreamName +
                 " requiredPerStream=" + CollectionHelper.Render(requiredPerStream));
 
-            writer.incrIndent();
+            writer.IncrIndent();
             for (int i = 0; i < lookupInstructions.Length; i++)
             {
                 writer.WriteLine("lookup inst node " + i);
-                writer.incrIndent();
+                writer.IncrIndent();
                 lookupInstructions[i].Print(writer);
-                writer.decrIndent();
+                writer.DecrIndent();
             }
-            writer.decrIndent();
+            writer.DecrIndent();
 
-            writer.incrIndent();
+            writer.IncrIndent();
             for (int i = 0; i < assemblyInstructions.Length; i++)
             {
                 writer.WriteLine("assembly inst node " + i);
-                writer.incrIndent();
+                writer.IncrIndent();
                 assemblyInstructions[i].Print(writer);
-                writer.decrIndent();
+                writer.DecrIndent();
             }
-            writer.decrIndent();
+            writer.DecrIndent();
         }
 
         /// <summary>

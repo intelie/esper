@@ -48,7 +48,7 @@ namespace net.esper.filter
 		void assertValid(params object[] filterParameters)
 		{
 			FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterParameters);
-			FilterSpecValidator.validate(spec, null);
+			FilterSpecValidator.Validate(spec, null);
 		}
 		
 		private
@@ -57,7 +57,7 @@ namespace net.esper.filter
 			try
 			{
 				FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterParameters);
-				FilterSpecValidator.validate(spec, null);
+				FilterSpecValidator.Validate(spec, null);
 				Assert.Fail();
 			}
 			catch (ASTFilterSpecValidationException ex)

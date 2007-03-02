@@ -43,11 +43,11 @@ namespace net.esper.eql.expression
             // Test success
             EqualsNodes[0].AddChildNode(new SupportExprNode(typeof(String)));
             EqualsNodes[0].AddChildNode(new SupportExprNode(typeof(String)));
-            EqualsNodes[0].validate(null, null);
+            EqualsNodes[0].Validate(null, null);
 
-            EqualsNodes[1].validate(null, null);
-            EqualsNodes[2].validate(null, null);
-            EqualsNodes[3].validate(null, null);
+            EqualsNodes[1].Validate(null, null);
+            EqualsNodes[2].Validate(null, null);
+            EqualsNodes[3].Validate(null, null);
 
             EqualsNodes[0].ChildNodes.Clear();
             EqualsNodes[0].AddChildNode(new SupportExprNode(typeof(String)));
@@ -55,7 +55,7 @@ namespace net.esper.eql.expression
             // Test too few nodes under this node
             try
             {
-                EqualsNodes[0].validate(null, null);
+                EqualsNodes[0].Validate(null, null);
                 Assert.Fail();
             }
             catch (System.SystemException ex)
@@ -67,7 +67,7 @@ namespace net.esper.eql.expression
             EqualsNodes[0].AddChildNode(new SupportExprNode(typeof(bool)));
             try
             {
-                EqualsNodes[0].validate(null, null);
+                EqualsNodes[0].Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -98,14 +98,14 @@ namespace net.esper.eql.expression
             Assert.IsTrue((bool)EqualsNodes[0].Evaluate(null));
 
             // try a long and int
-            EqualsNodes[1].validate(null, null);
+            EqualsNodes[1].Validate(null, null);
             Assert.IsTrue((bool)EqualsNodes[1].Evaluate(null));
 
             // try a double and int
-            EqualsNodes[2].validate(null, null);
+            EqualsNodes[2].Validate(null, null);
             Assert.IsTrue((bool)EqualsNodes[2].Evaluate(null));
 
-            EqualsNodes[3].validate(null, null);
+            EqualsNodes[3].Validate(null, null);
             Assert.IsTrue((bool)EqualsNodes[3].Evaluate(null));
         }
 

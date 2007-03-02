@@ -259,7 +259,7 @@ namespace net.esper.view.window
             myView.Parent = parent;
 			myView.ViewServiceContext = context;
 
-			TimeBatchView copied = (TimeBatchView) ViewSupport.shallowCopyView( myView );
+			TimeBatchView copied = (TimeBatchView) ViewSupport.ShallowCopyView( myView );
 			Assert.AreEqual( myView.MsecIntervalSize, copied.MsecIntervalSize );
 			Assert.AreEqual( myView.InitialReferencePoint, copied.InitialReferencePoint );
 			Assert.AreEqual( myView.ViewServiceContext, copied.ViewServiceContext );

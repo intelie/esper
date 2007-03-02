@@ -158,11 +158,11 @@ namespace net.esper.view.std
             {
                 if (postOldData.Count == 0)
                 {
-                    updateChildren(newData, null);
+                    UpdateChildren(newData, null);
                 }
                 else
                 {
-					updateChildren( newData, postOldData.ToArray() );
+					UpdateChildren( newData, postOldData.ToArray() );
                 }
             }
         }

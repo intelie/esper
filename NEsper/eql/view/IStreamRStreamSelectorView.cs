@@ -36,7 +36,7 @@ namespace net.esper.eql.view
                 if (oldData != null)
                 {
                     // Hand only the old data as new data to child views
-                    this.updateChildren(oldData, null);
+                    this.UpdateChildren(oldData, null);
                 }
             }
             else if (selectStreamDirEnum == SelectClauseStreamSelectorEnum.ISTREAM_ONLY)
@@ -44,12 +44,12 @@ namespace net.esper.eql.view
                 if (newData != null)
                 {
                     // Hand only the new data as new data to child views
-                    this.updateChildren(newData, null);
+                    this.UpdateChildren(newData, null);
                 }
             }
             else if (selectStreamDirEnum == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH)
             {
-                this.updateChildren(newData, oldData);
+                this.UpdateChildren(newData, oldData);
             }
             else
             {

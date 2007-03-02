@@ -44,7 +44,7 @@ namespace net.esper.support.view
             this.lastNewData = newData;
             this.lastOldData = oldData;
 
-            updateChildren(newData, oldData);
+            UpdateChildren(newData, oldData);
         }
     }
 }

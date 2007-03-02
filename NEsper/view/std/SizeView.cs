@@ -77,7 +77,7 @@ namespace net.esper.view.std
 
                 EDataDictionary postOldData = new EDataDictionary();
                 postOldData[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = priorSize;
-                updateChildren(new EventBean[] { viewServiceContext.EventAdapterService.CreateMapFromValues(postNewData, eventType) }, new EventBean[] { viewServiceContext.EventAdapterService.CreateMapFromValues(postOldData, eventType) });
+                UpdateChildren(new EventBean[] { viewServiceContext.EventAdapterService.CreateMapFromValues(postNewData, eventType) }, new EventBean[] { viewServiceContext.EventAdapterService.CreateMapFromValues(postOldData, eventType) });
             }
         }
 

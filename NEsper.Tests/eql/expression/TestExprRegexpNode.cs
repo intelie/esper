@@ -89,7 +89,7 @@ namespace net.esper.eql.expression
         {
             try
             {
-                exprLikeRegexpNode.validate(null, null);
+                exprLikeRegexpNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

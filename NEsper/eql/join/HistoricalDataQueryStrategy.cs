@@ -66,7 +66,7 @@ namespace net.esper.eql.join
                 }
             }
 
-            IList<EventBean>[] result = historicalEventViewable.poll(lookupRows);
+            IList<EventBean>[] result = historicalEventViewable.Poll(lookupRows);
 
             int count = 0;
             foreach (IList<EventBean> rowsPerLookup in result)

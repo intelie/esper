@@ -31,13 +31,13 @@ namespace net.esper.eql.expression
             // test success
             orNode.AddChildNode(new SupportExprNode(typeof(bool)));
             orNode.AddChildNode(new SupportExprNode(typeof(bool)));
-            orNode.validate(null, null);
+            orNode.Validate(null, null);
 
             // test failure, type mismatch
             orNode.AddChildNode(new SupportExprNode(typeof(String)));
             try
             {
-                orNode.validate(null, null);
+                orNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -50,7 +50,7 @@ namespace net.esper.eql.expression
             orNode.AddChildNode(new SupportExprNode(typeof(bool)));
             try
             {
-                orNode.validate(null, null);
+                orNode.Validate(null, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

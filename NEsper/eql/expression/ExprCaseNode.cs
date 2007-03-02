@@ -42,15 +42,15 @@ namespace net.esper.eql.expression
             this.isCase2 = isCase2;
         }
 
-        public override void validate(StreamTypeService streamTypeService_, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService_, AutoImportService autoImportService)
         {
             if (isCase2)
             {
-                validateCaseTwo();
+                ValidateCaseTwo();
             }
             else
             {
-                validateCaseOne();
+                ValidateCaseOne();
             }
 
             // Determine type of each result (then-node and else node) child node expression
@@ -130,7 +130,7 @@ namespace net.esper.eql.expression
             }
         }
 
-        private void validateCaseOne()
+        private void ValidateCaseOne()
         {
             // Case 1 expression example:
             //      case when a=b then x [when c=d then y...] [else y]
@@ -159,7 +159,7 @@ namespace net.esper.eql.expression
             }
         }
 
-        private void validateCaseTwo()
+        private void ValidateCaseTwo()
         {
             // Case 2 expression example:
             //      case p when p1 then x [when p2 then y...] [else z]

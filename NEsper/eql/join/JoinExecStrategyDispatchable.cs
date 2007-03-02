@@ -43,7 +43,7 @@ namespace net.esper.eql.join
             newStreamBuffer = new EHashDictionary<Int32, EventBuffer>();
         }
 
-        public virtual void execute()
+        public virtual void Execute()
         {
             isDispatchRegistered = false;
 

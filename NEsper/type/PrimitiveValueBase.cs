@@ -49,11 +49,11 @@ namespace net.esper.type
         
         public abstract PrimitiveValueType Type { get;}
         public abstract Object ValueObject { get;}
-        public virtual void parse(String[] values)
+        public virtual void Parse(String[] values)
         {
-            parse(values[0]);
+            Parse(values[0]);
         }
 
-        public abstract void parse(String param1);
+        public abstract void Parse(String param1);
     }
 }

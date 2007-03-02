@@ -32,7 +32,7 @@ namespace net.esper.eql.expression
             this.isNotIn = isNotIn;
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
         	IList<ExprNode> children = this.ChildNodes ;
         	

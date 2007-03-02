@@ -33,7 +33,7 @@ namespace net.esper.eql.expression
             _bitWiseOpEnum = bitWiseOpEnum_;
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             if (this.ChildNodes.Count != 2)
             {
@@ -64,7 +64,7 @@ namespace net.esper.eql.expression
                 if (childBoxedTypeOne == childBoxedTypeTwo)
                 {
                     _resultType = childBoxedTypeOne;
-                    _bitWiseOpEnumComputer = _bitWiseOpEnum.getComputer(_resultType);
+                    _bitWiseOpEnumComputer = _bitWiseOpEnum.GetComputer(_resultType);
                 }
                 else
                 {

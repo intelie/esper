@@ -78,14 +78,14 @@ namespace net.esper.eql.core
             IList<ExprAggregateNode> aggregateNodesHaving = new List<ExprAggregateNode>();
             if (optionalHavingNode != null)
             {
-                ExprAggregateNode.getAggregatesBottomUp(optionalHavingNode, aggregateNodesHaving);
+                ExprAggregateNode.GetAggregatesBottomUp(optionalHavingNode, aggregateNodesHaving);
             }
 
             // Inspect sort-by clause for aggregation
             IList<ExprAggregateNode> aggregateNodesSortBy = new List<ExprAggregateNode>();
             foreach (ExprNode node in sortByNodes)
             {
-                ExprAggregateNode.getAggregatesBottomUp(node, aggregateNodesSortBy);
+                ExprAggregateNode.GetAggregatesBottomUp(node, aggregateNodesSortBy);
             }
 
             // Hand a service reference to the aggregation nodes themselves.
@@ -94,14 +94,14 @@ namespace net.esper.eql.core
             int column = 0;
             foreach (ExprAggregateNode aggregateNode in aggregateExprNodes)
             {
-                aggregateNode.setAggregationResultFuture(service, column);
+                aggregateNode.SetAggregationResultFuture(service, column);
 
                 // Check any same aggregation nodes in the having clause
                 foreach (ExprAggregateNode havingNode in aggregateNodesHaving)
                 {
                     if (ExprNode.DeepEquals(havingNode, aggregateNode))
                     {
-                        havingNode.setAggregationResultFuture(service, column);
+                        havingNode.SetAggregationResultFuture(service, column);
                     }
                 }
 
@@ -110,7 +110,7 @@ namespace net.esper.eql.core
                 {
                     if (ExprNode.DeepEquals(sortByNode, aggregateNode))
                     {
-                        sortByNode.setAggregationResultFuture(service, column);
+                        sortByNode.SetAggregationResultFuture(service, column);
                     }
                 }
 

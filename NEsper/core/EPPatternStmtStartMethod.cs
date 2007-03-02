@@ -2,6 +2,7 @@ using System;
 
 using net.esper.pattern;
 using net.esper.schedule;
+using net.esper.util;
 
 namespace net.esper.core
 {
@@ -40,8 +41,9 @@ namespace net.esper.core
         public virtual EPStatementStopMethod Start(PatternMatchCallback matchCallback)
 		{
 			PatternContext context = new PatternContext(services.FilterService, services.SchedulingService, scheduleBucket, services.EventAdapterService);
-			PatternStopCallback stopCallback = patternStarter.Start(matchCallback, context);
-			EPStatementStopMethod stopMethod = new EPStatementStopMethod( delegate() { stopCallback.Stop(); } );
+			StopCallback stopCallback = patternStarter.Start(matchCallback, context);
+			EPStatementStopMethod stopMethod = new EPStatementStopMethod(
+				delegate() { stopCallback(); } );
 			
 			return stopMethod;
 		}

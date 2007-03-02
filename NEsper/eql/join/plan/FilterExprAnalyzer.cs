@@ -17,7 +17,7 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <param name="queryGraph">- model containing relationships between streams, to be written to
         /// </param>
-        public static void analyze(ExprNode topNode, QueryGraph queryGraph)
+        public static void Analyze(ExprNode topNode, QueryGraph queryGraph)
         {
             // Analyze relationships between streams. Relationships are properties in AND and EQUALS nodes of joins.
             if (topNode is ExprEqualsNode)
@@ -25,13 +25,13 @@ namespace net.esper.eql.join.plan
                 ExprEqualsNode EqualsNode = (ExprEqualsNode)topNode;
                 if (!EqualsNode.NotEquals)
                 {
-                    analyzeEqualsNode(EqualsNode, queryGraph);
+                    AnalyzeEqualsNode(EqualsNode, queryGraph);
                 }
             }
             else if (topNode is ExprAndNode)
             {
                 ExprAndNode andNode = (ExprAndNode)topNode;
-                analyzeAndNode(andNode, queryGraph);
+                AnalyzeAndNode(andNode, queryGraph);
             }
         }
 
@@ -40,7 +40,7 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <param name="queryGraph">- store relationships between stream properties
         /// </param>
-        public static void analyzeEqualsNode(ExprEqualsNode EqualsNode, QueryGraph queryGraph)
+        public static void AnalyzeEqualsNode(ExprEqualsNode EqualsNode, QueryGraph queryGraph)
         {
             if ((!(EqualsNode.ChildNodes[0] is ExprIdentNode)) || (!(EqualsNode.ChildNodes[1] is ExprIdentNode)))
             {
@@ -58,17 +58,14 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <param name="queryGraph">- to store relationships between stream properties
         /// </param>
-        public static void analyzeAndNode(ExprAndNode andNode, QueryGraph queryGraph)
+        public static void AnalyzeAndNode(ExprAndNode andNode, QueryGraph queryGraph)
         {
             foreach (ExprNode childNode in andNode.ChildNodes)
             {
-                if (childNode is ExprEqualsNode)
+                ExprEqualsNode equalsNode = childNode as ExprEqualsNode;
+                if ((equalsNode != null) && (!equalsNode.NotEquals))
                 {
-                    ExprEqualsNode EqualsNode = (ExprEqualsNode)childNode;
-                    if (!EqualsNode.NotEquals)
-                    {
-                        analyzeEqualsNode(EqualsNode, queryGraph);
-                    }
+                    AnalyzeEqualsNode(equalsNode, queryGraph);
                 }
             }
         }

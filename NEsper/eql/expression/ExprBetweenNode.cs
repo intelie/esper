@@ -33,7 +33,7 @@ namespace net.esper.eql.expression
 			this.isNotBetween = isNotBetween;
 		}
 		
-		public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+		public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
 		{
 			if (this.ChildNodes.Count != 3)
 			{
@@ -106,14 +106,14 @@ namespace net.esper.eql.expression
 			return result;
 		}
 		
-		public override bool EqualsNode(ExprNode node_)
+		public override bool EqualsNode(ExprNode node)
 		{
-			if (!(node_ is ExprBetweenNode))
+			if (!(node is ExprBetweenNode))
 			{
 				return false;
 			}
 			
-			ExprBetweenNode other = (ExprBetweenNode) node_;
+			ExprBetweenNode other = (ExprBetweenNode) node;
 			return other.isNotBetween == this.isNotBetween;
 		}
 		

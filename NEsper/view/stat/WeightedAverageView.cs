@@ -166,7 +166,7 @@ namespace net.esper.view.stat
                 oldDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = oldValue;
                 EventBean oldDataEvent = viewServiceContext.EventAdapterService.CreateMapFromValues(oldDataMap, eventType);
 
-                updateChildren(new EventBean[] { newDataEvent }, new EventBean[] { oldDataEvent });
+                UpdateChildren(new EventBean[] { newDataEvent }, new EventBean[] { oldDataEvent });
             }
         }
 

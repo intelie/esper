@@ -103,7 +103,7 @@ namespace net.esper.eql.expression
         ///	<param name="column">- column	to hand	to future	for	easy access
         ///	</param>
 
-        public virtual void setAggregationResultFuture(AggregationResultFuture aggregationResultFuture, int column)
+        public virtual void SetAggregationResultFuture(AggregationResultFuture aggregationResultFuture, int column)
         {
             this.aggregationResultFuture = aggregationResultFuture;
             this.column = column;
@@ -122,14 +122,14 @@ namespace net.esper.eql.expression
         ///	</param>
         ///	<param name="aggregateNodes">is	a	list of	node to	populate into
         ///	</param>
-        public static void getAggregatesBottomUp(ExprNode topNode, IList<ExprAggregateNode> aggregateNodes)
+        public static void GetAggregatesBottomUp(ExprNode topNode, IList<ExprAggregateNode> aggregateNodes)
         {
             // Map to	hold per level of	the	node (1	to N depth)	of expression	node a list	of aggregation expr	nodes, if	any
             // exist at	that level
             ETreeDictionary<int, List<ExprAggregateNode>> aggregateExprPerLevel = new ETreeDictionary<int, List<ExprAggregateNode>>();
 
             // Recursively enter all aggregate functions and their level into	map
-            recursiveAggregateEnter(topNode, aggregateExprPerLevel, 1);
+            RecursiveAggregateEnter(topNode, aggregateExprPerLevel, 1);
 
             // Done	if none	found
             if (aggregateExprPerLevel.Count == 0)
@@ -171,12 +171,12 @@ namespace net.esper.eql.expression
             return this.EqualsNodeAggregate(other);
         }
 
-        private static void recursiveAggregateEnter(ExprNode currentNode, IDictionary<Int32, List<ExprAggregateNode>> aggregateExprPerLevel, int currentLevel)
+        private static void RecursiveAggregateEnter(ExprNode currentNode, IDictionary<Int32, List<ExprAggregateNode>> aggregateExprPerLevel, int currentLevel)
         {
             // ask all child nodes to	enter	themselves
             foreach (ExprNode node in currentNode.ChildNodes)
             {
-                recursiveAggregateEnter(node, aggregateExprPerLevel, currentLevel + 1);
+                RecursiveAggregateEnter(node, aggregateExprPerLevel, currentLevel + 1);
             }
 
             if (!(currentNode is ExprAggregateNode))
@@ -203,7 +203,7 @@ namespace net.esper.eql.expression
         ///	<returns>	numeric	type of	single child
         ///	</returns>
         ///	<throws>	ExprValidationException	if the validation	failed </throws>
-        protected internal Type validateSingleNumericChild(StreamTypeService streamTypeService)
+        protected internal Type ValidateSingleNumericChild(StreamTypeService streamTypeService)
         {
             if (this.ChildNodes.Count != 1)
             {

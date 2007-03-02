@@ -225,45 +225,45 @@ namespace net.esper.collection
 
 			// test various other cases
 			double[] vector = new double[] { 1, 1, 2, 2, 2, 3, 4, 5, 5, 6 };
-			Assert.AreEqual( 0, findIndex( vector, 0 ) );
-			Assert.AreEqual( 0, findIndex( vector, 0.5 ) );
-			Assert.AreEqual( 0, findIndex( vector, 1 ) );
-			Assert.AreEqual( 2, findIndex( vector, 1.5 ) );
-			Assert.AreEqual( 2, findIndex( vector, 2 ) );
-			Assert.AreEqual( 5, findIndex( vector, 2.5 ) );
-			Assert.AreEqual( 5, findIndex( vector, 3 ) );
-			Assert.AreEqual( 6, findIndex( vector, 3.5 ) );
-			Assert.AreEqual( 6, findIndex( vector, 4 ) );
-			Assert.AreEqual( 7, findIndex( vector, 4.5 ) );
-			Assert.AreEqual( 7, findIndex( vector, 5 ) );
-			Assert.AreEqual( 9, findIndex( vector, 5.5 ) );
-			Assert.AreEqual( 9, findIndex( vector, 6 ) );
-			Assert.AreEqual( -1, findIndex( vector, 6.5 ) );
-			Assert.AreEqual( -1, findIndex( vector, 7 ) );
+			Assert.AreEqual( 0, FindIndex( vector, 0 ) );
+			Assert.AreEqual( 0, FindIndex( vector, 0.5 ) );
+			Assert.AreEqual( 0, FindIndex( vector, 1 ) );
+			Assert.AreEqual( 2, FindIndex( vector, 1.5 ) );
+			Assert.AreEqual( 2, FindIndex( vector, 2 ) );
+			Assert.AreEqual( 5, FindIndex( vector, 2.5 ) );
+			Assert.AreEqual( 5, FindIndex( vector, 3 ) );
+			Assert.AreEqual( 6, FindIndex( vector, 3.5 ) );
+			Assert.AreEqual( 6, FindIndex( vector, 4 ) );
+			Assert.AreEqual( 7, FindIndex( vector, 4.5 ) );
+			Assert.AreEqual( 7, FindIndex( vector, 5 ) );
+			Assert.AreEqual( 9, FindIndex( vector, 5.5 ) );
+			Assert.AreEqual( 9, FindIndex( vector, 6 ) );
+			Assert.AreEqual( -1, FindIndex( vector, 6.5 ) );
+			Assert.AreEqual( -1, FindIndex( vector, 7 ) );
 
 			// test various other cases
 			vector = new double[] { 1, 8, 100, 1000, 1000, 10000, 10000, 99999 };
-			Assert.AreEqual( 0, findIndex( vector, 0 ) );
-			Assert.AreEqual( 0, findIndex( vector, 1 ) );
-			Assert.AreEqual( 1, findIndex( vector, 2 ) );
-			Assert.AreEqual( 1, findIndex( vector, 7 ) );
-			Assert.AreEqual( 1, findIndex( vector, 8 ) );
-			Assert.AreEqual( 2, findIndex( vector, 9 ) );
-			Assert.AreEqual( 2, findIndex( vector, 99 ) );
-			Assert.AreEqual( 2, findIndex( vector, 100 ) );
-			Assert.AreEqual( 3, findIndex( vector, 101 ) );
-			Assert.AreEqual( 3, findIndex( vector, 999 ) );
-			Assert.AreEqual( 4, findIndex( vector, 1000 ) );
-			Assert.AreEqual( 5, findIndex( vector, 1001 ) );
-			Assert.AreEqual( 5, findIndex( vector, 9999 ) );
-			Assert.AreEqual( 6, findIndex( vector, 10000 ) );
-			Assert.AreEqual( 7, findIndex( vector, 10001 ) );
-			Assert.AreEqual( 7, findIndex( vector, 99998 ) );
-			Assert.AreEqual( 7, findIndex( vector, 99999 ) );
-			Assert.AreEqual( -1, findIndex( vector, 100000 ) );
+			Assert.AreEqual( 0, FindIndex( vector, 0 ) );
+			Assert.AreEqual( 0, FindIndex( vector, 1 ) );
+			Assert.AreEqual( 1, FindIndex( vector, 2 ) );
+			Assert.AreEqual( 1, FindIndex( vector, 7 ) );
+			Assert.AreEqual( 1, FindIndex( vector, 8 ) );
+			Assert.AreEqual( 2, FindIndex( vector, 9 ) );
+			Assert.AreEqual( 2, FindIndex( vector, 99 ) );
+			Assert.AreEqual( 2, FindIndex( vector, 100 ) );
+			Assert.AreEqual( 3, FindIndex( vector, 101 ) );
+			Assert.AreEqual( 3, FindIndex( vector, 999 ) );
+			Assert.AreEqual( 4, FindIndex( vector, 1000 ) );
+			Assert.AreEqual( 5, FindIndex( vector, 1001 ) );
+			Assert.AreEqual( 5, FindIndex( vector, 9999 ) );
+			Assert.AreEqual( 6, FindIndex( vector, 10000 ) );
+			Assert.AreEqual( 7, FindIndex( vector, 10001 ) );
+			Assert.AreEqual( 7, FindIndex( vector, 99998 ) );
+			Assert.AreEqual( 7, FindIndex( vector, 99999 ) );
+			Assert.AreEqual( -1, FindIndex( vector, 100000 ) );
 		}
 
-		private int findIndex( double[] data, double value )
+		private int FindIndex( double[] data, double value )
 		{
 			vector.Values.Clear();
 			for ( int i = 0 ; i < data.Length ; i++ )

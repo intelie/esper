@@ -29,13 +29,13 @@ namespace net.esper.filter
 		{
 			this.filterConstant = filterConstant;
 			
-			if (FilterOperatorHelper.isRangeOperator( filterOperator ))
+			if (FilterOperatorHelper.IsRangeOperator( filterOperator ))
 			{
 				throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " + "constant filter parameter");
 			}
 		}
 
-        public override Type getFilterValueClass(EDictionary<String, EventType> taggedEventTypes)
+        public override Type GetFilterValueClass(EDictionary<String, EventType> taggedEventTypes)
         {
             if (filterConstant == null)
             {
@@ -44,7 +44,7 @@ namespace net.esper.filter
             return filterConstant.GetType();
         }
 		
-		public override Object getFilterValue(MatchedEventMap matchedEvents)
+		public override Object GetFilterValue(MatchedEventMap matchedEvents)
 		{
 			return filterConstant;
 		}

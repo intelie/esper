@@ -35,7 +35,7 @@ namespace net.esper.pattern.observer
 			this.context = context;
 			this.beginState = beginState;
 			this.observerEventEvaluator = observerEventEvaluator;
-			this.scheduleSlot = context.ScheduleBucket.allocateSlot();
+			this.scheduleSlot = context.ScheduleBucket.AllocateSlot();
 		}
 		
 		public void  scheduledTrigger()

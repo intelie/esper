@@ -8,7 +8,9 @@ namespace net.esper.pattern
     /// Interface for executing a Stop on an active event expression.
     /// </summary>
 
-    public interface PatternStopCallback : StopCallback
-    {
-    }
+    public delegate void PatternStopCallback();
+    
+//    public interface PatternStopCallback : StopCallback
+//    {
+//    }
 }

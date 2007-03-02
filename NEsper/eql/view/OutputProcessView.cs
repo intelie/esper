@@ -164,11 +164,11 @@ namespace net.esper.eql.view
         {
             if (newEvents != null || oldEvents != null)
             {
-                updateChildren(newEvents, oldEvents);
+                UpdateChildren(newEvents, oldEvents);
             }
             else if (forceUpdate)
             {
-                updateChildren(null, null);
+                UpdateChildren(null, null);
             }
         }
 

@@ -74,7 +74,7 @@ namespace net.esper.core
             return null;
         }
         
-        public virtual void execute()
+        public virtual void Execute()
         {
             isDispatchWaiting = false;
             EventBean[] newEvents = EventBeanUtility.Flatten(lastNewEvents);
@@ -82,7 +82,7 @@ namespace net.esper.core
 
             if (log.IsDebugEnabled)
             {
-                ViewSupport.dumpUpdateParams(".execute", newEvents, oldEvents);
+                ViewSupport.dumpUpdateParams(".Execute", newEvents, oldEvents);
             }
 
             foreach (UpdateListener listener in updateListeners)

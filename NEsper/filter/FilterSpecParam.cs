@@ -43,14 +43,14 @@ namespace net.esper.filter
         /// </param>
         /// <returns> filter parameter value class
         /// </returns>
-        public abstract Type getFilterValueClass(EDictionary<String, EventType> optionalTaggedEventTypes);
+        public abstract Type GetFilterValueClass(EDictionary<String, EventType> optionalTaggedEventTypes);
 
         /// <summary> Return the filter parameter constant to filter for.</summary>
         /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters
         /// </param>
         /// <returns> filter parameter constant's value
         /// </returns>
-        public abstract Object getFilterValue(MatchedEventMap matchedEvents);
+        public abstract Object GetFilterValue(MatchedEventMap matchedEvents);
 
         /// <summary>
         /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.

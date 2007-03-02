@@ -128,7 +128,7 @@ namespace net.esper.eql.expression
             }
         }
 
-        public override void validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             // Get the types of the childNodes
         	IList<ExprNode> childNodes = ChildNodes ;

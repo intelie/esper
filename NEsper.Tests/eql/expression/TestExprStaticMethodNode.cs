@@ -47,7 +47,7 @@ namespace net.esper.eql.expression
             ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Max");
             root.AddChildNode(intThree);
             root.AddChildNode(intFive);
-            validate(root);
+            Validate(root);
 
             Assert.AreEqual(maxInt, root.StaticMethod);
             Int32 result = Math.Max(3, 5);
@@ -64,7 +64,7 @@ namespace net.esper.eql.expression
 			child.AddChildNode(intThree);
 			child.AddChildNode(intFive);
 			parent.AddChildNode(child);
-			validate(parent);
+			Validate(parent);
 			
 			Assert.AreEqual(staticMethod, parent.StaticMethod);
 			int result = Math.Max(3, 5);
@@ -77,7 +77,7 @@ namespace net.esper.eql.expression
             ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Max");
             root.AddChildNode(intThree);
             root.AddChildNode(shortNine);
-            validate(root);
+            Validate(root);
 
             Assert.AreEqual(maxInt, root.StaticMethod);
             short nine = 9;
@@ -91,7 +91,7 @@ namespace net.esper.eql.expression
             ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Max");
             root.AddChildNode(doubleEight);
             root.AddChildNode(intFive);
-            validate(root);
+            Validate(root);
 
             Assert.AreEqual(maxDouble, root.StaticMethod);
             Double result = Math.Max(8d, 5);
@@ -104,7 +104,7 @@ namespace net.esper.eql.expression
             ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Max");
             root.AddChildNode(doubleEight);
             root.AddChildNode(doubleFour);
-            validate(root);
+            Validate(root);
 
             Assert.AreEqual(maxDouble, root.StaticMethod);
             Double result = Math.Max(8d, 4d);
@@ -118,14 +118,14 @@ namespace net.esper.eql.expression
             ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "Pow");
             root.AddChildNode(doubleEight);
             root.AddChildNode(doubleFour);
-            validate(root);
+            Validate(root);
 
             Assert.AreEqual(pow, root.StaticMethod);
             Double result = Math.Pow(8d, 4d);
             Assert.AreEqual(result, root.Evaluate(null));
         }
 
-        private void validate(ExprNode node)
+        private void Validate(ExprNode node)
         {
             node.GetValidatedSubtree(streamTypeService, autoImportService);
         }

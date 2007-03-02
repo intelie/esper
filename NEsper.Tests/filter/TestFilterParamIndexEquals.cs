@@ -120,28 +120,28 @@ namespace net.esper.filter
         private void verifyShortBoxed(FilterParamIndex index, short? testValue, int numExpected)
         {
             testBean.shortBoxed = testValue;
-            index.matchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
 
         private void verifyBooleanPrimitive(FilterParamIndex index, bool testValue, int numExpected)
         {
             testBean.boolPrimitive = testValue;
-            index.matchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
 
         private void verifyString(FilterParamIndex index, String testValue, int numExpected)
         {
             testBean.str = testValue;
-            index.matchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
 
         private void verifyfloatPrimitive(FilterParamIndex index, float testValue, int numExpected)
         {
             testBean.floatPrimitive = testValue;
-            index.matchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList);
             Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
         }
     }

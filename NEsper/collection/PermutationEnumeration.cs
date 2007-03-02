@@ -34,8 +34,8 @@ namespace net.esper.collection
                 throw new ArgumentException("Invalid element number of 1");
             }
             this.numElements = numElements;
-            this.factors = getFactors(numElements);
-            this.maxNumPermutation = faculty(numElements);
+            this.factors = GetFactors(numElements);
+            this.maxNumPermutation = Faculty(numElements);
         }
 
         public Boolean MoveNext()
@@ -46,7 +46,7 @@ namespace net.esper.collection
                 return false;
             }
 
-            element = getPermutation(numElements, currentPermutation, factors);
+            element = GetPermutation(numElements, currentPermutation, factors);
             currentPermutation++;
             return true;
         }
@@ -71,7 +71,7 @@ namespace net.esper.collection
          * @param factors - factors for each index
          * @return permutation
          */
-        public static int[] getPermutation(int numElements, int permutation, int[] factors)
+        public static int[] GetPermutation(int numElements, int permutation, int[] factors)
         {
             /*
             Example:
@@ -114,13 +114,13 @@ namespace net.esper.collection
          * @param numElements - number of factors to compute
          * @return factors list
          */
-        public static int[] getFactors(int numElements)
+        public static int[] GetFactors(int numElements)
         {
             int[] facultyFactors = new int[numElements];
 
             for (int i = 0; i < numElements - 1; i++)
             {
-                facultyFactors[i] = faculty(numElements - i - 1);
+                facultyFactors[i] = Faculty(numElements - i - 1);
             }
 
             return facultyFactors;
@@ -131,7 +131,7 @@ namespace net.esper.collection
          * @param num to compute faculty for
          * @return N!
          */
-        public static int faculty(int num)
+        public static int Faculty(int num)
         {
             if (num == 0)
             {

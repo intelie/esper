@@ -84,13 +84,13 @@ namespace net.esper.eql.join.exec
         public override void Print(IndentWriter writer)
         {
             writer.WriteLine("NestedIterationExecNode");
-            writer.incrIndent();
+            writer.IncrIndent();
 
             foreach (ExecNode child in childNodes)
             {
                 child.Print(writer);
             }
-            writer.decrIndent();
+            writer.DecrIndent();
         }
     }
 }

@@ -82,12 +82,12 @@ namespace net.esper.eql.join.plan
                 " fromStreamName=" + fromStreamName +
                 " toStreams=" + CollectionHelper.Render(toStreams));
 
-            writer.incrIndent();
+            writer.IncrIndent();
             for (int i = 0; i < lookupPlans.Length; i++)
             {
                 writer.WriteLine("plan " + i + " :" + lookupPlans[i].ToString());
             }
-            writer.decrIndent();
+            writer.DecrIndent();
         }
     }
 }
