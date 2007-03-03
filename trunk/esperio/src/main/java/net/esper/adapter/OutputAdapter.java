@@ -23,5 +23,4 @@ public interface OutputAdapter extends Adapter
 
   public Subscription getSubscription(String subscriptionAlias);
 
-  public EventBeanListener getEventBeanListener();
 }

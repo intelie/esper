@@ -1,53 +1,26 @@
 package net.esper.adapter.jms;
 
-import net.esper.event.*;
+import net.esper.adapter.*;
+import net.esper.adapter.subscription.*;
 import net.esper.client.*;
 import net.esper.core.*;
-import net.esper.adapter.subscription.*;
-import net.esper.adapter.*;
+import net.esper.event.*;
+import org.apache.commons.logging.*;
 
 import java.util.*;
-import java.util.EventListener;
-
-import org.apache.commons.logging.*;
 
 /**
  * Created for ESPER.
  */
-public abstract class JMSOutputAdapter
-  implements OutputAdapter, EventBeanListener
+public abstract class JMSOutputAdapter implements OutputAdapter
 {
   protected EPServiceProviderSPI spi;
-  protected EventBean lastEvent;
-  protected int eventCount;
   protected long startTime;
   protected final AdapterStateManager stateManager = new AdapterStateManager();
   protected Map<String, Subscription> subscriptionMap;
   protected JMSMessageMarshaler jmsMessageMarshaler;
 
   private final Log log = LogFactory.getLog(this.getClass());
-
-  public EventBeanListener getEventBeanListener()
-  {
-    return this;
-  }
-
-  public EventBean getLastEvent()
-  {
-    return lastEvent;
-  }
-
-  public int getEventCount()
-  {
-    return eventCount;
-  }
-
-  public int getAndResetEventCount()
-  {
-    int count = eventCount;
-    eventCount = 0;
-    return count;
-  }
 
   public JMSMessageMarshaler getJmsMessageMarshaler()
   {
@@ -163,12 +136,6 @@ public abstract class JMSOutputAdapter
   {
     log.debug(".stop");
     stateManager.stop();
-    reset();
-  }
-
-  public void reset()
-  {
-    eventCount = 0;
   }
 
   public void destroy() throws EPException
@@ -189,6 +156,5 @@ public abstract class JMSOutputAdapter
   {
     return System.currentTimeMillis();
   }
-
 
 }

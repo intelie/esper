@@ -11,8 +11,9 @@ public interface JMSMessageMarshaler
 {
   /**
    * Marshals the response out of the event bean.
-  */
+   */
 
-  public Message marshal(EventBean eventBean, Session session, long timestamp);
-  
+  public abstract Message marshal(EventBean eventBean, Session session,
+    long timestamp);
+
 }

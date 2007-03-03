@@ -1,14 +1,11 @@
 package net.esper.adapter.jms;
 
-import net.esper.client.EPException;
-import net.esper.event.EventBean;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
+import net.esper.client.*;
+import net.esper.event.*;
+import org.apache.commons.logging.*;
+import org.springframework.jms.core.*;
 
-import javax.jms.Message;
-import javax.jms.Session;
+import javax.jms.*;
 
 /**
  * Created for ESPER.
@@ -47,8 +44,6 @@ public class SpringJMSTemplateOutputAdapter extends JMSOutputAdapter
         jmsMessageMarshaler :
         this.jmsMessageMarshaler));
       jmsTemplate.send(messageCreator);
-      lastEvent = eventBean;
-      eventCount++;
     }
   }
 

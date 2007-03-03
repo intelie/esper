@@ -4,17 +4,20 @@ import junit.framework.*;
 import net.esper.adapter.*;
 import net.esper.adapter.jms.*;
 import net.esper.client.*;
-import net.esper.event.*;
 import org.apache.commons.logging.*;
+import org.springframework.jms.core.*;
 
+import javax.jms.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Created by IntelliJ IDEA. User: MYSELF Date: Nov 14, 2006 Time: 1:30:01 PM To
  * change this template use File | Settings | File Templates.
  */
 public class TestJMSAdapter extends TestCase
+  implements ProducerCallback, MessageListener, ExceptionListener
 {
 
   private Configuration config = new Configuration();
@@ -24,11 +27,18 @@ public class TestJMSAdapter extends TestCase
   private EPStatement statement;
   List<AdapterLoader> adapterLoaders;
   private SpringContextLoader scl;
+  private ArrayBlockingQueue<HashMap<String, Object>> expectedEvents =
+    new ArrayBlockingQueue<HashMap<String, Object>>(10, true);
+
   private static final String ESPER_TEST_CONFIG =
     "esper.outputadapter.test.readconfig.cfg.xml";
-  private File configFile =
+  private static File configFile =
     new File("F:\\Esper\\jmsadapter\\trunk\\etc\\" + ESPER_TEST_CONFIG);
   private final Log log = LogFactory.getLog(getClass());
+
+  public TestJMSAdapter()
+  {
+  }
 
   protected void setUp()
   {
@@ -41,26 +51,16 @@ public class TestJMSAdapter extends TestCase
 
   public void testEvalEvents() throws Throwable
   {
-    resetEventCounter(scl);
+    expectedEvents.clear();
     sendMapEventType(
       "MyMapEvent", "myInt", 1, "myDouble", 1.1, "myString",
       "some string");
-    assertEvent(
-      "jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string",
-      1, false);
-    sendMapEventType("MyMapEvent", "myInt", 1, "myDouble", 1.1, "myString","");
-    assertEvent(
-      "jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string",
-      1, true);
     statementText = "select * from MyMapEvent.win:length(5)";
     statement = administrator.createEQL(statementText);
     administrator.createEQL(statementText);
     sendMapEventType(
       "MyMapEvent", "myInt", 1, "myDouble", 1.1, "myString",
       "some string");
-    assertEvent(
-      "jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string",
-      1, false);
     statementText =
       "insert into myOutputStream select intPrimitive, doublePrimitive " +
         "from " + SupportBean.class.getName() + ".win:length(100)";
@@ -68,33 +68,24 @@ public class TestJMSAdapter extends TestCase
     sendMapEventType(
       "MyMapEvent", "myInt", 1, "myDouble", 1.1, "myString",
       "some string");
-    assertEvent(
-      "jmsOutputAdapter", scl, new Integer(1), new Double(1.1), "some string",
-      1, false);
   }
 
   public void testSubscription() throws Throwable
   {
-    resetEventCounter(scl);
+    expectedEvents.clear();
     sendMapEventType(
       "MyMapEvent", "myInt", 1, "myDouble", 1.0001, "myString",
       "subscription 1");
-    assertEventSubscription(
-      "jmsOutputAdapter", scl, "subscriptionOne", new Integer(1),
-      new Double(1.0001), "subscription 1",
-      1, false);
     sendMapEventType(
       "MyMapEventTwo", "aString", "subscription 2", "anInt", 2, null, null);
-    assertEventSubscription(
-      "jmsOutputAdapter", scl, "subscriptionTwo", "subscription 2",
-      new Integer(2), null, 2, false);
   }
 
   public void testLateSubscriptionBidding() throws Throwable
   {
+    expectedEvents.clear();
+    scl.close();
     SpringContextLoader scl = new SpringContextLoader();
     scl.configure("spring/jms-spring.xml", true);
-    resetEventCounter(scl);
     OutputAdapter adapter = (OutputAdapter)getAdapter("jmsOutputAdapter", scl);
     JMSSubscription newSubscription =
       new JMSSubscription("newSubscription", adapter, "newMapEventType");
@@ -105,20 +96,11 @@ public class TestJMSAdapter extends TestCase
         scl, "newMapEventType", "key1", Long.class, "key2", Double.class));
     sendMapEventType(
       "newMapEventType", "key1", (long)1, "key2", 1.1, null, null);
-    assertEventSubscription(
-      "jmsOutputAdapter", scl, "newSubscription", new Long(1), new Double(1.1),
-      null, 1, false);
   }
 
   private Adapter getAdapter(String adapterAlias, SpringContextLoader scl)
   {
     return scl.getAdapter(adapterAlias);
-  }
-
-  private void resetEventCounter(SpringContextLoader scl)
-  {
-    OutputAdapter adapter = (OutputAdapter)getAdapter("jmsOutputAdapter", scl);
-    adapter.getEventBeanListener().getAndResetEventCount();
   }
 
   private Configuration createMapEventTypeConfig(SpringContextLoader scl,
@@ -138,7 +120,7 @@ public class TestJMSAdapter extends TestCase
   private void sendMapEventType(String eventTypeAlias, String key1,
     Object value1, String key2, Object value2, String key3, Object value3)
   {
-    Map map = new HashMap<String, Object>();
+    HashMap<String, Object> map = new HashMap<String, Object>();
     if (key1 != null)
     {
       map.put(key1, value1);
@@ -151,86 +133,114 @@ public class TestJMSAdapter extends TestCase
     {
       map.put(key3, value3);
     }
+    try
+    {
+      expectedEvents.put(map);
+    }
+    catch (InterruptedException e)
+    {
+    }
+    springJmsExecute();
     epService.getEPRuntime().sendEvent(map, eventTypeAlias);
   }
 
-  private void assertEvent(String adapterAlias, SpringContextLoader scl,
-    Object myInt, Object myDouble, Object myString, int count,
-    boolean failed) throws Throwable
+  private void springJmsExecute()
   {
-    EventBeanListener eventBeanListener =
-      ((OutputAdapter)scl.getAdapter(adapterAlias)).getEventBeanListener();
-    EventBean event = eventBeanListener.getLastEvent();
-    int eventCount = eventBeanListener.getAndResetEventCount();
+    JmsTemplate jmsTemplate = ((SpringJMSTemplateOutputAdapter)scl.getAdapter(
+      "jmsOutputAdapter")).getJmsTemplate();
+    jmsTemplate.execute(this);
+  }
+
+  public Object doInJms(Session session, MessageProducer producer)
+  {
+    ObjectMessage message = null;
     try
     {
-      assertEquals(myInt, event.get("myInt"));
-      assertEquals(myDouble, event.get("myDouble"));
-      assertEquals(myString, event.get("myString"));
-      assertEquals(count, eventCount);
+      if (expectedEvents.isEmpty())
+      {
+        return null;
+      }
+      HashMap<String, Object> mapEvents = expectedEvents.take();
+      message = session.createObjectMessage();
+      message.setObject(mapEvents);
+      Destination destination = session.createQueue("ESPER.TEST.QUEUE");
+      producer = session.createProducer(destination);
+      producer.send(message);
     }
-    catch (Throwable e)
+    catch (InterruptedException e)
     {
-      if (failed)
+    }
+    catch (JMSException e)
+    {
+      e.printStackTrace();
+    }
+    return message;
+  }
+
+  private synchronized void assertEvent(Map<String, Object> rcvEvent)
+  {
+    try
+    {
+      assertTrue(expectedEvents.size() != 0);
+      assertTrue(rcvEvent.size() != 0);
+      HashMap<String, Object> expEvent = expectedEvents.take();
+      Iterator<Map.Entry<String, Object>> itRcvEvent =
+        rcvEvent.entrySet().iterator();
+      Iterator<Map.Entry<String, Object>> itExpEvent =
+        expEvent.entrySet().iterator();
+      while (itExpEvent.hasNext())
       {
-        assertTrue(true);
+        Map.Entry<String, Object> rcvEntry = itRcvEvent.next();
+        Map.Entry<String, Object> expEntry = itExpEvent.next();
+        assertEquals(expEntry.getKey(), rcvEntry.getKey());
+        assertEquals(expEntry.getValue(), rcvEntry.getValue());
       }
-      else
-      {
-        fail();
-      }
+    }
+    catch (InterruptedException ex)
+    {
     }
   }
 
-  private void assertEventSubscription(String adapterAlias,
-    SpringContextLoader scl, String subscription,
-    Object value1, Object value2, Object value3, int count,
-    boolean failed) throws Throwable
+  public void onMessage(Message message)
   {
-    JMSOutputAdapter adapter = (JMSOutputAdapter)(scl.getAdapter(adapterAlias));
-
-    EventBeanListener eventBeanListener =
-      ((OutputAdapter)scl.getAdapter(adapterAlias)).getEventBeanListener();
-    EventBean event = eventBeanListener.getLastEvent();
     try
     {
-      JMSMessageMarshaler jmsAdapterMarshaler =
-        adapter.getJmsMessageMarshaler();
-      JMSMessageMarshaler jmsSubscriptionMarshaler =
-        ((JMSSubscription)adapter.getSubscription(
-          subscription)).getJmsMessageMarshaler();
-      if (subscription.equals("subscriptionOne"))
+      if (message instanceof ObjectMessage)
       {
-        assertEquals(value1, event.get("myInt"));
-        assertEquals(value2, event.get("myDouble"));
-        assertEquals(value3, event.get("myString"));
-        assertNull(jmsSubscriptionMarshaler);
+        HashMap<String, Object> mapEvent =
+          (HashMap<String, Object>)((ObjectMessage)message).getObject();
+        expectedEvents.put(mapEvent);
       }
-      if (subscription.equals("subscriptionTwo"))
+      if (message instanceof MapMessage)
       {
-        assertEquals(value1, event.get("aString"));
-        assertEquals(value2, event.get("anInt"));
-        assertNotSame(jmsAdapterMarshaler, jmsSubscriptionMarshaler);
+        MapMessage mapMsg = (MapMessage)message;
+        mapMsg.getMapNames();
+        Enumeration en = mapMsg.getMapNames();
+        Map<String, Object> mapEvent = new HashMap<String, Object>();
+        while (en.hasMoreElements())
+        {
+          String property = (String)en.nextElement();
+          Object mapObject = mapMsg.getObject(property);
+          log.debug("Property " + property + " Received: " + mapObject);
+          mapEvent.put(property, mapObject);
+        }
+        assertEvent(mapEvent);
       }
-      if (subscription.equals("newSubscription"))
-      {
-        assertEquals(value1, event.get("key1"));
-        assertEquals(value2, event.get("key2"));
-        assertNull(jmsSubscriptionMarshaler);
-      }
-      assertEquals(count, eventBeanListener.getEventCount());
     }
-    catch (Throwable e)
+    catch (InterruptedException ex)
     {
-      if (failed)
-      {
-        assertTrue(true);
-      }
-      else
-      {
-        fail();
-      }
+      log.debug("Interrupted!");
     }
+    catch (JMSException e)
+    {
+      log.error("Caught: " + e);
+      e.printStackTrace();
+    }
+  }
+
+  synchronized public void onException(JMSException ex)
+  {
+    log.error("JMS Exception occured.  Shutting down client.");
   }
 
   private class SupportBean

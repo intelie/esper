@@ -1,22 +1,15 @@
 package net.esper.adapter;
 
-import net.esper.client.Configuration;
-import net.esper.client.EPException;
-import net.esper.core.EPServiceProviderSPI;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.support.AbstractXmlApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import net.esper.client.*;
+import net.esper.core.*;
+import org.apache.commons.logging.*;
+import org.springframework.beans.*;
+import org.springframework.context.support.*;
 import org.w3c.dom.*;
-import org.xml.sax.*;
 
-import javax.xml.parsers.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.lang.reflect.*;
 
 /**
  * Created for ESPER.
@@ -113,6 +106,11 @@ public class SpringContextLoader implements AdapterLoader
       return null;
     }
     return adapterMap.get(adapterName);
+  }
+
+  public void close()
+  {
+    adapterSpringContext.close();
   }
 
   private AbstractXmlApplicationContext createSpringApplicationContext(
