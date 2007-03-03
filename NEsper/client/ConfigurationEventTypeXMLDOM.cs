@@ -1,4 +1,5 @@
-/// <summary>***********************************************************************************
+/// <summary>
+/// ************************************************************************************
 /// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
 /// http://esper.codehaus.org                                                          *
 /// ---------------------------------------------------------------------------------- *
@@ -16,23 +17,23 @@ using net.esper.compat;
 
 namespace net.esper.client
 {
-    /// <summary> Configuration object for enabling the engine to process events represented as XML DOM document nodes.
-    /// <p>
+    /// <summary>
+    /// Configuration object for enabling the engine to process events represented as XML DOM document nodes.
+    ///
     /// Use this class to configure the engine for processing of XML DOM objects that represent events
     /// and contain all the data for event properties used by statements.
-    /// <p>
+    ///
     /// Minimally required is the root element name which allows the engine to map the document
     /// to the event type that has been named in an EQL or pattern statement.
-    /// <p>
+    ///
     /// Event properties that are results of XPath expressions can be made known to the engine via this class.
     /// For XPath expressions that must refer to namespace prefixes those prefixes and their
     /// namespace name must be supplied to the engine. A default namespace can be supplied as well.
-    /// <p>
+    ///
     /// By supplying a schema resource the engine can interrogate the schema, allowing the engine to
     /// verify event properties and return event properties in the type defined by the schema.
     /// When a schema resource is supplied, the optional root element namespace defines the namespace in case the
     /// root element name occurs in multiple namespaces.
-    /// <p>
     /// </summary>
 
     public class ConfigurationEventTypeXMLDOM
@@ -52,12 +53,7 @@ namespace net.esper.client
         private EDictionary<String, XPathPropertyDesc> xPathProperties;
         private EDictionary<String, String> namespacePrefixes;
 
-        /// <summary> Returns the root element name.</summary>
-        /// <returns> root element name
-        /// </returns>
-        /// <summary> Sets the root element name.</summary>
-        /// <param name="rootElementName">is the name of the root element
-        /// </param>
+        /// <summary> Gets or sets the root element name.</summary>
 
         virtual public String RootElementName
         {
@@ -65,12 +61,7 @@ namespace net.esper.client
             set { this.rootElementName = value; }
         }
 
-        /// <summary> Returns the root element namespace.</summary>
-        /// <returns> root element namespace
-        /// </returns>
-        /// <summary> Sets the root element namespace.</summary>
-        /// <param name="rootElementNamespace">is the namespace for the root element
-        /// </param>
+        /// <summary> Gets or sets the root element namespace.</summary>
 
         virtual public String RootElementNamespace
         {
@@ -78,12 +69,7 @@ namespace net.esper.client
             set { this.rootElementNamespace = value; }
         }
 
-        /// <summary> Returns the default namespace.</summary>
-        /// <returns> default namespace
-        /// </returns>
-        /// <summary> Sets the default namespace.</summary>
-        /// <param name="defaultNamespace">is the default namespace
-        /// </param>
+        /// <summary> Gets or sets the default namespace.</summary>
 
         virtual public String DefaultNamespace
         {
@@ -92,12 +78,9 @@ namespace net.esper.client
 
         }
 
-        /// <summary> Returns the schema resource.</summary>
-        /// <returns> schema resource
-        /// </returns>
-        /// <summary> Sets the schema resource.</summary>
-        /// <param name="schemaResource">is the schema resource
-        /// </param>
+        /// <summary>
+	/// Gets or sets  the schema resource.
+	/// </summary>
 
         virtual public String SchemaResource
         {

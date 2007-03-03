@@ -290,7 +290,7 @@ namespace net.esper.compat
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="V"/> with the specified key.
+        /// Gets or sets the value the specified key.
         /// </summary>
         /// <value></value>
 

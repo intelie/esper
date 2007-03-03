@@ -25,7 +25,6 @@ namespace net.esper.client
         /// <summary>
         /// Gets the connection settings.
         /// </summary>
-        /// <value>The settings.</value>
         
         virtual public ConnectionStringSettings Settings
         {
@@ -35,7 +34,8 @@ namespace net.esper.client
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="settings">The settings.</param>
+        /// <param name="providerName">The name of the provider.</param>
+        /// <param name="properties">Properties that should be applied to the connection.</param>
         
         public DbProviderFactoryConnection(String providerName, NameValueCollection properties)
         {

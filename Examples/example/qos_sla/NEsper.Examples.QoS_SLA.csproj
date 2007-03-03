@@ -1,0 +1,55 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{031F8115-AC13-48E5-BF75-93B70CFB4310}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NEsper.Example.QoS_SLA</RootNamespace>
+    <AssemblyName>NEsper.Examples.QoS_SLA</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="commons-logging, Version=1.0.2606.16893, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\commons-logging.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="eventbean\LatencyLimit.cs" />
+    <Compile Include="eventbean\OperationMeasurement.cs" />
+    <Compile Include="monitor\AverageLatencyListener.cs" />
+    <Compile Include="monitor\AverageLatencyMonitor.cs" />
+    <Compile Include="monitor\DynaLatencySpikeMonitor.cs" />
+    <Compile Include="monitor\ErrorRateMonitor.cs" />
+    <Compile Include="monitor\LatencySpikeListener.cs" />
+    <Compile Include="monitor\LatencySpikeMonitor.cs" />
+    <Compile Include="monitor\ServiceHealthMonitor.cs" />
+    <Compile Include="monitor\SpikeAndErrorMonitor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\NEsper\NEsper.csproj">
+      <Project>{8376DC7A-06AC-40F1-9338-9AC5AF788356}</Project>
+      <Name>NEsper</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

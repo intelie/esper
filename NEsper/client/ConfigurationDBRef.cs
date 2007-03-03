@@ -17,19 +17,17 @@ namespace net.esper.client
         private ConnectionLifecycleEnum connectionLifecycleEnum;
         private DataCacheDesc dataCacheDesc;
 
-        /// <summary> Sets the auto-commit connection settings for new connections to this database.</summary>
-        /// <param name="value">is true to set auto-commit to true, or false to set auto-commit to false, or null to accepts the default
-        /// </param>
+        /// <summary> Gets or sets the auto-commit connection settings for new connections to this database.</summary>
         
 		virtual public bool ConnectionAutoCommit
         {
 			get { return this.connectionSettings.AutoCommit ; }
             set { this.connectionSettings.AutoCommit = value; }
         }
-        
-		/// <summary> Sets the transaction isolation level on new connections created for this database.</summary>
-        /// <param name="value">is the transaction isolation level
-        /// </param>
+      
+		/// <summary>
+		/// Gets or sets the transaction isolation level on new connections created for this database.
+		/// </summary>
         
 		virtual public IsolationLevel ConnectionTransactionIsolation
         {
@@ -37,9 +35,7 @@ namespace net.esper.client
             set { this.connectionSettings.TransactionIsolation = value ; }
         }
         
-		/// <summary> Sets the read-only flag on new connections created for this database.</summary>
-        /// <param name="isReadOnly">is the read-only flag
-        /// </param>
+		/// <summary> Gets or sets the read-only flag on new connections created for this database.</summary>
         
 		virtual public bool ConnectionReadOnly
         {
@@ -47,18 +43,15 @@ namespace net.esper.client
 			set { this.connectionSettings.ReadOnly = value; }
         }
         
-		/// <summary> Sets the catalog name for new connections created for this database.</summary>
-        /// <param name="catalog">is the catalog name
-        /// </param>
+		/// <summary> Gets or sets the catalog name for new connections created for this database.</summary>
         
 		virtual public String ConnectionCatalog
         {
+            get { return this.connectionSettings.Catalog; }
             set { this.connectionSettings.Catalog = value; }
         }
         
-		/// <summary> Configures a LRU cache of the given size for the database.</summary>
-        /// <param name="size">is the maximum number of entries before query results are evicted using.
-        /// </param>
+		/// <summary> Gets or sets the LRU cache to a given size for the database.</summary>
         
 		virtual public int LRUCache
         {
@@ -106,16 +99,12 @@ namespace net.esper.client
             get { return connectionSettings; }
         }
 
-        /// <summary> Returns the setting to control whether a new connection is obtained for each lookup,
-        /// or connections are retained between lookups.
+        /// <summary>
+	/// Gets or sets the setting to control whether a new connection is obtained
+	/// for each lookup, or connections are retained between lookups. Controls
+	/// whether a new connection is obtained for each lookup, or connections
+	/// are retained between lookups.
         /// </summary>
-        /// <returns> enum controlling connection allocation
-        /// </returns>
-        /// <summary> Controls whether a new connection is obtained for each lookup,
-        /// or connections are retained between lookups.
-        /// </summary>
-        /// <param name="connectionLifecycleEnum">is an enum controlling connection allocation
-        /// </param>
         
         public virtual ConnectionLifecycleEnum ConnectionLifecycle
         {
@@ -123,11 +112,9 @@ namespace net.esper.client
 	        set { this.connectionLifecycleEnum = value; }
 		}
 
-        /// <summary> Returns the descriptor controlling connection creation settings.</summary>
-        /// <returns> connection factory settings
-        /// </returns>
-        
-        public virtual ConnectionFactoryDesc ConnectionFactoryDesc
+        /// <summary> Gets the descriptor controlling connection creation settings.</summary>
+
+          public virtual ConnectionFactoryDesc ConnectionFactoryDesc
         {
         	get { return connectionFactoryDesc; }
         }
@@ -143,9 +130,7 @@ namespace net.esper.client
             dataCacheDesc = new ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds);
         }
 
-        /// <summary> Return a query result data cache descriptor.</summary>
-        /// <returns> cache descriptor
-        /// </returns>
+        /// <summary> Gets a query result data cache descriptor.</summary>
         
         public virtual DataCacheDesc DataCacheDesc
         {

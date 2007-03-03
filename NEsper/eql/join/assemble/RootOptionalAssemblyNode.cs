@@ -15,19 +15,17 @@ namespace net.esper.eql.join.assemble
 
     public class RootOptionalAssemblyNode : BaseAssemblyNode
     {
-        private readonly int numStreams;
+        private readonly int myNumStreams;
         private bool haveChildResults;
 
         /// <summary> Ctor.</summary>
-        /// <param name="streamNum">- is the stream number
-        /// </param>
-        /// <param name="numStreams">- is the number of streams
-        /// </param>
+        /// <param name="streamNum">is the stream number</param>
+        /// <param name="numStreams">is the number of streams</param>
 
         public RootOptionalAssemblyNode(int streamNum, int numStreams)
             : base(streamNum, numStreams)
         {
-            this.numStreams = numStreams;
+            this.myNumStreams = numStreams;
         }
 
         public override void Init(IList<Node>[] result)
@@ -40,7 +38,7 @@ namespace net.esper.eql.join.assemble
             // If we don't have child results, post an empty row
             if (!haveChildResults)
             {
-                EventBean[] row = new EventBean[numStreams];
+                EventBean[] row = new EventBean[myNumStreams];
                 parentNode.Result(row, streamNum, null, null);
                 return;
             }

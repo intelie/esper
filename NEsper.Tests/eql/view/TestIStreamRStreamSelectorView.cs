@@ -10,7 +10,6 @@ using NUnit.Framework;
 
 namespace net.esper.eql.view
 {
-	
 	[TestFixture]
 	public class TestIStreamRStreamSelectorView 
 	{

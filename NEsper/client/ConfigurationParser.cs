@@ -24,14 +24,14 @@ namespace net.esper.client
 {
     public class ConfigurationParser
     {
-        /// <summary> Use the configuration specified in the given input stream.</summary>
-        /// <param name="configuration">is the configuration object to populate
-        /// </param>
-        /// <param name="stream	">  Inputstream to be read from
-        /// </param>
-        /// <param name="resourceName">The name to use in warning/error messages
-        /// </param>
+        /// <summary>
+	/// Use the configuration specified in the given input stream.
+	/// </summary>
+        /// <param name="configuration">is the configuration object to populate</param>
+        /// <param name="stream	">Inputstream to be read from</param>
+        /// <param name="resourceName">The name to use in warning/error messages</param>
         /// <throws>  net.esper.client.EPException </throws>
+
         public static void DoConfigure(Configuration configuration, Stream stream, String resourceName)
         {
             XmlDocument document = null;
