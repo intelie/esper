@@ -28,10 +28,36 @@ public class EPStatementSyntaxException extends EPStatementException
      */
     public static EPStatementSyntaxException convert(RecognitionException e, String expression)
     {
-        String positionInfo = e.getLine() > 0 && e.getColumn() > 0
+        return new EPStatementSyntaxException(e.getMessage() + getPositionInfo(e), expression);
+    }
+
+    /**
+     * Converts end-of-input error from a syntax error to a nice statement exception.
+     * @param e is the syntax error
+     * @param expression is the expression text
+     * @return syntax exception
+     */
+    public static EPStatementSyntaxException convertEndOfInput(RecognitionException e, String tokenNameExpected, String expression)
+    {
+        return new EPStatementSyntaxException("end of input when expecting " + tokenNameExpected + getPositionInfo(e), expression);
+    }
+
+    /**
+     * Converts end-of-input error from a syntax error to a nice statement exception.
+     * @param e is the syntax error
+     * @param expression is the expression text
+     * @return syntax exception
+     */
+    public static EPStatementSyntaxException convertEndOfInput(RecognitionException e, String expression)
+    {
+        return new EPStatementSyntaxException("end of input" + getPositionInfo(e), expression);
+    }
+
+    public static String getPositionInfo(RecognitionException e)
+    {
+        return e.getLine() > 0 && e.getColumn() > 0
                 ? " near line " + e.getLine() + ", column " + e.getColumn()
                 : "";
-        return new EPStatementSyntaxException(e.getMessage() + positionInfo, expression);
     }
 
     /**

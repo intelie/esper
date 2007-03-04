@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select * from " + className + "(intPrimitive = 2)";
+        String expression = "insert into A (a";
         //String expression = "select googlex(1) from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
