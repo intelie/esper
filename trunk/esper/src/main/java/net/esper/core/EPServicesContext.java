@@ -44,6 +44,7 @@ public final class EPServicesContext
      * @param eventAdapterService service to resolve event types
      * @param autoImportService service to resolve partial class names
      * @param databaseConfigService service to resolve a database name to database connection factory and configs
+     * @param viewResolutionService to resolve view namespace and name to view factory
      */
     public EPServicesContext(SchedulingService schedulingService,
                              EventAdapterService eventAdapterService,

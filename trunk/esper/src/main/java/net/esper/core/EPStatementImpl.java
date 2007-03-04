@@ -71,6 +71,7 @@ public class EPStatementImpl extends EPStatementSupport implements EPStatement
         parentView = null;
         eventType = null;
         dispatchChildView = null;
+        statementLifecycleSvc = null;
     }
 
     public EPStatementState getState()
