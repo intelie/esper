@@ -2,27 +2,20 @@ package net.esper.adapter.jms;
 
 import net.esper.adapter.*;
 import net.esper.client.*;
-import net.esper.core.*;
-import net.esper.event.*;
-import net.esper.schedule.*;
 import org.apache.commons.logging.*;
 import org.springframework.jms.core.*;
+
+import javax.jms.*;
 
 /**
  * Created for ESPER.
  */
-public class SpringJMSTemplateInputAdapter extends AbstractCoordinatedAdapter
+public class SpringJMSTemplateInputAdapter extends JMSInputAdapter
+  implements MessageListener
 {
-  private EPServiceProviderSPI spi;
-  private EPRuntime runtime;
-  private EventAdapterService evAdaptSvc;
-  private SchedulingService schedulingService;
-
   private JmsTemplate jmsTemplate;
-  private JMSDefaultMapMessageUnmarshaler jmsUnmarshaler;
   private String eventTypeAlias;
-
-  private long totalDelay;
+  private Message jmsMessage;
 
   private final Log log = LogFactory.getLog(getClass());
 
@@ -37,16 +30,6 @@ public class SpringJMSTemplateInputAdapter extends AbstractCoordinatedAdapter
     this.jmsTemplate = jmsTemplate;
   }
 
-  public JMSDefaultMapMessageUnmarshaler getJmsMarshaler()
-  {
-    return jmsUnmarshaler;
-  }
-
-  public void setJmsMarshaler(JMSDefaultMapMessageUnmarshaler jmsUnmarshaler)
-  {
-    this.jmsUnmarshaler = jmsUnmarshaler;
-  }
-
   public String getEventTypeAlias()
   {
     return eventTypeAlias;
@@ -57,58 +40,38 @@ public class SpringJMSTemplateInputAdapter extends AbstractCoordinatedAdapter
     this.eventTypeAlias = eventTypeAlias;
   }
 
-  public void setEPServiceProvider(EPServiceProvider epService)
+  public Object read()
   {
-    if (epService == null)
-    {
-      throw new NullPointerException("epService cannot be null");
-    }
-    if (!(epService instanceof EPServiceProviderSPI))
-    {
-      throw new IllegalArgumentException("Invalid type of EPServiceProvider");
-    }
-    spi = (EPServiceProviderSPI)epService;
-    EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;
-    runtime = spi.getEPRuntime();
-    schedulingService = spi.getSchedulingService();
-    evAdaptSvc = spi.getEventAdapterService();
+    return jmsMessageUnmarshaler.unmarshal(eventAdapterSvc, jmsMessage);
   }
 
-
-  public SendableEvent read()
+  public void onMessage(Message message)
   {
-    EventBean evBean = null;
-
-    if (stateManager.getState() == AdapterState.DESTROYED)
-    {
-      return null;
-    }
-
     try
     {
-      if (eventsToSend.isEmpty())
+      message.acknowledge();
+      if (stateManager.getState() == AdapterState.DESTROYED)
       {
-        EventType eventType = evAdaptSvc.getEventType(eventTypeAlias);
-        if ((jmsTemplate != null) && (eventType != null))
+        return;
+      }
+      jmsMessage = message;
+      synchronized (jmsMessage)
+      {
+        Object event = read();
+
+        if (event != null)
         {
-          //evBean = jmsUnmarshaler.unmarshal(
-          //  evAdaptSvc, jmsTemplate.receive(), totalDelay, scheduleSlot);
-          evBean = null;
+          epRuntime.sendEvent(event);
         }
-        updateTotalDelay();
-        return null;
-        //return evBean;
       }
-      else
-      {
-        SendableEvent event = eventsToSend.first();
-        eventsToSend.remove(event);
-        return event;
-      }
+    }
+    catch (JMSException ex)
+    {
+      throw new EPException(ex);
     }
     catch (EPException ex)
     {
-      log.debug(".Marshalling exception");
+      log.debug(".onMessage exception");
       if (stateManager.getState() == AdapterState.STARTED)
       {
         stop();
@@ -117,48 +80,7 @@ public class SpringJMSTemplateInputAdapter extends AbstractCoordinatedAdapter
       {
         destroy();
       }
-      return null;
     }
-
-  }
-
-  private void updateTotalDelay()
-  {
-    /*if(eventsPerSec > -1)
-    {
-        totalDelay += 1000/eventsPerSec;
-    }*/
-  }
-
-  /**
-   * Reset all the changeable state of this Adapter, as if it were just
-   * created.
-   */
-  protected void reset()
-  {
-    totalDelay = 0;
-  }
-
-  /**
-   * Remove the first member of eventsToSend.
-   */
-  protected void replaceFirstEventToSend()
-  {
-    eventsToSend.remove(eventsToSend.first());
-    SendableEvent event = read();
-    if (event != null)
-    {
-      eventsToSend.add(event);
-    }
-  }
-
-
-  /**
-   * close() method not relevant for JMS adapter.
-   */
-  protected void close()
-  {
-
   }
 
 }

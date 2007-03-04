@@ -7,6 +7,7 @@ import net.esper.core.*;
 import net.esper.event.*;
 import org.apache.commons.logging.*;
 
+import javax.jms.*;
 import java.util.*;
 
 /**
@@ -19,6 +20,7 @@ public abstract class JMSOutputAdapter implements OutputAdapter
   protected final AdapterStateManager stateManager = new AdapterStateManager();
   protected Map<String, Subscription> subscriptionMap;
   protected JMSMessageMarshaler jmsMessageMarshaler;
+  protected Destination destination;
 
   private final Log log = LogFactory.getLog(this.getClass());
 
@@ -30,6 +32,11 @@ public abstract class JMSOutputAdapter implements OutputAdapter
   public void setJmsMessageMarshaler(JMSMessageMarshaler jmsMessageMarshaler)
   {
     this.jmsMessageMarshaler = jmsMessageMarshaler;
+  }
+
+  public void setDestination(Destination destination)
+  {
+    this.destination = destination;
   }
 
   public Map<String, Subscription> getSubscriptionMap()
@@ -92,11 +99,12 @@ public abstract class JMSOutputAdapter implements OutputAdapter
   {
     if (epService == null)
     {
-      throw new NullPointerException("epService cannot be null");
+      throw new NullPointerException(AdapterUtils.EP_SERVICE_NOT_FOUND_ERROR);
     }
     if (!(epService instanceof EPServiceProviderSPI))
     {
-      throw new IllegalArgumentException("Invalid type of EPServiceProvider");
+      throw new IllegalArgumentException(
+        AdapterUtils.EP_SERVICE_INVALID_TYPE_ERROR);
     }
     spi = (EPServiceProviderSPI)epService;
   }
@@ -106,8 +114,7 @@ public abstract class JMSOutputAdapter implements OutputAdapter
     log.debug(".start");
     if (spi.getEPRuntime() == null)
     {
-      throw new EPException(
-        "Attempting to start an Adapter that hasn't had the epService provided");
+      throw new EPException(AdapterUtils.ADAPTER_START_ERROR);
     }
     startTime = getCurrentTime();
     log.debug(".start startTime==" + startTime);

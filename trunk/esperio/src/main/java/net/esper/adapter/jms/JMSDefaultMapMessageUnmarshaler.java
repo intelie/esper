@@ -1,36 +1,30 @@
 package net.esper.adapter.jms;
 
+import net.esper.adapter.*;
+import net.esper.client.*;
 import net.esper.event.*;
-import net.esper.schedule.ScheduleSlot;
-import net.esper.client.EPException;
+import org.apache.commons.logging.*;
 
-import javax.jms.Message;
-import javax.jms.MapMessage;
-import javax.jms.JMSException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Enumeration;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.jms.*;
+import java.util.*;
 
 /**
  * Created for ESPER.
  */
-public class JMSDefaultMapMessageUnmarshaler
+public class JMSDefaultMapMessageUnmarshaler implements JMSMessageUnmarshaler
 {
 
   private final Log log = LogFactory.getLog(this.getClass());
 
-  public EventBean unmarshal(EventAdapterService eventAdapterService, Message message,
-    long totalDelay, ScheduleSlot scheduleSlot) throws EPException
+  public EventBean unmarshal(EventAdapterService eventAdapterService,
+    Message message) throws EPException
   {
     EventBean eventBean = null;
     try
     {
       if ((message != null) && (message instanceof MapMessage))
       {
-        Map<String, Class> eventTypeMap = new HashMap<String, Class>();        
+        Map<String, Class> eventTypeMap = new HashMap<String, Class>();
         Map<String, Object> properties = new HashMap<String, Object>();
         MapMessage mapMsg = (MapMessage)message;
         mapMsg.getMapNames();
@@ -42,7 +36,9 @@ public class JMSDefaultMapMessageUnmarshaler
           eventTypeMap.put(property, mapObject.getClass());
           properties.put(property, mapObject);
         }
-        EventType eventType = eventAdapterService.addMapType("SpringAdapterType", eventTypeMap);
+        EventType eventType =
+          eventAdapterService.addMapType(
+            AdapterUtils.JMS_ADAPTER_DEFAULT_EVENT_TYPE_ALIAS, eventTypeMap);
         return eventAdapterService.createMapFromValues(properties, eventType);
       }
     }

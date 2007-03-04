@@ -1,26 +1,19 @@
 package net.esper.adapter;
 
 import net.esper.adapter.subscription.*;
-import net.esper.client.*;
 
 import java.util.*;
 
 
 public interface OutputAdapter extends Adapter
 {
-  public void setEPServiceProvider(EPServiceProvider epService);
+  void setSubscriptionMap(Map<String, Subscription> subscriptionMap);
 
-  public EPServiceProvider getEPServiceProvider();
+  Map<String, Subscription> getSubscriptionMap();
 
-  public void setSubscriptionMap(Map<String, Subscription> subscriptionMap);
+  void addSubscription(Subscription subscription, String subscriptionAlias);
 
-  public Map<String, Subscription> getSubscriptionMap();
+  void addSubscription(Subscription subscription);
 
-  public void addSubscription(Subscription subscription,
-    String subscriptionAlias);
-
-  public void addSubscription(Subscription subscription);
-
-  public Subscription getSubscription(String subscriptionAlias);
-
+  Subscription getSubscription(String subscriptionAlias);
 }

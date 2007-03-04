@@ -4,6 +4,7 @@ import junit.framework.*;
 import net.esper.adapter.*;
 import net.esper.adapter.jms.*;
 import net.esper.client.*;
+import net.esper.support.util.*;
 import org.apache.commons.logging.*;
 import org.springframework.jms.core.*;
 
@@ -13,8 +14,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * Created by IntelliJ IDEA. User: MYSELF Date: Nov 14, 2006 Time: 1:30:01 PM To
- * change this template use File | Settings | File Templates.
+ * Created for ESPER.
  */
 public class TestJMSAdapter extends TestCase
   implements ProducerCallback, MessageListener, ExceptionListener
@@ -29,6 +29,8 @@ public class TestJMSAdapter extends TestCase
   private SpringContextLoader scl;
   private ArrayBlockingQueue<HashMap<String, Object>> expectedEvents =
     new ArrayBlockingQueue<HashMap<String, Object>>(10, true);
+  private SupportUpdateListener listener;
+  private Boolean destinationSet;
 
   private static final String ESPER_TEST_CONFIG =
     "esper.outputadapter.test.readconfig.cfg.xml";
@@ -47,6 +49,7 @@ public class TestJMSAdapter extends TestCase
     administrator = epService.getEPAdministrator();
     adapterLoaders = config.getAdapterLoaders();
     scl = (SpringContextLoader)adapterLoaders.get(0);
+    listener = new SupportUpdateListener();
   }
 
   public void testEvalEvents() throws Throwable
@@ -54,20 +57,21 @@ public class TestJMSAdapter extends TestCase
     expectedEvents.clear();
     sendMapEventType(
       "MyMapEvent", "myInt", 1, "myDouble", 1.1, "myString",
-      "some string");
+      "some string", true);
     statementText = "select * from MyMapEvent.win:length(5)";
     statement = administrator.createEQL(statementText);
     administrator.createEQL(statementText);
     sendMapEventType(
       "MyMapEvent", "myInt", 1, "myDouble", 1.1, "myString",
-      "some string");
+      "some string", true);
     statementText =
       "insert into myOutputStream select intPrimitive, doublePrimitive " +
         "from " + SupportBean.class.getName() + ".win:length(100)";
     administrator.createEQL(statementText);
     sendMapEventType(
       "MyMapEvent", "myInt", 1, "myDouble", 1.1, "myString",
-      "some string");
+      "some string", true);
+    scl.close();
   }
 
   public void testSubscription() throws Throwable
@@ -75,16 +79,18 @@ public class TestJMSAdapter extends TestCase
     expectedEvents.clear();
     sendMapEventType(
       "MyMapEvent", "myInt", 1, "myDouble", 1.0001, "myString",
-      "subscription 1");
+      "subscription 1", true);
     sendMapEventType(
-      "MyMapEventTwo", "aString", "subscription 2", "anInt", 2, null, null);
+      "MyMapEventTwo", "aString", "subscription 2", "anInt", 2, null, null,
+      true);
+    scl.close();
   }
 
   public void testLateSubscriptionBidding() throws Throwable
   {
     expectedEvents.clear();
     scl.close();
-    SpringContextLoader scl = new SpringContextLoader();
+    scl = new SpringContextLoader();
     scl.configure("spring/jms-spring.xml", true);
     OutputAdapter adapter = (OutputAdapter)getAdapter("jmsOutputAdapter", scl);
     JMSSubscription newSubscription =
@@ -95,7 +101,37 @@ public class TestJMSAdapter extends TestCase
       createMapEventTypeConfig(
         scl, "newMapEventType", "key1", Long.class, "key2", Double.class));
     sendMapEventType(
-      "newMapEventType", "key1", (long)1, "key2", 1.1, null, null);
+      "newMapEventType", "key1", (long)1, "key2", 1.1, null, null, true);
+    scl.close();
+  }
+
+  public void testInputAdapter()
+  {
+    // We need to configure another engine than the one used for the output adapter
+    // to avoid an endless loop.
+    // The listener will be hooked to the second engine.
+    EPServiceProvider inputAdapterEPService =
+      EPServiceProviderManager.getProvider(
+        "testInputAdapter",
+        createMapEventTypeConfig(
+          "MyMapEvent", "myInt", Integer.class, "myDouble", Double.class,
+          "myString", String.class));
+    Adapter adapter = scl.getAdapter("jmsInputAdapter");
+    adapter.setEPServiceProvider(inputAdapterEPService);
+    administrator = inputAdapterEPService.getEPAdministrator();
+    statementText = "select * from MyMapEvent.win:length(5)";
+    statement = administrator.createEQL(statementText);
+    statement.addListener(listener);
+    sendMapEventType(
+      "MyMapEvent", "myInt", 1, "myDouble", 1.1, "myString",
+      "some string", false);
+    while (!listener.getAndClearIsInvoked())
+    {
+
+    }
+    assertEquals(1, listener.getLastNewData().length);
+    assertEquals(1.1, listener.getLastNewData()[0].get("myDouble"));
+    scl.close();
   }
 
   private Adapter getAdapter(String adapterAlias, SpringContextLoader scl)
@@ -117,8 +153,23 @@ public class TestJMSAdapter extends TestCase
     return config;
   }
 
+  private Configuration createMapEventTypeConfig(String eventTypeAlias,
+    String key1, Class class1,
+    String key2, Class class2,
+    String key3, Class class3)
+  {
+    Configuration config = new Configuration();
+    Map<String, Class> props = new HashMap<String, Class>();
+    props.put(key1, class1);
+    props.put(key2, class2);
+    props.put(key3, class3);
+    config.addEventTypeAlias(eventTypeAlias, props);
+    return config;
+  }
+
   private void sendMapEventType(String eventTypeAlias, String key1,
-    Object value1, String key2, Object value2, String key3, Object value3)
+    Object value1, String key2, Object value2, String key3, Object value3,
+    boolean checkInBroker)
   {
     HashMap<String, Object> map = new HashMap<String, Object>();
     if (key1 != null)
@@ -140,8 +191,20 @@ public class TestJMSAdapter extends TestCase
     catch (InterruptedException e)
     {
     }
-    springJmsExecute();
-    epService.getEPRuntime().sendEvent(map, eventTypeAlias);
+    if (checkInBroker)
+    {
+      destinationSet = false;
+      springJmsExecute();
+      while (!destinationSet)
+      {
+      }
+      epService.getEPRuntime().sendEvent(map, eventTypeAlias);
+      destinationSet = false;
+    }
+    else
+    {
+      epService.getEPRuntime().sendEvent(map, eventTypeAlias);
+    }
   }
 
   private void springJmsExecute()
@@ -164,6 +227,10 @@ public class TestJMSAdapter extends TestCase
       message = session.createObjectMessage();
       message.setObject(mapEvents);
       Destination destination = session.createQueue("ESPER.TEST.QUEUE");
+      SpringJMSTemplateOutputAdapter adapter =
+        (SpringJMSTemplateOutputAdapter)getAdapter("jmsOutputAdapter", scl);
+      adapter.setDestination(destination);
+      destinationSet = true;
       producer = session.createProducer(destination);
       producer.send(message);
     }
@@ -205,6 +272,7 @@ public class TestJMSAdapter extends TestCase
   {
     try
     {
+      message.acknowledge();
       if (message instanceof ObjectMessage)
       {
         HashMap<String, Object> mapEvent =
@@ -241,6 +309,11 @@ public class TestJMSAdapter extends TestCase
   synchronized public void onException(JMSException ex)
   {
     log.error("JMS Exception occured.  Shutting down client.");
+  }
+
+  public void destroy()
+  {
+    log.debug("destroy()");
   }
 
   private class SupportBean

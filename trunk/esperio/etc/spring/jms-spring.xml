@@ -12,12 +12,7 @@
   <bean id="activeMQbroker" class="org.apache.activemq.xbean.BrokerFactoryBean"
         destroy-method="destroy">
     <property name="config" value="classpath:spring\\activeMQ.xml"/>
-    <!-- property name="start" value="true" / -->
-  </bean>
-  <!--  ActiveMQ destinations to use  -->
-  <bean id="activeMQDestination"
-        class="org.apache.activemq.command.ActiveMQQueue">
-    <constructor-arg value="ESPER.TEST.QUEUE"/>
+    <property name="start" value="true"/>
   </bean>
 
   <!-- JNDI Environment Template -->
@@ -64,6 +59,19 @@
      </property>
  </bean -->
 
+  <!--  ActiveMQ destination to use  by default -->
+  <bean id="defaultDestination"
+        class="org.apache.activemq.command.ActiveMQQueue">
+    <constructor-arg value="ESPER.QUEUE"/>
+  </bean>
+
+  <!--  ActiveMQ destinations to use for testing -->
+  <bean id="testDestination"
+        class="org.apache.activemq.command.ActiveMQQueue">
+    <constructor-arg value="ESPER.TEST.QUEUE"/>
+  </bean>
+
+
   <!-- JMS Queue Template -->
   <!-- bean id="jmsJBOSSTemplate" class="org.springframework.jms.core.JmsTemplate">
       <property name="connectionFactory">
@@ -83,7 +91,7 @@
       <ref bean="jmsActiveMQFactory"/>
     </property>
     <property name="defaultDestination">
-      <ref bean="activeMQDestination"/>
+      <ref bean="defaultDestination"/>
     </property>
     <property name="receiveTimeout">
       <value>30000</value>
@@ -102,14 +110,21 @@
       </property>
   </bean-->
 
-  <bean id="messageListener"
+  <bean id="messageTestListener"
         class="net.esper.regression.adapter.TestJMSAdapter"/>
+
+  <bean id="testListenerContainer"
+        class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+    <property name="connectionFactory" ref="jmsActiveMQFactory"/>
+    <property name="destination" ref="testDestination"/>
+    <property name="messageListener" ref="messageTestListener"/>
+  </bean>
 
   <bean id="listenerContainer"
         class="org.springframework.jms.listener.SimpleMessageListenerContainer">
     <property name="connectionFactory" ref="jmsActiveMQFactory"/>
-    <property name="destination" ref="activeMQDestination"/>
-    <property name="messageListener" ref="messageListener"/>
+    <property name="destination" ref="defaultDestination"/>
+    <property name="messageListener" ref="jmsInputAdapter"/>
   </bean>
 
   <bean id="jmsMessageMarshaler"
@@ -117,6 +132,9 @@
 
   <bean id="myCustomMarshaler"
         class="net.esper.adapter.jms.JMSDefaultMapMessageMarshaler"/>
+
+  <bean id="jmsMessageUnmarshaler"
+        class="net.esper.adapter.jms.JMSDefaultMapMessageUnmarshaler"/>
 
   <bean id="subscriptionOne" class="net.esper.adapter.jms.JMSSubscription">
     <property name="alias">
@@ -158,19 +176,15 @@
     </property>
   </bean>
 
-  <!--bean id="jmsInputAdapter" class="net.esper.adapter.jms.JMSAdapter">
-   <property name="role" value="RECEIVER"/>
-   <property name="eventsPerSec" value="1000"/>
-   <property name="defaultJmsTemplate">
-       <ref bean="synchronousJmsTemplate"/>
-     </property>
-     <property name="defaultJMSMarshaler">
-       <ref bean="defaultJMSMarshaler"/>
-     </property>
-     <property name="defaultInputEventType">
-       <ref bean="jmsInputAdapterEventType"/>
-     </property>
-  </bean-->
+  <bean id="jmsInputAdapter"
+        class="net.esper.adapter.jms.SpringJMSTemplateInputAdapter">
+    <property name="jmsTemplate">
+      <ref bean="jmsActiveMQTemplate"/>
+    </property>
+    <property name="jmsMessageUnmarshaler">
+      <ref bean="jmsMessageUnmarshaler"/>
+    </property>
+  </bean>
 
 </beans>
 

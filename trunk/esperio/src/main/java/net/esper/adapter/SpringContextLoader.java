@@ -91,11 +91,8 @@ public class SpringContextLoader implements AdapterLoader
     for (Iterator<Adapter> itAdapter = c.iterator(); itAdapter.hasNext();)
     {
       Adapter adapter = itAdapter.next();
-      if (adapter instanceof OutputAdapter)
-      {
-        ((OutputAdapter)adapter).setEPServiceProvider(epService);
-        adapter.start();
-      }
+      adapter.setEPServiceProvider(epService);
+      adapter.start();
     }
   }
 
@@ -106,6 +103,16 @@ public class SpringContextLoader implements AdapterLoader
       return null;
     }
     return adapterMap.get(adapterName);
+  }
+
+  public void start()
+  {
+    adapterSpringContext.start();
+  }
+
+  public void refresh()
+  {
+    adapterSpringContext.refresh();
   }
 
   public void close()

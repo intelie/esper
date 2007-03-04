@@ -43,7 +43,14 @@ public class SpringJMSTemplateOutputAdapter extends JMSOutputAdapter
         eventBean, ((jmsMessageMarshaler != null) ?
         jmsMessageMarshaler :
         this.jmsMessageMarshaler));
-      jmsTemplate.send(messageCreator);
+      if (destination != null)
+      {
+        jmsTemplate.send(destination, messageCreator);
+      }
+      else
+      {
+        jmsTemplate.send(messageCreator);
+      }
     }
   }
 
