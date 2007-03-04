@@ -3,6 +3,12 @@ Esper Changelog
 
 Changes in version 1.6
 ----------------------
+* More helpful error messages when invalid syntax (ESPER-82)
+* Management API
+
+
+Changes in version 1.6
+----------------------
 * Added support for group-by and previous (ESPER-80 Prev function to consider grouped windows)
 * Added length window batch (ESPER-27 jumping/tumbling window)
 * Added support for array definition (Enhancement Request ESPER-76 Java array initialization syntax for constants)
