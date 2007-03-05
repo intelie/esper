@@ -91,14 +91,14 @@ namespace net.esper.example.stockticker.monitor
 
                     StockTickerAlertListener listener = new StockTickerAlertListener(this.epService, limit, tick);
 
-                    String expressionText = "every tick=StockTick" +
+                    String lExpressionText = "every tick=StockTick" +
                              "(stockSymbol='" + limit.StockSymbol + "', price < " + lowerLimit + ")";
-                    lowPriceListener = this.epService.EPAdministrator.CreatePattern(expressionText);
+                    lowPriceListener = this.epService.EPAdministrator.CreatePattern(lExpressionText);
                     lowPriceListener.AddListener(listener.Update);
 
-                    expressionText = "every tick=StockTick" +
+                    lExpressionText = "every tick=StockTick" +
                             "(stockSymbol='" + limit.StockSymbol + "', price > " + upperLimit + ")";
-                    highPriceListener = this.epService.EPAdministrator.CreatePattern(expressionText);
+                    highPriceListener = this.epService.EPAdministrator.CreatePattern(lExpressionText);
                     highPriceListener.AddListener(listener.Update);
                 }));
         }

@@ -16,7 +16,7 @@ namespace net.esper.example.transaction
             this.groupIdentifier = groupIdentifier;
         }
 
-        public void update(EventBean[] newEvents, EventBean[] oldEvents)
+        public void Update(EventBean[] newEvents, EventBean[] oldEvents)
         {
             if (newEvents == null)
             {

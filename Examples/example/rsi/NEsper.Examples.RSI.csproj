@@ -3,7 +3,7 @@
     <ProjectGuid>{67B0CA47-A7A6-488B-9753-8F947AE65896}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>NEsper.Example.RSI</RootNamespace>
     <AssemblyName>NEsper.Examples.RSI</AssemblyName>
   </PropertyGroup>
@@ -27,6 +27,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\commons-logging.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\lib\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -36,6 +40,7 @@
     <Compile Include="RSIEvent.cs" />
     <Compile Include="RSIListener.cs" />
     <Compile Include="RSIStockTickerListener.cs" />
+    <Compile Include="TestRSI.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\NEsper\NEsper.csproj">

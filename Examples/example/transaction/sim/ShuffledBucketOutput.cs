@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 
+using net.esper.compat;
 using net.esper.example.transaction;
 
 namespace net.esper.example.transaction.sim
@@ -59,7 +60,7 @@ namespace net.esper.example.transaction.sim
 
         private void OutputBucket(List<TxnEventBase> bucket)
         {
-            Collections.shuffle(bucket, random);
+            CollectionHelper.Shuffle(bucket, random);
             outputStream.Output(bucket);
             bucket.Clear();
         }

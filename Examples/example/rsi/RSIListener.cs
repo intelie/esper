@@ -55,52 +55,52 @@ namespace net.esper.example.rsi
         {
             Object eventBean = newEvents_[0]["Tick"];
             StockTick tick = (StockTick)eventBean;
-            _log.Info(" Stock " + tick.StockSymbol + " Price " + tick.Price);
-            eventBean = newEvents_[0].get("avgLoss");
+            log.Info(" Stock " + tick.StockSymbol + " Price " + tick.Price);
+            eventBean = newEvents_[0]["AvgLoss"];
             _avgLoss = (Double)eventBean;
-            if (_avgLoss == Double.MIN_VALUE)
+            if (_avgLoss == Double.MinValue)
             {
-                _log.Info(" Not Meaningful ");
+                log.Info(" Not Meaningful ");
             }
             else
             {
-                _avgLoss = to1tenthPrecision((Double)eventBean);
-                _log.Info(" AvgLoss " + _avgLoss);
+                _avgLoss = To1tenthPrecision((Double)eventBean);
+                log.Info(" AvgLoss " + _avgLoss);
             }
             eventBean = newEvents_[0]["AvgGain"];
             _avgGain = (Double)eventBean;
-            if (_avgGain == Double.MIN_VALUE)
+            if (_avgGain == Double.MinValue)
             {
-                _log.Info(" Not Meaningful ");
+                log.Info(" Not Meaningful ");
             }
             else
             {
                 _avgGain = To1tenthPrecision((Double)eventBean);
-                _log.Info(" AvgGain " + _avgGain);
+                log.Info(" AvgGain " + _avgGain);
             }
 
             eventBean = newEvents_[0]["RS"];
             _rs = (Double)eventBean;
-            if (_rs == Double.MIN_VALUE)
+            if (_rs == Double.MinValue)
             {
-                _log.Info(" Not Meaningful ");
+                log.Info(" Not Meaningful ");
             }
             else
             {
                 _rs = To1tenthPrecision((Double)eventBean);
-                _log.Info(" RS " + _rs);
+                log.Info(" RS " + _rs);
             }
-            eventBean = newEvents_[0].get("RSI");
+            eventBean = newEvents_[0]["RSI"] ;
             _rsi = (Double)eventBean;
-            if (_rsi == Double.MIN_VALUE)
+            if (_rsi == Double.MinValue)
             {
-                _log.Info(" Not Meaningful ");
+                log.Info(" Not Meaningful ");
             }
             else
             {
                 _rsiCount++;
                 _rsi = To1tenthPrecision((Double)eventBean);
-                _log.Info(" RSI " + _rsi);
+                log.Info(" RSI " + _rsi);
             }
         }
 

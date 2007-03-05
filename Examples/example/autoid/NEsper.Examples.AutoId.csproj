@@ -27,6 +27,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\commons-logging.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\lib\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -36,8 +40,14 @@
     <Compile Include="AutoIdSimMain.cs" />
     <Compile Include="RFIDTagsPerSensorListener.cs" />
     <Compile Include="RFIDTagsPerSensorStmt.cs" />
+    <Compile Include="TestAutoIdSimMain.cs" />
+    <Compile Include="TestRFIDTagsPerSensorStmt.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\NEsper.Tests\NEsper.Tests.csproj">
+      <Project>{34C1A382-1B8B-4A15-B168-0AD7D30E2E22}</Project>
+      <Name>NEsper.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\NEsper\NEsper.csproj">
       <Project>{8376DC7A-06AC-40F1-9338-9AC5AF788356}</Project>
       <Name>NEsper</Name>

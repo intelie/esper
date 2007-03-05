@@ -34,7 +34,7 @@ namespace net.esper.example.autoid
 	        int events = 0;
 	        try {
 	            events = Int32.Parse(args[0]);
-	        } catch (NullReferenceException e) {
+	        } catch (NullReferenceException) {
 	            Console.Out.WriteLine("Invalid numberOfEvents:" + args[0]);
 	            Environment.Exit(-2);
 	            return;

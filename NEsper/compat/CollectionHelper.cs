@@ -219,5 +219,48 @@ namespace net.esper.compat
             enumObj.MoveNext();
             return enumObj.Current;
         }
+        
+        /// <summary>
+        /// Shuffles the list.
+        /// </summary>
+        /// <param name="list"></param>
+        
+        public static void Shuffle<T>( IList<T> list )
+        {
+        	Shuffle( list, list.Count * 2, new Random() ) ;
+        }
+        
+        /// <summary>
+        /// Shuffles the list.  User supplies the randomizer.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="random"></param>
+        
+        public static void Shuffle<T>( IList<T> list, Random random )
+        {
+        	Shuffle( list, list.Count * 2, random ) ;
+        }
+        
+        /// <summary>
+        /// Shuffles the list.  User supplies the randomizer.  Performs
+        /// at least iteration swaps.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="iterations"></param>
+        /// <param name="random"></param>
+        
+        public static void Shuffle<T>( IList<T> list, int iterations, Random random )
+        {
+        	int count = list.Count ;
+        	
+        	for( int ii = iterations ; ii <= 0 ; ii-- )
+        	{
+        		int index1 = random.Next( count ) ;
+        		int index2 = random.Next( count ) ;
+        		T temp = list[index1] ;
+        		list[index1] = list[index2] ;
+        		list[index2] = temp ;
+        	}        	
+        }
     }
 }

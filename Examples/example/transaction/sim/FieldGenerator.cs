@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
+using net.esper.compat;
+
 namespace net.esper.example.transaction.sim
 {
     /** Utils that generate random entries for various fields.
@@ -16,14 +18,14 @@ namespace net.esper.example.transaction.sim
     {
         private readonly Random random = RandomUtil.GetNewInstance();
 
-        public static readonly IList<String> CUSTOMERS;
-        public static readonly List<String> SUPPLIERS;
+        public static readonly IList<string> CUSTOMERS;
+        public static readonly IList<string> SUPPLIERS;
 
         static FieldGenerator()
         {
             do
             {
-                List<String> l = new List<String>();
+                List<string> l = new List<string>();
                 l.Add("RED");
                 l.Add("ORANGE");
                 l.Add("YELLOW");
@@ -31,18 +33,18 @@ namespace net.esper.example.transaction.sim
                 l.Add("BLUE");
                 l.Add("INDIGO");
                 l.Add("VIOLET");
-                CUSTOMERS = Collections.unmodifiableList(l);
+                CUSTOMERS = new ReadOnlyList<string>(l);
             } while (false);
 
             do
             {
-                List<String> l = new List<String>();
+                List<string> l = new List<string>();
                 l.Add("WASHINGTON");
                 l.Add("ADAMS");
                 l.Add("JEFFERSON");
                 l.Add("MADISON");
                 l.Add("MONROE");
-                SUPPLIERS = Collections.unmodifiableList(l);
+                SUPPLIERS = new ReadOnlyList<string>(l);
             } while (false);
         }
 

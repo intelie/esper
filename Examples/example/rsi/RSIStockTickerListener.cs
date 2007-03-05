@@ -24,8 +24,8 @@ namespace net.esper.example.rsi
         private int _period;
         private int _count = 0;
         private List<Double> _adv, _decl;
-        private double _avgGain = Double.MIN_VALUE, _avgLoss = Double.MIN_VALUE;
-        private double _rs = Double.MIN_VALUE, _rsi = Double.MIN_VALUE;
+        private double _avgGain = Double.MinValue, _avgLoss = Double.MinValue;
+        private double _rs = Double.MinValue, _rsi = Double.MinValue;
 
         public RSIStockTickerListener(EPServiceProvider epService_, int periods_)
         {
@@ -40,8 +40,8 @@ namespace net.esper.example.rsi
         {
             _period = period_;
             _oldEvents = null;
-            _adv.clear();
-            _decl.clear();
+            _adv.Clear();
+            _decl.Clear();
             _avgGain = Double.MinValue;
             _avgLoss = Double.MinValue;
             _rs = Double.MinValue;
@@ -63,8 +63,8 @@ namespace net.esper.example.rsi
             {
                 eventBean = _oldEvents[0]["Tick"];
                 StockTick oldTick = (StockTick)eventBean;
-                compute(newTick, oldTick);
-                _epService.EPRuntime.sendEvent(new RSIEvent(newTick, _avgLoss, _avgGain, _rs, _rsi));
+                Compute(newTick, oldTick);
+                _epService.EPRuntime.SendEvent(new RSIEvent(newTick, _avgLoss, _avgGain, _rs, _rsi));
             }
             _oldEvents = newEvents;
         }
@@ -96,8 +96,8 @@ namespace net.esper.example.rsi
                 }
                 else
                 {
-                    _adv.clear();
-                    _decl.clear();
+                    _adv.Clear();
+                    _decl.Clear();
                     double adv = 0.0;
                     double decl = 0.0;
                     if (change > 0)
@@ -120,7 +120,7 @@ namespace net.esper.example.rsi
                 }
                 else
                 {
-                    _rs = Math.abs(_avgGain / _avgLoss);
+                    _rs = Math.Abs(_avgGain / _avgLoss);
                     double to1 = 1.0 + _rs;
                     double to100 = 100.0 / to1;
                     _rsi = 100.0 - to100;
@@ -139,7 +139,7 @@ namespace net.esper.example.rsi
             return (sum / _count);
         }
 
-        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly Log _log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }
 

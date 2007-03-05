@@ -26,7 +26,7 @@ namespace net.esper.example.transaction.sim
         protected String currentTransactionID;
         protected Random random = RandomUtil.GetNewInstance();
         protected List<TxnEventBase> transactionEvents;
-        protected IEnumerable<TxnEventBase> transactionEnum;
+        protected IEnumerator<TxnEventBase> transactionEnum;
 
         protected int maxTrans;
         protected int numTrans;
@@ -83,34 +83,27 @@ namespace net.esper.example.transaction.sim
         {
             get { return maxTrans; }
         }
-
+        
         public override IEnumerator<TxnEventBase> GetEnumerator()
         {
-            while ((numTrans < maxTrans) || (transactionEnum.MoveNext()))
-            {
-                if (transactionEnum != null)
-                {
-                    TxnEventBase m = transactionEnum.Current;
-                    m.TransactionId = currentTransactionID;
-                    yield return m;
-                }
+        	while( numTrans < maxTrans )
+        	{
+        		while ((transactionEnum == null) ||
+        		       (transactionEnum.MoveNext() == false))
+        		{
+			        //create a new transaction, with ID.
+			        int id = random.Next();
+			        currentTransactionID = Convert.ToString(id);
+			        transactionEvents = CreateNextTransaction();
+			        transactionEnum = transactionEvents.GetEnumerator();
+        		}
+        		
+		        numTrans++;
 
-                if (numTrans == maxTrans)
-                {
-                    throw new IllegalStateException("There is no next element.");
-                }
-                //create a new transaction, with ID.
-                numTrans++;
-                int id = random.Next();
-                if (id < 0)
-                {
-                    id = -1 * id;
-                }
-                currentTransactionID = Convert.ToString(id);
-                transactionEvents = CreateNextTransaction();
-                transactionEnum = transactionEvents.GetEnumerator();
-                yield return this.next();
-            }
+		        TxnEventBase m = transactionEnum.Current;
+		        m.TransactionId = currentTransactionID;
+		        yield return m;
+        	}
         }
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
