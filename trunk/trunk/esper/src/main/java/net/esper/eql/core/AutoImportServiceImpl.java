@@ -33,6 +33,13 @@ public class AutoImportServiceImpl implements AutoImportService
 		}
 	}
 
+    /**
+     * Ctor.
+     */
+    public AutoImportServiceImpl()
+    {
+    }
+
 	@SuppressWarnings({"StringContatenationInLoop"})
     public Class resolveClass(String className)
 	throws ClassNotFoundException

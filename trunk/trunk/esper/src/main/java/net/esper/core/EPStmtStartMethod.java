@@ -40,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EPStmtStartMethod
 {
-    private final StatementSpec statementSpec;
+    private final StatementSpecCompiled statementSpec;
     private final String eqlStatement;
     private final ScheduleBucket scheduleBucket;
     private final EPServicesContext services;
@@ -55,7 +55,7 @@ public class EPStmtStartMethod
      * @param services is the service instances for dependency injection
      * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
-    public EPStmtStartMethod(StatementSpec statementSpec,
+    public EPStmtStartMethod(StatementSpecCompiled statementSpec,
                                 String eqlStatement,
                                 EPServicesContext services,
                                 EPStatementHandle epStatementHandle)
@@ -94,19 +94,19 @@ public class EPStmtStartMethod
         // Create streams and views
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
-            StreamSpec streamSpec = statementSpec.getStreamSpecs().get(i);
+            StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
 
             // Create view factories and parent view based on a filter specification
-            if (streamSpec instanceof FilterStreamSpec)
+            if (streamSpec instanceof FilterStreamSpecCompiled)
             {
-                FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
+                FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
                 eventStreamParentViewable[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), epStatementHandle, isJoin);
                 unmaterializedViewChain[i] = services.getViewService().createFactories(eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), viewContext);
             }
             // Create view factories and parent view based on a pattern expression
-            else if (streamSpec instanceof PatternStreamSpec)
+            else if (streamSpec instanceof PatternStreamSpecCompiled)
             {
-                PatternStreamSpec patternStreamSpec = (PatternStreamSpec) streamSpec;
+                PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
                 final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
                 eventStreamParentViewable[i] = sourceEventStream;
@@ -160,11 +160,11 @@ public class EPStmtStartMethod
         {
             public void stop()
             {
-                for (StreamSpec streamSpec : statementSpec.getStreamSpecs())
+                for (StreamSpecCompiled streamSpec : statementSpec.getStreamSpecs())
                 {
-                    if (streamSpec instanceof FilterStreamSpec)
+                    if (streamSpec instanceof FilterStreamSpecCompiled)
                     {
-                        FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
+                        FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
                         services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin);
                     }
                 }
@@ -281,7 +281,7 @@ public class EPStmtStartMethod
      * @return array of stream names
      */
     @SuppressWarnings({"StringContatenationInLoop"})
-    protected static String[] determineStreamNames(List<StreamSpec> streams)
+    protected static String[] determineStreamNames(List<StreamSpecCompiled> streams)
     {
         String[] streamNames = new String[streams.size()];
         for (int i = 0; i < streams.size(); i++)

@@ -6,7 +6,7 @@ import net.esper.client.EPStatementException;
 import net.esper.client.EPStatementState;
 import net.esper.collection.Pair;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.StatementSpec;
+import net.esper.eql.spec.StatementSpecCompiled;
 import net.esper.util.ManagedLock;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
@@ -40,7 +40,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         this.stmtNameToIdMap = new HashMap<String, String>();
     }
 
-    public synchronized EPStatement createAndStart(StatementSpec statementSpec, String expression, boolean isPattern, String optStatementName)
+    public synchronized EPStatement createAndStart(StatementSpecCompiled statementSpec, String expression, boolean isPattern, String optStatementName)
     {
         // Generate statement id
         String statementId = UuidGenerator.generate(expression);

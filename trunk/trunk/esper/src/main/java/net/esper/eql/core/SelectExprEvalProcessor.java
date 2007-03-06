@@ -2,7 +2,7 @@ package net.esper.eql.core;
 
 import net.esper.event.*;
 import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectExprElementNamedSpec;
+import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 
@@ -36,7 +36,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
      * @param eventAdapterService - service for generating events and handling event types
      * @throws net.esper.eql.expression.ExprValidationException thrown if any of the expressions don't validate
      */
-    public SelectExprEvalProcessor(List<SelectExprElementNamedSpec> selectionList,
+    public SelectExprEvalProcessor(List<SelectExprElementCompiledSpec> selectionList,
                                    InsertIntoDesc insertIntoDesc,
                                    boolean isUsingWildcard, 
                                    StreamTypeService typeService, 
@@ -50,7 +50,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             throw new IllegalArgumentException("Empty selection list not supported");
         }
 
-        for (SelectExprElementNamedSpec entry : selectionList)
+        for (SelectExprElementCompiledSpec entry : selectionList)
         {
             if (entry.getAssignedName() == null)
             {
@@ -94,7 +94,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         init(selectionList, insertIntoDesc, underlyingType, eventAdapterService);
     }
 
-    private void init(List<SelectExprElementNamedSpec> selectionList,
+    private void init(List<SelectExprElementCompiledSpec> selectionList,
                       InsertIntoDesc insertIntoDesc,
                       EventType eventType, 
                       EventAdapterService eventAdapterService)
@@ -200,7 +200,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     }
 
     private static void verifyInsertInto(InsertIntoDesc insertIntoDesc,
-                                         List<SelectExprElementNamedSpec> selectionList)
+                                         List<SelectExprElementCompiledSpec> selectionList)
         throws ExprValidationException
     {
         // Verify all column names are unique

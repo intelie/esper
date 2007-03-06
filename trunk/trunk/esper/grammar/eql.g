@@ -6,7 +6,7 @@ header
 class EQLStatementParser extends Parser;
 options
 {
-	k = 3;                           // lookahead
+	k = 4;                           // lookahead
 	exportVocab=Eql;
 	buildAST = true;
     defaultErrorHandler=false;
@@ -140,6 +140,8 @@ tokens
    	DBWHERE_CLAUSE;
    	WILDCARD_SELECT;
 	INSERTINTO_STREAM_NAME;
+	IN_RANGE;
+	NOT_IN_RANGE;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -377,11 +379,27 @@ evalRelationalExpression
 			(
 				// Represent the optional NOT prefix using the token type by
 				// testing 'n' and setting the token type accordingly.
-				(i:IN_SET^ {
-						#i.setType( (n == null) ? IN_SET : NOT_IN_SET);
-						#i.setText( (n == null) ? "in" : "not in");
+				(i:IN_SET^ 				
+					(LPAREN | LBRACK) expression	// brackets are for inclusive/exclusive
+						(
+							( col:COLON! (expression) )		// range
+							|
+							( (COMMA! expression)* )		// list of values
+						)
+					(RPAREN | RBRACK)	
+					{
+						if (col == null)
+						{
+							#i.setType( (n == null) ? IN_SET : NOT_IN_SET);
+							#i.setText( (n == null) ? "in" : "not in");
+						}
+						else
+						{
+							#i.setType( (n == null) ? IN_RANGE : NOT_IN_RANGE);
+							#i.setText( (n == null) ? "in range" : "not in range");
+						}
 					}
-					(LPAREN! expression (COMMA! expression)* RPAREN!))
+				)
 				| (b:BETWEEN^ {
 						#b.setType( (n == null) ? BETWEEN : NOT_BETWEEN);
 						#b.setText( (n == null) ? "between" : "not between");
@@ -400,7 +418,7 @@ evalRelationalExpression
 			)	
 		)
 	;
-		
+			
 concatenationExpr
 	: additiveExpression ( c:LOR! additiveExpression ( LOR! additiveExpression)* )?
 		{
@@ -630,64 +648,9 @@ classIdentifierNonGreedy
 	;	
 	
 filterParamSet
-    :   filterParameter (COMMA! filterParameter)*
+    :   expression (COMMA! expression)*
     ;
-   
-filterParameter
-	:	eventProperty (filterParamConstant | filterParamBetween | filterParamRangeAndIn)
-		{ #filterParameter = #([EVENT_FILTER_PARAM,"filterParameter"], #filterParameter); }
-	;
-	
-filterParamConstant 
-	:	(EQUALS^ | NOT_EQUAL^ | LT^ | LE^ | GE^ | GT^) (constant | filterIdentifier)
-	;
-
-// the 'in' can be a range - such as "in (a:b)" or "in [a:b]" or "in (a:b]" or "in [a:b)" (inclusive/exclusive)
-// the 'in' can be a set list-of-values such as "in (a, b, c)"
-filterParamRangeAndIn
-	: 	(n:NOT_EXPR!)? IN_SET! (LPAREN | LBRACK) (constant | filterIdentifier)	// brackets are for inclusive/exclusive
-		(
-			( col:COLON! (constant | filterIdentifier) )		// range
-			|
-			( (COMMA! (constant | filterIdentifier))* )			// list of values
-		)
-		(RPAREN | RBRACK)			
-		{ 
-			if (col != null)
-				if (n != null)				
-					#filterParamRangeAndIn = #([EVENT_FILTER_NOT_RANGE,"filterParamNotRange"], #filterParamRangeAndIn); 
-				else
-					#filterParamRangeAndIn = #([EVENT_FILTER_RANGE,"filterParamRange"], #filterParamRangeAndIn); 
-			else
-				if (n != null)				
-					#filterParamRangeAndIn = #([EVENT_FILTER_NOT_IN,"filterParamNotIn"], #filterParamRangeAndIn);
-				else
-					#filterParamRangeAndIn = #([EVENT_FILTER_IN,"filterParamIn"], #filterParamRangeAndIn);				
-		}
-	;    
-	
-filterParamBetween	// between being the same RANGE_CLOSED as "in [low:high] range as above with hard brackets 
-	: 	(n:NOT_EXPR!)? BETWEEN! (constant | filterIdentifier) AND_EXPR! (constant | filterIdentifier)
-		{ 
-			if (n != null)				
-				#filterParamBetween = #([EVENT_FILTER_NOT_BETWEEN,"filterParamNotBetween"], #filterParamBetween); 
-			else
-				#filterParamBetween = #([EVENT_FILTER_BETWEEN,"filterParamBetween"], #filterParamBetween); 
-		}
-	;    
-
-// change syntax to (a between (a:4))
-// more complex parsing logic
-
-filterParamInList
-	: 	(c:constant | f1:filterIdentifier) (COMMA! (constant | filterIdentifier))*
-	;    
-
-filterIdentifier
-	:	IDENT DOT! eventProperty
-		{ #filterIdentifier = #([EVENT_FILTER_IDENT,"filterIdentifier"], #filterIdentifier); }
-	;
-	
+   	
 eventProperty
 	:	eventPropertyAtomic (DOT! eventPropertyAtomic)* 
 		{ #eventProperty = #([EVENT_PROP_EXPR,"eventPropertyExpr"], #eventProperty); }

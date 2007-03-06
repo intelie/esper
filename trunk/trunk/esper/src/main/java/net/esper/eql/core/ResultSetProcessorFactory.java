@@ -16,8 +16,8 @@ import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.InsertIntoDesc;
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.eql.spec.SelectClauseSpec;
-import net.esper.eql.spec.SelectExprElementNamedSpec;
-import net.esper.eql.spec.SelectExprElementUnnamedSpec;
+import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.eql.spec.SelectExprElementRawSpec;
 import net.esper.event.EventAdapterService;
 
 import org.apache.commons.logging.Log;
@@ -93,11 +93,11 @@ public class ResultSetProcessorFactory
         expandAliases(selectClauseSpec.getSelectList(), orderByList);
 
         // Validate selection expressions, if any (could be wildcard i.e. empty list)
-        List<SelectExprElementNamedSpec> namedSelectionList = new LinkedList<SelectExprElementNamedSpec>();
+        List<SelectExprElementCompiledSpec> namedSelectionList = new LinkedList<SelectExprElementCompiledSpec>();
         for (int i = 0; i < selectClauseSpec.getSelectList().size(); i++)
         {
             // validate element
-            SelectExprElementUnnamedSpec element = selectClauseSpec.getSelectList().get(i);
+            SelectExprElementRawSpec element = selectClauseSpec.getSelectList().get(i);
             ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService, autoImportService, viewResourceDelegate);
 
             // determine an element name if none assigned
@@ -107,7 +107,7 @@ public class ResultSetProcessorFactory
                 asName = validatedExpression.toExpressionString();
             }
 
-            SelectExprElementNamedSpec validatedElement = new SelectExprElementNamedSpec(validatedExpression, asName);
+            SelectExprElementCompiledSpec validatedElement = new SelectExprElementCompiledSpec(validatedExpression, asName);
             namedSelectionList.add(validatedElement);
         }
         boolean isUsingWildcard = selectClauseSpec.isUsingWildcard();
@@ -136,7 +136,7 @@ public class ResultSetProcessorFactory
 
         // Get the select expression nodes
         List<ExprNode> selectNodes = new ArrayList<ExprNode>();
-        for(SelectExprElementNamedSpec element : namedSelectionList)
+        for(SelectExprElementCompiledSpec element : namedSelectionList)
         {
         	selectNodes.add(element.getSelectExpression());
         }
@@ -150,7 +150,7 @@ public class ResultSetProcessorFactory
 
         // Determine aggregate functions used in select, if any
         List<ExprAggregateNode> selectAggregateExprNodes = new LinkedList<ExprAggregateNode>();
-        for (SelectExprElementNamedSpec element : namedSelectionList)
+        for (SelectExprElementCompiledSpec element : namedSelectionList)
         {
             ExprAggregateNode.getAggregatesBottomUp(element.getSelectExpression(), selectAggregateExprNodes);
         }
@@ -427,9 +427,9 @@ public class ResultSetProcessorFactory
         return propertiesGroupBy;
     }
 
-    private static void expandAliases(List<SelectExprElementUnnamedSpec> selectionList, List<Pair<ExprNode, Boolean>> orderByList)
+    private static void expandAliases(List<SelectExprElementRawSpec> selectionList, List<Pair<ExprNode, Boolean>> orderByList)
     {
-    	for(SelectExprElementUnnamedSpec selectElement : selectionList)
+    	for(SelectExprElementRawSpec selectElement : selectionList)
     	{
     		String alias = selectElement.getOptionalAsName();
     		if(alias != null)

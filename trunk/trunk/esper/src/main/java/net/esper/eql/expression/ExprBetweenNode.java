@@ -13,18 +13,18 @@ import java.util.Iterator;
  */
 public class ExprBetweenNode extends ExprNode
 {
+    private final boolean isLowEndpointIncluded;
+    private final boolean isHighEndpointIncluded;
     private final boolean isNotBetween;
 
     private boolean isAlwaysFalse;
     private ExprBetweenComp computer;
 
-    /**
-     * Ctor.
-     * @param isNotBetween is true to indicate this is a "not between", or false for a "between"
-     */
-    public ExprBetweenNode(boolean isNotBetween)
+    public ExprBetweenNode(boolean lowEndpointIncluded, boolean highEndpointIncluded, boolean notBetween)
     {
-        this.isNotBetween = isNotBetween;
+        isLowEndpointIncluded = lowEndpointIncluded;
+        isHighEndpointIncluded = highEndpointIncluded;
+        isNotBetween = notBetween;
     }
 
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException

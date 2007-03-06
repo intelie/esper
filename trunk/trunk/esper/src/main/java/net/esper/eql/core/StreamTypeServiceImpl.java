@@ -2,6 +2,8 @@ package net.esper.eql.core;
 
 import net.esper.event.EventType;
 
+import java.util.LinkedHashMap;
+
 /**
  * Implementation that provides stream number and property type information. 
  */
@@ -23,6 +25,22 @@ public class StreamTypeServiceImpl implements StreamTypeService
         if (eventTypes.length != streamNames.length)
         {
             throw new IllegalArgumentException("Number of entries for event types and stream names differs");
+        }
+    }
+
+    /**
+     * Ctor.
+     */
+    public StreamTypeServiceImpl (LinkedHashMap<String, EventType> namesAndTypes)
+    {
+        eventTypes = new EventType[namesAndTypes.size()] ;
+        streamNames = new String[namesAndTypes.size()] ;
+        int count = 0;
+        for (String streamName : namesAndTypes.keySet())
+        {
+            streamNames[count] = streamName;
+            eventTypes[count] = namesAndTypes.get(streamName);
+            count++;
         }
     }
 

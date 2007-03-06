@@ -7,6 +7,7 @@ import net.esper.support.eql.parse.SupportParserHelper;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.eql.generated.EqlTokenTypes;
+import net.esper.eql.core.AutoImportServiceImpl;
 import antlr.collections.AST;
 
 public class TestEQLParser extends TestCase implements EqlTokenTypes
@@ -14,15 +15,14 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "insert into A (a";
-        //String expression = "select googlex(1) from " + className;
+        String expression = "select 1 from " + className + "(intPrimitive < 5 and intPrimitive > 4)";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
         SupportParserHelper.displayAST(ast);
 
         log.debug(".testDisplayAST walking...");
-        EQLTreeWalker walker = new EQLTreeWalker(SupportEventAdapterService.getService());
+        EQLTreeWalker walker = new EQLTreeWalker();
         walker.startEQLExpressionRule(ast);
     }
 
@@ -188,6 +188,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(preFill + "().win:some_view({'count'},'l','a')");
         assertIsValid(preFill + "().win:some_view({})");
         assertIsValid(preFill + "(string != 'test').win:lenght(100)");
+        assertIsValid(preFill + "(string in (1:2) and dodo=3 and lax like '%e%')");
+        assertIsValid(preFill + "(string in (1:2) and dodo=3, lax like '%e%' and oppol / yyy = 5, yunc(3))");
 
         assertIsValid("select max(intPrimitive, intBoxed) from " + className + "().std:win(20)");
         assertIsValid("select max(intPrimitive, intBoxed, longBoxed) from " + className + "().std:win(20)");

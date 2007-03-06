@@ -1,8 +1,7 @@
 package net.esper.eql.spec;
 
-import net.esper.collection.Pair;
-import net.esper.eql.spec.StreamSpec;
 import net.esper.eql.expression.ExprNode;
+import net.esper.collection.Pair;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -10,23 +9,24 @@ import java.util.LinkedList;
 /**
  * Specification object representing a complete EQL statement including all EQL constructs.
  */
-public class StatementSpec
+public class StatementSpecRaw
 {
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
     private SelectClauseSpec selectClauseSpec = new SelectClauseSpec();
-    private List<StreamSpec> streamSpecs = new LinkedList<StreamSpec>();
+    private List<StreamSpecRaw> streamSpecs = new LinkedList<StreamSpecRaw>();
     private List<OuterJoinDesc> outerJoinDescList = new LinkedList<OuterJoinDesc>();
     private ExprNode filterExprRootNode;
     private List<ExprNode> groupByExpressions = new LinkedList<ExprNode>();
     private ExprNode havingExprRootNode;
     private OutputLimitSpec outputLimitSpec;
     private List<Pair<ExprNode, Boolean>> orderByList = new LinkedList<Pair<ExprNode, Boolean>>();
+
     /**
      * Returns the FROM-clause stream definitions.
      * @return list of stream specifications
      */
-    public List<StreamSpec> getStreamSpecs()
+    public List<StreamSpecRaw> getStreamSpecs()
     {
         return streamSpecs;
     }
@@ -119,7 +119,7 @@ public class StatementSpec
     {
         this.outputLimitSpec = outputLimitSpec;
     }
-    
+
     /**
      * Sets the where clause filter expression node.
      * @param filterExprRootNode the where clause expression

@@ -107,7 +107,6 @@ public class ParseHelper
         }
         catch (NoViableAltException e)
         {
-            e.
             if(e.token.getText() == null)
             {
                 throw EPStatementSyntaxException.convertEndOfInput(e, expression);
