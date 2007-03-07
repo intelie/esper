@@ -199,7 +199,7 @@ public abstract class ExprAggregateNode extends ExprNode
         if (!JavaClassHelper.isNumeric(childType))
         {
             throw new ExprValidationException("Implicit conversion from datatype '" +
-                    childType.getName() +
+                    childType.getSimpleName() +
                     "' to numeric is not allowed");
         }
 

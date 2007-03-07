@@ -1,14 +1,7 @@
 package net.esper.filter;
 
-import net.esper.collection.MultiKeyUntyped;
-import net.esper.event.EventType;
-import net.esper.util.JavaClassHelper;
-import net.esper.pattern.MatchedEventMap;
 import net.esper.eql.expression.ExprNode;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Arrays;
+import net.esper.pattern.MatchedEventMap;
 
 /**
  * This class represents an arbitrary expression node returning a boolean value as a filter parameter in an {@link FilterSpec} filter specification.
@@ -36,13 +29,14 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
         this.exprNode = exprNode;
     }
 
-    public final Class getFilterValueClass(Map<String, EventType> taggedEventTypes)
+    public ExprNode getExprNode()
     {
-        return Boolean.class;
+        return exprNode;
     }
 
     public final Object getFilterValue(MatchedEventMap matchedEvents)
     {
+        // this is what the index gets
         return null;
     }
 

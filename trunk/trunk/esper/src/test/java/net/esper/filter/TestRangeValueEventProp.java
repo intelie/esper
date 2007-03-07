@@ -1,15 +1,11 @@
 package net.esper.filter;
 
-import net.esper.event.*;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.event.SupportEventTypeFactory;
-import net.esper.support.event.SupportEventBeanFactory;
-import net.esper.pattern.MatchedEventMap;
-
-import java.util.Map;
-import java.util.HashMap;
-
 import junit.framework.TestCase;
+import net.esper.event.EventBean;
+import net.esper.event.PropertyAccessException;
+import net.esper.pattern.MatchedEventMap;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.event.SupportEventBeanFactory;
 
 public class TestRangeValueEventProp extends TestCase
 {
@@ -22,17 +18,6 @@ public class TestRangeValueEventProp extends TestCase
         params[2] = new RangeValueEventProp("asName", "boolBoxed");
         params[3] = new RangeValueEventProp("asName", "intPrimitive");
         params[4] = new RangeValueEventProp("asName", "intPrimitive");
-    }
-
-    public void testCheckType()
-    {
-        Map<String, EventType> taggedEventTypes = new HashMap<String, EventType>();
-        taggedEventTypes.put("asName", SupportEventTypeFactory.createBeanType(SupportBean.class));
-
-        tryInvalidCheckType(taggedEventTypes, params[0]);
-        tryInvalidCheckType(taggedEventTypes, params[1]);
-        tryInvalidCheckType(taggedEventTypes, params[2]);
-        params[3].checkType(taggedEventTypes);
     }
 
     public void testGetFilterValue()
@@ -54,19 +39,6 @@ public class TestRangeValueEventProp extends TestCase
         assertFalse(params[0].equals(params[1]));
         assertFalse(params[2].equals(params[3]));
         assertTrue(params[3].equals(params[4]));
-    }
-
-    private void tryInvalidCheckType(Map<String, EventType> taggedEventTypes, FilterSpecParamRangeValue value)
-    {
-        try
-        {
-            value.checkType(taggedEventTypes);
-            fail();
-        }
-        catch (IllegalStateException ex)
-        {
-            // expected
-        }
     }
 
     private void tryInvalidGetFilterValue(MatchedEventMap matchedEvents, FilterSpecParamRangeValue value)

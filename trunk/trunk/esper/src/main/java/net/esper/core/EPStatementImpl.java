@@ -52,17 +52,29 @@ public class EPStatementImpl extends EPStatementSupport implements EPStatement
 
     public void start()
     {
+        if (statementLifecycleSvc == null)
+        {
+            throw new IllegalStateException("Cannot start statement, statement is in destroyed state");
+        }
         statementLifecycleSvc.start(statementId);
     }
 
     public void stop()
     {
+        if (statementLifecycleSvc == null)
+        {
+            throw new IllegalStateException("Cannot stop statement, statement is in destroyed state");
+        }
         statementLifecycleSvc.stop(statementId);
         dispatchChildView.clear();
     }
 
     public void destroy()
     {
+        if (currentState == EPStatementState.DESTROYED)
+        {
+            throw new IllegalStateException("Statement already destroyed");
+        }
         statementLifecycleSvc.destroy(statementId);
     }
 

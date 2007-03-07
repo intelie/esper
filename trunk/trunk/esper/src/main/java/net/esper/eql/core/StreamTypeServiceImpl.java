@@ -9,8 +9,9 @@ import java.util.LinkedHashMap;
  */
 public class StreamTypeServiceImpl implements StreamTypeService
 {
-    private EventType[] eventTypes;
-    private String[] streamNames;
+    private final EventType[] eventTypes;
+    private final String[] streamNames;
+    private boolean isStreamZeroUnambigous;
 
     /**
      * Ctor.
@@ -31,8 +32,9 @@ public class StreamTypeServiceImpl implements StreamTypeService
     /**
      * Ctor.
      */
-    public StreamTypeServiceImpl (LinkedHashMap<String, EventType> namesAndTypes)
+    public StreamTypeServiceImpl (LinkedHashMap<String, EventType> namesAndTypes, boolean isStreamZeroUnambigous)
     {
+        this.isStreamZeroUnambigous = isStreamZeroUnambigous; // TODO: unit test
         eventTypes = new EventType[namesAndTypes.size()] ;
         streamNames = new String[namesAndTypes.size()] ;
         int count = 0;
@@ -131,6 +133,12 @@ public class StreamTypeServiceImpl implements StreamTypeService
                 streamType = eventTypes[i];
                 foundCount++;
                 foundIndex = index;
+
+                // If the property could be resolved from stream 0 then we don't need to look further
+                if ((i == 0) && isStreamZeroUnambigous)
+                {
+                    return new PropertyResolutionDescriptor(streamNames[0], eventTypes[0], propertyName, 0, streamType.getPropertyType(propertyName));
+                }
             }
             index++;
         }

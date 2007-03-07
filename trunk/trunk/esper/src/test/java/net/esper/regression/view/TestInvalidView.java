@@ -175,7 +175,7 @@ public class TestInvalidView extends TestCase
         // insert into column name incorrect
         epService.getEPAdministrator().createEQL("insert into Xyz select 1 as dodi from java.lang.String");
         exceptionText = getStatementExceptionView("select pox from pattern[Xyz(yodo=4)]");
-        assertEquals("Property named 'yodo' not found in selected stream of type java.util.Map [select pox from pattern[Xyz(yodo=4)]]", exceptionText);
+        assertEquals("Property named 'yodo' is not valid in any stream [select pox from pattern[Xyz(yodo=4)]]", exceptionText);
     }
 
     public void testInvalidView()

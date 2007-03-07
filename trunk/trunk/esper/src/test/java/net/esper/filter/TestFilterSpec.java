@@ -62,7 +62,7 @@ public class TestFilterSpec extends TestCase
     {
         List<FilterSpecParam> params = SupportFilterSpecBuilder.buildList(new Object[]
                                     { "intPrimitive", FilterOperator.EQUAL, 2 });
-        params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive"));
+        params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive", false, Double.class));
         FilterSpec filterSpec = new FilterSpec(eventType, params);
 
         SupportBean eventBean = new SupportBean();

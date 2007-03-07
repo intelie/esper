@@ -168,8 +168,8 @@ caseExpr
 	;
 	
 inExpr
-	: #(IN_SET valueExpr (LPAREN|LBRACK) valueExpr valueExpr (valueExpr)* (RPAREN|RBRACK))
-	| #(NOT_IN_SET valueExpr (LPAREN|LBRACK) valueExpr valueExpr (valueExpr)* (RPAREN|RBRACK))
+	: #(IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK))
+	| #(NOT_IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK))
 	| #(IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK))
 	| #(NOT_IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK))
 	;

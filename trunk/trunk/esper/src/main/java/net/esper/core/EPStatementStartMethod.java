@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Starts and provides the stop method for EQL statements.
  */
-public class EPStmtStartMethod
+public class EPStatementStartMethod
 {
     private final StatementSpecCompiled statementSpec;
     private final String eqlStatement;
@@ -55,7 +55,7 @@ public class EPStmtStartMethod
      * @param services is the service instances for dependency injection
      * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
-    public EPStmtStartMethod(StatementSpecCompiled statementSpec,
+    public EPStatementStartMethod(StatementSpecCompiled statementSpec,
                                 String eqlStatement,
                                 EPServicesContext services,
                                 EPStatementHandle epStatementHandle)
@@ -296,7 +296,6 @@ public class EPStmtStartMethod
         return streamNames;
     }
 
-    @SuppressWarnings({"StringContatenationInLoop"})
     private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate)
     {
         if (statementSpec.getFilterRootNode() != null)
@@ -407,5 +406,5 @@ public class EPStmtStartMethod
         return finalView;
     }
 
-    private static final Log log = LogFactory.getLog(EPStmtStartMethod.class);
+    private static final Log log = LogFactory.getLog(EPStatementStartMethod.class);
 }

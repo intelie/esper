@@ -68,6 +68,12 @@ public class IndexFactory
             return index;
         }
 
+        // Handle all boolean expression
+        if (filterOperator == FilterOperator.BOOLEAN_EXPRESSION)
+        {
+            index = new FilterParamIndexBooleanExpr(propertyName, eventType);
+            return index;
+        }
         throw new IllegalArgumentException("Cannot create filter index instance for filter operator " + filterOperator);
     }
 }

@@ -1,14 +1,13 @@
 package net.esper.regression.view;
 
 import junit.framework.TestCase;
+import net.esper.client.EPException;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
-import net.esper.client.EPException;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.bean.SupportBeanNumeric;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportBean_S0;
+import net.esper.support.bean.SupportBeanNumeric;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestFilterExpressions extends TestCase
 {
@@ -22,6 +21,16 @@ public class TestFilterExpressions extends TestCase
         epService.initialize();
     }
 
+    public void testExpression()
+    {
+        String expr = "select * from " + SupportBean.class.getName() + "(intBoxed*intPrimitive > 20)";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(expr);
+        stmt.addListener(testListener);
+
+        sendBean(5, 5);
+        assertTrue(testListener.getAndClearIsInvoked());
+    }
+    
     // TODO: test connect expressions by and and use comma and mixed
     // TODO: test all different filters
     // TODO: test range "a in [3:4]" in a where clause
@@ -33,14 +42,24 @@ public class TestFilterExpressions extends TestCase
     // TODO: right exception throw when errors occur?
     // TODO: test prev and prior
     // TODO: check error message in where clause expression not returning boolean compared to filter expression
+    // TODO: function versus event propety resolution
+    // TODO: not returning boolean in filter function
+    // TODO: break or-expressions into 2-and
+    // TODO: break and with and-inside
+    // TODO: between works with open/closed ranges
+    // TODO: test duplicate filter properties
+    // TODO: test filters with multiple expressions
+    // TODO: test expressions in all situations
+    // TODO: test coercion that IN and others do
+    // TODO: test A(ax in (ay, az)) 
     
     public void testExpressionReversed()
     {
-        String expr = "select * from " + SupportBean.class.getName() + "(5 = intPrimitive)";
+        String expr = "select * from " + SupportBean.class.getName() + "(5 = intBoxed)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(expr);
         stmt.addListener(testListener);
 
-        sendBean("a", 5);
+        sendBean("intBoxed", 5);
         assertTrue(testListener.getAndClearIsInvoked());
     }
 
@@ -48,6 +67,14 @@ public class TestFilterExpressions extends TestCase
     {
         SupportBean event = new SupportBean();
         event.setIntPrimitive(intPrimitive);
+        epService.getEPRuntime().sendEvent(event);
+    }
+
+    private void sendBean(int intPrimitive, double doublePrimtive)
+    {
+        SupportBean event = new SupportBean();
+        event.setIntPrimitive(intPrimitive);
+        event.setDoublePrimitive(doublePrimtive);
         epService.getEPRuntime().sendEvent(event);
     }
 
@@ -71,17 +98,21 @@ public class TestFilterExpressions extends TestCase
         {
             event.setString((String) value);
         }
-        if (fieldName.equals("boolPrimitive"))
+        else if (fieldName.equals("boolPrimitive"))
         {
             event.setBoolPrimitive((Boolean) value);
         }
-        if (fieldName.equals("intBoxed"))
+        else if (fieldName.equals("intBoxed"))
         {
             event.setIntBoxed((Integer) value);
         }
-        if (fieldName.equals("longBoxed"))
+        else if (fieldName.equals("longBoxed"))
         {
             event.setLongBoxed((Long) value);
+        }
+        else
+        {
+            throw new IllegalArgumentException("field name not known");
         }
         epService.getEPRuntime().sendEvent(event);
     }

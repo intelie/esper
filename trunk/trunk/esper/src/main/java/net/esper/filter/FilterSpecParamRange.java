@@ -35,18 +35,21 @@ public final class FilterSpecParamRange extends FilterSpecParam
         }
     }
 
-    public final Class getFilterValueClass(Map<String, EventType> taggedEventTypes)
-    {
-        min.checkType(taggedEventTypes);
-        max.checkType(taggedEventTypes);
-        return DoubleRange.class;
-    }
-
     public final Object getFilterValue(MatchedEventMap matchedEvents)
     {
         double begin = min.getFilterValue(matchedEvents);
         double end = max.getFilterValue(matchedEvents);
         return new DoubleRange(begin, end);
+    }
+
+    public FilterSpecParamRangeValue getMin()
+    {
+        return min;
+    }
+
+    public FilterSpecParamRangeValue getMax()
+    {
+        return max;
     }
 
     public final String toString()

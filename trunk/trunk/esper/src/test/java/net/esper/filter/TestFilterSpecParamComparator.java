@@ -84,7 +84,7 @@ public class TestFilterSpecParamComparator extends TestCase
         }
 
         assertEquals(FilterOperator.EQUAL, sorted.first().getFilterOperator());
-        assertEquals(FilterOperator.NOT_EQUAL, sorted.last().getFilterOperator());
+        assertEquals(FilterOperator.BOOLEAN_EXPRESSION, sorted.last().getFilterOperator());
 
         log.debug(".testCompareAll " + Arrays.toString(sorted.toArray()));
     }

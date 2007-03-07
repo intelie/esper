@@ -1,10 +1,8 @@
 package net.esper.filter;
 
-import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.pattern.MatchedEventMap;
-
-import java.util.Map;
+import net.esper.util.JavaClassHelper;
 
 /**
  * Event property value in a list of values following an in-keyword.
@@ -13,34 +11,20 @@ public class InSetOfValuesEventProp implements FilterSpecParamInValue
 {
     private final String resultEventAsName;
     private final String resultEventProperty;
+    private final boolean isMustCoerce;
+    private final Class coercionType;
 
     /**
      * Ctor.
      * @param resultEventAsName is the event tag
      * @param resultEventProperty is the event property name
      */
-    public InSetOfValuesEventProp(String resultEventAsName, String resultEventProperty)
+    public InSetOfValuesEventProp(String resultEventAsName, String resultEventProperty, boolean isMustCoerce, Class coercionType)
     {
         this.resultEventAsName = resultEventAsName;
         this.resultEventProperty = resultEventProperty;
-    }
-
-    public final Class validate(Map<String, EventType> taggedEventTypes)
-    {
-        EventType type = taggedEventTypes.get(resultEventAsName);
-        if (type == null)
-        {
-            throw new IllegalStateException("Matching event type named " +
-                    '\'' + resultEventAsName + "' not found in event result set");
-        }
-
-        Class propertyClass = type.getPropertyType(resultEventProperty);
-        if (propertyClass == null)
-        {
-            throw new IllegalStateException("Property " + resultEventProperty + " of event type " +
-                    '\'' + resultEventAsName + "' not found");
-        }
-        return propertyClass;
+        this.coercionType = coercionType;
+        this.isMustCoerce = isMustCoerce;
     }
 
     public final Object getFilterValue(MatchedEventMap matchedEvents)
@@ -58,6 +42,11 @@ public class InSetOfValuesEventProp implements FilterSpecParamInValue
             throw new IllegalStateException("Event property named " +
                     '\'' + resultEventAsName + '.' + resultEventProperty + "' returned null value");
         }
+        // Coerce if necessary
+        if (isMustCoerce)
+        {
+            value = JavaClassHelper.coerceBoxed((Number) value, coercionType);
+        }        
         return value;
     }
 

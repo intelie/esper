@@ -13,6 +13,7 @@ import net.esper.pattern.observer.ObserverFactory;
 import net.esper.type.*;
 import net.esper.util.ConstructorHelper;
 import net.esper.view.ViewSpec;
+import net.esper.filter.FilterOperator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -975,15 +976,31 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
         log.debug(".leaveInRange");
 
-        ExprInNode inNode = new ExprInNode(node.getType() == NOT_IN_SET);
-        astExprNodeMap.put(node, inNode);
+        // The second node must be braces
+        AST bracesNode = node.getFirstChild().getNextSibling();
+        if ((bracesNode.getType() != LBRACK) && ((bracesNode.getType() != LPAREN)))
+        {
+            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.getType() + "'");
+        }
+        boolean isLowInclude = bracesNode.getType() == LBRACK;
+
+        // The fifth node must be braces
+        bracesNode = bracesNode.getNextSibling().getNextSibling().getNextSibling();
+        if ((bracesNode.getType() != RBRACK) && ((bracesNode.getType() != RPAREN)))
+        {
+            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.getType() + "'");
+        }
+        boolean isHighInclude = bracesNode.getType() == RBRACK;
+
+        ExprBetweenNode betweenNode = new ExprBetweenNode(isLowInclude, isHighInclude, node.getType() == NOT_IN_RANGE);
+        astExprNodeMap.put(node, betweenNode);
     }
 
     private void leaveBetween(AST node)
     {
         log.debug(".leaveBetween");
 
-        ExprBetweenNode betweenNode = new ExprBetweenNode(false, false, node.getType() == NOT_BETWEEN); //TODO included or not
+        ExprBetweenNode betweenNode = new ExprBetweenNode(true, true, node.getType() == NOT_BETWEEN);
         astExprNodeMap.put(node, betweenNode);
     }
 

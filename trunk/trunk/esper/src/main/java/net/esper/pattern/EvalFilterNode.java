@@ -59,6 +59,11 @@ public final class EvalFilterNode extends EvalNode
         return filterSpec;
     }
 
+    public void setFilterSpec(FilterSpec filterSpec)
+    {
+        this.filterSpec = filterSpec;
+    }
+
     /**
      * Returns the tag for any matching events to this filter, or null since tags are optional.
      * @return tag string for event

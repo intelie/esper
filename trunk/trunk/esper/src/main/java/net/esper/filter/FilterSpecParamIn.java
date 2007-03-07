@@ -1,11 +1,8 @@
 package net.esper.filter;
 
-import net.esper.event.EventType;
-import net.esper.pattern.MatchedEventMap;
 import net.esper.collection.MultiKeyUntyped;
-import net.esper.util.JavaClassHelper;
+import net.esper.pattern.MatchedEventMap;
 
-import java.util.Map;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,22 +53,6 @@ public final class FilterSpecParamIn extends FilterSpecParam
             throw new IllegalArgumentException("Illegal filter operator " + filterOperator + " supplied to " +
                     "in-values filter parameter");
         }
-    }
-
-    public final Class getFilterValueClass(Map<String, EventType> taggedEventTypes)
-    {
-        for (FilterSpecParamInValue valuePlaceholder : listOfValues)
-        {
-            Class clazz = valuePlaceholder.validate(taggedEventTypes);
-            Class clazzBoxed = JavaClassHelper.getBoxedType(clazz);
-            Class propBoxed = JavaClassHelper.getBoxedType(propertyType); 
-            if (clazzBoxed != propBoxed)
-            {
-                throw new IllegalStateException("Automatic conversion of type " + clazz + " to type " + propertyType + " not allowed");
-            }
-        }
-
-        return MultiKeyUntyped.class;
     }
 
     public final Object getFilterValue(MatchedEventMap matchedEvents)

@@ -33,7 +33,7 @@ public class ExprConcatNode extends ExprNode
             if (childType != String.class)
             {
                 throw new ExprValidationException("Implicit conversion from datatype '" +
-                        childType.getName() +
+                        childType.getSimpleName() +
                         "' to string is not allowed");
             }
         }

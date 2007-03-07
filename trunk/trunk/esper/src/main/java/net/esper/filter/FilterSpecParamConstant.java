@@ -32,16 +32,12 @@ public final class FilterSpecParamConstant extends FilterSpecParam
         }
     }
 
-    public Class getFilterValueClass(Map<String, EventType> taggedEventTypes)
+    public Object getFilterValue(MatchedEventMap matchedEvents)
     {
-        if (filterConstant == null)
-        {
-            return null;
-        }
-        return filterConstant.getClass();
+        return filterConstant;
     }
 
-    public Object getFilterValue(MatchedEventMap matchedEvents)
+    public Object getFilterConstant()
     {
         return filterConstant;
     }

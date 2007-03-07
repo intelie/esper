@@ -167,7 +167,7 @@ public class ExprIdentNode extends ExprNode
             }
 
             // resolves without a stream name, return descriptor and null stream name
-            return new Pair<PropertyResolutionDescriptor, String>(propertyInfo, null);
+            return new Pair<PropertyResolutionDescriptor, String>(propertyInfo, propertyInfo.getStreamName());
         }
 
         // try to resolve the property name and stream name as it is (ie. stream name as a stream name)

@@ -242,6 +242,5 @@ public enum FilterOperator
         {
             return FilterOperator.RANGE_OPEN;
         }
-
     }
 }

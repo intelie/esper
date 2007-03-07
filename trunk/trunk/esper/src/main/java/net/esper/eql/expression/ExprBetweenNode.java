@@ -27,6 +27,21 @@ public class ExprBetweenNode extends ExprNode
         isNotBetween = notBetween;
     }
 
+    public boolean isLowEndpointIncluded()
+    {
+        return isLowEndpointIncluded;
+    }
+
+    public boolean isHighEndpointIncluded()
+    {
+        return isHighEndpointIncluded;
+    }
+
+    public boolean isNotBetween()
+    {
+        return isNotBetween;
+    }
+
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 3)
@@ -55,19 +70,19 @@ public class ExprBetweenNode extends ExprNode
                 if (!JavaClassHelper.isNumeric(typeOne))
                 {
                     throw new ExprValidationException("Implicit conversion from datatype '" +
-                            typeOne.getName() +
+                            typeOne.getSimpleName() +
                             "' to numeric is not allowed");
                 }
                 if (!JavaClassHelper.isNumeric(typeTwo))
                 {
                     throw new ExprValidationException("Implicit conversion from datatype '" +
-                            typeTwo.getName() +
+                            typeTwo.getSimpleName() +
                             "' to numeric is not allowed");
                 }
                 if (!JavaClassHelper.isNumeric(typeThree))
                 {
                     throw new ExprValidationException("Implicit conversion from datatype '" +
-                            typeThree.getName() +
+                            typeThree.getSimpleName() +
                             "' to numeric is not allowed");
                 }
             }

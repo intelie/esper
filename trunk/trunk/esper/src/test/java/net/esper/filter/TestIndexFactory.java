@@ -51,6 +51,12 @@ public class TestIndexFactory extends TestCase
         assertTrue(index instanceof FilterParamIndexIn);
         index = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.NOT_IN_LIST_OF_VALUES);
         assertTrue(index instanceof FilterParamIndexNotIn);
+
+        // Create a boolean-expression-index
+        index = IndexFactory.createIndex(eventType, "boolean", FilterOperator.BOOLEAN_EXPRESSION);
+        assertTrue(index instanceof FilterParamIndexBooleanExpr);
+        index = IndexFactory.createIndex(eventType, "boolean", FilterOperator.BOOLEAN_EXPRESSION);
+        assertTrue(index instanceof FilterParamIndexBooleanExpr);
     }
 }
 

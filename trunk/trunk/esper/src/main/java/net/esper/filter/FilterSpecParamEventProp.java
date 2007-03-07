@@ -1,10 +1,8 @@
 package net.esper.filter;
 
-import net.esper.pattern.MatchedEventMap;
 import net.esper.event.EventBean;
-import net.esper.event.EventType;
-
-import java.util.Map;
+import net.esper.pattern.MatchedEventMap;
+import net.esper.util.JavaClassHelper;
 
 /**
  * This class represents a filter parameter containing a reference to another event's property
@@ -14,6 +12,8 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
 {
     private final String resultEventAsName;
     private final String resultEventProperty;
+    private final boolean isMustCoerce;
+    private final Class coercionType;
 
     /**
      * Constructor.
@@ -24,12 +24,14 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
      * @throws IllegalArgumentException if an operator was supplied that does not take a single constant value
      */
     public FilterSpecParamEventProp(String propertyName, FilterOperator filterOperator, String resultEventAsName,
-                                    String resultEventProperty)
+                                    String resultEventProperty, boolean isMustCoerce, Class coercionType)
         throws IllegalArgumentException
     {
         super(propertyName, filterOperator);
         this.resultEventAsName = resultEventAsName;
         this.resultEventProperty = resultEventProperty;
+        this.isMustCoerce = isMustCoerce;
+        this.coercionType = coercionType;
 
         if (filterOperator.isRangeOperator())
         {
@@ -56,17 +58,6 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
         return resultEventProperty;
     }
 
-    public Class getFilterValueClass(Map<String, EventType> taggedEventTypes)
-    {
-        EventType type = taggedEventTypes.get(resultEventAsName);
-        if (type == null)
-        {
-            throw new IllegalStateException("Event named '" +
-                    '\'' + resultEventAsName + "' not found in event pattern result set");
-        }
-        return type.getPropertyType(resultEventProperty);
-    }    
-
     public Object getFilterValue(MatchedEventMap matchedEvents)
     {
         EventBean event = matchedEvents.getMatchingEvent(resultEventAsName);
@@ -77,6 +68,12 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
         }
 
         Object value = event.get(resultEventProperty);
+
+        // Coerce if necessary
+        if (isMustCoerce)
+        {
+            value = JavaClassHelper.coerceBoxed((Number) value, coercionType);
+        }
         return value;
     }
 

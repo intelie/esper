@@ -18,7 +18,12 @@ public class TestViewPlugin extends TestCase
         configuration.addEventTypeAlias("A", SupportMarketDataBean.class);
         configuration.addPlugInView("mynamespace", "trendspotter", MyTrendSpotterViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "invalid", String.class.getName());
-        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService = EPServiceProviderManager.getProvider("TestViewPlugin", configuration);
+        epService.initialize();
+    }
+
+    public void tearDown()
+    {
         epService.initialize();
     }
 
