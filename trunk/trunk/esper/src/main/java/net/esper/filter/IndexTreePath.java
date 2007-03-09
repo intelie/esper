@@ -11,14 +11,14 @@ import java.util.Arrays;
  */
 public class IndexTreePath
 {
-    private final LinkedList<Pair<FilterParamIndex, Object>> indizes;
+    private final LinkedList<Pair<FilterParamIndexBase, Object>> indizes;
 
     /**
      * Constructor.
      */
     public IndexTreePath()
     {
-        indizes = new LinkedList<Pair<FilterParamIndex, Object>>();
+        indizes = new LinkedList<Pair<FilterParamIndexBase, Object>>();
     }
 
     /**
@@ -26,16 +26,16 @@ public class IndexTreePath
      * @param index to add
      * @param filteredForValue is the value the index filters
      */
-    public final void add(FilterParamIndex index, Object filteredForValue)
+    public final void add(FilterParamIndexBase index, Object filteredForValue)
     {
-        indizes.add(new Pair<FilterParamIndex, Object>(index, filteredForValue));
+        indizes.add(new Pair<FilterParamIndexBase, Object>(index, filteredForValue));
     }
 
     /**
      * Remove and return first index.
      * @return first index
      */
-    public final Pair<FilterParamIndex, Object> removeFirst()
+    public final Pair<FilterParamIndexBase, Object> removeFirst()
     {
         if (!indizes.isEmpty())
         {

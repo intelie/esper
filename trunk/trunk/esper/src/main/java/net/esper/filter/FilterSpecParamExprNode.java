@@ -2,13 +2,19 @@ package net.esper.filter;
 
 import net.esper.eql.expression.ExprNode;
 import net.esper.pattern.MatchedEventMap;
+import net.esper.event.EventType;
+import net.esper.event.EventBean;
+
+import java.util.LinkedHashMap;
 
 /**
- * This class represents an arbitrary expression node returning a boolean value as a filter parameter in an {@link FilterSpec} filter specification.
+ * This class represents an arbitrary expression node returning a boolean value as a filter parameter in an {@link FilterSpecCompiled} filter specification.
  */
 public final class FilterSpecParamExprNode extends FilterSpecParam
 {
-    private ExprNode exprNode;
+    private final ExprNode exprNode;
+    private final ExprNodeAdapter adapter;
+    private final LinkedHashMap<String, EventType> taggedEventTypes;
 
     /**
      * Ctor.
@@ -18,7 +24,8 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
      */
     public FilterSpecParamExprNode(String propertyName,
                              FilterOperator filterOperator,
-                             ExprNode exprNode)
+                             ExprNode exprNode,
+                             LinkedHashMap<String, EventType> taggedEventTypes)
         throws IllegalArgumentException
     {
         super(propertyName, filterOperator);
@@ -27,6 +34,9 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
             throw new IllegalArgumentException("Invalid filter operator for filter expression node");
         }
         this.exprNode = exprNode;
+        this.taggedEventTypes = taggedEventTypes;
+
+        adapter = new ExprNodeAdapter(exprNode);
     }
 
     public ExprNode getExprNode()
@@ -34,10 +44,25 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
         return exprNode;
     }
 
+    public LinkedHashMap<String, EventType> getTaggedEventTypes()
+    {
+        return taggedEventTypes;
+    }
+
     public final Object getFilterValue(MatchedEventMap matchedEvents)
     {
-        // this is what the index gets
-        return null;
+        if (taggedEventTypes != null)
+        {
+            EventBean[] events = new EventBean[taggedEventTypes.size() + 1];
+            int count = 1;
+            for (String tag : taggedEventTypes.keySet())
+            {
+                events[count] = matchedEvents.getMatchingEvent(tag);
+                count++;
+            }
+            adapter.setPrototype(events);
+        }
+        return adapter;
     }
 
     public final String toString()

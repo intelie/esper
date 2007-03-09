@@ -163,7 +163,9 @@ public class EPAdministratorImpl implements EPAdministrator
         }
         catch (RuntimeException ex)
         {
-            throw new EPStatementException("Unexpected error compiling statement:" + ex.getMessage(), eqlStatement);
+            String text = "Unexpected error compiling statement";
+            log.error(".compile " + text, ex);
+            throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eqlStatement);
         }
 
         return new StatementSpecCompiled(

@@ -13,7 +13,7 @@ import net.esper.event.EventType;
  * Index for filter parameter constants to match using the equals (=) operator.
  * The implementation is based on a regular HashMap.
  */
-public final class FilterParamIndexEquals extends FilterParamIndex
+public final class FilterParamIndexEquals extends FilterParamIndexPropBase
 {
     private final Map<Object, EventEvaluator> constantsMap;
     private final ReadWriteLock constantsMapRWLock;

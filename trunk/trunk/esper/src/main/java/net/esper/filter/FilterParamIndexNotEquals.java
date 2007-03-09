@@ -5,7 +5,6 @@ import net.esper.event.EventBean;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Collection;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -17,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
  * Index for filter parameter constants to match using the equals (=) operator.
  * The implementation is based on a regular HashMap.
  */
-public final class FilterParamIndexNotEquals extends FilterParamIndex
+public final class FilterParamIndexNotEquals extends FilterParamIndexPropBase
 {
     private final Map<Object, EventEvaluator> constantsMap;
     private final ReadWriteLock constantsMapRWLock;

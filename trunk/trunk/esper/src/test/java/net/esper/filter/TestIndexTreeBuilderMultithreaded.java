@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class TestIndexTreeBuilderMultithreaded extends TestCase
 {
-    private Vector<FilterSpec> testFilterSpecs;
+    private Vector<FilterSpecCompiled> testFilterSpecs;
     private Vector<EventBean> matchedEvents;
     private Vector<EventBean> unmatchedEvents;
 
@@ -40,7 +40,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         filterCallbacks = new LinkedList<FilterHandle>();
         pathsAddedTo = new LinkedList<IndexTreePath>();
 
-        testFilterSpecs = new Vector<FilterSpec>();
+        testFilterSpecs = new Vector<FilterSpecCompiled>();
         matchedEvents = new Vector<EventBean>();
         unmatchedEvents = new Vector<EventBean>();
 
@@ -91,7 +91,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
     public void testVerifyFilterSpecSet()
     {
         // Add all the above filter definitions
-        for (FilterSpec filterSpec : testFilterSpecs)
+        for (FilterSpecCompiled filterSpec : testFilterSpecs)
         {
             FilterValueSet filterValues = filterSpec.getValueSet(null);
             FilterHandle callback = new SupportFilterHandle();
@@ -190,7 +190,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         }
     }
 
-    private FilterSpec makeSpec(Object[] args)
+    private FilterSpecCompiled makeSpec(Object[] args)
     {
         return SupportFilterSpecBuilder.build(eventType, args);
     }

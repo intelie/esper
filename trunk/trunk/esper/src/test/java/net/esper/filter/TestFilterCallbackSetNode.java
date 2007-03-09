@@ -41,7 +41,7 @@ public class TestFilterCallbackSetNode extends TestCase
         assertFalse(testNode.isEmpty());
 
         // Add an indexOne
-        FilterParamIndex indexOne = new SupportFilterParamIndex();
+        FilterParamIndexBase indexOne = new SupportFilterParamIndex();
         testNode.add(indexOne);
 
         // Check after add
@@ -73,7 +73,7 @@ public class TestFilterCallbackSetNode extends TestCase
         matches.clear();
 
         // Create, add and populate an index node
-        FilterParamIndex index = new FilterParamIndexEquals("myString", eventBean.getEventType());
+        FilterParamIndexBase index = new FilterParamIndexEquals("myString", eventBean.getEventType());
         testNode.add(index);
         index.put("DepositEvent_1", testEvaluator);
 

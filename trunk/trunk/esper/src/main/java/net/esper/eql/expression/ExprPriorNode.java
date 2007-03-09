@@ -44,6 +44,10 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
         streamNumber = identNode.getStreamId();
         resultType = this.getChildNodes().get(1).getType();
 
+        if (viewResourceDelegate == null)
+        {
+            throw new ExprValidationException("Prior function cannot be used in this context");
+        }
         // Request a callback that provides the required access
         if (!viewResourceDelegate.requestCapability(streamNumber, new ViewCapPriorEventAccess(constantIndexNumber), this))
         {

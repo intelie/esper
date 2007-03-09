@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Mapping of event type to a tree-like structure
- * containing filter parameter constants in indexes {@link FilterParamIndex} and filter callbacks in {@link FilterHandleSetNode}.
+ * containing filter parameter constants in indexes {@link FilterParamIndexBase} and filter callbacks in {@link FilterHandleSetNode}.
  * <p>
  * This class evaluates events for the purpose of filtering by (1) looking up the event's {@link EventType}
  * and (2) asking the subtree for this event type to evaluate the event.

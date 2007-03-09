@@ -16,10 +16,9 @@ import java.util.concurrent.locks.ReadWriteLock;
  * <p>
  * Implementations make sure that the type of the Object constant in get and put calls matches the event property type.
  */
-public abstract class FilterParamIndex implements EventEvaluator
+public abstract class FilterParamIndexPropBase extends FilterParamIndexBase
 {
     private final String propertyName;
-    private final FilterOperator filterOperator;
     private final EventPropertyGetter getter;
     private final Class propertyBoxedType;
 
@@ -29,13 +28,12 @@ public abstract class FilterParamIndex implements EventEvaluator
      * @param filterOperator is the type of comparison performed.
      * @param eventType is the event type the index will handle.
      */
-    public FilterParamIndex(String propertyName, FilterOperator filterOperator, EventType eventType)
+    public FilterParamIndexPropBase(String propertyName, FilterOperator filterOperator, EventType eventType)
     {
+        super(filterOperator);
         this.propertyName = propertyName;
-        this.filterOperator = filterOperator;
-
-        getter = eventType.getGetter(propertyName);
-        propertyBoxedType = JavaClassHelper.getBoxedType(eventType.getPropertyType(propertyName));
+        this.getter = eventType.getGetter(propertyName);
+        this.propertyBoxedType = JavaClassHelper.getBoxedType(eventType.getPropertyType(propertyName));
         if (getter == null)
         {
             throw new IllegalArgumentException("Property named '" + propertyName + "' not valid for event type ");
@@ -96,15 +94,6 @@ public abstract class FilterParamIndex implements EventEvaluator
     }
 
     /**
-     * Returns the filter operator that the index matches for.
-     * @return filter operator
-     */
-    public final FilterOperator getFilterOperator()
-    {
-        return filterOperator;
-    }
-
-    /**
      * Returns getter for property.
      * @return property value getter
      */
@@ -124,8 +113,8 @@ public abstract class FilterParamIndex implements EventEvaluator
 
     public final String toString()
     {
-        return "propName=" + propertyName +
-               " filterOperator=" + filterOperator +
+        return super.toString() +
+               " propName=" + propertyName +
                " propertyBoxedType=" + propertyBoxedType.getName();
     }
 }

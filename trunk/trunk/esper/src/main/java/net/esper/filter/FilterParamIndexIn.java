@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
  * (i.e. multiple possible exact matches).
  * The implementation is based on a regular HashMap.
  */
-public final class FilterParamIndexIn extends FilterParamIndex
+public final class FilterParamIndexIn extends FilterParamIndexPropBase
 {
     private final Map<Object, List<EventEvaluator>> constantsMap;
     private final Map<MultiKeyUntyped, EventEvaluator> evaluatorsMap;

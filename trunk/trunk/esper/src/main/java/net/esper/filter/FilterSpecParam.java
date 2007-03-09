@@ -3,7 +3,7 @@ package net.esper.filter;
 import net.esper.pattern.MatchedEventMap;
 
 /**
- * This class represents one filter parameter in an {@link FilterSpec} filter specification.
+ * This class represents one filter parameter in an {@link FilterSpecCompiled} filter specification.
  * <p> Each filerting parameter has an attribute name and operator type.
  */
 public abstract class FilterSpecParam

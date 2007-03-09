@@ -1,9 +1,7 @@
 package net.esper.filter;
 
-import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
-import net.esper.eql.expression.ExprNode;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -15,19 +13,18 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Index that simply maintains a list of boolean expressions.
  */
-public final class FilterParamIndexBooleanExpr extends FilterParamIndex
+public final class FilterParamIndexBooleanExpr extends FilterParamIndexBase
 {
     private final Map<ExprNodeAdapter, EventEvaluator> evaluatorsMap;
     private final ReadWriteLock constantsMapRWLock;
 
     /**
      * Constructs the index for multiple-exact matches.
-     * @param propertyName is the name of the event property
      * @param eventType describes the event type and is used to obtain a getter instance for the property
      */
-    public FilterParamIndexBooleanExpr(String propertyName, EventType eventType)
+    public FilterParamIndexBooleanExpr(EventType eventType)
     {
-        super(propertyName, FilterOperator.BOOLEAN_EXPRESSION, eventType);
+        super(FilterOperator.BOOLEAN_EXPRESSION);
 
         evaluatorsMap = new HashMap<ExprNodeAdapter, EventEvaluator>();
         constantsMapRWLock = new ReentrantReadWriteLock();

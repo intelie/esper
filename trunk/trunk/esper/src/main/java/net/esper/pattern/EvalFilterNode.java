@@ -1,6 +1,6 @@
 package net.esper.pattern;
 
-import net.esper.filter.FilterSpec;
+import net.esper.filter.FilterSpecCompiled;
 import net.esper.eql.spec.FilterSpecRaw;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -12,7 +12,7 @@ public final class EvalFilterNode extends EvalNode
 {
     private final FilterSpecRaw rawFilterSpec;
     private final String eventAsName;
-    private FilterSpec filterSpec;
+    private FilterSpecCompiled filterSpec;
 
     public final EvalStateNode newState(Evaluator parentNode,
                                                  MatchedEventMap beginState,
@@ -54,12 +54,12 @@ public final class EvalFilterNode extends EvalNode
      * Returns filter specification.
      * @return filter definition
      */
-    public final FilterSpec getFilterSpec()
+    public final FilterSpecCompiled getFilterSpec()
     {
         return filterSpec;
     }
 
-    public void setFilterSpec(FilterSpec filterSpec)
+    public void setFilterSpec(FilterSpecCompiled filterSpec)
     {
         this.filterSpec = filterSpec;
     }

@@ -2,7 +2,7 @@ package net.esper.pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.filter.FilterSpec;
+import net.esper.filter.FilterSpecCompiled;
 import net.esper.filter.FilterValueSet;
 import net.esper.filter.FilterHandleCallback;
 import net.esper.event.EventBean;
@@ -13,7 +13,7 @@ import net.esper.core.EPStatementHandleCallback;
  */
 public final class EvalFilterStateNode extends EvalStateNode implements FilterHandleCallback
 {
-    private final FilterSpec filterSpec;
+    private final FilterSpecCompiled filterSpec;
     private final String eventAsName;
     private final MatchedEventMap beginState;
     private final PatternContext context;
@@ -30,7 +30,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
      * @param context contains handles to services required
      */
     public EvalFilterStateNode(Evaluator parentNode,
-                                     FilterSpec filterSpec,
+                                     FilterSpecCompiled filterSpec,
                                      String eventAsName,
                                      MatchedEventMap beginState,
                                      PatternContext context)

@@ -3,7 +3,7 @@ package net.esper.filter;
 import net.esper.event.EventType;
 
 /**
- * Factory for {@link FilterParamIndex} instances based on event property name and filter operator type.
+ * Factory for {@link FilterParamIndexBase} instances based on event property name and filter operator type.
  */
 public class IndexFactory
 {
@@ -16,9 +16,9 @@ public class IndexFactory
      * @param filterOperator is the type of index to use
      * @return the proper index based on the filter operator type
      */
-    public static FilterParamIndex createIndex(EventType eventType, String propertyName, FilterOperator filterOperator)
+    public static FilterParamIndexBase createIndex(EventType eventType, String propertyName, FilterOperator filterOperator)
     {
-        FilterParamIndex index;
+        FilterParamIndexBase index;
 
         // Handle all EQUAL comparisons
         if (filterOperator == FilterOperator.EQUAL)
@@ -71,7 +71,7 @@ public class IndexFactory
         // Handle all boolean expression
         if (filterOperator == FilterOperator.BOOLEAN_EXPRESSION)
         {
-            index = new FilterParamIndexBooleanExpr(propertyName, eventType);
+            index = new FilterParamIndexBooleanExpr(eventType);
             return index;
         }
         throw new IllegalArgumentException("Cannot create filter index instance for filter operator " + filterOperator);

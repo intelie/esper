@@ -78,7 +78,7 @@ public class TestFilterParamIndexNotIn extends TestCase
         }
     }
 
-    private void verify(FilterParamIndex index, Long testValue, boolean[] expected)
+    private void verify(FilterParamIndexBase index, Long testValue, boolean[] expected)
     {
         testBean.setLongBoxed(testValue);
         index.matchEvent(testEventBean, matchesList);

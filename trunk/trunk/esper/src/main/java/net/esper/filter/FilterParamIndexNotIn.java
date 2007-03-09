@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
  * Index for filter parameter constants to match using the 'not in' operator to match against a
  * all other values then the supplied set of values.
  */
-public final class FilterParamIndexNotIn extends FilterParamIndex
+public final class FilterParamIndexNotIn extends FilterParamIndexPropBase
 {
     private final Map<Object, Set<EventEvaluator>> constantsMap;
     private final Map<MultiKeyUntyped, EventEvaluator> filterValueEvaluators;

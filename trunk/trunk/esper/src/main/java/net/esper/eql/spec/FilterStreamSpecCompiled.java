@@ -1,6 +1,6 @@
 package net.esper.eql.spec;
 
-import net.esper.filter.FilterSpec;
+import net.esper.filter.FilterSpecCompiled;
 import net.esper.view.ViewSpec;
 import net.esper.eql.spec.StreamSpecBase;
 
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class FilterStreamSpecCompiled extends StreamSpecBase implements StreamSpecCompiled
 {
-    private FilterSpec filterSpec;
+    private FilterSpecCompiled filterSpec;
 
     /**
      * Ctor.
@@ -20,7 +20,7 @@ public class FilterStreamSpecCompiled extends StreamSpecBase implements StreamSp
      * @param viewSpecs - specifies what view to use to derive data
      * @param optionalStreamName - stream name, or null if none supplied
      */
-    public FilterStreamSpecCompiled(FilterSpec filterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
+    public FilterStreamSpecCompiled(FilterSpecCompiled filterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
     {
         super(optionalStreamName, viewSpecs);
         this.filterSpec = filterSpec;
@@ -30,7 +30,7 @@ public class FilterStreamSpecCompiled extends StreamSpecBase implements StreamSp
      * Returns filter specification for which events the stream will getSelectListEvents.
      * @return filter spec
      */
-    public FilterSpec getFilterSpec()
+    public FilterSpecCompiled getFilterSpec()
     {
         return filterSpec;
     }

@@ -7,7 +7,6 @@ import net.esper.event.EventBean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.TreeMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
@@ -20,7 +19,7 @@ import org.apache.commons.logging.Log;
  * The index only accepts numeric constants. It keeps a lower and upper bounds of all constants in the index
  * for fast range checking, since the assumption is that frequently values fall within a range.
  */
-public final class FilterParamIndexCompare extends FilterParamIndex
+public final class FilterParamIndexCompare extends FilterParamIndexPropBase
 {
     private final TreeMap<Object, EventEvaluator> constantsMap;
     private final ReadWriteLock constantsMapRWLock;

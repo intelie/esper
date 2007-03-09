@@ -11,4 +11,9 @@ public class SupportStaticMethodLib
 	{
 		throw new Exception("SupportStaticMethod.exceptionThrower throwing a fit");
 	}
+
+    public static boolean isStringEquals(String value, String compareTo)
+    {
+        return value.equals(compareTo);
+    }
 }

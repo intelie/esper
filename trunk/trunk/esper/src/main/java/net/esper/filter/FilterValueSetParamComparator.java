@@ -6,7 +6,7 @@ import java.util.Comparator;
  * Sort comparator for filter parameters that sorts filter parameters according to filter operator type, and
  * within the same filter operator sorts by event property name.
  */
-public class FilterSpecParamComparator implements Comparator<FilterValueSetParam>
+public class FilterValueSetParamComparator implements Comparator<FilterValueSetParam>
 {
     /**
      * Defines the sort order among filter operator types. The idea is to sort EQUAL-type operators first
@@ -31,6 +31,7 @@ public class FilterSpecParamComparator implements Comparator<FilterValueSetParam
             FilterOperator.NOT_RANGE_OPEN,
             FilterOperator.NOT_IN_LIST_OF_VALUES,
             FilterOperator.NOT_EQUAL,
+            FilterOperator.BOOLEAN_EXPRESSION
      };
 
     private static int[] filterSortOrder;

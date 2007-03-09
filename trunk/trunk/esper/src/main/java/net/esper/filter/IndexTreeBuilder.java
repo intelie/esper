@@ -10,7 +10,7 @@ import net.esper.collection.Pair;
 import net.esper.event.EventType;
 
 /**
- * Builder manipulates a tree structure consisting of {@link FilterHandleSetNode} and {@link FilterParamIndex} instances.
+ * Builder manipulates a tree structure consisting of {@link FilterHandleSetNode} and {@link FilterParamIndexBase} instances.
  * Filters can be added to a top node (an instance of FilterHandleSetNode) via the add method. This method returns
  * an instance of {@link IndexTreePath} which represents the tree path (list of indizes) that the filter callback was
  * added to. To remove filters the same IndexTreePath instance must be passed in.
@@ -117,14 +117,14 @@ public final class IndexTreeBuilder
 
         // Need to find an existing index that matches one of the filter parameters
         currentNode.getNodeRWLock().readLock().lock();
-        Pair<FilterValueSetParam, FilterParamIndex> pair = IndexHelper.findIndex(remainingParameters, currentNode.getIndizes());
+        Pair<FilterValueSetParam, FilterParamIndexBase> pair = IndexHelper.findIndex(remainingParameters, currentNode.getIndizes());
 
         // Found an index matching a filter parameter
         if (pair != null)
         {
             remainingParameters.remove(pair.getFirst());
             Object filterForValue = pair.getFirst().getFilterForValue();
-            FilterParamIndex index = pair.getSecond();
+            FilterParamIndexBase index = pair.getSecond();
             treePathInfo.add(index, filterForValue);
             addToIndex(index, filterForValue, treePathInfo);
             currentNode.getNodeRWLock().readLock().unlock();
@@ -141,7 +141,7 @@ public final class IndexTreeBuilder
         {
             remainingParameters.remove(pair.getFirst());
             Object filterForValue = pair.getFirst().getFilterForValue();
-            FilterParamIndex index = pair.getSecond();
+            FilterParamIndexBase index = pair.getSecond();
             treePathInfo.add(index, filterForValue);
             addToIndex(index, filterForValue, treePathInfo);
             currentNode.getNodeRWLock().writeLock().unlock();
@@ -153,7 +153,7 @@ public final class IndexTreeBuilder
         FilterValueSetParam parameterPickedForIndex = remainingParameters.first();
         remainingParameters.remove(parameterPickedForIndex);
 
-        FilterParamIndex index = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
+        FilterParamIndexBase index = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
                 parameterPickedForIndex.getFilterOperator());
 
         currentNode.getIndizes().add(index);
@@ -167,7 +167,7 @@ public final class IndexTreeBuilder
     private boolean removeFromNode(FilterHandleSetNode currentNode,
                                    IndexTreePath treePathInfo)
     {
-        Pair<FilterParamIndex, Object> nextPair = treePathInfo.removeFirst();
+        Pair<FilterParamIndexBase, Object> nextPair = treePathInfo.removeFirst();
 
         // No remaining filter parameters
         if (nextPair == null)
@@ -189,7 +189,7 @@ public final class IndexTreeBuilder
         }
 
         // Remove from index
-        FilterParamIndex nextIndex = nextPair.getFirst();
+        FilterParamIndexBase nextIndex = nextPair.getFirst();
         Object filteredForValue = nextPair.getSecond();
 
         currentNode.getNodeRWLock().writeLock().lock();
@@ -223,7 +223,7 @@ public final class IndexTreeBuilder
     }
 
     // Remove filterCallback from index, returning true if index empty after removal
-    private boolean removeFromIndex(FilterParamIndex index,
+    private boolean removeFromIndex(FilterParamIndexBase index,
                                     IndexTreePath treePathInfo,
                                     Object filterForValue)
     {
@@ -256,8 +256,8 @@ public final class IndexTreeBuilder
             return (size == 0);
         }
 
-        FilterParamIndex nextIndex = (FilterParamIndex) eventEvaluator;
-        Pair<FilterParamIndex, Object> nextPair = treePathInfo.removeFirst();
+        FilterParamIndexBase nextIndex = (FilterParamIndexBase) eventEvaluator;
+        Pair<FilterParamIndexBase, Object> nextPair = treePathInfo.removeFirst();
 
         if (nextPair == null)
         {
@@ -298,15 +298,14 @@ public final class IndexTreeBuilder
      * @param filterForValue is the filter parameter value to add
      * @param treePathInfo is the specification to fill on where is was added
      */
-    private void addToIndex(FilterParamIndex index,
+    private void addToIndex(FilterParamIndexBase index,
                             Object filterForValue,
                             IndexTreePath treePathInfo)
     {
         if (log.isDebugEnabled())
         {
             log.debug(".addToIndex (" + currentThreadId + ") Adding to index " +
-                      "  property=" + index.getPropertyName() +
-                      "  opType=" + index.getFilterOperator() +
+                      index.toString() +
                       "  expressionValue=" + filterForValue);
         }
 
@@ -341,7 +340,7 @@ public final class IndexTreeBuilder
             }
 
             // The found eventEvaluator must be converted to a new FilterHandleSetNode
-            FilterParamIndex nextIndex = (FilterParamIndex) eventEvaluator;
+            FilterParamIndexBase nextIndex = (FilterParamIndexBase) eventEvaluator;
             FilterHandleSetNode newNode = new FilterHandleSetNode();
             newNode.add(nextIndex);
             index.put(filterForValue, newNode);
@@ -366,7 +365,7 @@ public final class IndexTreeBuilder
         FilterValueSetParam parameterPickedForIndex = remainingParameters.first();
         remainingParameters.remove(parameterPickedForIndex);
 
-        FilterParamIndex nextIndex = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
+        FilterParamIndexBase nextIndex = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
                 parameterPickedForIndex.getFilterOperator());
 
         index.put(filterForValue, nextIndex);
@@ -392,7 +391,7 @@ public final class IndexTreeBuilder
         }
 
         // Check if the next index matches any of the remaining filterCallback parameters
-        FilterParamIndex nextIndex = (FilterParamIndex) eventEvaluator;
+        FilterParamIndexBase nextIndex = (FilterParamIndexBase) eventEvaluator;
 
         FilterValueSetParam parameter = IndexHelper.findParameter(remainingParameters, nextIndex);
         if (parameter != null)
@@ -414,13 +413,17 @@ public final class IndexTreeBuilder
      */
     protected static SortedSet<FilterValueSetParam> copySortParameters(List<FilterValueSetParam> parameters)
     {
-        SortedSet<FilterValueSetParam> copy = new TreeSet<FilterValueSetParam>(new FilterSpecParamComparator());
+        SortedSet<FilterValueSetParam> copy = new TreeSet<FilterValueSetParam>(new FilterValueSetParamComparator());
 
         for (FilterValueSetParam parameter : parameters)
         {
             copy.add(parameter);
         }
 
+        if (copy.size() != parameters.size())
+        {
+            throw new IllegalArgumentException("Filter parameters not unique by property name and filter operator");
+        }
         return copy;
     }
 

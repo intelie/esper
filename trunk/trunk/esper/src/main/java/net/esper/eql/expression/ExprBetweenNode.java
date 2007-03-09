@@ -116,10 +116,12 @@ public class ExprBetweenNode extends ExprNode
         Object higher = it.next().evaluate(eventsPerStream, isNewData);
 
         boolean result = computer.isBetween(value, lower, higher);
+
         if (isNotBetween)
         {
             return !result;
         }
+        
         return result;
     }
 
@@ -156,21 +158,21 @@ public class ExprBetweenNode extends ExprNode
         return buffer.toString();
     }
 
-    private static ExprBetweenComp makeComputer(Class compareType)
+    private ExprBetweenComp makeComputer(Class compareType)
     {
         ExprBetweenComp computer = null;
 
         if (compareType == String.class)
         {
-            computer = new ExprBetweenCompString();
+            computer = new ExprBetweenCompString(isLowEndpointIncluded, isHighEndpointIncluded);
         }
         else if (compareType == Long.class)
         {
-            computer = new ExprBetweenCompLong();
+            computer = new ExprBetweenCompLong(isLowEndpointIncluded, isHighEndpointIncluded);
         }
         else
         {
-            computer = new ExprBetweenCompDouble();
+            computer = new ExprBetweenCompDouble(isLowEndpointIncluded, isHighEndpointIncluded);
         }
         return computer;
     }
@@ -182,6 +184,15 @@ public class ExprBetweenNode extends ExprNode
 
     private static class ExprBetweenCompString implements ExprBetweenComp
     {
+        private boolean isLowIncluded;
+        private boolean isHighIncluded;
+
+        public ExprBetweenCompString(boolean lowIncluded, boolean isHighIncluded)
+        {
+            this.isLowIncluded = lowIncluded;
+            this.isHighIncluded = isHighIncluded;
+        }
+
         public boolean isBetween(Object value, Object lower, Object upper)
         {
             if ((value == null) || (lower == null) || ((upper == null)))
@@ -194,32 +205,53 @@ public class ExprBetweenNode extends ExprNode
 
             if (upperStr.compareTo(lowerStr) < 0)
             {
-                if (valueStr.compareTo(lowerStr) > 0)
-                {
-                    return false;
-                }
-                if (valueStr.compareTo(upperStr) < 0)
+                String temp = upperStr;
+                upperStr = lowerStr;
+                lowerStr = temp;
+            }
+
+            if (valueStr.compareTo(lowerStr) < 0)
+            {
+                return false;
+            }
+            if (valueStr.compareTo(upperStr) > 0)
+            {
+                return false;
+            }
+            if (!(isLowIncluded))
+            {
+                if (valueStr.equals(lowerStr))
                 {
                     return false;
                 }
             }
-            else
+            if (!(isHighIncluded))
             {
-                if (valueStr.compareTo(lowerStr) < 0)
-                {
-                    return false;
-                }
-                if (valueStr.compareTo(upperStr) > 0)
+                if (valueStr.equals(upperStr))
                 {
                     return false;
                 }
             }
             return true;
         }
+
+        public boolean isEqualsEndpoint(Object value, Object endpoint)
+        {
+            return value.equals(endpoint);
+        }
     }
 
     private static class ExprBetweenCompDouble implements ExprBetweenComp
     {
+        private boolean isLowIncluded;
+        private boolean isHighIncluded;
+
+        public ExprBetweenCompDouble(boolean lowIncluded, boolean highIncluded)
+        {
+            isLowIncluded = lowIncluded;
+            isHighIncluded = highIncluded;
+        }
+
         public boolean isBetween(Object value, Object lower, Object upper)
         {
             if ((value == null) || (lower == null) || ((upper == null)))
@@ -232,13 +264,24 @@ public class ExprBetweenNode extends ExprNode
 
             if (lowerD > upperD)
             {
-                if (valueD <= lowerD && valueD >= upperD)
+                double temp = upperD;
+                upperD = lowerD;
+                lowerD = temp;
+            }
+            
+            if (valueD > lowerD)
+            {
+                if (valueD < upperD)
                 {
                     return true;
                 }
+                if (isHighIncluded)
+                {
+                    return valueD == upperD;
+                }
                 return false;
             }
-            if (valueD >= lowerD && valueD <= upperD)
+            if ((isLowIncluded) && (valueD == lowerD))
             {
                 return true;
             }
@@ -248,6 +291,15 @@ public class ExprBetweenNode extends ExprNode
 
     private static class ExprBetweenCompLong implements ExprBetweenComp
     {
+        private boolean isLowIncluded;
+        private boolean isHighIncluded;
+
+        public ExprBetweenCompLong(boolean lowIncluded, boolean highIncluded)
+        {
+            isLowIncluded = lowIncluded;
+            isHighIncluded = highIncluded;
+        }
+
         public boolean isBetween(Object value, Object lower, Object upper)
         {
             if ((value == null) || (lower == null) || ((upper == null)))
@@ -260,13 +312,24 @@ public class ExprBetweenNode extends ExprNode
 
             if (lowerD > upperD)
             {
-                if (valueD <= lowerD && valueD >= upperD)
+                long temp = upperD;
+                upperD = lowerD;
+                lowerD = temp;
+            }
+
+            if (valueD > lowerD)
+            {
+                if (valueD < upperD)
                 {
                     return true;
                 }
+                if (isHighIncluded)
+                {
+                    return valueD == upperD;
+                }
                 return false;
             }
-            if (valueD >= lowerD && valueD <= upperD)
+            if ((isLowIncluded) && (valueD == lowerD))
             {
                 return true;
             }

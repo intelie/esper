@@ -23,7 +23,7 @@ public class TestFilterSpec extends TestCase
 
     public void testHashCode()
     {
-        FilterSpec spec = SupportFilterSpecBuilder.build(eventType, new Object[] { "intPrimitive", FilterOperator.EQUAL, 2,
+        FilterSpecCompiled spec = SupportFilterSpecBuilder.build(eventType, new Object[] { "intPrimitive", FilterOperator.EQUAL, 2,
                                                                  "intBoxed", FilterOperator.EQUAL, 3 });
         int expectedHash = eventType.hashCode() ^ "intPrimitive".hashCode() ^ "intBoxed".hashCode();
         assertEquals(expectedHash, spec.hashCode());
@@ -41,10 +41,10 @@ public class TestFilterSpec extends TestCase
             { },
             };
 
-        Vector<FilterSpec> specVec = new Vector<FilterSpec>();
+        Vector<FilterSpecCompiled> specVec = new Vector<FilterSpecCompiled>();
         for (Object[] param : paramList)
         {
-            FilterSpec spec = SupportFilterSpecBuilder.build(eventType, param);
+            FilterSpecCompiled spec = SupportFilterSpecBuilder.build(eventType, param);
             specVec.add(spec);
         }
 
@@ -63,7 +63,7 @@ public class TestFilterSpec extends TestCase
         List<FilterSpecParam> params = SupportFilterSpecBuilder.buildList(new Object[]
                                     { "intPrimitive", FilterOperator.EQUAL, 2 });
         params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive", false, Double.class));
-        FilterSpec filterSpec = new FilterSpec(eventType, params);
+        FilterSpecCompiled filterSpec = new FilterSpecCompiled(eventType, params);
 
         SupportBean eventBean = new SupportBean();
         eventBean.setDoublePrimitive(999.999);

@@ -17,11 +17,11 @@ public class TestIndexFactory extends TestCase
     public void testCreateIndex()
     {
         // Create a "greater" index
-        FilterParamIndex index = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
+        FilterParamIndexBase index = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
 
         assertTrue(index != null);
         assertTrue(index instanceof FilterParamIndexCompare);
-        assertTrue(index.getPropertyName().equals("intPrimitive"));
+        assertTrue(((FilterParamIndexCompare)index).getPropertyName().equals("intPrimitive"));
         assertTrue(index.getFilterOperator() == FilterOperator.GREATER);
 
         // Create an "equals" index
@@ -29,7 +29,7 @@ public class TestIndexFactory extends TestCase
 
         assertTrue(index != null);
         assertTrue(index instanceof FilterParamIndexEquals);
-        assertTrue(index.getPropertyName().equals("string"));
+        assertTrue(((FilterParamIndexEquals)index).getPropertyName().equals("string"));
         assertTrue(index.getFilterOperator() == FilterOperator.EQUAL);
 
         // Create an "not equals" index
@@ -37,7 +37,7 @@ public class TestIndexFactory extends TestCase
 
         assertTrue(index != null);
         assertTrue(index instanceof FilterParamIndexNotEquals);
-        assertTrue(index.getPropertyName().equals("string"));
+        assertTrue(((FilterParamIndexNotEquals)index).getPropertyName().equals("string"));
         assertTrue(index.getFilterOperator() == FilterOperator.NOT_EQUAL);
 
         // Create a range index

@@ -149,28 +149,28 @@ public class TestFilterParamIndexCompare extends TestCase
         verifyDoubleBoxed(index, 7.61, 0);
     }
 
-    private void verifyDoublePrimitive(FilterParamIndex index, double testValue, int numExpected)
+    private void verifyDoublePrimitive(FilterParamIndexBase index, double testValue, int numExpected)
     {
         testBean.setDoublePrimitive(testValue);
         index.matchEvent(testEventBean, matchesList);
         assertEquals(numExpected, testEvaluator.getAndResetCountInvoked());
     }
 
-    private void verifyDoubleBoxed(FilterParamIndex index, Double testValue, int numExpected)
+    private void verifyDoubleBoxed(FilterParamIndexBase index, Double testValue, int numExpected)
     {
         testBean.setDoubleBoxed(testValue);
         index.matchEvent(testEventBean, matchesList);
         assertEquals(numExpected, testEvaluator.getAndResetCountInvoked());
     }
 
-    private void verifyLongBoxed(FilterParamIndex index, Long testValue, int numExpected)
+    private void verifyLongBoxed(FilterParamIndexBase index, Long testValue, int numExpected)
     {
         testBean.setLongBoxed(testValue);
         index.matchEvent(testEventBean, matchesList);
         assertEquals(numExpected, testEvaluator.getAndResetCountInvoked());
     }
 
-    private void verifyLongPrimitive(FilterParamIndex index, long testValue, int numExpected)
+    private void verifyLongPrimitive(FilterParamIndexBase index, long testValue, int numExpected)
     {
         testBean.setLongPrimitive(testValue);
         index.matchEvent(testEventBean, matchesList);

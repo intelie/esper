@@ -1,12 +1,9 @@
 package net.esper.filter;
 
 import net.esper.pattern.MatchedEventMap;
-import net.esper.event.EventType;
-
-import java.util.Map;
 
 /**
- * This class represents a range filter parameter in an {@link FilterSpec} filter specification.
+ * This class represents a range filter parameter in an {@link FilterSpecCompiled} filter specification.
  */
 public final class FilterSpecParamRange extends FilterSpecParam
 {

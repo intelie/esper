@@ -6,7 +6,7 @@ import net.esper.util.JavaClassHelper;
 
 /**
  * This class represents a filter parameter containing a reference to another event's property
- * in the event pattern result, for use to describe a filter parameter in a {@link FilterSpec} filter specification.
+ * in the event pattern result, for use to describe a filter parameter in a {@link FilterSpecCompiled} filter specification.
  */
 public final class FilterSpecParamEventProp extends FilterSpecParam
 {
@@ -38,6 +38,16 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
             throw new IllegalArgumentException("Illegal filter operator " + filterOperator + " supplied to " +
                     "event property filter parameter");
         }
+    }
+
+    public boolean isMustCoerce()
+    {
+        return isMustCoerce;
+    }
+
+    public Class getCoercionType()
+    {
+        return coercionType;
     }
 
     /**

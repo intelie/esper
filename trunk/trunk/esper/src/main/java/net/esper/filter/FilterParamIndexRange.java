@@ -15,7 +15,7 @@ import net.esper.event.EventType;
  * The implementation is based on the SortedMap implementation of TreeMap and stores only expression
  * parameter values of type DoubleRange.
  */
-public final class FilterParamIndexRange extends FilterParamIndex
+public final class FilterParamIndexRange extends FilterParamIndexPropBase
 {
     private final TreeMap<DoubleRange, EventEvaluator> ranges;
     private final ReadWriteLock rangesRWLock;

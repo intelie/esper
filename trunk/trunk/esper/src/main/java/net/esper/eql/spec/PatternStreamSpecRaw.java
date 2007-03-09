@@ -7,12 +7,12 @@ import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
-import net.esper.filter.FilterSpec;
-import net.esper.filter.FilterSpecParam;
+import net.esper.filter.FilterSpecCompiled;
+import net.esper.filter.FilterSpecCompiler;
 import net.esper.pattern.EvalFilterNode;
 import net.esper.pattern.EvalNode;
-import net.esper.view.ViewSpec;
 import net.esper.util.UuidGenerator;
+import net.esper.view.ViewSpec;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -74,20 +74,15 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             // and additionally stream 0 (self) is our event type.
             // Stream type service allows resolution by property name event if that name appears in other tags.
             // by defaulting to stream zero.
+            // Stream zero is always the current event type, all others follow the order of the map (stream 1 to N).
             String selfStreamName = UuidGenerator.generate(filterNode);
             LinkedHashMap<String, EventType> filterTypes = new LinkedHashMap<String, EventType>();
             filterTypes.put(selfStreamName, eventType);
             filterTypes.putAll(taggedEventTypes);
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true);
             
-            // Validate all nodes, make sure each returns a boolean and types are good;
-            // Also decompose all AND super nodes into individual expressions
-            // Stream zero is always the current event type, all others follow the order of the map (stream 1 to N).
             List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-            List<ExprNode> constituents = FilterStreamSpecRaw.validateAndDecompose(exprNodes, streamTypeService, autoImportService);
-
-            // Make filter spec
-            FilterSpec spec = FilterStreamSpecRaw.makeFilterSpec(eventType, constituents);
+            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, autoImportService);
             filterNode.setFilterSpec(spec);
         }
 

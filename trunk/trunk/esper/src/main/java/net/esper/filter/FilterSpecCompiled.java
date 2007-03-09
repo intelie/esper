@@ -12,7 +12,7 @@ import java.util.LinkedList;
  * Contains the filter criteria to sift through events. The filter criteria are the event class to look for and
  * a set of parameters (attribute names, operators and constant/range values).
  */
-public final class FilterSpec
+public final class FilterSpecCompiled
 {
     private final EventType eventType;
     private final List<FilterSpecParam> parameters;
@@ -24,7 +24,7 @@ public final class FilterSpec
      * @param parameters is a list of filter parameters
      * @throws IllegalArgumentException if validation invalid
      */
-    public FilterSpec(EventType eventType, List<FilterSpecParam> parameters)
+    public FilterSpecCompiled(EventType eventType, List<FilterSpecParam> parameters)
     {
         this.eventType = eventType;
         this.parameters = parameters;
@@ -74,7 +74,7 @@ public final class FilterSpec
     public final String toString()
     {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("FilterSpec type=" + this.eventType);
+        buffer.append("FilterSpecCompiled type=" + this.eventType);
         buffer.append(" parameters=" + Arrays.toString(parameters.toArray()));
         return buffer.toString();
     }
@@ -86,12 +86,12 @@ public final class FilterSpec
             return true;
         }
 
-        if (!(obj instanceof FilterSpec))
+        if (!(obj instanceof FilterSpecCompiled))
         {
             return false;
         }
 
-        FilterSpec other = (FilterSpec) obj;
+        FilterSpecCompiled other = (FilterSpecCompiled) obj;
 
         if (this.eventType != other.eventType)
         {

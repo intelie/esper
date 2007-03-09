@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This class represents a 'in' filter parameter in an {@link net.esper.filter.FilterSpec} filter specification.
+ * This class represents a 'in' filter parameter in an {@link net.esper.filter.FilterSpecCompiled} filter specification.
  * <p>
  * The 'in' checks for a list of values.
  */
@@ -15,28 +15,32 @@ public final class FilterSpecParamIn extends FilterSpecParam
 {
     private final List<FilterSpecParamInValue> listOfValues;
     private MultiKeyUntyped inListConstantsOnly;
-    private Class propertyType;
 
     /**
      * Ctor.
      * @param propertyName is the event property name
      * @param filterOperator is expected to be the IN-list operator
      * @param listofValues is a list of constants and event property names
-     * @param isAllConstants true if there are only constants, nd false if there is one or more property in the values
-     * @param propertyType is the type of the property
      * @throws IllegalArgumentException for illegal args
      */
     public FilterSpecParamIn(String propertyName,
                              FilterOperator filterOperator,
-                             List<FilterSpecParamInValue> listofValues,
-                             boolean isAllConstants,
-                             Class propertyType)
+                             List<FilterSpecParamInValue> listofValues)
         throws IllegalArgumentException
     {
         super(propertyName, filterOperator);
-
-        this.propertyType = propertyType;
         this.listOfValues = listofValues;
+
+        boolean isAllConstants = false;
+        for (FilterSpecParamInValue value : listofValues)
+        {
+            if (value instanceof InSetOfValuesEventProp)
+            {
+                isAllConstants = false;
+                break;
+            }
+        }
+        
         if (isAllConstants)
         {
             Object[] constants = new Object[listOfValues.size()];
