@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportMarketDataBean
+import java.io.Serializable;
+
+public class SupportMarketDataBean implements Serializable
 {
     private String symbol;
     private double price;

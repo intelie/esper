@@ -4,7 +4,6 @@ import net.esper.schedule.SchedulingService;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.filter.FilterService;
 import net.esper.event.EventAdapterService;
-import net.esper.util.ManagedLock;
 import net.esper.core.EPStatementHandle;
 
 /**

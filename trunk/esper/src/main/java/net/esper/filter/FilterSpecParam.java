@@ -2,6 +2,7 @@ package net.esper.filter;
 
 import net.esper.pattern.MatchedEventMap;
 import net.esper.event.EventType;
+import net.esper.util.MetaDefItem;
 
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import java.util.Map;
  * This class represents one filter parameter in an {@link FilterSpec} filter specification.
  * <p> Each filerting parameter has an attribute name and operator type.
  */
-public abstract class FilterSpecParam
+public abstract class FilterSpecParam implements MetaDefItem
 {
     private final String propertyName;
     private final FilterOperator filterOperator;

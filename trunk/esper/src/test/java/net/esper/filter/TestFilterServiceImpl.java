@@ -35,16 +35,16 @@ public class TestFilterServiceImpl extends TestCase
         eventTypeTwo = SupportEventTypeFactory.createBeanType(SupportBeanSimple.class);
 
         filterSpecs = new Vector<FilterValueSet>();
-        filterSpecs.add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).getValueSet(null));
+        filterSpecs.add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).getValueSet(eventTypeOne, null));
         filterSpecs.add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[] {
                 "intPrimitive", FilterOperator.RANGE_CLOSED, 10, 20,
                 "string", FilterOperator.EQUAL, "HELLO",
                 "boolPrimitive", FilterOperator.EQUAL, false,
-                "doubleBoxed", FilterOperator.GREATER, 100d} ).getValueSet(null));
-        filterSpecs.add(SupportFilterSpecBuilder.build(eventTypeTwo, new Object[0]).getValueSet(null));
+                "doubleBoxed", FilterOperator.GREATER, 100d} ).getValueSet(eventTypeOne, null));
+        filterSpecs.add(SupportFilterSpecBuilder.build(eventTypeTwo, new Object[0]).getValueSet(eventTypeTwo, null));
         filterSpecs.add(SupportFilterSpecBuilder.build(eventTypeTwo, new Object[] {
                 "myInt", FilterOperator.RANGE_HALF_CLOSED, 1, 10,
-                "myString", FilterOperator.EQUAL, "Hello" }).getValueSet(null));
+                "myString", FilterOperator.EQUAL, "Hello" }).getValueSet(eventTypeTwo, null));
 
         // Create callbacks and add
         filterCallbacks = new Vector<SupportFilterHandle>();
@@ -125,7 +125,7 @@ public class TestFilterServiceImpl extends TestCase
         try
         {
             FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeTwo, new Object[] {
-                "myString", FilterOperator.GREATER, 2 }).getValueSet(null);
+                "myString", FilterOperator.GREATER, 2 }).getValueSet(eventTypeTwo, null);
             filterService.add(spec, new SupportFilterHandle());
             assertTrue(false);
         }
@@ -169,7 +169,7 @@ public class TestFilterServiceImpl extends TestCase
      */
     public void testActiveCallbackRemove()
     {
-        FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).getValueSet(null);
+        FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).getValueSet(eventTypeOne, null);
         final SupportFilterHandle callbackTwo = new SupportFilterHandle();
 
         // callback that removes another matching filter spec callback

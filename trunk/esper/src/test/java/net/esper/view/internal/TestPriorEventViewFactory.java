@@ -39,7 +39,7 @@ public class TestPriorEventViewFactory extends TestCase
     {
         try
         {
-            factoryOne.setViewParameters(null);
+            factoryOne.setViewParameters(null, null);
             fail();
         }
         catch (UnsupportedOperationException ex)

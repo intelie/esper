@@ -2,13 +2,14 @@ package net.esper.filter;
 
 import net.esper.event.EventType;
 import net.esper.pattern.MatchedEventMap;
+import net.esper.util.MetaDefItem;
 
 import java.util.Map;
 
 /**
  * Denotes a value for use by the in-keyword within a list of values
  */
-public interface FilterSpecParamInValue
+public interface FilterSpecParamInValue extends MetaDefItem
 {
     /**
      * Check the type of the property against the map of event tag and type.

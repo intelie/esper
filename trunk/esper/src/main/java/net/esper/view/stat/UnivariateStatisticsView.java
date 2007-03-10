@@ -16,7 +16,7 @@ import net.esper.collection.SingleEventIterator;
  */
 public final class UnivariateStatisticsView extends ViewSupport implements CloneableView
 {
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
     private final EventType eventType;
     private final String fieldName;
     private EventPropertyGetter fieldGetter;
@@ -26,18 +26,18 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
      * Constructor requires the name of the field to use in the parent view to compute the statistics.
      * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view to
      * compute the statistics on.
-     * @param viewServiceContext contains required view services
+     * @param statementServiceContext contains required view services
      */
-    public UnivariateStatisticsView(ViewServiceContext viewServiceContext, String fieldName)
+    public UnivariateStatisticsView(StatementServiceContext statementServiceContext, String fieldName)
     {
-        this.viewServiceContext = viewServiceContext;
+        this.statementServiceContext = statementServiceContext;
         this.fieldName = fieldName;
-        eventType = createEventType(viewServiceContext);
+        eventType = createEventType(statementServiceContext);
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return new UnivariateStatisticsView(viewServiceContext, fieldName);
+        return new UnivariateStatisticsView(statementServiceContext, fieldName);
     }
 
     public void setParent(Viewable parent)
@@ -60,11 +60,11 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        // If we have child views, keep a reference to the old values, so we can fire them as old data event.
+        // If we have child views, keep a reference to the old values, so we can fireStatementStopped them as old data event.
         EventBean oldDataMap = null;
         if (this.hasViews())
         {
-            oldDataMap = populateMap(baseStatisticsBean, viewServiceContext.getEventAdapterService(), eventType);
+            oldDataMap = populateMap(baseStatisticsBean, statementServiceContext.getEventAdapterService(), eventType);
         }
 
         // add data points to the bean
@@ -87,10 +87,10 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
             }
         }
 
-        // If there are child view, fire update method
+        // If there are child view, fireStatementStopped update method
         if (this.hasViews())
         {
-            EventBean newDataMap = populateMap(baseStatisticsBean, viewServiceContext.getEventAdapterService(), eventType);
+            EventBean newDataMap = populateMap(baseStatisticsBean, statementServiceContext.getEventAdapterService(), eventType);
             updateChildren(new EventBean[] {newDataMap}, new EventBean[] {oldDataMap});
         }
     }
@@ -103,7 +103,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
     public final Iterator<EventBean> iterator()
     {
         return new SingleEventIterator(populateMap(baseStatisticsBean,
-                viewServiceContext.getEventAdapterService(),
+                statementServiceContext.getEventAdapterService(),
                 eventType));
     }
 
@@ -128,10 +128,10 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
 
     /**
      * Creates the event type for this view.
-     * @param viewServiceContext is the event adapter service
+     * @param statementServiceContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(ViewServiceContext viewServiceContext)
+    protected static EventType createEventType(StatementServiceContext statementServiceContext)
     {
         Map<String, Class> eventTypeMap = new HashMap<String, Class>();
         eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__COUNT.getName(), long.class);
@@ -140,6 +140,6 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
         eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.getName(), double.class);
         eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.getName(), double.class);
         eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.getName(), double.class);
-        return viewServiceContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
+        return statementServiceContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
     }    
 }

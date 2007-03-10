@@ -3,9 +3,8 @@ package net.esper.eql.view;
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
-import net.esper.support.view.SupportViewContextFactory;
-import net.esper.view.ViewServiceContext;
-import net.esper.schedule.ScheduleHandleCallback;
+import net.esper.support.view.SupportStatementContextFactory;
+import net.esper.view.StatementServiceContext;
 import net.esper.core.EPStatementHandleCallback;
 import junit.framework.TestCase;
 
@@ -36,9 +35,9 @@ public class TestOutputConditionFirst extends TestCase
 	{
 		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(TEST_INTERVAL_MSEC/1000d, DisplayLimit.FIRST);
 		SupportSchedulingServiceImpl schedulingServiceStub = new SupportSchedulingServiceImpl();
-		ViewServiceContext viewContext = SupportViewContextFactory.makeContext(schedulingServiceStub);
+		StatementServiceContext statementContext = SupportStatementContextFactory.makeContext(schedulingServiceStub);
 		
-		OutputCondition condition = new OutputConditionFirst(outputConditionSpec, viewContext, callback);
+		OutputCondition condition = new OutputConditionFirst(outputConditionSpec, statementContext, callback);
 
         long startTime = 0;
         schedulingServiceStub.setTime(startTime);
@@ -50,7 +49,7 @@ public class TestOutputConditionFirst extends TestCase
         // check callback scheduled, pretend callback
         assertTrue(schedulingServiceStub.getAdded().size() == 1);
         assertTrue(schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC) != null);
-        ((EPStatementHandleCallback) schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC)).getScheduleCallback().scheduledTrigger();
+        ((EPStatementHandleCallback) schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC)).getScheduleCallback().scheduledTrigger(null);
         
         // 2 new, 3 old
         condition.updateOutputCondition(2, 3);
@@ -61,7 +60,7 @@ public class TestOutputConditionFirst extends TestCase
         // check callback scheduled, pretend callback
         assertTrue(schedulingServiceStub.getAdded().size() == 1);
         assertTrue(schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC) != null);
-        ((EPStatementHandleCallback) schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC)).getScheduleCallback().scheduledTrigger();
+        ((EPStatementHandleCallback) schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC)).getScheduleCallback().scheduledTrigger(null);
 
         
     	// 0 new, 0 old
@@ -78,9 +77,9 @@ public class TestOutputConditionFirst extends TestCase
 	{
 		// 'output first every 3 events'
 		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3, DisplayLimit.FIRST);
-		ViewServiceContext viewContext = null;
+		StatementServiceContext statementContext = null;
 		
-		OutputCondition condition = OutputConditionFactory.createCondition(outputConditionSpec, viewContext, callback);
+		OutputCondition condition = OutputConditionFactory.createCondition(outputConditionSpec, statementContext, callback);
 
 		// Send first event of the batch, callback should be made
 		condition.updateOutputCondition(1, 0);

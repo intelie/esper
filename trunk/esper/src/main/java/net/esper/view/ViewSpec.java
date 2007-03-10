@@ -1,5 +1,7 @@
 package net.esper.view;
 
+import net.esper.util.MetaDefItem;
+
 import java.util.List;
 
 /**
@@ -7,7 +9,7 @@ import java.util.List;
  * A object construction specification can be equal to another specification. This information is
  * important to determine reuse of any object.
  */
-public final class ViewSpec
+public final class ViewSpec implements MetaDefItem
 {
     private final String objectNamespace;
     private final String objectName;

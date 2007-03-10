@@ -1,6 +1,8 @@
 package net.esper.eql.spec;
 
 import net.esper.view.ViewSpec;
+import net.esper.util.MetaDefItem;
+
 import java.util.List;
 import java.util.LinkedList;
 
@@ -11,7 +13,7 @@ import java.util.LinkedList;
  * Implementation classes for views and patterns add additional information defining the
  * stream of events.
  */
-public abstract class StreamSpec
+public abstract class StreamSpec implements MetaDefItem
 {
     private String optionalStreamName;
     private List<ViewSpec> viewSpecs = new LinkedList<ViewSpec>();

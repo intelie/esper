@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import net.esper.view.ViewParameterException;
 import net.esper.view.ViewAttachException;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.event.SupportEventTypeFactory;
@@ -36,14 +36,14 @@ public class TestGroupByViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
-        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
-        assertFalse(factory.canReuse(new GroupByView(SupportViewContextFactory.makeContext(), new String[] {"a"})));
-        assertTrue(factory.canReuse(new GroupByView(SupportViewContextFactory.makeContext(), new String[] {"a", "b"})));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {"a", "b"}));
+        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), new String[] {"a"})));
+        assertTrue(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), new String[] {"a", "b"})));
 
-        factory.setViewParameters(Arrays.asList(new Object[] {new String[] {"a", "b"}}));
-        assertFalse(factory.canReuse(new GroupByView(SupportViewContextFactory.makeContext(), new String[] {"a"})));
-        assertTrue(factory.canReuse(new GroupByView(SupportViewContextFactory.makeContext(), new String[] {"a", "b"})));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {new String[] {"a", "b"}}));
+        assertFalse(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), new String[] {"a"})));
+        assertTrue(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), new String[] {"a", "b"})));
     }
 
     public void testAttaches() throws Exception
@@ -51,12 +51,12 @@ public class TestGroupByViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 
-        factory.setViewParameters(Arrays.asList(new Object[] {"price"}));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {"price"}));
         factory.attach(parentType, null, null, null);
 
         try
         {
-            factory.setViewParameters(Arrays.asList(new Object[] {"xxx"}));
+            factory.setViewParameters(null, Arrays.asList(new Object[] {"xxx"}));
             factory.attach(parentType, null, null, null);
             fail();
         }
@@ -71,7 +71,7 @@ public class TestGroupByViewFactory extends TestCase
         try
         {
             GroupByViewFactory factory = new GroupByViewFactory();
-            factory.setViewParameters(Arrays.asList(params));
+            factory.setViewParameters(null, Arrays.asList(params));
             fail();
         }
         catch (ViewParameterException ex)
@@ -83,8 +83,8 @@ public class TestGroupByViewFactory extends TestCase
     private void tryParameter(Object[] params, String[] fieldNames) throws Exception
     {
         GroupByViewFactory factory = new GroupByViewFactory();
-        factory.setViewParameters(Arrays.asList(params));
-        GroupByView view = (GroupByView) factory.makeView(SupportViewContextFactory.makeContext());
+        factory.setViewParameters(null, Arrays.asList(params));
+        GroupByView view = (GroupByView) factory.makeView(SupportStatementContextFactory.makeContext());
         ArrayAssertionUtil.assertEqualsExactOrder(fieldNames, view.getGroupFieldNames());
     }
 }

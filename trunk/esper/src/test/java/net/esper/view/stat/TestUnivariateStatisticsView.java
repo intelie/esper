@@ -7,7 +7,7 @@ import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.util.DoubleValueAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.view.ViewFieldEnum;
 
 import java.util.Iterator;
@@ -20,7 +20,7 @@ public class TestUnivariateStatisticsView extends TestCase
     public void setUp()
     {
         // Set up sum view and a test child view
-        myView = new UnivariateStatisticsView(SupportViewContextFactory.makeContext(), "price");
+        myView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), "price");
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -73,7 +73,7 @@ public class TestUnivariateStatisticsView extends TestCase
 
     public void testCopyView() throws Exception
     {
-        UnivariateStatisticsView copied = (UnivariateStatisticsView) myView.cloneView(SupportViewContextFactory.makeContext());
+        UnivariateStatisticsView copied = (UnivariateStatisticsView) myView.cloneView(SupportStatementContextFactory.makeContext());
         assertTrue(myView.getFieldName().equals(copied.getFieldName()));
     }
 

@@ -760,5 +760,17 @@ public class TestPreviousFunction extends TestCase
         assertEquals(symbol, event.get("symbol"));
         assertEquals(prevPrice, event.get("prevPrice"));
         assertEquals(prevPrevPrice, event.get("prevPrevPrice"));
-    }    
+    }
+
+    public static Integer intToLong(Long longValue)
+    {
+        if (longValue == null)
+        {
+            return null;
+        }
+        else
+        {
+            return longValue.intValue();
+        }
+    }
 }

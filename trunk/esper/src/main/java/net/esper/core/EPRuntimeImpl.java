@@ -1,26 +1,27 @@
 package net.esper.core;
 
-import java.util.*;
-
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.esper.client.EmittedListener;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.TimerEvent;
-import net.esper.collection.ThreadWorkQueue;
 import net.esper.collection.ArrayBackedCollection;
-import net.esper.timer.TimerCallback;
+import net.esper.collection.ThreadWorkQueue;
 import net.esper.event.EventBean;
 import net.esper.filter.FilterHandle;
 import net.esper.filter.FilterHandleCallback;
-import net.esper.util.ThreadLogUtil;
-import net.esper.util.ManagedReadWriteLock;
 import net.esper.schedule.ScheduleHandle;
 import net.esper.schedule.ScheduleHandleCallback;
-
+import net.esper.timer.TimerCallback;
+import net.esper.util.ThreadLogUtil;
+import net.esper.util.ManagedLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Implements runtime interface. Also accepts timer callbacks for synchronizing time events with regular events
@@ -29,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRouter
 {
     private EPServicesContext services;
-    private ManagedReadWriteLock eventProcessingRWLock;
     private ThreadWorkQueue threadWorkQueue;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
@@ -69,12 +69,10 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     /**
      * Constructor.
      * @param services - references to services
-     * @param eventProcessingRWLock - lock for statement create/start/stop across engine instance competing with events
      */
-    public EPRuntimeImpl(EPServicesContext services, ManagedReadWriteLock eventProcessingRWLock)
+    public EPRuntimeImpl(EPServicesContext services)
     {
         this.services = services;
-        this.eventProcessingRWLock = eventProcessingRWLock;
         threadWorkQueue = new ThreadWorkQueue();
     }
 
@@ -202,7 +200,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
 
         // Acquire main processing lock which locks out statement management
-        eventProcessingRWLock.acquireReadLock();
+        services.getEventProcessingRWLock().acquireReadLock();
         try
         {
             processMatches(eventBean);
@@ -213,7 +211,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
         finally
         {
-            eventProcessingRWLock.releaseReadLock();
+            services.getEventProcessingRWLock().releaseReadLock();
         }
 
         // Dispatch results to listeners
@@ -244,7 +242,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
 
         // Evaluation of all time events is protected from regular event stream processing
-        eventProcessingRWLock.acquireReadLock();
+        services.getEventProcessingRWLock().acquireReadLock();
 
         try
         {
@@ -265,7 +263,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
         finally
         {
-            eventProcessingRWLock.releaseReadLock();
+            services.getEventProcessingRWLock().releaseReadLock();
         }
 
         // Let listeners know of results
@@ -295,10 +293,11 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         {
             Object[] handleArray = handles.getArray();
             EPStatementHandleCallback handle = (EPStatementHandleCallback) handleArray[0];
-            handle.getEpStatementHandle().getStatementLock().acquireLock();
+            ManagedLock statementLock = handle.getEpStatementHandle().getStatementLock();
+            statementLock.acquireLock(services.getStatementLockFactory());
             try
             {
-                handle.getScheduleCallback().scheduledTrigger();
+                handle.getScheduleCallback().scheduledTrigger(services.getExtensionServicesContext());
 
                 handle.getEpStatementHandle().internalDispatch();
             }
@@ -308,7 +307,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             finally
             {
-                handle.getEpStatementHandle().getStatementLock().releaseLock();
+                handle.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
             }
             handles.clear();
             return;
@@ -356,7 +355,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         {
             Object callbackObject = stmtCallbacks.get(handle);
 
-            handle.getStatementLock().acquireLock();
+            handle.getStatementLock().acquireLock(services.getStatementLockFactory());
             try
             {
                 if (callbackObject instanceof LinkedList)
@@ -364,13 +363,13 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
                     LinkedList<ScheduleHandleCallback> callbackList = (LinkedList<ScheduleHandleCallback>) callbackObject;
                     for (ScheduleHandleCallback callback : callbackList)
                     {
-                        callback.scheduledTrigger();
+                        callback.scheduledTrigger(services.getExtensionServicesContext());
                     }
                 }
                 else
                 {
                     ScheduleHandleCallback callback = (ScheduleHandleCallback) callbackObject;
-                    callback.scheduledTrigger();
+                    callback.scheduledTrigger(services.getExtensionServicesContext());
                 }
 
                 // internal join processing, if applicable
@@ -382,7 +381,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             finally
             {
-                handle.getStatementLock().releaseLock();
+                handle.getStatementLock().releaseLock(services.getStatementLockFactory());
             }
         }
     }
@@ -402,7 +401,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
                 eventBean = services.getEventAdapterService().adapterForBean(event);
             }
 
-            eventProcessingRWLock.acquireReadLock();
+            services.getEventProcessingRWLock().acquireReadLock();
             try
             {
                 processMatches(eventBean);
@@ -413,7 +412,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             finally
             {
-                eventProcessingRWLock.releaseReadLock();
+                services.getEventProcessingRWLock().releaseReadLock();
             }
 
             dispatch();
@@ -441,7 +440,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         {
             Object[] matchArray = matches.getArray();
             EPStatementHandleCallback handle = (EPStatementHandleCallback) matchArray[0];
-            handle.getEpStatementHandle().getStatementLock().acquireLock();
+            handle.getEpStatementHandle().getStatementLock().acquireLock(services.getStatementLockFactory());
             try
             {
                 handle.getFilterCallback().matchFound(event);
@@ -454,7 +453,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             finally
             {
-                handle.getEpStatementHandle().getStatementLock().releaseLock();
+                handle.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
             }
             matches.clear();
             return;
@@ -500,7 +499,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
         for (EPStatementHandle handle : stmtCallbacks.keySet())
         {
-            handle.getStatementLock().acquireLock();
+            handle.getStatementLock().acquireLock(services.getStatementLockFactory());
             Object callbackObject = stmtCallbacks.get(handle);
             try
             {
@@ -527,7 +526,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             finally
             {
-                handle.getStatementLock().releaseLock();
+                handle.getStatementLock().releaseLock(services.getStatementLockFactory());
             }
         }
     }

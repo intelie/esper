@@ -7,7 +7,7 @@ import net.esper.support.event.EventFactoryHelper;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.support.view.SupportViewDataChecker;
 
 import java.util.Map;
@@ -26,7 +26,7 @@ public class TestTimeWindowView extends TestCase
         schedulingServiceStub = new SupportSchedulingServiceImpl();
 
         // Set up length window view and a test child view
-        myView = new TimeWindowView(SupportViewContextFactory.makeContext(schedulingServiceStub), null, TEST_WINDOW_MSEC, null);
+        myView = new TimeWindowView(SupportStatementContextFactory.makeContext(schedulingServiceStub), null, TEST_WINDOW_MSEC, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }

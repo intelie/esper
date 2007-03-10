@@ -26,7 +26,7 @@ public class TestFilterServiceMT extends TestCase
     {
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
         FilterSpec spec = SupportFilterSpecBuilder.build(eventType, new Object[] {"string", FilterOperator.EQUAL, "HELLO"});
-        final FilterValueSet filterValues = spec.getValueSet(null);
+        final FilterValueSet filterValues = spec.getValueSet(eventType, null);
 
         Callable callables[] = new Callable[5];
         for (int i = 0; i < callables.length; i++)

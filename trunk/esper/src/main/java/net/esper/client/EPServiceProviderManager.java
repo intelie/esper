@@ -12,6 +12,7 @@ import net.esper.core.EPServiceProviderImpl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Factory for instances of {@link EPServiceProvider}.
@@ -66,7 +67,7 @@ public final class EPServiceProviderManager
         }
 
         // New runtime
-        EPServiceProvider runtime = new EPServiceProviderImpl(configuration);
+        EPServiceProvider runtime = new EPServiceProviderImpl(configuration, uri);
         runtimes.put(uri, runtime);
 
         return runtime;

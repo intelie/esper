@@ -1,11 +1,13 @@
 package net.esper.collection;
 
+import net.esper.util.MetaDefItem;
+
 /**
  * General-purpose pair of values of any type. The pair only equals another pair if
  * the objects that form the pair equal, ie. first pair first object equals (.equals) the second pair first object,
  * and the first pair second object equals the second pair second object.
  */
-public final class UniformPair<T>
+public final class UniformPair<T> implements MetaDefItem
 {
     private T first;
     private T second;

@@ -17,7 +17,7 @@ import java.util.HashMap;
 public final class WeightedAverageView extends ViewSupport implements CloneableView
 {
     private final EventType eventType;
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
     private final String fieldNameX;
     private final String fieldNameWeight;
     private EventPropertyGetter fieldXGetter;
@@ -33,19 +33,19 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
      * @param fieldNameX is the name of the field within the parent view to use to get numeric data points for this view to
      * compute the average for.
      * @param fieldNameWeight is the field name for the weight to apply to each data point
-     * @param viewServiceContext contains required view services
+     * @param statementServiceContext contains required view services
      */
-    public WeightedAverageView(ViewServiceContext viewServiceContext, String fieldNameX, String fieldNameWeight)
+    public WeightedAverageView(StatementServiceContext statementServiceContext, String fieldNameX, String fieldNameWeight)
     {
         this.fieldNameX = fieldNameX;
         this.fieldNameWeight = fieldNameWeight;
-        this.viewServiceContext = viewServiceContext;
-        eventType = createEventType(viewServiceContext);
+        this.statementServiceContext = statementServiceContext;
+        eventType = createEventType(statementServiceContext);
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return new WeightedAverageView(viewServiceContext, fieldNameX, fieldNameWeight);
+        return new WeightedAverageView(statementServiceContext, fieldNameX, fieldNameWeight);
     }
 
     public void setParent(Viewable parent)
@@ -123,16 +123,16 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
             currentValue = Double.NaN;
         }
 
-        // If there are child view, fire update method
+        // If there are child view, fireStatementStopped update method
         if (this.hasViews())
         {
             Map<String, Object> newDataMap = new HashMap<String, Object>();
             newDataMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), currentValue);
-            EventBean newDataEvent = viewServiceContext.getEventAdapterService().createMapFromValues(newDataMap, eventType);
+            EventBean newDataEvent = statementServiceContext.getEventAdapterService().createMapFromValues(newDataMap, eventType);
 
             Map<String, Object> oldDataMap = new HashMap<String, Object>();
             oldDataMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), oldValue);
-            EventBean oldDataEvent = viewServiceContext.getEventAdapterService().createMapFromValues(oldDataMap, eventType);
+            EventBean oldDataEvent = statementServiceContext.getEventAdapterService().createMapFromValues(oldDataMap, eventType);
 
             updateChildren(new EventBean[] {newDataEvent}, new EventBean[] {oldDataEvent});
         }
@@ -147,7 +147,7 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
     {
         Map<String, Object> newDataMap = new HashMap<String, Object>();
         newDataMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), currentValue);
-        return new SingleEventIterator(viewServiceContext.getEventAdapterService().createMapFromValues(newDataMap, eventType));
+        return new SingleEventIterator(statementServiceContext.getEventAdapterService().createMapFromValues(newDataMap, eventType));
     }
 
     public final String toString()
@@ -159,14 +159,14 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
 
     /**
      * Creates the event type for this view.
-     * @param viewServiceContext is the event adapter service
+     * @param statementServiceContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(ViewServiceContext viewServiceContext)
+    protected static EventType createEventType(StatementServiceContext statementServiceContext)
     {
         Map<String, Class> schemaMap = new HashMap<String, Class>();
         schemaMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), double.class);
-        EventType eventType = viewServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
+        EventType eventType = statementServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
         return eventType;
     }
 }

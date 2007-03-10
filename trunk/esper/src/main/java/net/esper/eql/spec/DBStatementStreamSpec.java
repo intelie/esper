@@ -1,13 +1,14 @@
 package net.esper.eql.spec;
 
 import net.esper.view.ViewSpec;
+import net.esper.util.MetaDefItem;
 
 import java.util.List;
 
 /**
  * Specification object for historical data poll via database SQL statement.
  */
-public class DBStatementStreamSpec extends StreamSpec
+public class DBStatementStreamSpec extends StreamSpec implements MetaDefItem
 {
     private String databaseName;
     private String sqlWithSubsParams;

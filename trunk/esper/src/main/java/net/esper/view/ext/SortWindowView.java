@@ -114,9 +114,9 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         return optionalSortedRandomAccess;
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return sortWindowViewFactory.makeView(viewServiceContext);
+        return sortWindowViewFactory.makeView(statementServiceContext);
     }
 
     public final EventType getEventType()
@@ -188,7 +188,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
             }
         }
 
-        // If there are child views, fire update method
+        // If there are child views, fireStatementStopped update method
         if (optionalSortedRandomAccess != null)
         {
             optionalSortedRandomAccess.refresh(sortedEvents, eventCount, sortWindowSize);

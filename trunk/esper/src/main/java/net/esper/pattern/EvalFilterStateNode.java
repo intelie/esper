@@ -6,6 +6,7 @@ import net.esper.filter.FilterSpec;
 import net.esper.filter.FilterValueSet;
 import net.esper.filter.FilterHandleCallback;
 import net.esper.event.EventBean;
+import net.esper.event.EventType;
 import net.esper.core.EPStatementHandleCallback;
 
 /**
@@ -139,7 +140,8 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
     private void startFiltering()
     {
         handle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
-        FilterValueSet filterValues = filterSpec.getValueSet(beginState);
+        EventType eventType = context.getEventAdapterService().getTypeById(filterSpec.getEventTypeId());
+        FilterValueSet filterValues = filterSpec.getValueSet(eventType, beginState);
         context.getFilterService().add(filterValues, handle);
     }
 

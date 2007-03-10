@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class PatternStreamSpec extends StreamSpec
 {
-    private final EvalNode evalNode;
-    private final Map<String, EventType> taggedEventTypes;       // Stores types for filters with tags
+    private transient final EvalNode evalNode;
+    private transient final Map<String, EventType> taggedEventTypes;       // Stores types for filters with tags
 
     /**
      * Ctor.

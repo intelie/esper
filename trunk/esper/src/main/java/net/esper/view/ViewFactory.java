@@ -13,16 +13,16 @@ public interface ViewFactory
 {
     /**
      * Indicates user EQL query view parameters to the view factory.
-     * @param viewParameters is the objects representing the view parameters
-     * @throws ViewParameterException if the parameters don't match view parameter needs
+     * @param viewFactoryContext supplied context information for the view factory
+     * @param viewParameters is the objects representing the view parameters @throws ViewParameterException if the parameters don't match view parameter needs
      */
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException;
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException;
 
     /**
      * Attaches the factory to a parent event type such that the factory can validate
      * attach requirements and determine an event type for resulting views.
      * @param parentEventType is the parent event stream's or view factory's event type
-     * @param viewServiceContext contains the services needed for creating a new event type
+     * @param statementServiceContext contains the services needed for creating a new event type
      * @param optionalParentFactory is null when there is no parent view factory, or contains the
      * parent view factory
      * @param parentViewFactories is a list of all the parent view factories or empty list if there are none
@@ -30,7 +30,7 @@ public interface ViewFactory
      * with the parent view factories view
      */
     public void attach(EventType parentEventType,
-                       ViewServiceContext viewServiceContext,
+                       StatementServiceContext statementServiceContext,
                        ViewFactory optionalParentFactory,
                        List<ViewFactory> parentViewFactories) throws ViewAttachException;
 
@@ -51,10 +51,10 @@ public interface ViewFactory
 
     /**
      * Create a new view.
-     * @param viewServiceContext contains view services
+     * @param statementServiceContext contains view services
      * @return new view
      */
-    public View makeView(ViewServiceContext viewServiceContext);
+    public View makeView(StatementServiceContext statementServiceContext);
 
     /**
      * Returns the event type that the view that is created by the view factory would create for events posted

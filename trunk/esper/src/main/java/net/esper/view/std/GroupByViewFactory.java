@@ -16,12 +16,12 @@ public class GroupByViewFactory implements ViewFactory
     private String[] groupFieldNames;
     private EventType eventType;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         groupFieldNames = getFieldNameParams(viewParameters, "Group-by");
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         // Attaches to just about anything as long as all the fields exists
         for (int i = 0; i < groupFieldNames.length; i++)
@@ -55,9 +55,9 @@ public class GroupByViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
-        return new GroupByView(viewServiceContext, groupFieldNames);
+        return new GroupByView(statementServiceContext, groupFieldNames);
     }
 
     public EventType getEventType()

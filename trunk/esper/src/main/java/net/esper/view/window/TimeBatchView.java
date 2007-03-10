@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 import net.esper.view.View;
 import net.esper.view.CloneableView;
 import net.esper.schedule.ScheduleHandleCallback;
@@ -17,6 +17,7 @@ import net.esper.schedule.ScheduleSlot;
 import net.esper.client.EPException;
 import net.esper.collection.ViewUpdatedCollection;
 import net.esper.core.EPStatementHandleCallback;
+import net.esper.core.ExtensionServicesContext;
 
 /**
  * A data view that aggregates events in a stream and releases them in one batch at every specified time interval.
@@ -39,7 +40,7 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, D
 
     // View parameters
     private final TimeBatchViewFactory timeBatchViewFactory;
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
     private final long msecIntervalSize;
     private final Long initialReferencePoint;
     private final ViewUpdatedCollection viewUpdatedCollection;
@@ -58,26 +59,26 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, D
      * there is no such reference point supplied
      * @param viewUpdatedCollection is a collection that the view must update when receiving events
      * @param timeBatchViewFactory fr copying this view in a group-by
-     * @param viewServiceContext is required view services
+     * @param statementServiceContext is required view services
      */
     public TimeBatchView(TimeBatchViewFactory timeBatchViewFactory,
-                         ViewServiceContext viewServiceContext,
+                         StatementServiceContext statementServiceContext,
                          long msecIntervalSize,
                          Long referencePoint,
                          ViewUpdatedCollection viewUpdatedCollection)
     {
-        this.viewServiceContext = viewServiceContext;
+        this.statementServiceContext = statementServiceContext;
         this.timeBatchViewFactory = timeBatchViewFactory;
         this.msecIntervalSize = msecIntervalSize;
         this.initialReferencePoint = referencePoint;
         this.viewUpdatedCollection = viewUpdatedCollection;
 
-        this.scheduleSlot = viewServiceContext.getScheduleBucket().allocateSlot();
+        this.scheduleSlot = statementServiceContext.getScheduleBucket().allocateSlot();
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return timeBatchViewFactory.makeView(viewServiceContext);
+        return timeBatchViewFactory.makeView(statementServiceContext);
     }
 
     /**
@@ -112,7 +113,7 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, D
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
-        if (viewServiceContext == null)
+        if (statementServiceContext == null)
         {
             String message = "View context has not been supplied, cannot schedule callback";
             log.fatal(".update " + message);
@@ -133,7 +134,7 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, D
                 currentReferencePoint = initialReferencePoint;
                 if (currentReferencePoint == null)
                 {
-                    currentReferencePoint = viewServiceContext.getSchedulingService().getTime();
+                    currentReferencePoint = statementServiceContext.getSchedulingService().getTime();
                 }
             }
 
@@ -165,10 +166,10 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, D
         if (log.isDebugEnabled())
         {
             log.debug(".sendBatch Update child views, " +
-                    "  time=" + dateFormat.format(viewServiceContext.getSchedulingService().getTime()));
+                    "  time=" + dateFormat.format(statementServiceContext.getSchedulingService().getTime()));
         }
 
-        // If there are child views and the batch was filled, fire update method
+        // If there are child views and the batch was filled, fireStatementStopped update method
         if (this.hasViews())
         {
             // Convert to object arrays
@@ -245,7 +246,7 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, D
 
     private void scheduleCallback()
     {
-        long current = viewServiceContext.getSchedulingService().getTime();
+        long current = statementServiceContext.getSchedulingService().getTime();
         long afterMSec = computeWaitMSec(current, this.currentReferencePoint, this.msecIntervalSize);
 
         if (log.isDebugEnabled())
@@ -259,13 +260,13 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, D
         }
 
         ScheduleHandleCallback callback = new ScheduleHandleCallback() {
-            public void scheduledTrigger()
+            public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
             {
                 TimeBatchView.this.sendBatch();
             }
         };
-        EPStatementHandleCallback handle = new EPStatementHandleCallback(viewServiceContext.getEpStatementHandle(), callback);
-        viewServiceContext.getSchedulingService().add(afterMSec, handle, scheduleSlot);
+        EPStatementHandleCallback handle = new EPStatementHandleCallback(statementServiceContext.getEpStatementHandle(), callback);
+        statementServiceContext.getSchedulingService().add(afterMSec, handle, scheduleSlot);
     }
 
     /**

@@ -101,7 +101,7 @@ public class TestDatabaseJoinPerformance extends TestCase
         listener = new SupportUpdateListener();
         statement.addListener(listener);
 
-        // Send 100 events which all fire a join
+        // Send 100 events which all fireStatementStopped a join
         for (int i = 0; i < 100; i++)
         {
             SupportBean_S0 bean = new SupportBean_S0(5);

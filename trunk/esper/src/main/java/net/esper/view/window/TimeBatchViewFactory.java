@@ -18,7 +18,7 @@ public class TimeBatchViewFactory implements ViewFactory
     private EventType eventType;
     private RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         String errorMessage = "Time batch view requires a single numeric or time period parameter, and an optional long-typed reference point in msec";
         if ((viewParameters.size() < 1) || (viewParameters.size() > 2))
@@ -65,7 +65,7 @@ public class TimeBatchViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         this.eventType = parentEventType;
     }
@@ -88,7 +88,7 @@ public class TimeBatchViewFactory implements ViewFactory
         resourceCallback.setViewResource(relativeAccessGetterImpl);
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
         IStreamRelativeAccess relativeAccessByEvent = null;
 
@@ -98,7 +98,7 @@ public class TimeBatchViewFactory implements ViewFactory
             relativeAccessGetterImpl.updated(relativeAccessByEvent, null);
         }
 
-        return new TimeBatchView(this, viewServiceContext, millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);
+        return new TimeBatchView(this, statementServiceContext, millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);
     }
 
     public EventType getEventType()

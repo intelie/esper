@@ -93,7 +93,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         // Add all the above filter definitions
         for (FilterSpec filterSpec : testFilterSpecs)
         {
-            FilterValueSet filterValues = filterSpec.getValueSet(null);
+            FilterValueSet filterValues = filterSpec.getValueSet(eventType, null);
             FilterHandle callback = new SupportFilterHandle();
             filterCallbacks.add(callback);
             pathsAddedTo.add(builder.add(filterValues, callback, topNode));
@@ -156,7 +156,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
 
         for (int i = 0; i < numberOfRunnables; i++)
         {
-            IndexTreeBuilderRunnable runnable = new IndexTreeBuilderRunnable(topNode,
+            IndexTreeBuilderRunnable runnable = new IndexTreeBuilderRunnable(eventType, topNode,
                     testFilterSpecs, matchedEvents, unmatchedEvents);
 
             pool.execute(runnable);

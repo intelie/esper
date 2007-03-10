@@ -2,7 +2,7 @@ package net.esper.eql.view;
 
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 
 /**
  * An output condition that is satisfied at the first event
@@ -17,10 +17,10 @@ public class OutputConditionFirst implements OutputCondition
 	/**
 	 * Ctor.
      * @param outputLimitSpec specifies what kind of condition to create
-     * @param viewContext supplies the services required such as for scheduling callbacks
+     * @param statementContext supplies the services required such as for scheduling callbacks
      * @param outputCallback is the method to invoke for output
 	 */
-	public OutputConditionFirst(OutputLimitSpec outputLimitSpec, ViewServiceContext viewContext, OutputCallback outputCallback)
+	public OutputConditionFirst(OutputLimitSpec outputLimitSpec, StatementServiceContext statementContext, OutputCallback outputCallback)
 	{
 		if(outputCallback ==  null)
 		{
@@ -29,7 +29,7 @@ public class OutputConditionFirst implements OutputCondition
 		this.outputCallback = outputCallback;
 		OutputLimitSpec innerSpec = createInnerSpec(outputLimitSpec);
 		OutputCallback localCallback = createCallbackToLocal();
-		this.innerCondition = OutputConditionFactory.createCondition(innerSpec, viewContext, localCallback);
+		this.innerCondition = OutputConditionFactory.createCondition(innerSpec, statementContext, localCallback);
 		this.witnessedFirst = false;
 	}
 	

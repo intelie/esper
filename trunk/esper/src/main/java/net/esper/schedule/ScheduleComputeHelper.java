@@ -30,7 +30,7 @@ public final class ScheduleComputeHelper
      * @param afterTimeInMillis defines the start time
      * @return a long date millisecond value for the next schedule occurance matching the spec
      */
-    protected static long computeNextOccurance(ScheduleSpec spec, long afterTimeInMillis)
+    public static long computeNextOccurance(ScheduleSpec spec, long afterTimeInMillis)
     {
         if (log.isDebugEnabled())
         {

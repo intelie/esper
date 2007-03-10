@@ -94,7 +94,7 @@ public class PatternTestHarness implements SupportBeanConstants
             }
 
             // We stop the statement again and start after the first listener was added.
-            // Thus we can handle patterns that fire on startup.
+            // Thus we can handle patterns that fireStatementStopped on startup.
             statement.stop();
 
             expressions[index] = statement;
@@ -106,7 +106,7 @@ public class PatternTestHarness implements SupportBeanConstants
             index++;
         }
 
-        // Some expressions may fire as soon as they are started, such as a "not b()" expression, for example.
+        // Some expressions may fireStatementStopped as soon as they are started, such as a "not b()" expression, for example.
         // Check results for any such listeners/expressions.
         // NOTE: For EQL statements we do not support calling listeners when a pattern that fires upon start.
         // Reason is that this should not be a relevant functionality of a pattern, the start pattern

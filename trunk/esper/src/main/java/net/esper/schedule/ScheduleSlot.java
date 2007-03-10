@@ -1,9 +1,11 @@
 package net.esper.schedule;
 
+import net.esper.util.MetaDefItem;
+
 /**
  * This class is a slot in a {@link ScheduleBucket} for sorting schedule service callbacks.
  */
-public class ScheduleSlot implements Comparable<ScheduleSlot>
+public class ScheduleSlot implements Comparable<ScheduleSlot>, MetaDefItem
 {
     private int bucketNum;
     private int slotNum;

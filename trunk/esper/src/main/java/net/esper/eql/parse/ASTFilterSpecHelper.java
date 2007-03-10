@@ -58,21 +58,21 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
             startNode = startNode.getNextSibling();
         }
 
-        String eventName = startNode.getText();
-        EventType eventType = eventAdapterService.getEventType(eventName);
-
+        String eventTypeName = startNode.getText();
+        EventType eventType = eventAdapterService.getExistsTypeByAlias(eventTypeName);
         // The type is not known yet, attempt to add as a JavaBean type with the same alias
         if (eventType == null)
         {
             try
             {
-                eventType = eventAdapterService.addBeanType(eventName, eventName);
+                eventType = eventAdapterService.addBeanType(eventTypeName, eventTypeName);
             }
             catch (EventAdapterException ex)
             {
                 throw new ASTFilterSpecValidationException("Failed to resolve event type: " + ex.getMessage(), ex);
             }
         }
+        String eventTypeId = eventAdapterService.getIdByAlias(eventTypeName);
 
         // Create parameter list
         AST paramNodeAST = startNode.getNextSibling();
@@ -88,8 +88,8 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
             paramNodeAST = paramNodeAST.getNextSibling();
         }
 
-        FilterSpec filterSpec = new FilterSpec(eventType, parameters);
-        FilterSpecValidator.validate(filterSpec, optionalTaggedEventTypes);
+        FilterSpec filterSpec = new FilterSpec(eventTypeId, eventTypeName, parameters);
+        FilterSpecValidator.validate(eventType, filterSpec, optionalTaggedEventTypes);
 
         return filterSpec;
     }

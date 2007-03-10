@@ -26,21 +26,21 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     /**
      * Services required by implementing classes.
      */
-    protected ViewServiceContext viewServiceContext;
+    protected StatementServiceContext statementServiceContext;
 
     /**
      * Constructor requires the name of the two fields to use in the parent view to compute the statistics.
      * @param statisticsBean is the base class prodiving sum of X and Y and squares for use by subclasses
      * @param fieldNameX is the name of the field within the parent view to get the X values from
      * @param fieldNameY is the name of the field within the parent view to get the Y values from
-     * @param viewServiceContext contains required view services
+     * @param statementServiceContext contains required view services
      */
-    public BaseBivariateStatisticsView(ViewServiceContext viewServiceContext,
+    public BaseBivariateStatisticsView(StatementServiceContext statementServiceContext,
                                        BaseStatisticsBean statisticsBean,
                                        String fieldNameX,
                                        String fieldNameY)
     {
-        this.viewServiceContext = viewServiceContext;
+        this.statementServiceContext = statementServiceContext;
         this.statisticsBean = statisticsBean;
         this.fieldNameX = fieldNameX;
         this.fieldNameY = fieldNameY;
@@ -58,7 +58,7 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        // If we have child views, keep a reference to the old values, so we can fire them as old data event.
+        // If we have child views, keep a reference to the old values, so we can fireStatementStopped them as old data event.
         BaseStatisticsBean oldValues = null;
         if (this.hasViews())
         {
@@ -87,21 +87,21 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
             }
         }
 
-        // If there are child view, fire update method
+        // If there are child view, fireStatementStopped update method
         if (this.hasViews())
         {
             // Make a copy of the current values since if we change the values subsequently, the handed-down
             // values should not change
             BaseStatisticsBean newValues = (BaseStatisticsBean) statisticsBean.clone();
-            EventBean newValuesEvent = viewServiceContext.getEventAdapterService().adapterForBean(newValues);
-            EventBean oldValuesEvent = viewServiceContext.getEventAdapterService().adapterForBean(oldValues);
+            EventBean newValuesEvent = statementServiceContext.getEventAdapterService().adapterForBean(newValues);
+            EventBean oldValuesEvent = statementServiceContext.getEventAdapterService().adapterForBean(oldValues);
             updateChildren(new EventBean[] {newValuesEvent}, new EventBean[] {oldValuesEvent});
         }
     }
 
     public final Iterator<EventBean> iterator()
     {
-        return new SingleEventIterator(viewServiceContext.getEventAdapterService().adapterForBean(statisticsBean));
+        return new SingleEventIterator(statementServiceContext.getEventAdapterService().adapterForBean(statisticsBean));
     }
 
     /**

@@ -6,6 +6,7 @@ import net.esper.filter.FilterOperator;
 import net.esper.filter.FilterSpec;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventTypeFactory;
+import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.filter.SupportFilterServiceImpl;
 import net.esper.support.filter.SupportFilterSpecBuilder;
 import net.esper.view.EventStream;
@@ -21,7 +22,7 @@ public class TestStreamFactorySvcImpl extends TestCase
     public void setUp()
     {
         supportFilterService = new SupportFilterServiceImpl();
-        streamFactoryService = new StreamFactorySvcImpl();
+        streamFactoryService = new StreamFactorySvcImpl(SupportEventAdapterService.getService());
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
 
         filterSpecs = new FilterSpec[3];

@@ -31,8 +31,8 @@ public class TestEventTypeIndexBuilder extends TestCase
         typeOne = SupportEventTypeFactory.createBeanType(SupportBean.class);
         typeTwo = SupportEventTypeFactory.createBeanType(SupportBeanSimple.class);
 
-        valueSetOne = SupportFilterSpecBuilder.build(typeOne, new Object[0]).getValueSet(null);
-        valueSetTwo = SupportFilterSpecBuilder.build(typeTwo, new Object[0]).getValueSet(null);
+        valueSetOne = SupportFilterSpecBuilder.build(typeOne, new Object[0]).getValueSet(typeOne, null);
+        valueSetTwo = SupportFilterSpecBuilder.build(typeTwo, new Object[0]).getValueSet(typeTwo, null);
 
         callbackOne = new SupportFilterHandle();
         callbackTwo = new SupportFilterHandle();

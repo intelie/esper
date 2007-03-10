@@ -8,8 +8,6 @@ import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Factory for {@link UnivariateStatisticsView} instances. 
@@ -19,7 +17,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
     private String fieldName;
     private EventType eventType;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         String errorMessage = "'Univariate statistics' view require a single field name as a parameter";
         if (viewParameters.size() != 1)
@@ -35,14 +33,14 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
         fieldName = (String) viewParameters.get(0);
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldName);
         if (result != null)
         {
             throw new ViewAttachException(result);
         }
-        eventType = UnivariateStatisticsView.createEventType(viewServiceContext);
+        eventType = UnivariateStatisticsView.createEventType(statementServiceContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -55,9 +53,9 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
-        return new UnivariateStatisticsView(viewServiceContext, fieldName);
+        return new UnivariateStatisticsView(statementServiceContext, fieldName);
     }
 
     public EventType getEventType()

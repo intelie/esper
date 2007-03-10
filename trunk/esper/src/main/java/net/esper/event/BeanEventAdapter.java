@@ -1,9 +1,11 @@
 package net.esper.event;
 
 import net.esper.client.ConfigurationEventTypeLegacy;
+import net.esper.util.UuidGenerator;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -16,24 +18,22 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class BeanEventAdapter
 {
     private final Map<Class, BeanEventType> typesPerJavaBean;
-    private final Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
+    private Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
     private final ReadWriteLock typesPerJavaBeanLock;
 
     /**
      * Ctor.
-     * @param classToLegacyConfigs us a map of event type alias to legacy event type config
      */
-    public BeanEventAdapter(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
+    public BeanEventAdapter()
     {
         typesPerJavaBean = new HashMap<Class, BeanEventType>();
-
-        this.classToLegacyConfigs = new HashMap<String, ConfigurationEventTypeLegacy>();
-        if (classToLegacyConfigs != null)
-        {
-            this.classToLegacyConfigs.putAll(classToLegacyConfigs);
-        }
-
         typesPerJavaBeanLock = new ReentrantReadWriteLock();
+        classToLegacyConfigs = new HashMap<String, ConfigurationEventTypeLegacy>();
+    }
+
+    public void setClassToLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
+    {
+        this.classToLegacyConfigs.putAll(classToLegacyConfigs);
     }
 
     /**
@@ -41,11 +41,11 @@ public class BeanEventAdapter
      * @param event is the bean to wrap
      * @return EventBean wrapping Java Bean
      */
-    public EventBean adapterForBean(Object event)
+    public EventBean adapterForBean(Object event, Object eventId)
     {
         Class eventClass = event.getClass();
         EventType eventType = createOrGetBeanType(eventClass);
-        return new BeanEventBean(event, eventType);
+        return new BeanEventBean(event, eventType, eventId);
     }
 
     /**
@@ -83,7 +83,8 @@ public class BeanEventAdapter
             // Check if we have a legacy type definition for this class
             ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(clazz.getName());
 
-            eventType = new BeanEventType(clazz, this, legacyDef);
+            String eventTypeId = "CLASS_" + clazz.getName();
+            eventType = new BeanEventType(clazz, this, legacyDef, eventTypeId);
             typesPerJavaBean.put(clazz, eventType);
         }
         catch (RuntimeException ex)

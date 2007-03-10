@@ -20,11 +20,9 @@ public class FilterSpecValidator
      * @throws IllegalArgumentException to indicate validation errors
      * @throws ASTFilterSpecValidationException to indicate filter validation problem
      */
-    public static void validate(FilterSpec filterSpec, Map<String, EventType> optionalTaggedEventTypes)
+    public static void validate(EventType eventType, FilterSpec filterSpec, Map<String, EventType> optionalTaggedEventTypes)
         throws ASTFilterSpecValidationException
     {
-        EventType eventType = filterSpec.getEventType();
-
         for (FilterSpecParam param : filterSpec.getParameters())
         {
             String property = param.getPropertyName();

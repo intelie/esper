@@ -5,6 +5,7 @@ import net.esper.pattern.MatchedEventMap;
 import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.core.EPStatementHandleCallback;
+import net.esper.core.ExtensionServicesContext;
 
 /**
  * Guard implementation that keeps a timer instance and quits when the timer expired,
@@ -63,7 +64,7 @@ public class TimerWithinGuard implements Guard, ScheduleHandleCallback
         return true;
     }
 
-    public final void scheduledTrigger()
+    public final void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
     {
         // Timer callback is automatically removed when triggering
         isTimerActive = false;

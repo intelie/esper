@@ -11,6 +11,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventBeanUtility;
 import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
+import net.esper.collection.SingleEventIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,9 +22,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class UpdateDispatchView extends ViewSupport implements Dispatchable
 {
-    private final Set<UpdateListener> updateListeners;
+    private Set<UpdateListener> updateListeners;
     private final DispatchService dispatchService;
-    
+    private EventBean lastIterableEvent;
+
     private ThreadLocal<Boolean> isDispatchWaiting = new ThreadLocal<Boolean>() {
         protected synchronized Boolean initialValue() {
             return new Boolean(false);
@@ -52,6 +54,11 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
         this.dispatchService = dispatchService;
     }
 
+    public void setUpdateListeners(Set<UpdateListener> updateListeners)
+    {
+        this.updateListeners = updateListeners;
+    }
+
     public void update(EventBean[] newData, EventBean[] oldData)
     {
         if (log.isDebugEnabled())
@@ -60,6 +67,7 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
         }
         if (newData != null)
         {
+            lastIterableEvent = newData[0];
             lastNewEvents.get().add(newData);
         }
         if (oldData != null)
@@ -80,7 +88,9 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
 
     public Iterator<EventBean> iterator()
     {
-        return null;
+        // Iterates over the last new event. For Pattern statements
+        // to allow polling the last event that fired.
+        return new SingleEventIterator(lastIterableEvent);
     }
 
     public void execute()
@@ -101,6 +111,11 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
 
         lastNewEvents.get().clear();
         lastOldEvents.get().clear();
+    }
+
+    public void clear()
+    {
+        lastIterableEvent = null;
     }
 
     private static Log log = LogFactory.getLog(UpdateDispatchView.class);

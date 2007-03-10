@@ -12,7 +12,7 @@ import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 import net.esper.view.ViewSupport;
 
 import org.apache.commons.logging.Log;
@@ -40,12 +40,12 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
      * @param resultSetProcessor is processing the result set for publishing it out
      * @param streamCount is the number of streams, indicates whether or not this view participates in a join
      * @param outputLimitSpec is the specification for limiting output (the output condition and the result set processor)
-     * @param viewContext is the services the output condition may depend on
+     * @param statementContext is the services the output condition may depend on
      */
     public OutputProcessView(ResultSetProcessor resultSetProcessor,
     					  int streamCount, 
     					  OutputLimitSpec outputLimitSpec, 
-    					  ViewServiceContext viewContext)
+    					  StatementServiceContext statementContext)
     {
     	log.debug("creating view");
  
@@ -55,7 +55,7 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
     	}
 
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);		
-    	this.outputCondition = OutputConditionFactory.createCondition(outputLimitSpec, viewContext, outputCallback);
+    	this.outputCondition = OutputConditionFactory.createCondition(outputLimitSpec, statementContext, outputCallback);
         this.resultSetProcessor = resultSetProcessor;
         this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.isDisplayLastOnly());
     }
@@ -213,7 +213,12 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
     {
     	if(resultSetProcessor != null)
     	{
-    		return resultSetProcessor.getResultEventType();
+            EventType eventType = resultSetProcessor.getResultEventType();
+            if (eventType != null)
+            {
+                return eventType;
+            }
+            return parent.getEventType();
     	}
     	else 
     	{

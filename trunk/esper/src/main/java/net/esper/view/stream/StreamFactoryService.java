@@ -3,11 +3,7 @@ package net.esper.view.stream;
 import net.esper.view.EventStream;
 import net.esper.filter.FilterSpec;
 import net.esper.filter.FilterService;
-import net.esper.util.ManagedLock;
 import net.esper.core.EPStatementHandle;
-
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Service on top of the filter service for reuseing filter callbacks and their associated EventStream instances.

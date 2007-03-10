@@ -911,7 +911,7 @@ public class EQLTreeWalker extends EQLBaseWalker
             FilterSpec spec = ASTFilterSpecHelper.buildSpec(node, taggedEventTypes, eventAdapterService);
             String optionalTag = ASTFilterSpecHelper.getEventNameTag(node);
             EvalFilterNode filterNode = new EvalFilterNode(spec, optionalTag);
-            EventType eventType = spec.getEventType();
+            EventType eventType = eventAdapterService.getTypeById(spec.getEventTypeId());
 
             if (optionalTag != null)
             {

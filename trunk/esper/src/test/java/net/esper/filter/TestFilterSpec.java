@@ -1,31 +1,37 @@
 package net.esper.filter;
 
-import java.util.List;
-import java.util.Vector;
-
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.pattern.MatchedEventMap;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.filter.SupportFilterSpecBuilder;
-import net.esper.support.event.SupportEventTypeFactory;
+import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.event.SupportEventBeanFactory;
+import net.esper.support.filter.SupportFilterSpecBuilder;
+
+import java.util.List;
+import java.util.Vector;
 
 public class TestFilterSpec extends TestCase
 {
     private EventType eventType;
+    private String eventTypeId;
+    private String eventTypeAlias;
 
     public void setUp()
     {
-        eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
+        eventTypeAlias = SupportBean.class.getName();
+        eventType = SupportEventAdapterService.getService().addBeanType(eventTypeAlias, SupportBean.class);
+        eventTypeId = SupportEventAdapterService.getService().getIdByAlias(eventTypeAlias);
     }
 
     public void testHashCode()
     {
         FilterSpec spec = SupportFilterSpecBuilder.build(eventType, new Object[] { "intPrimitive", FilterOperator.EQUAL, 2,
                                                                  "intBoxed", FilterOperator.EQUAL, 3 });
-        int expectedHash = eventType.hashCode() ^ "intPrimitive".hashCode() ^ "intBoxed".hashCode();
+
+        String eventTypeId = SupportEventAdapterService.getService().getIdByType(eventType);
+        int expectedHash = eventTypeId.hashCode() ^ "intPrimitive".hashCode() ^ "intBoxed".hashCode();
         assertEquals(expectedHash, spec.hashCode());
     }
 
@@ -63,14 +69,14 @@ public class TestFilterSpec extends TestCase
         List<FilterSpecParam> params = SupportFilterSpecBuilder.buildList(new Object[]
                                     { "intPrimitive", FilterOperator.EQUAL, 2 });
         params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive"));
-        FilterSpec filterSpec = new FilterSpec(eventType, params);
+        FilterSpec filterSpec = new FilterSpec(eventTypeId, eventTypeAlias, params);
 
         SupportBean eventBean = new SupportBean();
         eventBean.setDoublePrimitive(999.999);
         EventBean event = SupportEventBeanFactory.createObject(eventBean);
         MatchedEventMap matchedEvents = new MatchedEventMap();
         matchedEvents.add("asName", event);
-        FilterValueSet valueSet = filterSpec.getValueSet(matchedEvents);
+        FilterValueSet valueSet = filterSpec.getValueSet(eventType, matchedEvents);
 
         // Assert the generated filter value container
         assertSame(eventType, valueSet.getEventType());

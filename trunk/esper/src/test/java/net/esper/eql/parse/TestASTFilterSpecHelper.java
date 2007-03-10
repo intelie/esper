@@ -1,24 +1,31 @@
 package net.esper.eql.parse;
 
+import antlr.collections.AST;
 import junit.framework.TestCase;
-import net.esper.support.eql.parse.SupportParserHelper;
+import net.esper.event.EventAdapterService;
+import net.esper.event.EventType;
+import net.esper.filter.*;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanComplexProps;
-import net.esper.support.event.SupportEventTypeFactory;
+import net.esper.support.eql.parse.SupportParserHelper;
 import net.esper.support.event.SupportEventAdapterService;
-import net.esper.filter.*;
-import net.esper.event.EventType;
+import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.util.DebugFacility;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import antlr.collections.AST;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TestASTFilterSpecHelper extends TestCase
 {
+    private EventAdapterService eventAdapterService;
+
+    public void setUp()
+    {
+        eventAdapterService = SupportEventAdapterService.getService();
+    }
+
     public void testInvalid() throws Exception
     {
         String classname = SupportBean.class.getName();
@@ -39,7 +46,7 @@ public class TestASTFilterSpecHelper extends TestCase
         String expression = "gum=" + SupportBean.class.getName();
 
         FilterSpec spec = getFilterSpec(expression, null);
-        assertEquals(SupportBean.class, spec.getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, eventAdapterService.getTypeById(spec.getEventTypeId()).getUnderlyingType());
         assertEquals(0, spec.getParameters().size());
 
         assertEquals("gum", getEventNameTag(expression));
@@ -50,7 +57,7 @@ public class TestASTFilterSpecHelper extends TestCase
         String expression = "name=" + SupportBean.class.getName() + "(intPrimitive>4, string=\"test\", doublePrimitive in [1:4])";
 
         FilterSpec spec = getFilterSpec(expression, null);
-        assertEquals(SupportBean.class, spec.getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, eventAdapterService.getTypeById(spec.getEventTypeId()).getUnderlyingType());
         assertEquals(3, spec.getParameters().size());
 
         FilterSpecParam param = spec.getParameters().get(0);
@@ -80,7 +87,7 @@ public class TestASTFilterSpecHelper extends TestCase
 
         FilterSpec spec = getFilterSpec(expression, taggedEventTypes);
 
-        assertEquals(SupportBean.class, spec.getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, eventAdapterService.getTypeById(spec.getEventTypeId()).getUnderlyingType());
         assertEquals(1, spec.getParameters().size());
         FilterSpecParamEventProp eventPropParam = (FilterSpecParamEventProp) spec.getParameters().get(0);
         assertEquals("n2", eventPropParam.getResultEventAsName());
@@ -102,7 +109,7 @@ public class TestASTFilterSpecHelper extends TestCase
         String expression = "myname=" + SupportBean.class.getName() + "(intPrimitive in (1:2), intBoxed in [2:6))";
 
         FilterSpec spec = getFilterSpec(expression, null);
-        assertEquals(SupportBean.class, spec.getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, eventAdapterService.getTypeById(spec.getEventTypeId()).getUnderlyingType());
         assertEquals(2, spec.getParameters().size());
 
         FilterSpecParam param = spec.getParameters().get(0);
@@ -121,7 +128,7 @@ public class TestASTFilterSpecHelper extends TestCase
         String expression = "myname=" + SupportBean.class.getName() + "(intPrimitive not in [1:2], intBoxed not in (2:6])";
 
         FilterSpec spec = getFilterSpec(expression, null);
-        assertEquals(SupportBean.class, spec.getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, eventAdapterService.getTypeById(spec.getEventTypeId()).getUnderlyingType());
         assertEquals(2, spec.getParameters().size());
 
         FilterSpecParam param = spec.getParameters().get(0);
@@ -197,7 +204,7 @@ public class TestASTFilterSpecHelper extends TestCase
         taggedEventTypes.put("asName", SupportEventTypeFactory.createBeanType(SupportBean.class));
 
         FilterSpec spec = getFilterSpec(expression, taggedEventTypes);
-        assertEquals(SupportBean.class, spec.getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, eventAdapterService.getTypeById(spec.getEventTypeId()).getUnderlyingType());
         assertEquals(1, spec.getParameters().size());
 
         FilterSpecParam param = spec.getParameters().get(0);

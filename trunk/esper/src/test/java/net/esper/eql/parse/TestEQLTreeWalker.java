@@ -35,7 +35,7 @@ public class TestEQLTreeWalker extends TestCase
 
         FilterStreamSpec streamSpec = (FilterStreamSpec) walker.getStatementSpec().getStreamSpecs().get(0);
         assertEquals(2, streamSpec.getViewSpecs().size());
-        assertEquals(SupportBean.class, streamSpec.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class.getName(), streamSpec.getFilterSpec().getEventTypeAlias());
         assertEquals("length", streamSpec.getViewSpecs().get(0).getObjectName());
         assertEquals("lastevent", streamSpec.getViewSpecs().get(1).getObjectName());
         assertEquals("win1", streamSpec.getOptionalStreamName());
@@ -74,7 +74,7 @@ public class TestEQLTreeWalker extends TestCase
 
         FilterStreamSpec streamSpec = (FilterStreamSpec) walker.getStatementSpec().getStreamSpecs().get(2);
         assertEquals(2, streamSpec.getViewSpecs().size());
-        assertEquals(SupportBean.class, streamSpec.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class.getName(), streamSpec.getFilterSpec().getEventTypeAlias());
         assertEquals("length", streamSpec.getViewSpecs().get(0).getObjectName());
         assertEquals("lastevent", streamSpec.getViewSpecs().get(1).getObjectName());
 
@@ -190,7 +190,7 @@ public class TestEQLTreeWalker extends TestCase
         FilterSpec filterSpec = ((FilterStreamSpec) walker.getStatementSpec().getStreamSpecs().get(0)).getFilterSpec();
 
         // Check filter spec properties
-        assertEquals(SupportBean.class, filterSpec.getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class.getName(), filterSpec.getEventTypeAlias());
         assertEquals(1, filterSpec.getParameters().size());
 
         // Check views
@@ -688,15 +688,6 @@ public class TestEQLTreeWalker extends TestCase
 
         assertFalse((Boolean) tryRelationalOp("'a' not like 'a'"));
         assertTrue((Boolean) tryRelationalOp("'a' not like 'ab'"));
-    }
-
-    public void testWalkArray() throws Exception
-    {
-        Object result = tryExpression("{1, 2}");
-        Integer[] ints = (Integer[]) result;
-        assertEquals(2, ints.length);
-        assertEquals(1, (int) ints[0]);
-        assertEquals(2, (int) ints[1]);
     }
 
     public void testWalkStaticFunc() throws Exception

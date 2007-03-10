@@ -1,7 +1,7 @@
 package net.esper.eql.view;
 
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,12 +15,12 @@ public final class OutputConditionFactory {
     /**
      * Creates an output condition instance.
      * @param outputLimitSpec specifies what kind of condition to create
-     * @param viewContext supplies the services required such as for scheduling callbacks
+     * @param statementContext supplies the services required such as for scheduling callbacks
      * @param outputCallback is the method to invoke for output
      * @return instance for performing output
      */
 	public static OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
-										 	  	  ViewServiceContext viewContext, 
+										 	  	  StatementServiceContext statementContext,
 										 	      OutputCallback outputCallback)
 	{
 		if(outputCallback ==  null)
@@ -35,7 +35,7 @@ public final class OutputConditionFactory {
 		else if(outputLimitSpec.isDisplayFirstOnly())
 		{
 			log.debug(".createCondition creating OutputConditionFirst");
-			return new OutputConditionFirst(outputLimitSpec, viewContext, outputCallback);
+			return new OutputConditionFirst(outputLimitSpec, statementContext, outputCallback);
 		}
 		if(outputLimitSpec.isEventLimit())
 		{
@@ -45,7 +45,7 @@ public final class OutputConditionFactory {
 		else 
 		{
 			log.debug(".createCondition creating OutputConditionTime with interval length " + outputLimitSpec.getTimeRate());
-			return new OutputConditionTime(outputLimitSpec.getTimeRate(), viewContext, outputCallback);
+			return new OutputConditionTime(outputLimitSpec.getTimeRate(), statementContext, outputCallback);
 		}
 	}
 }

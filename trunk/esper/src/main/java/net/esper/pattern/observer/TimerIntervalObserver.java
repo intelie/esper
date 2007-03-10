@@ -5,6 +5,7 @@ import net.esper.pattern.MatchedEventMap;
 import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.core.EPStatementHandleCallback;
+import net.esper.core.ExtensionServicesContext;
 
 /**
  * Observer that will wait a certain interval before indicating true (raising an event).
@@ -36,7 +37,7 @@ public class TimerIntervalObserver implements EventObserver, ScheduleHandleCallb
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
     }
 
-    public final void scheduledTrigger()
+    public final void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
     {
         observerEventEvaluator.observerEvaluateTrue(beginState);
         isTimerActive = false;

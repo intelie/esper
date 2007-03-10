@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class AddPropertyValueView extends ViewSupport implements CloneableView
 {
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
     private final String[] propertyNames;
     private final Object[] propertyValues;
     private final EventType eventType;
@@ -29,19 +29,19 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
      * @param fieldNames is the name of the field that is added to any events received by this view.
      * @param mergeValues is the values of the field that is added to any events received by this view.
      * @param mergedResultEventType is the event type that the merge view reports to it's child views
-     * @param viewServiceContext contains required view services
+     * @param statementServiceContext contains required view services
      */
-    public AddPropertyValueView(ViewServiceContext viewServiceContext, String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
+    public AddPropertyValueView(StatementServiceContext statementServiceContext, String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
     {
         this.propertyNames = fieldNames;
         this.propertyValues = mergeValues;
         this.eventType = mergedResultEventType;
-        this.viewServiceContext = viewServiceContext;
+        this.statementServiceContext = statementServiceContext;
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return new AddPropertyValueView(viewServiceContext, propertyNames, propertyValues, eventType);
+        return new AddPropertyValueView(statementServiceContext, propertyNames, propertyValues, eventType);
     }
 
     public void setParent(Viewable parent)
@@ -98,7 +98,7 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
             int index = 0;
             for (EventBean newEvent : newData)
             {
-                EventBean event = addProperty(newEvent, propertyNames, propertyValues, eventType, viewServiceContext.getEventAdapterService());
+                EventBean event = addProperty(newEvent, propertyNames, propertyValues, eventType, statementServiceContext.getEventAdapterService());
                 newEvents[index++] = event;
             }
         }
@@ -110,7 +110,7 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
             int index = 0;
             for (EventBean oldEvent : oldData)
             {
-                EventBean event = addProperty(oldEvent, propertyNames, propertyValues, eventType, viewServiceContext.getEventAdapterService());
+                EventBean event = addProperty(oldEvent, propertyNames, propertyValues, eventType, statementServiceContext.getEventAdapterService());
                 oldEvents[index++] = event;
             }
         }
@@ -140,7 +140,7 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
                 if (mustAddProperty)
                 {
                     EventBean event = addProperty(nextEvent, propertyNames, propertyValues, eventType,
-                            viewServiceContext.getEventAdapterService());
+                            statementServiceContext.getEventAdapterService());
                     return event;
                 }
                 else

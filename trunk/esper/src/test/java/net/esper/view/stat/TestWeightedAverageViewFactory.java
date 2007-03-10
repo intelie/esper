@@ -8,7 +8,7 @@ import net.esper.view.std.SizeView;
 import net.esper.event.EventType;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 
 import java.util.Arrays;
 
@@ -37,13 +37,13 @@ public class TestWeightedAverageViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 
-        factory.setViewParameters(Arrays.asList(new Object[] {"price", "volume"}));
-        factory.attach(parentType, SupportViewContextFactory.makeContext(), null, null);
+        factory.setViewParameters(null, Arrays.asList(new Object[] {"price", "volume"}));
+        factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
         assertEquals(double.class, factory.getEventType().getPropertyType(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName()));
 
         try
         {
-            factory.setViewParameters(Arrays.asList(new Object[] {"xxx", "y"}));
+            factory.setViewParameters(null, Arrays.asList(new Object[] {"xxx", "y"}));
             factory.attach(parentType, null, null, null);
             fail();
         }
@@ -55,18 +55,18 @@ public class TestWeightedAverageViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
-        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
-        assertFalse(factory.canReuse(new WeightedAverageView(SupportViewContextFactory.makeContext(), "a", "c")));
-        assertFalse(factory.canReuse(new WeightedAverageView(SupportViewContextFactory.makeContext(), "x", "b")));
-        assertTrue(factory.canReuse(new WeightedAverageView(SupportViewContextFactory.makeContext(), "a", "b")));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {"a", "b"}));
+        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), "a", "c")));
+        assertFalse(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), "x", "b")));
+        assertTrue(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), "a", "b")));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception
     {
         try
         {
-            factory.setViewParameters(Arrays.asList(params));
+            factory.setViewParameters(null, Arrays.asList(params));
             fail();
         }
         catch (ViewParameterException ex)
@@ -77,8 +77,8 @@ public class TestWeightedAverageViewFactory extends TestCase
 
     private void tryParameter(Object[] params, String fieldNameX, String fieldNameW) throws Exception
     {
-        factory.setViewParameters(Arrays.asList(params));
-        WeightedAverageView view = (WeightedAverageView) factory.makeView(SupportViewContextFactory.makeContext());
+        factory.setViewParameters(null, Arrays.asList(params));
+        WeightedAverageView view = (WeightedAverageView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldNameX, view.getFieldNameX());
         assertEquals(fieldNameW, view.getFieldNameWeight());
     }

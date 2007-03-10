@@ -11,7 +11,7 @@ package net.esper.dispatch;
  * <p>Note: Each execution thread owns its own dispatch queue.
  *
  * Note: Dispatchs could result in further call to the dispatch service. This is because listener code
- * that is invoked as a result of a dispatch may create patterns that fire as soon as they are started
+ * that is invoked as a result of a dispatch may create patterns that fireStatementStopped as soon as they are started
  * resulting in further dispatches within the same thread. Thus the implementation class must be careful
  * with the use of iterators to avoid ConcurrentModificationException errors.
  */

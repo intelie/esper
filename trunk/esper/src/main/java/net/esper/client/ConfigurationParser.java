@@ -81,6 +81,7 @@ class ConfigurationParser {
         handleEventTypes(configuration, root);
         handleAutoImports(configuration, root);
         handleDatabaseRefs(configuration, root);
+        handlePlugInView(configuration, root);
     }
 
     private static void handleEventTypes(Configuration configuration, Element parentElement)
@@ -307,6 +308,18 @@ class ConfigurationParser {
                     configDBRef.setLRUCache(Integer.parseInt(size));
                 }
             }
+        }
+    }
+
+    private static void handlePlugInView(Configuration configuration, Element parentElement)
+    {
+        NodeList nodes = parentElement.getElementsByTagName("plugin-view");
+        for (int i = 0; i < nodes.getLength(); i++)
+        {
+            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
+            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
+            configuration.addPlugInView(namespace, name, factoryClassName);
         }
     }
 

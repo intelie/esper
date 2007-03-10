@@ -2,7 +2,7 @@ package net.esper.view.std;
 
 import junit.framework.TestCase;
 import net.esper.support.util.ArrayAssertionUtil;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.view.ViewParameterException;
 
 import java.util.Arrays;
@@ -31,10 +31,10 @@ public class TestMergeViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(Arrays.asList(new Object[] {"a", "b"}));
-        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
-        assertFalse(factory.canReuse(new MergeView(SupportViewContextFactory.makeContext(), new String[] {"a"}, null)));
-        assertTrue(factory.canReuse(new MergeView(SupportViewContextFactory.makeContext(), new String[] {"a", "b"}, null)));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {"a", "b"}));
+        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), new String[] {"a"}, null)));
+        assertTrue(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), new String[] {"a", "b"}, null)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception
@@ -42,7 +42,7 @@ public class TestMergeViewFactory extends TestCase
         try
         {
             MergeViewFactory factory = new MergeViewFactory();
-            factory.setViewParameters(Arrays.asList(params));
+            factory.setViewParameters(null, Arrays.asList(params));
             fail();
         }
         catch (ViewParameterException ex)
@@ -54,8 +54,8 @@ public class TestMergeViewFactory extends TestCase
     private void tryParameter(Object[] params, String[] fieldNames) throws Exception
     {
         MergeViewFactory factory = new MergeViewFactory();
-        factory.setViewParameters(Arrays.asList(params));
-        MergeView view = (MergeView) factory.makeView(SupportViewContextFactory.makeContext());
+        factory.setViewParameters(null, Arrays.asList(params));
+        MergeView view = (MergeView) factory.makeView(SupportStatementContextFactory.makeContext());
         ArrayAssertionUtil.assertEqualsExactOrder(fieldNames, view.getGroupFieldNames());
     }
 }

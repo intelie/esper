@@ -73,7 +73,7 @@ public class TestTimerIntervalObserver extends TestCase
 
     public void testImmediateTrigger()
     {
-        // Should fire right away, wait time set to zero
+        // Should fireStatementStopped right away, wait time set to zero
         observer =  new TimerIntervalObserver(0, context, beginState, evaluator);
 
         scheduleService.setTime(0);

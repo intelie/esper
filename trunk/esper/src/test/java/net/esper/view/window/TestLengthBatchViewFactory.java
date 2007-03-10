@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import net.esper.view.std.SizeView;
 import net.esper.view.ViewParameterException;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 
 public class TestLengthBatchViewFactory extends TestCase
 {
@@ -31,8 +31,8 @@ public class TestLengthBatchViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(Arrays.asList(new Object[] {1000}));
-        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {1000}));
+        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new LengthBatchView(factory, 1, null)));
         assertTrue(factory.canReuse(new LengthBatchView(factory, 1000, null)));
     }
@@ -41,7 +41,7 @@ public class TestLengthBatchViewFactory extends TestCase
     {
         try
         {
-            factory.setViewParameters(Arrays.asList(new Object[] {param}));
+            factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -53,8 +53,8 @@ public class TestLengthBatchViewFactory extends TestCase
     private void tryParameter(Object[] param, int size) throws Exception
     {
         LengthBatchViewFactory factory = new LengthBatchViewFactory();
-        factory.setViewParameters(Arrays.asList(param));
-        LengthBatchView view = (LengthBatchView) factory.makeView(SupportViewContextFactory.makeContext());
+        factory.setViewParameters(null, Arrays.asList(param));
+        LengthBatchView view = (LengthBatchView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(size, view.getSize());
     }
 }

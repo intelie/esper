@@ -10,23 +10,23 @@ import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.view.EventStream;
 import net.esper.view.View;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 import net.esper.client.EPException;
 
 public class TestGroupByView extends TestCase
 {
     private GroupByView myGroupByView;
     private SupportBeanClassView ultimateChildView;
-    private ViewServiceContext viewServiceContext;
+    private StatementServiceContext statementServiceContext;
 
     public void setUp()
     {
-        viewServiceContext = SupportViewContextFactory.makeContext();
-        myGroupByView = new GroupByView(viewServiceContext, new String[] {"symbol"});
+        statementServiceContext = SupportStatementContextFactory.makeContext();
+        myGroupByView = new GroupByView(statementServiceContext, new String[] {"symbol"});
 
         SupportBeanClassView childView = new SupportBeanClassView(SupportMarketDataBean.class);
 
-        MergeView myMergeView = new MergeView(viewServiceContext, new String[]{"symbol"}, SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class));
+        MergeView myMergeView = new MergeView(statementServiceContext, new String[]{"symbol"}, SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class));
 
         ultimateChildView = new SupportBeanClassView(SupportMarketDataBean.class);
 
@@ -110,7 +110,7 @@ public class TestGroupByView extends TestCase
     public void testMakeSubviews()
     {
         EventStream eventStream = new SupportStreamImpl(SupportMarketDataBean.class, 4);
-        GroupByView groupView = new GroupByView(viewServiceContext, new String[] {"symbol"});
+        GroupByView groupView = new GroupByView(statementServiceContext, new String[] {"symbol"});
         eventStream.addView(groupView);
 
         Object[] groupByValue = new Object[] {"IBM"};
@@ -118,7 +118,7 @@ public class TestGroupByView extends TestCase
         // Invalid for no child nodes
         try
         {
-            GroupByView.makeSubViews(groupView, groupByValue, viewServiceContext);
+            GroupByView.makeSubViews(groupView, groupByValue, statementServiceContext);
             assertTrue(false);
         }
         catch (EPException ex)
@@ -127,11 +127,11 @@ public class TestGroupByView extends TestCase
         }
 
         // Invalid for child node is a merge node - doesn't make sense to group and merge only
-        MergeView mergeViewOne = new MergeView(viewServiceContext, new String[] {"symbol"}, null);
+        MergeView mergeViewOne = new MergeView(statementServiceContext, new String[] {"symbol"}, null);
         groupView.addView(mergeViewOne);
         try
         {
-            GroupByView.makeSubViews(groupView, groupByValue, viewServiceContext);
+            GroupByView.makeSubViews(groupView, groupByValue, statementServiceContext);
             assertTrue(false);
         }
         catch (EPException ex)
@@ -140,15 +140,15 @@ public class TestGroupByView extends TestCase
         }
 
         // Add a size view parent of merge view
-        groupView = new GroupByView(viewServiceContext, new String[] {"symbol"});
+        groupView = new GroupByView(statementServiceContext, new String[] {"symbol"});
 
-        SizeView sizeView_1 = new SizeView(viewServiceContext);
+        SizeView sizeView_1 = new SizeView(statementServiceContext);
 
         groupView.addView(sizeView_1);
-        mergeViewOne = new MergeView(viewServiceContext, new String[] {"symbol"}, null);
+        mergeViewOne = new MergeView(statementServiceContext, new String[] {"symbol"}, null);
         sizeView_1.addView(mergeViewOne);
 
-        List<View> subViews = GroupByView.makeSubViews(groupView, groupByValue, viewServiceContext);
+        List<View> subViews = GroupByView.makeSubViews(groupView, groupByValue, statementServiceContext);
 
         assertTrue(subViews.size() == 1);
         assertTrue(subViews.get(0) instanceof SizeView);

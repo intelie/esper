@@ -3,6 +3,7 @@ package net.esper.eql.spec;
 import net.esper.collection.Pair;
 import net.esper.eql.spec.StreamSpec;
 import net.esper.eql.expression.ExprNode;
+import net.esper.util.MetaDefItem;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -10,7 +11,7 @@ import java.util.LinkedList;
 /**
  * Specification object representing a complete EQL statement including all EQL constructs.
  */
-public class StatementSpec
+public class StatementSpec implements MetaDefItem
 {
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;

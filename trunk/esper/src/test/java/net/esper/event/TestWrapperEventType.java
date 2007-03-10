@@ -20,8 +20,8 @@ public class TestWrapperEventType extends TestCase
 	
 	protected void setUp()
 	{
-        underlyingEventTypeOne = new BeanEventType(SupportBeanSimple.class, new BeanEventAdapter(null), null);
-        underlyingEventTypeTwo = new BeanEventType(SupportBean_A.class, new BeanEventAdapter(null), null);
+        underlyingEventTypeOne = new BeanEventType(SupportBeanSimple.class, new BeanEventAdapter(), null, "abc");
+        underlyingEventTypeTwo = new BeanEventType(SupportBean_A.class, new BeanEventAdapter(), null, "abc");
         properties = new HashMap<String, Class>();
         properties.put("additionalString", String.class);
         properties.put("additionalInt", Integer.class);

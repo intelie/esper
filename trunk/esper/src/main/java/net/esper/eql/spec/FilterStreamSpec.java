@@ -10,7 +10,7 @@ import java.util.List;
  * Specification for building an event stream out of a filter for events (supplying type and basic filter criteria)
  * and views onto these events which are staggered onto each other to supply a final stream of events.
  */
-public class FilterStreamSpec extends StreamSpec
+public class FilterStreamSpec extends StreamSpec 
 {
     private FilterSpec filterSpec;
 

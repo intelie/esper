@@ -1,50 +1,48 @@
 package net.esper.core;
 
+import net.esper.client.EPStatementException;
+import net.esper.collection.Pair;
+import net.esper.eql.core.*;
+import net.esper.eql.db.PollingViewableFactory;
+import net.esper.eql.expression.ExprAggregateNode;
+import net.esper.eql.expression.ExprEqualsNode;
+import net.esper.eql.expression.ExprNode;
+import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.join.*;
+import net.esper.eql.spec.*;
+import net.esper.eql.view.FilterExprView;
+import net.esper.eql.view.IStreamRStreamSelectorView;
+import net.esper.eql.view.InternalRouteView;
+import net.esper.eql.view.OutputProcessView;
+import net.esper.event.EventBean;
+import net.esper.event.EventType;
+import net.esper.pattern.EvalRootNode;
+import net.esper.pattern.PatternContext;
+import net.esper.pattern.PatternMatchCallback;
+import net.esper.pattern.PatternStopCallback;
+import net.esper.schedule.ScheduleBucket;
+import net.esper.util.StopCallback;
+import net.esper.view.*;
+import net.esper.view.internal.BufferView;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.esper.client.EPStatementException;
-import net.esper.collection.Pair;
-import net.esper.eql.expression.*;
-import net.esper.eql.join.JoinExecStrategyDispatchable;
-import net.esper.eql.join.JoinExecutionStrategy;
-import net.esper.eql.join.JoinExecutionStrategyImpl;
-import net.esper.eql.join.JoinSetComposer;
-import net.esper.eql.join.JoinSetComposerFactory;
-import net.esper.eql.join.JoinSetFilter;
-import net.esper.eql.view.FilterExprView;
-import net.esper.eql.view.OutputProcessView;
-import net.esper.eql.view.InternalRouteView;
-import net.esper.eql.view.IStreamRStreamSelectorView;
-import net.esper.eql.spec.*;
-import net.esper.eql.core.*;
-import net.esper.eql.db.PollingViewableFactory;
-import net.esper.event.EventType;
-import net.esper.event.EventBean;
-import net.esper.view.*;
-import net.esper.view.ViewFactory;
-import net.esper.view.internal.BufferView;
-import net.esper.schedule.ScheduleBucket;
-import net.esper.pattern.PatternContext;
-import net.esper.pattern.PatternStopCallback;
-import net.esper.pattern.EvalRootNode;
-import net.esper.pattern.PatternMatchCallback;
-import net.esper.util.StopCallback;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Starts and provides the stop method for EQL statements.
  */
-public class EPEQLStmtStartMethod
+public class EPStmtStartMethod
 {
+    private final String statementId;
+    private final String statementName;
     private final StatementSpec statementSpec;
     private final String eqlStatement;
     private final ScheduleBucket scheduleBucket;
     private final EPServicesContext services;
-    private final ViewServiceContext viewContext;
+    private final StatementServiceContext statementContext;
     private final EPStatementHandle epStatementHandle;
 
     /**
@@ -55,11 +53,15 @@ public class EPEQLStmtStartMethod
      * @param services is the service instances for dependency injection
      * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
-    public EPEQLStmtStartMethod(StatementSpec statementSpec,
+    public EPStmtStartMethod(String statementId,
+                             String statementName,
+                                StatementSpec statementSpec,
                                 String eqlStatement,
                                 EPServicesContext services,
                                 EPStatementHandle epStatementHandle)
     {
+        this.statementId = statementId;
+        this.statementName = statementName;
         this.statementSpec = statementSpec;
         this.services = services;
         this.eqlStatement = eqlStatement;
@@ -69,8 +71,10 @@ public class EPEQLStmtStartMethod
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
         scheduleBucket = services.getSchedulingService().allocateBucket();
 
-        viewContext = new ViewServiceContext(services.getSchedulingService(),
-                scheduleBucket, services.getEventAdapterService(), epStatementHandle);
+        statementContext = new StatementServiceContext(statementId, statementName, services.getSchedulingService(),
+                scheduleBucket, services.getEventAdapterService(), epStatementHandle,
+                services.getViewResolutionService(), services.getExtensionServicesContext(),
+                new StatementStopServiceImpl());
     }
 
     /**
@@ -101,7 +105,7 @@ public class EPEQLStmtStartMethod
             {
                 FilterStreamSpec filterStreamSpec = (FilterStreamSpec) streamSpec;
                 eventStreamParentViewable[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), epStatementHandle, isJoin);
-                unmaterializedViewChain[i] = services.getViewService().createFactories(eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), viewContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(statementId, statementName, i, eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), statementContext);
             }
             // Create view factories and parent view based on a pattern expression
             else if (streamSpec instanceof PatternStreamSpec)
@@ -110,7 +114,7 @@ public class EPEQLStmtStartMethod
                 final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
                 eventStreamParentViewable[i] = sourceEventStream;
-                unmaterializedViewChain[i] = services.getViewService().createFactories(sourceEventStream.getEventType(), streamSpec.getViewSpecs(), viewContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(statementId, statementName, i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), statementContext);
 
                 EvalRootNode rootNode = new EvalRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
@@ -160,6 +164,8 @@ public class EPEQLStmtStartMethod
         {
             public void stop()
             {
+                statementContext.getStatementStopService().fireStatementStopped();
+
                 for (StreamSpec streamSpec : statementSpec.getStreamSpecs())
                 {
                     if (streamSpec instanceof FilterStreamSpec)
@@ -211,14 +217,14 @@ public class EPEQLStmtStartMethod
         Viewable[] streamViews = new Viewable[streamEventTypes.length];
         for (int i = 0; i < streamViews.length; i++)
         {
-            streamViews[i] = services.getViewService().createViews(eventStreamParentViewable[i], unmaterializedViewChain[i].getViewFactoryChain(), viewContext);
+            streamViews[i] = services.getViewService().createViews(eventStreamParentViewable[i], unmaterializedViewChain[i].getViewFactoryChain(), statementContext);
         }
 
         // For just 1 event stream without joins, handle the one-table process separatly.
         Viewable finalView = null;
         if (streamNames.length == 1)
         {
-            finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, viewContext);
+            finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, statementContext);
         }
         else
         {
@@ -240,6 +246,8 @@ public class EPEQLStmtStartMethod
             finalView = streamSelectorView;
         }
 
+        log.debug(".start Statement start completed");
+        
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
     }
 
@@ -255,7 +263,7 @@ public class EPEQLStmtStartMethod
         // Handle joins
         JoinSetComposer composer = JoinSetComposerFactory.makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
         JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
-        OutputProcessView indicatorView = new OutputProcessView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), viewContext);
+        OutputProcessView indicatorView = new OutputProcessView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
 
         // Create strategy for join execution
         JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
@@ -384,7 +392,7 @@ public class EPEQLStmtStartMethod
 
     private Viewable handleSimpleSelect(Viewable view,
                                         ResultSetProcessor optionalResultSetProcessor,
-                                        ViewServiceContext viewContext)
+                                        StatementServiceContext statementContext)
     {
         Viewable finalView = view;
 
@@ -399,7 +407,7 @@ public class EPEQLStmtStartMethod
         // Add select expression view if there is any
        if (optionalResultSetProcessor != null || statementSpec.getOutputLimitSpec() != null)
         {
-            OutputProcessView selectView = new OutputProcessView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), viewContext);
+            OutputProcessView selectView = new OutputProcessView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
             finalView.addView(selectView);
             finalView = selectView;
         }
@@ -407,5 +415,5 @@ public class EPEQLStmtStartMethod
         return finalView;
     }
 
-    private static final Log log = LogFactory.getLog(EPEQLStmtStartMethod.class);
+    private static final Log log = LogFactory.getLog(EPStmtStartMethod.class);
 }

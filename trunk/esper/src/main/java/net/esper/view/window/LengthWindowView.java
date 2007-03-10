@@ -8,7 +8,7 @@ import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 import net.esper.collection.ViewUpdatedCollection;
 
 /**
@@ -39,9 +39,9 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return lengthWindowViewFactory.makeView(viewServiceContext);
+        return lengthWindowViewFactory.makeView(statementServiceContext);
     }
 
     /**
@@ -101,7 +101,7 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
             }
         }
 
-        // If there are child views, fire update method
+        // If there are child views, fireStatementStopped update method
         if (viewUpdatedCollection != null)
         {
             viewUpdatedCollection.update(newData, oldData);

@@ -6,6 +6,7 @@ import javax.xml.xpath.XPathConstants;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 public class TestConfigurationParser extends TestCase
 {
@@ -104,5 +105,16 @@ public class TestConfigurationParser extends TestCase
         ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) configDBRef.getDataCacheDesc();
         assertEquals(60.5, expCache.getMaxAgeSeconds());
         assertEquals(120.1, expCache.getPurgeIntervalSeconds());
+
+        // assert custom view implementations
+        List<ConfigurationPlugInView> configViews = config.getPlugInViews();
+        assertEquals(2, configViews.size());
+        for (int i = 0; i < configViews.size(); i++)
+        {
+            ConfigurationPlugInView entry = configViews.get(i);
+            assertEquals("ext" + i, entry.getNamespace());
+            assertEquals("myview" + i, entry.getName());
+            assertEquals("com.mycompany.MyViewFactory" + i, entry.getFactoryClassName());
+        }
     }
 }

@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 import java.util.Arrays;
 
 import net.esper.view.ViewParameterException;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 
 public class TestSizeViewFactory extends TestCase
 {
@@ -25,7 +25,7 @@ public class TestSizeViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         assertFalse(factory.canReuse(new LastElementView()));
-        assertTrue(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertTrue(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
     }
 
     private void tryInvalidParameter(Object param) throws Exception
@@ -33,7 +33,7 @@ public class TestSizeViewFactory extends TestCase
         try
         {
             SizeViewFactory factory = new SizeViewFactory();
-            factory.setViewParameters(Arrays.asList(new Object[] {param}));
+            factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -45,7 +45,7 @@ public class TestSizeViewFactory extends TestCase
     private void tryParameter(Object[] param) throws Exception
     {
         SizeViewFactory factory = new SizeViewFactory();
-        factory.setViewParameters(Arrays.asList(param));
-        assertTrue(factory.makeView(SupportViewContextFactory.makeContext()) instanceof SizeView);
+        factory.setViewParameters(null, Arrays.asList(param));
+        assertTrue(factory.makeView(SupportStatementContextFactory.makeContext()) instanceof SizeView);
     }
 }

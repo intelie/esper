@@ -80,6 +80,10 @@ public class Configuration {
 	 */
 	private boolean isUsingDefaultImports = true;
 
+    protected String epServicesContextFactoryClassName;
+
+    protected List<ConfigurationPlugInView> plugInViews;
+
     /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
@@ -88,6 +92,16 @@ public class Configuration {
     public Configuration()
     {
         reset();
+    }
+
+    public void setEPServicesContextFactoryClassName(String epServicesContextFactoryClassName)
+    {
+        this.epServicesContextFactoryClassName = epServicesContextFactoryClassName;
+    }
+
+    public String getEPServicesContextFactoryClassName()
+    {
+        return epServicesContextFactoryClassName;
     }
 
     /**
@@ -239,6 +253,20 @@ public class Configuration {
     public Map<String, ConfigurationDBRef> getDatabaseReferences()
     {
         return databaseReferences;
+    }
+
+    public List<ConfigurationPlugInView> getPlugInViews()
+    {
+        return plugInViews;
+    }
+
+    public void addPlugInView(String namespace, String name, String viewFactoryClass)
+    {
+        ConfigurationPlugInView configurationPlugInView = new ConfigurationPlugInView();
+        configurationPlugInView.setNamespace(namespace);
+        configurationPlugInView.setName(name);
+        configurationPlugInView.setFactoryClassName(viewFactoryClass);
+        plugInViews.add(configurationPlugInView);
     }
 
     /**
@@ -408,6 +436,7 @@ public class Configuration {
         imports = new ArrayList<String>();
         addDefaultImports();
         isUsingDefaultImports = true;
+        plugInViews = new ArrayList<ConfigurationPlugInView>();
     }
 
     /**

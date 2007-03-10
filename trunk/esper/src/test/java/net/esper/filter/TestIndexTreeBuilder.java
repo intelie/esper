@@ -285,7 +285,7 @@ public class TestIndexTreeBuilder extends TestCase
     private FilterValueSet makeFilterValues(Object ... filterSpecArgs)
     {
         FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterSpecArgs);
-        FilterValueSet filterValues = spec.getValueSet(null);
+        FilterValueSet filterValues = spec.getValueSet(eventType, null);
         return filterValues;
     }
 }

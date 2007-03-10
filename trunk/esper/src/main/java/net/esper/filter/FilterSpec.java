@@ -2,6 +2,7 @@ package net.esper.filter;
 
 import net.esper.event.EventType;
 import net.esper.pattern.MatchedEventMap;
+import net.esper.util.MetaDefItem;
 
 import java.util.List;
 import java.util.Arrays;
@@ -12,31 +13,33 @@ import java.util.LinkedList;
  * Contains the filter criteria to sift through events. The filter criteria are the event class to look for and
  * a set of parameters (attribute names, operators and constant/range values).
  */
-public final class FilterSpec
+public final class FilterSpec implements MetaDefItem
 {
-    private final EventType eventType;
+    private final String eventTypeId;
+    private final String eventTypeAlias;
     private final List<FilterSpecParam> parameters;
 
     /**
      * Constructor - validates parameter list against event type, throws exception if invalid
      * property names or mismatcing filter operators are found.
-     * @param eventType is the event type
      * @param parameters is a list of filter parameters
      * @throws IllegalArgumentException if validation invalid
      */
-    public FilterSpec(EventType eventType, List<FilterSpecParam> parameters)
+    public FilterSpec(String eventTypeId, String eventTypeAlias, List<FilterSpecParam> parameters)
     {
-        this.eventType = eventType;
+        this.eventTypeId = eventTypeId;
+        this.eventTypeAlias = eventTypeAlias;
         this.parameters = parameters;
     }
 
-    /**
-     * Returns type of event to filter for.
-     * @return event type
-     */
-    public final EventType getEventType()
+    public String getEventTypeId()
     {
-        return eventType;
+        return eventTypeId;
+    }
+
+    public String getEventTypeAlias()
+    {
+        return eventTypeAlias;
     }
 
     /**
@@ -54,7 +57,7 @@ public final class FilterSpec
      * @param matchedEvents contains the result events to use for determining filter values
      * @return filter values
      */
-    public FilterValueSet getValueSet(MatchedEventMap matchedEvents)
+    public FilterValueSet getValueSet(EventType eventType, MatchedEventMap matchedEvents)
     {
         List<FilterValueSetParam> valueList = new LinkedList<FilterValueSetParam>();
 
@@ -74,8 +77,9 @@ public final class FilterSpec
     public final String toString()
     {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("FilterSpec type=" + this.eventType);
+        buffer.append("FilterSpec alias=" + this.eventTypeAlias);
         buffer.append(" parameters=" + Arrays.toString(parameters.toArray()));
+        buffer.append(" typeId=" + eventTypeId);
         return buffer.toString();
     }
 
@@ -93,7 +97,7 @@ public final class FilterSpec
 
         FilterSpec other = (FilterSpec) obj;
 
-        if (this.eventType != other.eventType)
+        if (!(this.eventTypeId.equals(other.eventTypeId)))
         {
             return false;
         }
@@ -117,7 +121,7 @@ public final class FilterSpec
 
     public int hashCode()
     {
-        int hashCode = eventType.hashCode();
+        int hashCode = eventTypeId.hashCode();
         for (FilterSpecParam param : parameters)
         {
             hashCode = hashCode ^ param.getPropertyName().hashCode();

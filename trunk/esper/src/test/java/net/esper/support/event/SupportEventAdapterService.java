@@ -14,7 +14,7 @@ public class SupportEventAdapterService
 
     static
     {
-        eventAdapterService = new EventAdapterServiceImpl(null);
+        eventAdapterService = new EventAdapterServiceImpl();
     }
 
     public static EventAdapterService getService()

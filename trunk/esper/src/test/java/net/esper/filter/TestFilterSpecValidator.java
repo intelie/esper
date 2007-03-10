@@ -40,7 +40,7 @@ public class TestFilterSpecValidator extends TestCase
     private void assertValid(Object ... filterParameters)
     {
         FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterParameters);
-        FilterSpecValidator.validate(spec, null);
+        FilterSpecValidator.validate(eventType, spec, null);
     }
 
     private void assertInvalid(Object ... filterParameters)
@@ -48,7 +48,7 @@ public class TestFilterSpecValidator extends TestCase
         try
         {
             FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterParameters);
-            FilterSpecValidator.validate(spec, null);
+            FilterSpecValidator.validate(eventType, spec, null);
             fail();
         }
         catch (ASTFilterSpecValidationException ex)

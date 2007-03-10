@@ -7,7 +7,7 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 
 import net.esper.view.ViewSupport;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 import net.esper.view.View;
 import net.esper.view.CloneableView;
 import net.esper.event.EventType;
@@ -18,6 +18,7 @@ import net.esper.collection.TimeWindow;
 import net.esper.collection.ViewUpdatedCollection;
 import net.esper.client.EPException;
 import net.esper.core.EPStatementHandleCallback;
+import net.esper.core.ExtensionServicesContext;
 
 /**
  * This view is a moving timeWindow extending the specified amount of milliseconds into the past.
@@ -39,7 +40,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
     private final TimeWindow timeWindow = new TimeWindow();
     private final ViewUpdatedCollection viewUpdatedCollection;
 
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
     private final ScheduleSlot scheduleSlot;
 
     /**
@@ -47,21 +48,21 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
      * @param millisecondsBeforeExpiry is the number of milliseconds before events gets pushed
      * out of the timeWindow as oldData in the update method.
      * @param viewUpdatedCollection is a collection the view must update when receiving events
-     * @param viewServiceContext is required view services
+     * @param statementServiceContext is required view services
      * @param timeWindowViewFactory for copying the view in a group-by
      */
-    public TimeWindowView(ViewServiceContext viewServiceContext, TimeWindowViewFactory timeWindowViewFactory, long millisecondsBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
+    public TimeWindowView(StatementServiceContext statementServiceContext, TimeWindowViewFactory timeWindowViewFactory, long millisecondsBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
     {
-        this.viewServiceContext = viewServiceContext;
+        this.statementServiceContext = statementServiceContext;
         this.timeWindowViewFactory = timeWindowViewFactory;
         this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
         this.viewUpdatedCollection = viewUpdatedCollection;
-        this.scheduleSlot = viewServiceContext.getScheduleBucket().allocateSlot();
+        this.scheduleSlot = statementServiceContext.getScheduleBucket().allocateSlot();
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return timeWindowViewFactory.makeView(viewServiceContext);
+        return timeWindowViewFactory.makeView(statementServiceContext);
     }
 
     /**
@@ -89,14 +90,14 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if (viewServiceContext == null)
+        if (statementServiceContext == null)
         {
             String message = "View context has not been supplied, cannot schedule callback";
             log.fatal(".update " + message);
             throw new EPException(message);
         }
 
-        long timestamp = viewServiceContext.getSchedulingService().getTime();
+        long timestamp = statementServiceContext.getSchedulingService().getTime();
 
         // we don't care about removed data from a prior view
         if ((newData == null) || (newData.length == 0))
@@ -135,7 +136,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
      */
     protected final void expire()
     {
-        long expireBeforeTimestamp = viewServiceContext.getSchedulingService().getTime() - millisecondsBeforeExpiry + 1;
+        long expireBeforeTimestamp = statementServiceContext.getSchedulingService().getTime() - millisecondsBeforeExpiry + 1;
 
         if (log.isDebugEnabled())
         {
@@ -148,7 +149,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
         // The window extends from X to (X - millisecondsBeforeExpiry + 1)
         List<EventBean> expired = timeWindow.expireEvents(expireBeforeTimestamp);
 
-        // If there are child views, fire update method
+        // If there are child views, fireStatementStopped update method
         if (this.hasViews())
         {
             if ((expired != null) && (!expired.isEmpty()))
@@ -177,7 +178,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
             return;
         }
         Long oldestTimestamp = timeWindow.getOldestTimestamp();
-        long currentTimestamp = viewServiceContext.getSchedulingService().getTime();
+        long currentTimestamp = statementServiceContext.getSchedulingService().getTime();
         long scheduleMillisec = millisecondsBeforeExpiry - (currentTimestamp - oldestTimestamp);
         scheduleCallback(scheduleMillisec);
 
@@ -190,13 +191,13 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
     private void scheduleCallback(long msecAfterCurrentTime)
     {
         ScheduleHandleCallback callback = new ScheduleHandleCallback() {
-            public void scheduledTrigger()
+            public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
             {
                 TimeWindowView.this.expire();
             }
         };
-        EPStatementHandleCallback handle = new EPStatementHandleCallback(viewServiceContext.getEpStatementHandle(), callback);
-        viewServiceContext.getSchedulingService().add(msecAfterCurrentTime, handle, scheduleSlot);
+        EPStatementHandleCallback handle = new EPStatementHandleCallback(statementServiceContext.getEpStatementHandle(), callback);
+        statementServiceContext.getSchedulingService().add(msecAfterCurrentTime, handle, scheduleSlot);
     }
 
     public final Iterator<EventBean> iterator()
