@@ -39,11 +39,19 @@ public final class FilterSpecParamRange extends FilterSpecParam
         return new DoubleRange(begin, end);
     }
 
+    /**
+     * Returns the lower endpoint.
+     * @return lower endpoint
+     */
     public FilterSpecParamRangeValue getMin()
     {
         return min;
     }
 
+    /**
+     * Returns the upper endpoint.
+     * @return upper endpoint
+     */
     public FilterSpecParamRangeValue getMax()
     {
         return max;

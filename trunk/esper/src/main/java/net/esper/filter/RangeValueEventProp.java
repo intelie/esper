@@ -43,11 +43,19 @@ public class RangeValueEventProp implements FilterSpecParamRangeValue
         return value.doubleValue();
     }
 
+    /**
+     * Returns the tag name or stream name to use for the event property.
+     * @return tag name
+     */
     public String getResultEventAsName()
     {
         return resultEventAsName;
     }
 
+    /**
+     * Returns the name of the event property.
+     * @return event property name
+     */
     public String getResultEventProperty()
     {
         return resultEventProperty;

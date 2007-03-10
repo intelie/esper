@@ -91,10 +91,6 @@ public class EPStatementImpl implements EPStatementSPI
             throw new IllegalStateException("Statement already destroyed");
         }
         statementLifecycleSvc.destroy(statementId);
-    }
-
-    public void initialize()
-    {
         parentView = null;
         eventType = null;
         dispatchChildView = null;

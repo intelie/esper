@@ -9,11 +9,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Resolves view namespace and name to view factory class, using configuration. 
+ */
 public class ViewResolutionServiceImpl implements ViewResolutionService
 {
     private static final Log log = LogFactory.getLog(ViewResolutionServiceImpl.class);
     private final Map<String, Map<String, Class>> nameToFactoryMap;
 
+    /**
+     * Ctor.
+     * @param configurationPlugInViews is the configured plug-in views
+     * @throws ConfigurationException when plug-in views cannot be solved
+     */
     public ViewResolutionServiceImpl(List<ConfigurationPlugInView> configurationPlugInViews) throws ConfigurationException
     {
         nameToFactoryMap = new HashMap<String, Map<String, Class>>();

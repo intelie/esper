@@ -13,7 +13,7 @@ import java.util.TreeMap;
  */
 public class IStreamSortedRandomAccess implements RandomAccessByIndex
 {
-    private final UpdateObserver updateObserver;
+    private final IStreamRandomAccessUpdateObserver updateObserver;
 
     private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
     private int currentSize;
@@ -22,7 +22,11 @@ public class IStreamSortedRandomAccess implements RandomAccessByIndex
     private EventBean[] cache;
     private int cacheFilledTo;
 
-    public IStreamSortedRandomAccess(UpdateObserver updateObserver)
+    /**
+     * Ctor.
+     * @param updateObserver for indicating updates to
+     */
+    public IStreamSortedRandomAccess(IStreamRandomAccessUpdateObserver updateObserver)
     {
         this.updateObserver = updateObserver;
     }
@@ -104,8 +108,15 @@ public class IStreamSortedRandomAccess implements RandomAccessByIndex
         return null;
     }
 
-    public interface UpdateObserver
+    /**
+     * For indicating that the collection has been updated.
+     */
+    public interface IStreamRandomAccessUpdateObserver
     {
+        /**
+         * Callback to indicate an update
+         * @param iStreamSortedRandomAccess is the collection
+         */
         public void updated(IStreamSortedRandomAccess iStreamSortedRandomAccess);
     }
 }

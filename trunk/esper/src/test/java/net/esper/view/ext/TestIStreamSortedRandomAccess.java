@@ -5,7 +5,6 @@ import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.bean.SupportBean;
 import net.esper.util.MultiKeyComparator;
-import net.esper.view.window.IStreamRandomAccess;
 
 import java.util.LinkedList;
 import java.util.TreeMap;
@@ -20,7 +19,7 @@ public class TestIStreamSortedRandomAccess extends TestCase
 
     public void setUp()
     {
-        IStreamSortedRandomAccess.UpdateObserver updateObserver = new IStreamSortedRandomAccess.UpdateObserver()
+        IStreamSortedRandomAccess.IStreamRandomAccessUpdateObserver updateObserver = new IStreamSortedRandomAccess.IStreamRandomAccessUpdateObserver()
         {
             public void updated(IStreamSortedRandomAccess iStreamSortedRandomAccess)
             {

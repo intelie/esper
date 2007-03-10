@@ -5,6 +5,8 @@ import net.esper.collection.Pair;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.spec.StatementSpecCompiled;
+import net.esper.eql.spec.StreamSpecCompiled;
+import net.esper.eql.spec.StreamSpecRaw;
 import net.esper.util.ManagedLock;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
@@ -13,10 +15,11 @@ import net.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+/**
+ * Provides statement lifecycle services.
+ */
 public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 {
     private static Log log = LogFactory.getLog(StatementLifecycleSvcImpl.class);
@@ -27,6 +30,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private final Map<String, EPStatementDesc> stmtIdToDescMap;
     private final Map<String, EPStatement> stmtNameToStmtMap;
 
+    /**
+     * Ctor.
+     * @param services is engine services
+     */
     public StatementLifecycleSvcImpl(EPServicesContext services)
     {
         this.services = services;
@@ -39,7 +46,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         this.stmtNameToIdMap = new HashMap<String, String>();
     }
 
-    public synchronized EPStatement createAndStart(StatementSpecCompiled statementSpec, String expression, boolean isPattern, String optStatementName)
+    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName)
     {
         // Generate statement id
         String statementId = UuidGenerator.generate(expression);
@@ -56,7 +63,16 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return desc.getEpStatement();
     }
 
-    protected synchronized EPStatement createStarted(StatementSpecCompiled statementSpec, String expression, boolean isPattern, String statementName, String statementId)
+    /**
+     * Creates a started statement.
+     * @param statementSpec is the statement def
+     * @param expression is the expression text
+     * @param isPattern is true for patterns, 
+     * @param statementName is the statement name
+     * @param statementId is the statement id
+     * @return statement 
+     */
+    protected synchronized EPStatement createStarted(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId)
     {
         if (log.isDebugEnabled())
         {
@@ -67,13 +83,24 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return desc.getEpStatement();
     }
 
-    protected synchronized EPStatementDesc createStopped(StatementSpecCompiled statementSpec, String expression, boolean isPattern, String statementName, String statementId)
+    /**
+     * Create stopped statement.
+     * @param statementSpec - statement definition
+     * @param expression is the expression text
+     * @param isPattern is true for patterns, false for non-patterns
+     * @param statementName is the statement name assigned or given
+     * @param statementId is the statement id
+     * @return stopped statement
+     */
+    protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId)
     {
         ManagedLock statementResourceLock = services.getStatementLockFactory().getStatementLock(statementName, expression);
         EPStatementHandle epStatementHandle = new EPStatementHandle(statementResourceLock, expression);
 
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
+
+        StatementSpecCompiled compiledSpec = compile(statementSpec, expression);
 
         eventProcessingRWLock.acquireWriteLock();
         try
@@ -82,7 +109,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern, services.getDispatchService(), this);
 
             // create start method
-            startMethod = new EPStatementStartMethod(statementId, statementName, statementSpec, expression, services, epStatementHandle);
+            startMethod = new EPStatementStartMethod(statementId, statementName, compiledSpec, expression, services, epStatementHandle);
 
             statementDesc = new EPStatementDesc(statement, startMethod, null);
             stmtIdToDescMap.put(statementId, statementDesc);
@@ -133,6 +160,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
+    /**
+     * Start the given statement.
+     * @param statementId is the statement id
+     * @param desc is the cached statement info
+     */
     public synchronized void start(String statementId, EPStatementDesc desc)
     {
         if (log.isDebugEnabled())
@@ -267,7 +299,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
 
             statement.setCurrentState(EPStatementState.DESTROYED);
-            statement.initialize();
 
             stmtNameToStmtMap.remove(statement.getName());
             stmtNameToIdMap.remove(statement.getName());
@@ -288,6 +319,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return stmtNameToStmtMap.get(name);
     }
 
+    /**
+     * Returns the statement given a statement id.
+     * @param id is the statement id
+     * @return statement
+     */
     public synchronized EPStatementSPI getStatementById(String id)
     {
         return this.stmtIdToDescMap.get(id).getEpStatement();
@@ -385,12 +421,21 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         log.debug(".updatedListeners No action for base implementation");
     }
 
+    /**
+     * Statement information.
+     */
     public class EPStatementDesc
     {
         private EPStatementSPI epStatement;
         private EPStatementStartMethod startMethod;
         private EPStatementStopMethod stopMethod;
 
+        /**
+         * Ctor.
+         * @param epStatement the statement
+         * @param startMethod the start method
+         * @param stopMethod the stop method
+         */
         public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod)
         {
             this.epStatement = epStatement;
@@ -398,24 +443,77 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             this.stopMethod = stopMethod;
         }
 
+        /**
+         * Returns the statement.
+         * @return statement.
+         */
         public EPStatementSPI getEpStatement()
         {
             return epStatement;
         }
 
+        /**
+         * Returns the start method.
+         * @return start method
+         */
         public EPStatementStartMethod getStartMethod()
         {
             return startMethod;
         }
 
+        /**
+         * Returns the stop method.
+         * @return stop method
+         */
         public EPStatementStopMethod getStopMethod()
         {
             return stopMethod;
         }
 
+        /**
+         * Sets the stop method.
+         * @param stopMethod to set
+         */
         public void setStopMethod(EPStatementStopMethod stopMethod)
         {
             this.stopMethod = stopMethod;
         }
     }
+
+    private StatementSpecCompiled compile(StatementSpecRaw spec, String eqlStatement) throws EPStatementException
+    {
+        List<StreamSpecCompiled> compiledStreams;
+
+        try
+        {
+            compiledStreams = new ArrayList<StreamSpecCompiled>();
+            for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
+            {
+                StreamSpecCompiled compiled = rawSpec.compile(services.getEventAdapterService(), services.getAutoImportService());
+                compiledStreams.add(compiled);
+            }
+        }
+        catch (ExprValidationException ex)
+        {
+            throw new EPStatementException(ex.getMessage(), eqlStatement);
+        }
+        catch (RuntimeException ex)
+        {
+            String text = "Unexpected error compiling statement";
+            log.error(".compile " + text, ex);
+            throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eqlStatement);
+        }
+
+        return new StatementSpecCompiled(
+                spec.getInsertIntoDesc(),
+                spec.getSelectStreamSelectorEnum(),
+                spec.getSelectClauseSpec(),
+                compiledStreams,
+                spec.getOuterJoinDescList(),
+                spec.getFilterRootNode(),
+                spec.getGroupByExpressions(),
+                spec.getHavingExprRootNode(),
+                spec.getOutputLimitSpec(),
+                spec.getOrderByList());
+    }    
 }

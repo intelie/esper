@@ -45,6 +45,10 @@ public final class EvalFilterNode extends EvalNode
         this.eventAsName = eventAsName;
     }
 
+    /**
+     * Returns the raw (unoptimized/validated) filter definition.
+     * @return filter def
+     */
     public FilterSpecRaw getRawFilterSpec()
     {
         return rawFilterSpec;
@@ -59,6 +63,10 @@ public final class EvalFilterNode extends EvalNode
         return filterSpec;
     }
 
+    /**
+     * Sets a validated and optimized filter specification
+     * @param filterSpec is the optimized filter
+     */
     public void setFilterSpec(FilterSpecCompiled filterSpec)
     {
         this.filterSpec = filterSpec;

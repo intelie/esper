@@ -71,6 +71,10 @@ public class TimeWindowViewFactory implements ViewFactory
         }
     }
 
+    /**
+     * Returns the number of millisecond before window contents expire.
+     * @return num msec
+     */
     public long getMillisecondsBeforeExpiry()
     {
         return millisecondsBeforeExpiry;

@@ -1,5 +1,8 @@
 package net.esper.event;
 
+/**
+ * Provides event adapter services through it's base class.
+ */
 public class EventAdapterServiceImpl extends EventAdapterServiceBase
 {
     public EventType addBeanType(String eventTypeAlias, Class clazz) throws EventAdapterException
@@ -15,13 +18,5 @@ public class EventAdapterServiceImpl extends EventAdapterServiceBase
     public EventBean adapterForBean(Object event)
     {
         return super.adapterForBean(event, null);
-    }
-
-    /**
-     * Ctor.
-     */
-    public EventAdapterServiceImpl()
-    {
-        super();
     }
 }

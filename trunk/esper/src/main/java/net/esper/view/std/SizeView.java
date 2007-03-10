@@ -20,6 +20,10 @@ public final class SizeView extends ViewSupport implements CloneableView
     private EventType eventType;
     private long size = 0;
 
+    /**
+     * Ctor.
+     * @param statementServiceContext is services
+     */
     public SizeView(StatementServiceContext statementServiceContext)
     {
         this.statementServiceContext = statementServiceContext;

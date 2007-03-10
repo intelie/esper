@@ -34,6 +34,10 @@ public final class FilterSpecParamConstant extends FilterSpecParam
         return filterConstant;
     }
 
+    /**
+     * Returns the constant value.
+     * @return constant value
+     */
     public Object getFilterConstant()
     {
         return filterConstant;

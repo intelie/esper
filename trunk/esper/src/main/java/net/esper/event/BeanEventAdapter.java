@@ -31,6 +31,10 @@ public class BeanEventAdapter
         classToLegacyConfigs = new HashMap<String, ConfigurationEventTypeLegacy>();
     }
 
+    /**
+     * Set the additional mappings for legacy classes.
+     * @param classToLegacyConfigs legacy class information
+     */
     public void setClassToLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
     {
         this.classToLegacyConfigs.putAll(classToLegacyConfigs);
@@ -39,6 +43,7 @@ public class BeanEventAdapter
     /**
      * Returns an adapter for the given Java Bean.
      * @param event is the bean to wrap
+     * @param eventId is an optional id to assigned to the event
      * @return EventBean wrapping Java Bean
      */
     public EventBean adapterForBean(Object event, Object eventId)

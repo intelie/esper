@@ -24,6 +24,10 @@ public class ExprRelationalOpNode extends ExprNode
         this.relationalOpEnum = relationalOpEnum;
     }
 
+    /**
+     * Returns the type of relational op used.
+     * @return enum with relational op type
+     */
     public RelationalOpEnum getRelationalOpEnum()
     {
         return relationalOpEnum;

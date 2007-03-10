@@ -16,6 +16,7 @@ public interface ViewService
      * Does not actually hook up the view factories or views against the event stream, but creates view
      * factories and sets parameters on each view factory as supplied. Determines if
      * view factories are compatible in the chain via the attach method.
+     * @param streamNum - the stream number starting at zero, a join would have N streams
      * @param parentEventType - is the event type of the event stream that originates the raw events
      * @param viewSpecList - the specification for each view factory in the chain to be created
      * @param context - dependent services
@@ -23,10 +24,9 @@ public interface ViewService
      * @throws ViewProcessingException thrown if a view factory doesn't take parameters as supplied,
      * or cannot hook onto it's parent view or event stream
      */
-    public ViewFactoryChain createFactories(String statementId,
-                                            String statementName,
-                                            int streamNum,
-                                            EventType parentEventType, List<ViewSpec> viewSpecList, StatementServiceContext context)
+    public ViewFactoryChain createFactories(int streamNum,
+                                            EventType parentEventType, List<ViewSpec> viewSpecList,
+                                            StatementServiceContext context)
             throws ViewProcessingException;
 
     /**

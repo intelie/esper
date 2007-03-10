@@ -13,7 +13,7 @@ public class TestIStreamRandomAccessImpl extends TestCase
 
     public void setUp()
     {
-        IStreamRandomAccess.UpdateObserver updateObserver = new IStreamRandomAccess.UpdateObserver()
+        IStreamRandomAccess.IStreamRandomAccessUpdateObserver updateObserver = new IStreamRandomAccess.IStreamRandomAccessUpdateObserver()
         {
             public void updated(IStreamRandomAccess iStreamRandomAccess)
             {

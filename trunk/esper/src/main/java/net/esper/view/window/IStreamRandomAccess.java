@@ -12,13 +12,13 @@ import java.util.ArrayList;
 public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedCollection
 {
     private ArrayList<EventBean> arrayList;
-    private final UpdateObserver updateObserver;
+    private final IStreamRandomAccessUpdateObserver updateObserver;
 
     /**
      * Ctor.
      * @param updateObserver is invoked when updates are received
      */
-    public IStreamRandomAccess(UpdateObserver updateObserver)
+    public IStreamRandomAccess(IStreamRandomAccessUpdateObserver updateObserver)
     {
         this.updateObserver = updateObserver;
         this.arrayList = new ArrayList<EventBean>();
@@ -59,8 +59,15 @@ public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedColl
         return null;
     }
 
-    public interface UpdateObserver
+    /**
+     * For indicating that the collection has been updated.
+     */
+    public interface IStreamRandomAccessUpdateObserver
     {
+        /**
+         * Callback to indicate an update
+         * @param iStreamRandomAccess is the collection
+         */
         public void updated(IStreamRandomAccess iStreamRandomAccess);
     }
 }

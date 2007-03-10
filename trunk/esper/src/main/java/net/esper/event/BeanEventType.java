@@ -33,6 +33,7 @@ public class BeanEventType implements EventTypeSPI
      * @param clazz is the class of a java bean or other POJO
      * @param beanEventAdapter is the chache and factory for event bean types and event wrappers
      * @param optionalLegacyDef optional configuration supplying legacy event type information
+     * @param eventTypeId is the event type id
      */
     public BeanEventType(Class clazz,
                          BeanEventAdapter beanEventAdapter,

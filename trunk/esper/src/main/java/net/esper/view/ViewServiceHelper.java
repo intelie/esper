@@ -224,7 +224,9 @@ public class ViewServiceHelper
      * Given a list of view specifications obtained from by parsing this method instantiates a list of view factories.
      * The view factories are not yet aware of each other after leaving this method (so not yet chained logically).
      * They are simply instantiated and assigned view parameters.
+     * @param streamNum is the stream number
      * @param viewSpecList is the view definition
+     * @param statementServiceContext is statement service context and statement info 
      * @return list of view factories
      * @throws ViewProcessingException if the factory cannot be creates such as for invalid view spec
      */

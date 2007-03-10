@@ -10,14 +10,11 @@ import net.esper.client.EPStatementException;
 import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.generated.EQLStatementParser;
 import net.esper.eql.parse.*;
-import net.esper.eql.spec.*;
-import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.spec.PatternStreamSpecRaw;
+import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.util.DebugFacility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Implementation for the admin interface.
@@ -135,12 +132,10 @@ public class EPAdministratorImpl implements EPAdministrator
         StatementSpecRaw statementSpec = new StatementSpecRaw();
         statementSpec.getStreamSpecs().add(patternStreamSpec);
 
-        StatementSpecCompiled compiledSpec = compile(statementSpec, expression);
-
-        return services.getStatementLifecycleSvc().createAndStart(compiledSpec, expression, true, statementName);
+        return services.getStatementLifecycleSvc().createAndStart(statementSpec, expression, true, statementName);
     }
 
-    public EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
+    private EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
     {
         if (log.isDebugEnabled())
         {
@@ -172,9 +167,8 @@ public class EPAdministratorImpl implements EPAdministrator
 
         // Specifies the statement
         StatementSpecRaw statementSpec = walker.getStatementSpec();
-        StatementSpecCompiled compiledSpec = compile(statementSpec, eqlStatement);
 
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(compiledSpec, eqlStatement, false, statementName);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
 
         log.debug(".createEQLStmt Statement created and started");
         return statement;
@@ -204,43 +198,6 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         services.getStatementLifecycleSvc().destroyAllStatements();
     }
-
-    private StatementSpecCompiled compile(StatementSpecRaw spec, String eqlStatement) throws EPStatementException
-    {
-        List<StreamSpecCompiled> compiledStreams;
-
-        try
-        {
-            compiledStreams = new ArrayList<StreamSpecCompiled>();
-            for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
-            {
-                StreamSpecCompiled compiled = rawSpec.compile(services.getEventAdapterService(), services.getAutoImportService());
-                compiledStreams.add(compiled);
-            }
-        }
-        catch (ExprValidationException ex)
-        {
-            throw new EPStatementException(ex.getMessage(), eqlStatement);
-        }
-        catch (RuntimeException ex)
-        {
-            String text = "Unexpected error compiling statement";
-            log.error(".compile " + text, ex);
-            throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eqlStatement);
-        }
-
-        return new StatementSpecCompiled(
-                spec.getInsertIntoDesc(),
-                spec.getSelectStreamSelectorEnum(),
-                spec.getSelectClauseSpec(),
-                compiledStreams,
-                spec.getOuterJoinDescList(),
-                spec.getFilterRootNode(),
-                spec.getGroupByExpressions(),
-                spec.getHavingExprRootNode(),
-                spec.getOutputLimitSpec(),
-                spec.getOrderByList());
-    }    
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);
 }

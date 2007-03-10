@@ -5,7 +5,10 @@ import net.esper.event.EventBean;
 import java.util.Map;
 import java.util.HashMap;
 
-public class RelativeAccessByEventNIndexGetter implements IStreamRelativeAccess.UpdateObserver
+/**
+ * Provides random-access into window contents by event and index as a combination. 
+ */
+public class RelativeAccessByEventNIndexGetter implements IStreamRelativeAccess.IStreamRelativeAccessUpdateObserver
 {
     private final Map<EventBean, IStreamRelativeAccess> accessorByEvent = new HashMap<EventBean, IStreamRelativeAccess>();
     private final Map<IStreamRelativeAccess, EventBean[]> eventsByAccessor  = new HashMap<IStreamRelativeAccess, EventBean[]>();
@@ -37,6 +40,11 @@ public class RelativeAccessByEventNIndexGetter implements IStreamRelativeAccess.
         eventsByAccessor.put(iStreamRelativeAccess, newData);
     }
 
+    /**
+     * Returns the access into window contents given an event.
+     * @param event to which the method returns relative access from
+     * @return buffer
+     */
     public IStreamRelativeAccess getAccessor(EventBean event)
     {
         IStreamRelativeAccess iStreamRelativeAccess = accessorByEvent.get(event);

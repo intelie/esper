@@ -19,6 +19,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     /**
      * Constructor - initializes services.
      * @param configuration is the engine configuration
+     * @param engineURI is the engine URI or null if this is the default provider
      * @throws ConfigurationException is thrown to indicate a configuraton error
      */
     public EPServiceProviderImpl(Configuration configuration, String engineURI) throws ConfigurationException

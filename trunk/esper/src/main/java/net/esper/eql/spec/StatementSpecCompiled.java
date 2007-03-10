@@ -21,6 +21,19 @@ public class StatementSpecCompiled
     private final OutputLimitSpec outputLimitSpec;
     private final List<Pair<ExprNode, Boolean>> orderByList;
 
+    /**
+     * Ctor.
+     * @param insertIntoDesc insert into def
+     * @param selectClauseStreamSelectorEnum stream selection
+     * @param selectClauseSpec select clause
+     * @param streamSpecs specs for streams
+     * @param outerJoinDescList outer join def
+     * @param filterExprRootNode where filter expr nodes
+     * @param groupByExpressions group by expression
+     * @param havingExprRootNode having expression
+     * @param outputLimitSpec output limit
+     * @param orderByList order by
+     */
     public StatementSpecCompiled(InsertIntoDesc insertIntoDesc, SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum, SelectClauseSpec selectClauseSpec, List<StreamSpecCompiled> streamSpecs, List<OuterJoinDesc> outerJoinDescList, ExprNode filterExprRootNode, List<ExprNode> groupByExpressions, ExprNode havingExprRootNode, OutputLimitSpec outputLimitSpec, List<Pair<ExprNode, Boolean>> orderByList)
     {
         this.insertIntoDesc = insertIntoDesc;
@@ -124,6 +137,10 @@ public class StatementSpecCompiled
         return selectStreamDirEnum;
     }
 
+    /**
+     * Set the where clause filter node.
+     * @param optionalFilterNode is the where-clause filter node
+     */
     public void setFilterExprRootNode(ExprNode optionalFilterNode)
     {
         filterExprRootNode = optionalFilterNode;

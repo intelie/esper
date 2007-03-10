@@ -56,6 +56,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
 
     /**
      * Ctor.
+     * @param eventAdapterService is the service to resolve event types
      */
     public StreamFactorySvcImpl(EventAdapterService eventAdapterService)
     {

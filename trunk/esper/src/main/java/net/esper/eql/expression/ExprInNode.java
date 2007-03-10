@@ -30,6 +30,10 @@ public class ExprInNode extends ExprNode
         this.isNotIn = isNotIn;
     }
 
+    /**
+     * Returns true for not-in, false for regular in
+     * @return false for "val in (a,b,c)" or true for "val not in (a,b,c)" 
+     */
     public boolean isNotIn()
     {
         return isNotIn;
@@ -76,6 +80,10 @@ public class ExprInNode extends ExprNode
         return Boolean.class;
     }
 
+    /**
+     * Returns the coercion type to use if coercion is required.
+     * @return coercion type
+     */
     public Class getCoercionType()
     {
         return coercionType;

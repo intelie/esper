@@ -92,11 +92,19 @@ public class ConfigurationSnapshot
         return databaseRefs;
     }
 
+    /**
+     * Returns the services context factory class name
+     * @return class name
+     */
     public String getEPServicesContextFactoryClassName()
     {
         return epServicesContextFactoryClassName;
     }
 
+    /**
+     * Returns a list of configured plug-in views.
+     * @return configs for views
+     */
     public List<ConfigurationPlugInView> getPlugInViews()
     {
         return plugInViews;

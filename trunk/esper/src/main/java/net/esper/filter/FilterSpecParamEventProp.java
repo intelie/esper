@@ -42,11 +42,19 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
         }
     }
 
+    /**
+     * Returns true if numeric coercion is required, or false if not
+     * @return true to coerce at runtime
+     */
     public boolean isMustCoerce()
     {
         return isMustCoerce;
     }
 
+    /**
+     * Returns the numeric coercion type.
+     * @return type to coerce to
+     */
     public Class getCoercionType()
     {
         return coercionType;

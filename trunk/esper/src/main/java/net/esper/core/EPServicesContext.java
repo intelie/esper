@@ -49,6 +49,10 @@ public final class EPServicesContext
      * @param eventAdapterService service to resolve event types
      * @param autoImportService service to resolve partial class names
      * @param databaseConfigService service to resolve a database name to database connection factory and configs
+     * @param viewResolutionService resolves view namespace and name to view factory class
+     * @param statementLockFactory creates statement-level locks
+     * @param eventProcessingRWLock is the engine lock for statement management
+     * @param extensionServicesContext marker interface allows adding additional services 
      */
     public EPServicesContext(SchedulingService schedulingService,
                              EventAdapterService eventAdapterService,
@@ -75,6 +79,10 @@ public final class EPServicesContext
         this.extensionServicesContext = extensionServicesContext;
     }
 
+    /**
+     * Sets the service dealing with starting and stopping statements.
+     * @param statementLifecycleSvc statement lifycycle svc
+     */
     public void setStatementLifecycleSvc(StatementLifecycleSvc statementLifecycleSvc)
     {
         this.statementLifecycleSvc = statementLifecycleSvc;
@@ -188,31 +196,54 @@ public final class EPServicesContext
         return databaseConfigService;
     }
 
+    /**
+     * Service for resolving view namespace and name.
+     * @return view resolution svc
+     */
     public ViewResolutionService getViewResolutionService()
     {
         return viewResolutionService;
     }
 
+    /**
+     * Factory for statement-level locks.
+     * @return factory
+     */
     public StatementLockFactory getStatementLockFactory()
     {
         return statementLockFactory;
     }
 
+    /**
+     * Returns the event processing lock for coordinating statement administration with event processing.
+     * @return lock
+     */
     public ManagedReadWriteLock getEventProcessingRWLock()
     {
         return eventProcessingRWLock;
     }
 
+    /**
+     * Returns statement lifecycle svc
+     * @return service for statement start and stop
+     */
     public StatementLifecycleSvc getStatementLifecycleSvc()
     {
         return statementLifecycleSvc;
     }
 
+    /**
+     * Returns extension service for adding custom the services.
+     * @return extension service context
+     */
     public ExtensionServicesContext getExtensionServicesContext()
     {
         return extensionServicesContext;
     }
 
+    /**
+     * Destroy services.
+     */
     public void destroy()
     {
         if (extensionServicesContext != null)

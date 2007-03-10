@@ -20,6 +20,13 @@ public class ExprBetweenNode extends ExprNode
     private boolean isAlwaysFalse;
     private ExprBetweenComp computer;
 
+    /**
+     * Ctor.
+     * @param lowEndpointIncluded is true for the regular 'between' or false for "val in (a:b)" (open range), or
+     * false if the endpoint is not included
+     * @param highEndpointIncluded indicates whether the high endpoint is included
+     * @param notBetween is true for 'not between' or 'not in (a:b), or false for a regular between 
+     */
     public ExprBetweenNode(boolean lowEndpointIncluded, boolean highEndpointIncluded, boolean notBetween)
     {
         isLowEndpointIncluded = lowEndpointIncluded;
@@ -27,16 +34,28 @@ public class ExprBetweenNode extends ExprNode
         isNotBetween = notBetween;
     }
 
+    /**
+     * Returns true if the low endpoint is included, false if not
+     * @return indicator if endppoint is included
+     */
     public boolean isLowEndpointIncluded()
     {
         return isLowEndpointIncluded;
     }
 
+    /**
+     * Returns true if the high endpoint is included, false if not
+     * @return indicator if endppoint is included
+     */
     public boolean isHighEndpointIncluded()
     {
         return isHighEndpointIncluded;
     }
 
+    /**
+     * Returns true for inverted range, or false for regular (openn/close/half-open/half-closed) ranges.
+     * @return true for not betwene, false for between 
+     */
     public boolean isNotBetween()
     {
         return isNotBetween;

@@ -8,9 +8,24 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class ManagedReadWriteLock
 {
+    /**
+     * Acquire text.
+     */
     protected final static String ACQUIRE_TEXT  = "Acquire ";
+
+    /**
+     * Acquired text.
+     */
     protected final static String ACQUIRED_TEXT = "Got     ";
+
+    /**
+     * Release text.
+     */
     protected final static String RELEASE_TEXT  = "Release ";
+
+    /**
+     * Released text.
+     */
     protected final static String RELEASED_TEXT = "Freed   ";
 
     private final ReentrantReadWriteLock lock;

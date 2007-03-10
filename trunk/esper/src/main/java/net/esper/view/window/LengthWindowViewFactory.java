@@ -12,7 +12,11 @@ import java.util.List;
  */
 public class LengthWindowViewFactory implements ViewFactory
 {
+    /**
+     * Size of length window.
+     */
     protected int size;
+    
     private EventType eventType;
     private RandomAccessByIndexGetter randomAccessGetterImpl;
 

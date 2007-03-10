@@ -26,6 +26,10 @@ public class InSetOfValuesConstant implements FilterSpecParamInValue
         return constant;
     }
 
+    /**
+     * Returns the constant value.
+     * @return constant
+     */
     public Object getConstant()
     {
         return constant;

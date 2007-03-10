@@ -4,17 +4,29 @@ import net.esper.eql.expression.ExprNode;
 
 import java.util.*;
 
+/**
+ * A two-sided map for filter parameters mapping filter expression nodes to filter parameters and
+ * back. For use in optimizing filter expressions.
+ */
 public class FilterParamExprMap
 {
     private Map<ExprNode, FilterSpecParam> exprNodes;
     private Map<FilterSpecParam, ExprNode> specParams;
 
+    /**
+     * Ctor.
+     */
     public FilterParamExprMap()
     {
         exprNodes = new HashMap<ExprNode, FilterSpecParam>();
         specParams = new HashMap<FilterSpecParam, ExprNode>();
     }
 
+    /**
+     * Add a node and filter param.
+     * @param exprNode is the node to add
+     * @param param is null if the expression node has not optimized form 
+     */
     public void put(ExprNode exprNode, FilterSpecParam param)
     {
         exprNodes.put(exprNode, param);
@@ -24,6 +36,10 @@ public class FilterParamExprMap
         }        
     }
 
+    /**
+     * Returns all expression nodes for which no filter parameter exists.
+     * @return list of expression nodes
+     */
     public List<ExprNode> getUnassignedExpressions()
     {
         List<ExprNode> unassigned = new ArrayList<ExprNode>();
@@ -37,11 +53,19 @@ public class FilterParamExprMap
         return unassigned;
     }
 
+    /**
+     * Returns all filter parameters.
+     * @return filter parameters
+     */
     public Collection<FilterSpecParam> getFilterParams()
     {
         return specParams.keySet();
     }
 
+    /**
+     * Removes a filter parameter and it's associated expression node
+     * @param param is the parameter to remove
+     */
     public void removeEntry(FilterSpecParam param)
     {
         ExprNode exprNode = specParams.get(param);
@@ -54,6 +78,10 @@ public class FilterParamExprMap
         exprNodes.remove(exprNode);
     }
 
+    /**
+     * Remove a filter parameter leaving the expression node in place.
+     * @param param filter parameter to remove
+     */
     public void removeValue(FilterSpecParam param)
     {
         ExprNode exprNode = specParams.get(param);

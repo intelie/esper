@@ -9,12 +9,13 @@ import org.apache.commons.logging.LogFactory;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.util.MetaDefItem;
 
 /**
  * Superclass for filter nodes in a filter expression tree. Allow
  * validation against stream event types and evaluation of events against filter tree.
  */
-public abstract class ExprNode implements ExprValidator, ExprEvaluator
+public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefItem
 {
     private final LinkedList<ExprNode> childNodes;
 

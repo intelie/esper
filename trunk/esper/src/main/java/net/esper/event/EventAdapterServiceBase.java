@@ -51,6 +51,10 @@ public abstract class EventAdapterServiceBase implements EventAdapterService
         beanEventAdapter = new BeanEventAdapter();
     }
 
+    /**
+     * Set the legacy Java class type information.
+     * @param classToLegacyConfigs is the legacy class configs
+     */
     public void setClassLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
     {
         beanEventAdapter.setClassToLegacyConfigs(classToLegacyConfigs);
@@ -126,6 +130,13 @@ public abstract class EventAdapterServiceBase implements EventAdapterService
         return alias;
     }
 
+    /**
+     * Add an alias and class as an event type.
+     * @param eventTypeAlias is the alias
+     * @param clazz is the Java class to add
+     * @return event type
+     * @throws EventAdapterException to indicate an error constructing the type
+     */
     public synchronized EventType addBeanTypeByAliasAndClazz(String eventTypeAlias, Class clazz) throws EventAdapterException
     {
         if (log.isDebugEnabled())
@@ -155,11 +166,24 @@ public abstract class EventAdapterServiceBase implements EventAdapterService
         return eventType;
     }
 
+    /**
+     * Create an event bean given an event of object id.
+     * @param event is the event class
+     * @param eventId is the event id
+     * @return event
+     */
     public EventBean adapterForBean(Object event, Object eventId)
     {
         return beanEventAdapter.adapterForBean(event, eventId);
     }
 
+    /**
+     * Add an event type for the given Java class name.
+     * @param eventTypeAlias is the alias
+     * @param fullyQualClassName is the Java class name
+     * @return event type
+     * @throws EventAdapterException if the Class name cannot resolve or other error occured
+     */
     public synchronized EventType addBeanTypeByAliasAndClassName(String eventTypeAlias, String fullyQualClassName) throws EventAdapterException
     {
         if (log.isDebugEnabled())

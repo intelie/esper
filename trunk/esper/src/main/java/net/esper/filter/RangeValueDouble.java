@@ -26,6 +26,10 @@ public class RangeValueDouble implements FilterSpecParamRangeValue
         return doubleValue;
     }
 
+    /**
+     * Returns the constant value.
+     * @return constant
+     */
     public double getDoubleValue()
     {
         return doubleValue;

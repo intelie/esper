@@ -13,11 +13,33 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Helper to compile (validate and optimize) filter expressions as used in pattern and filter-based streams.
+ */
 public final class FilterSpecCompiler
 {
     private static final Log log = LogFactory.getLog(FilterSpecCompiler.class);
+
+    /**
+     * Assigned for filter parameters that are based on boolean expression and not on
+     * any particular property name.
+     * <p>
+     * Keeping this artificial property name is a simplification as optimized filter parameters
+     * generally keep a property name.
+     */
     public final static String PROPERTY_NAME_BOOLEAN_EXPRESSION = ".boolean_expression";
 
+    /**
+     * Factory method for compiling filter expressions into a filter specification
+     * for use with filter service.
+     * @param eventType is the filtered-out event type
+     * @param filterExpessions is a list of filter expressions
+     * @param taggedEventTypes is a map of stream names (tags) and event types available
+     * @param streamTypeService is used to set rules for resolving properties
+     * @param autoImportService resolved imports for static methods and such
+     * @return compiled filter specification
+     * @throws ExprValidationException if the expression or type validations failed
+     */
     public static FilterSpecCompiled makeFilterSpec(EventType eventType,
                                                     List<ExprNode> filterExpessions,
                                                     LinkedHashMap<String, EventType> taggedEventTypes,
@@ -222,6 +244,13 @@ public final class FilterSpecCompiler
         }
     }
 
+    /**
+     * For a given expression determine if this is optimizable and create the filter parameter
+     * representing the expression, or null if not optimizable.
+     * @param constituent is the expression to look at
+     * @return filter parameter representing the expression, or null
+     * @throws ExprValidationException if the expression is invalid
+     */
     protected static FilterSpecParam makeFilterParam(ExprNode constituent)
             throws ExprValidationException
     {

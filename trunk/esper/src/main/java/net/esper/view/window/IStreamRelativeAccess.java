@@ -13,13 +13,13 @@ public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewU
 {
     private final Map<EventBean, Integer> indexPerEvent;
     private EventBean[] lastNewData;
-    private final UpdateObserver updateObserver;
+    private final IStreamRelativeAccessUpdateObserver updateObserver;
 
     /**
      * Ctor.
      * @param updateObserver is invoked when updates are received
      */
-    public IStreamRelativeAccess(UpdateObserver updateObserver)
+    public IStreamRelativeAccess(IStreamRelativeAccessUpdateObserver updateObserver)
     {
         this.updateObserver = updateObserver;
         indexPerEvent = new HashMap<EventBean, Integer>();
@@ -71,8 +71,16 @@ public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewU
         return null;
     }
 
-    public interface UpdateObserver
+    /**
+     * For indicating that the collection has been updated.
+     */
+    public interface IStreamRelativeAccessUpdateObserver
     {
+        /**
+         * Callback to indicate an update.
+         * @param iStreamRelativeAccess is the collection
+         * @param newData is the new data available
+         */
         public void updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData);
     }
 }

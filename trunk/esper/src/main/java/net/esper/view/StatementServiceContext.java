@@ -23,11 +23,15 @@ public final class StatementServiceContext
 
     /**
      * Constructor.
+     * @param statementId is the statement is assigned for the statement for which this context exists
+     * @param statementName is the statement name
      * @param schedulingService implementation for schedule registration
      * @param scheduleBucket is for ordering scheduled callbacks within the view statements
      * @param eventAdapterService service for generating events and handling event types
      * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      * @param viewResultionService is a service for resolving view namespace and name to a view factory
+     * @param extensionServicesContext provide extension points for custom statement resources
+     * @param statementStopService for registering a callback invoked when a statement is stopped
      */
     public StatementServiceContext(String statementId,
                                    String statementName,
@@ -50,11 +54,19 @@ public final class StatementServiceContext
         this.statementStopService = statementStopService;
     }
 
+    /**
+     * Returns the statement id.
+     * @return statement id
+     */
     public String getStatementId()
     {
         return statementId;
     }
 
+    /**
+     * Returns the statement name
+     * @return statement name
+     */
     public String getStatementName()
     {
         return statementName;
@@ -96,16 +108,28 @@ public final class StatementServiceContext
         return epStatementHandle;
     }
 
+    /**
+     * Returns view resolution svc.
+     * @return view resolution
+     */
     public ViewResolutionService getViewResultionService()
     {
         return viewResultionService;
     }
 
+    /**
+     * Returns extension context.
+     * @return context
+     */
     public ExtensionServicesContext getExtensionServicesContext()
     {
         return extensionServicesContext;
     }
 
+    /**
+     * Returns statement stop subscription taker.
+     * @return stop service
+     */
     public StatementStopService getStatementStopService()
     {
         return statementStopService;

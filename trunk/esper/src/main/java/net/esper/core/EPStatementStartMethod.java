@@ -47,6 +47,8 @@ public class EPStatementStartMethod
 
     /**
      * Ctor.
+     * @param statementId is the statement is assigned to the statement
+     * @param statementName is the statement name assigned
      * @param statementSpec is a container for the definition of all statement constructs that
      * may have been used in the statement, i.e. if defines the select clauses, insert into, outer joins etc.
      * @param eqlStatement is the expression text
@@ -105,7 +107,7 @@ public class EPStatementStartMethod
             {
                 FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
                 eventStreamParentViewable[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), epStatementHandle, isJoin);
-                unmaterializedViewChain[i] = services.getViewService().createFactories(statementId, statementName, i, eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), statementContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(i, eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), statementContext);
             }
             // Create view factories and parent view based on a pattern expression
             else if (streamSpec instanceof PatternStreamSpecCompiled)
@@ -114,7 +116,7 @@ public class EPStatementStartMethod
                 final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
                 eventStreamParentViewable[i] = sourceEventStream;
-                unmaterializedViewChain[i] = services.getViewService().createFactories(statementId, statementName, i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), statementContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), statementContext);
 
                 EvalRootNode rootNode = new EvalRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());

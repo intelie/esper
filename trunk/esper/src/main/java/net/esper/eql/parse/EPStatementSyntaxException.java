@@ -54,6 +54,11 @@ public class EPStatementSyntaxException extends EPStatementException
         return new EPStatementSyntaxException("end of input" + getPositionInfo(e), expression);
     }
 
+    /**
+     * Returns the position information string for a parser exception.
+     * @param e is the parser exception
+     * @return is a string with line and column information
+     */
     public static String getPositionInfo(RecognitionException e)
     {
         return e.getLine() > 0 && e.getColumn() > 0

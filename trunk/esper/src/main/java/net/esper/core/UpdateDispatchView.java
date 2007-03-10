@@ -54,6 +54,10 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
         this.dispatchService = dispatchService;
     }
 
+    /**
+     * Set new update listeners.
+     * @param updateListeners to set
+     */
     public void setUpdateListeners(Set<UpdateListener> updateListeners)
     {
         this.updateListeners = updateListeners;
@@ -113,6 +117,9 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
         lastOldEvents.get().clear();
     }
 
+    /**
+     * Remove event reference to last event.
+     */
     public void clear()
     {
         lastIterableEvent = null;

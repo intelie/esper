@@ -20,9 +20,7 @@ public final class ViewServiceImpl implements ViewService
     {
     }
 
-    public ViewFactoryChain createFactories(String statementId,
-                                            String statementName,
-                                            int streamNum,
+    public ViewFactoryChain createFactories(int streamNum,
                                             EventType parentEventType,
                                             List<ViewSpec> viewSpecDefinitions,
                                             StatementServiceContext context)

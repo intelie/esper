@@ -10,8 +10,8 @@ import net.esper.util.MetaDefItem;
 public class OuterJoinDesc implements MetaDefItem
 {
     private OuterJoinType outerJoinType;
-    private transient ExprIdentNode leftNode;
-    private transient ExprIdentNode rightNode;
+    private ExprIdentNode leftNode;
+    private ExprIdentNode rightNode;
 
     /**
      * Ctor.

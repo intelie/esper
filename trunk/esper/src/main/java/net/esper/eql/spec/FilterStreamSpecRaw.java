@@ -10,19 +10,38 @@ import net.esper.event.EventType;
 import net.esper.filter.FilterSpecCompiled;
 import net.esper.filter.FilterSpecCompiler;
 import net.esper.view.ViewSpec;
+import net.esper.util.MetaDefItem;
 
 import java.util.List;
 
-public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
+/**
+ * Unvalided filter-based stream specification.
+ */
+public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw, MetaDefItem
 {
     private FilterSpecRaw rawFilterSpec;
 
+
+    /**
+     * Ctor.
+     * @param rawFilterSpec is unvalidated filter specification
+     * @param viewSpecs is the view definition
+     * @param optionalStreamName is the stream name if supplied, or null if not supplied
+     */
     public FilterStreamSpecRaw(FilterSpecRaw rawFilterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
     {
         super(optionalStreamName, viewSpecs);
         this.rawFilterSpec = rawFilterSpec;
     }
 
+    public FilterStreamSpecRaw()
+    {
+    }
+
+    /**
+     * Returns the unvalided filter spec.
+     * @return filter def
+     */
     public FilterSpecRaw getRawFilterSpec()
     {
         return rawFilterSpec;
@@ -46,6 +65,13 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName());
     }
 
+    /**
+     * Resolves a given event alias to an event type.
+     * @param eventName is the alias to resolve
+     * @param eventAdapterService for resolving event types
+     * @return event type
+     * @throws ExprValidationException if the info cannot be resolved
+     */
     protected static EventType resolveType(String eventName, EventAdapterService eventAdapterService)
             throws ExprValidationException
     {

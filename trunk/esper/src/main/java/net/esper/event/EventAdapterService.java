@@ -9,9 +9,36 @@ import org.w3c.dom.Node;
  */
 public interface EventAdapterService
 {
+    /**
+     * Returns the event type id given an event type alias. The alias is expected to exist.
+     * <p> Use getExistsTypeByAlias to check if an alias exists.
+     * @param eventTypeAlias is the event name
+     * @return event type id
+     * @throws IllegalStateException to indicate that the alias does not exist. 
+     */
     public String getIdByAlias(String eventTypeAlias);
+
+    /**
+     * Returns the event type given an event type id. The id is expected to exist.
+     * @param eventTypeID is the tyoe id
+     * @return event type
+     * @throws IllegalStateException to indicate that the id does not exist. 
+     */
     public EventType getTypeById(String eventTypeID);
+
+    /**
+     * Returns the event type id given the event type, with the type expected to exist.
+     * @param eventType to return the id for
+     * @return event type id
+     * @throws IllegalStateException to indicate that the type does not exist.
+     */
     public String getIdByType(EventType eventType);
+
+    /**
+     * Returns the first event type alias for a given event type id.
+     * @param eventTypeID is the type id
+     * @return the very first alias registered for an event type
+     */
     public String getAliasById(String eventTypeID);
 
     /**

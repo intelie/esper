@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * Pattern specification in unvalidated, unoptimized form.
+ */
 public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 {
     private final EvalNode evalNode;
@@ -93,6 +96,11 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, this.getViewSpecs(), this.getOptionalStreamName());
     }
 
+    /**
+     * Searched recursivly for pattern evaluation filter nodes.
+     * @param currentNode is the root node
+     * @return list of filter nodes
+     */
     protected static List<EvalFilterNode> recusiveFilterChildNodes(EvalNode currentNode)
     {
         List<EvalFilterNode> nodeList = new ArrayList<EvalFilterNode>();

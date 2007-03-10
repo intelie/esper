@@ -16,6 +16,7 @@ public class BeanEventBean implements EventBeanSPI
     /**
      * Constructor.
      * @param event is the event object
+     * @param eventId is an optional event id for the event
      * @param eventType is the schema information for the event object.
      */
     public BeanEventBean(Object event, EventType eventType, Object eventId)

@@ -41,11 +41,19 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
         adapter = new ExprNodeAdapter(exprNode);
     }
 
+    /**
+     * Returns the expression node of the boolean expression this filter parameter represents.
+     * @return expression node
+     */
     public ExprNode getExprNode()
     {
         return exprNode;
     }
 
+    /**
+     * Returns the map of tag/stream names to event types that the filter expressions map use (for patterns)
+     * @return map
+     */
     public LinkedHashMap<String, EventType> getTaggedEventTypes()
     {
         return taggedEventTypes;

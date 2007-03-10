@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Factory for services context.
+ */
 public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 {
     public EPServicesContext createServicesContext(String engineURI, ConfigurationSnapshot configSnapshot)
@@ -50,6 +53,11 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         return services;
     }
 
+    /**
+     * Initialize event adapter service for config snapshot.
+     * @param eventAdapterService is events adapter
+     * @param configSnapshot is the config snapshot
+     */
     protected static void init(EventAdapterServiceBase eventAdapterService, ConfigurationSnapshot configSnapshot)
     {
         // Extract legacy event type definitions for each event type alias, if supplied.
@@ -117,6 +125,11 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
     }
 
+    /**
+     * Constructs the auto import service.
+     * @param configSnapshot config info
+     * @return service
+     */
     protected static AutoImportService makeAutoImportService(ConfigurationSnapshot configSnapshot)
     {
         AutoImportService autoImportService = null;
@@ -134,6 +147,12 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         return autoImportService;
     }
 
+    /**
+     * Creates the database config service.
+     * @param configSnapshot is the config snapshot
+     * @param schedulingService is the timer stuff
+     * @return database config svc
+     */
     protected static DatabaseConfigService makeDatabaseRefService(ConfigurationSnapshot configSnapshot,
                                                           SchedulingService schedulingService)
     {
