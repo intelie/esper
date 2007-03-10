@@ -21,7 +21,7 @@ public class RangeValueDouble implements FilterSpecParamRangeValue
         this.doubleValue = doubleValue;
     }
 
-    public final double getFilterValue(MatchedEventMap matchedEvents)
+    public final Double getFilterValue(MatchedEventMap matchedEvents)
     {
         return doubleValue;
     }

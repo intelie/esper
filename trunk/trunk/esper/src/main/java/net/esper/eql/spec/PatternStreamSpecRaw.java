@@ -75,7 +75,11 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             // Stream type service allows resolution by property name event if that name appears in other tags.
             // by defaulting to stream zero.
             // Stream zero is always the current event type, all others follow the order of the map (stream 1 to N).
-            String selfStreamName = UuidGenerator.generate(filterNode);
+            String selfStreamName = optionalTag;
+            if (selfStreamName == null)
+            {
+                selfStreamName = "s_" + UuidGenerator.generate(filterNode);
+            }
             LinkedHashMap<String, EventType> filterTypes = new LinkedHashMap<String, EventType>();
             filterTypes.put(selfStreamName, eventType);
             filterTypes.putAll(taggedEventTypes);

@@ -18,6 +18,8 @@ public class InSetOfValuesEventProp implements FilterSpecParamInValue
      * Ctor.
      * @param resultEventAsName is the event tag
      * @param resultEventProperty is the event property name
+     * @param isMustCoerce indicates on whether numeric coercion must be performed
+     * @param coercionType indicates the numeric coercion type to use
      */
     public InSetOfValuesEventProp(String resultEventAsName, String resultEventProperty, boolean isMustCoerce, Class coercionType)
     {
@@ -37,11 +39,7 @@ public class InSetOfValuesEventProp implements FilterSpecParamInValue
         }
 
         Object value = event.get(resultEventProperty);
-        if (value == null)
-        {
-            throw new IllegalStateException("Event property named " +
-                    '\'' + resultEventAsName + '.' + resultEventProperty + "' returned null value");
-        }
+
         // Coerce if necessary
         if (isMustCoerce)
         {

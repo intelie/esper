@@ -7,17 +7,6 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.eql.SupportStaticMethodLib;
 
-// TODO: test pattern self-comparison expressions, i.e. "A(a=a)" or "A(x=y)"
-// TODO: test pattern where tag name is same event, i.e. "a=A(a.x=a.y)"
-// TODO: test pattern boolean functions allowed, i.e. "A(isTrue(a.x)" or "b=B -> a=A(isTrue(a, b))"
-// TODO: right exception throw when errors occur?
-
-// TODO: test filters with multiple expressions
-// TODO: test A(ax in (ay, az))
-// TODO: test matching by adding a boolean expr first then some more sensible stuff testing the performance
-// TODO: test each of the filter params individually as duplicates
-// TODO: test null values in equals etc.
-
 public class TestFilterExpressions extends TestCase
 {
     private EPServiceProvider epService;
@@ -30,6 +19,295 @@ public class TestFilterExpressions extends TestCase
         epService.initialize();
     }
 
+    public void testPatternFunc3Stream()
+    {
+        String text;
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed=a.intBoxed, intBoxed=b.intBoxed and intBoxed != null)]";
+        tryPattern3Stream(text, new Integer[] {null, 2, 1, null,   8,  1,  2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, 3, 1,    8, null, 4, -2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, 3, 1,    8, null, 5, null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                    new boolean[] {false, false, true, false, false, false, false});
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed=a.intBoxed or intBoxed=b.intBoxed)]";
+        tryPattern3Stream(text, new Integer[] {null, 2, 1, null,   8, 1, 2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, 3, 1,    8, null, 4, -2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, 3, 1,    8, null, 5, null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                    new boolean[] {true, true, true, true, true, false, false});
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed=a.intBoxed, intBoxed=b.intBoxed)]";
+        tryPattern3Stream(text, new Integer[] {null, 2, 1, null,   8,  1,  2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, 3, 1,    8, null, 4, -2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, 3, 1,    8, null, 5, null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                    new boolean[] {true, false, true, false, false, false, false});
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed!=a.intBoxed, intBoxed!=b.intBoxed)]";
+        tryPattern3Stream(text, new Integer[] {null, 2, 1, null,   8,  1,  2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, 3, 1,    8, null, 4, -2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, 3, 1,    8, null, 5, null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                    new boolean[] {false, false, false, false, false, true, true});
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed!=a.intBoxed)]";
+        tryPattern3Stream(text, new Integer[] {2,    8,    null, 2, 1, null, 1}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {-2,   null, null, 3, 1,    8, 4}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {null, null, null, 3, 1,    8, 5}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                               new boolean[] {false, false, false, true, false, true, true});
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed=a.intBoxed, doubleBoxed=b.doubleBoxed)]";
+        tryPattern3Stream(text, new Integer[] {2, 2, 1, 2, 1, 7, 1}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {0, 0, 0, 0, 0, 0, 0}, new Double[] {1d, 2d, 0d, 2d, 0d, 1d, 0d},
+                                new Integer[] {2, 2, 3, 2, 1, 7, 5}, new Double[] {1d, 1d, 1d, 2d, 1d, 1d, 1d},
+                               new boolean[] {true, false, false, true, false, true, false});
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed in (a.intBoxed, b.intBoxed))]";
+        tryPattern3Stream(text, new Integer[] {2,    1, 1,     null,   1, null,    1}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {1,    2, 1,     null, null,   2,    0}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {2,    2, 3,     null,   1, null,  null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                           new boolean[]   {true, true, false, false, true, false, false});
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed in [a.intBoxed:b.intBoxed])]";
+        tryPattern3Stream(text, new Integer[] {2,    1, 1,     null,   1, null,    1}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {1,    2, 1,     null, null,   2,    0}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {2,    1, 3,     null,   1, null,  null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                           new boolean[]   {true, true, false, false, false, false, false});
+
+        text = "select * from pattern [" +
+                "a=" + SupportBean.class.getName() + " -> " +
+                "b=" + SupportBean.class.getName() + " -> " +
+                "c=" + SupportBean.class.getName() + "(intBoxed not in [a.intBoxed:b.intBoxed])]";
+        tryPattern3Stream(text, new Integer[] {2,    1, 1,     null,   1, null,    1}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {1,    2, 1,     null, null,   2,    0}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                                new Integer[] {2,    1, 3,     null,   1, null,  null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
+                           new boolean[]   {false, false, true, false, false, false, false});
+    }
+
+    public void testPatternFunc()
+    {
+        String text;
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(intBoxed = a.intBoxed and doubleBoxed = a.doubleBoxed)]";
+        tryPattern(text, new Integer[] {null, 2, 1, null, 8, 1, 2}, new Double[] {2d, 2d, 2d, 1d, 5d, 6d, 7d},
+                         new Integer[] {null, 3, 1, 8, null, 1, 2}, new Double[] {2d, 3d, 2d, 1d, 5d, 6d, 8d},
+                    new boolean[] {true, false, true, false, false, true, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(a.doubleBoxed = doubleBoxed)]";
+        tryPattern(text, new Integer[] {0, 0}, new Double[] {2d, 2d},
+                         new Integer[] {0, 0}, new Double[] {2d, 3d},
+                    new boolean[] {true, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(a.doubleBoxed = b.doubleBoxed)]";
+        tryPattern(text, new Integer[] {0, 0}, new Double[] {2d, 2d},
+                         new Integer[] {0, 0}, new Double[] {2d, 3d},
+                    new boolean[] {true, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(a.doubleBoxed != doubleBoxed)]";
+        tryPattern(text, new Integer[] {0, 0}, new Double[] {2d, 2d},
+                         new Integer[] {0, 0}, new Double[] {2d, 3d},
+                    new boolean[] {false, true});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(a.doubleBoxed != b.doubleBoxed)]";
+        tryPattern(text, new Integer[] {0, 0}, new Double[] {2d, 2d},
+                         new Integer[] {0, 0}, new Double[] {2d, 3d},
+                    new boolean[] {false, true});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed in [a.doubleBoxed:a.intBoxed])]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {false, true, true, true, true, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed in (a.doubleBoxed:a.intBoxed])]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {false, false, true, true, true, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(b.doubleBoxed in (a.doubleBoxed:a.intBoxed))]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {false, false, true, true, false, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed in [a.doubleBoxed:a.intBoxed))]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {false, true, true, true, false, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed not in [a.doubleBoxed:a.intBoxed])]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {true, false, false, false, false, true});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed not in (a.doubleBoxed:a.intBoxed])]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {true, true, false, false, false, true});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(b.doubleBoxed not in (a.doubleBoxed:a.intBoxed))]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {true, true, false, false, true, true});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed not in [a.doubleBoxed:a.intBoxed))]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {true, false, false, false, true, true});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed not in (a.doubleBoxed, a.intBoxed, 9))]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {true, false, true, false, false, true});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed in (a.doubleBoxed, a.intBoxed, 9))]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {false, true, false, true, true, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(b.doubleBoxed in (doubleBoxed, a.intBoxed, 9))]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {true, true, true, true, true, true});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed not in (doubleBoxed, a.intBoxed, 9))]";
+        tryPattern(text, new Integer[] {1, 1, 1, 1, 1, 1}, new Double[] {10d, 10d, 10d, 10d, 10d, 10d},
+                         new Integer[] {0, 0, 0, 0, 0, 0}, new Double[] {0d, 1d, 2d, 9d, 10d, 11d},
+                    new boolean[] {false, false, false, false, false, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed = " + SupportStaticMethodLib.class.getName() + ".minusOne(a.doubleBoxed))]";
+        tryPattern(text, new Integer[] {0, 0, 0}, new Double[] {10d, 10d, 10d},
+                         new Integer[] {0, 0, 0}, new Double[] {9d, 10d, 11d, },
+                    new boolean[] {true, false, false});
+
+        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed = " + SupportStaticMethodLib.class.getName() + ".minusOne(a.doubleBoxed) or " +
+                    "doubleBoxed = " + SupportStaticMethodLib.class.getName() + ".minusOne(a.intBoxed))]";
+        tryPattern(text, new Integer[] {0, 0, 12}, new Double[] {10d, 10d, 10d},
+                         new Integer[] {0, 0, 0}, new Double[] {9d, 10d, 11d, },
+                    new boolean[] {true, false, true});
+    }
+
+    private void tryPattern(String text,
+                            Integer[] intBoxedA,
+                            Double[] doubleBoxedA,
+                            Integer[] intBoxedB,
+                            Double[] doubleBoxedB,
+                            boolean[] expected)
+    {
+        assertEquals(intBoxedA.length, doubleBoxedA.length);
+        assertEquals(intBoxedB.length, doubleBoxedB.length);
+        assertEquals(expected.length, doubleBoxedA.length);
+        assertEquals(intBoxedA.length, doubleBoxedB.length);
+        
+        for (int i = 0; i < intBoxedA.length; i++)
+        {
+            EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+            stmt.addListener(testListener);
+
+            sendBeanIntDouble(intBoxedA[i], doubleBoxedA[i]);
+            sendBeanIntDouble(intBoxedB[i], doubleBoxedB[i]);
+            assertEquals("failed at index " + i, expected[i], testListener.getAndClearIsInvoked());
+            stmt.stop();
+        }
+    }
+
+    private void tryPattern3Stream(String text,
+                            Integer[] intBoxedA,
+                            Double[] doubleBoxedA,
+                            Integer[] intBoxedB,
+                            Double[] doubleBoxedB,
+                            Integer[] intBoxedC,
+                            Double[] doubleBoxedC,
+                            boolean[] expected)
+    {
+        assertEquals(intBoxedA.length, doubleBoxedA.length);
+        assertEquals(intBoxedB.length, doubleBoxedB.length);
+        assertEquals(expected.length, doubleBoxedA.length);
+        assertEquals(intBoxedA.length, doubleBoxedB.length);
+        assertEquals(intBoxedC.length, doubleBoxedC.length);
+        assertEquals(intBoxedB.length, doubleBoxedC.length);
+
+        for (int i = 0; i < intBoxedA.length; i++)
+        {
+            EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+            stmt.addListener(testListener);
+
+            sendBeanIntDouble(intBoxedA[i], doubleBoxedA[i]);
+            sendBeanIntDouble(intBoxedB[i], doubleBoxedB[i]);
+            sendBeanIntDouble(intBoxedC[i], doubleBoxedC[i]);
+            assertEquals("failed at index " + i, expected[i], testListener.getAndClearIsInvoked());
+            stmt.stop();
+        }
+    }
+
+    public void testIn3ValuesAndNull()
+    {
+        String text;
+
+        text = "select * from " + SupportBean.class.getName() + "(intPrimitive in (intBoxed, doubleBoxed))";
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{0, 1, 0}, new Double[]{2d, 2d, 1d}, new boolean[]{false, true, true});
+
+        text = "select * from " + SupportBean.class.getName() + "(intPrimitive in (intBoxed, " +
+            SupportStaticMethodLib.class.getName() + ".minusOne(doubleBoxed)))";
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{0, 1, 0}, new Double[]{2d, 2d, 1d}, new boolean[]{true, true, false});
+
+        text = "select * from " + SupportBean.class.getName() + "(intPrimitive not in (intBoxed, doubleBoxed))";
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{0, 1, 0}, new Double[]{2d, 2d, 1d}, new boolean[]{true, false, false});
+
+        text = "select * from " + SupportBean.class.getName() + "(intBoxed = doubleBoxed)";
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{true, false, false});
+
+        text = "select * from " + SupportBean.class.getName() + "(intBoxed in (doubleBoxed))";
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{true, false, false});
+
+        text = "select * from " + SupportBean.class.getName() + "(intBoxed not in (doubleBoxed))";
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{false, true, true});
+
+        text = "select * from " + SupportBean.class.getName() + "(intBoxed in [doubleBoxed:10))";
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, 2}, new Double[]{null, null, 1d}, new boolean[]{false, false, true});
+
+        text = "select * from " + SupportBean.class.getName() + "(intBoxed not in [doubleBoxed:10))";
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, 2}, new Double[]{null, null, 1d}, new boolean[]{false, true, false});
+    }
+    
     public void testFilterStaticFunc()
     {
         String text;
@@ -63,7 +341,7 @@ public class TestFilterExpressions extends TestCase
         tryFilter(text, false);
     }
 
-    public void tryFilterRelationalOpRange()
+    public void testFilterRelationalOpRange()
     {
         String text;
 
@@ -151,6 +429,49 @@ public class TestFilterExpressions extends TestCase
         stmt.removeListener(testListener);
     }
 
+    private void try3Fields(String text,
+                            int[] intPrimitive,
+                            Integer[] intBoxed,
+                            Double[] doubleBoxed,
+                            boolean[] expected)
+    {
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        stmt.addListener(testListener);
+
+        assertEquals(intPrimitive.length, doubleBoxed.length);
+        assertEquals(intBoxed.length, doubleBoxed.length);
+        assertEquals(expected.length, doubleBoxed.length);
+        for (int i = 0; i < intBoxed.length; i++)
+        {
+            sendBeanIntIntDouble(intPrimitive[i], intBoxed[i], doubleBoxed[i]);
+            assertEquals("failed at index " + i, expected[i], testListener.getAndClearIsInvoked());
+        }
+
+        stmt.stop();
+    }
+
+    public void testFilterBooleanExpr()
+    {
+        String text = "select * from " + SupportBean.class.getName() + "(2*intBoxed=doubleBoxed)";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        stmt.addListener(testListener);
+
+        sendBeanIntDouble(20, 50d);
+        assertFalse(testListener.getAndClearIsInvoked());
+        sendBeanIntDouble(25, 50d);
+        assertTrue(testListener.getAndClearIsInvoked());
+
+        text = "select * from " + SupportBean.class.getName() + "(2*intBoxed=doubleBoxed, string='s')";
+        stmt = epService.getEPAdministrator().createEQL(text);
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        stmt.addListener(listenerTwo);
+
+        sendBeanIntDoubleString(25, 50d, "s");
+        assertTrue(listenerTwo.getAndClearIsInvoked());
+        sendBeanIntDoubleString(25, 50d, "x");
+        assertFalse(listenerTwo.getAndClearIsInvoked());
+    }
+
     public void testFilterWithEqualsSameCompare()
     {
         String text;
@@ -207,6 +528,16 @@ public class TestFilterExpressions extends TestCase
 
         tryInvalid("select * from " + SupportBean.class.getName() + "(5 - 10)",
                 "Filter expression not returning a boolean value: '(5-10)' [select * from net.esper.support.bean.SupportBean(5 - 10)]");
+
+        tryInvalid("select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
+                SupportBean.class.getName() + "(doubleBoxed not in (doubleBoxed, x.intBoxed, 9))]",
+                "Failed to resolve property 'x.intBoxed' to a stream or nested property in a stream [select * from pattern [a=net.esper.support.bean.SupportBean -> b=net.esper.support.bean.SupportBean(doubleBoxed not in (doubleBoxed, x.intBoxed, 9))]]");
+
+        tryInvalid("select * from pattern [a=" + SupportBean.class.getName()
+                + " -> b=" + SupportBean.class.getName() + "(c.intPrimitive=a.intPrimitive)"
+                + " -> c=" + SupportBean.class.getName()
+                + "]",
+                "Failed to resolve property 'c.intPrimitive' to a stream or nested property in a stream [select * from pattern [a=net.esper.support.bean.SupportBean -> b=net.esper.support.bean.SupportBean(c.intPrimitive=a.intPrimitive) -> c=net.esper.support.bean.SupportBean]]");
     }
 
     private void tryInvalid(String text, String expectedMsg)
@@ -218,7 +549,7 @@ public class TestFilterExpressions extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals(ex.getMessage(), expectedMsg);
+            assertEquals(expectedMsg, ex.getMessage());
         }
     }
 
@@ -302,7 +633,7 @@ public class TestFilterExpressions extends TestCase
         assertTrue(testListener.getAndClearIsInvoked());
     }
 
-    private void sendBean(int intPrimitive, Integer intBoxed, Double doubleBoxed)
+    private void sendBeanIntDouble(Integer intBoxed, Double doubleBoxed)
     {
         SupportBean event = new SupportBean();
         event.setIntBoxed(intBoxed);
@@ -310,9 +641,19 @@ public class TestFilterExpressions extends TestCase
         epService.getEPRuntime().sendEvent(event);
     }
 
-    private void sendBeanIntDouble(Integer intBoxed, Double doubleBoxed)
+    private void sendBeanIntDoubleString(Integer intBoxed, Double doubleBoxed, String string)
     {
         SupportBean event = new SupportBean();
+        event.setIntBoxed(intBoxed);
+        event.setDoubleBoxed(doubleBoxed);
+        event.setString(string);
+        epService.getEPRuntime().sendEvent(event);
+    }
+
+    private void sendBeanIntIntDouble(int intPrimitive, Integer intBoxed, Double doubleBoxed)
+    {
+        SupportBean event = new SupportBean();
+        event.setIntPrimitive(intPrimitive);
         event.setIntBoxed(intBoxed);
         event.setDoubleBoxed(doubleBoxed);
         epService.getEPRuntime().sendEvent(event);

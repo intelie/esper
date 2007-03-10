@@ -15,7 +15,7 @@ public class TestRangeValueEventProp extends TestCase
     {
         params[0] = new RangeValueEventProp("a", "b");
         params[1] = new RangeValueEventProp("asName", "b");
-        params[2] = new RangeValueEventProp("asName", "boolBoxed");
+        params[2] = new RangeValueEventProp("asName", "boolPrimitive");
         params[3] = new RangeValueEventProp("asName", "intPrimitive");
         params[4] = new RangeValueEventProp("asName", "intPrimitive");
     }
@@ -30,7 +30,6 @@ public class TestRangeValueEventProp extends TestCase
 
         tryInvalidGetFilterValue(matchedEvents, params[0]);
         tryInvalidGetFilterValue(matchedEvents, params[1]);
-        tryInvalidGetFilterValue(matchedEvents, params[2]);
         assertEquals(1000.0, params[3].getFilterValue(matchedEvents));
     }
 

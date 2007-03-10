@@ -17,6 +17,7 @@ public class IndexHelper
      * For instance, for a filter parameter of "count EQUALS 10", the index against property "count" with
      * operator type EQUALS will be returned, if present.
      * NOTE: The caller is expected to obtain locks, if necessary, on the collections passed in.
+     * NOTE: Doesn't match non-property based index - thus boolean expressions don't get found and are always entered as a new index
      *
      * @param parameters is the list of sorted filter parameters
      * @param indizes is the collection of indexes

@@ -36,7 +36,7 @@ public class TestFilterParamIndexNotIn extends TestCase
     public void testIndex()
     {
         FilterParamIndexNotIn index = new FilterParamIndexNotIn("longBoxed", testEventType);
-        assertEquals(FilterOperator.IN_LIST_OF_VALUES, index.getFilterOperator());
+        assertEquals(FilterOperator.NOT_IN_LIST_OF_VALUES, index.getFilterOperator());
 
         index.put(new MultiKeyUntyped(new Object[] {2L, 5L}), testEvaluators[0]);
         index.put(new MultiKeyUntyped(new Object[] {3L, 4L, 5L}), testEvaluators[1]);

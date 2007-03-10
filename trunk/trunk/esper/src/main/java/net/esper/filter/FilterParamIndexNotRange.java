@@ -62,6 +62,11 @@ public final class FilterParamIndexNotRange extends FilterParamIndexPropBase
 
         DoubleRange range = (DoubleRange) expressionValue;
 
+        if ((range.getMax() == null) || (range.getMin() == null))
+        {
+            return; // null endpoints are ignored
+        }
+        
         if ( Math.abs(range.getMax() - range.getMin()) > largestRangeValueDouble)
         {
             largestRangeValueDouble = Math.abs(range.getMax() - range.getMin());

@@ -489,6 +489,11 @@ public final class FilterSpecCompiler
             return constant;    // no coercion required, other type checking performed by expression this comes from
         }
 
+        if (constant == null)  // null constant type
+        {
+            return null;
+        }
+        
         if (!JavaClassHelper.canCoerce(constant.getClass(), identNodeType))
         {
             throwConversionError(constant.getClass(), identNodeType, identNode.getResolvedPropertyName());

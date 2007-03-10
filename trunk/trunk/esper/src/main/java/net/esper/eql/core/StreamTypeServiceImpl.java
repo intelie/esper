@@ -31,10 +31,13 @@ public class StreamTypeServiceImpl implements StreamTypeService
 
     /**
      * Ctor.
+     * @param namesAndTypes is the ordered list of stream names and event types available (stream zero to N)
+     * @param isStreamZeroUnambigous indicates whether when a property is found in stream zero and another stream an exception should be
+     * thrown or the stream zero should be assumed
      */
     public StreamTypeServiceImpl (LinkedHashMap<String, EventType> namesAndTypes, boolean isStreamZeroUnambigous)
     {
-        this.isStreamZeroUnambigous = isStreamZeroUnambigous; // TODO: unit test
+        this.isStreamZeroUnambigous = isStreamZeroUnambigous;
         eventTypes = new EventType[namesAndTypes.size()] ;
         streamNames = new String[namesAndTypes.size()] ;
         int count = 0;

@@ -35,6 +35,7 @@ public class EPStatementSyntaxException extends EPStatementException
      * Converts end-of-input error from a syntax error to a nice statement exception.
      * @param e is the syntax error
      * @param expression is the expression text
+     * @param tokenNameExpected is the name or paraphrase of the expected token
      * @return syntax exception
      */
     public static EPStatementSyntaxException convertEndOfInput(RecognitionException e, String tokenNameExpected, String expression)

@@ -74,31 +74,48 @@ public final class FilterParamIndexNotEquals extends FilterParamIndexPropBase
             FilterParamIndexNotEquals.log.debug(".match (" + Thread.currentThread().getId() + ") attributeValue=" + attributeValue);
         }
 
-        if (attributeValue == null)
-        {
-            return;
-        }
-
         // Look up in hashtable
         constantsMapRWLock.readLock().lock();
 
-        for (Map.Entry<Object, EventEvaluator> entry : constantsMap.entrySet())
+        for (Object key : constantsMap.keySet())
         {
-            if (!entry.getKey().equals(attributeValue))
+            if (key == null)
             {
-                EventEvaluator evaluator = entry.getValue();
-                evaluator.matchEvent(eventBean, matches);
+                if (attributeValue != null)
+                {
+                    EventEvaluator evaluator = constantsMap.get(key);
+                    evaluator.matchEvent(eventBean, matches);
+                }
+            }
+            else
+            {
+                if (attributeValue != null)
+                {
+                    if (!key.equals(attributeValue))
+                    {
+                        EventEvaluator evaluator = constantsMap.get(key);
+                        evaluator.matchEvent(eventBean, matches);
+                    }
+                }
+                else
+                {
+                    // no this should not match: "val != null" doesn't match if val is 'a'
+                }
             }
         }
+
         constantsMapRWLock.readLock().unlock();
     }
 
     private void checkType(Object filterConstant)
     {
-        if (this.getPropertyBoxedType() != filterConstant.getClass())
+        if (filterConstant != null)
         {
-            throw new IllegalArgumentException("Invalid type of filter constant of " +
-                    filterConstant.getClass().getName() + " for property " + this.getPropertyName());
+            if (this.getPropertyBoxedType() != filterConstant.getClass())
+            {
+                throw new IllegalArgumentException("Invalid type of filter constant of " +
+                        filterConstant.getClass().getName() + " for property " + this.getPropertyName());
+            }
         }
     }
 

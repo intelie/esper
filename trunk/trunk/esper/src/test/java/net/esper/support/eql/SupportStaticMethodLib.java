@@ -16,4 +16,9 @@ public class SupportStaticMethodLib
     {
         return value.equals(compareTo);
     }
+
+    public static double minusOne(double value)
+    {
+        return value - 1;
+    }
 }

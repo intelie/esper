@@ -16,5 +16,5 @@ public interface FilterSpecParamRangeValue
      * @param matchedEvents is the prior results
      * @return filter value
      */
-    public double getFilterValue(MatchedEventMap matchedEvents);
+    public Double getFilterValue(MatchedEventMap matchedEvents);
 }

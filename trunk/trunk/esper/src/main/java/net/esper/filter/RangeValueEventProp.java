@@ -26,7 +26,7 @@ public class RangeValueEventProp implements FilterSpecParamRangeValue
         this.resultEventProperty = resultEventProperty;
     }
 
-    public final double getFilterValue(MatchedEventMap matchedEvents)
+    public final Double getFilterValue(MatchedEventMap matchedEvents)
     {
         EventBean event = matchedEvents.getMatchingEvent(resultEventAsName);
         if (event == null)
@@ -38,9 +38,8 @@ public class RangeValueEventProp implements FilterSpecParamRangeValue
         Number value = (Number) event.get(resultEventProperty);
         if (value == null)
         {
-            throw new IllegalStateException("Event property named " +
-                    '\'' + resultEventAsName + '.' + resultEventProperty + "' returned null value");
-        }
+            return null;
+        }        
         return value.doubleValue();
     }
 

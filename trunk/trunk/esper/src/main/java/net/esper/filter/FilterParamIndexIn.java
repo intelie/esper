@@ -78,7 +78,14 @@ public final class FilterParamIndexIn extends FilterParamIndexPropBase
         for (int i = 0; i < keyValues.length; i++)
         {
             List<EventEvaluator> evaluators = constantsMap.get(keyValues[i]);
-            evaluators.remove(eval);
+            if (evaluators != null) // could be removed already as same-value constants existed
+            {
+                evaluators.remove(eval);
+                if (evaluators.isEmpty())
+                {
+                    constantsMap.remove(keyValues[i]);
+                }
+            }
         }
         return isRemoved;
     }

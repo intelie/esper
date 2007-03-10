@@ -21,6 +21,8 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
      * @param filterOperator is the type of compare
      * @param resultEventAsName is the name of the result event from which to get a property value to compare
      * @param resultEventProperty is the name of the property to get from the named result event
+     * @param isMustCoerce indicates on whether numeric coercion must be performed
+     * @param coercionType indicates the numeric coercion type to use
      * @throws IllegalArgumentException if an operator was supplied that does not take a single constant value
      */
     public FilterSpecParamEventProp(String propertyName, FilterOperator filterOperator, String resultEventAsName,

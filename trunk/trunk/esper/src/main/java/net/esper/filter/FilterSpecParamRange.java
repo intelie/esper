@@ -34,8 +34,8 @@ public final class FilterSpecParamRange extends FilterSpecParam
 
     public final Object getFilterValue(MatchedEventMap matchedEvents)
     {
-        double begin = min.getFilterValue(matchedEvents);
-        double end = max.getFilterValue(matchedEvents);
+        Double begin = min.getFilterValue(matchedEvents);
+        Double end = max.getFilterValue(matchedEvents);
         return new DoubleRange(begin, end);
     }
 

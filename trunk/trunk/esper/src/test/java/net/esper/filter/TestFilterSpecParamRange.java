@@ -6,7 +6,7 @@ public class TestFilterSpecParamRange extends TestCase
 {
     public void testConstruct()
     {
-        DoubleRange range = new DoubleRange(3,3);
+        DoubleRange range = new DoubleRange(3d,3d);
 
         makeParam("a", FilterOperator.RANGE_HALF_OPEN, range);
 
@@ -23,11 +23,11 @@ public class TestFilterSpecParamRange extends TestCase
 
     public void testEquals()
     {
-        FilterSpecParam c1 = makeParam("a", FilterOperator.RANGE_CLOSED, new DoubleRange(5, 6));
-        FilterSpecParam c2 = makeParam("b", FilterOperator.RANGE_CLOSED, new DoubleRange(5, 6));
-        FilterSpecParam c3 = makeParam("a", FilterOperator.RANGE_HALF_CLOSED, new DoubleRange(5, 6));
-        FilterSpecParam c4 = makeParam("a", FilterOperator.RANGE_CLOSED, new DoubleRange(7, 6));
-        FilterSpecParam c5 = makeParam("a", FilterOperator.RANGE_CLOSED, new DoubleRange(5, 6));
+        FilterSpecParam c1 = makeParam("a", FilterOperator.RANGE_CLOSED, new DoubleRange(5d, 6d));
+        FilterSpecParam c2 = makeParam("b", FilterOperator.RANGE_CLOSED, new DoubleRange(5d, 6d));
+        FilterSpecParam c3 = makeParam("a", FilterOperator.RANGE_HALF_CLOSED, new DoubleRange(5d, 6d));
+        FilterSpecParam c4 = makeParam("a", FilterOperator.RANGE_CLOSED, new DoubleRange(7d, 6d));
+        FilterSpecParam c5 = makeParam("a", FilterOperator.RANGE_CLOSED, new DoubleRange(5d, 6d));
 
         assertFalse(c1.equals(c2));
         assertFalse(c1.equals(c3));
