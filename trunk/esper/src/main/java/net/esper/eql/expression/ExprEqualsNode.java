@@ -60,9 +60,9 @@ public class ExprEqualsNode extends ExprNode
         catch (IllegalArgumentException ex)
         {
             throw new ExprValidationException("Implicit conversion from datatype '" +
-                    typeOne.getName() +
+                    typeTwo.getSimpleName() +
                     "' to '" +
-                    typeTwo.getName() +
+                    typeOne.getSimpleName() +
                     "' is not allowed");
         }
 

@@ -1,6 +1,7 @@
 package net.esper.pattern;
 
-import net.esper.filter.FilterSpec;
+import net.esper.filter.FilterSpecCompiled;
+import net.esper.eql.spec.FilterSpecRaw;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -9,8 +10,9 @@ import org.apache.commons.logging.Log;
  */
 public final class EvalFilterNode extends EvalNode
 {
-    private final FilterSpec filterSpec;
+    private final FilterSpecRaw rawFilterSpec;
     private final String eventAsName;
+    private FilterSpecCompiled filterSpec;
 
     public final EvalStateNode newState(Evaluator parentNode,
                                                  MatchedEventMap beginState,
@@ -36,20 +38,30 @@ public final class EvalFilterNode extends EvalNode
      * @param eventAsName is the name to use for adding matching events to the MatchedEventMap
      * table used when indicating truth value of true.
      */
-    public EvalFilterNode(FilterSpec filterSpecification,
+    public EvalFilterNode(FilterSpecRaw filterSpecification,
                                 String eventAsName)
     {
-        this.filterSpec = filterSpecification;
+        this.rawFilterSpec = filterSpecification;
         this.eventAsName = eventAsName;
+    }
+
+    public FilterSpecRaw getRawFilterSpec()
+    {
+        return rawFilterSpec;
     }
 
     /**
      * Returns filter specification.
      * @return filter definition
      */
-    public final FilterSpec getFilterSpec()
+    public final FilterSpecCompiled getFilterSpec()
     {
         return filterSpec;
+    }
+
+    public void setFilterSpec(FilterSpecCompiled filterSpec)
+    {
+        this.filterSpec = filterSpec;
     }
 
     /**
@@ -65,7 +77,8 @@ public final class EvalFilterNode extends EvalNode
     public final String toString()
     {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("EvalFilterNode spec=" + this.filterSpec.toString());
+        buffer.append("EvalFilterNode rawFilterSpec=" + this.rawFilterSpec);
+        buffer.append(" filterSpec=" + this.filterSpec);
         buffer.append(" eventAsName=" + this.eventAsName);
         return buffer.toString();
     }

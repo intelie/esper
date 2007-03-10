@@ -304,6 +304,66 @@ public class JavaClassHelper
     }
 
     /**
+     * Determines if a number can be coerced upwards to another number class without loss.
+     * <p>
+     * Clients must pass in two classes that are numeric types.
+     * <p>
+     * Any number class can be coerced to double, while only double cannot be coerced to float.
+     * Any non-floating point number can be coerced to long.
+     * Integer can be coerced to Byte and Short even though loss is possible, for convenience.
+     * @param numberClassToBeCoerced the number class to be coerced
+     * @param numberClassToCoerceTo the number class to coerce to
+     * @return true if numbers can be coerced without loss, false if not
+     */
+    public static boolean canCoerce(Class numberClassToBeCoerced, Class numberClassToCoerceTo)
+    {
+        Class boxedFrom = getBoxedType(numberClassToBeCoerced);
+        Class boxedTo = getBoxedType(numberClassToCoerceTo);
+
+        if (!isNumeric(numberClassToBeCoerced))
+        {
+            throw new IllegalArgumentException("Class '" + numberClassToBeCoerced + "' is not a numeric type'");
+        }
+        
+        if (boxedTo == Float.class)
+        {
+            return ((boxedFrom == Byte.class) ||
+                    (boxedFrom == Short.class) ||
+                    (boxedFrom == Integer.class) ||
+                    (boxedFrom == Long.class) ||
+                    (boxedFrom == Float.class));
+        }
+        else if (boxedTo == Double.class)
+        {
+            return ((boxedFrom == Byte.class) ||
+                    (boxedFrom == Short.class) ||
+                    (boxedFrom == Integer.class) ||
+                    (boxedFrom == Long.class) ||
+                    (boxedFrom == Float.class) ||
+                    (boxedFrom == Double.class));
+        }
+        else if (boxedTo == Long.class)
+        {
+            return ((boxedFrom == Byte.class) ||
+                    (boxedFrom == Short.class) ||
+                    (boxedFrom == Integer.class) ||
+                    (boxedFrom == Long.class));
+        }
+        else if ((boxedTo == Integer.class) ||
+                 (boxedTo == Short.class) ||
+                 (boxedTo == Byte.class))
+        {
+            return ((boxedFrom == Byte.class) ||
+                    (boxedFrom == Short.class) ||
+                    (boxedFrom == Integer.class));
+        }
+        else
+        {
+            throw new IllegalArgumentException("Class '" + numberClassToCoerceTo + "' is not a numeric type'");
+        }
+    }
+
+    /**
      * Returns for the class name given the class name of the boxed (wrapped) type if
      * the class name is one of the Java primitive types.
      * @param className is a class name, a Java primitive type or other class

@@ -16,7 +16,7 @@ import java.util.List;
  * A pattern statement contains tagged events (i.e. a=A -> b=B).
  * Thus the resulting event type is has properties "a" and "b" of the type of A and B.
  */
-public class PatternStreamSpec extends StreamSpec
+public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamSpecCompiled 
 {
     private final EvalNode evalNode;
     private final Map<String, EventType> taggedEventTypes;       // Stores types for filters with tags
@@ -28,7 +28,7 @@ public class PatternStreamSpec extends StreamSpec
      * @param taggedEventTypes - event tags and their types as specified in the pattern, copied to allow original collection to change
      * @param optionalStreamName - stream name, or null if none supplied
      */
-    public PatternStreamSpec(EvalNode evalNode, Map<String, EventType> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName)
+    public PatternStreamSpecCompiled(EvalNode evalNode, Map<String, EventType> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName)
     {
         super(optionalStreamName, viewSpecs);
         this.evalNode = evalNode;

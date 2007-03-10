@@ -1,12 +1,9 @@
 package net.esper.filter;
 
 import net.esper.pattern.MatchedEventMap;
-import net.esper.event.EventType;
-
-import java.util.Map;
 
 /**
- * This class represents a range filter parameter in an {@link FilterSpec} filter specification.
+ * This class represents a range filter parameter in an {@link FilterSpecCompiled} filter specification.
  */
 public final class FilterSpecParamRange extends FilterSpecParam
 {
@@ -35,18 +32,21 @@ public final class FilterSpecParamRange extends FilterSpecParam
         }
     }
 
-    public final Class getFilterValueClass(Map<String, EventType> taggedEventTypes)
-    {
-        min.checkType(taggedEventTypes);
-        max.checkType(taggedEventTypes);
-        return DoubleRange.class;
-    }
-
     public final Object getFilterValue(MatchedEventMap matchedEvents)
     {
-        double begin = min.getFilterValue(matchedEvents);
-        double end = max.getFilterValue(matchedEvents);
+        Double begin = min.getFilterValue(matchedEvents);
+        Double end = max.getFilterValue(matchedEvents);
         return new DoubleRange(begin, end);
+    }
+
+    public FilterSpecParamRangeValue getMin()
+    {
+        return min;
+    }
+
+    public FilterSpecParamRangeValue getMax()
+    {
+        return max;
     }
 
     public final String toString()

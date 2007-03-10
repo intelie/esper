@@ -6,7 +6,7 @@ import java.util.Set;
 
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectExprElementNamedSpec;
+import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.event.EventAdapterService;
 
 import org.apache.commons.logging.Log;
@@ -27,7 +27,7 @@ public class SelectExprProcessorFactory
      * @return select-clause expression processor
      * @throws net.esper.eql.expression.ExprValidationException to indicate the select expression cannot be validated
      */
-    public static SelectExprProcessor getProcessor(List<SelectExprElementNamedSpec> selectionList,
+    public static SelectExprProcessor getProcessor(List<SelectExprElementCompiledSpec> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    StreamTypeService typeService, 
@@ -71,10 +71,10 @@ public class SelectExprProcessorFactory
      * @param selectionList is the list of select items to verify names
      * @throws net.esper.eql.expression.ExprValidationException thrown if a name occured more then once
      */
-    protected static void verifyNameUniqueness(List<SelectExprElementNamedSpec> selectionList) throws ExprValidationException
+    protected static void verifyNameUniqueness(List<SelectExprElementCompiledSpec> selectionList) throws ExprValidationException
     {
         Set<String> names = new HashSet<String>();
-        for (SelectExprElementNamedSpec element : selectionList)
+        for (SelectExprElementCompiledSpec element : selectionList)
         {
             if (names.contains(element.getAssignedName()))
             {

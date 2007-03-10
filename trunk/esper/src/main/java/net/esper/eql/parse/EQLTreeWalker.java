@@ -1,25 +1,26 @@
 package net.esper.eql.parse;
 
-import net.esper.filter.FilterSpec;
-import net.esper.view.ViewSpec;
-import net.esper.eql.generated.EQLBaseWalker;
-import net.esper.eql.expression.*;
-import net.esper.eql.spec.*;
-import net.esper.type.*;
+import antlr.collections.AST;
 import net.esper.collection.Pair;
-import net.esper.event.EventAdapterService;
-import net.esper.event.EventType;
+import net.esper.eql.expression.*;
+import net.esper.eql.generated.EQLBaseWalker;
+import net.esper.eql.spec.*;
 import net.esper.pattern.*;
-import net.esper.pattern.observer.ObserverEnum;
-import net.esper.pattern.observer.ObserverFactory;
 import net.esper.pattern.guard.GuardEnum;
 import net.esper.pattern.guard.GuardFactory;
+import net.esper.pattern.observer.ObserverEnum;
+import net.esper.pattern.observer.ObserverFactory;
+import net.esper.type.*;
 import net.esper.util.ConstructorHelper;
-import antlr.collections.AST;
+import net.esper.view.ViewSpec;
+import net.esper.filter.FilterOperator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Called during the walks of a EQL expression AST tree as specified in the grammar file.
@@ -27,37 +28,32 @@ import java.util.*;
  */
 public class EQLTreeWalker extends EQLBaseWalker
 {
-    // services required
-    private final EventAdapterService eventAdapterService;
-
     // private holding areas for accumulated info
     private final Map<AST, ExprNode> astExprNodeMap = new HashMap<AST, ExprNode>();
     private final Map<AST, EvalNode> astPatternNodeMap = new HashMap<AST, EvalNode>();
-    private final Map<String, EventType> taggedEventTypes = new HashMap<String, EventType>(); // Stores types for filters with tags
-    private FilterSpec filterSpec;
+    
+    private FilterSpecRaw filterSpec;
     private final List<ViewSpec> viewSpecs = new LinkedList<ViewSpec>();
 
     // Pattern indicator dictates behavior for some AST nodes
     private boolean isProcessingPattern;
 
     // AST Walk result
-    private final StatementSpec statementSpec;
+    private final StatementSpecRaw statementSpec;
 
     /**
      * Ctor.
-     * @param eventAdapterService for resolving event names
      */
-    public EQLTreeWalker(EventAdapterService eventAdapterService)
+    public EQLTreeWalker()
     {
-        this.eventAdapterService = eventAdapterService;
-        statementSpec = new StatementSpec();
+        statementSpec = new StatementSpecRaw();
     }
 
     /**
      * Returns statement specification.
      * @return statement spec.
      */
-    public StatementSpec getStatementSpec()
+    public StatementSpecRaw getStatementSpec()
     {
         return statementSpec;
     }
@@ -110,10 +106,7 @@ public class EQLTreeWalker extends EQLBaseWalker
                 leaveSelectionElement(node);
                 break;
             case EVENT_PROP_EXPR:
-                if (!isProcessingPattern)
-                {
-                    leaveEventPropertyExpr(node);
-                }
+                leaveEventPropertyExpr(node);
                 break;
             case EVAL_AND_EXPR:
                 leaveJoinAndExpr(node);
@@ -123,7 +116,7 @@ public class EQLTreeWalker extends EQLBaseWalker
                 break;
             case EVAL_EQUALS_EXPR:
             case EVAL_NOTEQUALS_EXPR:
-                leaveJoinEqualsExpr(node);
+                leaveEqualsExpr(node);
                 break;
             case WHERE_EXPR:
                 leaveWhereClause();
@@ -226,7 +219,11 @@ public class EQLTreeWalker extends EQLBaseWalker
                 break;
             case IN_SET:
             case NOT_IN_SET:
-                leaveIn(node);
+                leaveInSet(node);
+                break;
+            case IN_RANGE:
+            case NOT_IN_RANGE:
+                leaveInRange(node);
                 break;
             case BETWEEN:
             case NOT_BETWEEN:
@@ -337,10 +334,9 @@ public class EQLTreeWalker extends EQLBaseWalker
         // Get expression node sub-tree from the AST nodes placed so far
         EvalNode evalNode = astPatternNodeMap.values().iterator().next();
 
-        PatternStreamSpec streamSpec = new PatternStreamSpec(evalNode, taggedEventTypes, new LinkedList<ViewSpec>(), null);
+        PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new LinkedList<ViewSpec>(), null);
         statementSpec.getStreamSpecs().add(streamSpec);
 
-        taggedEventTypes.clear();
         astPatternNodeMap.clear();
     }
 
@@ -384,7 +380,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
 
         // Add as selection element
-        statementSpec.getSelectClauseSpec().add(new SelectExprElementUnnamedSpec(exprNode, optionalName));
+        statementSpec.getSelectClauseSpec().add(new SelectExprElementRawSpec(exprNode, optionalName));
     }
     
     private void leaveWildcardSelect()
@@ -418,11 +414,11 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
 
         // Convert to a stream specification instance
-        StreamSpec streamSpec;
+        StreamSpecRaw streamSpec;
         // If the first subnode is a filter node, we have a filter stream specification
         if (node.getFirstChild().getType() == EVENT_FILTER_EXPR)
         {
-            streamSpec = new FilterStreamSpec(filterSpec, viewSpecs, streamName);
+            streamSpec = new FilterStreamSpecRaw(filterSpec, viewSpecs, streamName);
         }
         else if (node.getFirstChild().getType() == PATTERN_INCL_EXPR)
         {
@@ -434,8 +430,7 @@ public class EQLTreeWalker extends EQLBaseWalker
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.values().iterator().next();
 
-            streamSpec = new PatternStreamSpec(evalNode, taggedEventTypes, viewSpecs, streamName);
-            taggedEventTypes.clear();
+            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamName);
             astPatternNodeMap.clear();
         }
         else if (node.getFirstChild().getType() == DATABASE_JOIN_EXPR)
@@ -515,9 +510,9 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
     }
 
-    private void leaveJoinEqualsExpr(AST node)
+    private void leaveEqualsExpr(AST node)
     {
-        log.debug(".leaveJoinEqualsExpr");
+        log.debug(".leaveEqualsExpr");
 
         boolean isNot = false;
         if (node.getType() == EVAL_NOTEQUALS_EXPR)
@@ -906,29 +901,41 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
         log.debug(".leaveFilter");
 
+        AST startNode = node.getFirstChild();
+        String optionalPatternTagName = null;
+        if (startNode.getType() == EVENT_FILTER_NAME_TAG)
+        {
+            optionalPatternTagName = startNode.getText();
+            startNode = startNode.getNextSibling();
+        }
+
+        // Determine event type
+        String eventName = startNode.getText();
+
+        AST currentNode = startNode.getNextSibling();
+        List<ExprNode> exprNodes = new LinkedList<ExprNode>();
+        while(currentNode != null)
+        {
+            ExprNode exprNode = astExprNodeMap.get(currentNode);
+            if (exprNode == null)
+            {
+                throw new IllegalStateException("Expression node for AST node not found for type " + currentNode.getType());
+            }
+            exprNodes.add(exprNode);
+            astExprNodeMap.remove(currentNode);
+            currentNode = currentNode.getNextSibling();
+        }
+
+        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes);
         if (isProcessingPattern)
         {
-            FilterSpec spec = ASTFilterSpecHelper.buildSpec(node, taggedEventTypes, eventAdapterService);
-            String optionalTag = ASTFilterSpecHelper.getEventNameTag(node);
-            EvalFilterNode filterNode = new EvalFilterNode(spec, optionalTag);
-            EventType eventType = spec.getEventType();
-
-            if (optionalTag != null)
-            {
-                EventType existingType = taggedEventTypes.get(optionalTag);
-                if ((existingType != null) && (existingType != eventType))
-                {
-                    throw new IllegalArgumentException("Tag '" + optionalTag + "' for event type " + eventType.getUnderlyingType().getName() +
-                            " has already been used for events of type " + existingType.getUnderlyingType().getName());
-                }
-                taggedEventTypes.put(optionalTag, eventType);
-            }
-
+            EvalFilterNode filterNode = new EvalFilterNode(rawFilterSpec, optionalPatternTagName);
             astPatternNodeMap.put(node, filterNode);
         }
         else
         {
-            filterSpec = ASTFilterSpecHelper.buildSpec(node, null, eventAdapterService);
+            // for event streams we keep the filter spec around for use when the stream definition is completed
+            filterSpec = rawFilterSpec;
 
             // clear the sub-nodes for the filter since the event property expressions have been processed
             // by building the spec
@@ -957,19 +964,43 @@ public class EQLTreeWalker extends EQLBaseWalker
         astPatternNodeMap.put(node, orNode);
     }
 
-    private void leaveIn(AST node)
+    private void leaveInSet(AST node)
     {
-        log.debug(".leaveIn");
+        log.debug(".leaveInSet");
 
         ExprInNode inNode = new ExprInNode(node.getType() == NOT_IN_SET);
         astExprNodeMap.put(node, inNode);
+    }
+
+    private void leaveInRange(AST node)
+    {
+        log.debug(".leaveInRange");
+
+        // The second node must be braces
+        AST bracesNode = node.getFirstChild().getNextSibling();
+        if ((bracesNode.getType() != LBRACK) && ((bracesNode.getType() != LPAREN)))
+        {
+            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.getType() + "'");
+        }
+        boolean isLowInclude = bracesNode.getType() == LBRACK;
+
+        // The fifth node must be braces
+        bracesNode = bracesNode.getNextSibling().getNextSibling().getNextSibling();
+        if ((bracesNode.getType() != RBRACK) && ((bracesNode.getType() != RPAREN)))
+        {
+            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.getType() + "'");
+        }
+        boolean isHighInclude = bracesNode.getType() == RBRACK;
+
+        ExprBetweenNode betweenNode = new ExprBetweenNode(isLowInclude, isHighInclude, node.getType() == NOT_IN_RANGE);
+        astExprNodeMap.put(node, betweenNode);
     }
 
     private void leaveBetween(AST node)
     {
         log.debug(".leaveBetween");
 
-        ExprBetweenNode betweenNode = new ExprBetweenNode(node.getType() == NOT_BETWEEN);
+        ExprBetweenNode betweenNode = new ExprBetweenNode(true, true, node.getType() == NOT_BETWEEN);
         astExprNodeMap.put(node, betweenNode);
     }
 

@@ -8,7 +8,6 @@ import java.util.TreeSet;
 import junit.framework.TestCase;
 import net.esper.collection.Pair;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventTypeFactory;
 
@@ -23,7 +22,7 @@ public class TestIndexHelper extends TestCase
     public void setUp()
     {
         eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
-        parameters = new TreeSet<FilterValueSetParam>(new FilterSpecParamComparator());
+        parameters = new TreeSet<FilterValueSetParam>(new FilterValueSetParamComparator());
 
         // Create parameter test list
         parameterOne = new FilterValueSetParamImpl("intPrimitive", FilterOperator.GREATER, 10);
@@ -36,10 +35,10 @@ public class TestIndexHelper extends TestCase
 
     public void testFindIndex()
     {
-        List<FilterParamIndex> indexes = new LinkedList<FilterParamIndex>();
+        List<FilterParamIndexBase> indexes = new LinkedList<FilterParamIndexBase>();
 
         // Create index list wity index that doesn't match
-        FilterParamIndex indexOne = IndexFactory.createIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
+        FilterParamIndexBase indexOne = IndexFactory.createIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
         indexes.add(indexOne);
         assertTrue(IndexHelper.findIndex(parameters, indexes) == null);
 
@@ -50,15 +49,15 @@ public class TestIndexHelper extends TestCase
         assertTrue(IndexHelper.findIndex(parameters, indexes) == null);
 
         // Add an index that does match a parameter
-        FilterParamIndex indexTwo = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.GREATER);
+        FilterParamIndexBase indexTwo = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.GREATER);
         indexes.add(indexTwo);
-        Pair<FilterValueSetParam, FilterParamIndex> pair = IndexHelper.findIndex(parameters, indexes);
+        Pair<FilterValueSetParam, FilterParamIndexBase> pair = IndexHelper.findIndex(parameters, indexes);
         assertTrue(pair != null);
         assertEquals(parameterTwo, pair.getFirst());
         assertEquals(indexTwo, pair.getSecond());
 
         // Add another index that does match a parameter, should return first match however which is doubleBoxed
-        FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
+        FilterParamIndexBase indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
         indexes.add(indexThree);
         pair = IndexHelper.findIndex(parameters, indexes);
         assertEquals(parameterTwo, pair.getFirst());
@@ -73,13 +72,13 @@ public class TestIndexHelper extends TestCase
 
     public void testFindParameter()
     {
-        FilterParamIndex indexOne = IndexFactory.createIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
+        FilterParamIndexBase indexOne = IndexFactory.createIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
         assertNull(IndexHelper.findParameter(parameters, indexOne));
 
-        FilterParamIndex indexTwo = IndexFactory.createIndex(eventType, "string", FilterOperator.EQUAL);
+        FilterParamIndexBase indexTwo = IndexFactory.createIndex(eventType, "string", FilterOperator.EQUAL);
         assertEquals(parameterThree, IndexHelper.findParameter(parameters, indexTwo));
 
-        FilterParamIndex indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
+        FilterParamIndexBase indexThree = IndexFactory.createIndex(eventType, "intPrimitive", FilterOperator.GREATER);
         assertEquals(parameterOne, IndexHelper.findParameter(parameters, indexThree));
     }
 }

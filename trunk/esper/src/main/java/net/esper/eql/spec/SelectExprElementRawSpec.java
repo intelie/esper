@@ -3,24 +3,25 @@ package net.esper.eql.spec;
 import net.esper.eql.expression.ExprNode;
 
 /**
- * Represents a single item in a SELECT-clause, with a name assigned
- * either by the engine or by the user specifying an "as" tag name.
+ * Represents a single item in a SELECT-clause, potentially unnamed
+ * as no "as" tag may have been supplied in the syntax.
+ * <p>
+ * Compare to {@link SelectExprElementCompiledSpec} which carries a determined name.
  */
-public class SelectExprElementNamedSpec
+public class SelectExprElementRawSpec
 {
     private ExprNode selectExpression;
-    private String assignedName;
+    private String optionalAsName;
 
     /**
      * Ctor.
      * @param selectExpression - the expression node to evaluate for matching events
-     * @param assignedName - cannot be null as a name is always assigned or
-     * system-determined
+     * @param optionalAsName - the name of the item, null if not name supplied
      */
-    public SelectExprElementNamedSpec(ExprNode selectExpression, String assignedName)
+    public SelectExprElementRawSpec(ExprNode selectExpression, String optionalAsName)
     {
         this.selectExpression = selectExpression;
-        this.assignedName = assignedName;
+        this.optionalAsName = optionalAsName;
     }
 
     /**
@@ -36,8 +37,8 @@ public class SelectExprElementNamedSpec
      * Returns the name of the item in the select clause.
      * @return name of item
      */
-    public String getAssignedName()
+    public String getOptionalAsName()
     {
-        return assignedName;
+        return optionalAsName;
     }
 }

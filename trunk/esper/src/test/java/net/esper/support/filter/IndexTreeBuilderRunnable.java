@@ -17,11 +17,11 @@ public class IndexTreeBuilderRunnable implements Runnable
     protected final static Random random = new Random(System.currentTimeMillis());
 
     private FilterHandleSetNode topNode;
-    private Vector<FilterSpec> testFilterSpecs;
+    private Vector<FilterSpecCompiled> testFilterSpecs;
     private Vector<EventBean> matchedEvents;
     private Vector<EventBean> unmatchedEvents;
 
-    public IndexTreeBuilderRunnable(FilterHandleSetNode topNode, Vector<FilterSpec> testFilterSpecs, Vector<EventBean> matchedEvents, Vector<EventBean> unmatchedEvents)
+    public IndexTreeBuilderRunnable(FilterHandleSetNode topNode, Vector<FilterSpecCompiled> testFilterSpecs, Vector<EventBean> matchedEvents, Vector<EventBean> unmatchedEvents)
     {
         this.topNode = topNode;
         this.testFilterSpecs = testFilterSpecs;
@@ -34,7 +34,7 @@ public class IndexTreeBuilderRunnable implements Runnable
         long currentThreadId = Thread.currentThread().getId();
 
         // Choose one of filter specifications, randomly, then reserve to make sure no one else has the same
-        FilterSpec filterSpec = null;
+        FilterSpecCompiled filterSpec = null;
         EventBean unmatchedEvent = null;
         EventBean matchedEvent = null;
 

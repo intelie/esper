@@ -37,13 +37,9 @@ public class TestEventPatternParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("a(a=2b=3)");
         assertIsInvalid("a(a=2,)");
         assertIsInvalid("a(a=2,b=)");
-        assertIsInvalid("a(a=2,b3)");
-        assertIsInvalid("e(a2>b3)");
         assertIsInvalid("e(a2>)");
-        assertIsInvalid("e(a2<d4)");
         assertIsInvalid("e(a2<=<4)");
         assertIsInvalid("e(a2>=>6)");
-        assertIsInvalid("e(a2<>8)");
         assertIsInvalid("e(a in [])");
         assertIsInvalid("e(a in [1:])");
         assertIsInvalid("e(a in [:5])");
@@ -179,8 +175,6 @@ public class TestEventPatternParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("A(y[0](g) = 1)");
         assertIsInvalid("A(y(g)..z = 1)");
         assertIsInvalid("A(x[aaa] = 1)");
-        assertIsInvalid("A(x(1) = 1)");
-        assertIsInvalid("A(x(aaa) = 1)");
     }
 
     public void testValidCases() throws Exception
@@ -219,6 +213,12 @@ public class TestEventPatternParser extends TestCase implements EqlTokenTypes
         assertIsValid(className + "(intPrimitive in [2:10])");
         assertIsValid(className + "(doubleBoxed in [-0.00001:-0.1E2])");
         assertIsValid(className + "(doubleBoxed in [60.0:61.0])");
+        assertIsValid("e(a2>b3)");
+        assertIsValid("e(b3)");
+        assertIsValid("e(a2<d4)");
+        assertIsValid("e(a2<>8)");
+        assertIsValid("A(x(1) = 1)");
+        assertIsValid("A(x(aaa) = 1)");
 
         // With name
         assertIsValid("se1=" + className);

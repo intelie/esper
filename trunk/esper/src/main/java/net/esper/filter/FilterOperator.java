@@ -88,9 +88,14 @@ public enum FilterOperator
     IN_LIST_OF_VALUES,
 
     /**
-     * Non-in list of values using the 'not in' operator
+     * Not-in list of values using the 'not in' operator
      */
-    NOT_IN_LIST_OF_VALUES;
+    NOT_IN_LIST_OF_VALUES,
+
+    /**
+     * Boolean expression filter operator
+     */
+    BOOLEAN_EXPRESSION;
 
     private final static String EQUAL_OP = "=";
     private final static String NOT_EQUAL_OP = "!=";
@@ -237,6 +242,5 @@ public enum FilterOperator
         {
             return FilterOperator.RANGE_OPEN;
         }
-
     }
 }

@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
  * Index for filter parameter constants to match using the 'not in' operator to match against a
  * all other values then the supplied set of values.
  */
-public final class FilterParamIndexNotIn extends FilterParamIndex
+public final class FilterParamIndexNotIn extends FilterParamIndexPropBase
 {
     private final Map<Object, Set<EventEvaluator>> constantsMap;
     private final Map<MultiKeyUntyped, EventEvaluator> filterValueEvaluators;
@@ -29,7 +29,7 @@ public final class FilterParamIndexNotIn extends FilterParamIndex
      */
     public FilterParamIndexNotIn(String propertyName, EventType eventType)
     {
-        super(propertyName, FilterOperator.IN_LIST_OF_VALUES, eventType);
+        super(propertyName, FilterOperator.NOT_IN_LIST_OF_VALUES, eventType);
 
         constantsMap = new HashMap<Object, Set<EventEvaluator>>();
         filterValueEvaluators = new HashMap<MultiKeyUntyped, EventEvaluator>();
@@ -81,7 +81,14 @@ public final class FilterParamIndexNotIn extends FilterParamIndex
         for (Object keyValue : keyValues)
         {
             Set<EventEvaluator> evaluators = constantsMap.get(keyValue);
-            evaluators.remove(eval);
+            if (evaluators != null) // could already be removed as constants may be the same
+            {
+                evaluators.remove(eval);
+                if (evaluators.isEmpty())
+                {
+                    constantsMap.remove(keyValue);
+                }
+            }
         }
         return isRemoved;
     }

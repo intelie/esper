@@ -13,7 +13,7 @@ import net.esper.event.EventType;
  * Index for filter parameter constants to match using the equals (=) operator.
  * The implementation is based on a regular HashMap.
  */
-public final class FilterParamIndexEquals extends FilterParamIndex
+public final class FilterParamIndexEquals extends FilterParamIndexPropBase
 {
     private final Map<Object, EventEvaluator> constantsMap;
     private final ReadWriteLock constantsMapRWLock;
@@ -71,11 +71,6 @@ public final class FilterParamIndexEquals extends FilterParamIndex
             log.debug(".match (" + Thread.currentThread().getId() + ") attributeValue=" + attributeValue);
         }
 
-        if (attributeValue == null)
-        {
-            return;
-        }
-
         // Look up in hashtable
         constantsMapRWLock.readLock().lock();
         EventEvaluator evaluator = constantsMap.get(attributeValue);
@@ -92,10 +87,13 @@ public final class FilterParamIndexEquals extends FilterParamIndex
 
     private void checkType(Object filterConstant)
     {
-        if (this.getPropertyBoxedType() != filterConstant.getClass())
+        if (filterConstant != null)
         {
-            throw new IllegalArgumentException("Invalid type of filter constant of " +
-                    filterConstant.getClass().getName() + " for property " + this.getPropertyName());
+            if (this.getPropertyBoxedType() != filterConstant.getClass())
+            {
+                throw new IllegalArgumentException("Invalid type of filter constant of " +
+                        filterConstant.getClass().getName() + " for property " + this.getPropertyName());
+            }
         }
     }
 

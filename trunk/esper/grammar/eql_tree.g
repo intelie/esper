@@ -168,10 +168,12 @@ caseExpr
 	;
 	
 inExpr
-	: #(IN_SET valueExpr valueExpr (valueExpr)*)
-	| #(NOT_IN_SET valueExpr valueExpr (valueExpr)*)
+	: #(IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK))
+	| #(NOT_IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK))
+	| #(IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK))
+	| #(NOT_IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK))
 	;
-	
+		
 betweenExpr
 	: #(BETWEEN valueExpr valueExpr valueExpr)
 	| #(NOT_BETWEEN valueExpr valueExpr (valueExpr)*)
@@ -246,11 +248,11 @@ atomicExpr
 	;
 
 eventFilterExpr
-	:	#( f:EVENT_FILTER_EXPR (EVENT_FILTER_NAME_TAG)? CLASS_IDENT (filterParam)* { leaveNode(#f); } )
+	:	#( f:EVENT_FILTER_EXPR (EVENT_FILTER_NAME_TAG)? CLASS_IDENT (valueExpr)* { leaveNode(#f); } )
 	;
 	
 filterParam
-	:	#(EVENT_FILTER_PARAM eventPropertyExpr filterParamComparator)
+	:	#(EVENT_FILTER_PARAM valueExpr (valueExpr)*)
 	;
 	
 filterParamComparator

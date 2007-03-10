@@ -1,12 +1,9 @@
 package net.esper.filter;
 
 import net.esper.pattern.MatchedEventMap;
-import net.esper.event.EventType;
-
-import java.util.Map;
 
 /**
- * This class represents one filter parameter in an {@link FilterSpec} filter specification.
+ * This class represents one filter parameter in an {@link FilterSpecCompiled} filter specification.
  * <p> Each filerting parameter has an attribute name and operator type.
  */
 public abstract class FilterSpecParam
@@ -19,13 +16,6 @@ public abstract class FilterSpecParam
         this.propertyName = propertyName;
         this.filterOperator = filterOperator;
     }
-
-    /**
-     * Return the filter parameter constant's class.
-     * @param optionalTaggedEventTypes is the event types per event as-name (tag)
-     * @return filter parameter value class
-     */
-    public abstract Class getFilterValueClass(Map<String, EventType> optionalTaggedEventTypes);
 
     /**
      * Return the filter parameter constant to filter for.

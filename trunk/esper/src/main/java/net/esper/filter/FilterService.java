@@ -2,13 +2,12 @@ package net.esper.filter;
 
 import net.esper.event.EventBean;
 
-import java.util.List;
 import java.util.Collection;
 
 /**
  * Interface for filtering events by event type and event property values. Allows adding and removing filters.
  * <p>
- * Filters are defined by a {@link FilterSpec} and are associated with a {@link FilterHandle}
+ * Filters are defined by a {@link FilterSpecCompiled} and are associated with a {@link FilterHandle}
  * callback.
  * Implementations may decide if the same filter callback can be registered twice for different or some
  * filter specifications.

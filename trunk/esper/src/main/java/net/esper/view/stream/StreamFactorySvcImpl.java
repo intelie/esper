@@ -7,7 +7,7 @@ import net.esper.core.EPStatementHandleCallback;
 import net.esper.event.EventBean;
 import net.esper.filter.FilterHandleCallback;
 import net.esper.filter.FilterService;
-import net.esper.filter.FilterSpec;
+import net.esper.filter.FilterSpecCompiled;
 import net.esper.filter.FilterValueSet;
 import net.esper.view.EventStream;
 import net.esper.view.ZeroDepthStream;
@@ -45,18 +45,18 @@ public class StreamFactorySvcImpl implements StreamFactoryService
 
     // Using identify hash map - ignoring the equals semantics on filter specs
     // Thus two filter specs objects are always separate entries in the map
-    private final IdentityHashMap<FilterSpec, Pair<EventStream, EPStatementHandleCallback>> eventStreamsIdentity;
+    private final IdentityHashMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>> eventStreamsIdentity;
 
     // Using a reference-counted map for non-join statements
-    private final RefCountedMap<FilterSpec, Pair<EventStream, EPStatementHandleCallback>> eventStreamsRefCounted;
+    private final RefCountedMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>> eventStreamsRefCounted;
 
     /**
      * Ctor.
      */
     public StreamFactorySvcImpl()
     {
-        this.eventStreamsRefCounted = new RefCountedMap<FilterSpec, Pair<EventStream, EPStatementHandleCallback>>();
-        this.eventStreamsIdentity = new IdentityHashMap<FilterSpec, Pair<EventStream, EPStatementHandleCallback>>();
+        this.eventStreamsRefCounted = new RefCountedMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>>();
+        this.eventStreamsIdentity = new IdentityHashMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>>();
     }
 
     /**
@@ -66,7 +66,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * @param epStatementHandle is the statement resource lock
      * @return newly createdStatement event stream, not reusing existing instances
      */
-    public EventStream createStream(FilterSpec filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin)
+    public EventStream createStream(FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin)
     {
         if (log.isDebugEnabled())
         {
@@ -133,7 +133,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * See the method of the same name in {@link net.esper.view.stream.StreamFactoryService}.
      * @param filterSpec is the filter definition
      */
-    public void dropStream(FilterSpec filterSpec, FilterService filterService, boolean isJoin)
+    public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin)
     {
         Pair<EventStream, EPStatementHandleCallback> pair = null;
 

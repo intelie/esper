@@ -13,7 +13,7 @@ import net.esper.support.eql.SupportStreamTypeSvc1Stream;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectExprElementNamedSpec;
+import net.esper.eql.spec.SelectExprElementCompiledSpec;
 
 public class TestSelectExprEvalProcessor extends TestCase
 {
@@ -22,7 +22,7 @@ public class TestSelectExprEvalProcessor extends TestCase
 
     public void setUp() throws Exception
     {
-        List<SelectExprElementNamedSpec> selectList = SupportSelectExprFactory.makeNoAggregateSelectList();
+        List<SelectExprElementCompiledSpec> selectList = SupportSelectExprFactory.makeNoAggregateSelectList();
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
 
         methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService);

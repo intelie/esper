@@ -27,7 +27,7 @@ public class TestInvalidPattern extends TestCase
     public void testSyntaxException()
     {
         String exceptionText = getSyntaxExceptionPattern(EVENT_NUM + "(doublePrimitive='ss'");
-        assertEquals("expecting RPAREN, found 'null' near line 1, column 58 [net.esper.support.bean.SupportBean_N(doublePrimitive='ss']", exceptionText);
+        assertEquals("end of input when expecting a closing parenthesis ')' near line 1, column 58 [net.esper.support.bean.SupportBean_N(doublePrimitive='ss']", exceptionText);
     }
 
     public void testStatementException() throws Exception
@@ -40,35 +40,31 @@ public class TestInvalidPattern extends TestCase
 
         // simple property not found
         exceptionText = getStatementExceptionPattern(EVENT_NUM + "(dummy=1)");
-        assertEquals("Property named 'dummy' not found in selected stream of type net.esper.support.bean.SupportBean_N [net.esper.support.bean.SupportBean_N(dummy=1)]", exceptionText);
+        assertEquals("Property named 'dummy' is not valid in any stream [net.esper.support.bean.SupportBean_N(dummy=1)]", exceptionText);
 
         // nested property not found
         exceptionText = getStatementExceptionPattern(EVENT_NUM + "(dummy.nested=1)");
-        assertEquals("Property named 'dummy.nested' not found in selected stream of type net.esper.support.bean.SupportBean_N [net.esper.support.bean.SupportBean_N(dummy.nested=1)]", exceptionText);
+        assertEquals("Failed to resolve property 'dummy.nested' to a stream or nested property in a stream [net.esper.support.bean.SupportBean_N(dummy.nested=1)]", exceptionText);
 
         // property wrong type
         exceptionText = getStatementExceptionPattern(EVENT_NUM + "(intPrimitive='s')");
-        assertEquals("Implicit conversion from datatype 'string' to 'int' for property 'intPrimitive' is not allowed [net.esper.support.bean.SupportBean_N(intPrimitive='s')]", exceptionText);
+        assertEquals("Implicit conversion from datatype 'String' to 'Integer' is not allowed [net.esper.support.bean.SupportBean_N(intPrimitive='s')]", exceptionText);
 
         // property not a primitive type
         exceptionText = getStatementExceptionPattern(EVENT_COMPLEX + "(nested=1)");
-        assertEquals("Property named 'nested' of type 'net.esper.support.bean.SupportBeanComplexProps$SupportBeanSpecialGetterNested' is not supported type [net.esper.support.bean.SupportBeanComplexProps(nested=1)]", exceptionText);
+        assertEquals("Implicit conversion from datatype 'Integer' to 'SupportBeanSpecialGetterNested' is not allowed [net.esper.support.bean.SupportBeanComplexProps(nested=1)]", exceptionText);
 
         // no tag matches prior use
         exceptionText = getStatementExceptionPattern(EVENT_NUM + "(doublePrimitive=x.abc)");
-        assertEquals("Event named ''x' not found in event pattern result set [net.esper.support.bean.SupportBean_N(doublePrimitive=x.abc)]", exceptionText);
-
-        // duplicate property in filter
-        exceptionText = getStatementExceptionPattern(EVENT_NUM + "(doublePrimitive=1, doublePrimitive=1)");
-        assertEquals("Property named 'doublePrimitive' has been listed more than once as a filter parameter [net.esper.support.bean.SupportBean_N(doublePrimitive=1, doublePrimitive=1)]", exceptionText);
+        assertEquals("Failed to resolve property 'x.abc' to a stream or nested property in a stream [net.esper.support.bean.SupportBean_N(doublePrimitive=x.abc)]", exceptionText);
 
         // range not valid on string
         exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + "(string in [1:2])");
-        assertEquals("Property named 'string' of type 'java.lang.String' not numeric as required for ranges [net.esper.support.bean.SupportBean(string in [1:2])]", exceptionText);
+        assertEquals("Implicit conversion from datatype 'String' to numeric is not allowed [net.esper.support.bean.SupportBean(string in [1:2])]", exceptionText);
 
         // range does not allow string params
         exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + "(doubleBoxed in ['a':2])");
-        assertEquals("Implicit conversion from datatype 'string' to 'double' for property 'doubleBoxed' is not allowed [net.esper.support.bean.SupportBean(doubleBoxed in ['a':2])]", exceptionText);
+        assertEquals("Implicit conversion from datatype 'String' to numeric is not allowed [net.esper.support.bean.SupportBean(doubleBoxed in ['a':2])]", exceptionText);
 
         // invalid observer arg
         exceptionText = getStatementExceptionPattern("timer:at(9l)");
@@ -80,7 +76,7 @@ public class TestInvalidPattern extends TestCase
 
         // use-result property is wrong type
         exceptionText = getStatementExceptionPattern("x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(doublePrimitive=x.boolBoxed)");
-        assertEquals("Type mismatch for property named 'doublePrimitive', supplied type of 'java.lang.Boolean' does not match property type 'java.lang.Double' [x=net.esper.support.bean.SupportBean -> net.esper.support.bean.SupportBean(doublePrimitive=x.boolBoxed)]", exceptionText);
+        assertEquals("Implicit conversion from datatype 'Boolean' to 'Double' is not allowed [x=net.esper.support.bean.SupportBean -> net.esper.support.bean.SupportBean(doublePrimitive=x.boolBoxed)]", exceptionText);
     }
 
     public void testUseResult()
@@ -94,7 +90,6 @@ public class TestInvalidPattern extends TestCase
         tryInvalid("xx=" + EVENT + " -> nb=" + EVENT + "(xx = na.doublePrimitive)");
         tryInvalid("na=" + EVENT + " -> nb=" + EVENT + "(xx = na.xx)");
         tryValid("na=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = na.doublePrimitive, intBoxed=na.intBoxed)");
-        tryInvalid("xx=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = nb.doublePrimitive)");
         tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in (na.doublePrimitive:na.doubleBoxed))");
         tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.doublePrimitive:na.doubleBoxed])");
         tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.intBoxed:na.intPrimitive])");

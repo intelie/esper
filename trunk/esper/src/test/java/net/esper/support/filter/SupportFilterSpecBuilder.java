@@ -8,9 +8,9 @@ import java.util.LinkedList;
 
 public class SupportFilterSpecBuilder
 {
-    public static FilterSpec build(EventType eventType, Object[] objects)
+    public static FilterSpecCompiled build(EventType eventType, Object[] objects)
     {
-        return new FilterSpec(eventType, buildList(objects));
+        return new FilterSpecCompiled(eventType, buildList(objects));
     }
 
     public static List<FilterSpecParam> buildList(Object[] objects)

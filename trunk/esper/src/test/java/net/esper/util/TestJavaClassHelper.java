@@ -5,6 +5,50 @@ import net.esper.support.bean.SupportBean;
 
 public class TestJavaClassHelper extends TestCase
 {
+    public void testCanCoerce()
+    {
+        final Class[] primitiveClasses = {
+            float.class, double.class, byte.class, short.class, int.class, long.class};
+
+        final Class[] boxedClasses = {
+            Float.class, Double.class, Byte.class, Short.class, Integer.class, Long.class};
+
+        for (int i = 0; i < primitiveClasses.length; i++)
+        {
+            assertTrue(JavaClassHelper.canCoerce(primitiveClasses[i], boxedClasses[i]));
+            assertTrue(JavaClassHelper.canCoerce(boxedClasses[i], boxedClasses[i]));
+            assertTrue(JavaClassHelper.canCoerce(primitiveClasses[i], primitiveClasses[i]));
+            assertTrue(JavaClassHelper.canCoerce(boxedClasses[i], primitiveClasses[i]));    
+        }
+
+        assertTrue(JavaClassHelper.canCoerce(float.class, Double.class));
+        assertFalse(JavaClassHelper.canCoerce(double.class, float.class));
+        assertTrue(JavaClassHelper.canCoerce(int.class, long.class));
+        assertFalse(JavaClassHelper.canCoerce(long.class, int.class));
+        assertTrue(JavaClassHelper.canCoerce(long.class, double.class));
+        assertTrue(JavaClassHelper.canCoerce(int.class, double.class));
+
+        try
+        {
+            JavaClassHelper.canCoerce(String.class, Float.class);
+            fail();
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // expected
+        }
+
+        try
+        {
+            JavaClassHelper.canCoerce(Float.class, Boolean.class);
+            fail();
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // expected
+        }
+    }
+
     public void testCoerceNumber()
     {
         assertEquals(1d, JavaClassHelper.coerceBoxed(1d, Double.class));

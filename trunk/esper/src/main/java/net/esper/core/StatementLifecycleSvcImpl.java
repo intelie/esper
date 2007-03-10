@@ -6,7 +6,7 @@ import net.esper.client.EPStatementException;
 import net.esper.client.EPStatementState;
 import net.esper.collection.Pair;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.StatementSpec;
+import net.esper.eql.spec.StatementSpecCompiled;
 import net.esper.util.ManagedLock;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
@@ -40,7 +40,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         this.stmtNameToIdMap = new HashMap<String, String>();
     }
 
-    public synchronized EPStatement createAndStart(StatementSpec statementSpec, String expression, boolean isPattern, String optStatementName)
+    public synchronized EPStatement createAndStart(StatementSpecCompiled statementSpec, String expression, boolean isPattern, String optStatementName)
     {
         // Generate statement id
         String statementId = UuidGenerator.generate(expression);
@@ -56,7 +56,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementHandle epStatementHandle = new EPStatementHandle(statementResourceLock, expression);
 
         EPStatementImpl statement;
-        EPStmtStartMethod startMethod;
+        EPStatementStartMethod startMethod;
 
         eventProcessingRWLock.acquireWriteLock();
         try
@@ -65,7 +65,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             statement = new EPStatementImpl(statementId, statementName, expression, isPattern, services.getDispatchService(), this);
 
             // create start method
-            startMethod = new EPStmtStartMethod(statementSpec, expression, services, epStatementHandle);
+            startMethod = new EPStatementStartMethod(statementSpec, expression, services, epStatementHandle);
             
             EPStatementDesc desc = new EPStatementDesc(statement, startMethod, null);
             stmtIdToDescMap.put(statementId, desc);
@@ -321,10 +321,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     public class EPStatementDesc
     {
         private EPStatementImpl epStatement;
-        private EPStmtStartMethod startMethod;
+        private EPStatementStartMethod startMethod;
         private EPStatementStopMethod stopMethod;
 
-        public EPStatementDesc(EPStatementImpl epStatement, EPStmtStartMethod startMethod, EPStatementStopMethod stopMethod)
+        public EPStatementDesc(EPStatementImpl epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod)
         {
             this.epStatement = epStatement;
             this.startMethod = startMethod;
@@ -336,7 +336,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             return epStatement;
         }
 
-        public EPStmtStartMethod getStartMethod()
+        public EPStatementStartMethod getStartMethod()
         {
             return startMethod;
         }

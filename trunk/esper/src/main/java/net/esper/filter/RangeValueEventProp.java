@@ -26,29 +26,7 @@ public class RangeValueEventProp implements FilterSpecParamRangeValue
         this.resultEventProperty = resultEventProperty;
     }
 
-    public final void checkType(Map<String, EventType> taggedEventTypes)
-    {
-        EventType type = taggedEventTypes.get(resultEventAsName);
-        if (type == null)
-        {
-            throw new IllegalStateException("Matching event type named " +
-                    '\'' + resultEventAsName + "' not found in event result set");
-        }
-
-        Class propertyClass = type.getPropertyType(resultEventProperty);
-        if (propertyClass == null)
-        {
-            throw new IllegalStateException("Property " + resultEventProperty + " of event type " +
-                    '\'' + resultEventAsName + "' not found");
-        }
-        if (!JavaClassHelper.isNumeric(propertyClass))
-        {
-            throw new IllegalStateException("Property " + resultEventProperty + " of event type " +
-                    '\'' + resultEventAsName + "' is not numeric");
-        }
-    }
-
-    public final double getFilterValue(MatchedEventMap matchedEvents)
+    public final Double getFilterValue(MatchedEventMap matchedEvents)
     {
         EventBean event = matchedEvents.getMatchingEvent(resultEventAsName);
         if (event == null)
@@ -60,10 +38,19 @@ public class RangeValueEventProp implements FilterSpecParamRangeValue
         Number value = (Number) event.get(resultEventProperty);
         if (value == null)
         {
-            throw new IllegalStateException("Event property named " +
-                    '\'' + resultEventAsName + '.' + resultEventProperty + "' returned null value");
-        }
+            return null;
+        }        
         return value.doubleValue();
+    }
+
+    public String getResultEventAsName()
+    {
+        return resultEventAsName;
+    }
+
+    public String getResultEventProperty()
+    {
+        return resultEventProperty;
     }
 
     public final String toString()

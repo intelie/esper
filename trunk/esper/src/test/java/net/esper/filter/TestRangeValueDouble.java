@@ -13,11 +13,6 @@ public class TestRangeValueDouble extends TestCase
         params[2] = new RangeValueDouble(5.5);
     }
 
-    public void testCheckType()
-    {
-        params[0].checkType(null);
-    }
-
     public void testGetFilterValue()
     {
         assertEquals(5.5, params[0].getFilterValue(null));

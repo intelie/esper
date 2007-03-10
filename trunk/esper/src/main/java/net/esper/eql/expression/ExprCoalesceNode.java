@@ -51,7 +51,7 @@ public class ExprCoalesceNode extends ExprNode
                 if (!JavaClassHelper.isNumeric(resultType))
                 {
                     throw new ExprValidationException("Implicit conversion from datatype '" +
-                            resultType +
+                            resultType.getSimpleName() +
                             "' to " + child.getType() + " is not allowed");
                 }
                 isNumericCoercion[count] = true;

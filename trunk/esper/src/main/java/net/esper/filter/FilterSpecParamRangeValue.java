@@ -12,15 +12,9 @@ import java.util.Map;
 public interface FilterSpecParamRangeValue
 {
     /**
-     * Check the type against the map of event tag and type.
-     * @param taggedEventTypes map of event tags and types
-     */
-    public void checkType(Map<String, EventType> taggedEventTypes);
-
-    /**
      * Returns the filter value representing the endpoint.
      * @param matchedEvents is the prior results
      * @return filter value
      */
-    public double getFilterValue(MatchedEventMap matchedEvents);
+    public Double getFilterValue(MatchedEventMap matchedEvents);
 }

@@ -25,7 +25,7 @@ public class TestFilterServiceMT extends TestCase
     public void testAddRemoveFilter() throws Exception
     {
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
-        FilterSpec spec = SupportFilterSpecBuilder.build(eventType, new Object[] {"string", FilterOperator.EQUAL, "HELLO"});
+        FilterSpecCompiled spec = SupportFilterSpecBuilder.build(eventType, new Object[] {"string", FilterOperator.EQUAL, "HELLO"});
         final FilterValueSet filterValues = spec.getValueSet(null);
 
         Callable callables[] = new Callable[5];

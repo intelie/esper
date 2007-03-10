@@ -15,7 +15,7 @@ import net.esper.event.EventType;
  * The implementation is based on the SortedMap implementation of TreeMap and stores only expression
  * parameter values of type DoubleRange.
  */
-public final class FilterParamIndexRange extends FilterParamIndex
+public final class FilterParamIndexRange extends FilterParamIndexPropBase
 {
     private final TreeMap<DoubleRange, EventEvaluator> ranges;
     private final ReadWriteLock rangesRWLock;
@@ -59,6 +59,10 @@ public final class FilterParamIndexRange extends FilterParamIndex
         }
 
         DoubleRange range = (DoubleRange) expressionValue;
+        if ((range.getMax() == null) || (range.getMin() == null))
+        {
+            return;     // endpoints null - we don't enter
+        }
 
         if ( Math.abs(range.getMax() - range.getMin()) > largestRangeValueDouble)
         {

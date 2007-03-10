@@ -58,6 +58,11 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         streamNumber = identNode.getStreamId();
         resultType = this.getChildNodes().get(1).getType();
 
+        if (viewResourceDelegate == null)
+        {
+            throw new ExprValidationException("Previous function cannot be used in this context");
+        }
+
         // Request a callback that provides the required access
         if (!viewResourceDelegate.requestCapability(streamNumber, new ViewCapDataWindowAccess(constantIndexNumber), this))
         {

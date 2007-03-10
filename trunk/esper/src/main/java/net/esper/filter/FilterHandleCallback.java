@@ -10,7 +10,7 @@ public interface FilterHandleCallback extends FilterHandle
 {
     /**
      * Indicate that an event was evaluated by the {@link net.esper.filter.FilterService}
-     * which matches the filter specification {@link net.esper.filter.FilterSpec} associated with this callback.
+     * which matches the filter specification {@link net.esper.filter.FilterSpecCompiled} associated with this callback.
      * @param event - the event received that matches the filter specification
      */
     public void matchFound(EventBean event);

@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
  * The implementation is based on the SortedMap implementation of TreeMap and stores only expression
  * parameter values of type DoubleRange.
  */
-public final class FilterParamIndexNotRange extends FilterParamIndex
+public final class FilterParamIndexNotRange extends FilterParamIndexPropBase
 {
     private final TreeMap<DoubleRange, EventEvaluator> ranges;
     private final Set<EventEvaluator> evaluators;
@@ -62,6 +62,11 @@ public final class FilterParamIndexNotRange extends FilterParamIndex
 
         DoubleRange range = (DoubleRange) expressionValue;
 
+        if ((range.getMax() == null) || (range.getMin() == null))
+        {
+            return; // null endpoints are ignored
+        }
+        
         if ( Math.abs(range.getMax() - range.getMin()) > largestRangeValueDouble)
         {
             largestRangeValueDouble = Math.abs(range.getMax() - range.getMin());

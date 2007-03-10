@@ -30,6 +30,11 @@ public class ExprInNode extends ExprNode
         this.isNotIn = isNotIn;
     }
 
+    public boolean isNotIn()
+    {
+        return isNotIn;
+    }
+
     public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
@@ -69,6 +74,11 @@ public class ExprInNode extends ExprNode
     public Class getType()
     {
         return Boolean.class;
+    }
+
+    public Class getCoercionType()
+    {
+        return coercionType;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)

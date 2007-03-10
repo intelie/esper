@@ -37,10 +37,10 @@ public class TestFilterParamIndexNotRange extends TestCase
         FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_CLOSED, testEventType);
         assertEquals(FilterOperator.NOT_RANGE_CLOSED, index.getFilterOperator());
 
-        index.put(new DoubleRange(2, 4), testEvaluators[0]);
-        index.put(new DoubleRange(2, 5), testEvaluators[1]);
-        index.put(new DoubleRange(1, 3), testEvaluators[2]);
-        index.put(new DoubleRange(1, 1), testEvaluators[3]);
+        index.put(new DoubleRange(2d, 4d), testEvaluators[0]);
+        index.put(new DoubleRange(2d, 5d), testEvaluators[1]);
+        index.put(new DoubleRange(1d, 3d), testEvaluators[2]);
+        index.put(new DoubleRange(1d, 1d), testEvaluators[3]);
 
         verify(index, 0L, new boolean[] {true, true, true, true});
         verify(index, 1L, new boolean[] {true, true, false, false});
@@ -55,10 +55,10 @@ public class TestFilterParamIndexNotRange extends TestCase
     {
         FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_OPEN, testEventType);
 
-        index.put(new DoubleRange(2, 4), testEvaluators[0]);
-        index.put(new DoubleRange(2, 5), testEvaluators[1]);
-        index.put(new DoubleRange(1, 3), testEvaluators[2]);
-        index.put(new DoubleRange(1, 1), testEvaluators[3]);
+        index.put(new DoubleRange(2d, 4d), testEvaluators[0]);
+        index.put(new DoubleRange(2d, 5d), testEvaluators[1]);
+        index.put(new DoubleRange(1d, 3d), testEvaluators[2]);
+        index.put(new DoubleRange(1d, 1d), testEvaluators[3]);
 
         verify(index, 0L, new boolean[] {true, true, true, true});
         verify(index, 1L, new boolean[] {true, true, true, true});
@@ -73,10 +73,10 @@ public class TestFilterParamIndexNotRange extends TestCase
     {
         FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_HALF_OPEN, testEventType);
 
-        index.put(new DoubleRange(2, 4), testEvaluators[0]);
-        index.put(new DoubleRange(2, 5), testEvaluators[1]);
-        index.put(new DoubleRange(1, 3), testEvaluators[2]);
-        index.put(new DoubleRange(1, 1), testEvaluators[3]);
+        index.put(new DoubleRange(2d, 4d), testEvaluators[0]);
+        index.put(new DoubleRange(2d, 5d), testEvaluators[1]);
+        index.put(new DoubleRange(1d, 3d), testEvaluators[2]);
+        index.put(new DoubleRange(1d, 1d), testEvaluators[3]);
 
         verify(index, 0L, new boolean[] {true, true, true, true});
         verify(index, 1L, new boolean[] {true, true, false, true});
@@ -91,10 +91,10 @@ public class TestFilterParamIndexNotRange extends TestCase
     {
         FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_HALF_CLOSED, testEventType);
 
-        index.put(new DoubleRange(2, 4), testEvaluators[0]);
-        index.put(new DoubleRange(2, 5), testEvaluators[1]);
-        index.put(new DoubleRange(1, 3), testEvaluators[2]);
-        index.put(new DoubleRange(1, 1), testEvaluators[3]);
+        index.put(new DoubleRange(2d, 4d), testEvaluators[0]);
+        index.put(new DoubleRange(2d, 5d), testEvaluators[1]);
+        index.put(new DoubleRange(1d, 3d), testEvaluators[2]);
+        index.put(new DoubleRange(1d, 1d), testEvaluators[3]);
 
         verify(index, 0L, new boolean[] {true, true, true, true});
         verify(index, 1L, new boolean[] {true, true, true, true});
@@ -105,7 +105,7 @@ public class TestFilterParamIndexNotRange extends TestCase
         verify(index, 6L, new boolean[] {true, true, true, true});
     }
 
-    private void verify(FilterParamIndex index, Long testValue, boolean[] expected)
+    private void verify(FilterParamIndexBase index, Long testValue, boolean[] expected)
     {
         testBean.setLongBoxed(testValue);
         index.matchEvent(testEventBean, matchesList);

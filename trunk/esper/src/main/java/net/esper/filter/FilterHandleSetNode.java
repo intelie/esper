@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
 /**
- * This class holds a list of indizes storing filter constants in {@link FilterParamIndex} nodes
+ * This class holds a list of indizes storing filter constants in {@link FilterParamIndexBase} nodes
  * and a set of {@link FilterHandle}.
  * An instance of this class represents a leaf-node (no indizes stored, just filter callbacks)
  * but can also be non-leaf (some indizes exist) in a filter evaluation tree.
@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 public final class FilterHandleSetNode implements EventEvaluator
 {
     private final Set<FilterHandle> callbackSet;
-    private final List<FilterParamIndex> indizes;
+    private final List<FilterParamIndexBase> indizes;
     private final ReadWriteLock nodeRWLock;
 
     /**
@@ -28,7 +28,7 @@ public final class FilterHandleSetNode implements EventEvaluator
     public FilterHandleSetNode()
     {
         callbackSet = new LinkedHashSet<FilterHandle>();
-        indizes = new LinkedList<FilterParamIndex>();
+        indizes = new LinkedList<FilterParamIndexBase>();
         nodeRWLock = new ReentrantReadWriteLock();
     }
 
@@ -67,7 +67,7 @@ public final class FilterHandleSetNode implements EventEvaluator
      * Returns list of indexes - not returning an iterator. Client classes should not change this collection.
      * @return list of indizes
      */
-    public List<FilterParamIndex> getIndizes()
+    public List<FilterParamIndexBase> getIndizes()
     {
         return indizes;
     }
@@ -84,7 +84,7 @@ public final class FilterHandleSetNode implements EventEvaluator
         nodeRWLock.readLock().lock();
 
         // Ask each of the indizes to match against the attribute values
-        for (FilterParamIndex index : indizes)
+        for (FilterParamIndexBase index : indizes)
         {
             index.matchEvent(eventBean, matches);
         }
@@ -123,7 +123,7 @@ public final class FilterHandleSetNode implements EventEvaluator
      * code.
      * @param index - index to add
      */
-    protected final void add(FilterParamIndex index)
+    protected final void add(FilterParamIndexBase index)
     {
         indizes.add(index);
     }
@@ -135,7 +135,7 @@ public final class FilterHandleSetNode implements EventEvaluator
      * @param index is the index to remove
      * @return true if found, false if not existing
      */
-    protected final boolean remove(FilterParamIndex index)
+    protected final boolean remove(FilterParamIndexBase index)
     {
         return indizes.remove(index);
     }

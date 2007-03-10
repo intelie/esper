@@ -2,13 +2,16 @@ package net.esper.eql.core;
 
 import net.esper.event.EventType;
 
+import java.util.LinkedHashMap;
+
 /**
  * Implementation that provides stream number and property type information. 
  */
 public class StreamTypeServiceImpl implements StreamTypeService
 {
-    private EventType[] eventTypes;
-    private String[] streamNames;
+    private final EventType[] eventTypes;
+    private final String[] streamNames;
+    private boolean isStreamZeroUnambigous;
 
     /**
      * Ctor.
@@ -23,6 +26,26 @@ public class StreamTypeServiceImpl implements StreamTypeService
         if (eventTypes.length != streamNames.length)
         {
             throw new IllegalArgumentException("Number of entries for event types and stream names differs");
+        }
+    }
+
+    /**
+     * Ctor.
+     * @param namesAndTypes is the ordered list of stream names and event types available (stream zero to N)
+     * @param isStreamZeroUnambigous indicates whether when a property is found in stream zero and another stream an exception should be
+     * thrown or the stream zero should be assumed
+     */
+    public StreamTypeServiceImpl (LinkedHashMap<String, EventType> namesAndTypes, boolean isStreamZeroUnambigous)
+    {
+        this.isStreamZeroUnambigous = isStreamZeroUnambigous;
+        eventTypes = new EventType[namesAndTypes.size()] ;
+        streamNames = new String[namesAndTypes.size()] ;
+        int count = 0;
+        for (String streamName : namesAndTypes.keySet())
+        {
+            streamNames[count] = streamName;
+            eventTypes[count] = namesAndTypes.get(streamName);
+            count++;
         }
     }
 
@@ -113,6 +136,12 @@ public class StreamTypeServiceImpl implements StreamTypeService
                 streamType = eventTypes[i];
                 foundCount++;
                 foundIndex = index;
+
+                // If the property could be resolved from stream 0 then we don't need to look further
+                if ((i == 0) && isStreamZeroUnambigous)
+                {
+                    return new PropertyResolutionDescriptor(streamNames[0], eventTypes[0], propertyName, 0, streamType.getPropertyType(propertyName));
+                }
             }
             index++;
         }

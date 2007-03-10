@@ -5,7 +5,7 @@ import java.util.SortedSet;
 import java.util.List;
 
 /**
- * Utility class for matching filter parameters to indizes. Matches are indicated by the index {@link FilterParamIndex}
+ * Utility class for matching filter parameters to indizes. Matches are indicated by the index {@link FilterParamIndexBase}
  * and the filter parameter {@link FilterSpecParam} featuring the same event property name and filter operator.
  */
 public class IndexHelper
@@ -17,24 +17,30 @@ public class IndexHelper
      * For instance, for a filter parameter of "count EQUALS 10", the index against property "count" with
      * operator type EQUALS will be returned, if present.
      * NOTE: The caller is expected to obtain locks, if necessary, on the collections passed in.
+     * NOTE: Doesn't match non-property based index - thus boolean expressions don't get found and are always entered as a new index
      *
      * @param parameters is the list of sorted filter parameters
      * @param indizes is the collection of indexes
      * @return A matching pair of filter parameter and index, if any matches were found. Null if no matches were found.
      */
-    public static Pair<FilterValueSetParam, FilterParamIndex> findIndex(SortedSet<FilterValueSetParam> parameters, List<FilterParamIndex> indizes)
+    public static Pair<FilterValueSetParam, FilterParamIndexBase> findIndex(SortedSet<FilterValueSetParam> parameters, List<FilterParamIndexBase> indizes)
     {
         for (FilterValueSetParam parameter : parameters)
         {
             String property = parameter.getPropertyName();
             FilterOperator operator = parameter.getFilterOperator();
 
-            for (FilterParamIndex index : indizes)
+            for (FilterParamIndexBase index : indizes)
             {
-                if ( (property.equals(index.getPropertyName())) &&
-                     (operator.equals(index.getFilterOperator())) )
+                // if property-based index, we prefer this in matching
+                if (index instanceof FilterParamIndexPropBase)
                 {
-                    return new Pair<FilterValueSetParam, FilterParamIndex>(parameter, index);
+                    FilterParamIndexPropBase propBasedIndex = (FilterParamIndexPropBase) index;
+                    if ( (property.equals(propBasedIndex.getPropertyName())) &&
+                         (operator.equals(propBasedIndex.getFilterOperator())) )
+                    {
+                        return new Pair<FilterValueSetParam, FilterParamIndexBase>(parameter, index);
+                    }
                 }
             }
         }
@@ -50,22 +56,38 @@ public class IndexHelper
      * @return filter parameter, or null if no matching parameter found.
      */
     public static FilterValueSetParam findParameter(SortedSet<FilterValueSetParam> parameters,
-                                                FilterParamIndex index)
+                                                FilterParamIndexBase index)
     {
-        String indexProperty = index.getPropertyName();
-        FilterOperator indexOperator = index.getFilterOperator();
-
-        for (FilterValueSetParam parameter : parameters)
+        if (index instanceof FilterParamIndexPropBase)
         {
-            String paramProperty = parameter.getPropertyName();
-            FilterOperator paramOperator = parameter.getFilterOperator();
+            FilterParamIndexPropBase propBasedIndex = (FilterParamIndexPropBase) index;
+            String indexProperty = propBasedIndex.getPropertyName();
+            FilterOperator indexOperator = propBasedIndex.getFilterOperator();
 
-            if ( (paramProperty.equals(indexProperty)) &&
-                 (paramOperator.equals(indexOperator)) )
+            for (FilterValueSetParam parameter : parameters)
             {
-                return parameter;
+                String paramProperty = parameter.getPropertyName();
+                FilterOperator paramOperator = parameter.getFilterOperator();
+
+                if ( (paramProperty.equals(indexProperty)) &&
+                     (paramOperator.equals(indexOperator)) )
+                {
+                    return parameter;
+                }
             }
         }
+        else
+        {
+            for (FilterValueSetParam parameter : parameters)
+            {
+                FilterOperator paramOperator = parameter.getFilterOperator();
+
+                if (paramOperator.equals(index.getFilterOperator()))
+                {
+                    return parameter;
+                }
+            }
+        }       
 
         return null;
     }

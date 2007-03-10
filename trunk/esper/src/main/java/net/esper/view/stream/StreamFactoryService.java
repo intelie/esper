@@ -1,13 +1,9 @@
 package net.esper.view.stream;
 
 import net.esper.view.EventStream;
-import net.esper.filter.FilterSpec;
+import net.esper.filter.FilterSpecCompiled;
 import net.esper.filter.FilterService;
-import net.esper.util.ManagedLock;
 import net.esper.core.EPStatementHandle;
-
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Service on top of the filter service for reuseing filter callbacks and their associated EventStream instances.
@@ -28,7 +24,7 @@ public interface StreamFactoryService
      * necessary for stream reuse and multithreading concerns
      * @return event stream representing active filter
      */
-    public EventStream createStream(FilterSpec filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
+    public EventStream createStream(FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
                                     boolean isJoin);
 
     /**
@@ -39,5 +35,5 @@ public interface StreamFactoryService
      * @param isJoin is indicatng whether the stream will participate in a join statement, information
      * necessary for stream reuse and multithreading concerns
      */
-    public void dropStream(FilterSpec filterSpec, FilterService filterService, boolean isJoin);
+    public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin);
 }

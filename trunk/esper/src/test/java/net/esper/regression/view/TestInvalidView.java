@@ -50,11 +50,11 @@ public class TestInvalidView extends TestCase
 
         // where-clause equals has invalid type compare
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length(1) where doublePrimitive=true");
-        assertEquals("Error validating expression: Implicit conversion from datatype 'java.lang.Double' to 'java.lang.Boolean' is not allowed [select * from net.esper.support.bean.SupportBean_N.win:length(1) where doublePrimitive=true]", exceptionText);
+        assertEquals("Error validating expression: Implicit conversion from datatype 'Boolean' to 'Double' is not allowed [select * from net.esper.support.bean.SupportBean_N.win:length(1) where doublePrimitive=true]", exceptionText);
 
         // where-clause relational op has invalid type
         exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) where string > 5");
-        assertEquals("Error validating expression: Implicit conversion from datatype 'java.lang.String' to numeric is not allowed [select * from net.esper.support.bean.SupportBean.win:length(1) where string > 5]", exceptionText);
+        assertEquals("Error validating expression: Implicit conversion from datatype 'String' to numeric is not allowed [select * from net.esper.support.bean.SupportBean.win:length(1) where string > 5]", exceptionText);
 
         // where-clause has aggregation function
         exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) where sum(intPrimitive) > 5");
@@ -62,7 +62,7 @@ public class TestInvalidView extends TestCase
 
         // invalid numerical expression
         exceptionText = getStatementExceptionView("select 2 * 's' from " + EVENT_ALLTYPES + ".win:length(1)");
-        assertEquals("Error starting view: Implicit conversion from datatype 'java.lang.String' to numeric is not allowed [select 2 * 's' from net.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
+        assertEquals("Error starting view: Implicit conversion from datatype 'String' to numeric is not allowed [select 2 * 's' from net.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
 
         // invalid property in select
         exceptionText = getStatementExceptionView("select a[2].m('a') from " + EVENT_ALLTYPES + ".win:length(1)");
@@ -98,7 +98,7 @@ public class TestInvalidView extends TestCase
 
         // invalid property in having clause
         exceptionText = getStatementExceptionView("select 2 * 's' from " + EVENT_ALLTYPES + ".win:length(1) group by intPrimitive having xxx > 5");
-        assertEquals("Error starting view: Implicit conversion from datatype 'java.lang.String' to numeric is not allowed [select 2 * 's' from net.esper.support.bean.SupportBean.win:length(1) group by intPrimitive having xxx > 5]", exceptionText);
+        assertEquals("Error starting view: Implicit conversion from datatype 'String' to numeric is not allowed [select 2 * 's' from net.esper.support.bean.SupportBean.win:length(1) group by intPrimitive having xxx > 5]", exceptionText);
 
         // invalid having clause - not the same aggregate as used in select
         exceptionText = getStatementExceptionView("select sum(intPrimitive) from " + EVENT_ALLTYPES + ".win:length(1) group by intBoxed having sum(doubleBoxed) > 5");
@@ -175,7 +175,7 @@ public class TestInvalidView extends TestCase
         // insert into column name incorrect
         epService.getEPAdministrator().createEQL("insert into Xyz select 1 as dodi from java.lang.String");
         exceptionText = getStatementExceptionView("select pox from pattern[Xyz(yodo=4)]");
-        assertEquals("Property named 'yodo' not found in selected stream of type java.util.Map [select pox from pattern[Xyz(yodo=4)]]", exceptionText);
+        assertEquals("Property named 'yodo' is not valid in any stream [select pox from pattern[Xyz(yodo=4)]]", exceptionText);
     }
 
     public void testInvalidView()

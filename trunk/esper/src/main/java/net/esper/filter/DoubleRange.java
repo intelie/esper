@@ -6,8 +6,8 @@ package net.esper.filter;
  */
 public final class DoubleRange
 {
-    private double min;
-    private double max;
+    private Double min;
+    private Double max;
     private int hashCode;
 
     /**
@@ -15,25 +15,36 @@ public final class DoubleRange
      * @param min is the low endpoint
      * @param max is the high endpoint
      */
-    public DoubleRange(double min, double max)
+    public DoubleRange(Double min, Double max)
     {
         this.min = min;
         this.max = max;
 
-        if (min > max)
+        if ((min != null) && (max != null))
         {
-            this.max = min;
-            this.min = max;
+            if (min > max)
+            {
+                this.max = min;
+                this.min = max;
+            }
         }
 
-        hashCode = ((Double) min).hashCode() ^ ((Double) max).hashCode();
+        hashCode = 7;
+        if (min != null)
+        {
+            hashCode = hashCode^min.hashCode();
+        }
+        if (max != null)
+        {
+            hashCode = hashCode^max.hashCode();
+        }
     }
 
     /**
      * Returns low endpoint.
      * @return low endpoint
      */
-    public final double getMin()
+    public final Double getMin()
     {
         return min;
     }
@@ -42,7 +53,7 @@ public final class DoubleRange
      * Returns high endpoint.
      * @return high endpoint
      */
-    public final double getMax()
+    public final Double getMax()
     {
         return max;
     }
@@ -57,9 +68,9 @@ public final class DoubleRange
         {
             return false;
         }
-
         DoubleRange otherRange = (DoubleRange) other;
-        return ((otherRange.max == this.max) && (otherRange.min == this.min));
+
+        return ((otherRange.max.doubleValue() == this.max) && (otherRange.min.doubleValue() == this.min));
     }
 
     public final int hashCode()

@@ -8,8 +8,6 @@ package net.esper.util;
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
 
-// TODO: check with Alex that this is OK to add
-
 import java.net.InetAddress;
 import java.security.SecureRandom;
 

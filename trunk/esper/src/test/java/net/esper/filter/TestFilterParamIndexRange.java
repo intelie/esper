@@ -27,7 +27,7 @@ public class TestFilterParamIndexRange extends TestCase
         testEventType = testEventBean.getEventType();
         matchesList = new LinkedList<FilterHandle>();
 
-        testRange = new DoubleRange(10, 20);
+        testRange = new DoubleRange(10d, 20d);
     }
 
     public void testInvalid()
@@ -167,7 +167,7 @@ public class TestFilterParamIndexRange extends TestCase
 
         for (int i = 0; i < 10000; i++)
         {
-            DoubleRange range = new DoubleRange(i, i+1);
+            DoubleRange range = new DoubleRange(new Double(i), new Double(i+1));
             index.put(range, testEvaluator);
         }
 
@@ -182,7 +182,7 @@ public class TestFilterParamIndexRange extends TestCase
 
         for (int i = 0; i < 100; i++)
         {
-            DoubleRange range = new DoubleRange(i, 2 * i);
+            DoubleRange range = new DoubleRange(new Double(i), new Double(2 * i));
             index.put(range, testEvaluator);
         }
 
@@ -233,14 +233,14 @@ public class TestFilterParamIndexRange extends TestCase
         return index;
     }
 
-    private void verifyDoublePrimitive(FilterParamIndex index, double testValue, int numExpected)
+    private void verifyDoublePrimitive(FilterParamIndexBase index, double testValue, int numExpected)
     {
         testBean.setDoublePrimitive(testValue);
         index.matchEvent(testEventBean, matchesList);
         assertEquals(numExpected, testEvaluator.getAndResetCountInvoked());
     }
 
-    private void verifyLongPrimitive(FilterParamIndex index, long testValue, int numExpected)
+    private void verifyLongPrimitive(FilterParamIndexBase index, long testValue, int numExpected)
     {
         testBean.setLongPrimitive(testValue);
         index.matchEvent(testEventBean, matchesList);

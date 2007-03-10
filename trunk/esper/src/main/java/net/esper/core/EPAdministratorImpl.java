@@ -10,11 +10,14 @@ import net.esper.client.EPStatementException;
 import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.generated.EQLStatementParser;
 import net.esper.eql.parse.*;
-import net.esper.eql.spec.PatternStreamSpec;
-import net.esper.eql.spec.StatementSpec;
+import net.esper.eql.spec.*;
+import net.esper.eql.expression.ExprValidationException;
 import net.esper.util.DebugFacility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation for the admin interface.
@@ -102,7 +105,7 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         // Parse and walk
         AST ast = ParseHelper.parse(expression, patternParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEventAdapterService());
+        EQLTreeWalker walker = new EQLTreeWalker();
 
         try
         {
@@ -130,19 +133,58 @@ public class EPAdministratorImpl implements EPAdministrator
         }
 
         // Get pattern specification
-        PatternStreamSpec patternStreamSpec = (PatternStreamSpec) walker.getStatementSpec().getStreamSpecs().get(0);
+        PatternStreamSpecRaw patternStreamSpec = (PatternStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);
 
         // Create statement spec
-        StatementSpec statementSpec = new StatementSpec();
+        StatementSpecRaw statementSpec = new StatementSpecRaw();
         statementSpec.getStreamSpecs().add(patternStreamSpec);
 
-        return statementLifecycleSvc.createAndStart(statementSpec, expression, true, statementName);
+        StatementSpecCompiled compiledSpec = compile(statementSpec, expression);
+
+        return statementLifecycleSvc.createAndStart(compiledSpec, expression, true, statementName);
+    }
+
+    private StatementSpecCompiled compile(StatementSpecRaw spec, String eqlStatement) throws EPStatementException
+    {
+        List<StreamSpecCompiled> compiledStreams;
+
+        try
+        {
+            compiledStreams = new ArrayList<StreamSpecCompiled>();
+            for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
+            {
+                StreamSpecCompiled compiled = rawSpec.compile(services.getEventAdapterService(), services.getAutoImportService());
+                compiledStreams.add(compiled);
+            }
+        }
+        catch (ExprValidationException ex)
+        {
+            throw new EPStatementException(ex.getMessage(), eqlStatement);
+        }
+        catch (RuntimeException ex)
+        {
+            String text = "Unexpected error compiling statement";
+            log.error(".compile " + text, ex);
+            throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eqlStatement);
+        }
+
+        return new StatementSpecCompiled(
+                spec.getInsertIntoDesc(),
+                spec.getSelectStreamSelectorEnum(),
+                spec.getSelectClauseSpec(),
+                compiledStreams,
+                spec.getOuterJoinDescList(),
+                spec.getFilterRootNode(),
+                spec.getGroupByExpressions(),
+                spec.getHavingExprRootNode(),
+                spec.getOutputLimitSpec(),
+                spec.getOrderByList());
     }
 
     public EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
     {
         AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEventAdapterService());
+        EQLTreeWalker walker = new EQLTreeWalker();
 
         try
         {
@@ -165,9 +207,10 @@ public class EPAdministratorImpl implements EPAdministrator
         }
 
         // Specifies the statement
-        StatementSpec statementSpec = walker.getStatementSpec();
+        StatementSpecRaw statementSpec = walker.getStatementSpec();
+        StatementSpecCompiled compiledSpec = compile(statementSpec, eqlStatement);
 
-        return statementLifecycleSvc.createAndStart(statementSpec, eqlStatement, false, statementName);
+        return statementLifecycleSvc.createAndStart(compiledSpec, eqlStatement, false, statementName);
     }
 
     public EPStatement getStatement(String name)

@@ -29,36 +29,6 @@ public class TestFilterSpecParamEventProp extends TestCase
         assertFalse(params[0].equals(params[3]));
     }
 
-    public void testGetFilterValueClass()
-    {
-        FilterSpecParamEventProp param = makeParam("asName", "intBoxed");
-
-        Map<String, EventType> taggedEventTypes = new HashMap<String, EventType>();
-        taggedEventTypes.put("asName", SupportEventTypeFactory.createBeanType(SupportBean.class));
-
-        assertEquals(Integer.class, param.getFilterValueClass(taggedEventTypes));
-
-        try
-        {
-            param.getFilterValueClass(new HashMap<String, EventType>());
-            fail();
-        }
-        catch (IllegalStateException ex)
-        {
-            // Expected
-        }
-
-        try
-        {
-            param.getFilterValueClass(null);
-            fail();
-        }
-        catch (NullPointerException ex)
-        {
-            // Expected
-        }
-    }
-
     public void testGetFilterValue()
     {
         FilterSpecParamEventProp params = makeParam("asName", "intBoxed");
@@ -95,6 +65,6 @@ public class TestFilterSpecParamEventProp extends TestCase
 
     private FilterSpecParamEventProp makeParam(String eventAsName, String property)
     {
-        return new FilterSpecParamEventProp("intPrimitive", FilterOperator.EQUAL, eventAsName, property);
+        return new FilterSpecParamEventProp("intPrimitive", FilterOperator.EQUAL, eventAsName, property, false, int.class);
     }
 }

@@ -9,13 +9,13 @@ import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TestFilterSpecParamComparator extends TestCase
+public class TestValueSetParamComparator extends TestCase
 {
-    private FilterSpecParamComparator comparator;
+    private FilterValueSetParamComparator comparator;
 
     public void setUp()
     {
-        comparator = new FilterSpecParamComparator();
+        comparator = new FilterValueSetParamComparator();
     }
 
     public void testCompareOneByOne()
@@ -84,10 +84,10 @@ public class TestFilterSpecParamComparator extends TestCase
         }
 
         assertEquals(FilterOperator.EQUAL, sorted.first().getFilterOperator());
-        assertEquals(FilterOperator.NOT_EQUAL, sorted.last().getFilterOperator());
+        assertEquals(FilterOperator.BOOLEAN_EXPRESSION, sorted.last().getFilterOperator());
 
         log.debug(".testCompareAll " + Arrays.toString(sorted.toArray()));
     }
 
-    private static final Log log = LogFactory.getLog(TestFilterSpecParamComparator.class);
+    private static final Log log = LogFactory.getLog(TestValueSetParamComparator.class);
 }

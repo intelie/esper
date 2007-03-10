@@ -14,10 +14,10 @@ public class TestFilterSpecParamIn extends TestCase
 
     public void testEquals()
     {
-        values = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, getList(new Object[] {"A", "B"}), true, String.class);
-        FilterSpecParamIn values2 = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, getList(new Object[] {"A"}), true, String.class);
-        FilterSpecParamIn values3 = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, getList(new Object[] {"A", "B"}), true, String.class);
-        FilterSpecParamIn values4 = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, getList(new Object[] {"A", "C"}), true, String.class);
+        values = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, getList(new Object[] {"A", "B"}));
+        FilterSpecParamIn values2 = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, getList(new Object[] {"A"}));
+        FilterSpecParamIn values3 = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, getList(new Object[] {"A", "B"}));
+        FilterSpecParamIn values4 = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, getList(new Object[] {"A", "C"}));
 
         assertFalse(values.equals(new FilterSpecParamConstant("a", FilterOperator.EQUAL, "a")));
         assertFalse(values.equals(values2));
