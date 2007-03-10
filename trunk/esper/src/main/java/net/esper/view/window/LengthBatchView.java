@@ -5,7 +5,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 import net.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,9 +58,9 @@ public final class LengthBatchView extends ViewSupport implements CloneableView,
         }
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return lengthBatchViewFactory.makeView(viewServiceContext);
+        return lengthBatchViewFactory.makeView(statementServiceContext);
     }
 
     /**
@@ -118,7 +118,7 @@ public final class LengthBatchView extends ViewSupport implements CloneableView,
             log.debug(".sendBatch Update child views");
         }
 
-        // If there are child views and the batch was filled, fire update method
+        // If there are child views and the batch was filled, fireStatementStopped update method
         if (this.hasViews())
         {
             // Convert to object arrays

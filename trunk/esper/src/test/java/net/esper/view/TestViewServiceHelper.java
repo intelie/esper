@@ -51,7 +51,7 @@ public class TestViewServiceHelper extends TestCase
     {
         SupportBeanClassView topView = new SupportBeanClassView(TEST_CLASS);
         List<ViewFactory> viewFactories = SupportViewSpecFactory.makeFactoryListOne(topView.getEventType());
-        ViewServiceContext context = SupportViewContextFactory.makeContext();
+        StatementServiceContext context = SupportStatementContextFactory.makeContext();
 
         // Check correct views created
         List<View> views = ViewServiceHelper.instantiateChain(topView, viewFactories, context);
@@ -80,7 +80,7 @@ public class TestViewServiceHelper extends TestCase
 
         // One top view under the stream that doesn't match
         SupportBeanClassView testView = new SupportBeanClassView(TEST_CLASS);
-        stream.addView(new SizeView(SupportViewContextFactory.makeContext()));
+        stream.addView(new SizeView(SupportStatementContextFactory.makeContext()));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
         assertEquals(stream, result.getFirst());
@@ -109,7 +109,7 @@ public class TestViewServiceHelper extends TestCase
         // One child view under the top view that does not match
         testView = new SupportBeanClassView(TEST_CLASS);
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        myLengthWindowView.addView(new UnivariateStatisticsView(SupportViewContextFactory.makeContext(), "volume"));
+        myLengthWindowView.addView(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), "volume"));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
         assertEquals(1, result.getSecond().size());
         assertEquals(myLengthWindowView, result.getSecond().get(0));
@@ -118,7 +118,7 @@ public class TestViewServiceHelper extends TestCase
 
         // Add child view under the top view that does match
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(SupportViewContextFactory.makeContext(), "price");
+        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), "price");
         myLengthWindowView.addView(myUnivarView);
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 

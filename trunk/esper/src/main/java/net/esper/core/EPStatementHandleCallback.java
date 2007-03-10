@@ -4,6 +4,7 @@ import net.esper.filter.FilterHandleCallback;
 import net.esper.filter.FilterHandle;
 import net.esper.schedule.ScheduleHandle;
 import net.esper.schedule.ScheduleHandleCallback;
+import net.esper.util.MetaDefItem;
 
 /**
  * Statement resource handle and callback for use with {@link net.esper.filter.FilterService} and
@@ -12,7 +13,7 @@ import net.esper.schedule.ScheduleHandleCallback;
  * Links the statement handle identifying a statement and containing the statement resource lock,
  * with the actual callback to invoke for a statement together.
  */
-public class EPStatementHandleCallback implements FilterHandle, ScheduleHandle
+public class EPStatementHandleCallback implements FilterHandle, ScheduleHandle, MetaDefItem
 {
     private EPStatementHandle epStatementHandle;
     private FilterHandleCallback filterCallback;

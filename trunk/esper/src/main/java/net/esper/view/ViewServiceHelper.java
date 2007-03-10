@@ -66,7 +66,7 @@ public class ViewServiceHelper
      */
     protected static List<View> instantiateChain(Viewable parentViewable,
                                                  List<ViewFactory> viewFactories,
-                                                 ViewServiceContext context)
+                                                 StatementServiceContext context)
     {
         List<View> newViews = new LinkedList<View>();
         Viewable parent = parentViewable;
@@ -225,31 +225,35 @@ public class ViewServiceHelper
      * The view factories are not yet aware of each other after leaving this method (so not yet chained logically).
      * They are simply instantiated and assigned view parameters.
      * @param viewSpecList is the view definition
-     * @param viewResolutionService to resolve view namespace and name to actual view factory
      * @return list of view factories
      * @throws ViewProcessingException if the factory cannot be creates such as for invalid view spec
      */
-    public static List<ViewFactory> instantiateFactories(List<ViewSpec> viewSpecList, ViewResolutionService viewResolutionService)
+    public static List<ViewFactory> instantiateFactories(int streamNum,
+                                                         List<ViewSpec> viewSpecList,
+                                                         StatementServiceContext statementServiceContext)
             throws ViewProcessingException
     {
         List<ViewFactory> factoryChain = new ArrayList<ViewFactory>();
 
+        int viewNum = 0;
         for (ViewSpec spec : viewSpecList)
         {
             // Create the new view factory
-            ViewFactory viewFactory = viewResolutionService.create(spec);
+            ViewFactory viewFactory = statementServiceContext.getViewResultionService().create(spec);
             factoryChain.add(viewFactory);
 
             // Set view factory parameters
             try
             {
-                viewFactory.setViewParameters(spec.getObjectParameters());
+                ViewFactoryContext context = new ViewFactoryContext(statementServiceContext, streamNum, viewNum, spec.getObjectNamespace(), spec.getObjectName());
+                viewFactory.setViewParameters(context, spec.getObjectParameters());
             }
             catch (ViewParameterException e)
             {
                 throw new ViewProcessingException("Error in view '" + spec.getObjectNamespace() + ':' + spec.getObjectName() +
                         "', " + e.getMessage());
             }
+            viewNum++;
         }
 
         return factoryChain;

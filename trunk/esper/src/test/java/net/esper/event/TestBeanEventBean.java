@@ -22,7 +22,7 @@ public class TestBeanEventBean extends TestCase
     public void testGet()
     {
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
-        BeanEventBean eventBean = new BeanEventBean(testEvent, eventType);
+        BeanEventBean eventBean = new BeanEventBean(testEvent, eventType, 0);
 
         assertEquals(eventType, eventBean.getEventType());
         assertEquals(testEvent, eventBean.getUnderlying());
@@ -45,7 +45,7 @@ public class TestBeanEventBean extends TestCase
         try
         {
             eventType = SupportEventTypeFactory.createBeanType(SupportBeanSimple.class);
-            eventBean = new BeanEventBean(testEvent, eventType);
+            eventBean = new BeanEventBean(testEvent, eventType, 1);
             eventBean.get("myString");
             assertTrue(false);
         }

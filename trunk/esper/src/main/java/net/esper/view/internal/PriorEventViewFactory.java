@@ -28,12 +28,12 @@ public class PriorEventViewFactory implements ViewFactory
         isUnbound = unbound;
     }
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         throw new UnsupportedOperationException("View not available through EQL");
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         eventType = parentEventType;
     }
@@ -71,7 +71,7 @@ public class PriorEventViewFactory implements ViewFactory
         callbackList.add(resourceCallback);
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
         ViewUpdatedCollection viewUpdatedCollection = null;
 

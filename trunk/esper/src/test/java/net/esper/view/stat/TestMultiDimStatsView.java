@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import net.esper.support.view.SupportStreamImpl;
 import net.esper.support.view.SupportSchemaNeutralView;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportEnum;
 import net.esper.support.event.SupportEventBeanFactory;
@@ -30,7 +30,7 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testOneDim()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportViewContextFactory.makeContext(), derivedFields, "intPrimitive", "enumValue", null, null);
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, "intPrimitive", "enumValue", null, null);
         parentStream.addView(olapView);
         olapView.addView(childView);
 
@@ -56,7 +56,7 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testTwoDim()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportViewContextFactory.makeContext(), derivedFields, "intPrimitive", "string", "enumValue", null);
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, "intPrimitive", "string", "enumValue", null);
         parentStream.addView(olapView);
         olapView.addView(childView);
 
@@ -80,7 +80,7 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testThreeDim()
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportViewContextFactory.makeContext(), derivedFields, "intPrimitive", "boolBoxed", "string", "enumValue");
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, "intPrimitive", "boolBoxed", "string", "enumValue");
         parentStream.addView(olapView);
         olapView.addView(childView);
 

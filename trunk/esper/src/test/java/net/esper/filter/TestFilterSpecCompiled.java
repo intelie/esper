@@ -1,30 +1,35 @@
 package net.esper.filter;
 
-import java.util.List;
-import java.util.Vector;
-
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.pattern.MatchedEventMap;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.filter.SupportFilterSpecBuilder;
-import net.esper.support.event.SupportEventTypeFactory;
+import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.event.SupportEventBeanFactory;
+import net.esper.support.filter.SupportFilterSpecBuilder;
 
-public class TestFilterSpec extends TestCase
+import java.util.List;
+import java.util.Vector;
+
+public class TestFilterSpecCompiled extends TestCase
 {
     private EventType eventType;
+    private String eventTypeId;
+    private String eventTypeAlias;
 
     public void setUp()
     {
-        eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
+        eventTypeAlias = SupportBean.class.getName();
+        eventType = SupportEventAdapterService.getService().addBeanType(eventTypeAlias, SupportBean.class);
+        eventTypeId = SupportEventAdapterService.getService().getIdByAlias(eventTypeAlias);
     }
 
     public void testHashCode()
     {
         FilterSpecCompiled spec = SupportFilterSpecBuilder.build(eventType, new Object[] { "intPrimitive", FilterOperator.EQUAL, 2,
                                                                  "intBoxed", FilterOperator.EQUAL, 3 });
+
         int expectedHash = eventType.hashCode() ^ "intPrimitive".hashCode() ^ "intBoxed".hashCode();
         assertEquals(expectedHash, spec.hashCode());
     }

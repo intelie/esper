@@ -13,7 +13,6 @@ import net.esper.pattern.observer.ObserverFactory;
 import net.esper.type.*;
 import net.esper.util.ConstructorHelper;
 import net.esper.view.ViewSpec;
-import net.esper.filter.FilterOperator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

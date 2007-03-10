@@ -5,6 +5,7 @@ Changes in version 1.6
 ----------------------
 * More helpful error messages when invalid syntax (ESPER-82)
 * Management API
+* Filter expressions
 
 
 Changes in version 1.6

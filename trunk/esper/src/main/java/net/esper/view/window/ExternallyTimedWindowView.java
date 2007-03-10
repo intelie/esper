@@ -58,9 +58,9 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
         this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return externallyTimedWindowViewFactory.makeView(viewServiceContext);
+        return externallyTimedWindowViewFactory.makeView(statementServiceContext);
     }
 
     /**
@@ -129,7 +129,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
             viewUpdatedCollection.update(newData, oldDataUpdate);
         }
 
-        // If there are child views, fire update method
+        // If there are child views, fireStatementStopped update method
         if (this.hasViews())
         {
             updateChildren(newData, oldDataUpdate);

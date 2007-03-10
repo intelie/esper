@@ -23,7 +23,7 @@ public class TestNestedPropertyGetter extends TestCase
 
     public void setUp() throws Exception
     {
-        beanEventAdapter = new BeanEventAdapter(null);
+        beanEventAdapter = new BeanEventAdapter();
         bean = SupportBeanCombinedProps.makeDefaultBean();
         event = SupportEventBeanFactory.createObject(bean);
 

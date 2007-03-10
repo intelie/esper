@@ -3,16 +3,15 @@ package net.esper.eql.spec;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
-import net.esper.eql.expression.*;
+import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
-import net.esper.filter.*;
-import net.esper.type.RelationalOpEnum;
+import net.esper.filter.FilterSpecCompiled;
+import net.esper.filter.FilterSpecCompiler;
 import net.esper.view.ViewSpec;
-import net.esper.util.JavaClassHelper;
 
-import java.util.*;
+import java.util.List;
 
 public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 {
@@ -50,7 +49,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
     protected static EventType resolveType(String eventName, EventAdapterService eventAdapterService)
             throws ExprValidationException
     {
-        EventType eventType = eventAdapterService.getEventType(eventName);
+        EventType eventType = eventAdapterService.getExistsTypeByAlias(eventName);
 
         // The type is not known yet, attempt to add as a JavaBean type with the same alias
         if (eventType == null)

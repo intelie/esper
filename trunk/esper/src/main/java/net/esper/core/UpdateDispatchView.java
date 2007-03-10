@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class UpdateDispatchView extends ViewSupport implements Dispatchable
 {
-    private final Set<UpdateListener> updateListeners;
+    private Set<UpdateListener> updateListeners;
     private final DispatchService dispatchService;
     private EventBean lastIterableEvent;
 
@@ -52,6 +52,11 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
     {
         this.updateListeners = updateListeners;
         this.dispatchService = dispatchService;
+    }
+
+    public void setUpdateListeners(Set<UpdateListener> updateListeners)
+    {
+        this.updateListeners = updateListeners;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)

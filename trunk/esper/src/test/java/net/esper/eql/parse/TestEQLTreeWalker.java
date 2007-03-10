@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import net.esper.eql.expression.*;
 import net.esper.eql.spec.*;
 import net.esper.event.EventAdapterService;
-import net.esper.filter.FilterOperator;
 import net.esper.pattern.*;
 import net.esper.support.bean.*;
 import net.esper.support.eql.parse.SupportParserHelper;
@@ -659,15 +658,6 @@ public class TestEQLTreeWalker extends TestCase
 
         assertFalse((Boolean) tryRelationalOp("'a' not like 'a'"));
         assertTrue((Boolean) tryRelationalOp("'a' not like 'ab'"));
-    }
-
-    public void testWalkArray() throws Exception
-    {
-        Object result = tryExpression("{1, 2}");
-        Integer[] ints = (Integer[]) result;
-        assertEquals(2, ints.length);
-        assertEquals(1, (int) ints[0]);
-        assertEquals(2, (int) ints[1]);
     }
 
     public void testWalkStaticFunc() throws Exception

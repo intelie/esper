@@ -1,8 +1,5 @@
 package net.esper.core;
 
-import net.esper.util.ManagedLock;
-import net.esper.dispatch.Dispatchable;
-
 /**
  * Interface for statement-level dispatch.
  * <p>

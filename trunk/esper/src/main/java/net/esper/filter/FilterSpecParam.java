@@ -1,12 +1,13 @@
 package net.esper.filter;
 
 import net.esper.pattern.MatchedEventMap;
+import net.esper.util.MetaDefItem;
 
 /**
  * This class represents one filter parameter in an {@link FilterSpecCompiled} filter specification.
  * <p> Each filerting parameter has an attribute name and operator type.
  */
-public abstract class FilterSpecParam
+public abstract class FilterSpecParam implements MetaDefItem
 {
     private final String propertyName;
     private final FilterOperator filterOperator;

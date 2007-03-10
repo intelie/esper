@@ -7,7 +7,6 @@ import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
-import net.esper.support.view.SupportViewContextFactory;
 import net.esper.support.view.SupportViewDataChecker;
 
 public class TestExternallyTimedWindowView extends TestCase

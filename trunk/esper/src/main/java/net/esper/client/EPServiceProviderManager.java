@@ -67,7 +67,7 @@ public final class EPServiceProviderManager
         }
 
         // New runtime
-        EPServiceProvider runtime = new EPServiceProviderImpl(uri, configuration);
+        EPServiceProvider runtime = new EPServiceProviderImpl(configuration, uri);
         runtimes.put(uri, runtime);
 
         return runtime;

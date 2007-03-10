@@ -16,19 +16,19 @@ import net.esper.view.*;
  */
 public final class SizeView extends ViewSupport implements CloneableView
 {
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
     private EventType eventType;
     private long size = 0;
 
-    public SizeView(ViewServiceContext viewServiceContext)
+    public SizeView(StatementServiceContext statementServiceContext)
     {
-        this.viewServiceContext = viewServiceContext;
-        this.eventType = createEventType(viewServiceContext);
+        this.statementServiceContext = statementServiceContext;
+        this.eventType = createEventType(statementServiceContext);
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return new SizeView(viewServiceContext);
+        return new SizeView(statementServiceContext);
     }
 
     public final EventType getEventType()
@@ -51,15 +51,15 @@ public final class SizeView extends ViewSupport implements CloneableView
             size -= oldData.length;
         }
 
-        // If there are child views, fire update method
+        // If there are child views, fireStatementStopped update method
         if ((this.hasViews()) && (priorSize != size))
         {
             Map<String, Object> postNewData = new HashMap<String, Object>();
             postNewData.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), size);
             Map<String, Object> postOldData = new HashMap<String, Object>();
             postOldData.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), priorSize);
-            updateChildren(new EventBean[] {viewServiceContext.getEventAdapterService().createMapFromValues(postNewData, eventType)},
-                    new EventBean[] {viewServiceContext.getEventAdapterService().createMapFromValues(postOldData, eventType)});
+            updateChildren(new EventBean[] {statementServiceContext.getEventAdapterService().createMapFromValues(postNewData, eventType)},
+                    new EventBean[] {statementServiceContext.getEventAdapterService().createMapFromValues(postOldData, eventType)});
         }                
     }
 
@@ -67,7 +67,7 @@ public final class SizeView extends ViewSupport implements CloneableView
     {
         HashMap<String, Object> current = new HashMap<String, Object>();
         current.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), size);
-        return new SingleEventIterator(viewServiceContext.getEventAdapterService().createMapFromValues(current, eventType));
+        return new SingleEventIterator(statementServiceContext.getEventAdapterService().createMapFromValues(current, eventType));
     }
 
     public final String toString()
@@ -77,13 +77,13 @@ public final class SizeView extends ViewSupport implements CloneableView
 
     /**
      * Creates the event type for this view
-     * @param viewServiceContext is the event adapter service
+     * @param statementServiceContext is the event adapter service
      * @return event type for view
      */
-    protected static EventType createEventType(ViewServiceContext viewServiceContext)
+    protected static EventType createEventType(StatementServiceContext statementServiceContext)
     {
         Map<String, Class> schemaMap = new HashMap<String, Class>();
         schemaMap.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), long.class);
-        return viewServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
+        return statementServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
     }
 }

@@ -14,7 +14,7 @@ public class MyTrendSpotterView extends ViewSupport
 {
     private static final String PROPERTY_NAME = "trendcount";
 
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
     private final EventType eventType;
     private final String fieldName;
     private EventPropertyGetter fieldGetter;
@@ -24,14 +24,14 @@ public class MyTrendSpotterView extends ViewSupport
 
     /**
      * Constructor requires the name of the field to use in the parent view to compute a trend.
-     * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view 
-     * @param viewServiceContext contains required view services
+     * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view
+     * @param statementServiceContext contains required view services
      */
-    public MyTrendSpotterView(ViewServiceContext viewServiceContext, String fieldName)
+    public MyTrendSpotterView(StatementServiceContext statementServiceContext, String fieldName)
     {
-        this.viewServiceContext = viewServiceContext;
+        this.statementServiceContext = statementServiceContext;
         this.fieldName = fieldName;
-        eventType = createEventType(viewServiceContext);
+        eventType = createEventType(statementServiceContext);
     }
 
     public void setParent(Viewable parent)
@@ -43,9 +43,9 @@ public class MyTrendSpotterView extends ViewSupport
         }
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return new MyTrendSpotterView(viewServiceContext, fieldName);
+        return new MyTrendSpotterView(statementServiceContext, fieldName);
     }
 
     /**
@@ -59,7 +59,7 @@ public class MyTrendSpotterView extends ViewSupport
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        // If we have child views, keep a reference to the old values, so we can fire them as old data event.
+        // If we have child views, keep a reference to the old values, so we can fireStatementStopped them as old data event.
         EventBean oldDataPost = populateMap(trendcount);
 
         // add data points
@@ -85,7 +85,7 @@ public class MyTrendSpotterView extends ViewSupport
             }
         }
 
-        // If there are child view, fire update method
+        // If there are child view, fireStatementStopped update method
         if (this.hasViews())
         {
             EventBean newDataPost = populateMap(trendcount);
@@ -113,18 +113,18 @@ public class MyTrendSpotterView extends ViewSupport
     {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put(PROPERTY_NAME, trendcount);
-        return viewServiceContext.getEventAdapterService().createMapFromValues(result, eventType);
+        return statementServiceContext.getEventAdapterService().createMapFromValues(result, eventType);
     }
 
     /**
      * Creates the event type for this view.
-     * @param viewServiceContext is the event adapter service
+     * @param statementServiceContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(ViewServiceContext viewServiceContext)
+    protected static EventType createEventType(StatementServiceContext statementServiceContext)
     {
         Map<String, Class> eventTypeMap = new HashMap<String, Class>();
         eventTypeMap.put(PROPERTY_NAME, long.class);
-        return viewServiceContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
+        return statementServiceContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
     }
 }

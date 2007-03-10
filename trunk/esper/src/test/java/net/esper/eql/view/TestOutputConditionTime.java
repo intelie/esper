@@ -2,9 +2,8 @@ package net.esper.eql.view;
 
 import junit.framework.TestCase;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
-import net.esper.support.view.SupportViewContextFactory;
-import net.esper.view.ViewServiceContext;
-import net.esper.schedule.ScheduleHandleCallback;
+import net.esper.support.view.SupportStatementContextFactory;
+import net.esper.view.StatementServiceContext;
 import net.esper.core.EPStatementHandleCallback;
 
 
@@ -16,7 +15,7 @@ public class TestOutputConditionTime extends TestCase
     private OutputCallback callback;
     private SupportSchedulingServiceImpl schedulingServiceStub;
 
-	private ViewServiceContext context;
+	private StatementServiceContext context;
 
     public void setUp()
     {
@@ -27,7 +26,7 @@ public class TestOutputConditionTime extends TestCase
     	};
     	
     	schedulingServiceStub = new SupportSchedulingServiceImpl();
-    	context = SupportViewContextFactory.makeContext(schedulingServiceStub);
+    	context = SupportStatementContextFactory.makeContext(schedulingServiceStub);
 		condition = new OutputConditionTime(TEST_INTERVAL_MSEC / 1000d, context, callback);
     }
 
@@ -46,7 +45,7 @@ public class TestOutputConditionTime extends TestCase
         assertTrue(schedulingServiceStub.getAdded().size() == 1);
         assertTrue(schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC) != null);
         Object result = schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC);
-        ((EPStatementHandleCallback) result).getScheduleCallback().scheduledTrigger();
+        ((EPStatementHandleCallback) result).getScheduleCallback().scheduledTrigger(null);
   
         // 2 new, 3 old
         condition.updateOutputCondition(2, 3);
@@ -57,7 +56,7 @@ public class TestOutputConditionTime extends TestCase
         // check callback scheduled, pretend callback
         assertTrue(schedulingServiceStub.getAdded().size() == 1);
         assertTrue(schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC) != null);
-        ((EPStatementHandleCallback) result).getScheduleCallback().scheduledTrigger();
+        ((EPStatementHandleCallback) result).getScheduleCallback().scheduledTrigger(null);
 
         
     	// 0 new, 0 old

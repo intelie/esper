@@ -13,7 +13,7 @@ public class SizeViewFactory implements ViewFactory
 {
     private EventType eventType;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         String errorMessage = "'Size' view does not take any parameters";
         if (!viewParameters.isEmpty())
@@ -22,9 +22,9 @@ public class SizeViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
-        eventType = SizeView.createEventType(viewServiceContext);
+        eventType = SizeView.createEventType(statementServiceContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -37,9 +37,9 @@ public class SizeViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
-        return new SizeView(viewServiceContext);
+        return new SizeView(statementServiceContext);
     }
 
     public EventType getEventType()

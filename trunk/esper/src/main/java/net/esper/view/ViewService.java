@@ -23,7 +23,10 @@ public interface ViewService
      * @throws ViewProcessingException thrown if a view factory doesn't take parameters as supplied,
      * or cannot hook onto it's parent view or event stream
      */
-    public ViewFactoryChain createFactories(EventType parentEventType, List<ViewSpec> viewSpecList, ViewServiceContext context)
+    public ViewFactoryChain createFactories(String statementId,
+                                            String statementName,
+                                            int streamNum,
+                                            EventType parentEventType, List<ViewSpec> viewSpecList, StatementServiceContext context)
             throws ViewProcessingException;
 
     /**
@@ -38,7 +41,7 @@ public interface ViewService
      */
     public Viewable createViews(Viewable eventStreamViewable,
                                 List<ViewFactory> viewFactoryChain,
-                                ViewServiceContext context);
+                                StatementServiceContext context);
 
     /**
      * Removes a view discoupling the view and any of it's parent views up the tree to the last shared parent view.

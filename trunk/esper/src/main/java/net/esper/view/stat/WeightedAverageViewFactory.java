@@ -8,8 +8,6 @@ import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
 
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Factory for {@link WeightedAverageView} instances. 
@@ -20,7 +18,7 @@ public class WeightedAverageViewFactory implements ViewFactory
     private String fieldNameWeight;
     private EventType eventType;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         String errorMessage = "'Weighted average' view requires two field names as parameters";
         if (viewParameters.size() != 2)
@@ -38,14 +36,14 @@ public class WeightedAverageViewFactory implements ViewFactory
         fieldNameWeight = (String) viewParameters.get(1);
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldNameX, fieldNameWeight);
         if (result != null)
         {
             throw new ViewAttachException(result);
         }
-        eventType = WeightedAverageView.createEventType(viewServiceContext);
+        eventType = WeightedAverageView.createEventType(statementServiceContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -58,9 +56,9 @@ public class WeightedAverageViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
-        return new WeightedAverageView(viewServiceContext, fieldNameX, fieldNameWeight);
+        return new WeightedAverageView(statementServiceContext, fieldNameX, fieldNameWeight);
     }
 
     public EventType getEventType()

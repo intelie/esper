@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ASTFilterSpecHelper implements EqlTokenTypes
 {
+
     /**
      * Return the generated property name that is defined by the AST child node and it's siblings.
      * @param propertyNameExprChildNode is the child node from which to start putting the property name together

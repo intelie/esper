@@ -16,12 +16,12 @@ public class MergeViewFactory implements ViewFactory
     private Class[] fieldTypes;
     private EventType eventType;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         fieldNames = GroupByViewFactory.getFieldNameParams(viewParameters, "Group-by-merge");
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         // Find the group by view matching the merge view
         ViewFactory groupByViewFactory = null;
@@ -74,7 +74,7 @@ public class MergeViewFactory implements ViewFactory
         // grouped which simply provides a map of calculated values,
         // then we need to add in the merge field as an event property thus changing event types.
         {
-            eventType = viewServiceContext.getEventAdapterService().createAddToEventType(
+            eventType = statementServiceContext.getEventAdapterService().createAddToEventType(
                     parentEventType, fieldNames, fieldTypes);
         }
     }
@@ -89,9 +89,9 @@ public class MergeViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
-        return new MergeView(viewServiceContext, fieldNames, eventType);
+        return new MergeView(statementServiceContext, fieldNames, eventType);
     }
 
     public EventType getEventType()

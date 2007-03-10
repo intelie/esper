@@ -20,7 +20,7 @@ public class SortWindowViewFactory implements ViewFactory
     private EventType eventType;
     private RandomAccessByIndexGetter randomAccessGetterImpl;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         String errorMessage = "Sort window view requires a field name, a boolean sort order and a numeric size parameter or parameter list";
         if (viewParameters.size() == 3)
@@ -79,7 +79,7 @@ public class SortWindowViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         // Attaches to parent views where the sort fields exist and implement Comparable
         String result = null;
@@ -122,7 +122,7 @@ public class SortWindowViewFactory implements ViewFactory
         resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
         IStreamSortedRandomAccess sortedRandomAccess = null;
 

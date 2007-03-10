@@ -5,6 +5,8 @@ import net.esper.collection.RefCountedMap;
 import net.esper.core.EPStatementHandle;
 import net.esper.core.EPStatementHandleCallback;
 import net.esper.event.EventBean;
+import net.esper.event.EventType;
+import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterHandleCallback;
 import net.esper.filter.FilterService;
 import net.esper.filter.FilterSpecCompiled;
@@ -50,13 +52,16 @@ public class StreamFactorySvcImpl implements StreamFactoryService
     // Using a reference-counted map for non-join statements
     private final RefCountedMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>> eventStreamsRefCounted;
 
+    private final EventAdapterService eventAdapterService;
+
     /**
      * Ctor.
      */
-    public StreamFactorySvcImpl()
+    public StreamFactorySvcImpl(EventAdapterService eventAdapterService)
     {
         this.eventStreamsRefCounted = new RefCountedMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>>();
         this.eventStreamsIdentity = new IdentityHashMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>>();
+        this.eventAdapterService = eventAdapterService;
     }
 
     /**
@@ -100,7 +105,8 @@ public class StreamFactorySvcImpl implements StreamFactoryService
         }
 
         // New event stream
-        final EventStream eventStream = new ZeroDepthStream(filterSpec.getEventType());
+        EventType eventType = filterSpec.getEventType();
+        final EventStream eventStream = new ZeroDepthStream(eventType);
 
         FilterHandleCallback filterCallback = new FilterHandleCallback()
         {

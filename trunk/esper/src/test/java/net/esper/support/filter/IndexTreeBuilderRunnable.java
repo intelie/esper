@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.filter.*;
 import net.esper.event.EventBean;
+import net.esper.event.EventType;
 import net.esper.support.util.ObjectReservationSingleton;
 
 public class IndexTreeBuilderRunnable implements Runnable
@@ -20,9 +21,11 @@ public class IndexTreeBuilderRunnable implements Runnable
     private Vector<FilterSpecCompiled> testFilterSpecs;
     private Vector<EventBean> matchedEvents;
     private Vector<EventBean> unmatchedEvents;
+    private final EventType eventType;
 
-    public IndexTreeBuilderRunnable(FilterHandleSetNode topNode, Vector<FilterSpecCompiled> testFilterSpecs, Vector<EventBean> matchedEvents, Vector<EventBean> unmatchedEvents)
+    public IndexTreeBuilderRunnable(EventType eventType, FilterHandleSetNode topNode, Vector<FilterSpecCompiled> testFilterSpecs, Vector<EventBean> matchedEvents, Vector<EventBean> unmatchedEvents)
     {
+        this.eventType = eventType;
         this.topNode = topNode;
         this.testFilterSpecs = testFilterSpecs;
         this.matchedEvents = matchedEvents;

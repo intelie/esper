@@ -18,7 +18,7 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
     private EventType eventType;
     private RandomAccessByIndexGetter randomAccessGetterImpl;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         String errorMessage = "Externally-timed window view requires a timestamp field name and a numeric or time period parameter";
         if (viewParameters.size() != 2)
@@ -56,7 +56,7 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String message = PropertyCheckHelper.checkLong(parentEventType, timestampFieldName);
         if (message != null)
@@ -91,7 +91,7 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
         resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
         IStreamRandomAccess randomAccess = null;
 

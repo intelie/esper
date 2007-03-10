@@ -44,7 +44,7 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
         this.uniqueFieldName = uniqueFieldName;
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
         return new UniqueByPropertyView(uniqueFieldName);
     }
@@ -134,7 +134,7 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
         }
 
 
-        // If there are child views, fire update method
+        // If there are child views, fireStatementStopped update method
         if (this.hasViews())
         {
             if (postOldData.isEmpty())

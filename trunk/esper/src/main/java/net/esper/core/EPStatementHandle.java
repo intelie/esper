@@ -1,5 +1,6 @@
 package net.esper.core;
 
+import net.esper.util.MetaDefItem;
 import net.esper.util.ManagedLock;
 
 /**
@@ -8,7 +9,7 @@ import net.esper.util.ManagedLock;
  * Use by {@link EPRuntimeImpl} for determining callback-statement affinity and locking of statement
  * resources. 
  */
-public class EPStatementHandle
+public class EPStatementHandle implements MetaDefItem
 {
     private final ManagedLock statementLock;
     private final int hashCode;

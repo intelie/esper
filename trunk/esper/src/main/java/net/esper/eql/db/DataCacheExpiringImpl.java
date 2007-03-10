@@ -7,6 +7,7 @@ import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.collection.MultiKey;
 import net.esper.core.EPStatementHandle;
 import net.esper.core.EPStatementHandleCallback;
+import net.esper.core.ExtensionServicesContext;
 
 import java.util.List;
 import java.util.WeakHashMap;
@@ -108,7 +109,7 @@ public class DataCacheExpiringImpl implements DataCache, ScheduleHandleCallback
         return cache.size();
     }
 
-    public void scheduledTrigger()
+    public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
     {
         // purge expired
         long now = schedulingService.getTime();

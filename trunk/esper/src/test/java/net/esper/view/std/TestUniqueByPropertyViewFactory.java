@@ -1,7 +1,7 @@
 package net.esper.view.std;
 
 import junit.framework.TestCase;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.view.ViewParameterException;
 
 import java.util.Arrays;
@@ -23,8 +23,8 @@ public class TestUniqueByPropertyViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(Arrays.asList(new Object[] {"a"}));
-        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {"a"}));
+        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertTrue(factory.canReuse(new UniqueByPropertyView("a")));
         assertFalse(factory.canReuse(new UniqueByPropertyView("c")));
     }
@@ -34,7 +34,7 @@ public class TestUniqueByPropertyViewFactory extends TestCase
         try
         {
             UniqueByPropertyViewFactory factory = new UniqueByPropertyViewFactory();
-            factory.setViewParameters(Arrays.asList(new Object[] {param}));
+            factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -46,8 +46,8 @@ public class TestUniqueByPropertyViewFactory extends TestCase
     private void tryParameter(Object param, String fieldName) throws Exception
     {
         UniqueByPropertyViewFactory factory = new UniqueByPropertyViewFactory();
-        factory.setViewParameters(Arrays.asList(new Object[] {param}));
-        UniqueByPropertyView view = (UniqueByPropertyView) factory.makeView(SupportViewContextFactory.makeContext());
+        factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
+        UniqueByPropertyView view = (UniqueByPropertyView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldName, view.getUniqueFieldName());
     }
 }

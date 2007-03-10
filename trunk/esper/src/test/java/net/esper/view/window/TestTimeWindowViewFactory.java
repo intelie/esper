@@ -1,7 +1,7 @@
 package net.esper.view.window;
 
 import net.esper.eql.parse.TimePeriodParameter;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.view.ViewParameterException;
 import net.esper.view.std.SizeView;
 
@@ -31,10 +31,10 @@ public class TestTimeWindowViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(Arrays.asList(new Object[] {1000}));
-        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
-        assertFalse(factory.canReuse(new TimeBatchView(null, SupportViewContextFactory.makeContext(), 1000, null, null)));
-        assertTrue(factory.canReuse(new TimeWindowView(SupportViewContextFactory.makeContext(), factory, 1000000, null)));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {1000}));
+        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new TimeBatchView(null, SupportStatementContextFactory.makeContext(), 1000, null, null)));
+        assertTrue(factory.canReuse(new TimeWindowView(SupportStatementContextFactory.makeContext(), factory, 1000000, null)));
     }
 
     private void tryInvalidParameter(Object param) throws Exception
@@ -42,7 +42,7 @@ public class TestTimeWindowViewFactory extends TestCase
         try
         {
             TimeWindowViewFactory factory = new TimeWindowViewFactory();
-            factory.setViewParameters(Arrays.asList(new Object[] {param}));
+            factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -54,8 +54,8 @@ public class TestTimeWindowViewFactory extends TestCase
     private void tryParameter(Object param, long msec) throws Exception
     {
         TimeWindowViewFactory factory = new TimeWindowViewFactory();
-        factory.setViewParameters(Arrays.asList(new Object[] {param}));
-        TimeWindowView view = (TimeWindowView) factory.makeView(SupportViewContextFactory.makeContext());
+        factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
+        TimeWindowView view = (TimeWindowView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(msec, view.getMillisecondsBeforeExpiry());
     }
 }

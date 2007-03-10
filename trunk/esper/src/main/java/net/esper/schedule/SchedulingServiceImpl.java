@@ -92,7 +92,7 @@ public final class SchedulingServiceImpl implements SchedulingService
         if (handleSet == null)
         {
             // If it already has been removed then that's fine;
-            // Such could be the case when 2 timers fire at the same time, and one stops the other
+            // Such could be the case when 2 timers fireStatementStopped at the same time, and one stops the other
             return;
         }
         handleSet.remove(slot);

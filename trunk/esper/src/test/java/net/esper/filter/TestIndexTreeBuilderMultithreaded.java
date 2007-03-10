@@ -156,7 +156,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
 
         for (int i = 0; i < numberOfRunnables; i++)
         {
-            IndexTreeBuilderRunnable runnable = new IndexTreeBuilderRunnable(topNode,
+            IndexTreeBuilderRunnable runnable = new IndexTreeBuilderRunnable(eventType, topNode,
                     testFilterSpecs, matchedEvents, unmatchedEvents);
 
             pool.execute(runnable);

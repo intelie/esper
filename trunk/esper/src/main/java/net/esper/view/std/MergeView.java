@@ -25,24 +25,24 @@ public final class MergeView extends ViewSupport implements CloneableView
     private final LinkedList<View> parentViews = new LinkedList<View>();
     private final String[] groupFieldNames;
     private final EventType eventType;
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
 
     /**
      * Constructor.
      * @param groupFieldNames is the fields from which to pull the value to group by
      * @param resultEventType is passed by the factory as the factory adds the merged fields to an event type
-     * @param viewServiceContext contains required view services
+     * @param statementServiceContext contains required view services
      */
-    public MergeView(ViewServiceContext viewServiceContext, String groupFieldNames[], EventType resultEventType)
+    public MergeView(StatementServiceContext statementServiceContext, String groupFieldNames[], EventType resultEventType)
     {
         this.groupFieldNames = groupFieldNames;
         this.eventType = resultEventType;
-        this.viewServiceContext = viewServiceContext;
+        this.statementServiceContext = statementServiceContext;
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return new MergeView(viewServiceContext, groupFieldNames, eventType);
+        return new MergeView(statementServiceContext, groupFieldNames, eventType);
     }
 
     /**

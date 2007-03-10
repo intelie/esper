@@ -3,7 +3,7 @@ package net.esper.view.window;
 import junit.framework.TestCase;
 import net.esper.view.ViewParameterException;
 import net.esper.view.std.SizeView;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 
 import java.util.Arrays;
 
@@ -28,8 +28,8 @@ public class TestLengthWindowViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(Arrays.asList(new Object[] {1000}));
-        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        factory.setViewParameters(null, Arrays.asList(new Object[] {1000}));
+        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new LengthWindowView(factory, 1, null)));
         assertTrue(factory.canReuse(new LengthWindowView(factory, 1000, null)));
     }
@@ -39,7 +39,7 @@ public class TestLengthWindowViewFactory extends TestCase
         try
         {
 
-            factory.setViewParameters(Arrays.asList(new Object[] {param}));
+            factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -51,8 +51,8 @@ public class TestLengthWindowViewFactory extends TestCase
     private void tryParameter(Object[] param, int size) throws Exception
     {
         LengthWindowViewFactory factory = new LengthWindowViewFactory();
-        factory.setViewParameters(Arrays.asList(param));
-        LengthWindowView view = (LengthWindowView) factory.makeView(SupportViewContextFactory.makeContext());
+        factory.setViewParameters(null, Arrays.asList(param));
+        LengthWindowView view = (LengthWindowView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(size, view.getSize());
     }
 }

@@ -200,7 +200,7 @@ public class TestSchedulingServiceImpl extends TestCase
         for (ScheduleHandle handle : handles)
         {
             ScheduleHandleCallback cb = (ScheduleHandleCallback) handle;
-            cb.scheduledTrigger();
+            cb.scheduledTrigger(null);
         }
     }    
 }

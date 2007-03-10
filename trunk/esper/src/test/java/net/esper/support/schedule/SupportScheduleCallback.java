@@ -3,6 +3,7 @@ package net.esper.support.schedule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.schedule.ScheduleHandleCallback;
+import net.esper.core.ExtensionServicesContext;
 
 public class SupportScheduleCallback implements ScheduleHandleCallback
 {
@@ -10,7 +11,7 @@ public class SupportScheduleCallback implements ScheduleHandleCallback
 
     private int orderTriggered = 0;
 
-    public void scheduledTrigger()
+    public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
     {
         log.debug(".scheduledTrigger");
         orderAllCallbacks++;

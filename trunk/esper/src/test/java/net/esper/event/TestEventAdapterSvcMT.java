@@ -21,7 +21,7 @@ public class TestEventAdapterSvcMT extends TestCase
 
     public void setUp()
     {
-        service = new EventAdapterServiceImpl(null);
+        service = new EventAdapterServiceImpl();
     }
 
     public void testAddBeanTypeClass() throws Exception

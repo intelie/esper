@@ -7,22 +7,29 @@ package net.esper.event;
  * Two BeanEventBean instances are equal if they have the same event type and refer to the same instance of event object.
  * Clients that need to compute equality between Java beans wrapped by this class need to obtain the underlying object.
  */
-class BeanEventBean implements EventBean
+public class BeanEventBean implements EventBeanSPI
 {
     private EventType eventType;
     private Object event;
+    private Object eventId;
 
     /**
      * Constructor.
      * @param event is the event object
      * @param eventType is the schema information for the event object.
      */
-    protected BeanEventBean(Object event, EventType eventType)
+    public BeanEventBean(Object event, EventType eventType, Object eventId)
     {
         this.eventType = eventType;
         this.event = event;
+        this.eventId = eventId;
     }
 
+    public Object getEventBeanId()
+    {
+        return eventId;
+    }
+    
     public Object getUnderlying()
     {
         return event;

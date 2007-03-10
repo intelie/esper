@@ -8,7 +8,7 @@ import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.support.view.SupportViewDataChecker;
 
 public class TestMergeView extends TestCase
@@ -19,7 +19,7 @@ public class TestMergeView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new MergeView(SupportViewContextFactory.makeContext(),
+        myView = new MergeView(SupportStatementContextFactory.makeContext(),
                 new String[] {"symbol"},
                 SupportEventTypeFactory.createBeanType(SupportBean.class));
 
@@ -55,7 +55,7 @@ public class TestMergeView extends TestCase
         SupportBeanClassView parent = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.setParent(parent);
 
-        MergeView copied = (MergeView) myView.cloneView(SupportViewContextFactory.makeContext());
+        MergeView copied = (MergeView) myView.cloneView(SupportStatementContextFactory.makeContext());
         assertEquals(myView.getGroupFieldNames(), copied.getGroupFieldNames());
         assertEquals(myView.getEventType(), SupportEventTypeFactory.createBeanType(SupportBean.class));
     }

@@ -19,7 +19,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
     private String pageField;
     private EventType eventType;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         String errorMessage = "'Multi-dimensional stats' view requires a String-array and 2 or more field names as parameters";
         if (viewParameters.size() < 3)
@@ -65,7 +65,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String message = PropertyCheckHelper.checkNumeric(parentEventType, measureField);
         if (message != null)
@@ -97,7 +97,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
             }
         }
 
-        eventType = MultiDimStatsView.createEventType(viewServiceContext);
+        eventType = MultiDimStatsView.createEventType(statementServiceContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -110,9 +110,9 @@ public class MultiDimStatsViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
-        return new MultiDimStatsView(viewServiceContext, derivedMeasures, measureField, columnField, rowField, pageField);
+        return new MultiDimStatsView(statementServiceContext, derivedMeasures, measureField, columnField, rowField, pageField);
     }
 
     public EventType getEventType()

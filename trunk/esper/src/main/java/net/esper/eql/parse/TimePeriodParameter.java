@@ -1,9 +1,11 @@
 package net.esper.eql.parse;
 
+import net.esper.util.MetaDefItem;
+
 /**
  * Parameter for views that accept time period information such as "5 sec 100 msec".
  */
-public class TimePeriodParameter
+public class TimePeriodParameter implements MetaDefItem
 {
     private double numSeconds;
 

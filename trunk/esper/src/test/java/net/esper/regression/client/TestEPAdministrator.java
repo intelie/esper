@@ -22,7 +22,7 @@ public class TestEPAdministrator extends TestCase
         epService.initialize();
     }
 
-    public void test1kValidStmts()
+    public void test1kValidStmtsPerformance()
     {
         long start = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++)
@@ -67,7 +67,7 @@ public class TestEPAdministrator extends TestCase
         EPStatement[] stmts = createStmts(names);
         for (int i = 0; i < stmts.length; i++)
         {
-            assertSame("failed for " + names[i], stmts[i], epService.getEPAdministrator().getStatement(expected[i]));    
+            assertSame("failed for " + names[i], stmts[i], epService.getEPAdministrator().getStatement(expected[i]));
             assertEquals("failed for " + names[i], expected[i], epService.getEPAdministrator().getStatement(expected[i]).getName());
         }
     }
@@ -82,7 +82,7 @@ public class TestEPAdministrator extends TestCase
 
         names = new String[] {"s1", "s2"};
         EPStatement[] stmtsSetTwo = createStmts(names);
-        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"s1", "s1--0", "s2"} , epService.getEPAdministrator().getStatementNames());               
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"s1", "s1--0", "s2"} , epService.getEPAdministrator().getStatementNames());
     }
 
     public void testCreateEQLByName()
@@ -256,7 +256,7 @@ public class TestEPAdministrator extends TestCase
     {
         for (int i = 0; i < stmts.length; i++)
         {
-            assertEquals(EPStatementState.STOPPED, stmts[i].getState());            
+            assertEquals(EPStatementState.STOPPED, stmts[i].getState());
         }
         sendEvent();
         assertEquals(0, testListener.getNewDataList().size());

@@ -1,19 +1,29 @@
 package net.esper.core;
 
-import net.esper.client.EPStatement;
 import net.esper.client.EPStatementState;
+import net.esper.client.UpdateListener;
 import net.esper.dispatch.DispatchService;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.Viewable;
 
 import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Statement implementation for EQL statements.
  */
-public class EPStatementImpl extends EPStatementSupport implements EPStatement
+public class EPStatementImpl implements EPStatementSPI
 {
+    /**
+     * Using a copy-on-write set here:
+     * When the engine dispatches events to a set of listeners, then while iterating through the set there
+     * may be listeners added or removed (the listener may remove itself).
+     * Additionally, events may be dispatched by multiple threads to the same listener.
+     */
+    private Set<UpdateListener> listeners = new CopyOnWriteArraySet<UpdateListener>();
+
     private final String statementId;
     private final String statementName;
     private final String expressionText;
@@ -48,6 +58,11 @@ public class EPStatementImpl extends EPStatementSupport implements EPStatement
         this.statementLifecycleSvc = statementLifecycleSvc;
         this.dispatchChildView = new UpdateDispatchView(this.getListeners(), dispatchService);
         this.currentState = EPStatementState.STOPPED;
+    }
+
+    public String getStatementId()
+    {
+        return statementId;
     }
 
     public void start()
@@ -107,7 +122,7 @@ public class EPStatementImpl extends EPStatementSupport implements EPStatement
         {
             parentView = viewable;
             parentView.addView(dispatchChildView);
-            eventType = parentView.getEventType(); 
+            eventType = parentView.getEventType();
         }
     }
 
@@ -141,5 +156,60 @@ public class EPStatementImpl extends EPStatementSupport implements EPStatement
     public EventType getEventType()
     {
         return eventType;
+    }
+
+    /**
+     * Returns the set of listeners to the statement.
+     * @return statement listeners
+     */
+    public Set<UpdateListener> getListeners()
+    {
+        return listeners;
+    }
+
+    public void setListeners(Set<UpdateListener> listeners)
+    {
+        this.listeners = listeners;
+        if (dispatchChildView != null)
+        {
+            dispatchChildView.setUpdateListeners(listeners);
+        }
+    }
+
+    /**
+     * Add a listener to the statement.
+     * @param listener to add
+     */
+    public void addListener(UpdateListener listener)
+    {
+        if (listener == null)
+        {
+            throw new IllegalArgumentException("Null listener reference supplied");
+        }
+
+        listeners.add(listener);
+        statementLifecycleSvc.updatedListeners(statementId, listeners);
+    }
+
+    /**
+     * Remove a listeners to a statement.
+     * @param listener to remove
+     */
+    public void removeListener(UpdateListener listener)
+    {
+        if (listener == null)
+        {
+            throw new IllegalArgumentException("Null listener reference supplied");
+        }
+
+        listeners.remove(listener);
+    }
+
+    /**
+     * Remove all listeners to a statement.
+     */
+    public void removeAllListeners()
+    {
+        listeners.clear();
     }
 }

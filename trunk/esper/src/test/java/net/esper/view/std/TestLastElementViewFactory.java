@@ -5,8 +5,7 @@ import junit.framework.TestCase;
 import java.util.Arrays;
 
 import net.esper.view.ViewParameterException;
-import net.esper.view.window.TimeWindowView;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 
 public class TestLastElementViewFactory extends TestCase
 {
@@ -25,7 +24,7 @@ public class TestLastElementViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        assertFalse(factory.canReuse(new SizeView(SupportViewContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertTrue(factory.canReuse(new LastElementView()));
     }
 
@@ -34,7 +33,7 @@ public class TestLastElementViewFactory extends TestCase
         try
         {
             LastElementViewFactory factory = new LastElementViewFactory();
-            factory.setViewParameters(Arrays.asList(new Object[] {param}));
+            factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -46,7 +45,7 @@ public class TestLastElementViewFactory extends TestCase
     private void tryParameter(Object[] param) throws Exception
     {
         LastElementViewFactory factory = new LastElementViewFactory();
-        factory.setViewParameters(Arrays.asList(param));
-        assertTrue(factory.makeView(SupportViewContextFactory.makeContext()) instanceof LastElementView);
+        factory.setViewParameters(null, Arrays.asList(param));
+        assertTrue(factory.makeView(SupportStatementContextFactory.makeContext()) instanceof LastElementView);
     }
 }

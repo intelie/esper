@@ -16,8 +16,8 @@ import net.esper.util.DebugFacility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Implementation for the admin interface.
@@ -30,7 +30,6 @@ public class EPAdministratorImpl implements EPAdministrator
     private static WalkRuleSelector eqlWalkRule;
 
     private final EPServicesContext services;
-    private final StatementLifecycleSvc statementLifecycleSvc;
 
     static
     {
@@ -68,13 +67,10 @@ public class EPAdministratorImpl implements EPAdministrator
     /**
      * Constructor - takes the services context as argument.
      * @param services - references to services
-     * @param statementLifecycleSvc - service for statement management
      */
-    public EPAdministratorImpl(EPServicesContext services,
-                               StatementLifecycleSvc statementLifecycleSvc)
+    public EPAdministratorImpl(EPServicesContext services)
     {
         this.services = services;
-        this.statementLifecycleSvc = statementLifecycleSvc;
     }
 
     public EPStatement createPattern(String onExpression) throws EPException
@@ -141,7 +137,72 @@ public class EPAdministratorImpl implements EPAdministrator
 
         StatementSpecCompiled compiledSpec = compile(statementSpec, expression);
 
-        return statementLifecycleSvc.createAndStart(compiledSpec, expression, true, statementName);
+        return services.getStatementLifecycleSvc().createAndStart(compiledSpec, expression, true, statementName);
+    }
+
+    public EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
+    {
+        if (log.isDebugEnabled())
+        {
+            log.debug(".createEQLStmt statementName=" + statementName + " eqlStatement=" + eqlStatement);
+        }
+
+        AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
+        EQLTreeWalker walker = new EQLTreeWalker();
+
+        try
+        {
+            ParseHelper.walk(ast, walker, eqlWalkRule, eqlStatement);
+        }
+        catch (ASTWalkException ex)
+        {
+            log.error(".createEQL Error validating expression", ex);
+            throw new EPStatementException(ex.getMessage(), eqlStatement);
+        }
+        catch (RuntimeException ex)
+        {
+            log.error(".createEQL Error validating expression", ex);
+            throw new EPStatementException(ex.getMessage(), eqlStatement);
+        }
+
+        if (log.isDebugEnabled())
+        {
+            DebugFacility.dumpAST(walker.getAST());
+        }
+
+        // Specifies the statement
+        StatementSpecRaw statementSpec = walker.getStatementSpec();
+        StatementSpecCompiled compiledSpec = compile(statementSpec, eqlStatement);
+
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(compiledSpec, eqlStatement, false, statementName);
+
+        log.debug(".createEQLStmt Statement created and started");
+        return statement;
+    }
+
+    public EPStatement getStatement(String name)
+    {
+        return services.getStatementLifecycleSvc().getStatementByName(name);
+    }
+
+    public String[] getStatementNames()
+    {
+        return services.getStatementLifecycleSvc().getStatementNames();
+    }
+
+    public void startAllStatements() throws EPException
+    {
+        services.getStatementLifecycleSvc().startAllStatements();
+    }
+
+    public void stopAllStatements() throws EPException
+    {
+        services.getStatementLifecycleSvc().stopAllStatements();
+    }
+
+    public void destroyAllStatements() throws EPException
+    {
+        services.getStatementLifecycleSvc().destroyAllStatements();
     }
 
     private StatementSpecCompiled compile(StatementSpecRaw spec, String eqlStatement) throws EPStatementException
@@ -179,64 +240,7 @@ public class EPAdministratorImpl implements EPAdministrator
                 spec.getHavingExprRootNode(),
                 spec.getOutputLimitSpec(),
                 spec.getOrderByList());
-    }
-
-    public EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
-    {
-        AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker();
-
-        try
-        {
-            ParseHelper.walk(ast, walker, eqlWalkRule, eqlStatement);
-        }
-        catch (ASTWalkException ex)
-        {
-            log.debug(".createEQL Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), eqlStatement);
-        }
-        catch (RuntimeException ex)
-        {
-            log.debug(".createEQL Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), eqlStatement);
-        }
-
-        if (log.isDebugEnabled())
-        {
-            DebugFacility.dumpAST(walker.getAST());
-        }
-
-        // Specifies the statement
-        StatementSpecRaw statementSpec = walker.getStatementSpec();
-        StatementSpecCompiled compiledSpec = compile(statementSpec, eqlStatement);
-
-        return statementLifecycleSvc.createAndStart(compiledSpec, eqlStatement, false, statementName);
-    }
-
-    public EPStatement getStatement(String name)
-    {
-        return statementLifecycleSvc.getStatement(name);
-    }
-
-    public String[] getStatementNames()
-    {
-        return statementLifecycleSvc.getStatementNames();
-    }
-
-    public void startAllStatements() throws EPException
-    {
-        statementLifecycleSvc.startAllStatements();
-    }
-
-    public void stopAllStatements() throws EPException
-    {
-        statementLifecycleSvc.stopAllStatements();
-    }
-
-    public void destroyAllStatements() throws EPException
-    {
-        statementLifecycleSvc.destroyAllStatements();
-    }
+    }    
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);
 }

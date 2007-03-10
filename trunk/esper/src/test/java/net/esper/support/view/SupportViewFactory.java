@@ -8,12 +8,12 @@ import java.util.List;
 
 public abstract class SupportViewFactory implements ViewFactory
 {
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -28,7 +28,7 @@ public abstract class SupportViewFactory implements ViewFactory
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

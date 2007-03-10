@@ -1,22 +1,22 @@
 package net.esper.event;
 
+import net.esper.client.ConfigurationEventTypeLegacy;
+import net.esper.event.property.*;
+import net.sf.cglib.reflect.FastClass;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-import net.sf.cglib.reflect.FastClass;
-import net.esper.event.property.*;
-import net.esper.client.ConfigurationEventTypeLegacy;
-
 /**
  * Implementation of the EventType interface for handling JavaBean-type classes.
  */
-public class BeanEventType implements EventType
+public class BeanEventType implements EventTypeSPI
 {
     private final Class clazz;
     private final BeanEventAdapter beanEventAdapter;
     private final ConfigurationEventTypeLegacy optionalLegacyDef;
+    private final String eventTypeId;
 
     private String[] propertyNames;
     private Map<String, Class> simplePropertyTypes;
@@ -34,14 +34,22 @@ public class BeanEventType implements EventType
      * @param beanEventAdapter is the chache and factory for event bean types and event wrappers
      * @param optionalLegacyDef optional configuration supplying legacy event type information
      */
-    public BeanEventType(Class clazz, BeanEventAdapter beanEventAdapter,
-                         ConfigurationEventTypeLegacy optionalLegacyDef)
+    public BeanEventType(Class clazz,
+                         BeanEventAdapter beanEventAdapter,
+                         ConfigurationEventTypeLegacy optionalLegacyDef,
+                         String eventTypeId)
     {
         this.clazz = clazz;
         this.beanEventAdapter = beanEventAdapter;
         this.optionalLegacyDef = optionalLegacyDef;
+        this.eventTypeId = eventTypeId;
 
         initialize();
+    }
+
+    public String getEventTypeId()
+    {
+        return eventTypeId;
     }
 
     public final Class getPropertyType(String propertyName)

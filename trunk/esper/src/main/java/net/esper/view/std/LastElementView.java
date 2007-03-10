@@ -8,7 +8,7 @@ import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 import net.esper.collection.SingleEventIterator;
 
 /**
@@ -38,7 +38,7 @@ public class LastElementView extends ViewSupport implements CloneableView
      */
     protected EventBean lastEvent;
 
-    public View cloneView(ViewServiceContext context)
+    public View cloneView(StatementServiceContext context)
     {
         return new LastElementView();
     }
@@ -69,7 +69,7 @@ public class LastElementView extends ViewSupport implements CloneableView
             lastEvent = newData[newData.length - 1];
         }
 
-        // If there are child views, fire update method
+        // If there are child views, fireStatementStopped update method
         if (this.hasViews())
         {
             if (!oldDataToPost.isEmpty())

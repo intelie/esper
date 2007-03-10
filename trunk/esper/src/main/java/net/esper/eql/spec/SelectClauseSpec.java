@@ -1,12 +1,14 @@
 package net.esper.eql.spec;
 
+import net.esper.util.MetaDefItem;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Encapsulates the parsed select expressions in a select-clause in an EQL statement.
  */
-public class SelectClauseSpec
+public class SelectClauseSpec implements MetaDefItem
 {
 	private List<SelectExprElementRawSpec> selectList;
 	private boolean isUsingWildcard;

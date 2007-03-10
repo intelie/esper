@@ -80,6 +80,8 @@ public class Configuration {
 	 */
 	private boolean isUsingDefaultImports = true;
 
+    protected String epServicesContextFactoryClassName;
+
     protected List<ConfigurationPlugInView> plugInViews;
 
     /**
@@ -90,6 +92,16 @@ public class Configuration {
     public Configuration()
     {
         reset();
+    }
+
+    public void setEPServicesContextFactoryClassName(String epServicesContextFactoryClassName)
+    {
+        this.epServicesContextFactoryClassName = epServicesContextFactoryClassName;
+    }
+
+    public String getEPServicesContextFactoryClassName()
+    {
+        return epServicesContextFactoryClassName;
     }
 
     /**

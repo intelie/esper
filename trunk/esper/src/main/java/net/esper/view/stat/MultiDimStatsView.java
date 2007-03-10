@@ -47,7 +47,7 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
         };
     }
 
-    private final ViewServiceContext viewServiceContext;
+    private final StatementServiceContext statementServiceContext;
     private final String[] derivedMeasures;
     private final String measureField;
     private final String columnField;
@@ -68,23 +68,23 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
      * @param columnField defines the field supplying column dimension members
      * @param rowField defines an optional field supplying row dimension members
      * @param pageField defines an optional field supplying page dimension members
-     * @param viewServiceContext contains required view services
+     * @param statementServiceContext contains required view services
      */
-    public MultiDimStatsView(ViewServiceContext viewServiceContext,
+    public MultiDimStatsView(StatementServiceContext statementServiceContext,
                              String[] derivedMeasures, String measureField, String columnField, String rowField, String pageField)
     {
-        this.viewServiceContext = viewServiceContext;
+        this.statementServiceContext = statementServiceContext;
         this.derivedMeasures = derivedMeasures;
         this.measureField = measureField;
         this.columnField = columnField;
         this.rowField = rowField;
         this.pageField = pageField;
-        eventType = createEventType(viewServiceContext);
+        eventType = createEventType(statementServiceContext);
     }
 
-    public View cloneView(ViewServiceContext viewServiceContext)
+    public View cloneView(StatementServiceContext statementServiceContext)
     {
-        return new MultiDimStatsView(viewServiceContext, derivedMeasures, measureField, columnField, rowField, pageField); 
+        return new MultiDimStatsView(statementServiceContext, derivedMeasures, measureField, columnField, rowField, pageField);
     }
 
     /**
@@ -271,20 +271,20 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
 
         Map<String, Object> result = new HashMap<String, Object>();
         result.put(ViewFieldEnum.MULTIDIM_OLAP__CUBE.getName(), cube);
-        EventBean eventBean = viewServiceContext.getEventAdapterService().createMapFromValues(result, eventType);
+        EventBean eventBean = statementServiceContext.getEventAdapterService().createMapFromValues(result, eventType);
         return eventBean;
     }
 
     /**
      * Creates the event type for this view.
-     * @param viewServiceContext is the event adapter service
+     * @param statementServiceContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(ViewServiceContext viewServiceContext)
+    protected static EventType createEventType(StatementServiceContext statementServiceContext)
     {
         Map<String, Class> schemaMap = new HashMap<String, Class>();
         schemaMap.put(ViewFieldEnum.MULTIDIM_OLAP__CUBE.getName(), Cube.class);
-        EventType eventType = viewServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
+        EventType eventType = statementServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
         return eventType;
     }
     

@@ -6,6 +6,7 @@ import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSpec;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.core.EPStatementHandleCallback;
+import net.esper.core.ExtensionServicesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,7 +40,7 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
     }
 
-    public final void scheduledTrigger()
+    public final void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
     {
         if (log.isDebugEnabled())
         {

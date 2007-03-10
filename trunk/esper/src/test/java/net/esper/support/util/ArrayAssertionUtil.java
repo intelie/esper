@@ -141,6 +141,31 @@ public class ArrayAssertionUtil
     }
 
     /**
+     * Compare the long values in the long arrays assuming the exact same order.
+     * @param data is the data to assertEqualsExactOrder against
+     * @param expectedValues is the expected values
+     */
+    public static void assertEqualsExactOrder(long[] data, long[] expectedValues)
+    {
+        if ((expectedValues == null) && (data == null))
+        {
+            return;
+        }
+        if ( ((expectedValues == null) && (data != null)) ||
+             ((expectedValues != null) && (data == null)) )
+        {
+            TestCase.assertTrue(false);
+        }
+
+        TestCase.assertEquals(expectedValues.length, data.length);
+
+        for (int i = 0; i < expectedValues.length; i++)
+        {
+            TestCase.assertEquals(expectedValues[i], data[i]);
+        }
+    }
+
+    /**
      * Compare the STring values in the two String arrays assuming the exact same order.
      * @param data is the data to assertEqualsExactOrder against
      * @param expectedValues is the expected values
@@ -425,6 +450,14 @@ public class ArrayAssertionUtil
             resultClasses[i] = objects[i].getClass();
         }
         assertEqualsAnyOrder(resultClasses, classes);
+    }
+
+    public static Object[] sum(Object[] srcOne, Object[] srcTwo)
+    {
+        Object[] result = new Object[srcOne.length + srcTwo.length];
+        System.arraycopy(srcOne, 0, result, 0, srcOne.length);
+        System.arraycopy(srcTwo, 0, result, srcOne.length, srcTwo.length);
+        return result;
     }
 
     private static final Log log = LogFactory.getLog(ArrayAssertionUtil.class);

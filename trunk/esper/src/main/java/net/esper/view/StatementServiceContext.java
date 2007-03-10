@@ -1,20 +1,25 @@
 package net.esper.view;
 
-import net.esper.schedule.SchedulingService;
-import net.esper.schedule.ScheduleBucket;
-import net.esper.event.EventAdapterService;
 import net.esper.core.EPStatementHandle;
+import net.esper.core.ExtensionServicesContext;
+import net.esper.event.EventAdapterService;
+import net.esper.schedule.ScheduleBucket;
+import net.esper.schedule.SchedulingService;
 
 /**
  * Contains handles to the implementation of the the scheduling service for use in view evaluation.
  */
-public final class ViewServiceContext
+public final class StatementServiceContext
 {
+    private final String statementId;
+    private final String statementName;
     private final SchedulingService schedulingService;
     private final ScheduleBucket scheduleBucket;
     private final EventAdapterService eventAdapterService;
     private final EPStatementHandle epStatementHandle;
     private final ViewResolutionService viewResultionService;
+    private final ExtensionServicesContext extensionServicesContext;
+    private final StatementStopService statementStopService;
 
     /**
      * Constructor.
@@ -24,17 +29,35 @@ public final class ViewServiceContext
      * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      * @param viewResultionService is a service for resolving view namespace and name to a view factory
      */
-    public ViewServiceContext(SchedulingService schedulingService,
+    public StatementServiceContext(String statementId,
+                                   String statementName,
+                              SchedulingService schedulingService,
                               ScheduleBucket scheduleBucket,
                               EventAdapterService eventAdapterService,
                               EPStatementHandle epStatementHandle,
-                              ViewResolutionService viewResultionService)
+                              ViewResolutionService viewResultionService,
+                              ExtensionServicesContext extensionServicesContext,
+                              StatementStopService statementStopService)
     {
+        this.statementId = statementId;
+        this.statementName = statementName;
         this.schedulingService = schedulingService;
         this.eventAdapterService = eventAdapterService;
         this.scheduleBucket = scheduleBucket;
         this.epStatementHandle = epStatementHandle;
         this.viewResultionService = viewResultionService;
+        this.extensionServicesContext = extensionServicesContext;
+        this.statementStopService = statementStopService;
+    }
+
+    public String getStatementId()
+    {
+        return statementId;
+    }
+
+    public String getStatementName()
+    {
+        return statementName;
     }
 
     /**
@@ -77,4 +100,21 @@ public final class ViewServiceContext
     {
         return viewResultionService;
     }
+
+    public ExtensionServicesContext getExtensionServicesContext()
+    {
+        return extensionServicesContext;
+    }
+
+    public StatementStopService getStatementStopService()
+    {
+        return statementStopService;
+    }
+
+    public String toString()
+    {
+        return  " statementId=" + statementId +
+                " statementName=" + statementName;
+    }
+
 }

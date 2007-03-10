@@ -1,7 +1,6 @@
 package net.esper.regression.client;
 
 import net.esper.view.*;
-import net.esper.view.stat.UnivariateStatisticsView;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
 
@@ -12,7 +11,7 @@ public class MyTrendSpotterViewFactory implements ViewFactory
     private String fieldName;
     private EventType eventType;
 
-    public void setViewParameters(List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         String errorMessage = "'Trend spotter' view require a single field name as a parameter";
         if (viewParameters.size() != 1)
@@ -28,14 +27,14 @@ public class MyTrendSpotterViewFactory implements ViewFactory
         fieldName = (String) viewParameters.get(0);
     }
 
-    public void attach(EventType parentEventType, ViewServiceContext viewServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldName);
         if (result != null)
         {
             throw new ViewAttachException(result);
         }
-        eventType = MyTrendSpotterView.createEventType(viewServiceContext);
+        eventType = MyTrendSpotterView.createEventType(statementServiceContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -48,9 +47,9 @@ public class MyTrendSpotterViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(ViewServiceContext viewServiceContext)
+    public View makeView(StatementServiceContext statementServiceContext)
     {
-        return new MyTrendSpotterView(viewServiceContext, fieldName);
+        return new MyTrendSpotterView(statementServiceContext, fieldName);
     }
 
     public EventType getEventType()

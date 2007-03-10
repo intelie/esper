@@ -8,7 +8,7 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
-import net.esper.support.view.SupportViewContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.view.ViewFieldEnum;
 
 public class TestSizeView extends TestCase
@@ -19,7 +19,7 @@ public class TestSizeView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new SizeView(SupportViewContextFactory.makeContext());
+        myView = new SizeView(SupportStatementContextFactory.makeContext());
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -85,7 +85,7 @@ public class TestSizeView extends TestCase
 
     public void testSchema()
     {
-        SizeView view = new SizeView(SupportViewContextFactory.makeContext());
+        SizeView view = new SizeView(SupportStatementContextFactory.makeContext());
 
         EventType eventType = view.getEventType();
         assertEquals(long.class, eventType.getPropertyType(ViewFieldEnum.SIZE_VIEW__SIZE.getName()));
@@ -93,7 +93,7 @@ public class TestSizeView extends TestCase
 
     public void testCopyView() throws Exception
     {
-        assertTrue(myView.cloneView(SupportViewContextFactory.makeContext()) instanceof SizeView);
+        assertTrue(myView.cloneView(SupportStatementContextFactory.makeContext()) instanceof SizeView);
     }
 
     private void checkNewData(long expectedSize)

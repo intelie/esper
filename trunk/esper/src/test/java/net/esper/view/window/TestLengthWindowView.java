@@ -11,8 +11,6 @@ import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.view.SupportBeanClassView;
 import net.esper.support.view.SupportStreamImpl;
 import net.esper.support.view.SupportViewDataChecker;
-import net.esper.support.view.SupportViewContextFactory;
-import net.esper.view.ViewSupport;
 
 public class TestLengthWindowView extends TestCase
 {

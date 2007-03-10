@@ -9,12 +9,17 @@ import org.w3c.dom.Node;
  */
 public interface EventAdapterService
 {
+    public String getIdByAlias(String eventTypeAlias);
+    public EventType getTypeById(String eventTypeID);
+    public String getIdByType(EventType eventType);
+    public String getAliasById(String eventTypeID);
+
     /**
      * Return the event type for a given event name, or null if none is registered for that name.
      * @param eventTypeAlias is the event type alias name to return type for
      * @return event type for named event, or null if unknown/unnamed type
      */
-    public EventType getEventType(String eventTypeAlias);
+    public EventType getExistsTypeByAlias(String eventTypeAlias);
 
     /**
      * Add an event type with the given alias and a given set of properties.
@@ -49,7 +54,7 @@ public interface EventAdapterService
      * The method accepts a Map that contains the property names as keys and Class objects as the values.
      * The Class instances represent the property types.
      * <p>
-     * New instances are created by this method on every invocation. Clients to this method need to
+     * New instances are createdStatement by this method on every invocation. Clients to this method need to
      * cache the returned EventType instance to reuse EventType's for same-typed events.
      * <p>
      * @param propertyTypes is a map of String to Class objects
@@ -178,7 +183,7 @@ public interface EventAdapterService
      * as well as the additional given properties.
      * @param underlyingEventType is the event type for the event type that this wrapper wraps
      * @param propertyTypes is the names and types of any additional properties 
-     * @return eventType is the type created
+     * @return eventType is the type createdStatement
      * @throws EventAdapterException if alias already exists and doesn't match this type's info
      */
     public EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Class> propertyTypes) throws EventAdapterException;

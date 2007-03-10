@@ -70,12 +70,12 @@ public class SupportSchedulingServiceImpl implements SchedulingService
             if (handle instanceof EPStatementHandleCallback)
             {
                 EPStatementHandleCallback callback = (EPStatementHandleCallback) handle;
-                callback.getScheduleCallback().scheduledTrigger();
+                callback.getScheduleCallback().scheduledTrigger(null);
             }
             else
             {
                 ScheduleHandleCallback cb = (ScheduleHandleCallback) handle;
-                cb.scheduledTrigger();
+                cb.scheduledTrigger(null);
             }
         }
     }

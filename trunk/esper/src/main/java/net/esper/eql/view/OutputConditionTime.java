@@ -2,9 +2,9 @@ package net.esper.eql.view;
 
 import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
-import net.esper.view.ViewServiceContext;
+import net.esper.view.StatementServiceContext;
 import net.esper.core.EPStatementHandleCallback;
-import net.esper.core.EPStatementHandle;
+import net.esper.core.ExtensionServicesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +23,7 @@ public final class OutputConditionTime implements OutputCondition
     private final ScheduleSlot scheduleSlot;
 
     private Long currentReferencePoint;
-    private ViewServiceContext context; 
+    private StatementServiceContext context;
     private boolean isCallbackScheduled;
 
     /**
@@ -33,7 +33,7 @@ public final class OutputConditionTime implements OutputCondition
      * @param outputCallback is the callback to make once the condition is satisfied
      */
     public OutputConditionTime(double secIntervalSize, 
-    						   ViewServiceContext context, 
+    						   StatementServiceContext context,
     						   OutputCallback outputCallback)
     {
 		if(outputCallback ==  null)
@@ -108,7 +108,7 @@ public final class OutputConditionTime implements OutputCondition
         }
 
         ScheduleHandleCallback callback = new ScheduleHandleCallback() {
-            public void scheduledTrigger()
+            public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
             {
                 OutputConditionTime.this.isCallbackScheduled = false;
                 OutputConditionTime.this.outputCallback.continueOutputProcessing(DO_OUTPUT, FORCE_UPDATE);
