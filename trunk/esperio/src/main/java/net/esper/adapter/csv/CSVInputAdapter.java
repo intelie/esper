@@ -273,7 +273,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 	private Map<String, Class> constructPropertyTypes(String eventTypeAlias, Map<String, Class> propertyTypesGiven, EventAdapterService eventAdapterService)
 	{
 		Map<String, Class> propertyTypes = new HashMap<String, Class>();
-		EventType eventType = eventAdapterService.getEventType(eventTypeAlias);
+		EventType eventType = eventAdapterService.getExistsTypeByAlias(eventTypeAlias);
 		if(eventType == null)
 		{
 			if(propertyTypesGiven != null)

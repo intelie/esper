@@ -9,10 +9,11 @@ import net.esper.client.EPServiceProvider;
 import net.esper.core.EPServiceProviderSPI;
 import net.esper.core.EPStatementHandleCallback;
 import net.esper.core.EPStatementHandle;
+import net.esper.core.ExtensionServicesContext;
 import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
 import net.esper.schedule.SchedulingService;
-import net.esper.util.ManagedLock;
+import net.esper.util.ManagedLockImpl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -233,8 +234,8 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	private void scheduleNextCallback()
 	{
-		ScheduleHandleCallback nextScheduleCallback = new ScheduleHandleCallback() { public void scheduledTrigger() { continueSendingEvents(); } };
-        EPStatementHandleCallback scheduleCSVHandle = new EPStatementHandleCallback(new EPStatementHandle(new ManagedLock("CSV"), "AbstractCoordinatedAdapter"), nextScheduleCallback);
+		ScheduleHandleCallback nextScheduleCallback = new ScheduleHandleCallback() { public void scheduledTrigger(ExtensionServicesContext extensionServicesContext) { continueSendingEvents(); } };
+        EPStatementHandleCallback scheduleCSVHandle = new EPStatementHandleCallback(new EPStatementHandle(new ManagedLockImpl("CSV"), "AbstractCoordinatedAdapter"), nextScheduleCallback);
         ScheduleSlot nextScheduleSlot;
 
 		if(eventsToSend.isEmpty())
