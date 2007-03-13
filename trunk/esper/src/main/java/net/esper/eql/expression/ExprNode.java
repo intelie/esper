@@ -1,15 +1,13 @@
 package net.esper.eql.expression;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import net.esper.eql.core.AutoImportService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.util.MetaDefItem;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.LinkedList;
 
 /**
  * Superclass for filter nodes in a filter expression tree. Allow
@@ -165,40 +163,25 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         return true;
     }
 
-    // Assumes that this is an ExprIdentNode
+    // Since static method calls such as "Class.method('a')" and mapped properties "Stream.property('key')"
+    // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
+    // this method tries to resolve the mapped property as a static method.
+    // Assumes that this is an ExprIdentNode.
     private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, AutoImportService autoImportService, ExprValidationException propertyException)
     throws ExprValidationException
     {
         // Reconstruct the original string
         ExprIdentNode identNode = (ExprIdentNode) this;
-        StringBuffer name = new StringBuffer(identNode.getUnresolvedPropertyName());
+        StringBuffer mappedProperty = new StringBuffer(identNode.getUnresolvedPropertyName());
         if(identNode.getStreamOrPropertyName() != null)
         {
-            name.insert(0, identNode.getStreamOrPropertyName() + '.');
+            mappedProperty.insert(0, identNode.getStreamOrPropertyName() + '.');
         }
 
-        // Parse the string to see if it looks like a method invocation
-        // (Ident nodes can only have a single string value in parentheses)
-        String classNameRegEx = "((\\w+\\.)*\\w+)";
-        String methodNameRegEx = "(\\w+)";
-        String argsRegEx = "\\s*\\(\\s*[\'\"]\\s*(\\w+)\\s*[\'\"]\\s*\\)\\s*";
-        String methodInvocationRegEx = classNameRegEx + "\\." + methodNameRegEx + argsRegEx;
-
-        Pattern pattern = Pattern.compile(methodInvocationRegEx);
-        Matcher matcher = pattern.matcher(name);
-        if(!matcher.matches())
-        {
-            // This property name doesn't look like a method invocation
-            throw propertyException;
-        }
-
-        // Create a new static method node and add the method
-        // argument as a child node
-        String className = matcher.group(1);
-        String methodName = matcher.group(3);
-        String argString = matcher.group(4);
-        ExprNode result = new ExprStaticMethodNode(className, methodName);
-        result.addChildNode(new ExprConstantNode(argString));
+        // Parse the mapped property format into a class name, method and single string parameter
+        MappedPropertyParseResult parse = parseMappedProperty(mappedProperty.toString());
+        ExprNode result = new ExprStaticMethodNode(parse.getClassName(), parse.getMethodName());
+        result.addChildNode(new ExprConstantNode(parse.getArgString()));
 
         // Validate
         try
@@ -207,10 +190,133 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         }
         catch(ExprValidationException e)
         {
-            throw new ExprValidationException("Failed to resolve " + name + " as either an event property or as a static method invocation");
+            throw new ExprValidationException("Failed to resolve " + mappedProperty + " as either an event property or as a static method invocation");
         }
 
         return result;
+    }
+
+    /**
+     * Parse the mapped property into classname, method and string argument.
+     * Mind this has been parsed already and is a valid mapped property.
+     * @param property is the string property to be passed as a static method invocation
+     * @return descriptor object
+     */
+    protected static MappedPropertyParseResult parseMappedProperty(String property)
+    {
+        // get argument
+        int indexFirstDoubleQuote = property.indexOf("\"");
+        int indexFirstSingleQuote = property.indexOf("'");
+        int startArg;
+        if ((indexFirstSingleQuote == -1) && (indexFirstDoubleQuote == -1))
+        {
+            return null;
+        }        
+        if ((indexFirstSingleQuote != -1) && (indexFirstDoubleQuote != -1))
+        {
+            if (indexFirstSingleQuote < indexFirstDoubleQuote)
+            {
+                startArg = indexFirstSingleQuote;
+            }
+            else
+            {
+                startArg = indexFirstDoubleQuote;    
+            }
+        }
+        else if (indexFirstSingleQuote != -1)
+        {
+            startArg = indexFirstSingleQuote;
+        }
+        else
+        {
+            startArg = indexFirstDoubleQuote;
+        }
+
+        int indexLastDoubleQuote = property.lastIndexOf("\"");
+        int indexLastSingleQuote = property.lastIndexOf("'");
+        int endArg;
+        if ((indexLastSingleQuote == -1) && (indexLastDoubleQuote == -1))
+        {
+            return null;
+        }
+        if ((indexLastSingleQuote != -1) && (indexLastDoubleQuote != -1))
+        {
+            if (indexLastSingleQuote > indexLastDoubleQuote)
+            {
+                endArg = indexLastSingleQuote;
+            }
+            else
+            {
+                endArg = indexLastDoubleQuote;
+            }
+        }
+        else if (indexLastSingleQuote != -1)
+        {
+            endArg = indexLastSingleQuote;
+        }
+        else
+        {
+            endArg = indexLastDoubleQuote;
+        }
+        String argument = property.substring(startArg + 1, endArg);
+
+        // get method
+        String splitDots[] = property.toString().split("[\\.]");
+        if (splitDots.length < 2)
+        {
+            return null;
+        }
+        String method = splitDots[splitDots.length - 1];
+        int indexParan = method.indexOf("(");
+        if (indexParan == -1)
+        {
+            return null;
+        }
+        method = method.substring(0, indexParan);
+
+        // get class
+        StringBuffer clazz = new StringBuffer();
+        for (int i = 0; i < splitDots.length - 1; i++)
+        {
+            if (i > 0)
+            {
+                clazz.append('.');
+            }
+            clazz.append(splitDots[i]);            
+        }
+
+        return new MappedPropertyParseResult(clazz.toString(), method, argument);
+    }
+
+    protected static class MappedPropertyParseResult
+    {
+        private String className;
+        private String methodName;
+        private String argString;
+
+        public String getClassName()
+        {
+            return className;
+        }
+
+        public String getMethodName()
+        {
+            return methodName;
+        }
+
+        public String getArgString()
+        {
+            return argString;
+        }
+
+        public MappedPropertyParseResult(String className, String methodName, String argString)
+        {
+            this.className = className;
+            this.methodName = methodName;
+            this.argString = argString;
+
+
+        }
     }
 
     private static final Log log = LogFactory.getLog(ExprNode.class);

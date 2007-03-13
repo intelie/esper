@@ -9,6 +9,7 @@
 				<xs:element ref="auto-import" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="database-reference" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="plugin-view" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="adapter-loader" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -191,6 +192,23 @@
 			<xs:attribute name="namespace" type="xs:string" use="required"/>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="factory-class" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="adapter-loader">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="init-args" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="class-name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="init-args">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any namespace="##targetNamespace" processContents="skip" minOccurs="0" maxOccurs="unbounded" />
+			   <xs:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded" />			
+			 </xs:sequence>
+			<xs:anyAttribute/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

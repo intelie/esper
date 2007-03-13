@@ -20,6 +20,8 @@ import javax.xml.xpath.XPathConstants;
 import java.util.*;
 import java.io.*;
 
+import net.esper.collection.Pair;
+
 /**
  * Parser for configuration XML.
  */
@@ -82,6 +84,7 @@ class ConfigurationParser {
         handleAutoImports(configuration, root);
         handleDatabaseRefs(configuration, root);
         handlePlugInView(configuration, root);
+        handleAdapterLoaders(configuration, root);
     }
 
     private static void handleEventTypes(Configuration configuration, Element parentElement)
@@ -320,6 +323,20 @@ class ConfigurationParser {
             String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
             String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
             configuration.addPlugInView(namespace, name, factoryClassName);
+        }
+    }
+
+    private static void handleAdapterLoaders(Configuration configuration, Element parentElement)
+    {
+        NodeList nodes = parentElement.getElementsByTagName("adapter-loader");
+        for (int i = 0; i < nodes.getLength(); i++)
+        {
+            String className = nodes.item(i).getAttributes().getNamedItem("class-name").getTextContent();
+            Pair<Element, Properties> config = null; //configuration.getAdapterLoaderConfig(nodes.item(i));
+            ConfigurationAdapterLoader adapter = new ConfigurationAdapterLoader();
+            adapter.setClassName(className);
+            adapter.setConfigElement(config.getFirst());
+            adapter.setConfigProperties(config.getSecond());
         }
     }
 

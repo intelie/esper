@@ -12,6 +12,7 @@ import net.esper.client.EPStatement;
 import net.esper.client.EPStatementException;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.bean.SupportTemperatureBean;
 import net.esper.support.eql.SupportStaticMethodLib;
 import net.esper.support.util.SupportUpdateListener;
 
@@ -194,7 +195,26 @@ public class TestStaticFunctions extends TestCase
 		assertEquals("CAT", newEvents[2].get("symbol"));
 	}
 
-	private Object createStatementAndGet(String propertyName)
+    public void testNestedFunction()
+    {
+        Configuration configuration = new Configuration();
+        configuration.addImport(SupportStaticMethodLib.class.getName());
+        configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        String text = "select " +
+                "SupportStaticMethodLib.appendPipe(SupportStaticMethodLib.delimitPipe('POLYGON ((100 100, \", 100 100, 400 400))'),temp.geom) as val" +
+                " from Temperature as temp";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportTemperatureBean("a"));
+        assertEquals("|POLYGON ((100 100, \", 100 100, 400 400))||a", listener.assertOneGetNewAndReset().get("val"));
+    }
+
+    private Object createStatementAndGet(String propertyName)
 	{
 		statement = epService.getEPAdministrator().createEQL(statementText);
 		listener = new SupportUpdateListener();

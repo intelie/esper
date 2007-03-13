@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class EPServiceProviderManager
 {
     @SuppressWarnings({"CollectionWithoutInitialCapacity"})
-    private static Map<String, EPServiceProvider> runtimes = Collections.synchronizedMap(new HashMap<String, EPServiceProvider>());
+    private static Map<String, EPServiceProviderImpl> runtimes = Collections.synchronizedMap(new HashMap<String, EPServiceProviderImpl>());
 
     /**
      * Returns the default EPServiceProvider.
@@ -63,11 +63,13 @@ public final class EPServiceProviderManager
     {
         if (runtimes.containsKey(uri))
         {
-            return runtimes.get(uri);
+            EPServiceProviderImpl provider = runtimes.get(uri);
+            provider.setConfiguration(configuration);
+            return provider;
         }
 
         // New runtime
-        EPServiceProvider runtime = new EPServiceProviderImpl(configuration, uri);
+        EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, uri);
         runtimes.put(uri, runtime);
 
         return runtime;

@@ -91,4 +91,27 @@ public class TestExprNode extends TestCase
         assertFalse(ExprNode.deepEquals(SupportExprNodeFactory.makeMathNode(), SupportExprNodeFactory.make2SubNodeAnd()));
         assertTrue(ExprNode.deepEquals(SupportExprNodeFactory.make3SubNodeAnd(), SupportExprNodeFactory.make3SubNodeAnd()));
     }
+
+    public void testParseMappedProp()
+    {
+        ExprNode.MappedPropertyParseResult result = ExprNode.parseMappedProperty("a.b('c')");
+        assertEquals("a", result.getClassName());
+        assertEquals("b", result.getMethodName());
+        assertEquals("c", result.getArgString());
+
+        result = ExprNode.parseMappedProperty("a.b.c.d.E(\"hfhf f f f \")");
+        assertEquals("a.b.c.d", result.getClassName());
+        assertEquals("E", result.getMethodName());
+        assertEquals("hfhf f f f ", result.getArgString());
+
+        result = ExprNode.parseMappedProperty("c.d.doit(\"kf\"kf'kf\")");
+        assertEquals("c.d", result.getClassName());
+        assertEquals("doit", result.getMethodName());
+        assertEquals("kf\"kf'kf", result.getArgString());
+
+        result = ExprNode.parseMappedProperty("c.d.doit('kf\"kf'kf\"')");
+        assertEquals("c.d", result.getClassName());
+        assertEquals("doit", result.getMethodName());
+        assertEquals("kf\"kf'kf\"", result.getArgString());
+    }
 }

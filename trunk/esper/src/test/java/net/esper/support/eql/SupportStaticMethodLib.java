@@ -21,4 +21,14 @@ public class SupportStaticMethodLib
     {
         return value - 1;
     }
+
+    public static String appendPipe(String string, String value)
+    {
+        return string + "|" + value;
+    }
+
+    public static String delimitPipe(String string)
+    {
+        return "|" + string + "|";
+    }
 }

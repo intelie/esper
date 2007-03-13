@@ -13,7 +13,7 @@ import net.esper.schedule.SchedulingService;
 public class EPServiceProviderImpl implements EPServiceProviderSPI
 {
     private volatile EPServiceEngine engine;
-    private final ConfigurationSnapshot configSnapshot;
+    private ConfigurationSnapshot configSnapshot;
     private String engineURI;
 
     /**
@@ -27,6 +27,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         this.engineURI = engineURI;
         configSnapshot = new ConfigurationSnapshot(configuration);
         initialize();
+    }
+
+    public void setConfiguration(Configuration configuration)
+    {
+        configSnapshot = new ConfigurationSnapshot(configuration);
     }
 
     public String getURI()
