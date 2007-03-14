@@ -12,7 +12,7 @@ using NUnit.Framework;
 
 namespace net.esper.eql.db
 {
-	[TestFixture]
+	//[TestFixture]
 	public class TestPollExecStrategyDBQuery
 	{
 		private PollExecStrategyDBQuery dbPollExecStrategy;

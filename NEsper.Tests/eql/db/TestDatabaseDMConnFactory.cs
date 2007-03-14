@@ -15,7 +15,7 @@ using org.apache.commons.logging;
 
 namespace net.esper.eql.db
 {
-    [TestFixture]
+    //[TestFixture]
     public class TestDatabaseDMConnFactory
     {
         private DatabaseProviderConnFactory databaseDMConnFactoryOne;
