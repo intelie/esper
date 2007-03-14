@@ -54,8 +54,6 @@ namespace net.esper.schedule
                 throw new ScheduleServiceException(message);
             }
 
-            System.Diagnostics.Debug.WriteLine("CurrentTime: " + currentTime);
-
             long triggerOnTime = currentTime + afterMSec;
 
             AddTrigger(slot, callback, triggerOnTime);
@@ -149,10 +147,8 @@ namespace net.esper.schedule
             {
                 callbackSet = new ETreeDictionary<ScheduleSlot, ScheduleCallback>();
                 timeCallbackMap[triggerTime] = callbackSet;
-                System.Diagnostics.Debug.WriteLine("Adding triggerMap entry at " + triggerTime);
             }
 
-            System.Diagnostics.Debug.WriteLine("Adding triggerMap entry to existing set @ " + triggerTime);
             callbackSet[slot] = callback;
             callbackSetMap[callback] = callbackSet;
         }
