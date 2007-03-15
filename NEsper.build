@@ -1,9 +1,42 @@
 <?xml version="1.0" ?>
 <project name="NEsper" default="compile-all" xmlnds="http://tempuri.org/nant-vs.xsd">
     <!-- Global project settings -->
-    <property name="nesper.basedir" value="." />
+    <property name="nesper.basedir" location="." />
     <property name="project.build.config" value="debug" />
     <property name="project.build.package" value="false" />
+
+    <!-- Directories -->
+    <property name="sandcastle.dir"
+              value="C:\Program Files\Sandcastle" />
+    <property name="sandcastle.workingdir" 
+              value="${nesper.basedir}\SandcastleWorkingDir" />
+    <property name="sandcastle.output.dir" 
+              value="${sandcastle.workingdir}\Output" />
+    <!-- Executables -->
+    <property name="sandcastle.mrefbuilder.exe" 
+              value="${sandcastle.dir}\productiontools\mrefbuilder.exe" />
+    <property name="sandcastle.buildassembler.exe" 
+              value="${sandcastle.dir}\productiontools\buildassembler.exe" />
+    <property name="sandcastle.xsltransform.exe" 
+              value="${sandcastle.dir}\productiontools\xsltransform.exe" />
+    <!-- Transformations -->
+    <property name="sandcastle.addoverloads.xsl" 
+              value="${sandcastle.dir}\ProductionTransforms\AddOverloads.xsl" />
+    <property name="sandcastle.addguidfilenames.xsl" 
+              value="${sandcastle.dir}\ProductionTransforms\AddGuidFilenames.xsl" />
+    <property name="sandcastle.reflectiontomanifest.xsl" 
+              value="${sandcastle.dir}\ProductionTransforms\ReflectionToManifest.xsl" />
+    <property name="sandcastle.reflectiontochmproject.xsl" 
+              value="${sandcastle.dir}\ProductionTransforms\ReflectionToChmProject.xsl" />
+    <property name="sandcastle.reflectiontochmcontents.xsl" 
+              value="${sandcastle.dir}\ProductionTransforms\ReflectionToChmContents.xsl" />
+    <property name="sandcastle.reflectiontochmindex.xsl" 
+              value="${sandcastle.dir}\ProductionTransforms\ReflectionToChmIndex.xsl" />
+    <!-- Help Compiler -->
+    <property name="hhc.dir"
+              value="C:\Program Files\HTML Help Workshop" />
+    <property name="hhc.exe" overwrite="false" 
+              value="${hhc.dir}\hhc.exe" />
 
     <!-- Include nesper helpers -->
     <include buildfile="${nesper.basedir}/NEsper.include" />
@@ -32,6 +65,7 @@
             message="The current package zipfile has not been specified."
             if="${not property::exists('current.package.zipfile')}" />
     </target>
+
     <target name="check-htmlhelp-compiler">
         <if test="${not property::exists('htmlhelp.compiler')}">
             <readregistry
@@ -52,12 +86,35 @@
                 value="${sys.os.folder.programfiles}/HTML Help Worshop/hhc.exe" />
         </if>
     </target>
+
+    <target name="check-sandcastle">
+        <if test="${not property::exists('sandcastle')}">
+            <readregistry
+                property="htmlhelp.workshop.installroot"
+                key="SOFTWARE\Microsoft\HTML Help Workshop\InstallDir"
+                hive="CurrentUser"
+                failonerror="false" />
+            <if test="${property::exists('htmlhelp.workshop.installroot')}">
+                <property 
+                    name="htmlhelp.compiler"
+                    value="${htmlhelp.workshop.installroot}/hhc.exe" />
+            </if>
+        </if>
+        <if test="${not property::exists('htmlhelp.compiler')}">
+            <sysinfo />
+            <property 
+                name="htmlhelp.compiler"
+                value="${sys.os.folder.programfiles}/HTML Help Worshop/hhc.exe" />
+        </if>
+    </target>
+    
     <!-- Target for cleaning up the current package directory -->
     <target name="clean-current-package-dir" depends="check-current-package-dir" description="Cleans the current package directory">
         <echo message="Cleaning the ${current.package.dir} package directory." />
         <delete dir="${current.package.dir}" if="${directory::exists(current.package.dir)}" />
         <mkdir dir="${current.package.dir}" />
     </target>
+    
     <!-- Displays configuration info, usefull for working out why nesper doesn't build -->
     <target name="display-setup" depends="check-htmlhelp-compiler">
         <!-- .NET Framework 2.0 -->
@@ -79,6 +136,7 @@
         <!-- HTML Help Compiler -->
         <echo message="htmlhelp.compiler: ${htmlhelp.compiler}" />
     </target>
+    
     <target name="display-target-framework">
         <echo message="" />
         <echo message="----------------------------------------------------------" />
@@ -97,6 +155,7 @@
         <echo message="assembly directory : ${framework::get-assembly-directory(framework::get-target-framework())}" />
         <echo message="" />
     </target>
+    
     <!-- Target for setting the package configuration -->
     <target name="set-package-configuration" depends="check-package-dir, check-package-version">
         <property name="current.package.name" value="${nant.project.name}-${package.version}" />
@@ -109,6 +168,7 @@
         <delete dir="${current.package.dir}" if="${directory::exists(current.package.dir)}" />
         <mkdir dir="${current.package.dir}" />
     </target>
+    
     <!-- Target for compiling all build configurations for all runtime configurations -->
     <target name="compile-all" description="Compile all build configurations for all runtime configurations">
         <echo message="Compiling all build configurations for all runtime configurations." />
@@ -117,6 +177,7 @@
         <call target="set-release-build-configuration" />
         <call target="compile-build" />
     </target>
+    
     <!-- Target for compiling all build configurations for the current runtime configurations -->
     <target name="compile-runtime" description="Compile all build configurations for the current target framework">
         <echo message="Compiling all build configurations for ${framework::get-description(framework::get-target-framework())}." />
@@ -129,6 +190,7 @@
         <call target="set-runtime-configuration" />
         <call target="compile-${framework::get-target-framework()}" />
     </target>
+    
     <!-- Target for compiling all runtime configurations in the current build configuration -->
     <target name="compile-build" description="Compile current build configurations for all runtime configurations">
         <echo message="Compiling all framework versions for the ${current.build.config} build configuration." />
@@ -155,9 +217,11 @@
             </if>
         </if>
     </target>
+    
     <target name="compile" description="Builds the current build configuration for the current target framework." depends="check-current-build-config">
         <call target="compile-${framework::get-target-framework()}" />
     </target>
+    
     <target name="compile-net-2.0" description="Builds .NET Framework 2.0 version" depends="set-net-2.0-runtime-configuration, check-nesper-basedir, clean-current-bin-dir">
         <!-- initialize the temp.build.skip property to false -->
         <property name="temp.build.skip" value="false" />
@@ -200,6 +264,7 @@
             </csc>
         </if>
     </target>
+    
     <target name="compile-mono-2.0" description="Builds Mono 2.0 version" depends="set-mono-2.0-runtime-configuration, check-nesper-basedir, clean-current-bin-dir">
         <!-- initialize the temp.build.skip property to false -->
         <property name="temp.build.skip" value="false" />
@@ -238,7 +303,7 @@
                 </references>
             </csc>
         </if>
-  </target>
+    </target>
 
     <!-- Target for generating docs for all runtime configurations -->
     <target name="generate-sdkdoc-all" depends="check-current-build-config">
@@ -477,6 +542,100 @@
                 <exclude name="**/*.swp" />
             </fileset>
         </zip>
+    </target>
+    
+    <target name="generate-sandcastle">
+        <!-- Create or Cleanup Working Directory -->
+        <mkdir dir="${sandcastle.workingdir}" if="${not directory::exists(sandcastle.workingdir)}" />
+        <delete>
+           <fileset basedir="${sandcastle.workingdir}">
+              <include name="**\*" />
+           </fileset>
+        </delete>
+
+        <!-- Copy configuration file, and hard code references -->
+        <copy file="${sandcastle.dir}/Presentation/vs2005/Configuration/Sandcastle.config"
+              tofile="${sandcastle.workingdir}/Sandcastle.config"> 
+           <filterchain> 
+              <replacestring from="&quot;..\..\" to="&quot;${sandcastle.dir}\" /> 
+              <replacestring from="&quot;..\" to="&quot;${sandcastle.dir}\Examples\" />
+              <replacestring from="&quot;comments.xml" to="&quot;${doc.dir}\*.xml" /> 
+           </filterchain> 
+        </copy>    
+        
+        <!-- Run MRefBuilder (introspection on assemblies) to create basic Reflection XML -->
+        <exec program="${sandcastle.mrefbuilder.exe}" workingdir="${sandcastle.workingdir}"> 
+           <arg value="${current.bin.dir}/*.dll" />
+           <arg value="${current.bin.dir}/*.exe" />
+           <arg value="/out:reflection.org1.xml" />
+           <arg value="/dep:lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/${current.build.config}/*.dll" />
+           <arg value="/dep:lib/${current.build.config}/*.dll" />
+           <arg value="/dep:lib/*.dll" />
+        </exec>
+        
+        <!-- Create final Reflection XML -->
+        <!-- Regroup overloads -->
+        <exec program="${sandcastle.xsltransform.exe}" workingdir="${sandcastle.workingdir}">
+           <arg value="reflection.org1.xml" />
+           <arg value="/xsl:&quot;${sandcastle.addoverloads.xsl}&quot;" />
+           <arg value="/out:reflection.org2.xml" />
+        </exec>
+        <!-- Create filenames for html documents -->
+        <exec program="${sandcastle.xsltransform.exe}" workingdir="${sandcastle.workingdir}">
+           <arg value="reflection.org2.xml" />
+           <arg value="/xsl:&quot;${sandcastle.addguidfilenames.xsl}&quot;" />
+           <arg value="/out:reflection.xml" />
+        </exec>
+        
+        <!-- Create Manifest (list of Topics) -->
+        <exec program="${sandcastle.xsltransform.exe}" workingdir="${sandcastle.workingdir}">
+           <arg value="/xsl:&quot;${sandcastle.reflectiontomanifest.xsl}&quot;" />
+           <arg value="reflection.xml" />
+           <arg value="/out:manifest.xml" />
+        </exec>
+        
+        <!-- Create Output Environment -->
+        <mkdir dir="${sandcastle.output.dir}" /> 
+        <mkdir dir="${sandcastle.output.dir}/html" /> 
+        <copy todir="${sandcastle.output.dir}"> 
+            <fileset basedir="${sandcastle.dir}/Presentation"> 
+                <include name="art/*" /> 
+                <include name="scripts/*" /> 
+                <include name="styles/*" /> 
+            </fileset> 
+        </copy>
+        
+        <!-- Run BuildAssembler (create html topic files) -->
+        <exec program="${sandcastle.buildassembler.exe}" workingdir="${sandcastle.workingdir}" >
+           <arg value="manifest.xml" />
+           <arg value="/config:Sandcastle.config" />
+        </exec>
+        
+        <!-- Create html Help project -->
+        <exec program="${sandcastle.xsltransform.exe}" workingdir="${sandcastle.workingdir}">
+           <arg value="/xsl:&quot;${sandcastle.reflectiontochmproject.xsl}&quot;" />
+           <arg value="reflection.xml" />
+           <arg value="/out:&quot;${sandcastle.output.dir}\test.hhp&quot;" />
+        </exec>
+        <!-- Create html Help project Table Of Contents -->
+        <exec program="${sandcastle.xsltransform.exe}" workingdir="${sandcastle.workingdir}" >
+           <arg value="/xsl:&quot;${sandcastle.reflectiontochmcontents.xsl}&quot;" />
+           <arg value="reflection.xml" />
+           <arg value="/arg:html=Output\html" />
+           <arg value="/out:&quot;${sandcastle.output.dir}\test.hhc&quot;" />
+        </exec>
+        <!-- Create html Help project Index -->
+        <exec program="${sandcastle.xsltransform.exe}" workingdir="${sandcastle.workingdir}" >
+           <arg value="/xsl:&quot;${sandcastle.reflectiontochmindex.xsl}&quot;" />
+           <arg value="reflection.xml" />
+           <arg value="/out:&quot;${sandcastle.output.dir}\test.hhk&quot;" />
+        </exec>
+
+        <!-- Generate CHM file -->
+        <exec program="${hhc.exe}" 
+              commandline="test.hhp" 
+              workingdir="${sandcastle.output.dir}" 
+              failonerror="false"/>
     </target>
 
     <target name="update-version-info">
