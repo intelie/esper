@@ -6,9 +6,9 @@ import java.util.Properties;
 
 public class ConfigurationAdapterLoader
 {
+    private String loaderName;
     private String className;
     private Properties configProperties;
-    private Element configElement;
 
     /**
      * Ctor.
@@ -37,13 +37,14 @@ public class ConfigurationAdapterLoader
         this.configProperties = configProperties;
     }
 
-    public Element getConfigElement()
+
+    public String getLoaderName()
     {
-        return configElement;
+        return loaderName;
     }
 
-    public void setConfigElement(Element configElement)
+    public void setLoaderName(String loaderName)
     {
-        this.configElement = configElement;
+        this.loaderName = loaderName;
     }
 }

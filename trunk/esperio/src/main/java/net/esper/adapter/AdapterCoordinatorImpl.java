@@ -22,7 +22,7 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 {
 	private static final Log log = LogFactory.getLog(AdapterCoordinatorImpl.class);
 
-	private final Map<SendableEvent, CoordinatedAdapter> eventsFromAdapters = new HashMap<SendableEvent, CoordinatedAdapter>();
+    private final Map<SendableEvent, CoordinatedAdapter> eventsFromAdapters = new HashMap<SendableEvent, CoordinatedAdapter>();
 	private final Set<CoordinatedAdapter> emptyAdapters = new HashSet<CoordinatedAdapter>();
 	private final boolean usingEngineThread;
 	private final ScheduleBucket scheduleBucket;

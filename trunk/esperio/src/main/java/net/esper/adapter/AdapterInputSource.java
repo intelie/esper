@@ -88,8 +88,12 @@ public class AdapterInputSource
 		this.classpathResource = null;
 		this.reader = null;
 	}
-	
-	public AdapterInputSource(Reader reader)
+
+    /**
+     * Ctor.
+     * @param reader is any reader for reading a file or string
+     */
+    public AdapterInputSource(Reader reader)
 	{
 		if(reader == null)
 		{

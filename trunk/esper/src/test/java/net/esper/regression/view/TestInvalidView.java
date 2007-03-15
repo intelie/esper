@@ -66,7 +66,7 @@ public class TestInvalidView extends TestCase
 
         // invalid property in select
         exceptionText = getStatementExceptionView("select a[2].m('a') from " + EVENT_ALLTYPES + ".win:length(1)");
-        assertEquals("Error starting view: Property named 'a[2].m('a')' is not valid in any stream [select a[2].m('a') from net.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
+        assertEquals("Error starting view: Failed to resolve a[2].m('a') as either an event property or as a static method invocation [select a[2].m('a') from net.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
 
         // select clause uses same "as" name twice
         exceptionText = getStatementExceptionView("select 2 as m, 2 as m from " + EVENT_ALLTYPES + ".win:length(1)");

@@ -288,19 +288,12 @@ public class Configuration {
         return adapterLoaders;
     }
 
-    public void addAdapterLoader(String className, Properties configuration)
+    public void addAdapterLoader(String loaderName, String className, Properties configuration)
     {
         ConfigurationAdapterLoader adapterLoader = new ConfigurationAdapterLoader();
+        adapterLoader.setLoaderName(loaderName);
         adapterLoader.setClassName(className);
         adapterLoader.setConfigProperties(configuration);
-        adapterLoaders.add(adapterLoader);
-    }
-
-    public void addAdapterLoader(String className, Element configuration)
-    {
-        ConfigurationAdapterLoader adapterLoader = new ConfigurationAdapterLoader();
-        adapterLoader.setClassName(className);
-        adapterLoader.setConfigElement(configuration);
         adapterLoaders.add(adapterLoader);
     }
 

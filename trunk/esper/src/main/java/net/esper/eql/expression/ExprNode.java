@@ -180,6 +180,10 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
 
         // Parse the mapped property format into a class name, method and single string parameter
         MappedPropertyParseResult parse = parseMappedProperty(mappedProperty.toString());
+        if (parse == null)
+        {
+            throw propertyException;
+        }
         ExprNode result = new ExprStaticMethodNode(parse.getClassName(), parse.getMethodName());
         result.addChildNode(new ExprConstantNode(parse.getArgString()));
 

@@ -197,18 +197,16 @@
 	<xs:element name="adapter-loader">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="init-args" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="init-arg" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="class-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="init-args">
+	<xs:element name="init-arg">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:any namespace="##targetNamespace" processContents="skip" minOccurs="0" maxOccurs="unbounded" />
-			   <xs:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded" />			
-			 </xs:sequence>
-			<xs:anyAttribute/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

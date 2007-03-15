@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
+import javax.swing.text.ElementIterator;
 import java.util.*;
 import java.io.*;
 
@@ -331,12 +332,21 @@ class ConfigurationParser {
         NodeList nodes = parentElement.getElementsByTagName("adapter-loader");
         for (int i = 0; i < nodes.getLength(); i++)
         {
+            String loaderName = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
             String className = nodes.item(i).getAttributes().getNamedItem("class-name").getTextContent();
-            Pair<Element, Properties> config = null; //configuration.getAdapterLoaderConfig(nodes.item(i));
-            ConfigurationAdapterLoader adapter = new ConfigurationAdapterLoader();
-            adapter.setClassName(className);
-            adapter.setConfigElement(config.getFirst());
-            adapter.setConfigProperties(config.getSecond());
+            Properties properties = new Properties();
+            ElementIterator nodeIterator = new ElementIterator(nodes.item(i).getChildNodes());
+            while (nodeIterator.hasNext())
+            {
+                Element subElement = nodeIterator.next();
+                if (subElement.getNodeName().equals("init-arg"))
+                {
+                    String name = subElement.getAttributes().getNamedItem("name").getTextContent();
+                    String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+                    properties.put(name, value);
+                }
+            }
+            configuration.addAdapterLoader(loaderName, className, properties);
         }
     }
 

@@ -5,8 +5,23 @@ package net.esper.adapter;
  */
 public enum AdapterState
 {
-	OPENED,
-	STARTED,
-	PAUSED,
-	DESTROYED;
+    /**
+     * Opened state.
+     */
+    OPENED,
+
+    /**
+     * Started state.
+     */
+    STARTED,
+
+    /**
+     * Paused state.
+     */
+    PAUSED,
+
+    /**
+     * Destroyed state.
+     */
+    DESTROYED;
 }

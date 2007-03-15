@@ -1,6 +1,3 @@
-/**
- * 
- */
 package net.esper.adapter;
 
 import net.esper.client.EPException;

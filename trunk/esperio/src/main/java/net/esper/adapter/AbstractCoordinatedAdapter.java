@@ -19,15 +19,27 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A skeleton implementation of the ReadableAdapter interface.
+ * A skeleton implementation for coordinated adapter reading, for adapters that
+ * can do timestamp-coordinated input.
  */
 public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 {
 	private static final Log log = LogFactory.getLog(AbstractCoordinatedAdapter.class);
 
-	protected final AdapterStateManager stateManager = new AdapterStateManager();
-	protected final SortedSet<SendableEvent> eventsToSend = new TreeSet<SendableEvent>(new SendableEventComparator());
-	protected ScheduleSlot scheduleSlot;
+    /**
+     * Statement management.
+     */
+    protected final AdapterStateManager stateManager = new AdapterStateManager();
+
+    /**
+     * Sorted events to be sent.
+     */
+    protected final SortedSet<SendableEvent> eventsToSend = new TreeSet<SendableEvent>(new SendableEventComparator());
+
+    /**
+     * Slot for scheduling.
+     */
+    protected ScheduleSlot scheduleSlot;
 
 	private EPRuntime runtime;
 	private SchedulingService schedulingService;

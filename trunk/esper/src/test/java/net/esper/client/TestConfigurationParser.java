@@ -121,6 +121,15 @@ public class TestConfigurationParser extends TestCase
         List<ConfigurationAdapterLoader> adapters = config.getAdapterLoaders();
         assertEquals(2, adapters.size());
         ConfigurationAdapterLoader adapterOne = adapters.get(0);
-        assertEquals("net.esper.support.adapter.SupportLoaderOne", adapterOne.getClassName());        
+        assertEquals("Loader1", adapterOne.getLoaderName());
+        assertEquals("net.esper.support.adapter.SupportLoaderOne", adapterOne.getClassName());
+        assertEquals(2, adapterOne.getConfigProperties().size());
+        assertEquals("val1", adapterOne.getConfigProperties().get("name1"));
+        assertEquals("val2", adapterOne.getConfigProperties().get("name2"));
+
+        ConfigurationAdapterLoader adapterTwo = adapters.get(1);
+        assertEquals("Loader2", adapterTwo.getLoaderName());
+        assertEquals("net.esper.support.adapter.SupportLoaderTwo", adapterTwo.getClassName());
+        assertEquals(0, adapterTwo.getConfigProperties().size());
     }
 }

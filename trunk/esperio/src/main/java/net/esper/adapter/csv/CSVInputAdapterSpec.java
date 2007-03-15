@@ -64,12 +64,12 @@ public class CSVInputAdapterSpec
 	{
 		this.propertyTypes = propertyTypes;
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see net.esper.adapter.AdapterSpec#setUsingEngineThread(boolean)
-	 */
-	public void setUsingEngineThread(boolean usingEngineThread)
+
+    /**
+     * Set to true to use the engine timer thread for the work, or false to use the current thread.
+     * @param usingEngineThread true for timer thread
+     */
+    public void setUsingEngineThread(boolean usingEngineThread)
 	{
 		this.usingEngineThread = usingEngineThread;
 	}

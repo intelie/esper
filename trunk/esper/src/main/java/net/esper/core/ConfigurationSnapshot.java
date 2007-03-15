@@ -18,6 +18,7 @@ public class ConfigurationSnapshot
     private Map<String, ConfigurationDBRef> databaseRefs = new HashMap<String, ConfigurationDBRef>();
     private String epServicesContextFactoryClassName;
     private List<ConfigurationPlugInView> plugInViews = new LinkedList<ConfigurationPlugInView>();
+    private List<ConfigurationAdapterLoader> adapterLoaders = new LinkedList<ConfigurationAdapterLoader>();
 
     /**
      * Ctor.
@@ -36,6 +37,7 @@ public class ConfigurationSnapshot
         databaseRefs.putAll(configuration.getDatabaseReferences());
         epServicesContextFactoryClassName = configuration.getEPServicesContextFactoryClassName();
         plugInViews.addAll(configuration.getPlugInViews());
+        adapterLoaders.addAll(configuration.getAdapterLoaders());
     }
 
     /**
@@ -108,6 +110,11 @@ public class ConfigurationSnapshot
     public List<ConfigurationPlugInView> getPlugInViews()
     {
         return plugInViews;
+    }
+
+    public List<ConfigurationAdapterLoader> getAdapterLoaders()
+    {
+        return adapterLoaders;
     }
 }
 
