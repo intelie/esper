@@ -1,0 +1,285 @@
+<chapter id="extension">
+
+    <title>Extension and Plug-in</title>
+
+    <sect1 id="ext-intro" revision="1">
+        <title>Overview</title>
+        
+        <para>
+			Esper can currently be extended by these means:
+        </para>
+        
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					User-defined functions - these can be used anywhere where expressions are allowed, please see <xref linkend="eql-user-defined"/>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Custom-developed Plug-in Views
+				</para>
+			</listitem>
+		</itemizedlist>
+    </sect1>
+    
+    <sect1 id="custom-views" revision="1">
+        <title>Custom View Implementation</title>
+        
+        <para>
+			Views in Esper are used to derive information from an event stream, and to represent data windows onto an event stream. This chapter describes how to plug-in a new, custom view. 
+        </para>
+        
+        <para>
+			The following steps are required to develop and use a custom view with Esper. 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement a view factory class. View factories are classes that accept and check view parameters and instantiate the appropriate view class.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Implement a view class. A view class commonly represents a data window or derives new information from a stream.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Configure the view factory class supplying a view namespace and name in the engine configuration file.
+				</para>
+			</listitem>
+		</orderedlist>
+
+        <para>
+			The example view factory and view class that are used in this chapter can be found in the package <literal>net.esper.regression.client</literal> by the name <literal>MyTrendSpotterViewFactory</literal> and <literal>MyTrendSpotterView</literal>.
+        </para>
+
+        <para>
+			Views can make use of the following engine services available via <literal>StatementServiceContext</literal>:
+        </para>
+        
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					The <literal>SchedulingService</literal> interface allows views to schedule timer callbacks to a view
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The <literal>EventAdapterService</literal> interface allows views to create new event types and event instances of a given type. 
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The <literal>StatementStopService</literal> interface allows view to register a callback that the engine invokes to indicate that the view's statement has been stopped
+				</para>
+			</listitem>
+		</itemizedlist>
+
+        <para>
+			Note that custom views may use engine services and APIs that can be subject to change between major releases. The engine services discussed above and view APIs are considered part of the engine internal public API and are stable. Any changes to such APIs are disclosed through the release change logs and history. Please also consider contributing your custom view to the Esper project team by submitting the view code through the mailing list or via a JIRA issue.
+        </para>
+
+		<sect2 id="custom-views-viewfactory" revision="1">
+			<title>Implementing a View Factory</title>
+			
+			<para>
+				A view factory class is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Accept zero, one or more view parameters. Validate and parse the parameters as required.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Validate that the parameterized view is compatible with its parent view. For example, validate that field names are valid in the event type of the parent view.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Instantiate the actual view class.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Provide information about the event type of events posted by the view.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				View factory classes simply subclass <literal>net.esper.view.ViewFactorySupport</literal>:
+			</para>
+			<programlisting><![CDATA[public class MyTrendSpotterViewFactory extends ViewFactorySupport { ...]]></programlisting>
+
+			<para>
+				Your view factory class must implement the <literal>setViewParameters</literal> method to accept and parse view parameters. The next code snippet shows an implementation of this method. The code obtains a single field name
+				parameter from the parameter list passed to the method:
+			</para>
+			<programlisting><![CDATA[public class MyTrendSpotterViewFactory extends ViewFactorySupport {
+  private String fieldName;
+  private EventType eventType;
+
+  public void setViewParameters(ViewFactoryContext viewFactoryContext, 
+                          List<Object> viewParameters) throws ViewParameterException
+  {
+    String errorMessage = "'Trend spotter' view require a single field name as a parameter";
+    if (viewParameters.size() != 1) {
+      throw new ViewParameterException(errorMessage);
+    }
+
+    if (!(viewParameters.get(0) instanceof String)) {
+      throw new ViewParameterException(errorMessage);
+    }
+
+    fieldName = (String) viewParameters.get(0);
+  }
+  ...]]></programlisting>
+    
+		<para>
+			After the engine supplied view parameters to the factory, the engine will ask the view to attach to its parent view and validate any field name parameters against the parent view's event type. If the view will be generating events of a different type then the events generated by the parent view, then the view factory can create the new event type in this method:
+		</para>
+
+		<programlisting><![CDATA[public void attach(EventType parentEventType, 
+		StatementServiceContext statementServiceContext, 
+		ViewFactory optionalParentFactory, 
+		List<ViewFactory> parentViewFactories) 
+		    throws ViewAttachException {
+  String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldName);
+  if (result != null) {
+    throw new ViewAttachException(result);
+  }
+
+  // create new event type
+  Map<String, Class> eventTypeMap = new HashMap<String, Class>();
+  eventTypeMap.put(PROPERTY_NAME, Long.class);
+  eventType = statementServiceContext.getEventAdapterService().
+                         createAnonymousMapType(eventTypeMap);
+}]]></programlisting>
+
+		<para>
+			Finally, the engine asks the view factory to create a view instance:
+		</para>
+
+		<programlisting><![CDATA[public View makeView(StatementServiceContext statementServiceContext) {
+  return new MyTrendSpotterView(statementServiceContext, fieldName);
+}]]></programlisting>
+		</sect2>
+		
+		<sect2 id="custom-views-view" revision="1">
+			<title>Implementing a View</title>
+			
+			<para>
+				A view class is responsible for:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						The <literal>setParent</literal> method informs the view of the parent view's event type
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The <literal>update</literal> method receives insert streams and remove stream events from its parent view
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The <literal>iterator</literal> method supplies an (optional) iterator to allow an application to pull or request results from an <literal>EPStatement</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The <literal>cloneView</literal> method must make a configured copy of the view to enable the view to work in a grouping context together with a <literal>std:groupby</literal> parent view
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				View classes simply subclass <literal>net.esper.view.ViewSupport</literal>:
+			</para>
+			<programlisting><![CDATA[public class MyTrendSpotterView extends ViewSupport { ...]]></programlisting>
+
+			<para>
+				The view class must implement the <literal>setParent(Viewable parent)</literal> method. This is an opportunity for the view to initialize and obtain a fast event property getter for later use to obtain event property values. The next code snippet shows an implementation of this method:
+			</para>
+			<programlisting><![CDATA[public void setParent(Viewable parent) {
+  super.setParent(parent);
+  if (parent != null)  {
+    fieldGetter = parent.getEventType().getGetter(fieldName);
+  }
+}
+]]></programlisting>
+
+			<para>
+				Your <literal>update</literal> method will be processing incoming (insert stream) and outgoing (remove stream) events, as well as providing incoming and outgoing events to child views. The convention required of your update method implementation is that the view releases any insert stream events which the view generates as semantically-equal remove stream events at a later time. A sample <literal>update</literal> method implementation that computes a number of events in an upward trend is shown below:
+			</para>
+			<programlisting><![CDATA[public final void update(EventBean[] newData, EventBean[] oldData) {
+  EventBean oldDataPost = populateMap(trendcount);
+
+  // add data points
+  if (newData != null) {
+    for (int i = 0; i < newData.length; i++) {
+      double dataPoint = ((Number) fieldGetter.get(newData[i])).doubleValue();
+
+      if (lastDataPoint == null) {
+        trendcount = 1L;
+      }
+      else if (lastDataPoint < dataPoint) {
+        trendcount++;
+      }
+      else if (lastDataPoint > dataPoint) {
+        trendcount = 0L;
+      }
+      lastDataPoint = dataPoint;
+    }
+  }
+
+  if (this.hasViews())	{
+    EventBean newDataPost = populateMap(trendcount);
+    updateChildren(new EventBean[] {newDataPost}, new EventBean[] {oldDataPost});
+  }
+}]]></programlisting>
+
+			<para>
+				This <literal>update</literal> method adheres to the view convention and posts prior data as an old event. This is a required behavior that views must implement to prevent memory leaks.
+			</para>
+
+			<para>
+				Please refer to the sample views for a code sample on how to implement <literal>iterator</literal> and <literal>cloneView</literal> methods.
+			</para>
+
+		</sect2>
+		
+		<sect2 id="custom-views-config" revision="1">
+			<title>Configuring View Namespace and Name</title>
+			
+			<para>
+				The view factory class name as well as the view namespace and name for the new view must be added to the engine configuration via the configuration API or using the XML configuration file. The configuration shown below is XML however the same options are available through the configuration API:
+			</para>
+		
+			<programlisting><![CDATA[<esper-configuration
+  <plugin-view namespace="custom" name="trendspotter" 
+      factory-class="net.esper.regression.view.MyTrendSpotterViewFactory" /> 
+</esper-configuration>]]></programlisting>
+
+			<para>
+				The new view is now ready to use in a statement:
+			</para>		
+			<programlisting><![CDATA[select * from StockTick.custom:trendspotter('price')]]></programlisting>
+
+			<para>
+				Note that the view must implement the <literal>copyView</literal> method to enable the view to work in a grouping context as shown in the next statement:
+			</para>		
+			<programlisting><![CDATA[select * from StockTick.std:groupby('symbol').custom:trendspotter('price')]]></programlisting>
+
+		</sect2>
+
+    </sect1>
+
+</chapter>
+
