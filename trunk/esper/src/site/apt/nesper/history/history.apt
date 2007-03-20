@@ -22,11 +22,15 @@ Version 1.3.0 BETA - Release Candidate
     
 * Major changes
 
-    * TODO
+	  * Conversion of Esper to the CLR.
+
+    * Most of the method names have had their canonization changed to reflect .NET coding conventions.
+    
+    * Database support has been dropped in this release until we can address positional parameters in ADO.NET.
+    
+    * Many of the interfaces used in Esper have been changed to delegates in NEsper.
     	
 * Minor changes	
     
-    * TODO
-
-    * TODO
+    * None
 

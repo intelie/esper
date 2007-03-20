@@ -1,4 +1,34 @@
 Building NEsper
 ~~~~~~~~~~~~~~
 
-  TODO
+  You do not need to build NEsper to run the examples. Please follow the instructions in the readme file in the "examples/etc" folder
+  to run the examples.
+
+  Presently, NEsper can be built with NAnt, MSBuild, or any IDE that can process Visual Studio 2005 Solution Files.
+  The NEsper engine can be built and unit tested via the below commands.
+             
+  Once you unpack Esper then open a command window and change directory into the Esper top directory where the Maven project model file "pom.xml" 
+  is located. The file is in the directory "esper/esper".
+  
+  If you have a filewall, you will need to change the proxy entry in Maven's setting.xml under your Maven installation directory. 
+  Sometimes Maven appears to have problems downloading repository library files, in that case please give the build a second try.
+  
+  Building NEsper with NAnt
+
+----------------------------------------
+cd Nesper
+nant
+----------------------------------------	
+  
+  Building NEsper with MSBuild
+
+----------------------------------------
+cd Nesper/Nesper
+MSBuild Nesper.sln
+----------------------------------------	
+
+  NEsper tests are a contained in the Visual Studio Solution and are automatically built when
+  the solution is built with MSBuild, Visual Studio, or SharpDevelop.
+ 
+  NEsper examples are a contained in the Visual Studio Solution and are automatically built when
+  the solution is built with MSBuild, Visual Studio, or SharpDevelop.
