@@ -1,25 +1,25 @@
 <?xml version="1.0" ?>
-<project name="NEsper" default="compile-all" xmlnds="http://tempuri.org/nant-vs.xsd">
+<project name="NEsper" default="NEsperDev" xmlnds="http://tempuri.org/nant-vs.xsd">
     <!-- Global project settings -->
-    <property name="nesper.basedir" location="." />
+    <property name="project.basedir" value="${directory::get-current-directory()}" />
+    <property name="project.builddir" value="${project.basedir}/build" />    
     <property name="project.build.config" value="debug" />
-    <property name="project.build.package" value="false" />
 
-    <!-- Directories -->
+    <!-- Sandcastle Directories -->
     <property name="sandcastle.dir"
               value="C:\Program Files\Sandcastle" />
     <property name="sandcastle.workingdir" 
-              value="${nesper.basedir}\SandcastleWorkingDir" />
+              value="${project.basedir}\SandcastleWorkingDir" />
     <property name="sandcastle.output.dir" 
               value="${sandcastle.workingdir}\Output" />
-    <!-- Executables -->
+    <!-- Sandcastle Executables -->
     <property name="sandcastle.mrefbuilder.exe" 
               value="${sandcastle.dir}\productiontools\mrefbuilder.exe" />
     <property name="sandcastle.buildassembler.exe" 
               value="${sandcastle.dir}\productiontools\buildassembler.exe" />
     <property name="sandcastle.xsltransform.exe" 
               value="${sandcastle.dir}\productiontools\xsltransform.exe" />
-    <!-- Transformations -->
+    <!-- Sandcastle Transformations -->
     <property name="sandcastle.addoverloads.xsl" 
               value="${sandcastle.dir}\ProductionTransforms\AddOverloads.xsl" />
     <property name="sandcastle.addguidfilenames.xsl" 
@@ -38,513 +38,50 @@
     <property name="hhc.exe" overwrite="false" 
               value="${hhc.dir}\hhc.exe" />
 
-    <!-- Include nesper helpers -->
-    <include buildfile="${nesper.basedir}/NEsper.include" />
+		<mkdir dir="${project.builddir}" />
+ 		<record name="${project.builddir}/BuildLog.txt" level="Info" action="Start"/>
 
-    <!-- Targets that should always be executed -->
-    <call target="set-build-configuration" />
-    <call target="set-framework-configuration" />
-    <!-- Targets that check settings -->
-    <target name="check-package-version">
-        <fail 
-            message="A package version has not been specified." 
-            if="${not property::exists('package.version')}" />
-    </target>
-    <target name="check-package-dir">
-        <property name="package.dir" value="build/package" overwrite="false" />
-        <mkdir dir="${package.dir}" />
-    </target>
-    <target name="check-current-package-dir">
-        <fail 
-            message="The current package directory has not been specified."
-            if="${not property::exists('current.package.dir')}" />
-        <mkdir dir="${current.package.dir}" />
-    </target>
-    <target name="check-current-package-zipfile">
-        <fail 
-            message="The current package zipfile has not been specified."
-            if="${not property::exists('current.package.zipfile')}" />
-    </target>
+		<target name="NEsperDev">
+      <property name="project.build.config" value="Debug" />
+			<call target="BuildSolution"/>
+	    <property name="project.build.config" value="Release" />
+			<call target="BuildSolution"/>
+  		<call target="CoreNUnit"/>		
+			<record name="${project.builddir}/Buildlog.txt" action="Close"/>
+		</target>
 
-    <target name="check-htmlhelp-compiler">
-        <if test="${not property::exists('htmlhelp.compiler')}">
-            <readregistry
-                property="htmlhelp.workshop.installroot"
-                key="SOFTWARE\Microsoft\HTML Help Workshop\InstallDir"
-                hive="CurrentUser"
-                failonerror="false" />
-            <if test="${property::exists('htmlhelp.workshop.installroot')}">
-                <property 
-                    name="htmlhelp.compiler"
-                    value="${htmlhelp.workshop.installroot}/hhc.exe" />
-            </if>
-        </if>
-        <if test="${not property::exists('htmlhelp.compiler')}">
-            <sysinfo />
-            <property 
-                name="htmlhelp.compiler"
-                value="${sys.os.folder.programfiles}/HTML Help Worshop/hhc.exe" />
-        </if>
-    </target>
+		<!--=========================================BUILD SOLUTION===========================================-->
+		<target name="BuildSolution">
+		 <echo message = "Start building the solution in ${project.build.config} mode ..." />
+		
+		 <msbuild project="${project.basedir}/NEsper/NEsper.sln">
+		   <arg value="/property:Configuration=${project.build.config}" />
+		   <arg value="/t:Rebuild" />
+		 </msbuild>
+		</target>
 
-    <target name="check-sandcastle">
-        <if test="${not property::exists('sandcastle')}">
-            <readregistry
-                property="htmlhelp.workshop.installroot"
-                key="SOFTWARE\Microsoft\HTML Help Workshop\InstallDir"
-                hive="CurrentUser"
-                failonerror="false" />
-            <if test="${property::exists('htmlhelp.workshop.installroot')}">
-                <property 
-                    name="htmlhelp.compiler"
-                    value="${htmlhelp.workshop.installroot}/hhc.exe" />
-            </if>
-        </if>
-        <if test="${not property::exists('htmlhelp.compiler')}">
-            <sysinfo />
-            <property 
-                name="htmlhelp.compiler"
-                value="${sys.os.folder.programfiles}/HTML Help Worshop/hhc.exe" />
-        </if>
-    </target>
-    
-    <!-- Target for cleaning up the current package directory -->
-    <target name="clean-current-package-dir" depends="check-current-package-dir" description="Cleans the current package directory">
-        <echo message="Cleaning the ${current.package.dir} package directory." />
-        <delete dir="${current.package.dir}" if="${directory::exists(current.package.dir)}" />
-        <mkdir dir="${current.package.dir}" />
-    </target>
-    
-    <!-- Displays configuration info, usefull for working out why nesper doesn't build -->
-    <target name="display-setup" depends="check-htmlhelp-compiler">
-        <!-- .NET Framework 2.0 -->
-        <if test="${framework::exists('net-2.0')}">
-            <property name="nant.settings.currentframework" value="net-2.0" />
-            <call target="display-target-framework" />
-        </if>
-        <if test="${not framework::exists('net-2.0')}">
-            <echo message=".NET Framework 2.0 runtime is not available." />
-        </if>
-        <!-- Mono 2.0 -->
-        <if test="${framework::exists('mono-2.0')}">
-            <property name="nant.settings.currentframework" value="mono-2.0" />
-            <call target="display-target-framework" />
-        </if>
-        <if test="${not framework::exists('mono-2.0')}">
-            <echo message="Mono 2.0 runtime is not available." />
-        </if>
-        <!-- HTML Help Compiler -->
-        <echo message="htmlhelp.compiler: ${htmlhelp.compiler}" />
-    </target>
-    
-    <target name="display-target-framework">
-        <echo message="" />
-        <echo message="----------------------------------------------------------" />
-        <echo message=" ${nant.settings.currentframework.description}" />
-        <echo message="----------------------------------------------------------" />
-        <echo message="" />
-        <echo message="framework : ${framework::get-target-framework()}" />
-        <echo message="description : ${framework::get-description(framework::get-target-framework())}" />
-        <if test="${framework::sdk-exists(framework::get-target-framework())}">
-            <echo message="sdk directory : ${framework::get-sdk-directory(framework::get-target-framework())}" />
-        </if>
-        <if test="${not framework::sdk-exists(framework::get-target-framework())}">
-            <echo message="sdk directory : &lt;not configured/available&gt;" />
-        </if>
-        <echo message="framework directory : ${framework::get-framework-directory(framework::get-target-framework())}" />
-        <echo message="assembly directory : ${framework::get-assembly-directory(framework::get-target-framework())}" />
-        <echo message="" />
-    </target>
-    
-    <!-- Target for setting the package configuration -->
-    <target name="set-package-configuration" depends="check-package-dir, check-package-version">
-        <property name="current.package.name" value="${nant.project.name}-${package.version}" />
-        <property name="current.package.dir" value="${package.dir}/${current.package.name}" />
-        <property name="nesper.basedir" value="${current.package.dir}" />
-        <property name="current.package.zipfile" value="${project::get-name()}-${package.version}.zip" />
-        <property name="bin.dir" value="${current.package.dir}/bin" />
-        <property name="doc.dir" value="${current.package.dir}/doc" />
-        <property name="sdkdoc.dir" value="${doc.dir}/sdk" />
-        <delete dir="${current.package.dir}" if="${directory::exists(current.package.dir)}" />
-        <mkdir dir="${current.package.dir}" />
-    </target>
-    
-    <!-- Target for compiling all build configurations for all runtime configurations -->
-    <target name="compile-all" description="Compile all build configurations for all runtime configurations">
-        <echo message="Compiling all build configurations for all runtime configurations." />
-        <call target="set-debug-build-configuration" />
-        <call target="compile-build" />
-        <call target="set-release-build-configuration" />
-        <call target="compile-build" />
-    </target>
-    
-    <!-- Target for compiling all build configurations for the current runtime configurations -->
-    <target name="compile-runtime" description="Compile all build configurations for the current target framework">
-        <echo message="Compiling all build configurations for ${framework::get-description(framework::get-target-framework())}." />
-        <call target="set-debug-build-configuration" />
-        <!-- make sure that the runtime properties that rely on build configuration information are refreshed -->
-        <call target="set-runtime-configuration" />
-        <call target="compile-${framework::get-target-framework()}" />
-        <call target="set-release-build-configuration" />
-        <!-- make sure that the runtime properties that rely on build configuration information are refreshed -->
-        <call target="set-runtime-configuration" />
-        <call target="compile-${framework::get-target-framework()}" />
-    </target>
-    
-    <!-- Target for compiling all runtime configurations in the current build configuration -->
-    <target name="compile-build" description="Compile current build configurations for all runtime configurations">
-        <echo message="Compiling all framework versions for the ${current.build.config} build configuration." />
-        <if test="${framework::exists('net-2.0')}">
-            <call target="compile-net-2.0" />
-        </if>
-        <if test="${not framework::exists('net-2.0')}">
-            <if test="${property::exists('project.build.package') and project.build.package}">
-                <fail message="The .NET Framework 2.0 is not available." />
-            </if>
-            <if test="${not(property::exists('project.build.package') and project.build.package)}">
-                <echo message="The .NET Framework 2.0 is not available. Build skipped." />
-            </if>
-        </if> 
-        <if test="${framework::exists('mono-2.0')}">
-            <call target="compile-mono-2.0" />
-        </if>
-        <if test="${not framework::exists('mono-2.0')}">
-            <if test="${property::exists('project.build.package') and project.build.package}">
-                <fail message="Mono 2.0 is not available." />
-            </if>
-            <if test="${not(property::exists('project.build.package') and project.build.package)}">
-                <echo message="Mono 2.0 is not available. Build skipped." />
-            </if>
-        </if>
-    </target>
-    
-    <target name="compile" description="Builds the current build configuration for the current target framework." depends="check-current-build-config">
-        <call target="compile-${framework::get-target-framework()}" />
-    </target>
-    
-    <target name="compile-net-2.0" description="Builds .NET Framework 2.0 version" depends="set-net-2.0-runtime-configuration, check-nesper-basedir, clean-current-bin-dir">
-        <!-- initialize the temp.build.skip property to false -->
-        <property name="temp.build.skip" value="false" />
-        <if test="${current.build.config.release}">
-            <!-- check if the nesper key file is available -->
-            <if test="${not file::exists(nesper.basedir + '/NEsper.snk')}">
-                <if test="${property::exists('project.build.package') and project.build.package}">
-                    <fail message="Key file not found." />
-                </if>
-                <if test="${not(property::exists('project.build.package') and project.build.package)}">
-                    <echo message="Key file not found. You can generate a key file by running 'sn -k NEsper.snk'." />
-                    <echo message="The generated key file should be stored in the nesper base directory." />
-                    <echo message="The release build will be skipped." />
-                    <property name="temp.build.skip" value="true" />
-                </if>
-            </if>
-        </if>
-        <if test="${not temp.build.skip}">
-	    <!-- No support for keyfiles until issues with antlr are resolved -->
-            <!--
-            <csc keyfile="${path::combine(nesper.basedir, 'NEsper.snk')}" nostdlib="true" noconfig="true" warninglevel="0" warnaserror="false" target="library" debug="${current.build.debug}" define="${current.build.defines.csc}" output="${current.bin.dir}/NEsper.dll" doc="${current.bin.dir}/NEsper.xml">
-            -->
+		<target name="CoreNUnit">
+		 <echo message="Starting Core Unit Tests"/>
+		 <nunit2>
+		   <formatter type="Xml" outputdir="${project.builddir}/" extension=".xml" usefile="true" />
+		   <test assemblyname="${project.basedir}/NEsper.Tests/bin/${project.build.config}/NEsper.Tests.dll"
+		            appconfig="${project.basedir}/NEsper.Tests/bin/${project.build.config}/NEsper.Tests.dll.config" />
+		 </nunit2>
+		
+		 <call target="GenerateNUnitReport" />
+		</target>
+		
+		<target name="GenerateNUnitReport">
+		 <echo message="Generating NUnit Report" />
+		 <nunit2report todir="${project.builddir}/">
+		   <fileset>
+		     <includes name="${project.builddir}/NEsper.Tests.dll-results.xml" />
+		   </fileset>
+		 </nunit2report>
+		</target>
 
-            <csc nostdlib="true" noconfig="true" warninglevel="0" warnaserror="false" target="library" debug="${current.build.debug}" define="${current.build.defines.csc}" output="${current.bin.dir}/NEsper.dll" doc="${current.bin.dir}/NEsper.xml">
-                <sources basedir="${nesper.basedir}/NEsper">
-                    <include name="**/*.cs" />
-                </sources>
-                <references>
-                    <include name="mscorlib.dll" />
-                    <include name="System.dll" />
-                    <include name="System.Data.dll" />
-                    <include name="System.Web.dll" />
-                    <include name="System.Xml.dll" />
-                    <include name="System.Configuration.dll" />
-                    <!-- allow for third party assemblies to be referenced by just storing them in the lib/<framework family>/<framework version>/<build configuration> directory -->
-                    <include name="lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/${current.build.config}/*.dll" />
-                    <include name="lib/${current.build.config}/*.dll" />
-                    <include name="lib/*.dll" />
-                </references>
-            </csc>
-        </if>
-    </target>
-    
-    <target name="compile-mono-2.0" description="Builds Mono 2.0 version" depends="set-mono-2.0-runtime-configuration, check-nesper-basedir, clean-current-bin-dir">
-        <!-- initialize the temp.build.skip property to false -->
-        <property name="temp.build.skip" value="false" />
-        <if test="${current.build.config.release}">
-            <!-- check if the nesper key file is available -->
-            <if test="${not file::exists(nesper.basedir + '/NEsper.snk')}">
-                <if test="${property::exists('project.build.package') and project.build.package}">
-                    <fail message="Key file not found." />
-                </if>
-                <if test="${not(property::exists('project.build.package') and project.build.package)}">
-                    <echo message="Key file not found. You can generate a key file by running 'sn -k NEsper.snk'." />
-                    <echo message="The generated key file should be stored in the nesper base directory." />
-                    <echo message="The release build will be skipped." />
-                    <property name="temp.build.skip" value="true" />
-                </if>
-            </if>
-        </if>
-        <if test="${not temp.build.skip}">
-            <csc keyfile="${path::combine(nesper.basedir, 'NEsper.snk')}" nostdlib="false" noconfig="true" warnaserror="false" target="library" debug="${current.build.debug}" define="${current.build.defines.csc}" output="${current.bin.dir}/NEsper.dll" doc="${current.bin.dir}/NEsper.xml">
-                <nowarn>
-                    <!-- workaround for Mono bug #61902 -->
-                    <warning number="0618" />
-                    <!-- warning CS1058: A previous catch clause already catches all exceptions. All non-exceptions thrown will be wrapped in a System.Runtime.CompilerServices.RuntimeWrappedException -->
-                    <warning number="1058" />
-                </nowarn>
-                <sources basedir="${nesper.basedir}/src">
-                    <include name="**/*.cs" />
-                </sources>
-                <references>
-                    <include name="System.dll" />
-                    <include name="System.Data.dll" />
-                    <include name="System.Web.dll" />
-                    <include name="System.Xml.dll" />
-                    <!-- allow for third party assemblies to be referenced by just storing them in the lib/<framework family>/<framework version>/<build configuration> directory -->
-                    <include name="lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/${current.build.config}/*.dll" />
-                </references>
-            </csc>
-        </if>
-    </target>
-
-    <!-- Target for generating docs for all runtime configurations -->
-    <target name="generate-sdkdoc-all" depends="check-current-build-config">
-        <echo message="Generating SDK documentation temporarily disabled." />
-        <!--
-        <echo message="Generating SDK documentation based on the ${current.build.config} build configuration for all runtime configurations." />
-        -->
-        <!-- NAnt doesn't yet come with a version of NDoc that can handle .NET 2.0 assemblies -->
-    </target>
-
-    <!-- Target for generating docs for build configurations -->
-    <target name="generate-sdkdoc" depends="compile, check-htmlhelp-compiler, check-current-sdkdoc-dir, check-current-sdkdoc-debug, clean-current-sdkdoc-dir">
-        <ndoc>
-            <assemblies basedir="${current.bin.dir}">
-                <include name="NEsper.dll" />
-            </assemblies>
-            <documenters>
-                <documenter name="MSDN">
-                    <property name="OutputDirectory" value="${current.sdkdoc.dir}" />
-                    <property name="HtmlHelpName" value="nesper-sdk-${framework::get-target-framework()}" />
-                    <property name="HtmlHelpCompilerFilename" value="${htmlhelp.compiler}" />
-                    <property name="IncludeFavorites" value="true" />
-                    <property name="IncludeHierarchy" value="true" />
-                    <property name="Title" value="nesper SDK Documentation - ${framework::get-description(framework::get-target-framework())}" />
-                    <property name="SplitTOCs" value="false" />
-                    <property name="DefaulTOC" value="" />
-                    <property name="ShowVisualBasic" value="true" />
-                    <property name="OmitObjectTags" value="false" />
-                    <property name="RootPageContainsNamespaces" value="false" />
-                    <property name="SortTOCByNamespace" value="true" />
-                    <property name="ShowMissingSummaries" value="${current.sdkdoc.debug}" />
-                    <property name="ShowMissingRemarks" value="${current.sdkdoc.debug}" />
-                    <property name="ShowMissingParams" value="${current.sdkdoc.debug}" />
-                    <property name="ShowMissingReturns" value="${current.sdkdoc.debug}" />
-                    <property name="ShowMissingValues" value="${current.sdkdoc.debug}" />
-                    <property name="DocumentAttributes" value="false" />
-                    <property name="DocumentedAttributes" value="" />
-                    <property name="DocumentInternals" value="false" />
-                    <property name="DocumentPrivates" value="false" />
-                    <property name="DocumentProtected" value="true" />
-                    <property name="DocumentEmptyNamespaces" value="false" />
-                    <property name="SkipNamespacesWithoutSummaries" value="false" />
-                    <property name="AutoPropertyBackerSummaries" value="false" />
-                    <property name="AutoDocumentConstructors" value="true" />
-                    <property name="GetExternalSummaries" value="true" />
-                    <property name="IncludeAssemblyVersion" value="false" />
-                    <property name="CopyrightText" value="Copyright 2001-2006 The Apache Software Foundation." />
-                    <property name="CopyrightHref" value="http://logging.apache.org/nesper" />
-                </documenter>
-            </documenters>
-        </ndoc>
-        <!-- Remove everything except the help file itself from the current SDK documentation directory -->
-        <delete>
-            <fileset basedir="${current.sdkdoc.dir}">
-                <include name="**/*" />
-                <exclude name="**/*.chm" />
-            </fileset>
-        </delete>
-    </target>
-
-    <target name="package" depends="set-package-configuration" description="Build and Package distribution">
-        <!-- set flag to indicating that this is a package build -->
-        <property name="project.build.package" value="true" />
-        <!-- clean the current package directory -->
-        <call target="clean-current-package-dir" />
-        <!-- copies the examples to the current package directory -->
-        <call target="package-examples" />
-        <!-- copies the sources to the current package directory -->
-        <call target="package-src" />
-        <!-- copies the unit tests sources to the current package directory -->
-        <call target="package-tests-src" />
-        <!-- copies the extenstions to the current package directory -->
-        <call target="package-extensions" />
-        <!-- copies the documentation to the current package directory -->
-        <call target="package-doc" />
-        <!-- copies the release files to the current package directory -->
-        <call target="package-release-files" />
-        <!-- compile all build configurations for all runtime configurations  -->
-        <call target="compile-all" />
-        <!-- compile all examples -->
-        <call target="compile-examples" />
-        <!-- compile all extensions -->
-        <call target="compile-extensions" />
-        <!-- generate the sdk docs using the release build configuration for all runtime configuration -->
-        <call target="set-release-build-configuration" />
-        <call target="generate-sdkdoc-all" />
-        <!-- create the package distribution zipfile -->
-        <call target="create-package-zipfile" />
-    </target>
-
-    <target name="package-examples" depends="check-current-package-dir, check-nesper-basedir">
-        <mkdir dir="${current.package.dir}/examples" />
-        <delete dir="${current.package.dir}/examples" />
-        <copy todir="${current.package.dir}/examples">
-            <fileset basedir="examples">
-                <include name="**/*" />
-                <exclude name="**/bin/**" />
-                <exclude name="**/build/**" />
-                <exclude name="**/doc/**" />
-                <exclude name="**/obj/**" />
-                <exclude name="**/*.csproj.user" />
-                <exclude name="**/*.csdproj.user" />
-                <exclude name="**/*.vbproj.user" />
-                <exclude name="**/*.vbdproj.user" />
-                <exclude name="**/*.suo" />
-                <exclude name="**/*.sln.old" />
-                <!-- file created by mono compiler -->
-                <exclude name="**/gc.log" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="package-src" depends="check-current-package-dir, check-nesper-basedir">
-        <mkdir dir="${current.package.dir}/src" />
-        <delete dir="${current.package.dir}/src" />
-        <copy todir="${current.package.dir}/src">
-            <fileset basedir="src">
-                <include name="**/*" />
-                <exclude name="**/obj/**" />
-                <exclude name="*.csproj.user" />
-                <exclude name="*.suo" />
-                <exclude name="nesper.ndoc" />
-                <exclude name="nesper*.xml" />
-                <exclude name="**/*.sln.old" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="package-tests-src" depends="check-current-package-dir, check-nesper-basedir">
-        <mkdir dir="${current.package.dir}/tests" />
-        <delete dir="${current.package.dir}/tests" />
-        <copy todir="${current.package.dir}/tests/src">
-            <fileset basedir="tests/src">
-                <include name="**/*" />
-                <exclude name="**/bin/**" />
-                <exclude name="**/obj/**" />
-                <exclude name="*.csproj.user" />
-                <exclude name="*.suo" />
-                <exclude name="nesper.ndoc" />
-                <exclude name="nesper*.xml" />
-                <exclude name="**/*.sln.old" />
-            </fileset>
-        </copy>
-        <copy todir="${current.package.dir}/tests/lib">
-            <fileset basedir="tests/lib">
-                <include name="**/*.dll" />
-            </fileset>
-        </copy>
-        <copy todir="${current.package.dir}/tests">
-            <fileset basedir="tests">
-                <include name="**/nant.*" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="package-extensions" depends="check-current-package-dir, check-nesper-basedir">
-        <mkdir dir="${current.package.dir}/extensions" />
-        <delete dir="${current.package.dir}/extensions" />
-        <copy todir="${current.package.dir}/extensions">
-            <fileset basedir="extensions">
-                <include name="**/*" />
-                <exclude name="**/bin/**" />
-                <exclude name="**/build/**" />
-                <exclude name="**/doc/**" />
-                <exclude name="**/obj/**" />
-                <exclude name="**/*.csproj.user" />
-                <exclude name="**/*.vbproj.user" />
-                <exclude name="**/*.suo" />
-                <exclude name="**/*.sln.old" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="package-doc" depends="check-current-package-dir, check-nesper-basedir">
-        <mkdir dir="${current.package.dir}/doc" />
-        <copy todir="${current.package.dir}/doc" includeemptydirs="false">
-            <fileset basedir="doc">
-                <include name="**/*" />
-                <exclude name="**/ndoc.log" />
-            </fileset>
-        </copy>
-        <mkdir dir="${current.package.dir}/xdocs" />
-        <copy todir="${current.package.dir}/xdocs" includeemptydirs="false">
-            <fileset basedir="xdocs">
-                <include name="**/*.xml" />
-                <include name="**/*.vsl" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="package-release-files" depends="check-current-package-dir, check-nesper-basedir">
-        <copy todir="${current.package.dir}">
-            <fileset basedir=".">
-                <!-- <include name="index.html" /> -->
-                <include name="build.cmd" />
-                <include name="ChangeLog.txt" />
-                <include name="nesper.build" />
-                <include name="nesper.include" />
-                <!-- <include name="releasenotes.html" /> -->
-                <include name="LICENSE.txt" />
-                <include name="NOTICE.txt" />
-                <include name="README.txt" />
-                <include name="NEsper.snk" />
-                <include name="NEsper.snk.readme" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="create-package-zipfile" depends="check-current-package-dir, check-current-package-zipfile, check-nesper-basedir">
-        <!-- delete the specified zipfile if it already exists -->
-        <delete>
-            <fileset basedir=".">
-                <include name="${current.package.zipfile}" />
-            </fileset>
-        </delete>
-        <zip zipfile="${current.package.zipfile}" ziplevel="9">
-            <fileset basedir="${current.package.dir}" prefix="${current.package.name}">
-                <include name="**/*" />
-                <!-- do not include the nesper keyfiles -->
-                <exclude name="**/*.snk" />
-                <!-- do not include the built examples -->
-                <exclude name="examples/**/bin/**" />
-                <!-- do not include the docs of examples -->
-                <exclude name="examples/**/doc/**" />
-                <!-- do not include the built extensions -->
-                <exclude name="extensions/**/bin/**" />
-                <!-- do not include the docs of extensions -->
-                <exclude name="extensions/**/doc/**" />
-                <!-- file created by mono compiler -->
-                <exclude name="**/gc.log" />
-                <!-- do not include the nunit binaries -->
-                <exclude name="tests/**/nunit*.dll" />
-                <!-- do not include the Visual Studio .NET 2003 project and solution files -->
-                <exclude name="**/*vs2003*" />
-                <!-- do not include old swp files (there shouldn't be any!) -->
-                <exclude name="**/*.swp" />
-            </fileset>
-        </zip>
-    </target>
-    
-    <target name="generate-sandcastle">
+    <!-- Generate documentation -->
+    <target name="documentation">
         <!-- Create or Cleanup Working Directory -->
         <mkdir dir="${sandcastle.workingdir}" if="${not directory::exists(sandcastle.workingdir)}" />
         <delete>
@@ -636,17 +173,5 @@
               commandline="test.hhp" 
               workingdir="${sandcastle.output.dir}" 
               failonerror="false"/>
-    </target>
-
-    <target name="update-version-info">
-        <nant buildfile="${nesper.basedir}/examples/nant.build" target="update-version-info" inheritall="false" />
-    </target>
-
-    <target name="compile-examples" description="Build all examples">
-        <nant buildfile="${nesper.basedir}/examples/nant.build" target="compile" inheritall="false" />
-    </target>
-
-    <target name="compile-extensions" description="Build all extensions">
-        <nant buildfile="${nesper.basedir}/extensions/nant.build" target="compile" inheritall="false" />
     </target>
 </project>
