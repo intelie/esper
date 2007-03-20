@@ -6,6 +6,8 @@ import net.esper.event.EventBean;
 import java.util.List;
 import java.util.LinkedList;
 
+import junit.framework.Assert;
+
 public class SupportUpdateListener implements UpdateListener
 {
     private List<EventBean[]> newDataList;
@@ -89,4 +91,19 @@ public class SupportUpdateListener implements UpdateListener
     {
         this.lastOldData = lastOldData;
     }
+
+    public EventBean assertOneGetNewAndReset()
+    {
+        Assert.assertTrue(isInvoked);
+
+        Assert.assertEquals(1, newDataList.size());
+        Assert.assertEquals(1, oldDataList.size());
+
+        Assert.assertEquals(1, lastNewData.length);
+        Assert.assertNull(lastOldData);
+
+        EventBean lastNew = lastNewData[0];
+        reset();
+        return lastNew;
+    }    
 }

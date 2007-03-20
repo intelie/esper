@@ -3,6 +3,11 @@ Esper Changelog
 
 Changes in version 1.7
 ----------------------
+* GUI example of RFID tags moving zones in unison
+
+
+Changes in version 1.7
+----------------------
 * Support for free-form filter expressions (User-defined filter functions ESPER-77, Pattern Filter - null value support ESPER-17, ESPER-91)
 * New JMS input and output adapter based on Spring JMS templates (ESPER-4, ESPER-8, ESPER-7)
 * Support for adding new event type aliases and Map and DOM event types during runtime (ESPER-87)
