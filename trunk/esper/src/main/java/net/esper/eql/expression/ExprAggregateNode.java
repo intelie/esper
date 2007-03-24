@@ -54,6 +54,13 @@ public abstract class ExprAggregateNode extends ExprNode
      */
     protected abstract boolean equalsNodeAggregate(ExprAggregateNode node);
 
+    /**
+     * Gives the aggregation node a chance to validate the sub-expression types.
+     * @param streamTypeService is the types per stream
+     * @param methodResolutionService used for resolving method and function names
+     * @return aggregation function use
+     * @throws ExprValidationException when expression validation failed
+     */
     protected abstract AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
         throws ExprValidationException;
 
@@ -71,7 +78,7 @@ public abstract class ExprAggregateNode extends ExprNode
         this.aggregationMethod = validateAggregationChild(streamTypeService, methodResolutionService);
         if (isDistinct)
         {
-            aggregationMethod = methodResolutionService.getDistinctAggregator(aggregationMethod);
+            aggregationMethod = methodResolutionService.makeDistinctAggregator(aggregationMethod);
         }
     }
 

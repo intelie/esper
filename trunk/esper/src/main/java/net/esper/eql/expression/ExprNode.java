@@ -7,9 +7,8 @@
  **************************************************************************************/
 package net.esper.eql.expression;
 
-import net.esper.eql.core.MethodResolutionService;
-import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.core.*;
+import net.esper.eql.agg.AggregationSupport;
 import net.esper.util.MetaDefItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -191,20 +190,56 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         {
             throw propertyException;
         }
-        ExprNode result = new ExprStaticMethodNode(parse.getClassName(), parse.getMethodName());
-        result.addChildNode(new ExprConstantNode(parse.getArgString()));
 
-        // Validate
+        // If there is a class name, assume a static method is possible
+        if (parse.getClassName() != null)
+        {
+            ExprNode result = new ExprStaticMethodNode(parse.getClassName(), parse.getMethodName());
+            result.addChildNode(new ExprConstantNode(parse.getArgString()));
+
+            // Validate
+            try
+            {
+                result.validate(streamTypeService, methodResolutionService, null);
+            }
+            catch(ExprValidationException e)
+            {
+                throw new ExprValidationException("Failed to resolve " + mappedProperty + " as either an event property or as a static method invocation");
+            }
+
+            return result;
+        }
+
+        // There is no class name, try an aggregation function
         try
         {
-            result.validate(streamTypeService, methodResolutionService, null);
+            AggregationSupport aggregation = methodResolutionService.resolveAggregation(parse.getMethodName());
+            ExprNode result = new ExprPlugInAggFunctionNode(false, aggregation, parse.getMethodName());
+            result.addChildNode(new ExprConstantNode(parse.getArgString()));
+
+            // Validate
+            try
+            {
+                result.validate(streamTypeService, methodResolutionService, null);
+            }
+            catch (RuntimeException e)
+            {
+                throw new ExprValidationException("Plug-in aggregation function '" + parse.getMethodName() + "' failed validation: " + e.getMessage());
+            }
+
+            return result;
         }
-        catch(ExprValidationException e)
+        catch (EngineImportUndefinedException e)
         {
-            throw new ExprValidationException("Failed to resolve " + mappedProperty + " as either an event property or as a static method invocation");
+            // Not an aggregation function
+        }
+        catch (EngineImportException e)
+        {
+            throw new IllegalStateException("Error resolving aggregation: " + e.getMessage(), e);
         }
 
-        return result;
+        // absolutly cannot be resolved
+        throw propertyException;
     }
 
     /**
@@ -273,10 +308,11 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
 
         // get method
         String splitDots[] = property.toString().split("[\\.]");
-        if (splitDots.length < 2)
+        if (splitDots.length == 0)
         {
             return null;
         }
+
         String method = splitDots[splitDots.length - 1];
         int indexParan = method.indexOf("(");
         if (indexParan == -1)
@@ -284,6 +320,17 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
             return null;
         }
         method = method.substring(0, indexParan);
+        if (method.length() == 0)
+        {
+            return null;
+        }
+
+        if (splitDots.length == 1)
+        {
+            // no class name
+            return new MappedPropertyParseResult(null, method, argument);
+        }
+
 
         // get class
         StringBuffer clazz = new StringBuffer();
@@ -337,7 +384,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
 
         /**
          * Returns the parse result of the mapped property.
-         * @param className is the class name
+         * @param className is the class name, or null if there isn't one
          * @param methodName is the method name
          * @param argString is the argument
          */

@@ -13,6 +13,7 @@ import net.esper.client.EPStatementException;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportTemperatureBean;
+import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.SupportStaticMethodLib;
 import net.esper.support.util.SupportUpdateListener;
 
@@ -72,6 +73,25 @@ public class TestStaticFunctions extends TestCase
 		assertEquals(Integer.toBinaryString(7), result[0]);
 	}
 	
+    public void testRuntimeAutoImports()
+    {
+        epService = EPServiceProviderManager.getDefaultProvider();
+        String text = "select SupportStaticMethodLib.minusOne(doublePrimitive) from " + SupportBean.class.getName();
+
+        try
+        {
+            epService.getEPAdministrator().createEQL(text);
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error starting view: Could not load class by name 'SupportStaticMethodLib'  [select SupportStaticMethodLib.minusOne(doublePrimitive) from net.esper.support.bean.SupportBean]", ex.getMessage());
+        }
+
+        epService.getEPAdministrator().getConfiguration().addImport(SupportStaticMethodLib.class.getName());
+        epService.getEPAdministrator().createEQL(text);
+    }
+
 	public void testNoParameters()
 	{
 		Long startTime = System.currentTimeMillis();

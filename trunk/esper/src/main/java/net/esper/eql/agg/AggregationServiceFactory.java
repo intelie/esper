@@ -22,6 +22,7 @@ public class AggregationServiceFactory
      * @param hasGroupByClause - indicator on whethere there is group-by required, or group-all
      * @param optionalHavingNode - having node if having-clause was specified, or null if no having-clause given
      * @param sortByNodes - the nodes for the sort-by clause
+     * @param methodResolutionService - is required to resolve aggregation methods
      * @return instance for aggregation handling
      */
     public static AggregationService getService(List<ExprAggregateNode> aggregateExprNodes,

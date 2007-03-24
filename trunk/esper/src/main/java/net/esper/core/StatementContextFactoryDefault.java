@@ -6,6 +6,9 @@ import net.esper.util.ManagedLock;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.MethodResolutionServiceImpl;
 
+/**
+ * Default implementation for making a statement-specific context class.
+ */
 public class StatementContextFactoryDefault implements StatementContextFactory
 {
     public StatementContext makeContext(String statementId,

@@ -178,6 +178,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     /**
      * Loads and initializes adapter loaders.
      * @param configuration is the engine configs
+     * @param services is the engine instance services
      */
     private void loadAdapters(ConfigurationSnapshot configuration, EPServicesContext services)
     {

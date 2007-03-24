@@ -28,7 +28,7 @@ public class ExprMedianNode extends ExprAggregateNode
     public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
     {
         super.validateSingleNumericChild(streamTypeService);
-        return methodResolutionService.getMedianAggregator();
+        return methodResolutionService.makeMedianAggregator();
     }
 
     protected String getAggregationFunctionName()

@@ -24,5 +24,8 @@ public interface AdapterLoader
      */
     public void init(String name, Properties properties, EPServiceProviderSPI epService);
 
+    /**
+     * Destroys adapter loader and adapters loaded.
+     */
     public void destroy();
 }

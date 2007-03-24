@@ -49,6 +49,6 @@ public class NumIntegerSumAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.getSumAggregator(null);
+        return methodResolutionService.makeSumAggregator(null);
     }
 }

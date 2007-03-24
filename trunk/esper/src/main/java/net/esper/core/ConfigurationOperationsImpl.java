@@ -14,6 +14,7 @@ import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterService;
 import net.esper.util.JavaClassHelper;
 import net.esper.eql.core.EngineImportService;
+import net.esper.eql.core.EngineImportException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     /**
      * Ctor.
      * @param eventAdapterService is the event wrapper and type service
+     * @param engineImportService for imported aggregation functions and static functions
      */
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
                                        EngineImportService engineImportService)
@@ -40,7 +42,26 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
     public void addPlugInAggregationFunction(String functionName, String aggregationClassName)
     {
-        // TODO
+        try
+        {
+            engineImportService.addAggregation(functionName, aggregationClassName);
+        }
+        catch (EngineImportException e)
+        {
+            throw new ConfigurationException(e.getMessage(), e);
+        }
+    }
+
+    public void addImport(String importName)
+    {
+        try
+        {
+            engineImportService.addImport(importName);
+        }
+        catch (EngineImportException e)
+        {
+            throw new ConfigurationException(e.getMessage(), e);
+        }
     }
 
     public void addEventTypeAlias(String eventTypeAlias, String javaEventClassName)

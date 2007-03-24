@@ -28,6 +28,7 @@ public final class StatementContext
      * Constructor.
      * @param statementId is the statement is assigned for the statement for which this context exists
      * @param statementName is the statement name
+     * @param expression is the EQL or pattern expression used
      * @param schedulingService implementation for schedule registration
      * @param scheduleBucket is for ordering scheduled callbacks within the view statements
      * @param eventAdapterService service for generating events and handling event types
@@ -35,6 +36,7 @@ public final class StatementContext
      * @param viewResultionService is a service for resolving view namespace and name to a view factory
      * @param extensionServicesContext provide extension points for custom statement resources
      * @param statementStopService for registering a callback invoked when a statement is stopped
+     * @param methodResolutionService is a service for resolving static methods and aggregation functions
      */
     public StatementContext(String statementId,
                                    String statementName,
@@ -142,11 +144,19 @@ public final class StatementContext
         return statementStopService;
     }
 
+    /**
+     * Returns service to look up static and aggregation methods or functions.
+     * @return method resolution
+     */
     public MethodResolutionService getMethodResolutionService()
     {
         return methodResolutionService;
     }
 
+    /**
+     * Returns the statement expression text
+     * @return expression text
+     */
     public String getExpression()
     {
         return expression;

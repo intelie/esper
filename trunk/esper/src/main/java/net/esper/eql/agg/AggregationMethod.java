@@ -44,6 +44,7 @@ public interface AggregationMethod
 
     /**
      * Make a new, initalized aggregation state.
+     * @param methodResolutionService for use in creating new aggregation method instances as a factory
      * @return initialized copy of the aggregator
      */
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService);

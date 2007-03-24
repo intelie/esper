@@ -96,7 +96,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
-        StatementContext statementContext =  services.getStatementServiceContextFactory().makeContext(statementId, statementName, expression, services);
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services);
 
         StatementSpecCompiled compiledSpec = compile(statementSpec, expression, statementContext);
 

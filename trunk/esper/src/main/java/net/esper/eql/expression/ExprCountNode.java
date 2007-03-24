@@ -30,7 +30,7 @@ public class ExprCountNode extends ExprAggregateNode
         // Empty child node list signals count(*), does not ignore nulls
         if (this.getChildNodes().isEmpty())
         {
-            return methodResolutionService.getCountAggregator(false);
+            return methodResolutionService.makeCountAggregator(false);
         }
         else
         {
@@ -39,7 +39,7 @@ public class ExprCountNode extends ExprAggregateNode
             {
                 throw new ExprValidationException("Count node must have zero or 1 child nodes");
             }
-            return methodResolutionService.getCountAggregator(true);
+            return methodResolutionService.makeCountAggregator(true);
         }
     }
 

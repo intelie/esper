@@ -5,10 +5,16 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Implements a JNDI context for providing a directory for engine-external resources such as adapters.
+ */
 public class EngineEnvContext implements Context
 {
     private Map<String, Object> context;
 
+    /**
+     * Ctor.
+     */
     public EngineEnvContext()
     {
         context = new HashMap<String, Object>();

@@ -3,8 +3,10 @@ package net.esper.core;
 import net.esper.client.ConfigurationEventTypeLegacy;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.ConfigurationException;
+import net.esper.client.ConfigurationPlugInAggregationFunction;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineImportServiceImpl;
+import net.esper.eql.core.EngineImportException;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.db.DatabaseConfigServiceImpl;
 import net.esper.event.EventAdapterException;
@@ -138,14 +140,22 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      */
     protected static EngineImportService makeEngineImportService(ConfigurationSnapshot configSnapshot)
     {
-        EngineImportService engineImportService = null;
+        EngineImportService engineImportService = new EngineImportServiceImpl();
 
         // Add auto-imports
         try
         {
-            engineImportService = new EngineImportServiceImpl(configSnapshot.getAutoImports(), configSnapshot.getPlugInAggregation());
+            for (String importName : configSnapshot.getAutoImports())
+            {
+                engineImportService.addImport(importName);
+            }
+
+            for (ConfigurationPlugInAggregationFunction config : configSnapshot.getPlugInAggregation())
+            {
+                engineImportService.addAggregation(config.getName(), config.getFunctionClassName());
+            }
         }
-        catch (IllegalArgumentException ex)
+        catch (EngineImportException ex)
         {
             throw new ConfigurationException("Error configuring engine: " + ex.getMessage(), ex);
         }

@@ -32,6 +32,6 @@ public class CountAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.getCountAggregator(false);
+        return methodResolutionService.makeCountAggregator(false);
     }
 }

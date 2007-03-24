@@ -37,5 +37,9 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      */
     public FilterService getFilterService();
 
+    /**
+     * Returns the engine environment context for engine-external resources such as adapters.
+     * @return engine environment context
+     */
     public Context getEnvContext();
 }

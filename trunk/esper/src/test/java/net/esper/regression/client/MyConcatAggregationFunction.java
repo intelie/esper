@@ -8,9 +8,9 @@ public class MyConcatAggregationFunction extends AggregationSupport
     private StringBuilder builder;
     private String delimiter;
 
-    public MyConcatAggregationFunction(String functionName)
+    public MyConcatAggregationFunction()
     {
-        super(functionName);
+        super();
         builder = new StringBuilder();
         delimiter = "";
     }

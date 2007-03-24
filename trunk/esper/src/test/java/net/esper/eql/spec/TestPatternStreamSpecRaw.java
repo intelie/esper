@@ -4,6 +4,7 @@ import antlr.collections.AST;
 import junit.framework.TestCase;
 import net.esper.eql.core.MethodResolutionServiceImpl;
 import net.esper.eql.core.EngineImportServiceImpl;
+import net.esper.eql.core.EngineImportService;
 import net.esper.eql.parse.EQLTreeWalker;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.filter.*;
@@ -202,7 +203,7 @@ public class TestPatternStreamSpecRaw extends TestCase
         AST ast = SupportParserHelper.parseEQL(expression);
         SupportParserHelper.displayAST(ast);
 
-        EQLTreeWalker walker = new EQLTreeWalker();
+        EQLTreeWalker walker = new EQLTreeWalker(new EngineImportServiceImpl());
         walker.startEQLExpressionRule(ast);
 
         PatternStreamSpecRaw spec = (PatternStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);

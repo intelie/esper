@@ -257,7 +257,7 @@ public class TestFilterStreamSpecRaw extends TestCase
         AST ast = SupportParserHelper.parseEQL(expression);
         SupportParserHelper.displayAST(ast);
 
-        EQLTreeWalker walker = new EQLTreeWalker();
+        EQLTreeWalker walker = new EQLTreeWalker(new EngineImportServiceImpl());
         walker.startEQLExpressionRule(ast);
 
         FilterStreamSpecRaw spec = (FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);

@@ -15,11 +15,14 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
     /**
      * Ctor.
      * @param distinct - flag indicating unique or non-unique value aggregation
+     * @param aggregationSupport - is the base class for plug-in aggregation functions
+     * @param functionName is the aggregation function name 
      */
-    public ExprPlugInAggFunctionNode(boolean distinct, AggregationSupport aggregationSupport)
+    public ExprPlugInAggFunctionNode(boolean distinct, AggregationSupport aggregationSupport, String functionName)
     {
         super(distinct);
         this.aggregationSupport = aggregationSupport;
+        aggregationSupport.setFunctionName(functionName);
     }
 
     public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
@@ -27,11 +30,11 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
         Class childType = null;
         if (this.getChildNodes().size() > 1)
         {
-            throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.getFunctionName() + " ' requires a single parameter");
+            throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.getFunctionName() + "' requires a single parameter");
         }
         if (this.getChildNodes().size() == 1)
         {
-            childType = this.getChildNodes().get(0).getClass();
+            childType = this.getChildNodes().get(0).getType();
         }
 
         try
@@ -40,13 +43,13 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
         }
         catch (RuntimeException ex)
         {
-            throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.getFunctionName() + " ' failed validation:" + ex.getMessage());
+            throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.getFunctionName() + "' failed validation: " + ex.getMessage());
         }
 
         return aggregationSupport;
     }
 
-    protected String getAggregationFunctionName()
+    public String getAggregationFunctionName()
     {
         return aggregationSupport.getFunctionName();
     }

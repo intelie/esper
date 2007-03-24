@@ -75,6 +75,6 @@ public class AvedevAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.getAvedevAggregator();
+        return methodResolutionService.makeAvedevAggregator();
     }
 }

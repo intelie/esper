@@ -47,6 +47,6 @@ public class AvgAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.getAvgAggregator();
+        return methodResolutionService.makeAvgAggregator();
     }
 }

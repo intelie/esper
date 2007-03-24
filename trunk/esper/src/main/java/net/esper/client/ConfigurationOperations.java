@@ -8,7 +8,30 @@ import java.util.Properties;
  */
 public interface ConfigurationOperations
 {
-    public void addPlugInAggregationFunction(String functionName, String aggregationClassName);
+    /**
+     * Adds a plug-in aggregation function given a function name and an aggregation class name.
+     * <p>
+     * The aggregation class must extends the base class {@link net.esper.eql.agg.AggregationSupport}.
+     * <p>
+     * The same function name cannot be added twice.
+     * @param functionName is the new aggregation function name
+     * @param aggregationClassName is the fully-qualified class name of the class implementing the aggregation function
+     * @throws ConfigurationException is thrown to indicate a problem adding aggregation function
+     */
+    public void addPlugInAggregationFunction(String functionName, String aggregationClassName) throws ConfigurationException;
+
+    /**
+     * Adds a package or class to the list of automatically-imported classes and packages.
+     * <p>
+     * To import a single class offering a static method, simply supply the fully-qualified name of the class
+     * and use the syntax <code>classname.methodname(...)</code>
+     * <p>
+     * To import a whole package and use the <code>classname.methodname(...)</code> syntax, specifiy a package
+     * with wildcard, such as <code>com.mycompany.staticlib.*</code>.
+     * @param importName is a fully-qualified class name or a package name with wildcard
+     * @throws ConfigurationException if incorrect package or class names are encountered
+     */
+    public void addImport(String importName) throws ConfigurationException;
 
     /**
      * Add an alias for an event type represented by JavaBean object events.

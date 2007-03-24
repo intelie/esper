@@ -68,6 +68,6 @@ public class MedianAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.getMedianAggregator();
+        return methodResolutionService.makeMedianAggregator();
     }
 }

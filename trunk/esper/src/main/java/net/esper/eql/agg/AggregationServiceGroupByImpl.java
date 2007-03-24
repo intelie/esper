@@ -28,6 +28,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
      * @param evaluators - evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))
      * @param prototypes - collect the aggregation state that evaluators evaluate to, act as prototypes for new aggregations
      * aggregation states for each group
+     * @param methodResolutionService - factory for creating additional aggregation method instances per group key
      */
     public AggregationServiceGroupByImpl(ExprEvaluator evaluators[], AggregationMethod prototypes[], MethodResolutionService methodResolutionService)
     {

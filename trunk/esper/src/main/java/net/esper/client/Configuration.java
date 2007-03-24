@@ -218,10 +218,6 @@ public class Configuration implements ConfigurationOperations {
         eventTypesLegacy.put(eventTypeAlias, legacyEventTypeDesc);
     }
 
-    /**
-     * Add an import (a class or package). Adding will suppress the use of the default imports.
-     * @param autoImport - the import to add
-     */
     public void addImport(String autoImport)
     {
 		if(isUsingDefaultImports)
@@ -305,6 +301,10 @@ public class Configuration implements ConfigurationOperations {
         return adapterLoaders;
     }
 
+    /**
+     * Returns a list of configured plug-in aggregation functions.
+     * @return list of configured aggregations
+     */
     public List<ConfigurationPlugInAggregationFunction> getPlugInAggregationFunctions()
     {
         return plugInAggregationFunctions;

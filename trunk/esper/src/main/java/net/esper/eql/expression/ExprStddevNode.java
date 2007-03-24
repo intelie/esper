@@ -28,7 +28,7 @@ public class ExprStddevNode extends ExprAggregateNode
     public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
     {
         super.validateSingleNumericChild(streamTypeService);
-        return methodResolutionService.getStddevAggregator();
+        return methodResolutionService.makeStddevAggregator();
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)

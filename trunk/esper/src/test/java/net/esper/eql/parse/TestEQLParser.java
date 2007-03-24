@@ -6,6 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import net.esper.support.eql.parse.SupportParserHelper;
 import net.esper.support.bean.SupportBean;
 import net.esper.eql.generated.EqlTokenTypes;
+import net.esper.eql.core.EngineImportService;
+import net.esper.eql.core.EngineImportServiceImpl;
 import antlr.collections.AST;
 
 public class TestEQLParser extends TestCase implements EqlTokenTypes
@@ -20,7 +22,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         SupportParserHelper.displayAST(ast);
 
         log.debug(".testDisplayAST walking...");
-        EQLTreeWalker walker = new EQLTreeWalker();
+        EQLTreeWalker walker = new EQLTreeWalker(new EngineImportServiceImpl());
         walker.startEQLExpressionRule(ast);
     }
 

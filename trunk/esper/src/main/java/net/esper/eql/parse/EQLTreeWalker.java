@@ -9,9 +9,13 @@ package net.esper.eql.parse;
 
 import antlr.collections.AST;
 import net.esper.collection.Pair;
+import net.esper.eql.core.EngineImportService;
+import net.esper.eql.core.EngineImportUndefinedException;
+import net.esper.eql.core.EngineImportException;
 import net.esper.eql.expression.*;
 import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.spec.*;
+import net.esper.eql.agg.AggregationSupport;
 import net.esper.pattern.*;
 import net.esper.pattern.guard.GuardEnum;
 import net.esper.pattern.guard.GuardFactory;
@@ -47,11 +51,15 @@ public class EQLTreeWalker extends EQLBaseWalker
     // AST Walk result
     private final StatementSpecRaw statementSpec;
 
+    private final EngineImportService engineImportService;
+
     /**
      * Ctor.
+     * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions 
      */
-    public EQLTreeWalker()
+    public EQLTreeWalker(EngineImportService engineImportService)
     {
+        this.engineImportService = engineImportService;
         statementSpec = new StatementSpecRaw();
     }
 
@@ -492,11 +500,6 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
     	log.debug(".leaveLibFunction");
 
-    	if(node.getNumberOfChildren() < 1)
-    	{
-    		throw new IllegalArgumentException("Illegal number of child nodes for lib function");
-    	}
-
         String childNodeText = node.getFirstChild().getText();
         if ((childNodeText.equals("max")) || (childNodeText.equals("min")))
         {
@@ -509,11 +512,32 @@ public class EQLTreeWalker extends EQLBaseWalker
             String className = node.getFirstChild().getText();
             String methodName = node.getFirstChild().getNextSibling().getText();
             astExprNodeMap.put(node, new ExprStaticMethodNode(className, methodName));
+            return;
         }
-        else
+
+        try
         {
-            throw new IllegalStateException("Unknown method named '" + node.getFirstChild().getText() + "' could not be resolved");
+            AggregationSupport aggregation = engineImportService.resolveAggregation(childNodeText);
+
+            boolean isDistinct = false;
+            if ((node.getFirstChild().getNextSibling() != null) && (node.getFirstChild().getNextSibling().getType() == DISTINCT))
+            {
+                isDistinct = true;
+            }
+
+            astExprNodeMap.put(node, new ExprPlugInAggFunctionNode(isDistinct, aggregation, childNodeText));
+            return;
         }
+        catch (EngineImportUndefinedException e)
+        {
+            // Not an aggretaion function
+        }
+        catch (EngineImportException e)
+        {
+            throw new IllegalStateException("Error resolving aggregation: " + e.getMessage(), e);            
+        }
+
+        throw new IllegalStateException("Unknown method named '" + childNodeText + "' could not be resolved");
     }
 
     private void leaveEqualsExpr(AST node)

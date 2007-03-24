@@ -44,6 +44,7 @@ public class EPStatementStartMethod
      * @param statementSpec is a container for the definition of all statement constructs that
      * may have been used in the statement, i.e. if defines the select clauses, insert into, outer joins etc.
      * @param services is the service instances for dependency injection
+     * @param statementContext is statement-level information and statement services
      */
     public EPStatementStartMethod(StatementSpecCompiled statementSpec,
                                 EPServicesContext services,

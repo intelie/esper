@@ -1,58 +1,69 @@
 package net.esper.eql.core;
 
+import net.esper.eql.agg.AggregationSupport;
 import net.esper.util.StaticMethodResolver;
-import net.esper.eql.agg.AggregationMethod;
-import net.esper.client.ConfigurationPlugInAggregationFunction;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/**
+ * Implementation for engine-level imports.
+ */
 public class EngineImportServiceImpl implements EngineImportService
 {
-	private final List<String> imports = new ArrayList<String>();
-    private final Map<String, String> aggregationFunctions = new HashMap<String, String>();
+	private final List<String> imports;
+    private final Map<String, String> aggregationFunctions;
 
 	/**
 	 * Ctor.
-	 * @param imports - the package and class names that will be used to resolve partial class names
 	 */
-	public EngineImportServiceImpl(String[] imports, List<ConfigurationPlugInAggregationFunction> aggregationFunctions)
-	{
-		if(imports == null)
-		{
-			throw new NullPointerException("Array of auto imports cannot be null");
-		}
-
-		for(String importName : imports)
-		{
-			addImport(importName);
-		}
-
-        if (aggregationFunctions != null)
-        {
-            for(ConfigurationPlugInAggregationFunction function : aggregationFunctions)
-            {
-                addAggregationFunction(function.getName(), function.getFunctionClassName());
-            }
-        }
-    }
-
-    /**
-     * Ctor.
-     */
-    public EngineImportServiceImpl()
+	public EngineImportServiceImpl()
     {
+        imports = new ArrayList<String>();
+        aggregationFunctions = new HashMap<String, String>();
     }
 
-    public AggregationMethod resolveAggregationFunction(String name)
+    public void addImport(String importName) throws EngineImportException
+    {
+        if(!isClassName(importName) && !isPackageName(importName))
+        {
+            throw new EngineImportException("Invalid import name '" + importName + "'");
+        }
+
+        imports.add(importName);
+    }
+
+    public void addAggregation(String functionName, String aggregationClass) throws EngineImportException
+    {
+        String existing = aggregationFunctions.get(functionName);
+        if (existing != null)
+        {
+            throw new EngineImportException("Aggregation function by name '" + functionName + "' is already defined");
+        }
+        if(!isFunctionName(functionName))
+        {
+            throw new EngineImportException("Invalid aggregation function name '" + functionName + "'");
+        }
+        if(!isClassName(aggregationClass))
+        {
+            throw new EngineImportException("Invalid class name for aggregation '" + aggregationClass + "'");
+        }
+        aggregationFunctions.put(functionName.toLowerCase(), aggregationClass);
+    }
+
+    public AggregationSupport resolveAggregation(String name) throws EngineImportException, EngineImportUndefinedException
     {
         String className = aggregationFunctions.get(name);
         if (className == null)
         {
-            return null;
+            className = aggregationFunctions.get(name.toLowerCase());
+        }
+        if (className == null)
+        {
+            throw new EngineImportUndefinedException("Aggregation function named '" + name + "' is not defined");
         }
 
         Class clazz;
@@ -60,22 +71,62 @@ public class EngineImportServiceImpl implements EngineImportService
         {
             clazz = Class.forName(className);
         }
-        catch(ClassNotFoundException e)
+        catch (ClassNotFoundException ex)
         {
-            return null; // TODO
+            throw new EngineImportException("Could not load aggregation class by name '" + className + "'", ex);
         }
-        return null; // TODO
+
+        Object object = null;
+        try
+        {
+            object = clazz.newInstance();
+        }
+        catch (InstantiationException e)
+        {
+            throw new EngineImportException("Error instantiating aggregation class by name '" + className + "'", e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new EngineImportException("Illegal access instatiating aggregation class by name '" + className + "'", e);
+        }
+
+        if (!(object instanceof AggregationSupport))
+        {
+            throw new EngineImportException("Aggregation class by name '" + className + "' does not subclass AggregationSupport");
+        }
+        return (AggregationSupport) object;
     }
 
     public Method resolveMethod(String classNameAlias, String methodName, Class[] paramTypes)
-			throws ClassNotFoundException, NoSuchMethodException
+			throws EngineImportException
     {
-        Class clazz = resolveClass(classNameAlias);
-        return StaticMethodResolver.resolveMethod(clazz, methodName, paramTypes);
-	}
+        Class clazz = null;
+        try
+        {
+            clazz = resolveClass(classNameAlias);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new EngineImportException("Could not load class by name '" + classNameAlias + "' ", e);
+        }
 
-    protected Class resolveClass(String className)
-			throws ClassNotFoundException
+        try
+        {
+            return StaticMethodResolver.resolveMethod(clazz, methodName, paramTypes);
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new EngineImportException("Could not find method named '" + methodName + "' in class '" + classNameAlias + "' ", e);
+        }
+    }
+
+    /**
+     * Finds a class by class name using the auto-import information provided.
+     * @param className is the class name to find
+     * @return class
+     * @throws ClassNotFoundException if the class cannot be loaded
+     */
+    protected Class resolveClass(String className) throws ClassNotFoundException
     {
 		// Attempt to retrieve the class with the name as-is
 		try
@@ -122,34 +173,9 @@ public class EngineImportServiceImpl implements EngineImportService
 		return imports.toArray(new String[0]);
 	}
 
-    /**
-     * Add a package to the auto-import list, for testing.
-     * @param importName to add
-     */
-    protected void addImport(String importName)
-	{
-		if(!isClassName(importName) && !isPackageName(importName))
-		{
-			throw new IllegalArgumentException("Invalid import name " + importName);
-		}
-		imports.add(importName);
-	}
-
-    protected void addAggregationFunction(String functionName, String className)
-    {
-        if(!isFunctionName(functionName))
-        {
-            throw new IllegalArgumentException("Invalid function name " + functionName);
-        }
-        if(!isClassName(className))
-        {
-            throw new IllegalArgumentException("Invalid class name " + className);
-        }
-    }
-
     private static boolean isFunctionName(String functionName)
     {
-        String classNameRegEx = "\\w";
+        String classNameRegEx = "\\w+";
         return functionName.matches(classNameRegEx);
     }
 

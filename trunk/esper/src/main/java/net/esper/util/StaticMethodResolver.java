@@ -107,14 +107,14 @@ public class StaticMethodResolver
 	 * Attempts to find the static method described by the parameters, 
 	 * or a method of the same name that will accept the same type of
 	 * parameters.
+     * @param declaringClass - the class to search for the method
 	 * @param methodName - the name of the method
 	 * @param paramTypes - the parameter types for the method
 	 * @return - the Method object for this method
-	 * @throws ClassNotFoundException if the class could not be found/loaded
 	 * @throws NoSuchMethodException if the method could not be found
 	 */
 	public static Method resolveMethod(Class declaringClass, String methodName, Class[] paramTypes)
-	throws ClassNotFoundException, NoSuchMethodException
+	throws NoSuchMethodException
 	{
         if (log.isDebugEnabled())
         {

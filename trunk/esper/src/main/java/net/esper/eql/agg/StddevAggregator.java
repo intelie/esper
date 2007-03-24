@@ -58,6 +58,6 @@ public class StddevAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.getStddevAggregator();
+        return methodResolutionService.makeStddevAggregator();
     }
 }

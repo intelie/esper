@@ -130,6 +130,10 @@ public class ConfigurationSnapshot
         return adapterLoaders;
     }
 
+    /**
+     * Returns a list of configured aggregation functions.
+     * @return aggregation function configs 
+     */
     public List<ConfigurationPlugInAggregationFunction> getPlugInAggregation()
     {
         return plugInAggregation;

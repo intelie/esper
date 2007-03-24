@@ -62,6 +62,9 @@ public final class EPServicesContext
      * @param statementLockFactory creates statement-level locks
      * @param eventProcessingRWLock is the engine lock for statement management
      * @param extensionServicesContext marker interface allows adding additional services
+     * @param engineImportService is engine imported static func packages and aggregation functions
+     * @param statementContextFactory is the factory to use to create statement context objects
+     * @param engineEnvContext is engine environment/directory information for use with adapters and external env
      */
     public EPServicesContext(SchedulingService schedulingService,
                              EventAdapterService eventAdapterService,
@@ -254,6 +257,10 @@ public final class EPServicesContext
         return extensionServicesContext;
     }
 
+    /**
+     * Returns the engine environment context for getting access to engine-external resources, such as adapters
+     * @return engine environment context
+     */
     public EngineEnvContext getEngineEnvContext()
     {
         return engineEnvContext;
@@ -270,7 +277,11 @@ public final class EPServicesContext
         }
     }
 
-    public StatementContextFactory getStatementServiceContextFactory()
+    /**
+     * Returns the factory to use for creating a statement context.
+     * @return statement context factory
+     */
+    public StatementContextFactory getStatementContextFactory()
     {
         return statementContextFactory;
     }

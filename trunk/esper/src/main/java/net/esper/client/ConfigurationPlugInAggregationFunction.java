@@ -33,11 +33,19 @@ public class ConfigurationPlugInAggregationFunction
         this.name = name;
     }
 
+    /**
+     * Returns the aggregation function name.
+     * @return name
+     */
     public String getFunctionClassName()
     {
         return functionClassName;
     }
 
+    /**
+     * Sets the aggregation function's implementation class name.
+     * @param functionClassName is the implementation class name
+     */
     public void setFunctionClassName(String functionClassName)
     {
         this.functionClassName = functionClassName;

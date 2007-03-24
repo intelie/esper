@@ -28,7 +28,7 @@ public class ExprSumNode extends ExprAggregateNode
     public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
     {
         Class childType = super.validateSingleNumericChild(streamTypeService);
-        return methodResolutionService.getSumAggregator(childType);
+        return methodResolutionService.makeSumAggregator(childType);
     }
 
     protected String getAggregationFunctionName()

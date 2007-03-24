@@ -65,6 +65,6 @@ public class MinMaxAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.getMinMaxAggregator(minMaxTypeEnum, returnType);
+        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, returnType);
     }
 }

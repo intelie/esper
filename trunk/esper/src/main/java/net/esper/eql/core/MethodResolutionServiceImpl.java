@@ -3,30 +3,49 @@ package net.esper.eql.core;
 import net.esper.eql.agg.*;
 import net.esper.type.MinMaxTypeEnum;
 import net.esper.collection.MultiKeyUntyped;
+import net.esper.client.EPException;
 
 import java.lang.reflect.Method;
 
+/**
+ * Implements method resolution.
+ */
 public class MethodResolutionServiceImpl implements MethodResolutionService
 {
 	private final EngineImportService engineImportService;
 
+    /**
+     * Ctor.
+     * @param engineImportService is the engine imports
+     */
     public MethodResolutionServiceImpl(EngineImportService engineImportService)
 	{
         this.engineImportService = engineImportService;
 	}
 
-    public AggregationSupport getPlugInAggregator(String functionName)
+    public AggregationSupport makePlugInAggregator(String functionName)
     {
-        return null;
+        try
+        {
+            return engineImportService.resolveAggregation(functionName);
+        }
+        catch (EngineImportUndefinedException e)
+        {
+            throw new EPException("Failed to make new aggregation function instance for '" + functionName + "'", e);
+        }
+        catch (EngineImportException e)
+        {
+            throw new EPException("Failed to make new aggregation function instance for '" + functionName + "'", e);
+        }
     }
 
     public Method resolveMethod(String classNameAlias, String methodName, Class[] paramTypes)
-			throws ClassNotFoundException, NoSuchMethodException
+			throws EngineImportException
     {
         return engineImportService.resolveMethod(classNameAlias, methodName, paramTypes);
 	}       
 
-    public AggregationMethod getCountAggregator(boolean isIgnoreNull)
+    public AggregationMethod makeCountAggregator(boolean isIgnoreNull)
     {
         if (isIgnoreNull)
         {
@@ -35,7 +54,12 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new CountAggregator();
     }
 
-    public AggregationMethod getSumAggregator(Class type)
+    public AggregationSupport resolveAggregation(String functionName) throws EngineImportUndefinedException, EngineImportException
+    {
+        return engineImportService.resolveAggregation(functionName);
+    }
+
+    public AggregationMethod makeSumAggregator(Class type)
     {
         if ((type == Long.class) || (type == long.class))
         {
@@ -56,32 +80,32 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new NumIntegerSumAggregator();
     }
 
-    public AggregationMethod getDistinctAggregator(AggregationMethod aggregationMethod)
+    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod)
     {
         return new DistinctValueAggregator(aggregationMethod);
     }
 
-    public AggregationMethod getAvgAggregator()
+    public AggregationMethod makeAvgAggregator()
     {
         return new AvgAggregator();
     }
 
-    public AggregationMethod getAvedevAggregator()
+    public AggregationMethod makeAvedevAggregator()
     {
         return new AvedevAggregator();
     }
 
-    public AggregationMethod getMedianAggregator()
+    public AggregationMethod makeMedianAggregator()
     {
         return new MedianAggregator();
     }
 
-    public AggregationMethod getMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Class targetType)
+    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Class targetType)
     {
         return new MinMaxAggregator(minMaxTypeEnum, targetType);
     }
 
-    public AggregationMethod getStddevAggregator()
+    public AggregationMethod makeStddevAggregator()
     {
         return new StddevAggregator();
     }
