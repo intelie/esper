@@ -1,10 +1,10 @@
 package net.esper.support.eql;
 
-import net.esper.eql.expression.*;
-import net.esper.eql.core.Aggregator;
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.agg.AggregationMethod;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.expression.ExprAggregateNode;
+import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventBean;
 
 public class SupportAggregateExprNode extends ExprAggregateNode
@@ -41,11 +41,12 @@ public class SupportAggregateExprNode extends ExprAggregateNode
         this.type = type;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
     {
         // Keep a count for if and when this was validated
         validateCount++;
         validateCountSnapshot = validateCount;
+        return null;
     }
 
     public Class getType()
@@ -58,7 +59,7 @@ public class SupportAggregateExprNode extends ExprAggregateNode
         return validateCountSnapshot;
     }
 
-    public Aggregator getAggregationFunction()
+    public AggregationMethod getAggregationFunction()
     {
         return null;
     }

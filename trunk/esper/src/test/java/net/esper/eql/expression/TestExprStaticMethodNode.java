@@ -4,15 +4,13 @@ import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 import net.esper.util.StaticMethodResolver;
-import net.esper.eql.core.AutoImportService;
-import net.esper.eql.core.AutoImportServiceImpl;
-import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.*;
 
 public class TestExprStaticMethodNode extends TestCase
 {
     StaticMethodResolver staticMethodResolver;
     StreamTypeService streamTypeService;
-    AutoImportService autoImportService;
+    MethodResolutionService methodResolutionService;
     ExprNode intThree;
     ExprNode intFive;
     ExprNode shortNine;
@@ -25,7 +23,7 @@ public class TestExprStaticMethodNode extends TestCase
     protected void setUp() throws Exception
     {
         streamTypeService = null;
-        autoImportService = new AutoImportServiceImpl(new String[] {"java.lang.*"});
+        methodResolutionService = new MethodResolutionServiceImpl(new EngineImportServiceImpl(new String[] {"java.lang.*"}, null));
         staticMethodResolver = new StaticMethodResolver();
         intThree = new ExprConstantNode(3);
         intFive = new ExprConstantNode(5);
@@ -129,7 +127,7 @@ public class TestExprStaticMethodNode extends TestCase
 
     private void validate(ExprNode node) throws Exception
     {
-        node.getValidatedSubtree(streamTypeService, autoImportService, null);
+        node.getValidatedSubtree(streamTypeService, methodResolutionService, null);
     }
 
     public void nonstaticMethod(){}

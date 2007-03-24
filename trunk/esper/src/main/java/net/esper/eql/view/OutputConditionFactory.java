@@ -8,7 +8,7 @@
 package net.esper.eql.view;
 
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,7 +27,7 @@ public final class OutputConditionFactory {
      * @return instance for performing output
      */
 	public static OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
-										 	  	  StatementServiceContext statementContext,
+										 	  	  StatementContext statementContext,
 										 	      OutputCallback outputCallback)
 	{
 		if(outputCallback ==  null)

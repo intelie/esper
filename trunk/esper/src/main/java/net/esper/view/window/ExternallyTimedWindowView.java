@@ -8,6 +8,7 @@ import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.collection.TimeWindow;
 import net.esper.collection.ViewUpdatedCollection;
+import net.esper.core.StatementContext;
 
 /**
  * View for a moving window extending the specified amount of time into the past, driven entirely by external timing
@@ -58,9 +59,9 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
         this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return externallyTimedWindowViewFactory.makeView(statementServiceContext);
+        return externallyTimedWindowViewFactory.makeView(statementContext);
     }
 
     /**

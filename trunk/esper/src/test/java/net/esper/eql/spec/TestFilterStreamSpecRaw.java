@@ -2,7 +2,9 @@ package net.esper.eql.spec;
 
 import antlr.collections.AST;
 import junit.framework.TestCase;
-import net.esper.eql.core.AutoImportServiceImpl;
+import net.esper.eql.core.MethodResolutionServiceImpl;
+import net.esper.eql.core.EngineImportService;
+import net.esper.eql.core.EngineImportServiceImpl;
 import net.esper.eql.parse.EQLTreeWalker;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.expression.ExprAndNode;
@@ -246,7 +248,7 @@ public class TestFilterStreamSpecRaw extends TestCase
 
     private FilterSpecCompiled compile(FilterStreamSpecRaw raw) throws Exception
     {
-        FilterStreamSpecCompiled compiled = (FilterStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new AutoImportServiceImpl());
+        FilterStreamSpecCompiled compiled = (FilterStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()));
         return compiled.getFilterSpec();
     }
     

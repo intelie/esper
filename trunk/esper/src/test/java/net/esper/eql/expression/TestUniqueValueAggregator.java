@@ -1,16 +1,16 @@
 package net.esper.eql.expression;
 
 import net.esper.support.eql.SupportAggregator;
-import net.esper.eql.core.UniqueValueAggregator;
+import net.esper.eql.agg.DistinctValueAggregator;
 import junit.framework.TestCase;
 
 public class TestUniqueValueAggregator extends TestCase
 {
-    private UniqueValueAggregator agg;
+    private DistinctValueAggregator agg;
 
     public void setUp()
     {
-        agg = new UniqueValueAggregator(new SupportAggregator());
+        agg = new DistinctValueAggregator(new SupportAggregator());
     }
 
     public void testEnter()
@@ -34,13 +34,6 @@ public class TestUniqueValueAggregator extends TestCase
         {
             // expected
         }
-    }
-
-    public void testNewAggregator()
-    {
-        agg.enter(1);
-        assertNotSame(agg, agg.newAggregator());
-        assertEquals(0, agg.newAggregator().getValue());
     }
 
     public void testGetValue()

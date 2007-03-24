@@ -3,6 +3,7 @@ package net.esper.view.std;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ public class MergeViewFactory implements ViewFactory
         fieldNames = GroupByViewFactory.getFieldNameParams(viewParameters, "Group-by-merge");
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         // Find the group by view matching the merge view
         ViewFactory groupByViewFactory = null;
@@ -74,7 +75,7 @@ public class MergeViewFactory implements ViewFactory
         // grouped which simply provides a map of calculated values,
         // then we need to add in the merge field as an event property thus changing event types.
         {
-            eventType = statementServiceContext.getEventAdapterService().createAddToEventType(
+            eventType = statementContext.getEventAdapterService().createAddToEventType(
                     parentEventType, fieldNames, fieldTypes);
         }
     }
@@ -89,9 +90,9 @@ public class MergeViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
-        return new MergeView(statementServiceContext, fieldNames, eventType);
+        return new MergeView(statementContext, fieldNames, eventType);
     }
 
     public EventType getEventType()

@@ -2,6 +2,7 @@ package net.esper.regression.client;
 
 import net.esper.event.EventType;
 import net.esper.view.*;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -26,19 +27,19 @@ public class MyTrendSpotterViewFactory extends ViewFactorySupport
         fieldName = (String) viewParameters.get(0);
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldName);
         if (result != null)
         {
             throw new ViewAttachException(result);
         }
-        eventType = MyTrendSpotterView.createEventType(statementServiceContext);
+        eventType = MyTrendSpotterView.createEventType(statementContext);
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
-        return new MyTrendSpotterView(statementServiceContext, fieldName);
+        return new MyTrendSpotterView(statementContext, fieldName);
     }
 
     public EventType getEventType()

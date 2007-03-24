@@ -1,7 +1,9 @@
 package net.esper.eql.expression;
 
 import net.esper.support.eql.SupportExprNode;
+import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.type.MathArithTypeEnum;
+import net.esper.eql.agg.*;
 
 public class TestExprSumNode extends TestExprAggregateNodeAdapter
 {
@@ -17,17 +19,17 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
     public void testGetType() throws Exception
     {
         sumNode.addChildNode(new SupportExprNode(Integer.class));
-        sumNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(sumNode);
         assertEquals(Integer.class, sumNode.getType());
 
         sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(Float.class));
-        sumNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(sumNode);
         assertEquals(Float.class, sumNode.getType());
 
         sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(Short.class));
-        sumNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(sumNode);
         assertEquals(Integer.class, sumNode.getType());
     }
 
@@ -73,11 +75,11 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
 
     public void testMakeAggregator() throws Exception
     {
-        assertTrue(makeNode(5, Integer.class).getPrototypeAggregator() instanceof ExprSumNode.IntegerSum);
-        assertTrue(makeNode(5, Float.class).getPrototypeAggregator() instanceof ExprSumNode.FloatSum);
-        assertTrue(makeNode(5, Double.class).getPrototypeAggregator() instanceof ExprSumNode.DoubleSum);
-        assertTrue(makeNode(5, Short.class).getPrototypeAggregator() instanceof ExprSumNode.NumberIntegerSum);
-        assertTrue(makeNode(5, Long.class).getPrototypeAggregator() instanceof ExprSumNode.LongSum);
+        assertTrue(makeNode(5, Integer.class).getPrototypeAggregator() instanceof IntegerSumAggregator);
+        assertTrue(makeNode(5, Float.class).getPrototypeAggregator() instanceof FloatSumAggregator);
+        assertTrue(makeNode(5, Double.class).getPrototypeAggregator() instanceof DoubleSumAggregator);
+        assertTrue(makeNode(5, Short.class).getPrototypeAggregator() instanceof NumIntegerSumAggregator);
+        assertTrue(makeNode(5, Long.class).getPrototypeAggregator() instanceof LongSumAggregator);
     }
 
     public void testEqualsNode() throws Exception
@@ -90,7 +92,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
     {
         ExprSumNode sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(value, type));
-        sumNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(sumNode);
         return sumNode;
     }
 }

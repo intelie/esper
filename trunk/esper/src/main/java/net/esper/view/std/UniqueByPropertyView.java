@@ -9,6 +9,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
 import net.esper.view.*;
+import net.esper.core.StatementContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,7 +45,7 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
         this.uniqueFieldName = uniqueFieldName;
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
         return new UniqueByPropertyView(uniqueFieldName);
     }

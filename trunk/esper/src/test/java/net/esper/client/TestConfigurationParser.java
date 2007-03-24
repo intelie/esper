@@ -98,7 +98,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals("mypassword1", dmDef.getOptionalPassword());
         assertEquals("{user=myuser2, password=mypassword2, somearg=someargvalue}", dmDef.getOptionalProperties().toString());
         assertEquals(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN, configDBRef.getConnectionLifecycleEnum());
-        assertEquals(false, configDBRef.getConnectionSettings().getAutoCommit().booleanValue());
+        assertEquals((Boolean) false, configDBRef.getConnectionSettings().getAutoCommit());
         assertEquals("test", configDBRef.getConnectionSettings().getCatalog());
         assertEquals(Boolean.TRUE, configDBRef.getConnectionSettings().getReadOnly());
         assertEquals(new Integer(3), configDBRef.getConnectionSettings().getTransactionIsolation());
@@ -131,5 +131,14 @@ public class TestConfigurationParser extends TestCase
         assertEquals("Loader2", adapterTwo.getLoaderName());
         assertEquals("net.esper.support.adapter.SupportLoaderTwo", adapterTwo.getClassName());
         assertEquals(0, adapterTwo.getConfigProperties().size());
+
+        // assert plug-in aggregation function loaded
+        assertEquals(2, config.getPlugInAggregationFunctions().size());
+        ConfigurationPlugInAggregationFunction plugin = config.getPlugInAggregationFunctions().get(0);
+        assertEquals("com.mycompany.MyMatrixAggregationMethod0", plugin.getFunctionClassName());
+        assertEquals("func1", plugin.getName());
+        plugin = config.getPlugInAggregationFunctions().get(1);
+        assertEquals("com.mycompany.MyMatrixAggregationMethod1", plugin.getFunctionClassName());
+        assertEquals("func2", plugin.getName());
     }
 }

@@ -11,6 +11,7 @@ import net.esper.view.stat.olap.*;
 import net.esper.view.*;
 import net.esper.collection.SingleEventIterator;
 import net.esper.collection.MultiKeyUntyped;
+import net.esper.core.StatementContext;
 
 /**
  * This view compiles OLAP cubes for the specified fields. New data from the parent view is entered into
@@ -47,7 +48,7 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
         };
     }
 
-    private final StatementServiceContext statementServiceContext;
+    private final StatementContext statementContext;
     private final String[] derivedMeasures;
     private final String measureField;
     private final String columnField;
@@ -68,23 +69,23 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
      * @param columnField defines the field supplying column dimension members
      * @param rowField defines an optional field supplying row dimension members
      * @param pageField defines an optional field supplying page dimension members
-     * @param statementServiceContext contains required view services
+     * @param statementContext contains required view services
      */
-    public MultiDimStatsView(StatementServiceContext statementServiceContext,
+    public MultiDimStatsView(StatementContext statementContext,
                              String[] derivedMeasures, String measureField, String columnField, String rowField, String pageField)
     {
-        this.statementServiceContext = statementServiceContext;
+        this.statementContext = statementContext;
         this.derivedMeasures = derivedMeasures;
         this.measureField = measureField;
         this.columnField = columnField;
         this.rowField = rowField;
         this.pageField = pageField;
-        eventType = createEventType(statementServiceContext);
+        eventType = createEventType(statementContext);
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return new MultiDimStatsView(statementServiceContext, derivedMeasures, measureField, columnField, rowField, pageField);
+        return new MultiDimStatsView(statementContext, derivedMeasures, measureField, columnField, rowField, pageField);
     }
 
     /**
@@ -271,20 +272,20 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
 
         Map<String, Object> result = new HashMap<String, Object>();
         result.put(ViewFieldEnum.MULTIDIM_OLAP__CUBE.getName(), cube);
-        EventBean eventBean = statementServiceContext.getEventAdapterService().createMapFromValues(result, eventType);
+        EventBean eventBean = statementContext.getEventAdapterService().createMapFromValues(result, eventType);
         return eventBean;
     }
 
     /**
      * Creates the event type for this view.
-     * @param statementServiceContext is the event adapter service
+     * @param statementContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(StatementServiceContext statementServiceContext)
+    protected static EventType createEventType(StatementContext statementContext)
     {
         Map<String, Class> schemaMap = new HashMap<String, Class>();
         schemaMap.put(ViewFieldEnum.MULTIDIM_OLAP__CUBE.getName(), Cube.class);
-        EventType eventType = statementServiceContext.getEventAdapterService().createAnonymousMapType(schemaMap);
+        EventType eventType = statementContext.getEventAdapterService().createAnonymousMapType(schemaMap);
         return eventType;
     }
     

@@ -5,6 +5,7 @@ import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class TimeWindowViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         this.eventType = parentEventType;
     }
@@ -93,7 +94,7 @@ public class TimeWindowViewFactory implements ViewFactory
         resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
         IStreamRandomAccess randomAccess = null;
 
@@ -103,7 +104,7 @@ public class TimeWindowViewFactory implements ViewFactory
             randomAccessGetterImpl.updated(randomAccess);
         }
         
-        return new TimeWindowView(statementServiceContext, this, millisecondsBeforeExpiry, randomAccess);
+        return new TimeWindowView(statementContext, this, millisecondsBeforeExpiry, randomAccess);
     }
 
     public EventType getEventType()

@@ -5,7 +5,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,9 +58,9 @@ public final class LengthBatchView extends ViewSupport implements CloneableView,
         }
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return lengthBatchViewFactory.makeView(statementServiceContext);
+        return lengthBatchViewFactory.makeView(statementContext);
     }
 
     /**

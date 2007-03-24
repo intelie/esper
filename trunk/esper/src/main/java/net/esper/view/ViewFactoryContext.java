@@ -5,6 +5,7 @@ import net.esper.schedule.ScheduleBucket;
 import net.esper.event.EventAdapterService;
 import net.esper.core.EPStatementHandle;
 import net.esper.core.ExtensionServicesContext;
+import net.esper.core.StatementContext;
 
 /**
  * Context calss for specific views within a statement. Each view in a statement gets it's own context
@@ -12,7 +13,7 @@ import net.esper.core.ExtensionServicesContext;
  */
 public class ViewFactoryContext
 {
-    private StatementServiceContext statementServiceContext;
+    private StatementContext statementContext;
     private final int streamNum;
     private final int viewNum;
     private final String namespaceName;
@@ -20,15 +21,15 @@ public class ViewFactoryContext
 
     /**
      * Ctor.
-     * @param statementServiceContext is the statement-level services
+     * @param statementContext is the statement-level services
      * @param streamNum is the stream number from zero to N
      * @param viewNum is the view number from zero to N
      * @param namespaceName is the view namespace
      * @param viewName is the view name
      */
-    public ViewFactoryContext(StatementServiceContext statementServiceContext, int streamNum, int viewNum, String namespaceName, String viewName)
+    public ViewFactoryContext(StatementContext statementContext, int streamNum, int viewNum, String namespaceName, String viewName)
     {
-        this.statementServiceContext = statementServiceContext;
+        this.statementContext = statementContext;
         this.streamNum = streamNum;
         this.viewNum = viewNum;
         this.namespaceName = namespaceName;
@@ -41,7 +42,7 @@ public class ViewFactoryContext
      */
     public final SchedulingService getSchedulingService()
     {
-        return statementServiceContext.getSchedulingService();
+        return statementContext.getSchedulingService();
     }
 
     /**
@@ -50,7 +51,7 @@ public class ViewFactoryContext
      */
     public EventAdapterService getEventAdapterService()
     {
-        return statementServiceContext.getEventAdapterService();
+        return statementContext.getEventAdapterService();
     }
 
     /**
@@ -59,7 +60,7 @@ public class ViewFactoryContext
      */
     public ScheduleBucket getScheduleBucket()
     {
-        return statementServiceContext.getScheduleBucket();
+        return statementContext.getScheduleBucket();
     }
 
     /**
@@ -68,7 +69,7 @@ public class ViewFactoryContext
      */
     public EPStatementHandle getEpStatementHandle()
     {
-        return statementServiceContext.getEpStatementHandle();
+        return statementContext.getEpStatementHandle();
     }
 
     /**
@@ -77,7 +78,7 @@ public class ViewFactoryContext
      */
     public ExtensionServicesContext getExtensionServicesContext()
     {
-        return statementServiceContext.getExtensionServicesContext();
+        return statementContext.getExtensionServicesContext();
     }
 
     /**
@@ -86,7 +87,7 @@ public class ViewFactoryContext
      */
     public StatementStopService getStatementStopService()
     {
-        return statementServiceContext.getStatementStopService();
+        return statementContext.getStatementStopService();
     }
 
     /**
@@ -95,7 +96,7 @@ public class ViewFactoryContext
      */
     public String getStatementId()
     {
-        return statementServiceContext.getStatementId();
+        return statementContext.getStatementId();
     }
 
     /**
@@ -136,7 +137,7 @@ public class ViewFactoryContext
 
     public String toString()
     {
-        return  statementServiceContext.toString() +
+        return  statementContext.toString() +
                 " streamNum=" + streamNum +
                 " viewNum=" + viewNum +
                 " namespaceName=" + namespaceName +

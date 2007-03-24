@@ -20,6 +20,7 @@ import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.expression.ExprAggregateNode;
+import net.esper.eql.agg.AggregationService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

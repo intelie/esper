@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.spec;
 
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
 import net.esper.eql.expression.ExprValidationException;
@@ -58,7 +58,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
     }
 
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
-                                      AutoImportService autoImportService)
+                                      MethodResolutionService methodResolutionService)
             throws ExprValidationException
     {
         // Determine the event type
@@ -70,7 +70,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"});
 
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, rawFilterSpec.getFilterExpressions(), null,
-                streamTypeService, autoImportService);
+                streamTypeService, methodResolutionService);
 
         return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName());
     }

@@ -9,19 +9,22 @@ package net.esper.client;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
-import javax.swing.text.ElementIterator;
-import java.util.*;
-import java.io.*;
-
-import net.esper.collection.Pair;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Properties;
 
 /**
  * Parser for configuration XML.
@@ -38,7 +41,7 @@ class ConfigurationParser {
     protected static void doConfigure(Configuration configuration, InputStream stream, String resourceName) throws EPException
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
+        DocumentBuilder builder;
 
         Document document = null;
 
@@ -85,6 +88,7 @@ class ConfigurationParser {
         handleAutoImports(configuration, root);
         handleDatabaseRefs(configuration, root);
         handlePlugInView(configuration, root);
+        handlePlugInAggregation(configuration, root);
         handleAdapterLoaders(configuration, root);
     }
 
@@ -170,7 +174,7 @@ class ConfigurationParser {
                 String propertyName = propertyElement.getAttributes().getNamedItem("property-name").getTextContent();
                 String xPath = propertyElement.getAttributes().getNamedItem("xpath").getTextContent();
                 String propertyType = propertyElement.getAttributes().getNamedItem("type").getTextContent();
-                QName xpathConstantType = null;
+                QName xpathConstantType;
                 if (propertyType.toUpperCase().equals("NUMBER"))
                 {
                     xpathConstantType = XPathConstants.NUMBER;
@@ -324,6 +328,17 @@ class ConfigurationParser {
             String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
             String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
             configuration.addPlugInView(namespace, name, factoryClassName);
+        }
+    }
+
+    private static void handlePlugInAggregation(Configuration configuration, Element parentElement)
+    {
+        NodeList nodes = parentElement.getElementsByTagName("plugin-aggregation-function");
+        for (int i = 0; i < nodes.getLength(); i++)
+        {
+            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+            String functionClassName = nodes.item(i).getAttributes().getNamedItem("function-class").getTextContent();
+            configuration.addPlugInAggregationFunction(name, functionClassName);
         }
     }
 

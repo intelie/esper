@@ -4,6 +4,7 @@ import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
 import net.esper.view.*;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class LengthBatchViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         this.eventType = parentEventType;
     }
@@ -66,7 +67,7 @@ public class LengthBatchViewFactory implements ViewFactory
         resourceCallback.setViewResource(relativeAccessGetterImpl);
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
         IStreamRelativeAccess relativeAccessByEvent = null;
 

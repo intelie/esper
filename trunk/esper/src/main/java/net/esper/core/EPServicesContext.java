@@ -11,7 +11,8 @@ import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.DispatchServiceProvider;
 import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
+import net.esper.eql.core.EngineImportService;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
@@ -27,7 +28,7 @@ import net.esper.view.stream.StreamFactoryService;
 import net.esper.view.stream.StreamFactoryServiceProvider;
 
 /**
- * Convenience class to instantiate implementations for all services.
+ * Convenience class to hold implementations for all services.
  */
 public final class EPServicesContext
 {
@@ -39,13 +40,14 @@ public final class EPServicesContext
     private final ViewService viewService;
     private final StreamFactoryService streamFactoryService;
     private final EventAdapterService eventAdapterService;
-    private final AutoImportService autoImportService;
+    private final EngineImportService engineImportService;
     private final DatabaseConfigService databaseConfigService;
     private final ViewResolutionService viewResolutionService;
     private final StatementLockFactory statementLockFactory;
     private final ManagedReadWriteLock eventProcessingRWLock;
     private final ExtensionServicesContext extensionServicesContext;
     private final EngineEnvContext engineEnvContext;
+    private final StatementContextFactory statementContextFactory;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -55,7 +57,6 @@ public final class EPServicesContext
      * Constructor - sets up new set of services.
      * @param schedulingService service to get time and schedule callbacks
      * @param eventAdapterService service to resolve event types
-     * @param autoImportService service to resolve partial class names
      * @param databaseConfigService service to resolve a database name to database connection factory and configs
      * @param viewResolutionService resolves view namespace and name to view factory class
      * @param statementLockFactory creates statement-level locks
@@ -64,17 +65,18 @@ public final class EPServicesContext
      */
     public EPServicesContext(SchedulingService schedulingService,
                              EventAdapterService eventAdapterService,
-                             AutoImportService autoImportService,
+                             EngineImportService engineImportService,
                              DatabaseConfigService databaseConfigService,
                              ViewResolutionService viewResolutionService,
                              StatementLockFactory statementLockFactory,
                              ManagedReadWriteLock eventProcessingRWLock,
                              ExtensionServicesContext extensionServicesContext,
-                             EngineEnvContext engineEnvContext)
+                             EngineEnvContext engineEnvContext,
+                             StatementContextFactory statementContextFactory)
     {
         this.schedulingService = schedulingService;
         this.eventAdapterService = eventAdapterService;
-        this.autoImportService = autoImportService;
+        this.engineImportService = engineImportService;
         this.databaseConfigService = databaseConfigService;
         this.filterService = FilterServiceProvider.newService();
         this.timerService = TimerServiceProvider.newService();
@@ -87,6 +89,7 @@ public final class EPServicesContext
         this.eventProcessingRWLock = eventProcessingRWLock;
         this.extensionServicesContext = extensionServicesContext;
         this.engineEnvContext = engineEnvContext;
+        this.statementContextFactory = statementContextFactory;
     }
 
     /**
@@ -192,9 +195,9 @@ public final class EPServicesContext
      * Returns the import and class name resolution service.
      * @return import service
      */
-    public AutoImportService getAutoImportService()
+    public EngineImportService getEngineImportService()
     {
-    	return autoImportService;
+    	return engineImportService;
     }
 
     /**
@@ -265,5 +268,10 @@ public final class EPServicesContext
         {
             extensionServicesContext.destroy();
         }
+    }
+
+    public StatementContextFactory getStatementServiceContextFactory()
+    {
+        return statementContextFactory;
     }
 }

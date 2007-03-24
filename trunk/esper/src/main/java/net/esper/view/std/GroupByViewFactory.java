@@ -3,6 +3,7 @@ package net.esper.view.std;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class GroupByViewFactory implements ViewFactory
         groupFieldNames = getFieldNameParams(viewParameters, "Group-by");
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         // Attaches to just about anything as long as all the fields exists
         for (int i = 0; i < groupFieldNames.length; i++)
@@ -55,9 +56,9 @@ public class GroupByViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
-        return new GroupByView(statementServiceContext, groupFieldNames);
+        return new GroupByView(statementContext, groupFieldNames);
     }
 
     public EventType getEventType()

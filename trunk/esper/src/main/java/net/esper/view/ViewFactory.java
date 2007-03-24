@@ -2,6 +2,7 @@ package net.esper.view;
 
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public interface ViewFactory
      * Attaches the factory to a parent event type such that the factory can validate
      * attach requirements and determine an event type for resulting views.
      * @param parentEventType is the parent event stream's or view factory's event type
-     * @param statementServiceContext contains the services needed for creating a new event type
+     * @param statementContext contains the services needed for creating a new event type
      * @param optionalParentFactory is null when there is no parent view factory, or contains the
      * parent view factory
      * @param parentViewFactories is a list of all the parent view factories or empty list if there are none
@@ -31,7 +32,7 @@ public interface ViewFactory
      * with the parent view factories view
      */
     public void attach(EventType parentEventType,
-                       StatementServiceContext statementServiceContext,
+                       StatementContext statementContext,
                        ViewFactory optionalParentFactory,
                        List<ViewFactory> parentViewFactories) throws ViewAttachException;
 
@@ -52,10 +53,10 @@ public interface ViewFactory
 
     /**
      * Create a new view.
-     * @param statementServiceContext contains view services
+     * @param statementContext contains view services
      * @return new view
      */
-    public View makeView(StatementServiceContext statementServiceContext);
+    public View makeView(StatementContext statementContext);
 
     /**
      * Returns the event type that the view that is created by the view factory would create for events posted

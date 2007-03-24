@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.expression;
 
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 
@@ -19,12 +19,12 @@ public interface ExprValidator
     /**
      * Validate node.
      * @param streamTypeService serves stream event type info
-     * @param autoImportService - for resolving class names in library method invocations
+     * @param methodResolutionService - for resolving class names in library method invocations
      * @param viewResourceDelegate - delegates for view resources to expression nodes
      * @throws ExprValidationException thrown when validation failed
      */
     public void validate(StreamTypeService streamTypeService,
-                         AutoImportService autoImportService,
+                         MethodResolutionService methodResolutionService,
                          ViewResourceDelegate viewResourceDelegate) throws ExprValidationException;
 
     /**

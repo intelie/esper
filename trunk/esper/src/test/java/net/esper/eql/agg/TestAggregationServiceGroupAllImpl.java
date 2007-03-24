@@ -1,9 +1,9 @@
-package net.esper.eql.core;
+package net.esper.eql.agg;
 
 import net.esper.support.eql.SupportExprNode;
 import net.esper.support.eql.SupportAggregator;
 import net.esper.event.EventBean;
-import net.esper.eql.core.AggregationServiceGroupAllImpl;
+import net.esper.eql.agg.AggregationServiceGroupAllImpl;
 import net.esper.eql.expression.ExprEvaluator;
 import junit.framework.TestCase;
 

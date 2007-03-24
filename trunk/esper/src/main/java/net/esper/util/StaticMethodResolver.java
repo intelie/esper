@@ -1,16 +1,14 @@
 package net.esper.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import net.esper.eql.core.AutoImportService;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Used for retrieving static method objects. It
@@ -109,21 +107,19 @@ public class StaticMethodResolver
 	 * Attempts to find the static method described by the parameters, 
 	 * or a method of the same name that will accept the same type of
 	 * parameters.
-	 * @param className - the name of the class that declared this method
 	 * @param methodName - the name of the method
 	 * @param paramTypes - the parameter types for the method
-	 * @param autoImportService - for resolving the class name
 	 * @return - the Method object for this method
 	 * @throws ClassNotFoundException if the class could not be found/loaded
 	 * @throws NoSuchMethodException if the method could not be found
 	 */
-	public static Method resolveMethod(String className, String methodName, Class[] paramTypes, AutoImportService autoImportService)
+	public static Method resolveMethod(Class declaringClass, String methodName, Class[] paramTypes)
 	throws ClassNotFoundException, NoSuchMethodException
 	{
-		log.debug(".resolve method className==" + className + ", methodName==" + methodName);
-
-		// Get the declaring class
-		Class declaringClass = autoImportService.resolveClass(className);
+        if (log.isDebugEnabled())
+        {
+            log.debug(".resolve method className=" + declaringClass.getSimpleName() + ", methodName=" + methodName);
+        }
 		
 		// Get all the methods for this class
 		Method[] methods = declaringClass.getMethods();
@@ -198,7 +194,7 @@ public class StaticMethodResolver
 					appendString = ", ";
 				}
 			}
-			throw new NoSuchMethodException("Unknown method " + className + '.' + methodName + '(' + params + ')');
+			throw new NoSuchMethodException("Unknown method " + declaringClass.getSimpleName() + '.' + methodName + '(' + params + ')');
 		}
 	}
 	

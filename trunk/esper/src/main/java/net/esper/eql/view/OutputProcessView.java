@@ -19,7 +19,7 @@ import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.view.ViewSupport;
 
 import org.apache.commons.logging.Log;
@@ -52,7 +52,7 @@ public class OutputProcessView extends ViewSupport implements JoinSetIndicator
     public OutputProcessView(ResultSetProcessor resultSetProcessor,
     					  int streamCount,
     					  OutputLimitSpec outputLimitSpec,
-    					  StatementServiceContext statementContext)
+    					  StatementContext statementContext)
     {
     	log.debug("creating view");
 

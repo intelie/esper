@@ -15,6 +15,7 @@ import net.esper.view.*;
 import net.esper.collection.Pair;
 import net.esper.collection.MultiKey;
 import net.esper.client.EPException;
+import net.esper.core.StatementContext;
 
 /**
  * The group view splits the data in a stream to multiple subviews, based on a key index.
@@ -34,7 +35,7 @@ import net.esper.client.EPException;
 public final class GroupByView extends ViewSupport implements CloneableView
 {
     private final String[] groupFieldNames;
-    private final StatementServiceContext statementServiceContext;
+    private final StatementContext statementContext;
     private EventPropertyGetter[] groupFieldGetters;
 
     private final Map<MultiKey<Object>, List<View>> subViewsPerKey = new HashMap<MultiKey<Object>, List<View>>();
@@ -44,17 +45,17 @@ public final class GroupByView extends ViewSupport implements CloneableView
     /**
      * Constructor.
      * @param groupFieldNames is the fields from which to pull the values to group by
-     * @param statementServiceContext contains required view services
+     * @param statementContext contains required view services
      */
-    public GroupByView(StatementServiceContext statementServiceContext, String[] groupFieldNames)
+    public GroupByView(StatementContext statementContext, String[] groupFieldNames)
     {
-        this.statementServiceContext = statementServiceContext;
+        this.statementContext = statementContext;
         this.groupFieldNames = groupFieldNames;
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return new GroupByView(statementServiceContext, groupFieldNames);
+        return new GroupByView(statementContext, groupFieldNames);
     }
 
     public void setParent(Viewable parent)
@@ -139,7 +140,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
         // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
         if (subViews == null)
         {
-            subViews = makeSubViews(this, groupByValuesKey.getArray(), statementServiceContext);
+            subViews = makeSubViews(this, groupByValuesKey.getArray(), statementContext);
             subViewsPerKey.put(groupByValuesKey, subViews);
         }
 
@@ -180,12 +181,12 @@ public final class GroupByView extends ViewSupport implements CloneableView
      * Sets up merge data views for merging the group-by key value back in.
      * @param groupView is the parent view for which to copy subviews for
      * @param groupByValues is the key values to group-by
-     * @param statementServiceContext is the view services that sub-views may need
+     * @param statementContext is the view services that sub-views may need
      * @return a list of views that are copies of the original list, with copied children, with
      * data merge views added to the copied child leaf views.
      */
     protected static List<View> makeSubViews(GroupByView groupView, Object[] groupByValues,
-                                             StatementServiceContext statementServiceContext)
+                                             StatementContext statementContext)
     {
         if (!groupView.hasViews())
         {
@@ -213,20 +214,20 @@ public final class GroupByView extends ViewSupport implements CloneableView
             CloneableView cloneableView = (CloneableView) originalChildView;
 
             // Copy child node
-            View copyChildView = cloneableView.cloneView(statementServiceContext);
+            View copyChildView = cloneableView.cloneView(statementContext);
             copyChildView.setParent(groupView);
             subViewList.add(copyChildView);
 
             // Make the sub views for child copying from the original to the child
             copySubViews(groupView.groupFieldNames, groupByValues, originalChildView, copyChildView,
-                    statementServiceContext);
+                    statementContext);
         }
 
         return subViewList;
     }
 
     private static void copySubViews(String[] groupFieldNames, Object[] groupByValues, View originalView, View copyView,
-                                     StatementServiceContext statementServiceContext)
+                                     StatementContext statementContext)
     {
         for (View subView : originalView.getViews())
         {
@@ -237,7 +238,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
                 if (Arrays.equals(mergeView.getGroupFieldNames(), groupFieldNames))
                 {
                     // We found our merge view - install a new data merge view on top of it
-                    AddPropertyValueView mergeDataView = new AddPropertyValueView(statementServiceContext, groupFieldNames, groupByValues, mergeView.getEventType());
+                    AddPropertyValueView mergeDataView = new AddPropertyValueView(statementContext, groupFieldNames, groupByValues, mergeView.getEventType());
 
                     // Add to the copied parent subview the view merge data view
                     copyView.addView(mergeDataView);
@@ -257,11 +258,11 @@ public final class GroupByView extends ViewSupport implements CloneableView
                 throw new EPException("Unexpected error copying subview");
             }
             CloneableView cloneableView = (CloneableView) subView;
-            View copiedChild = cloneableView.cloneView(statementServiceContext);
+            View copiedChild = cloneableView.cloneView(statementContext);
             copyView.addView(copiedChild);
 
             // Make the sub views for child
-            copySubViews(groupFieldNames, groupByValues, subView, copiedChild, statementServiceContext);
+            copySubViews(groupFieldNames, groupByValues, subView, copiedChild, statementContext);
         }
     }
 

@@ -12,6 +12,7 @@ import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
+import net.esper.core.StatementContext;
 
 /**
  * Window sorting by values in the specified field extending a specified number of elements
@@ -114,9 +115,9 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         return optionalSortedRandomAccess;
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return sortWindowViewFactory.makeView(statementServiceContext);
+        return sortWindowViewFactory.makeView(statementContext);
     }
 
     public final EventType getEventType()

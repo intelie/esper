@@ -9,7 +9,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.ViewResourceCallback;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.view.window.RandomAccessByIndex;
 import net.esper.view.window.RelativeAccessByEventNIndex;
@@ -27,7 +27,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
     private RelativeAccessByEventNIndex relativeAccess;
     private RandomAccessByIndex randomAccess;
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

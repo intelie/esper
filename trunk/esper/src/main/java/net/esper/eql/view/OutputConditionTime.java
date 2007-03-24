@@ -9,7 +9,7 @@ package net.esper.eql.view;
 
 import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.core.EPStatementHandleCallback;
 import net.esper.core.ExtensionServicesContext;
 
@@ -30,7 +30,7 @@ public final class OutputConditionTime implements OutputCondition
     private final ScheduleSlot scheduleSlot;
 
     private Long currentReferencePoint;
-    private StatementServiceContext context;
+    private StatementContext context;
     private boolean isCallbackScheduled;
 
     /**
@@ -40,7 +40,7 @@ public final class OutputConditionTime implements OutputCondition
      * @param outputCallback is the callback to make once the condition is satisfied
      */
     public OutputConditionTime(double secIntervalSize,
-    						   StatementServiceContext context,
+    						   StatementContext context,
     						   OutputCallback outputCallback)
     {
 		if(outputCallback ==  null)

@@ -5,6 +5,7 @@ import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
 import net.esper.view.*;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class TimeBatchViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         this.eventType = parentEventType;
     }
@@ -88,7 +89,7 @@ public class TimeBatchViewFactory implements ViewFactory
         resourceCallback.setViewResource(relativeAccessGetterImpl);
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
         IStreamRelativeAccess relativeAccessByEvent = null;
 
@@ -98,7 +99,7 @@ public class TimeBatchViewFactory implements ViewFactory
             relativeAccessGetterImpl.updated(relativeAccessByEvent, null);
         }
 
-        return new TimeBatchView(this, statementServiceContext, millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);
+        return new TimeBatchView(this, statementContext, millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);
     }
 
     public EventType getEventType()

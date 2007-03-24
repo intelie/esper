@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.spec;
 
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
 import net.esper.eql.expression.ExprNode;
@@ -54,7 +54,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
     }
 
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
-                                      AutoImportService autoImportService)
+                                      MethodResolutionService methodResolutionService)
             throws ExprValidationException
     {
         // Determine al the filter nodes used in the pattern
@@ -96,7 +96,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true);
 
             List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, autoImportService);
+            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService);
             filterNode.setFilterSpec(spec);
         }
 

@@ -5,6 +5,7 @@ import net.esper.eql.parse.TimePeriodParameter;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
 import net.esper.view.*;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String message = PropertyCheckHelper.checkLong(parentEventType, timestampFieldName);
         if (message != null)
@@ -91,7 +92,7 @@ public class ExternallyTimedWindowViewFactory implements ViewFactory
         resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
         IStreamRandomAccess randomAccess = null;
 

@@ -1,8 +1,9 @@
-package net.esper.eql.core;
+package net.esper.eql.agg;
 
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.eql.agg.AggregationMethod;
 
 /**
  * Implementation for handling aggregation without any grouping (no group-by).
@@ -14,7 +15,7 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
      * @param evaluators - evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))
      * @param aggregators - collect the aggregation state that evaluators evaluate to
      */
-    public AggregationServiceGroupAllImpl(ExprEvaluator evaluators[], Aggregator aggregators[])
+    public AggregationServiceGroupAllImpl(ExprEvaluator evaluators[], AggregationMethod aggregators[])
     {
         super(evaluators, aggregators);
     }

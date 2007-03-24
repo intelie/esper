@@ -7,18 +7,15 @@
  **************************************************************************************/
 package net.esper.eql.expression;
 
-import net.esper.eql.core.Aggregator;
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.agg.AggregationMethod;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewResourceDelegate;
 
 /**
  * Represents the count(...) and count(*) and count(distinct ...) aggregate function is an expression tree.
  */
 public class ExprCountNode extends ExprAggregateNode
 {
-    private Aggregator computer;
-
     /**
      * Ctor.
      * @param distinct - flag indicating unique or non-unique value aggregation
@@ -28,40 +25,27 @@ public class ExprCountNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
     {
-        // Empty child node list signals count(*)
+        // Empty child node list signals count(*), does not ignore nulls
         if (this.getChildNodes().isEmpty())
         {
-            computer = new DatapointAggregator();
+            return methodResolutionService.getCountAggregator(false);
         }
         else
         {
+            // else ignore nulls
             if (this.getChildNodes().size() != 1)
             {
                 throw new ExprValidationException("Count node must have zero or 1 child nodes");
             }
-            computer = new NonNullDatapointAggregator();
+            return methodResolutionService.getCountAggregator(true);
         }
-    }
-
-    public Aggregator getAggregationFunction()
-    {
-        if (computer == null)
-        {
-            throw new IllegalStateException("Node has not been initalized through validate call");
-        }
-        return computer;
     }
 
     protected String getAggregationFunctionName()
     {
         return "count";
-    }
-
-    public Class getType() throws ExprValidationException
-    {
-        return computer.getValueType();
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)
@@ -72,79 +56,5 @@ public class ExprCountNode extends ExprAggregateNode
         }
 
         return true;
-    }
-
-    /**
-     * Counts all datapoints including null values.
-     */
-    public static class DatapointAggregator implements Aggregator
-    {
-        private long numDataPoints;
-
-        public void enter(Object object)
-        {
-            numDataPoints++;
-        }
-
-        public void leave(Object object)
-        {
-            numDataPoints--;
-        }
-
-        public Object getValue()
-        {
-            return numDataPoints;
-        }
-
-        public Class getValueType()
-        {
-            return Long.class;
-        }
-
-        public Aggregator newAggregator()
-        {
-            return new DatapointAggregator();
-        }
-    }
-
-    /**
-     * Count all non-null values.
-     */
-    public static class NonNullDatapointAggregator implements Aggregator
-    {
-        private long numDataPoints;
-
-        public void enter(Object object)
-        {
-            if (object == null)
-            {
-                return;
-            }
-            numDataPoints++;
-        }
-
-        public void leave(Object object)
-        {
-            if (object == null)
-            {
-                return;
-            }
-            numDataPoints--;
-        }
-
-        public Object getValue()
-        {
-            return numDataPoints;
-        }
-
-        public Class getValueType()
-        {
-            return Long.class;
-        }
-
-        public Aggregator newAggregator()
-        {
-            return new NonNullDatapointAggregator();
-        }
     }
 }

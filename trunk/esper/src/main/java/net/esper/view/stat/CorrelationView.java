@@ -1,7 +1,7 @@
 package net.esper.view.stat;
 
 import net.esper.event.EventType;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
 
@@ -19,23 +19,23 @@ public final class CorrelationView extends BaseBivariateStatisticsView implement
      * Constructor.
      * @param xFieldName is the field name of the field providing X data points
      * @param yFieldName is the field name of the field providing X data points
-     * @param statementServiceContext contains required view services
+     * @param statementContext contains required view services
      */
-    public CorrelationView(StatementServiceContext statementServiceContext, String xFieldName, String yFieldName)
+    public CorrelationView(StatementContext statementContext, String xFieldName, String yFieldName)
     {
-        super(statementServiceContext, new CorrelationBean(), xFieldName, yFieldName);
+        super(statementContext, new CorrelationBean(), xFieldName, yFieldName);
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return new CorrelationView(statementServiceContext, this.getFieldNameX(), this.getFieldNameY());
+        return new CorrelationView(statementContext, this.getFieldNameX(), this.getFieldNameY());
     }
 
     public EventType getEventType()
     {
         if (eventType == null)
         {
-            eventType = createEventType(statementServiceContext);
+            eventType = createEventType(statementContext);
         }
         return eventType;
     }
@@ -49,12 +49,12 @@ public final class CorrelationView extends BaseBivariateStatisticsView implement
 
     /**
      * Creates the event type for this view.
-     * @param statementServiceContext is the event adapter service
+     * @param statementContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(StatementServiceContext statementServiceContext)
+    protected static EventType createEventType(StatementContext statementContext)
     {
-        return statementServiceContext.getEventAdapterService().addBeanType(CorrelationBean.class.getName(), CorrelationBean.class);
+        return statementContext.getEventAdapterService().addBeanType(CorrelationBean.class.getName(), CorrelationBean.class);
     }
 }
 

@@ -39,7 +39,7 @@ public class TestJMXLastElementDynamicMBean extends TestCase
     public void testBeanInfo()
     {
         MBeanInfo mbeanInfo = mbean.getMBeanInfo();
-        assertTrue(mbeanInfo.getAttributes().length == 4);
+        assertTrue(mbeanInfo.getAttributes().length == 5);
 
         String[] validKeys = eventType.getPropertyNames();
         for (int i = 0; i < mbeanInfo.getAttributes().length; i++)

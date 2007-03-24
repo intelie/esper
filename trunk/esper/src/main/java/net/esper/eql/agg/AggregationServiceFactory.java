@@ -1,13 +1,14 @@
-package net.esper.eql.core;
+package net.esper.eql.agg;
 
-import net.esper.event.EventBean;
-import net.esper.eql.core.AggregationService;
 import net.esper.eql.expression.ExprAggregateNode;
-import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.eql.expression.ExprNode;
+import net.esper.eql.agg.AggregationMethod;
+import net.esper.eql.core.MethodResolutionService;
+import net.esper.event.EventBean;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Factory for aggregation service instances.
@@ -26,7 +27,8 @@ public class AggregationServiceFactory
     public static AggregationService getService(List<ExprAggregateNode> aggregateExprNodes,
                                                 boolean hasGroupByClause,
                                                 ExprNode optionalHavingNode,
-                                                List<ExprNode> sortByNodes)
+                                                List<ExprNode> sortByNodes,
+                                                MethodResolutionService methodResolutionService)
     {
         // No aggregates used, we do not need this service
         if (aggregateExprNodes.isEmpty())
@@ -36,7 +38,7 @@ public class AggregationServiceFactory
 
         // Construct a list of evaluation node for the aggregation function.
         // For example "sum(2 * 3)" would make the sum an evaluation node.
-        Aggregator aggregators[] = new Aggregator[aggregateExprNodes.size()];
+        AggregationMethod aggregators[] = new AggregationMethod[aggregateExprNodes.size()];
         ExprEvaluator[] evaluators = new ExprEvaluator[aggregateExprNodes.size()];
 
         int index = 0;
@@ -71,7 +73,7 @@ public class AggregationServiceFactory
         if (hasGroupByClause)
         {
             // If there is a group-by clause, then we need to keep aggregators as prototypes
-            service = new AggregationServiceGroupByImpl(evaluators, aggregators);
+            service = new AggregationServiceGroupByImpl(evaluators, aggregators, methodResolutionService);
         }
         else
         {

@@ -1,8 +1,10 @@
 package net.esper.eql.expression;
 
 import net.esper.support.eql.SupportExprNode;
+import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.MinMaxTypeEnum;
+import net.esper.eql.agg.MinMaxAggregator;
 
 public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
 {
@@ -76,7 +78,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
     public void testMakeAggregator() throws Exception
     {
         MinMaxTypeEnum type = MinMaxTypeEnum.MAX;
-        assertTrue(makeNode(type, 5, Integer.class).getPrototypeAggregator() instanceof ExprMinMaxAggrNode.MinMaxAggregator);
+        assertTrue(makeNode(type, 5, Integer.class).getPrototypeAggregator() instanceof MinMaxAggregator);
     }
 
     public void testEqualsNode() throws Exception
@@ -90,7 +92,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
     {
         ExprMinMaxAggrNode minMaxNode = new ExprMinMaxAggrNode(false, minMaxType);
         minMaxNode.addChildNode(new SupportExprNode(value, type));
-        minMaxNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(minMaxNode);
         return minMaxNode;
     }
 }

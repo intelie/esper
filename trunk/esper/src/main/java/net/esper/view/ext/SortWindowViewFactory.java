@@ -5,6 +5,7 @@ import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
 import net.esper.view.*;
 import net.esper.view.window.RandomAccessByIndexGetter;
+import net.esper.core.StatementContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -79,7 +80,7 @@ public class SortWindowViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         // Attaches to parent views where the sort fields exist and implement Comparable
         String result = null;
@@ -122,7 +123,7 @@ public class SortWindowViewFactory implements ViewFactory
         resourceCallback.setViewResource(randomAccessGetterImpl);
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
         IStreamSortedRandomAccess sortedRandomAccess = null;
 

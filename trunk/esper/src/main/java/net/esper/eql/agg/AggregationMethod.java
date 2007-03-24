@@ -5,14 +5,16 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.core;
+package net.esper.eql.agg;
+
+import net.esper.eql.core.MethodResolutionService;
 
 /**
  * Maintains aggregation state applying values as entering and leaving the state.
  * <P>Implementations must also act as a factory for further independent copies of aggregation states such that
  * new aggregation state holders and be created from a prototype.
  */
-public interface Aggregator
+public interface AggregationMethod
 {
     /**
      * Apply the value as entering aggregation (entering window).
@@ -44,5 +46,5 @@ public interface Aggregator
      * Make a new, initalized aggregation state.
      * @return initialized copy of the aggregator
      */
-    public Aggregator newAggregator();
+    public AggregationMethod newAggregator(MethodResolutionService methodResolutionService);
 }

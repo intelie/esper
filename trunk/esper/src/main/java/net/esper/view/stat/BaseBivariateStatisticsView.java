@@ -6,6 +6,7 @@ import net.esper.collection.SingleEventIterator;
 import net.esper.event.EventBean;
 import net.esper.event.EventPropertyGetter;
 import net.esper.view.*;
+import net.esper.core.StatementContext;
 
 /**
  * View for computing statistics that require 2 input variable arrays containing X and Y datapoints.
@@ -26,21 +27,21 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     /**
      * Services required by implementing classes.
      */
-    protected StatementServiceContext statementServiceContext;
+    protected StatementContext statementContext;
 
     /**
      * Constructor requires the name of the two fields to use in the parent view to compute the statistics.
      * @param statisticsBean is the base class prodiving sum of X and Y and squares for use by subclasses
      * @param fieldNameX is the name of the field within the parent view to get the X values from
      * @param fieldNameY is the name of the field within the parent view to get the Y values from
-     * @param statementServiceContext contains required view services
+     * @param statementContext contains required view services
      */
-    public BaseBivariateStatisticsView(StatementServiceContext statementServiceContext,
+    public BaseBivariateStatisticsView(StatementContext statementContext,
                                        BaseStatisticsBean statisticsBean,
                                        String fieldNameX,
                                        String fieldNameY)
     {
-        this.statementServiceContext = statementServiceContext;
+        this.statementContext = statementContext;
         this.statisticsBean = statisticsBean;
         this.fieldNameX = fieldNameX;
         this.fieldNameY = fieldNameY;
@@ -93,15 +94,15 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
             // Make a copy of the current values since if we change the values subsequently, the handed-down
             // values should not change
             BaseStatisticsBean newValues = (BaseStatisticsBean) statisticsBean.clone();
-            EventBean newValuesEvent = statementServiceContext.getEventAdapterService().adapterForBean(newValues);
-            EventBean oldValuesEvent = statementServiceContext.getEventAdapterService().adapterForBean(oldValues);
+            EventBean newValuesEvent = statementContext.getEventAdapterService().adapterForBean(newValues);
+            EventBean oldValuesEvent = statementContext.getEventAdapterService().adapterForBean(oldValues);
             updateChildren(new EventBean[] {newValuesEvent}, new EventBean[] {oldValuesEvent});
         }
     }
 
     public final Iterator<EventBean> iterator()
     {
-        return new SingleEventIterator(statementServiceContext.getEventAdapterService().adapterForBean(statisticsBean));
+        return new SingleEventIterator(statementContext.getEventAdapterService().adapterForBean(statisticsBean));
     }
 
     /**

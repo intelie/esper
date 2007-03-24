@@ -9,10 +9,9 @@ package net.esper.eql.expression;
 
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
-import net.esper.eql.core.AggregationResultFuture;
-import net.esper.eql.core.Aggregator;
-import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.UniqueValueAggregator;
+import net.esper.eql.core.*;
+import net.esper.eql.agg.AggregationMethod;
+import net.esper.eql.agg.AggregationResultFuture;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -24,52 +23,22 @@ import java.util.LinkedList;
  * <p>
  * In terms of validation each concrete aggregation node must implement it's own validation.
  * <p>
- * In terms of evaluation this base class will ask the assigned {@link net.esper.eql.core.AggregationResultFuture} for the current state,
+ * In terms of evaluation this base class will ask the assigned {@link net.esper.eql.agg.AggregationResultFuture} for the current state,
  * using a column number assigned to the node.
  * <p>
- * Concrete subclasses must supply an aggregation state prototype node {@link Aggregator} that reflects
+ * Concrete subclasses must supply an aggregation state prototype node {@link AggregationMethod} that reflects
  * each group's (there may be group-by critera) current aggregation state.
  */
 public abstract class ExprAggregateNode extends ExprNode
 {
 	private AggregationResultFuture aggregationResultFuture;
 	private int column;
+    private AggregationMethod aggregationMethod;
 
     /**
      * Indicator for whether the aggregation is distinct - i.e. only unique values are considered.
      */
     protected boolean isDistinct;
-
-    /**
-     * Ctor.
-     * @param distinct - sets the flag indicatating whether only unique values should be aggregated
-     */
-    protected ExprAggregateNode(boolean distinct)
-    {
-        isDistinct = distinct;
-    }
-
-    /**
-     * Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
-     * @return prototype aggregation state as a factory for aggregation states per group-by key value
-     */
-    public Aggregator getPrototypeAggregator()
-    {
-        if (!isDistinct)
-        {
-            return getAggregationFunction();
-        }
-        else
-        {
-            return new UniqueValueAggregator(getAggregationFunction());
-        }
-    }
-
-    /**
-     * Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
-     * @return prototype aggregation state as a factory for aggregation states per group-by key value
-     */
-    protected abstract Aggregator getAggregationFunction();
 
     /**
      * Returns the aggregation function name for representation in a generate expression string.
@@ -84,6 +53,49 @@ public abstract class ExprAggregateNode extends ExprNode
      * @return true if semantically equal, or false if not equals
      */
     protected abstract boolean equalsNodeAggregate(ExprAggregateNode node);
+
+    protected abstract AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+        throws ExprValidationException;
+
+    /**
+     * Ctor.
+     * @param distinct - sets the flag indicatating whether only unique values should be aggregated
+     */
+    protected ExprAggregateNode(boolean distinct)
+    {
+        isDistinct = distinct;
+    }
+
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    {
+        this.aggregationMethod = validateAggregationChild(streamTypeService, methodResolutionService);
+        if (isDistinct)
+        {
+            aggregationMethod = methodResolutionService.getDistinctAggregator(aggregationMethod);
+        }
+    }
+
+    public Class getType() throws ExprValidationException
+    {
+        if (aggregationMethod == null)
+        {
+            throw new IllegalStateException("Aggregation method has not been set");
+        }
+        return aggregationMethod.getValueType();
+    }
+
+    /**
+     * Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
+     * @return prototype aggregation state as a factory for aggregation states per group-by key value
+     */
+    public AggregationMethod getPrototypeAggregator()
+    {
+        if (aggregationMethod == null)
+        {
+            throw new IllegalStateException("Aggregation method has not been set");
+        }
+        return aggregationMethod;
+    }
 
     /**
      * Assigns to the node the future which can be queried for the current aggregation state at evaluation time.

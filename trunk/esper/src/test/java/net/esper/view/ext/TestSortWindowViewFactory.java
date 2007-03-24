@@ -3,7 +3,7 @@ package net.esper.view.ext;
 import junit.framework.TestCase;
 import net.esper.view.ViewAttachException;
 import net.esper.view.ViewParameterException;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.view.std.SizeView;
 import net.esper.event.EventType;
 import net.esper.support.event.SupportEventTypeFactory;
@@ -59,7 +59,7 @@ public class TestSortWindowViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        StatementServiceContext context = SupportStatementContextFactory.makeContext();
+        StatementContext context = SupportStatementContextFactory.makeContext();
 
         factory.setViewParameters(null, Arrays.asList(new Object[] {"price", true, 100}));
         assertFalse(factory.canReuse(new SizeView(context)));

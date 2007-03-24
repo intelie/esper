@@ -3,6 +3,7 @@ package net.esper.view.stat;
 import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventType;
 import net.esper.view.*;
+import net.esper.core.StatementContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +66,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String message = PropertyCheckHelper.checkNumeric(parentEventType, measureField);
         if (message != null)
@@ -97,7 +98,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
             }
         }
 
-        eventType = MultiDimStatsView.createEventType(statementServiceContext);
+        eventType = MultiDimStatsView.createEventType(statementContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -110,9 +111,9 @@ public class MultiDimStatsViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
-        return new MultiDimStatsView(statementServiceContext, derivedMeasures, measureField, columnField, rowField, pageField);
+        return new MultiDimStatsView(statementContext, derivedMeasures, measureField, columnField, rowField, pageField);
     }
 
     public EventType getEventType()

@@ -9,6 +9,7 @@ import net.esper.view.std.LastElementView;
 import net.esper.view.std.SizeView;
 import net.esper.view.window.LengthWindowView;
 import net.esper.view.window.TimeWindowView;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class TestViewServiceHelper extends TestCase
     {
         SupportBeanClassView topView = new SupportBeanClassView(TEST_CLASS);
         List<ViewFactory> viewFactories = SupportViewSpecFactory.makeFactoryListOne(topView.getEventType());
-        StatementServiceContext context = SupportStatementContextFactory.makeContext();
+        StatementContext context = SupportStatementContextFactory.makeContext();
 
         // Check correct views created
         List<View> views = ViewServiceHelper.instantiateChain(topView, viewFactories, context);

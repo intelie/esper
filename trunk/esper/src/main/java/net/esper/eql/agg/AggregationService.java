@@ -5,9 +5,8 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.core;
+package net.esper.eql.agg;
 
-import net.esper.collection.MultiKey;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
 

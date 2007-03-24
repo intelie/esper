@@ -9,7 +9,7 @@ package net.esper.eql.view;
 
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 
 /**
  * An output condition that is satisfied at the first event
@@ -27,7 +27,7 @@ public class OutputConditionFirst implements OutputCondition
      * @param statementContext supplies the services required such as for scheduling callbacks
      * @param outputCallback is the method to invoke for output
 	 */
-	public OutputConditionFirst(OutputLimitSpec outputLimitSpec, StatementServiceContext statementContext, OutputCallback outputCallback)
+	public OutputConditionFirst(OutputLimitSpec outputLimitSpec, StatementContext statementContext, OutputCallback outputCallback)
 	{
 		if(outputCallback ==  null)
 		{

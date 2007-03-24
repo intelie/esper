@@ -1,7 +1,7 @@
 package net.esper.eql.expression;
 
 import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventBean;
@@ -25,7 +25,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
     private RandomAccessByIndexGetter randomAccessGetter;
     private RelativeAccessByEventNIndexGetter relativeAccessGetter;
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

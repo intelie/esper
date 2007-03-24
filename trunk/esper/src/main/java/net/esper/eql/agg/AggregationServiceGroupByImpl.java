@@ -1,8 +1,10 @@
-package net.esper.eql.core;
+package net.esper.eql.agg;
 
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.eql.agg.AggregationMethod;
+import net.esper.eql.core.MethodResolutionService;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -13,37 +15,35 @@ import java.util.HashMap;
 public class AggregationServiceGroupByImpl extends AggregationServiceBase
 {
     // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
-    private Map<MultiKeyUntyped, Aggregator[]> aggregatorsPerGroup;
+    private Map<MultiKeyUntyped, AggregationMethod[]> aggregatorsPerGroup;
 
     // maintain a current row for random access into the aggregator state table
     // (row=groups, columns=expression nodes that have aggregation functions)
-    private Aggregator[] currentAggregatorRow;
+    private AggregationMethod[] currentAggregatorRow;
+
+    private MethodResolutionService methodResolutionService;
 
     /**
      * Ctor.
      * @param evaluators - evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))
-     * @param aggregators - collect the aggregation state that evaluators evaluate to, act as factories for new
+     * @param prototypes - collect the aggregation state that evaluators evaluate to, act as prototypes for new aggregations
      * aggregation states for each group
      */
-    public AggregationServiceGroupByImpl(ExprEvaluator evaluators[], Aggregator aggregators[])
+    public AggregationServiceGroupByImpl(ExprEvaluator evaluators[], AggregationMethod prototypes[], MethodResolutionService methodResolutionService)
     {
-        super(evaluators, aggregators);
-
-        this.aggregatorsPerGroup = new HashMap<MultiKeyUntyped, Aggregator[]>();
+        super(evaluators, prototypes);
+        this.methodResolutionService = methodResolutionService;
+        this.aggregatorsPerGroup = new HashMap<MultiKeyUntyped, AggregationMethod[]>();
     }
 
     public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
     {
-        Aggregator[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
+        AggregationMethod[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
 
         // The aggregators for this group do not exist, need to create them from the prototypes
         if (groupAggregators == null)
         {
-            groupAggregators = new Aggregator[this.aggregators.length];
-            for (int j = 0; j < groupAggregators.length; j++)
-            {
-                groupAggregators[j] = aggregators[j].newAggregator();
-            }
+            groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
             aggregatorsPerGroup.put(groupByKey, groupAggregators);
         }
 
@@ -57,16 +57,12 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
 
     public void applyLeave(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
     {
-        Aggregator[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
+        AggregationMethod[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
 
         // The aggregators for this group do not exist, need to create them from the prototypes
         if (groupAggregators == null)
         {
-            groupAggregators = new Aggregator[this.aggregators.length];
-            for (int j = 0; j < groupAggregators.length; j++)
-            {
-                groupAggregators[j] = aggregators[j].newAggregator();
-            }
+            groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
             aggregatorsPerGroup.put(groupByKey, groupAggregators);
         }
 
@@ -84,11 +80,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
 
         if (currentAggregatorRow == null)
         {
-            currentAggregatorRow = new Aggregator[this.aggregators.length];
-            for (int j = 0; j < currentAggregatorRow.length; j++)
-            {
-                currentAggregatorRow[j] = aggregators[j].newAggregator();
-            }
+            currentAggregatorRow = methodResolutionService.newAggregators(aggregators, groupByKey);
             aggregatorsPerGroup.put(groupByKey, currentAggregatorRow);
         }
     }

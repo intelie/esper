@@ -5,25 +5,26 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.core;
+package net.esper.eql.agg;
 
 import net.esper.collection.RefCountedSet;
-import net.esper.eql.core.Aggregator;
+import net.esper.eql.agg.AggregationMethod;
+import net.esper.eql.core.MethodResolutionService;
 
 /**
- * Aggregator for use on top of another aggregator that handles unique value aggregation (versus all-value aggregation)
+ * AggregationMethod for use on top of another aggregator that handles unique value aggregation (versus all-value aggregation)
  * for the underlying aggregator.
  */
-public class UniqueValueAggregator implements Aggregator
+public class DistinctValueAggregator implements AggregationMethod
 {
-    private final Aggregator inner;
+    private final AggregationMethod inner;
     private final RefCountedSet<Object> valueSet;
 
     /**
      * Ctor.
      * @param inner is the aggregator function computing aggregation values 
      */
-    public UniqueValueAggregator(Aggregator inner)
+    public DistinctValueAggregator(AggregationMethod inner)
     {
         this.inner = inner;
         this.valueSet = new RefCountedSet<Object>();
@@ -57,8 +58,9 @@ public class UniqueValueAggregator implements Aggregator
         return inner.getValueType();
     }
 
-    public Aggregator newAggregator()
+    public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return new UniqueValueAggregator(inner.newAggregator());
+        AggregationMethod innerCopy = inner.newAggregator(methodResolutionService);
+        return methodResolutionService.getDistinctAggregator(innerCopy);
     }
 }

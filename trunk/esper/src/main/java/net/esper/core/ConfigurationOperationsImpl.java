@@ -7,14 +7,13 @@
  **************************************************************************************/
 package net.esper.core;
 
-import net.esper.client.ConfigurationEventTypeLegacy;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.ConfigurationException;
 import net.esper.client.ConfigurationOperations;
-import net.esper.eql.core.AutoImportService;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterService;
 import net.esper.util.JavaClassHelper;
+import net.esper.eql.core.EngineImportService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,14 +25,22 @@ import java.util.Properties;
 public class ConfigurationOperationsImpl implements ConfigurationOperations
 {
     private EventAdapterService eventAdapterService;
+    private EngineImportService engineImportService;
 
     /**
      * Ctor.
      * @param eventAdapterService is the event wrapper and type service
      */
-    public ConfigurationOperationsImpl(EventAdapterService eventAdapterService)
+    public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
+                                       EngineImportService engineImportService)
     {
         this.eventAdapterService = eventAdapterService;
+        this.engineImportService = engineImportService;
+    }
+
+    public void addPlugInAggregationFunction(String functionName, String aggregationClassName)
+    {
+        // TODO
     }
 
     public void addEventTypeAlias(String eventTypeAlias, String javaEventClassName)
@@ -125,5 +132,5 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
             propertyTypes.put((String) property, clazz);
         }
         return propertyTypes;
-    }    
+    }
 }

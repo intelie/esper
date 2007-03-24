@@ -4,7 +4,7 @@ import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -26,7 +26,7 @@ public class SupportBeanClassView extends SupportBaseView implements CloneableVi
         instances.add(this);
     }
 
-    public View cloneView(StatementServiceContext context)
+    public View cloneView(StatementContext context)
     {
         return new SupportBeanClassView(clazz);
     }

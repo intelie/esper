@@ -1,10 +1,13 @@
-package net.esper.eql.core;
+package net.esper.eql.agg;
 
 import net.esper.support.eql.SupportAggregator;
 import net.esper.support.eql.SupportExprNode;
 import net.esper.event.EventBean;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.eql.expression.ExprEvaluator;
+import net.esper.eql.agg.AggregationServiceGroupByImpl;
+import net.esper.eql.core.MethodResolutionService;
+import net.esper.eql.core.MethodResolutionServiceImpl;
 import junit.framework.TestCase;
 
 public class TestAggregationServiceGroupByImpl extends TestCase
@@ -12,6 +15,7 @@ public class TestAggregationServiceGroupByImpl extends TestCase
     private AggregationServiceGroupByImpl service;
     private MultiKeyUntyped groupOneKey;
     private MultiKeyUntyped groupTwoKey;
+    private MethodResolutionService methodResolutionService;
 
     public void setUp()
     {
@@ -21,8 +25,9 @@ public class TestAggregationServiceGroupByImpl extends TestCase
             aggregators[i] = new SupportAggregator();
         }
         ExprEvaluator evaluators[] = new ExprEvaluator[] { new SupportExprNode(5), new SupportExprNode(2) };
+        methodResolutionService = new MethodResolutionServiceImpl(null);
 
-        service = new AggregationServiceGroupByImpl(evaluators, aggregators);
+        service = new AggregationServiceGroupByImpl(evaluators, aggregators, methodResolutionService);
 
         groupOneKey = new MultiKeyUntyped(new Object[] {"x", "y1"});
         groupTwoKey = new MultiKeyUntyped(new Object[] {"x", "y2"});

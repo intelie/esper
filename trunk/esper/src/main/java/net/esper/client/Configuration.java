@@ -91,6 +91,11 @@ public class Configuration implements ConfigurationOperations {
     protected List<ConfigurationPlugInView> plugInViews;
 
     /**
+     * List of configured plug-in aggregation functions.
+     */
+    protected List<ConfigurationPlugInAggregationFunction> plugInAggregationFunctions;
+
+    /**
      * List of adapter loaders.
      */
     protected List<ConfigurationAdapterLoader> adapterLoaders;
@@ -121,6 +126,14 @@ public class Configuration implements ConfigurationOperations {
     public String getEPServicesContextFactoryClassName()
     {
         return epServicesContextFactoryClassName;
+    }
+
+    public void addPlugInAggregationFunction(String functionName, String aggregationClassName)
+    {
+        ConfigurationPlugInAggregationFunction entry = new ConfigurationPlugInAggregationFunction();
+        entry.setFunctionClassName(aggregationClassName);
+        entry.setName(functionName);
+        plugInAggregationFunctions.add(entry);
     }
 
     /**
@@ -290,6 +303,11 @@ public class Configuration implements ConfigurationOperations {
     public List<ConfigurationAdapterLoader> getAdapterLoaders()
     {
         return adapterLoaders;
+    }
+
+    public List<ConfigurationPlugInAggregationFunction> getPlugInAggregationFunctions()
+    {
+        return plugInAggregationFunctions;
     }
 
     /**
@@ -490,6 +508,7 @@ public class Configuration implements ConfigurationOperations {
         isUsingDefaultImports = true;
         plugInViews = new ArrayList<ConfigurationPlugInView>();
         adapterLoaders = new ArrayList<ConfigurationAdapterLoader>();
+        plugInAggregationFunctions = new ArrayList<ConfigurationPlugInAggregationFunction>();
     }
 
     /**

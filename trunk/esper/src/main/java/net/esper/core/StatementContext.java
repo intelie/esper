@@ -1,18 +1,20 @@
-package net.esper.view;
+package net.esper.core;
 
-import net.esper.core.EPStatementHandle;
-import net.esper.core.ExtensionServicesContext;
 import net.esper.event.EventAdapterService;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
+import net.esper.view.StatementStopService;
+import net.esper.view.ViewResolutionService;
+import net.esper.eql.core.MethodResolutionService;
 
 /**
  * Contains handles to the implementation of the the scheduling service for use in view evaluation.
  */
-public final class StatementServiceContext
+public final class StatementContext
 {
     private final String statementId;
     private final String statementName;
+    private final String expression;
     private final SchedulingService schedulingService;
     private final ScheduleBucket scheduleBucket;
     private final EventAdapterService eventAdapterService;
@@ -20,6 +22,7 @@ public final class StatementServiceContext
     private final ViewResolutionService viewResultionService;
     private final ExtensionServicesContext extensionServicesContext;
     private final StatementStopService statementStopService;
+    private final MethodResolutionService methodResolutionService;
 
     /**
      * Constructor.
@@ -33,18 +36,21 @@ public final class StatementServiceContext
      * @param extensionServicesContext provide extension points for custom statement resources
      * @param statementStopService for registering a callback invoked when a statement is stopped
      */
-    public StatementServiceContext(String statementId,
+    public StatementContext(String statementId,
                                    String statementName,
+                                   String expression,
                               SchedulingService schedulingService,
                               ScheduleBucket scheduleBucket,
                               EventAdapterService eventAdapterService,
                               EPStatementHandle epStatementHandle,
                               ViewResolutionService viewResultionService,
                               ExtensionServicesContext extensionServicesContext,
-                              StatementStopService statementStopService)
+                              StatementStopService statementStopService,
+                              MethodResolutionService methodResolutionService)
     {
         this.statementId = statementId;
         this.statementName = statementName;
+        this.expression = expression;
         this.schedulingService = schedulingService;
         this.eventAdapterService = eventAdapterService;
         this.scheduleBucket = scheduleBucket;
@@ -52,6 +58,7 @@ public final class StatementServiceContext
         this.viewResultionService = viewResultionService;
         this.extensionServicesContext = extensionServicesContext;
         this.statementStopService = statementStopService;
+        this.methodResolutionService = methodResolutionService;
     }
 
     /**
@@ -135,10 +142,19 @@ public final class StatementServiceContext
         return statementStopService;
     }
 
+    public MethodResolutionService getMethodResolutionService()
+    {
+        return methodResolutionService;
+    }
+
+    public String getExpression()
+    {
+        return expression;
+    }
+
     public String toString()
     {
         return  " statementId=" + statementId +
                 " statementName=" + statementName;
     }
-
 }

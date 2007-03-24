@@ -25,6 +25,8 @@ import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.eql.spec.SelectClauseSpec;
 import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.eql.spec.SelectExprElementRawSpec;
+import net.esper.eql.agg.AggregationServiceFactory;
+import net.esper.eql.agg.AggregationService;
 import net.esper.event.EventAdapterService;
 
 import org.apache.commons.logging.Log;
@@ -69,7 +71,7 @@ public class ResultSetProcessorFactory
      * @param typeService - for information about the streams in the from clause
      * @param insertIntoDesc - descriptor for insert-into clause information
      * @param eventAdapterService - wrapping service for events
-     * @param autoImportService - for resolving class names
+     * @param methodResolutionService - for resolving class names
      * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
      * @return result set processor instance
      * @throws ExprValidationException when any of the expressions is invalid
@@ -82,7 +84,7 @@ public class ResultSetProcessorFactory
                                                	  List<Pair<ExprNode, Boolean>> orderByList,
                                                   StreamTypeService typeService,
                                                   EventAdapterService eventAdapterService,
-                                                  AutoImportService autoImportService,
+                                                  MethodResolutionService methodResolutionService,
                                                   ViewResourceDelegate viewResourceDelegate)
             throws ExprValidationException
     {
@@ -105,7 +107,7 @@ public class ResultSetProcessorFactory
         {
             // validate element
             SelectExprElementRawSpec element = selectClauseSpec.getSelectList().get(i);
-            ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService, autoImportService, viewResourceDelegate);
+            ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
 
             // determine an element name if none assigned
             String asName = element.getOptionalAsName();
@@ -123,13 +125,13 @@ public class ResultSetProcessorFactory
         // Validate group-by expressions, if any (could be empty list for no group-by)
         for (int i = 0; i < groupByNodes.size(); i++)
         {
-            groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService, autoImportService, viewResourceDelegate));
+            groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate));
         }
 
         // Validate having clause, if present
         if (optionalHavingNode != null)
         {
-            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, autoImportService, viewResourceDelegate);
+            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
         }
 
         // Validate order-by expressions, if any (could be empty list for no order-by)
@@ -137,7 +139,7 @@ public class ResultSetProcessorFactory
         {
         	ExprNode orderByNode = orderByList.get(i).getFirst();
         	Boolean isDescending = orderByList.get(i).getSecond();
-        	Pair<ExprNode, Boolean> validatedPair = new Pair<ExprNode, Boolean>(orderByNode.getValidatedSubtree(typeService, autoImportService, viewResourceDelegate), isDescending);
+        	Pair<ExprNode, Boolean> validatedPair = new Pair<ExprNode, Boolean>(orderByNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate), isDescending);
         	orderByList.set(i, validatedPair);
         }
 
@@ -164,7 +166,7 @@ public class ResultSetProcessorFactory
 
         // Construct the appropriate aggregation service
         boolean hasGroupBy = !groupByNodes.isEmpty();
-        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, hasGroupBy, optionalHavingNode, orderByNodes);
+        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, hasGroupBy, optionalHavingNode, orderByNodes, methodResolutionService);
 
         // Construct the processor for sorting output events
         OrderByProcessor orderByProcessor = OrderByProcessorFactory.getProcessor(namedSelectionList,

@@ -5,6 +5,7 @@ import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.event.EventPropertyGetter;
 import net.esper.collection.SingleEventIterator;
+import net.esper.core.StatementContext;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -14,7 +15,7 @@ public class MyTrendSpotterView extends ViewSupport
 {
     private static final String PROPERTY_NAME = "trendcount";
 
-    private final StatementServiceContext statementServiceContext;
+    private final StatementContext statementContext;
     private final EventType eventType;
     private final String fieldName;
     private EventPropertyGetter fieldGetter;
@@ -25,13 +26,13 @@ public class MyTrendSpotterView extends ViewSupport
     /**
      * Constructor requires the name of the field to use in the parent view to compute a trend.
      * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view
-     * @param statementServiceContext contains required view services
+     * @param statementContext contains required view services
      */
-    public MyTrendSpotterView(StatementServiceContext statementServiceContext, String fieldName)
+    public MyTrendSpotterView(StatementContext statementContext, String fieldName)
     {
-        this.statementServiceContext = statementServiceContext;
+        this.statementContext = statementContext;
         this.fieldName = fieldName;
-        eventType = createEventType(statementServiceContext);
+        eventType = createEventType(statementContext);
     }
 
     public void setParent(Viewable parent)
@@ -43,9 +44,9 @@ public class MyTrendSpotterView extends ViewSupport
         }
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return new MyTrendSpotterView(statementServiceContext, fieldName);
+        return new MyTrendSpotterView(statementContext, fieldName);
     }
 
     /**
@@ -111,18 +112,18 @@ public class MyTrendSpotterView extends ViewSupport
     {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put(PROPERTY_NAME, trendcount);
-        return statementServiceContext.getEventAdapterService().createMapFromValues(result, eventType);
+        return statementContext.getEventAdapterService().createMapFromValues(result, eventType);
     }
 
     /**
      * Creates the event type for this view.
-     * @param statementServiceContext is the event adapter service
+     * @param statementContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(StatementServiceContext statementServiceContext)
+    protected static EventType createEventType(StatementContext statementContext)
     {
         Map<String, Class> eventTypeMap = new HashMap<String, Class>();
         eventTypeMap.put(PROPERTY_NAME, Long.class);
-        return statementServiceContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
+        return statementContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
     }
 }

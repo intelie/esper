@@ -9,6 +9,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.event.EventAdapterService;
 import net.esper.view.*;
+import net.esper.core.StatementContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class AddPropertyValueView extends ViewSupport implements CloneableView
 {
-    private final StatementServiceContext statementServiceContext;
+    private final StatementContext statementContext;
     private final String[] propertyNames;
     private final Object[] propertyValues;
     private final EventType eventType;
@@ -29,19 +30,19 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
      * @param fieldNames is the name of the field that is added to any events received by this view.
      * @param mergeValues is the values of the field that is added to any events received by this view.
      * @param mergedResultEventType is the event type that the merge view reports to it's child views
-     * @param statementServiceContext contains required view services
+     * @param statementContext contains required view services
      */
-    public AddPropertyValueView(StatementServiceContext statementServiceContext, String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
+    public AddPropertyValueView(StatementContext statementContext, String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
     {
         this.propertyNames = fieldNames;
         this.propertyValues = mergeValues;
         this.eventType = mergedResultEventType;
-        this.statementServiceContext = statementServiceContext;
+        this.statementContext = statementContext;
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return new AddPropertyValueView(statementServiceContext, propertyNames, propertyValues, eventType);
+        return new AddPropertyValueView(statementContext, propertyNames, propertyValues, eventType);
     }
 
     public void setParent(Viewable parent)
@@ -98,7 +99,7 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
             int index = 0;
             for (EventBean newEvent : newData)
             {
-                EventBean event = addProperty(newEvent, propertyNames, propertyValues, eventType, statementServiceContext.getEventAdapterService());
+                EventBean event = addProperty(newEvent, propertyNames, propertyValues, eventType, statementContext.getEventAdapterService());
                 newEvents[index++] = event;
             }
         }
@@ -110,7 +111,7 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
             int index = 0;
             for (EventBean oldEvent : oldData)
             {
-                EventBean event = addProperty(oldEvent, propertyNames, propertyValues, eventType, statementServiceContext.getEventAdapterService());
+                EventBean event = addProperty(oldEvent, propertyNames, propertyValues, eventType, statementContext.getEventAdapterService());
                 oldEvents[index++] = event;
             }
         }
@@ -140,7 +141,7 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
                 if (mustAddProperty)
                 {
                     EventBean event = addProperty(nextEvent, propertyNames, propertyValues, eventType,
-                            statementServiceContext.getEventAdapterService());
+                            statementContext.getEventAdapterService());
                     return event;
                 }
                 else

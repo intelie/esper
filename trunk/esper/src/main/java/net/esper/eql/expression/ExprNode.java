@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.expression;
 
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.util.MetaDefItem;
@@ -52,31 +52,31 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
      * node as root. Some of the nodes of the tree, including the
      * root, might be replaced in the process.
      * @param streamTypeService - serves stream type information
-     * @param autoImportService - for resolving class names in library method invocations
+     * @param methodResolutionService - for resolving class names in library method invocations
      * @param viewResourceDelegate - delegates for view resources to expression nodes
      * @throws ExprValidationException when the validation fails
      * @return the root node of the validated subtree, possibly
      *         different than the root node of the unvalidated subtree
      */
-    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService, AutoImportService autoImportService,
+    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService,
                                         ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         ExprNode result = this;
 
         for (int i = 0; i < childNodes.size(); i++)
         {
-            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, autoImportService, viewResourceDelegate));
+            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate));
         }
 
         try
         {
-            validate(streamTypeService, autoImportService, viewResourceDelegate);
+            validate(streamTypeService, methodResolutionService, viewResourceDelegate);
         }
         catch(ExprValidationException e)
         {
             if(this instanceof ExprIdentNode)
             {
-                result = resolveIdentAsStaticMethod(streamTypeService, autoImportService, e);
+                result = resolveIdentAsStaticMethod(streamTypeService, methodResolutionService, e);
             }
             else
             {
@@ -174,7 +174,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
     // this method tries to resolve the mapped property as a static method.
     // Assumes that this is an ExprIdentNode.
-    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, AutoImportService autoImportService, ExprValidationException propertyException)
+    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException)
     throws ExprValidationException
     {
         // Reconstruct the original string
@@ -197,7 +197,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         // Validate
         try
         {
-            result.validate(streamTypeService, autoImportService, null);
+            result.validate(streamTypeService, methodResolutionService, null);
         }
         catch(ExprValidationException e)
         {

@@ -3,6 +3,7 @@ package net.esper.view.std;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class LastElementViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         this.eventType = parentEventType;
     }
@@ -37,7 +38,7 @@ public class LastElementViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
         return new LastElementView();
     }

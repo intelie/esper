@@ -7,18 +7,17 @@
  **************************************************************************************/
 package net.esper.eql.expression;
 
+import net.esper.client.EPException;
+import net.esper.eql.core.MethodResolutionService;
+import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.event.EventBean;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-
-import net.esper.client.EPException;
-import net.esper.event.EventBean;
-import net.esper.util.StaticMethodResolver;
-import net.esper.eql.core.AutoImportService;
-import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewResourceDelegate;
-import net.sf.cglib.reflect.FastClass;
-import net.sf.cglib.reflect.FastMethod;
 
 /**
  * Represents an invocation of a static library method in the expression tree.
@@ -121,7 +120,7 @@ public class ExprStaticMethodNode extends ExprNode
 		}
 	}
 
-	public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
 	{
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();
@@ -135,7 +134,7 @@ public class ExprStaticMethodNode extends ExprNode
 		// Try to resolve the method
 		try
 		{
-			Method method = StaticMethodResolver.resolveMethod(className, methodName, paramTypes, autoImportService);
+			Method method = methodResolutionService.resolveMethod(className, methodName, paramTypes);
 			FastClass declaringClass = FastClass.create(method.getDeclaringClass());
 			staticMethod = declaringClass.getMethod(method);
 		}

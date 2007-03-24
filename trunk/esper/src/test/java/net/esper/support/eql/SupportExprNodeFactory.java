@@ -4,6 +4,7 @@ import net.esper.eql.expression.*;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.eql.core.ViewResourceDelegateImpl;
+import net.esper.eql.core.MethodResolutionServiceImpl;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.RelationalOpEnum;
 import net.esper.view.ViewFactoryChain;
@@ -295,7 +296,7 @@ public class SupportExprNodeFactory
         return topNode;
     }
 
-    private static void validate(ExprNode topNode) throws Exception
+    public static void validate(ExprNode topNode) throws Exception
     {
         SupportStreamTypeSvc3Stream streamTypeService = new SupportStreamTypeSvc3Stream();
 
@@ -308,6 +309,6 @@ public class SupportExprNodeFactory
         }
         ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream);
 
-        topNode.getValidatedSubtree(streamTypeService, null, viewResources);
+        topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(null), viewResources);
     }
 }

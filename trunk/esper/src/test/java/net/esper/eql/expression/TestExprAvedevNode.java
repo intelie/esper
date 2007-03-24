@@ -1,7 +1,7 @@
 package net.esper.eql.expression;
 
 import net.esper.support.eql.SupportExprNode;
-import net.esper.eql.core.Aggregator;
+import net.esper.eql.agg.AggregationMethod;
 
 public class TestExprAvedevNode extends TestExprAggregateNodeAdapter
 {
@@ -28,7 +28,7 @@ public class TestExprAvedevNode extends TestExprAggregateNodeAdapter
 
     public void testAggregateFunction()
     {
-        Aggregator agg = validatedNodeToTest.getAggregationFunction();
+        AggregationMethod agg = validatedNodeToTest.getPrototypeAggregator();
         assertEquals(Double.class, agg.getValueType());
 
         assertNull(agg.getValue());

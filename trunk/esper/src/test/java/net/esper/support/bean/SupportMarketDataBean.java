@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class SupportMarketDataBean implements Serializable
 {
     private String symbol;
+    private String id;
     private double price;
     private Long volume;
     private String feed;
@@ -15,6 +16,13 @@ public class SupportMarketDataBean implements Serializable
         this.price = price;
         this.volume = volume;
         this.feed = feed;
+    }
+
+    public SupportMarketDataBean(String symbol, String id, double price)
+    {
+        this.symbol = symbol;
+        this.id = id;
+        this.price = price;
     }
 
     public String getSymbol()
@@ -35,6 +43,11 @@ public class SupportMarketDataBean implements Serializable
     public String getFeed()
     {
         return feed;
+    }
+
+    public String getId()
+    {
+        return id;
     }
 
     public String toString()

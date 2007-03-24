@@ -5,6 +5,7 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.collection.Pair;
+import net.esper.core.StatementContext;
 
 /**
  * Utility methods to deal with chains of views, and for merge/group-by views.
@@ -66,7 +67,7 @@ public class ViewServiceHelper
      */
     protected static List<View> instantiateChain(Viewable parentViewable,
                                                  List<ViewFactory> viewFactories,
-                                                 StatementServiceContext context)
+                                                 StatementContext context)
     {
         List<View> newViews = new LinkedList<View>();
         Viewable parent = parentViewable;
@@ -226,13 +227,13 @@ public class ViewServiceHelper
      * They are simply instantiated and assigned view parameters.
      * @param streamNum is the stream number
      * @param viewSpecList is the view definition
-     * @param statementServiceContext is statement service context and statement info 
+     * @param statementContext is statement service context and statement info
      * @return list of view factories
      * @throws ViewProcessingException if the factory cannot be creates such as for invalid view spec
      */
     public static List<ViewFactory> instantiateFactories(int streamNum,
                                                          List<ViewSpec> viewSpecList,
-                                                         StatementServiceContext statementServiceContext)
+                                                         StatementContext statementContext)
             throws ViewProcessingException
     {
         List<ViewFactory> factoryChain = new ArrayList<ViewFactory>();
@@ -241,13 +242,13 @@ public class ViewServiceHelper
         for (ViewSpec spec : viewSpecList)
         {
             // Create the new view factory
-            ViewFactory viewFactory = statementServiceContext.getViewResultionService().create(spec);
+            ViewFactory viewFactory = statementContext.getViewResultionService().create(spec);
             factoryChain.add(viewFactory);
 
             // Set view factory parameters
             try
             {
-                ViewFactoryContext context = new ViewFactoryContext(statementServiceContext, streamNum, viewNum, spec.getObjectNamespace(), spec.getObjectName());
+                ViewFactoryContext context = new ViewFactoryContext(statementContext, streamNum, viewNum, spec.getObjectNamespace(), spec.getObjectName());
                 viewFactory.setViewParameters(context, spec.getObjectParameters());
             }
             catch (ViewParameterException e)

@@ -5,6 +5,7 @@ import net.esper.view.ViewParameterException;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class CorrelationViewFactory implements ViewFactory
         fieldNameY = (String) viewParameters.get(1);
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldNameX, fieldNameY);
         if (result != null)
@@ -43,7 +44,7 @@ public class CorrelationViewFactory implements ViewFactory
             throw new ViewAttachException(result);
         }
 
-        eventType = CorrelationView.createEventType(statementServiceContext);
+        eventType = CorrelationView.createEventType(statementContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -56,9 +57,9 @@ public class CorrelationViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
-        return new CorrelationView(statementServiceContext, fieldNameX, fieldNameY);
+        return new CorrelationView(statementContext, fieldNameX, fieldNameY);
     }
 
     public EventType getEventType()

@@ -1,6 +1,7 @@
 package net.esper.view;
 
 import net.esper.event.EventType;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public interface ViewService
      */
     public ViewFactoryChain createFactories(int streamNum,
                                             EventType parentEventType, List<ViewSpec> viewSpecList,
-                                            StatementServiceContext context)
+                                            StatementContext context)
             throws ViewProcessingException;
 
     /**
@@ -41,7 +42,7 @@ public interface ViewService
      */
     public Viewable createViews(Viewable eventStreamViewable,
                                 List<ViewFactory> viewFactoryChain,
-                                StatementServiceContext context);
+                                StatementContext context);
 
     /**
      * Removes a view discoupling the view and any of it's parent views up the tree to the last shared parent view.

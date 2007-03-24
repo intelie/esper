@@ -8,7 +8,7 @@ import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.collection.ViewUpdatedCollection;
 
 /**
@@ -39,9 +39,9 @@ public final class LengthWindowView extends ViewSupport implements DataWindowVie
         this.viewUpdatedCollection = viewUpdatedCollection;
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return lengthWindowViewFactory.makeView(statementServiceContext);
+        return lengthWindowViewFactory.makeView(statementContext);
     }
 
     /**

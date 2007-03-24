@@ -20,7 +20,6 @@ import net.esper.pattern.EvalRootNode;
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.PatternMatchCallback;
 import net.esper.pattern.PatternStopCallback;
-import net.esper.schedule.ScheduleBucket;
 import net.esper.util.StopCallback;
 import net.esper.view.*;
 import net.esper.view.internal.BufferView;
@@ -36,47 +35,23 @@ import java.util.Map;
  */
 public class EPStatementStartMethod
 {
-    private final String statementId;
-    private final String statementName;
     private final StatementSpecCompiled statementSpec;
-    private final String eqlStatement;
-    private final ScheduleBucket scheduleBucket;
     private final EPServicesContext services;
-    private final StatementServiceContext statementContext;
-    private final EPStatementHandle epStatementHandle;
+    private final StatementContext statementContext;
 
     /**
      * Ctor.
-     * @param statementId is the statement is assigned to the statement
-     * @param statementName is the statement name assigned
      * @param statementSpec is a container for the definition of all statement constructs that
      * may have been used in the statement, i.e. if defines the select clauses, insert into, outer joins etc.
-     * @param eqlStatement is the expression text
      * @param services is the service instances for dependency injection
-     * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      */
-    public EPStatementStartMethod(String statementId,
-                                String statementName,
-                                StatementSpecCompiled statementSpec,
-                                String eqlStatement,
+    public EPStatementStartMethod(StatementSpecCompiled statementSpec,
                                 EPServicesContext services,
-                                EPStatementHandle epStatementHandle)
+                                StatementContext statementContext)
     {
-        this.statementId = statementId;
-        this.statementName = statementName;
         this.statementSpec = statementSpec;
         this.services = services;
-        this.eqlStatement = eqlStatement;
-        this.epStatementHandle = epStatementHandle;
-
-        // Allocate the statement's schedule bucket which stays constant over it's lifetime.
-        // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
-        scheduleBucket = services.getSchedulingService().allocateBucket();
-
-        statementContext = new StatementServiceContext(statementId, statementName, services.getSchedulingService(),
-                scheduleBucket, services.getEventAdapterService(), epStatementHandle,
-                services.getViewResolutionService(), services.getExtensionServicesContext(),
-                new StatementStopServiceImpl());
+        this.statementContext = statementContext;
     }
 
     /**
@@ -106,7 +81,8 @@ public class EPStatementStartMethod
             if (streamSpec instanceof FilterStreamSpecCompiled)
             {
                 FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
-                eventStreamParentViewable[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), epStatementHandle, isJoin);
+                eventStreamParentViewable[i] = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
+                        services.getFilterService(), statementContext.getEpStatementHandle(), isJoin);
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), statementContext);
             }
             // Create view factories and parent view based on a pattern expression
@@ -120,7 +96,8 @@ public class EPStatementStartMethod
 
                 EvalRootNode rootNode = new EvalRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
-                final PatternContext patternContext = new PatternContext(services.getFilterService(), services.getSchedulingService(), scheduleBucket, services.getEventAdapterService(), epStatementHandle);
+                final PatternContext patternContext = new PatternContext(services.getFilterService(),
+                        services.getSchedulingService(), statementContext.getScheduleBucket(), services.getEventAdapterService(), statementContext.getEpStatementHandle());
 
                 PatternMatchCallback callback = new PatternMatchCallback() {
                     public void matchFound(Map<String, EventBean> matchEvent)
@@ -143,7 +120,7 @@ public class EPStatementStartMethod
                 }
 
                 DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
-                HistoricalEventViewable historicalEventViewable = PollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), epStatementHandle);
+                HistoricalEventViewable historicalEventViewable = PollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle());
                 unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.getEventType(), new LinkedList<ViewFactory>());
                 eventStreamParentViewable[i] = historicalEventViewable;
                 stopCallbacks.add(historicalEventViewable);
@@ -209,11 +186,11 @@ public class EPStatementStartMethod
                 statementSpec.getOrderByList(),
                 typeService,
                 services.getEventAdapterService(),
-                services.getAutoImportService(),
+                statementContext.getMethodResolutionService(),
                 viewResourceDelegate);
 
         // Validate where-clause filter tree and outer join clause
-        validateNodes(typeService, services.getAutoImportService(), viewResourceDelegate);
+        validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
 
         // Materialize views
         Viewable[] streamViews = new Viewable[streamEventTypes.length];
@@ -230,7 +207,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            finalView = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), epStatementHandle);
+            finalView = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext.getEpStatementHandle());
         }
 
         // Hook up internal event route for insert-into if required
@@ -307,7 +284,7 @@ public class EPStatementStartMethod
     }
 
     @SuppressWarnings({"StringContatenationInLoop"})
-    private void validateNodes(StreamTypeService typeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate)
+    private void validateNodes(StreamTypeService typeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
     {
         if (statementSpec.getFilterRootNode() != null)
         {
@@ -316,7 +293,7 @@ public class EPStatementStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, autoImportService, viewResourceDelegate);
+                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
                 statementSpec.setFilterExprRootNode(optionalFilterNode);
 
                 // Make sure there is no aggregation in the where clause
@@ -330,7 +307,7 @@ public class EPStatementStartMethod
             catch (ExprValidationException ex)
             {
                 log.debug(".validateNodes Validation exception for filter=" + optionalFilterNode.toExpressionString(), ex);
-                throw new EPStatementException("Error validating expression: " + ex.getMessage(), eqlStatement);
+                throw new EPStatementException("Error validating expression: " + ex.getMessage(), statementContext.getExpression());
             }
         }
 
@@ -346,12 +323,12 @@ public class EPStatementStartMethod
             equalsNode.addChildNode(outerJoinDesc.getRightNode());
             try
             {
-                equalsNode = equalsNode.getValidatedSubtree(typeService, autoImportService, viewResourceDelegate);
+                equalsNode = equalsNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
             }
             catch (ExprValidationException ex)
             {
                 log.debug("Validation exception for outer join node=" + equalsNode.toExpressionString(), ex);
-                throw new EPStatementException("Error validating expression: " + ex.getMessage(), eqlStatement);
+                throw new EPStatementException("Error validating expression: " + ex.getMessage(), statementContext.getExpression());
             }
 
             // Make sure we have left-hand-side and right-hand-side refering to different streams
@@ -360,7 +337,7 @@ public class EPStatementStartMethod
             if (streamIdLeft == streamIdRight)
             {
                 String message = "Outer join ON-clause cannot refer to properties of the same stream";
-                throw new EPStatementException("Error validating expression: " + message, eqlStatement);
+                throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
             }
 
             // Make sure one of the properties refers to the acutual stream currently being joined
@@ -369,7 +346,7 @@ public class EPStatementStartMethod
             {
                 String message = "Outer join ON-clause must refer to at least one property of the joined stream" +
                         " for stream " + expectedStreamJoined;
-                throw new EPStatementException("Error validating expression: " + message, eqlStatement);
+                throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
             }
 
             // Make sure neither of the streams refer to a 'future' stream
@@ -386,7 +363,7 @@ public class EPStatementStartMethod
             {
                 String message = "Outer join ON-clause invalid scope for property" +
                         " '" + badPropertyName + "', expecting the current or a prior stream scope";
-                throw new EPStatementException("Error validating expression: " + message, eqlStatement);
+                throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
             }
 
         }
@@ -394,7 +371,7 @@ public class EPStatementStartMethod
 
     private Viewable handleSimpleSelect(Viewable view,
                                         ResultSetProcessor optionalResultSetProcessor,
-                                        StatementServiceContext statementContext)
+                                        StatementContext statementContext)
     {
         Viewable finalView = view;
 

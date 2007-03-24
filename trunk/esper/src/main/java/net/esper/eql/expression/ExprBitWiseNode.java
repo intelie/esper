@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import net.esper.event.EventBean;
 import net.esper.type.BitWiseOpEnum;
 import net.esper.util.JavaClassHelper;
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 
@@ -35,7 +35,7 @@ public class ExprBitWiseNode extends ExprNode {
         _bitWiseOpEnum = bitWiseOpEnum_;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

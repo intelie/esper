@@ -1,6 +1,8 @@
 package net.esper.eql.expression;
 
+import net.esper.eql.agg.AvgAggregator;
 import net.esper.support.eql.SupportExprNode;
+import net.esper.support.eql.SupportExprNodeFactory;
 
 public class TestExprAvgNode extends TestExprAggregateNodeAdapter
 {
@@ -14,10 +16,9 @@ public class TestExprAvgNode extends TestExprAggregateNodeAdapter
 
     public void testAggregation()
     {
-        ExprAvgNode.DoubleAvg agg = new ExprAvgNode.DoubleAvg();
+        AvgAggregator agg = new AvgAggregator();
         assertEquals(Double.class, agg.getValueType());
         assertEquals(null, agg.getValue());
-        assertTrue(agg.newAggregator() instanceof ExprAvgNode.DoubleAvg);
 
         agg.enter(5);
         assertEquals(5d, agg.getValue());
@@ -50,7 +51,7 @@ public class TestExprAvgNode extends TestExprAggregateNodeAdapter
     {
         ExprAvgNode avgNode = new ExprAvgNode(isDistinct);
         avgNode.addChildNode(new SupportExprNode(value, type));
-        avgNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(avgNode);
         return avgNode;
     }
 }

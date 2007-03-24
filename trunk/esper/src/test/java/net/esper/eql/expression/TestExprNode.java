@@ -4,9 +4,10 @@ import junit.framework.TestCase;
 import net.esper.support.eql.SupportExprNode;
 import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.support.eql.SupportStreamTypeSvc1Stream;
-import net.esper.eql.core.AutoImportService;
-import net.esper.eql.core.AutoImportServiceImpl;
+import net.esper.eql.core.MethodResolutionService;
+import net.esper.eql.core.MethodResolutionServiceImpl;
 import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.EngineImportServiceImpl;
 
 public class TestExprNode extends TestCase
 {
@@ -48,22 +49,22 @@ public class TestExprNode extends TestCase
     public void testIdentToStaticMethod() throws ExprValidationException
     {
         StreamTypeService typeService = new SupportStreamTypeSvc1Stream();
-        AutoImportService autoImportService = new AutoImportServiceImpl(new String[] {"java.lang.*" });
+        MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(new EngineImportServiceImpl(new String[] {"java.lang.*" }, null));
 
         ExprNode identNode = new ExprIdentNode("Integer.valueOf(\"3\")");
-        ExprNode result = identNode.getValidatedSubtree(typeService, autoImportService, null);
+        ExprNode result = identNode.getValidatedSubtree(typeService, methodResolutionService, null);
         assertTrue(result instanceof ExprStaticMethodNode);
         assertEquals(Integer.valueOf("3"), result.evaluate(null, false));
 
         identNode = new ExprIdentNode("Integer.valueOf(\'3\')");
-        result = identNode.getValidatedSubtree(typeService, autoImportService, null);
+        result = identNode.getValidatedSubtree(typeService, methodResolutionService, null);
         assertTrue(result instanceof ExprStaticMethodNode);
         assertEquals(Integer.valueOf("3"), result.evaluate(null, false));
 
         identNode = new ExprIdentNode("UknownClass.nonexistentMethod(\"3\")");
         try
         {
-            result = identNode.getValidatedSubtree(typeService, autoImportService, null);
+            result = identNode.getValidatedSubtree(typeService, methodResolutionService, null);
             fail();
         }
         catch(ExprValidationException e)
@@ -74,7 +75,7 @@ public class TestExprNode extends TestCase
         identNode = new ExprIdentNode("unknownMap(\"key\")");
         try
         {
-            result = identNode.getValidatedSubtree(typeService, autoImportService, null);
+            result = identNode.getValidatedSubtree(typeService, methodResolutionService, null);
             fail();
         }
         catch(ExprValidationException e)

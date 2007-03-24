@@ -6,6 +6,7 @@ import net.esper.view.ViewAttachException;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class RegressionLinestViewFactory implements ViewFactory
         fieldNameY = (String) viewParameters.get(1);
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldNameX, fieldNameY);
         if (result != null)
@@ -44,7 +45,7 @@ public class RegressionLinestViewFactory implements ViewFactory
             throw new ViewAttachException(result);
         }
 
-        eventType = RegressionLinestView.createEventType(statementServiceContext);
+        eventType = RegressionLinestView.createEventType(statementContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -57,9 +58,9 @@ public class RegressionLinestViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
-        return new RegressionLinestView(statementServiceContext, fieldNameX, fieldNameY);
+        return new RegressionLinestView(statementContext, fieldNameX, fieldNameY);
     }
 
     public boolean canReuse(View view)

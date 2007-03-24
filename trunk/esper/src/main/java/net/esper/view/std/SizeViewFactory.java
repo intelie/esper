@@ -3,6 +3,7 @@ package net.esper.view.std;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class SizeViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
-        eventType = SizeView.createEventType(statementServiceContext);
+        eventType = SizeView.createEventType(statementContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -37,9 +38,9 @@ public class SizeViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
-        return new SizeView(statementServiceContext);
+        return new SizeView(statementContext);
     }
 
     public EventType getEventType()

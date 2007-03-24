@@ -1,6 +1,6 @@
 package net.esper.support.view;
 
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.view.ViewResolutionServiceImpl;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
@@ -8,15 +8,16 @@ import net.esper.schedule.ScheduleBucket;
 
 public class SupportStatementContextFactory
 {
-    public static StatementServiceContext makeContext()
+    public static StatementContext makeContext()
     {
         SupportSchedulingServiceImpl sched = new SupportSchedulingServiceImpl();
         ScheduleBucket bucket = sched.allocateBucket();
-        return new StatementServiceContext("stmtId", "stmtName", sched, bucket, SupportEventAdapterService.getService(), null, new ViewResolutionServiceImpl(null), null, null);
+        return makeContext(sched);                
     }
 
-    public static StatementServiceContext makeContext(SupportSchedulingServiceImpl stub)
+    public static StatementContext makeContext(SupportSchedulingServiceImpl stub)
     {
-        return new StatementServiceContext("stmtId", "stmtName", stub, stub.allocateBucket(), SupportEventAdapterService.getService(), null, new ViewResolutionServiceImpl(null), null, null);
+        return new StatementContext("stmtId", "stmtName", "exprHere", stub, stub.allocateBucket(),
+                SupportEventAdapterService.getService(), null, new ViewResolutionServiceImpl(null), null, null, null);
     }
 }

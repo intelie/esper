@@ -11,7 +11,7 @@ import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.collection.Pair;
 import net.esper.collection.MultiKey;
-import net.esper.eql.core.AggregationService;
+import net.esper.eql.agg.AggregationService;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.expression.ExprNode;
 

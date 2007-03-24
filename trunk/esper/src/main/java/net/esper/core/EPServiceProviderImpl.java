@@ -152,7 +152,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         services.getTimerService().setCallback(runtime);
 
         // New admin
-        ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService());
+        ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService(), services.getEngineImportService());
         EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps);
 
         // Start clocking

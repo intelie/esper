@@ -661,7 +661,7 @@ public class TestOrderBySimple extends TestCase {
 		assertValues(symbols, "symbol");
 		assertValues(prices, "price");
 		assertValues(volumes, "volume");
-	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "volume", "price", "feed"}));
+	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "id", "volume", "price", "feed"}));
 		clearValues();
 
 		statementString = "select * from " +

@@ -16,6 +16,7 @@ import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
 import net.esper.util.MultiKeyComparator;
 import net.esper.eql.expression.ExprNode;
+import net.esper.eql.agg.AggregationService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

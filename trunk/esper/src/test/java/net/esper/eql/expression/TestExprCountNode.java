@@ -1,6 +1,7 @@
 package net.esper.eql.expression;
 
 import net.esper.support.eql.SupportExprNode;
+import net.esper.support.eql.SupportExprNodeFactory;
 
 public class TestExprCountNode extends TestExprAggregateNodeAdapter
 {
@@ -11,7 +12,7 @@ public class TestExprCountNode extends TestExprAggregateNodeAdapter
         super.validatedNodeToTest = makeNode(5, Integer.class);
 
         wildcardCount = new ExprCountNode(false);
-        wildcardCount.validate(null, null, null);
+        SupportExprNodeFactory.validate(wildcardCount);
     }
 
     public void testGetType() throws Exception
@@ -37,7 +38,7 @@ public class TestExprCountNode extends TestExprAggregateNodeAdapter
     {
         ExprCountNode countNode = new ExprCountNode(false);
         countNode.addChildNode(new SupportExprNode(value, type));
-        countNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(countNode);
         return countNode;
     }
 }

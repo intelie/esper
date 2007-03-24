@@ -1,7 +1,7 @@
 package net.esper.view.stat;
 
 import net.esper.event.EventType;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
 
@@ -19,23 +19,23 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
      * Constructor.
      * @param xFieldName is the field name of the field providing X data points
      * @param yFieldName is the field name of the field providing X data points
-     * @param statementServiceContext contains required view services
+     * @param statementContext contains required view services
      */
-    public RegressionLinestView(StatementServiceContext statementServiceContext, String xFieldName, String yFieldName)
+    public RegressionLinestView(StatementContext statementContext, String xFieldName, String yFieldName)
     {
-        super(statementServiceContext, new RegressionBean(), xFieldName, yFieldName);
+        super(statementContext, new RegressionBean(), xFieldName, yFieldName);
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return new RegressionLinestView(statementServiceContext, this.getFieldNameX(), this.getFieldNameY());
+        return new RegressionLinestView(statementContext, this.getFieldNameX(), this.getFieldNameY());
     }
 
     public EventType getEventType()
     {
         if (eventType == null)
         {
-            eventType = createEventType(statementServiceContext);
+            eventType = createEventType(statementContext);
         }
         return eventType;
     }
@@ -49,12 +49,12 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
 
     /**
      * Creates the event type for this view.
-     * @param statementServiceContext is the event adapter service
+     * @param statementContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(StatementServiceContext statementServiceContext)
+    protected static EventType createEventType(StatementContext statementContext)
     {
-        return statementServiceContext.getEventAdapterService().addBeanType(RegressionBean.class.getName(), RegressionBean.class);
+        return statementContext.getEventAdapterService().addBeanType(RegressionBean.class.getName(), RegressionBean.class);
     }
 }
 

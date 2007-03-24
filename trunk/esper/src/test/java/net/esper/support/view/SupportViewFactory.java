@@ -3,6 +3,7 @@ package net.esper.support.view;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public abstract class SupportViewFactory implements ViewFactory
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -28,7 +29,7 @@ public abstract class SupportViewFactory implements ViewFactory
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

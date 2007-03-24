@@ -7,6 +7,7 @@ import java.util.*;
 
 import net.esper.collection.Pair;
 import net.esper.event.EventType;
+import net.esper.core.StatementContext;
 
 /**
  * Implementation of the view evaluation service business interface.
@@ -23,7 +24,7 @@ public final class ViewServiceImpl implements ViewService
     public ViewFactoryChain createFactories(int streamNum,
                                             EventType parentEventType,
                                             List<ViewSpec> viewSpecDefinitions,
-                                            StatementServiceContext context)
+                                            StatementContext context)
             throws ViewProcessingException
     {
         // Clone the view spec list to prevent parameter modification
@@ -62,7 +63,7 @@ public final class ViewServiceImpl implements ViewService
 
     public Viewable createViews(Viewable eventStreamViewable,
                                 List<ViewFactory> viewFactories,
-                                StatementServiceContext context)
+                                StatementContext context)
     {
         // Attempt to find existing views under the stream that match specs.
         // The viewSpecList may have been changed by this method.

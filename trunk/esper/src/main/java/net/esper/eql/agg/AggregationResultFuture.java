@@ -1,4 +1,4 @@
-package net.esper.eql.core;
+package net.esper.eql.agg;
 
 /**
  * Interface for use by aggregate expression nodes representing aggregate functions such as 'sum' or 'avg' to use

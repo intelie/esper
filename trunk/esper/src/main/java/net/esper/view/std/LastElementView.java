@@ -8,7 +8,7 @@ import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.collection.SingleEventIterator;
 
 /**
@@ -38,7 +38,7 @@ public class LastElementView extends ViewSupport implements CloneableView
      */
     protected EventBean lastEvent;
 
-    public View cloneView(StatementServiceContext context)
+    public View cloneView(StatementContext context)
     {
         return new LastElementView();
     }

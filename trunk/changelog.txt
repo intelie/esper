@@ -4,6 +4,7 @@ Esper Changelog
 Changes in version 1.7
 ----------------------
 * GUI example of RFID tags moving zones in unison
+* custom aggregaton method
 
 
 Changes in version 1.7

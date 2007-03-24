@@ -10,7 +10,7 @@ package net.esper.eql.expression;
 import net.esper.util.JavaClassHelper;
 import net.esper.event.EventBean;
 import net.esper.eql.expression.ExprNode;
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 
@@ -19,7 +19,7 @@ import net.esper.eql.core.ViewResourceDelegate;
  */
 public class ExprOrNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean
         for (ExprNode child : this.getChildNodes())

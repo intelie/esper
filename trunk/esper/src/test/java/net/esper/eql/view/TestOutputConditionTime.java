@@ -3,7 +3,7 @@ package net.esper.eql.view;
 import junit.framework.TestCase;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.view.SupportStatementContextFactory;
-import net.esper.view.StatementServiceContext;
+import net.esper.core.StatementContext;
 import net.esper.core.EPStatementHandleCallback;
 
 
@@ -15,7 +15,7 @@ public class TestOutputConditionTime extends TestCase
     private OutputCallback callback;
     private SupportSchedulingServiceImpl schedulingServiceStub;
 
-	private StatementServiceContext context;
+	private StatementContext context;
 
     public void setUp()
     {

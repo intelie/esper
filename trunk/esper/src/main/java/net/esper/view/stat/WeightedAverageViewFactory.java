@@ -6,6 +6,7 @@ import net.esper.view.ViewAttachException;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -36,14 +37,14 @@ public class WeightedAverageViewFactory implements ViewFactory
         fieldNameWeight = (String) viewParameters.get(1);
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldNameX, fieldNameWeight);
         if (result != null)
         {
             throw new ViewAttachException(result);
         }
-        eventType = WeightedAverageView.createEventType(statementServiceContext);
+        eventType = WeightedAverageView.createEventType(statementContext);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -56,9 +57,9 @@ public class WeightedAverageViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
-        return new WeightedAverageView(statementServiceContext, fieldNameX, fieldNameWeight);
+        return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight);
     }
 
     public EventType getEventType()

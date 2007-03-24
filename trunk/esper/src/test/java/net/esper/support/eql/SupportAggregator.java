@@ -1,8 +1,9 @@
 package net.esper.support.eql;
 
-import net.esper.eql.core.Aggregator;
+import net.esper.eql.agg.AggregationMethod;
+import net.esper.eql.core.MethodResolutionService;
 
-public class SupportAggregator implements Aggregator
+public class SupportAggregator implements AggregationMethod
 {
     private int sum;
 
@@ -32,7 +33,7 @@ public class SupportAggregator implements Aggregator
         return Integer.class;
     }
 
-    public Aggregator newAggregator()
+    public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
         return new SupportAggregator();
     }

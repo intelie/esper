@@ -26,6 +26,7 @@ public class ConfigurationSnapshot
     private String epServicesContextFactoryClassName;
     private List<ConfigurationPlugInView> plugInViews = new LinkedList<ConfigurationPlugInView>();
     private List<ConfigurationAdapterLoader> adapterLoaders = new LinkedList<ConfigurationAdapterLoader>();
+    private List<ConfigurationPlugInAggregationFunction> plugInAggregation = new LinkedList<ConfigurationPlugInAggregationFunction>();
 
     /**
      * Ctor.
@@ -45,6 +46,7 @@ public class ConfigurationSnapshot
         epServicesContextFactoryClassName = configuration.getEPServicesContextFactoryClassName();
         plugInViews.addAll(configuration.getPlugInViews());
         adapterLoaders.addAll(configuration.getAdapterLoaders());
+        plugInAggregation.addAll(configuration.getPlugInAggregationFunctions());
     }
 
     /**
@@ -126,6 +128,11 @@ public class ConfigurationSnapshot
     public List<ConfigurationAdapterLoader> getAdapterLoaders()
     {
         return adapterLoaders;
+    }
+
+    public List<ConfigurationPlugInAggregationFunction> getPlugInAggregation()
+    {
+        return plugInAggregation;
     }
 }
 

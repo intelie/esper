@@ -41,7 +41,7 @@ public class RefCountedSet<K>
         Integer value = refSet.get(key);
         if (value == null)
         {
-            refSet.put(key, new Integer(1));
+            refSet.put(key, 1);
             numValues++;
             return true;
         }

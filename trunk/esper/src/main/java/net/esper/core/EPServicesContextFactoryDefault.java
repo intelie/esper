@@ -3,13 +3,13 @@ package net.esper.core;
 import net.esper.client.ConfigurationEventTypeLegacy;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.ConfigurationException;
-import net.esper.eql.core.AutoImportService;
-import net.esper.eql.core.AutoImportServiceImpl;
+import net.esper.eql.core.EngineImportService;
+import net.esper.eql.core.EngineImportServiceImpl;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.db.DatabaseConfigServiceImpl;
 import net.esper.event.EventAdapterException;
-import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterServiceBase;
+import net.esper.event.EventAdapterServiceImpl;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
@@ -34,7 +34,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         init(eventAdapterService, configSnapshot);
 
         SchedulingService schedulingService = SchedulingServiceProvider.newService();
-        AutoImportService autoImportService = makeAutoImportService(configSnapshot);
+        EngineImportService engineImportService = makeEngineImportService(configSnapshot);
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
         ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(configSnapshot.getPlugInViews());
 
@@ -44,10 +44,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         // JNDI context for binding resources
         EngineEnvContext jndiContext = new EngineEnvContext();
 
+        // Statement context factory
+        StatementContextFactory statementContextFactory = new StatementContextFactoryDefault();
+
         // New services context
         EPServicesContext services = new EPServicesContext(schedulingService,
-                eventAdapterService, autoImportService, databaseConfigService, viewResolutionService,
-                new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext);
+                eventAdapterService, engineImportService, databaseConfigService, viewResolutionService,
+                new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(services);
@@ -133,21 +136,21 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      * @param configSnapshot config info
      * @return service
      */
-    protected static AutoImportService makeAutoImportService(ConfigurationSnapshot configSnapshot)
+    protected static EngineImportService makeEngineImportService(ConfigurationSnapshot configSnapshot)
     {
-        AutoImportService autoImportService = null;
+        EngineImportService engineImportService = null;
 
         // Add auto-imports
         try
         {
-            autoImportService = new AutoImportServiceImpl(configSnapshot.getAutoImports());
+            engineImportService = new EngineImportServiceImpl(configSnapshot.getAutoImports(), configSnapshot.getPlugInAggregation());
         }
         catch (IllegalArgumentException ex)
         {
             throw new ConfigurationException("Error configuring engine: " + ex.getMessage(), ex);
         }
 
-        return autoImportService;
+        return engineImportService;
     }
 
     /**

@@ -9,6 +9,7 @@ import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.collection.IterablesListIterator;
+import net.esper.core.StatementContext;
 
 /**
  * The merge view works together with a group view that splits the data in a stream to multiple subviews, based on
@@ -25,24 +26,24 @@ public final class MergeView extends ViewSupport implements CloneableView
     private final LinkedList<View> parentViews = new LinkedList<View>();
     private final String[] groupFieldNames;
     private final EventType eventType;
-    private final StatementServiceContext statementServiceContext;
+    private final StatementContext statementContext;
 
     /**
      * Constructor.
      * @param groupFieldNames is the fields from which to pull the value to group by
      * @param resultEventType is passed by the factory as the factory adds the merged fields to an event type
-     * @param statementServiceContext contains required view services
+     * @param statementContext contains required view services
      */
-    public MergeView(StatementServiceContext statementServiceContext, String groupFieldNames[], EventType resultEventType)
+    public MergeView(StatementContext statementContext, String groupFieldNames[], EventType resultEventType)
     {
         this.groupFieldNames = groupFieldNames;
         this.eventType = resultEventType;
-        this.statementServiceContext = statementServiceContext;
+        this.statementContext = statementContext;
     }
 
-    public View cloneView(StatementServiceContext statementServiceContext)
+    public View cloneView(StatementContext statementContext)
     {
-        return new MergeView(statementServiceContext, groupFieldNames, eventType);
+        return new MergeView(statementContext, groupFieldNames, eventType);
     }
 
     /**

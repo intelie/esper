@@ -3,11 +3,10 @@ package net.esper.core;
 import net.esper.client.*;
 import net.esper.collection.Pair;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.spec.StatementSpecCompiled;
+import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.spec.StreamSpecCompiled;
 import net.esper.eql.spec.StreamSpecRaw;
-import net.esper.util.ManagedLock;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
 import net.esper.view.ViewProcessingException;
@@ -94,13 +93,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      */
     protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId)
     {
-        ManagedLock statementResourceLock = services.getStatementLockFactory().getStatementLock(statementName, expression);
-        EPStatementHandle epStatementHandle = new EPStatementHandle(statementResourceLock, expression);
-
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
-        StatementSpecCompiled compiledSpec = compile(statementSpec, expression);
+        StatementContext statementContext =  services.getStatementServiceContextFactory().makeContext(statementId, statementName, expression, services);
+
+        StatementSpecCompiled compiledSpec = compile(statementSpec, expression, statementContext);
 
         eventProcessingRWLock.acquireWriteLock();
         try
@@ -109,7 +107,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern, services.getDispatchService(), this);
 
             // create start method
-            startMethod = new EPStatementStartMethod(statementId, statementName, compiledSpec, expression, services, epStatementHandle);
+            startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
 
             statementDesc = new EPStatementDesc(statement, startMethod, null);
             stmtIdToDescMap.put(statementId, statementDesc);
@@ -480,7 +478,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
-    private StatementSpecCompiled compile(StatementSpecRaw spec, String eqlStatement) throws EPStatementException
+    private static StatementSpecCompiled compile(StatementSpecRaw spec, String eqlStatement, StatementContext statementContext) throws EPStatementException
     {
         List<StreamSpecCompiled> compiledStreams;
 
@@ -489,7 +487,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             compiledStreams = new ArrayList<StreamSpecCompiled>();
             for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
             {
-                StreamSpecCompiled compiled = rawSpec.compile(services.getEventAdapterService(), services.getAutoImportService());
+                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService());
                 compiledStreams.add(compiled);
             }
         }

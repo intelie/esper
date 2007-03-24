@@ -6,6 +6,7 @@ import net.esper.eql.core.ViewResourceCallback;
 import net.esper.view.*;
 import net.esper.view.window.RelativeAccessByEventNIndex;
 import net.esper.collection.*;
+import net.esper.core.StatementContext;
 
 import java.util.*;
 
@@ -33,7 +34,7 @@ public class PriorEventViewFactory implements ViewFactory
         throw new UnsupportedOperationException("View not available through EQL");
     }
 
-    public void attach(EventType parentEventType, StatementServiceContext statementServiceContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
         eventType = parentEventType;
     }
@@ -71,7 +72,7 @@ public class PriorEventViewFactory implements ViewFactory
         callbackList.add(resourceCallback);
     }
 
-    public View makeView(StatementServiceContext statementServiceContext)
+    public View makeView(StatementContext statementContext)
     {
         ViewUpdatedCollection viewUpdatedCollection = null;
 

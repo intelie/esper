@@ -10,7 +10,7 @@ package net.esper.eql.expression;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.type.RelationalOpEnum;
-import net.esper.eql.core.AutoImportService;
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 
@@ -40,7 +40,7 @@ public class ExprRelationalOpNode extends ExprNode
         return relationalOpEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, AutoImportService autoImportService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         // Must have 2 child nodes
         if (this.getChildNodes().size() != 2)

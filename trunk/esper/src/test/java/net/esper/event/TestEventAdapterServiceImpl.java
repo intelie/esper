@@ -122,7 +122,7 @@ public class TestEventAdapterServiceImpl extends TestCase
         EventType typeOne = adapterService.addWrapperType("latencyEvent", beanEventType, props);
         assertEquals(Long.class, typeOne.getPropertyType("a"));
         assertEquals(String.class, typeOne.getPropertyType("b"));
-        assertEquals(6, typeOne.getPropertyNames().length);
+        assertEquals(7, typeOne.getPropertyNames().length);
 
         String id = adapterService.getIdByAlias("latencyEvent");
         assertNotNull(id);

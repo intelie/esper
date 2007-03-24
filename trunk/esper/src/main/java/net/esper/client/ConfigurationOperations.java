@@ -8,6 +8,8 @@ import java.util.Properties;
  */
 public interface ConfigurationOperations
 {
+    public void addPlugInAggregationFunction(String functionName, String aggregationClassName);
+
     /**
      * Add an alias for an event type represented by JavaBean object events.
      * <p>

@@ -8,6 +8,7 @@
 package net.esper.eql.spec;
 
 import net.esper.eql.expression.ExprNode;
+import net.esper.util.MetaDefItem;
 
 /**
  * Represents a single item in a SELECT-clause, potentially unnamed
@@ -15,7 +16,7 @@ import net.esper.eql.expression.ExprNode;
  * <p>
  * Compare to {@link SelectExprElementCompiledSpec} which carries a determined name.
  */
-public class SelectExprElementRawSpec
+public class SelectExprElementRawSpec implements MetaDefItem
 {
     private ExprNode selectExpression;
     private String optionalAsName;
