@@ -19,8 +19,6 @@ namespace net.esper.client
         /// <returns> true for auto-commit on, false for auto-commit off, or null to accept the default
         /// </returns>
         /// <summary> Indicates whether to set any new connections for this database to auto-commit.</summary>
-        /// <param name="autoCommit">true to set connections to auto-commit, or false, or null to not set this value on a new connection
-        /// </param>
         
         virtual public Boolean AutoCommit
         {
@@ -32,8 +30,6 @@ namespace net.esper.client
         /// <returns> name of the catalog to set, or null to accept the default
         /// </returns>
         /// <summary> Sets the name of the catalog on new database connections.</summary>
-        /// <param name="catalog">is the name of the catalog to set, or null to accept the default
-        /// </param>
         
         virtual public String Catalog
         {
@@ -45,8 +41,6 @@ namespace net.esper.client
         /// <returns> true for read-only on, false for read-only off, or null to accept the default
         /// </returns>
         /// <summary> Indicates whether to set any new connections for this database to read-only.</summary>
-        /// <param name="readOnly">true to set connections to read-only, or false, or null to not set this value on a new connection
-        /// </param>
 
         virtual public Boolean ReadOnly
         {

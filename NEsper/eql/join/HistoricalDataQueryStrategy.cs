@@ -45,7 +45,12 @@ namespace net.esper.eql.join
             lookupRows1Event[0] = new EventBean[2];
         }
 
-        public void lookup(EventBean[] lookupEvents, ISet<MultiKey<EventBean>> joinSet)
+        /// <summary>
+        /// Look up events returning tuples of joined events.
+        /// </summary>
+        /// <param name="lookupEvents">events to use to perform the join</param>
+        /// <param name="joinSet">result join tuples of events</param>
+        public void Lookup(EventBean[] lookupEvents, ISet<MultiKey<EventBean>> joinSet)
         {
             EventBean[][] lookupRows;
 

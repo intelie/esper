@@ -19,15 +19,21 @@ namespace net.esper.view
         private readonly ELinkedList<View> children = new ELinkedList<View>();
         private readonly EventType eventType;
 
-        /**
-         * Ctor.
-         * @param eventType - type of event
-         */
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ZeroDepthStream"/> class.
+        /// </summary>
+        /// <param name="eventType">type of event</param>
+
         public ZeroDepthStream(EventType eventType)
         {
             this.eventType = eventType;
         }
 
+        /// <summary>
+        /// Inserts the specified event.
+        /// </summary>
+        /// <param name="ev">The ev.</param>
+        
         public void Insert(EventBean ev)
         {
             if (log.IsDebugEnabled)
@@ -52,16 +58,33 @@ namespace net.esper.view
             }
         }
 
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns> metadata for the objects in the collection
+        /// </returns>
         public EventType EventType
         {
             get { return eventType; }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
         public IEnumerator<EventBean> GetEnumerator()
         {
             return null;
         }
 
+        /// <summary>
+        /// Add a view to the viewable object.
+        /// </summary>
+        /// <param name="view">to add</param>
+        /// <returns>view to add</returns>
         public View AddView(View view)
         {
             children.Add(view);
@@ -69,11 +92,23 @@ namespace net.esper.view
             return view;
         }
 
+        /// <summary>
+        /// Returns all added views.
+        /// </summary>
+        /// <returns>list of added views</returns>
         public IList<View> GetViews()
         {
             return children;
         }
 
+        /// <summary>
+        /// Remove a view.
+        /// </summary>
+        /// <param name="view">to remove</param>
+        /// <returns>
+        /// true to indicate that the view to be removed existed within this view, false if the view to
+        /// remove could not be found
+        /// </returns>
         public Boolean RemoveView(View view)
         {
             Boolean isRemoved = children.Remove(view);
@@ -81,6 +116,12 @@ namespace net.esper.view
             return isRemoved;
         }
 
+        /// <summary>
+        /// Test is there are any views to the Viewable.
+        /// </summary>
+        /// <value></value>
+        /// <returns> true indicating there are child views, false indicating there are no child views
+        /// </returns>
         public Boolean HasViews
         {
             get { return (children.Count > 0); }
@@ -90,6 +131,12 @@ namespace net.esper.view
 
         #region IEnumerable Members
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+        /// </returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();

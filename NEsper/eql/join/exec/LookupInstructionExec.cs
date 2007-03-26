@@ -26,14 +26,13 @@ namespace net.esper.eql.join.exec
         private readonly int[] optionalSubStreams;
         private readonly bool hasRequiredSubStreams;
 
-        /**
-         * Ctor.
-         * @param fromStream - the stream supplying the lookup event
-         * @param fromStreamName - the stream name supplying the lookup event
-         * @param toStreams - the set of streams to look up in
-         * @param lookupStrategies - the strategy to use for each stream to look up in
-         * @param requiredPerStream - indicates which of the lookup streams are required to build a result and which are not
-         */
+        /// <summary>Ctor.</summary>
+        /// <param name="fromStream">the stream supplying the lookup event</param>
+        /// <param name="fromStreamName">the stream name supplying the lookup event</param>
+        /// <param name="toStreams">the set of streams to look up in</param>
+        /// <param name="lookupStrategies">the strategy to use for each stream to look up in</param>
+        /// <param name="requiredPerStream">indicates which of the lookup streams are required to build a result and which are not</param>
+
         public LookupInstructionExec(int fromStream, String fromStreamName, int[] toStreams, TableLookupStrategy[] lookupStrategies, Boolean[] requiredPerStream)
         {
             if (toStreams.Length != lookupStrategies.Length)
@@ -75,30 +74,26 @@ namespace net.esper.eql.join.exec
             hasRequiredSubStreams = requiredSubStreams.Length > 0;
         }
 
-        /**
-         * Returns the stream number of the stream supplying the event to use for lookup.
-         * @return stream number
-         */
+        /// <summary>Returns the stream number of the stream supplying the event to use for lookup.</summary>
+        /// <returns>stream number</returns>
+
         public int FromStream
         {
         	get { return fromStream; }
         }
 
-        /**
-         * Returns true if there is one or more required substreams or false if no substreams are required joins.
-         * @return true if any substreams are required (inner) joins, or false if not
-         */
+        /// <summary>Returns true if there is one or more required substreams or false if no substreams are required joins.</summary>
+        /// <returns>true if any substreams are required (inner) joins, or false if not</returns>
+
         public Boolean HasRequiredStream
         {
         	get { return hasRequiredSubStreams; }
         }
 
-        /**
-         * Execute the instruction adding results to the repository and obtaining events for lookup from the
-         * repository.
-         * @param repository supplies events for lookup, and place to add results to
-         * @return true if one or more results, false if no results
-         */
+        /// <summary>Execute the instruction adding results to the repository and obtaining events for lookup from therepository.</summary>
+        /// <param name="repository">supplies events for lookup, and place to add results to</param>
+        /// <returns>true if one or more results, false if no results</returns>
+
         public Boolean Process(Repository repository)
         {
             Boolean hasOneResultRow = false;
@@ -114,7 +109,7 @@ namespace net.esper.eql.join.exec
                 // For that event, lookup in all required streams
                 while (streamCount < requiredSubStreams.Length)
                 {
-                    ISet<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent);
+                    ISet<EventBean> lookupResult = lookupStrategies[streamCount].Lookup(lookupEvent);
 
                     // There is no result, break if this is a required stream
                     if (lookupResult == null)
@@ -143,7 +138,7 @@ namespace net.esper.eql.join.exec
                 // For that event, lookup in all optional streams
                 for (int i = 0; i < optionalSubStreams.Length; i++)
                 {
-                    ISet<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent);
+                    ISet<EventBean> lookupResult = lookupStrategies[streamCount].Lookup(lookupEvent);
 
                     if (lookupResult != null)
                     {
@@ -168,10 +163,9 @@ namespace net.esper.eql.join.exec
             return arr;
         }
 
-        /**
-         * Output the instruction.
-         * @param writer is the write to output to
-         */
+        /// <summary>Output the instruction.</summary>
+        /// <param name="writer">is the write to output to</param>
+
         public void Print(IndentWriter writer)
         {
             writer.WriteLine("LookupInstructionExec" +

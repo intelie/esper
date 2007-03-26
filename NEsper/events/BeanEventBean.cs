@@ -13,11 +13,23 @@ namespace net.esper.events
 
     public class BeanEventBean : EventBean
     {
+        /// <summary>
+        /// Get the underlying data object to this event wrapper.
+        /// </summary>
+        /// <value></value>
+        /// <returns> underlying data object, usually either a Map or a bean instance.
+        /// </returns>
         virtual public Object Underlying
         {
             get { return _event; }
         }
 
+        /// <summary>
+        /// Return the {@link EventType} instance that describes the set of properties available for this event.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type
+        /// </returns>
         virtual public EventType EventType
         {
             get { return eventType; }
@@ -26,11 +38,11 @@ namespace net.esper.events
         private EventType eventType;
         private Object _event;
 
-        /// <summary> Constructor.</summary>
-        /// <param name="event">is the event object
-        /// </param>
-        /// <param name="eventType">is the schema information for the event object.
-        /// </param>
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="_event">is the event object</param>
+        /// <param name="eventType">is the schema information for the event object.</param>
 
         protected internal BeanEventBean(Object _event, EventType eventType)
         {
@@ -38,6 +50,11 @@ namespace net.esper.events
             this._event = _event;
         }
 
+        /// <summary>
+        /// Returns true if this object equals the other object.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns></returns>
         public override bool Equals(Object other)
         {
             if (!(other is BeanEventBean))
@@ -60,6 +77,13 @@ namespace net.esper.events
             return true;
         }
 
+        /// <summary>
+        /// Returns the value of an event property.
+        /// </summary>
+        /// <value></value>
+        /// <returns> the value of a simple property with the specified name.
+        /// </returns>
+        /// <throws>  PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed </throws>
         public virtual Object this[String property]
         {
             get
@@ -74,12 +98,23 @@ namespace net.esper.events
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             return "BeanEventBean" + " eventType=" + eventType + " bean=" + _event;
         }
 
-        //UPGRADE_NOTE: The following method implementation was automatically added to preserve functionality. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1306'"
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override int GetHashCode()
         {
             return base.GetHashCode();

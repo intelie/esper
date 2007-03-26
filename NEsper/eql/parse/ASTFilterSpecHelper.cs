@@ -39,11 +39,11 @@ namespace net.esper.eql.parse
 		}
 		
 		/// <summary> Creates a filter specification for the AST representing the filter expression.</summary>
-		/// <param name="filterAST">- root filter AST node
+		/// <param name="filterAST">root filter AST node
 		/// </param>
-		/// <param name="optionalTaggedEventTypes">- event type for each named event if named events are allowed in filter
+		/// <param name="optionalTaggedEventTypes">event type for each named event if named events are allowed in filter
 		/// </param>
-		/// <param name="eventAdapterService">- service for resolving event names to known event types
+		/// <param name="eventAdapterService">service for resolving event names to known event types
 		/// </param>
 		/// <returns> filter spec
 		/// </returns>

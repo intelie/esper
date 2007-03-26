@@ -9,13 +9,14 @@ namespace net.esper.events.property
 	
 	/// <summary> This class represents a nested property, each nesting level made up of a property instance that
 	/// can be of type indexed, mapped or simple itself.
-	/// <p>
+	/// <para>
 	/// The syntax for nested properties is as follows.
-	/// <pre>
+	/// <c>
 	/// a.n
 	/// a[1].n
 	/// a('1').n
-	/// </pre>
+	/// </c>
+    /// </para>
 	/// </summary>
 
 	public class NestedProperty : Property
@@ -43,7 +44,12 @@ namespace net.esper.events.property
 		{
             get { return properties; }
 		}
-		
+
+        /// <summary>
+        /// Returns value getter for the property of an event of the given event type.
+        /// </summary>
+        /// <param name="eventType">is the type of event to make a getter for</param>
+        /// <returns>fast property value getter for property</returns>
 		public virtual EventPropertyGetter GetGetter(BeanEventType eventType)
 		{
 			IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
@@ -93,7 +99,12 @@ namespace net.esper.events.property
 
 			return new NestedPropertyGetter(getters, beanEventAdapter);
 		}
-		
+
+        /// <summary>
+        /// Returns the property type.
+        /// </summary>
+        /// <param name="eventType">is the event type representing the JavaBean</param>
+        /// <returns>property type class</returns>
 		public virtual Type GetPropertyType(BeanEventType eventType)
 		{
 			Type result = null;

@@ -9,14 +9,16 @@ using org.apache.commons.logging;
 
 namespace net.esper.example.rsi
 {
-    /**
-     * RSI gives you the trend for a stock and for more complete explanation, you can visit the link:
-     * <a href="http://www.stockcharts.com/education/IndicatorAnalysis/indic_RSI.html">RSI</a>
-     * <p>
-     * After a definite number of stock events, or accumulation period, the first RSI is computed.
-     * Then for each subsequent stock event, the RSI calculations use the previous period’s Average Gain and
-     * Loss to determine the “smoothed RSI”.
-     */
+    /// <summary>
+    /// RSI gives you the trend for a stock and for more complete explanation, you can
+    /// visit the link:<see cref="http://www.stockcharts.com/education/IndicatorAnalysis/indic_RSI.html">RSI</see>
+    /// <para>
+    /// After a definite number of stock events, or accumulation period, the first RSI is
+    /// computed.  Then for each subsequent stock event, the RSI calculations use the previous
+    /// period’s Average Gain andLoss to determine the “smoothed RSI”.
+    /// </para>
+    /// </summary>
+
     public class RSIStockTickerListener
     {
         private readonly EPServiceProvider _epService;

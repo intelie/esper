@@ -36,7 +36,7 @@ namespace net.esper.eql.core
         {
             // single stream, empty group-by and wildcard select, no having clause, no need for any output processing
             IList<SelectExprElementUnnamedSpec> wildcardSelect = new List<SelectExprElementUnnamedSpec>();
-            ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
+            ResultSetProcessor processor = ResultSetProcessorFactory.GetProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
             Assert.IsNull(processor);
         }
 
@@ -45,17 +45,17 @@ namespace net.esper.eql.core
         {
             // empty group-by and no event properties aggregated in select clause (wildcard), no having clause
             IList<SelectExprElementUnnamedSpec> wildcardSelect = new List<SelectExprElementUnnamedSpec>();
-            ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
+            ResultSetProcessor processor = ResultSetProcessorFactory.GetProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
             Assert.IsTrue(processor is ResultSetProcessorSimple);
 
             // empty group-by with select clause elements
 	        	IList<SelectExprElementUnnamedSpec> selectList = SupportSelectExprFactory.makeNoAggregateSelectListUnnamed();
-            processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
+                processor = ResultSetProcessorFactory.GetProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
             Assert.IsTrue(processor is ResultSetProcessorSimple);
 
             // non-empty group-by and wildcard select, group by ignored
             groupByList.Add(SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0"));
-            processor = ResultSetProcessorFactory.getProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
+            processor = ResultSetProcessorFactory.GetProcessor(wildcardSelect, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
             Assert.IsTrue(processor is ResultSetProcessorSimple);
         }
 
@@ -65,12 +65,12 @@ namespace net.esper.eql.core
             // empty group-by but aggragating event properties in select clause (output per event), no having clause
             // and one or more properties in the select clause is not aggregated
             IList<SelectExprElementUnnamedSpec> selectList = SupportSelectExprFactory.makeAggregateMixed();
-            ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
+            ResultSetProcessor processor = ResultSetProcessorFactory.GetProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
             Assert.IsTrue(processor is ResultSetProcessorAggregateAll);
 
             // test a case where a property is both aggregated and non-aggregated: select volume, sum(volume)
             selectList = SupportSelectExprFactory.makeAggregatePlusNoAggregate();
-            processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
+            processor = ResultSetProcessorFactory.GetProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
             Assert.IsTrue(processor is ResultSetProcessorAggregateAll);
         }
 
@@ -80,7 +80,7 @@ namespace net.esper.eql.core
             // empty group-by but aggragating event properties in select clause (output per event), no having clause
             // and all properties in the select clause are aggregated
             IList<SelectExprElementUnnamedSpec> selectList = SupportSelectExprFactory.makeAggregateSelectListWithProps();
-            ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
+            ResultSetProcessor processor = ResultSetProcessorFactory.GetProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
             Assert.IsTrue(processor is ResultSetProcessorRowForAll);
         }
 
@@ -91,7 +91,7 @@ namespace net.esper.eql.core
             // no having clause
             IList<SelectExprElementUnnamedSpec> selectList = SupportSelectExprFactory.makeAggregateMixed();
             groupByList.Add(SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0"));
-            ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
+            ResultSetProcessor processor = ResultSetProcessorFactory.GetProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
             Assert.IsTrue(processor is ResultSetProcessorRowPerGroup);
         }
 
@@ -107,7 +107,7 @@ namespace net.esper.eql.core
 
             groupByList.Add(SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0"));
 
-            ResultSetProcessor processor = ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
+            ResultSetProcessor processor = ResultSetProcessorFactory.GetProcessor(selectList, null, groupByList, null, null, orderByList, typeService1Stream, eventAdapterService, null);
 
             Assert.IsTrue(processor is ResultSetProcessorAggregateGrouped);
         }
@@ -118,7 +118,7 @@ namespace net.esper.eql.core
             // invalid select clause
             try
             {
-                ResultSetProcessorFactory.getProcessor(SupportSelectExprFactory.makeInvalidSelectList(), null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
+                ResultSetProcessorFactory.GetProcessor(SupportSelectExprFactory.makeInvalidSelectList(), null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -130,7 +130,7 @@ namespace net.esper.eql.core
             groupByList.Add(new ExprIdentNode("xxxx", "s0"));
             try
             {
-                ResultSetProcessorFactory.getProcessor(SupportSelectExprFactory.makeNoAggregateSelectListUnnamed(), null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
+                ResultSetProcessorFactory.GetProcessor(SupportSelectExprFactory.makeNoAggregateSelectListUnnamed(), null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -147,7 +147,7 @@ namespace net.esper.eql.core
 
             try
             {
-                ResultSetProcessorFactory.getProcessor(selectList, null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
+                ResultSetProcessorFactory.GetProcessor(selectList, null, groupByList, null, null, orderByList, typeService3Stream, eventAdapterService, null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

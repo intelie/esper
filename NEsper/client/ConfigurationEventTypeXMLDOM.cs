@@ -1,12 +1,10 @@
-/// <summary>
-/// ************************************************************************************
-/// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
-/// http://esper.codehaus.org                                                          *
-/// ---------------------------------------------------------------------------------- *
-/// The software in this package is published under the terms of the GPL license       *
-/// a copy of which has been included with this distribution in the license.txt file.  *
-/// ************************************************************************************
-/// </summary>
+// ************************************************************************************
+// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
+// http://esper.codehaus.org                                                          *
+// ---------------------------------------------------------------------------------- *
+// The software in this package is published under the terms of the GPL license       *
+// a copy of which has been included with this distribution in the license.txt file.  *
+// ************************************************************************************
 
 using System;
 using System.Collections.Generic;
@@ -114,8 +112,7 @@ namespace net.esper.client
         /// <param name="name">name of the event property</param>
         /// <param name="xpath">is an arbitrary xpath expression</param>
         /// <param name="type">is the return type of the expression</param>
-        /// </param>
-
+        
         public virtual void AddXPathProperty(String name, String xpath, XPathResultType type)
         {
             XPathPropertyDesc desc = new XPathPropertyDesc(name, xpath, type);
@@ -134,8 +131,7 @@ namespace net.esper.client
         /// <summary> Add a prefix and namespace name for use in XPath expressions refering to that prefix.</summary>
         /// <param name="prefix">is the prefix of the namespace
         /// </param>
-        /// <param name="namespace">is the namespace name
-        /// </param>
+        /// <param name="namespace_">is the namespace name</param>
 
         public virtual void AddNamespacePrefix(String prefix, String namespace_)
         {

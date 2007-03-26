@@ -11,11 +11,24 @@ namespace net.esper.eql.expression
 
 	public class ExprStddevNode : ExprAggregateNode
 	{
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
 		override public Type ReturnType
 		{
 			get { return computer.ValueType; }
 		}
 
+        /// <summary>
+        /// Returns the aggregation function name for representation in a generate expression string.
+        /// </summary>
+        /// <value></value>
+        /// <returns> aggregation function name
+        /// </returns>
 		protected internal override string AggregationFunctionName
 		{
 			get { return "stddev"; }
@@ -24,7 +37,7 @@ namespace net.esper.eql.expression
 		private Aggregator computer;
 
 		/// <summary> Ctor.</summary>
-		/// <param name="distinct">- flag indicating unique or non-unique value aggregation
+		/// <param name="distinct">flag indicating unique or non-unique value aggregation
 		/// </param>
 		
 		public ExprStddevNode( bool distinct )
@@ -32,12 +45,24 @@ namespace net.esper.eql.expression
 		{
 		}
 
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
 		public override void Validate( StreamTypeService streamTypeService, AutoImportService autoImportService )
 		{
 			base.ValidateSingleNumericChild( streamTypeService );
 			computer = new DoubleStddev();
 		}
 
+        /// <summary>
+        /// Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
+        /// </summary>
+        /// <value></value>
+        /// <returns> prototype aggregation state as a factory for aggregation states per group-by key value
+        /// </returns>
 		public override Aggregator AggregationFunction
 		{
 			get
@@ -50,6 +75,14 @@ namespace net.esper.eql.expression
 			}
 		}
 
+        /// <summary>
+        /// Return true if a expression aggregate node semantically equals the current node, or false if not.
+        /// For use by the EqualsNode implementation which compares the distinct flag.
+        /// </summary>
+        /// <param name="node">to compare to</param>
+        /// <returns>
+        /// true if semantically equal, or false if not equals
+        /// </returns>
 		public override bool EqualsNodeAggregate( ExprAggregateNode node )
 		{
 			if ( !( node is ExprStddevNode ) )
@@ -66,6 +99,12 @@ namespace net.esper.eql.expression
 		
 		public class DoubleStddev : Aggregator
 		{
+            /// <summary>
+            /// Returns the current value held.
+            /// </summary>
+            /// <value></value>
+            /// <returns> current value
+            /// </returns>
 			virtual public Object Value
 			{
 				get
@@ -81,6 +120,12 @@ namespace net.esper.eql.expression
 				}
 			}
 
+            /// <summary>
+            /// Returns the type of the current value.
+            /// </summary>
+            /// <value></value>
+            /// <returns> type of values held
+            /// </returns>
 			virtual public Type ValueType
 			{
 				get { return typeof( double? ); }
@@ -90,7 +135,11 @@ namespace net.esper.eql.expression
 			private double sumSq;
 			private long numDataPoints;
 
-			public virtual void enter( Object _object )
+            /// <summary>
+            /// Enters the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+			public virtual void Enter( Object _object )
 			{
 				if ( _object == null )
 				{
@@ -104,7 +153,11 @@ namespace net.esper.eql.expression
 				sumSq += value * value;
 			}
 
-			public virtual void leave( Object _object )
+            /// <summary>
+            /// Leaves the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+			public virtual void Leave( Object _object )
 			{
 				if ( _object == null )
 				{
@@ -118,7 +171,11 @@ namespace net.esper.eql.expression
 				sumSq -= value * value;
 			}
 
-			public virtual Aggregator newAggregator()
+            /// <summary>
+            /// Make a new, initalized aggregation state.
+            /// </summary>
+            /// <returns>initialized copy of the aggregator</returns>
+			public virtual Aggregator NewAggregator()
 			{
 				return new DoubleStddev();
 			}

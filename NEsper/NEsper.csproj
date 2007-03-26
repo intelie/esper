@@ -90,7 +90,6 @@
     <Compile Include="compat\LinkedDictionary.cs" />
     <Compile Include="compat\CollectionHelper.cs" />
     <Compile Include="compat\LinkedHashSet.cs" />
-    <Compile Include="compat\IPathSearcher.cs" />
     <Compile Include="compat\ReaderLock.cs" />
     <Compile Include="compat\ResourceManager.cs" />
     <Compile Include="compat\ETreeSet.cs" />

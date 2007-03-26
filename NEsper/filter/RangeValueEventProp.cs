@@ -29,6 +29,10 @@ namespace net.esper.filter
             this.resultEventProperty = resultEventProperty;
         }
 
+        /// <summary>
+        /// Check the type against the map of event tag and type.
+        /// </summary>
+        /// <param name="taggedEventTypes">map of event tags and types</param>
         public void CheckType(EDictionary<String, EventType> taggedEventTypes)
         {
             EventType type = taggedEventTypes.Fetch(resultEventAsName, null);
@@ -51,6 +55,11 @@ namespace net.esper.filter
             }
         }
 
+        /// <summary>
+        /// Returns the filter value representing the endpoint.
+        /// </summary>
+        /// <param name="matchedEvents">is the prior results</param>
+        /// <returns>filter value</returns>
         public double GetFilterValue(MatchedEventMap matchedEvents)
         {
             EventBean ev = matchedEvents.getMatchingEvent(resultEventAsName);
@@ -64,20 +73,33 @@ namespace net.esper.filter
             if (value == null)
             {
                 throw new IllegalStateException(
-            		"Event property named " +
+                    "Event property named " +
                     "'" + resultEventAsName +
-                    "." + resultEventProperty + 
+                    "." + resultEventProperty +
                     "' returned null value");
             }
-            
-            return Convert.ToDouble( value ) ;
+
+            return Convert.ToDouble(value);
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             return "resultEventProp=" + resultEventAsName + "." + resultEventProperty;
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <param name="obj">The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>.</param>
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
+        /// </returns>
         public override Boolean Equals(Object obj)
         {
             if (this == obj)
@@ -99,10 +121,16 @@ namespace net.esper.filter
 
             return false;
         }
-        
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

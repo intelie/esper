@@ -1,11 +1,10 @@
-/// <summary>***********************************************************************************
-/// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
-/// http://esper.codehaus.org                                                          *
-/// ---------------------------------------------------------------------------------- *
-/// The software in this package is published under the terms of the GPL license       *
-/// a copy of which has been included with this distribution in the license.txt file.  *
-/// ************************************************************************************
-/// </summary>
+// ************************************************************************************
+// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
+// http://esper.codehaus.org                                                          *
+// ---------------------------------------------------------------------------------- *
+// The software in this package is published under the terms of the GPL license       *
+// a copy of which has been included with this distribution in the license.txt file.  *
+// ************************************************************************************
 
 using System;
 using System.Collections.Generic;
@@ -45,7 +44,7 @@ namespace net.esper.client
         }
 
         /// <summary> Returns an EPServiceProvider for a given registration URI.</summary>
-        /// <param name="uri">- the registration URI
+        /// <param name="uri">the registration URI
         /// </param>
         /// <returns> EPServiceProvider for the given registration URI.
         /// </returns>
@@ -56,7 +55,7 @@ namespace net.esper.client
         }
 
         /// <summary> Returns an EPServiceProvider for a given registration URI.</summary>
-        /// <param name="uri">- the registration URI
+        /// <param name="uri">the registration URI
         /// </param>
         /// <param name="configuration">is the configuration for the service
         /// </param>

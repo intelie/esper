@@ -33,21 +33,21 @@ namespace net.esper.eql.core
         public virtual void testApplyEnter()
         {
             // apply two rows, all aggregators evaluated their sub-expressions(constants 5 and 2) twice
-            service.applyEnter(new EventBean[1], null);
-            service.applyEnter(new EventBean[1], null);
-            Assert.AreEqual(10, service.getValue(0));
-            Assert.AreEqual(4, service.getValue(1));
+            service.ApplyEnter(new EventBean[1], null);
+            service.ApplyEnter(new EventBean[1], null);
+            Assert.AreEqual(10, service.GetValue(0));
+            Assert.AreEqual(4, service.GetValue(1));
         }
 
         [Test]
         public virtual void testApplyLeave()
         {
             // apply 3 rows, all aggregators evaluated their sub-expressions(constants 5 and 2)
-            service.applyLeave(new EventBean[1], null);
-            service.applyLeave(new EventBean[1], null);
-            service.applyLeave(new EventBean[1], null);
-            Assert.AreEqual(-15, service.getValue(0));
-            Assert.AreEqual(-6, service.getValue(1));
+            service.ApplyLeave(new EventBean[1], null);
+            service.ApplyLeave(new EventBean[1], null);
+            service.ApplyLeave(new EventBean[1], null);
+            Assert.AreEqual(-15, service.GetValue(0));
+            Assert.AreEqual(-6, service.GetValue(1));
         }
 
         private static EventBean[][] MakeEvents(int countRows)

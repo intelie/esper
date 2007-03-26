@@ -15,6 +15,12 @@ namespace net.esper.compat
 
     public class LinkedDictionary<K,V> : EDictionary<K,V>
     {
+        /// <summary>
+        /// Delegate for handling events on dictionary entries.
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+
         public delegate bool EntryEventHandler(KeyValuePair<K, V> entry);
         
         /// <summary>
@@ -138,6 +144,11 @@ namespace net.esper.compat
 			}
 		}
 		#endregion
+
+        /// <summary>
+        /// Occurs when a potentially destructive operations occurs on the dictionary
+        /// and the dictionary is allowed to rebalance.
+        /// </summary>
 
         public event EntryEventHandler RemoveEldest;
 
@@ -336,9 +347,9 @@ namespace net.esper.compat
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
         
-        public void Add(KeyValuePair<K, V> keyValuePair)
+        public void Add(KeyValuePair<K, V> item)
         {
-            Add( keyValuePair.Key, keyValuePair.Value ) ;
+            Add( item.Key, item.Value ) ;
         }
 
         /// <summary>

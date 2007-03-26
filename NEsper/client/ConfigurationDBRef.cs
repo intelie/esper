@@ -68,12 +68,11 @@ namespace net.esper.client
             connectionSettings = new ConnectionSettings();
         }
 
-		/// <summary>
-		/// Sets the connection factory
-		/// </summary>
-		/// <param name="className"></param>
-		/// <param name="url"></param>
-		/// <param name="connectionArgs"></param>
+        /// <summary>
+        /// Sets the database provider connection.
+        /// </summary>
+        /// <param name="providerName">Name of the provider.</param>
+        /// <param name="connectionArgs">The connection args.</param>
 		
 		public void SetDatabaseProviderConnection(String providerName, NameValueCollection connectionArgs)
     	{

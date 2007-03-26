@@ -18,7 +18,7 @@ namespace net.esper.eql.parse
     {
 
         /// <summary> Returns the parse Object for the parameter/constant AST node whose text to parse.</summary>
-        /// <param name="parameterNode">- AST node to parse
+        /// <param name="parameterNode">AST node to parse
         /// </param>
         /// <returns> object value
         /// </returns>

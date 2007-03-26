@@ -22,9 +22,10 @@ namespace net.esper.eql.core
 
         private IList<String> namespaces = new List<String>();
 
-        /// <summary> Ctor.</summary>
-        /// <param name="imports">- the package and class names that will be used to resolve partial class names
-        /// </param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="namespaces">the namespaces that will be used to resolve partial class names</param>
 
         public AutoImportServiceImpl(IEnumerable<String> namespaces)
         {
@@ -39,6 +40,13 @@ namespace net.esper.eql.core
             }
         }
 
+        /// <summary>
+        /// Gets the Type object for the type name. If the type
+        /// name is incomplete, uses the imported namespace names
+        /// to attempt to resolve the name.
+        /// </summary>
+        /// <param name="className">the name of the type to resolve</param>
+        /// <returns>the Type object for this class name</returns>
         public virtual Type ResolveClass(String className)
         {
             // Attempt to retrieve the class with the name as-is

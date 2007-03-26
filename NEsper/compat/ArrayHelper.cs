@@ -3,13 +3,17 @@ using System.Text;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// Helper class that assists with operations on arrays.
+    /// </summary>
+
 	public class ArrayHelper
 	{
-		/// <summary>
-		/// Renders the array as a string
-		/// </summary>
-		/// <param name="array1"></param>
-		/// <returns></returns>
+        /// <summary>
+        /// Renders the array as a string
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <returns></returns>
 		
 		public static String Render( Array array )
 		{

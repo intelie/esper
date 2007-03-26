@@ -34,9 +34,9 @@ namespace net.esper.eql.spec
 		private String assignedName;
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="selectExpression">- the expression node to evaluate for matching events
+		/// <param name="selectExpression">the expression node to evaluate for matching events
 		/// </param>
-		/// <param name="assignedName">- cannot be null as a name is always assigned or
+		/// <param name="assignedName">cannot be null as a name is always assigned or
 		/// system-determined
 		/// </param>
 		public SelectExprElementNamedSpec(ExprNode selectExpression, String assignedName)

@@ -24,12 +24,12 @@ namespace net.esper.eql.join.rep
 			
 		}
 
-		/// <summary> Returns the parent node, or null if this is a root node.</summary>
-		/// <returns> parent node or null for root node
-		/// </returns>
-		/// <summary> Sets the parent node.</summary>
-		/// <param name="parent">to set
-		/// </param>
+        /// <summary>
+        /// Gets or sets the parent node, or null if this is a root node.
+        /// </summary>
+        /// <value>The parent.</value>
+        /// <returns> parent node or null for root node
+        /// </returns>
 		virtual public Node Parent
 		{
 			get
@@ -44,12 +44,12 @@ namespace net.esper.eql.join.rep
 			
 		}
 
-		/// <summary> Returns lookup event.</summary>
-		/// <returns> parent node's event that was used to lookup
-		/// </returns>
-		/// <summary> Set the parent lookup (from stream) event whose results (to stream) are stored.</summary>
-		/// <param name="parentEvent">is the lookup event
-		/// </param>
+        /// <summary>
+        /// Gets or sets lookup event.
+        /// </summary>
+        /// <value>The parent event.</value>
+        /// <returns> parent node's event that was used to lookup
+        /// </returns>
 		virtual public EventBean ParentEvent
 		{
 			get
@@ -64,6 +64,10 @@ namespace net.esper.eql.join.rep
 			
 		}
 
+        /// <summary>
+        /// Gets or sets the events.
+        /// </summary>
+        /// <value>The events.</value>
         virtual public ISet<EventBean> Events
         {
             get { return events; }

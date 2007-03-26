@@ -11,10 +11,11 @@ namespace net.esper.eql.core
     /// <summary> Result set processor for the fully-grouped case:
     /// there is a group-by and all non-aggregation event properties in the select clause are listed in the group by,
     /// and there are aggregation functions.
-    /// <p>
+    /// <para>
     /// Produces one row for each group that changed (and not one row per event). Computes MultiKey group-by keys for
     /// each event and uses a set of the group-by keys to generate the result rows, using the first (old or new, anyone) event
     /// for each distinct group-by key.
+    /// </para>
     /// </summary>
 
     public class ResultSetProcessorRowPerGroup : ResultSetProcessor
@@ -37,27 +38,33 @@ namespace net.esper.eql.core
         private readonly IDictionary<MultiKey<Object>, EventBean[]> newGenerators = new Dictionary<MultiKey<Object>, EventBean[]>();
         private readonly IDictionary<MultiKey<Object>, EventBean[]> oldGenerators = new Dictionary<MultiKey<Object>, EventBean[]>();
 
+        /// <summary>
+        /// Returns the event type of processed results.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type of the resulting events posted by the processor.
+        /// </returns>
         virtual public EventType ResultEventType
         {
             get { return selectExprProcessor.ResultEventType; }
         }
 
         /// <summary> Ctor.</summary>
-        /// <param name="selectExprProcessor">- for processing the select expression and generting the final output rows
+        /// <param name="selectExprProcessor">for processing the select expression and generting the final output rows
         /// </param>
-        /// <param name="orderByProcessor">- for sorting outgoing events according to the order-by clause
+        /// <param name="orderByProcessor">for sorting outgoing events according to the order-by clause
         /// </param>
-        /// <param name="aggregationService">- handles aggregation
+        /// <param name="aggregationService">handles aggregation
         /// </param>
-        /// <param name="groupKeyNodes">- list of group-by expression nodes needed for building the group-by keys
+        /// <param name="groupKeyNodes">list of group-by expression nodes needed for building the group-by keys
         /// </param>
-        /// <param name="optionalHavingNode">- expression node representing validated HAVING clause, or null if none given.
+        /// <param name="optionalHavingNode">expression node representing validated HAVING clause, or null if none given.
         /// Aggregation functions in the having node must have been pointed to the AggregationService for evaluation.
         /// </param>
-        /// <param name="isOutputLimiting">- true to indicate we are output limiting and must keep producing
+        /// <param name="isOutputLimiting">true to indicate we are output limiting and must keep producing
         /// a row per group even if groups didn't change
         /// </param>
-        /// <param name="isOutputLimitLastOnly">- true if output limiting and interested in last event only
+        /// <param name="isOutputLimitLastOnly">true if output limiting and interested in last event only
         /// </param>
         public ResultSetProcessorRowPerGroup(
             SelectExprProcessor selectExprProcessor,
@@ -78,7 +85,15 @@ namespace net.esper.eql.core
             this.isSorting = orderByProcessor != null;
         }
 
-        public Pair<EventBean[], EventBean[]> processJoinResult(
+        /// <summary>
+        /// For use by joins posting their result, process the event rows that are entered and removed (new and old events).
+        /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
+        /// old events as specified.
+        /// </summary>
+        /// <param name="newEvents">new events posted by join</param>
+        /// <param name="oldEvents">old events posted by join</param>
+        /// <returns>pair of new events and old events</returns>
+        public Pair<EventBean[], EventBean[]> ProcessJoinResult(
             ISet<MultiKey<EventBean>> newEvents,
             ISet<MultiKey<EventBean>> oldEvents)
         {
@@ -97,7 +112,7 @@ namespace net.esper.eql.core
                 int count = 0;
                 foreach (MultiKey<EventBean> eventsPerStream in oldEvents)
                 {
-                    aggregationService.applyLeave(eventsPerStream.Array, oldDataMultiKey[count]);
+                    aggregationService.ApplyLeave(eventsPerStream.Array, oldDataMultiKey[count]);
                     count++;
                 }
             }
@@ -107,7 +122,7 @@ namespace net.esper.eql.core
                 int count = 0;
                 foreach (MultiKey<EventBean> eventsPerStream in newEvents)
                 {
-                    aggregationService.applyEnter(eventsPerStream.Array, newDataMultiKey[count]);
+                    aggregationService.ApplyEnter(eventsPerStream.Array, newDataMultiKey[count]);
                     count++;
                 }
             }
@@ -122,7 +137,15 @@ namespace net.esper.eql.core
             return null;
         }
 
-        public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+        /// <summary>
+        /// For use by views posting their result, process the event rows that are entered and removed (new and old events).
+        /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
+        /// old events as specified.
+        /// </summary>
+        /// <param name="newData">new events posted by view</param>
+        /// <param name="oldData">old events posted by view</param>
+        /// <returns>pair of new events and old events</returns>
+        public Pair<EventBean[], EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData)
         {
             // Generate group-by keys for all events, collect all keys in a set for later event generation
             IDictionary<MultiKey<Object>, EventBean> keysAndEvents = new Dictionary<MultiKey<Object>, EventBean>();
@@ -140,7 +163,7 @@ namespace net.esper.eql.core
                 for (int i = 0; i < oldData.Length; i++)
                 {
                     eventsPerStream[0] = oldData[i];
-                    aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[i]);
+                    aggregationService.ApplyLeave(eventsPerStream, oldDataMultiKey[i]);
                 }
             }
             if (newData != null)
@@ -149,7 +172,7 @@ namespace net.esper.eql.core
                 for (int i = 0; i < newData.Length; i++)
                 {
                     eventsPerStream[0] = newData[i];
-                    aggregationService.applyEnter(eventsPerStream, newDataMultiKey[i]);
+                    aggregationService.ApplyEnter(eventsPerStream, newDataMultiKey[i]);
                 }
             }
 
@@ -242,7 +265,7 @@ namespace net.esper.eql.core
                 }
             }
 
-            return applyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators);
+            return ApplyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators);
         }
 
         private EventBean[] generateOutputEventsJoin(
@@ -312,10 +335,10 @@ namespace net.esper.eql.core
                 }
             }
 
-            return applyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators);
+            return ApplyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators);
         }
 
-        private EventBean[] applyOutputLimitAndOrderBy(
+        private EventBean[] ApplyOutputLimitAndOrderBy(
             EventBean[] events,
             EventBean[][] currentGenerators,
             MultiKey<Object>[] keys,
@@ -344,7 +367,7 @@ namespace net.esper.eql.core
 
             if (isSorting)
             {
-                events = orderByProcessor.sort(events, currentGenerators, keys);
+                events = orderByProcessor.Sort(events, currentGenerators, keys);
             }
 
             return events;

@@ -7,7 +7,7 @@ namespace net.esper.eql.core
 	public class PropertyNotFoundException:StreamTypesException
 	{
 		/// <summary> Ctor.</summary>
-		/// <param name="msg">- message
+		/// <param name="msg">message
 		/// </param>
 		public PropertyNotFoundException(String msg):base(msg)
 		{

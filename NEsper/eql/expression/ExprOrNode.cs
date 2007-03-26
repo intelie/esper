@@ -14,11 +14,24 @@ namespace net.esper.eql.expression
 
     public class ExprOrNode : ExprNode
     {
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         override public Type ReturnType
         {
             get { return typeof(bool?); }
         }
 
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             // Sub-nodes must be returning boolean
@@ -37,6 +50,13 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Evaluate event tuple and return result.
+        /// </summary>
+        /// <param name="eventsPerStream">event tuple</param>
+        /// <returns>
+        /// evaluation result, a boolean value for OR/AND-type evalution nodes.
+        /// </returns>
         public override Object Evaluate(EventBean[] eventsPerStream)
         {
             // At least one child must evaluate to true
@@ -51,6 +71,12 @@ namespace net.esper.eql.expression
             return false;
         }
 
+        /// <summary>
+        /// Returns the expression node rendered as a string.
+        /// </summary>
+        /// <value></value>
+        /// <returns> string rendering of expression
+        /// </returns>
         public override String ExpressionString
         {
             get
@@ -71,6 +97,15 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Return true if a expression node semantically equals the current node, or false if not.
+        /// Concrete implementations should compare the type and any additional information
+        /// that impact the evaluation of a node.
+        /// </summary>
+        /// <param name="node">to compare to</param>
+        /// <returns>
+        /// true if semantically equal, or false if not equals
+        /// </returns>
         public override bool EqualsNode(ExprNode node)
         {
             if (!(node is ExprOrNode))

@@ -18,7 +18,7 @@ namespace net.esper.eql.join.plan
         private readonly int numStreams;
 
         /// <summary> Ctor.</summary>
-        /// <param name="numStreams">- number of streams
+        /// <param name="numStreams">number of streams
         /// </param>
 
         public OuterInnerDirectionalGraph(int numStreams)

@@ -12,6 +12,12 @@ namespace net.esper.view.stat.olap
 
     public sealed class CubeImpl : Cube
     {
+        /// <summary>
+        /// Returns dimensions. Implementations have at least 1 dimension and can be n-dimensional.
+        /// </summary>
+        /// <value></value>
+        /// <returns> dimension array
+        /// </returns>
         public IList<Dimension> Dimensions
         {
             get
@@ -25,6 +31,16 @@ namespace net.esper.view.stat.olap
 
         }
 
+        /// <summary>
+        /// Returns all measures.
+        /// Individual measures can be retrieved directly by indexing into the array of measures.
+        /// A formual for calculating an ordinal for a 3-dimensional cube is as follows:
+        /// ordinal = dimension[0].index + dimension[1].index * dimension[0].size +
+        /// dimension[2].index * dimension[0].size * dimension[1].size;
+        /// </summary>
+        /// <value></value>
+        /// <returns> array of measures
+        /// </returns>
         public IList<Cell> Measures
         {
             get
@@ -61,6 +77,13 @@ namespace net.esper.view.stat.olap
             this.measuresToDerive = measuresToDerive;
         }
 
+        /// <summary>
+        /// Returns the member value for each dimension that intersect to identify the cell of the given ordinal.
+        /// </summary>
+        /// <param name="ordinal">is the cell ordinal, Starting at zero and with a max value of Cell[].Length - 1.</param>
+        /// <returns>
+        /// member values matching the number of dimensions that intersect to identify the cell
+        /// </returns>
         public IList<DimensionMember> GetMembers(int ordinal)
         {
             if ((ordinal < 0) || (ordinal >= measures.Length))
@@ -81,6 +104,15 @@ namespace net.esper.view.stat.olap
             return intersections[ordinal];
         }
 
+        /// <summary>
+        /// Given the the members of each dimension that define the intersection, returns the ordinal of a measure.
+        /// </summary>
+        /// <param name="members">is an array of members within each dimension that intersect and thus define the cell
+        /// position</param>
+        /// <returns>
+        /// ordinal Starts at zero and ends at Cell[].Length - 1. A -1 is returned if the intersection
+        /// could not be determined, such as when a dimension member could not be located.
+        /// </returns>
         public int GetOrdinal(IList<DimensionMember> members)
         {
             if (measures == null)

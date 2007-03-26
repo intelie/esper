@@ -64,27 +64,31 @@ namespace net.esper.eql.expression
             this.streamOrPropertyName = streamOrPropertyName;
         }
 
-        /**
-         * For unit testing, returns unresolved property name.
-         * @return property name
-         */
+        /// <summary>For unit testing, returns unresolved property name.</summary>
+        /// <returns>property name</returns>
+
         public String UnresolvedPropertyName
         {
             get { return unresolvedPropertyName; }
         }
 
-        /**
-         * For unit testing, returns stream or property name candidate.
-         * @return stream name, or property name of a nested property of one of the streams
-         */
+        /// <summary>For unit testing, returns stream or property name candidate.</summary>
+        /// <returns>stream name, or property name of a nested property of one of the streams</returns>
+
         public String StreamOrPropertyName
         {
             get { return streamOrPropertyName; }
         }
 
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
-            Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
+            Pair<PropertyResolutionDescriptor, String> propertyInfoPair = GetTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
             resolvedStreamName = propertyInfoPair.Second;
             streamNum = propertyInfoPair.First.StreamNum;
             propertyType = propertyInfoPair.First.PropertyType;
@@ -92,6 +96,13 @@ namespace net.esper.eql.expression
             propertyGetter = propertyInfoPair.First.StreamEventType.GetGetter(resolvedPropertyName);
         }
 
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         public override Type ReturnType
         {
             get
@@ -104,10 +115,10 @@ namespace net.esper.eql.expression
             }
         }
 
-        /**
-         * Returns stream id supplying the property value.
-         * @return stream number
-         */
+        /// <summary>
+        /// Gets the stream id supplying the property value 
+        /// </summary>
+
         public int StreamId
         {
             get
@@ -120,10 +131,10 @@ namespace net.esper.eql.expression
             }
         }
 
-        /**
-         * Returns stream name as resolved by lookup of property in streams.
-         * @return stream name
-         */
+        /// <summary>
+        /// Returns stream name as resolved by lookup of property in streams.
+        /// </summary>
+ 
         public String ResolvedStreamName
         {
             get
@@ -136,10 +147,10 @@ namespace net.esper.eql.expression
             }
         }
 
-        /**
-         * Return property name as resolved by lookup in streams.
-         * @return property name
-         */
+        /// <summary>
+        /// Return property name as resolved by lookup in streams.
+        /// </summary>
+        
         public String ResolvedPropertyName
         {
             get
@@ -152,18 +163,14 @@ namespace net.esper.eql.expression
             }
         }
 
-        /**
-         * Determine stream id and property type given an unresolved property name and
-         * a stream name that may also be part of the property name.
-         * <p>
-         * For example: select s0.p1 from...    p1 is the property name, s0 the stream name, however this could also be a nested property
-         * @param streamTypeService - service for type infos
-         * @param unresolvedPropertyName - property name
-         * @param streamOrPropertyName - stream name, this can also be the first part of the property name
-         * @return pair of stream number and property type
-         * @throws ExprValidationException if no such property exists
-         */
-        protected static Pair<PropertyResolutionDescriptor, String> getTypeFromStream(StreamTypeService streamTypeService, String unresolvedPropertyName, String streamOrPropertyName)
+        /// <summary>Determine stream id and property type given an unresolved property name anda stream name that may also be part of the property name.&lt;p&gt;For example: select s0.p1 from...    p1 is the property name, s0 the stream name, however this could also be a nested property</summary>
+        /// <param name="streamTypeService">service for type infos</param>
+        /// <param name="unresolvedPropertyName">property name</param>
+        /// <param name="streamOrPropertyName">stream name, this can also be the first part of the property name</param>
+        /// <returns>pair of stream number and property type</returns>
+        /// <throws>ExprValidationException if no such property exists</throws>
+
+        protected static Pair<PropertyResolutionDescriptor, String> GetTypeFromStream(StreamTypeService streamTypeService, String unresolvedPropertyName, String streamOrPropertyName)
         {
             PropertyResolutionDescriptor propertyInfo = null;
 
@@ -216,6 +223,12 @@ namespace net.esper.eql.expression
             throw new ExprValidationException("Failed to resolve property '" + propertyNameCandidate + "' to a stream or nested property in a stream");
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             return "unresolvedPropertyName=" + unresolvedPropertyName +
@@ -225,6 +238,13 @@ namespace net.esper.eql.expression
                     " propertyInfo.type=" + propertyType;
         }
 
+        /// <summary>
+        /// Evaluate event tuple and return result.
+        /// </summary>
+        /// <param name="eventsPerStream">event tuple</param>
+        /// <returns>
+        /// evaluation result, a boolean value for OR/AND-type evalution nodes.
+        /// </returns>
         public override Object Evaluate(EventBean[] eventsPerStream)
         {
             EventBean ev = eventsPerStream[streamNum];
@@ -235,6 +255,12 @@ namespace net.esper.eql.expression
             return propertyGetter.GetValue(ev);
         }
 
+        /// <summary>
+        /// Returns the expression node rendered as a string.
+        /// </summary>
+        /// <value></value>
+        /// <returns> string rendering of expression
+        /// </returns>
         public override String ExpressionString
         {
             get
@@ -251,6 +277,15 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Return true if a expression node semantically equals the current node, or false if not.
+        /// Concrete implementations should compare the type and any additional information
+        /// that impact the evaluation of a node.
+        /// </summary>
+        /// <param name="node">to compare to</param>
+        /// <returns>
+        /// true if semantically equal, or false if not equals
+        /// </returns>
         public override Boolean EqualsNode(ExprNode node)
         {
             if (!(node is ExprIdentNode))

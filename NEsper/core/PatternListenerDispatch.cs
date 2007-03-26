@@ -27,9 +27,10 @@ namespace net.esper.core
 			this.listeners = listeners;
 		}
 
-		/// <summary> Add an event to be dispatched.</summary>
-		/// <param name="event">to add
-		/// </param>
+        /// <summary>
+        /// Add an event to be dispatched.
+        /// </summary>
+        /// <param name="_event">event to add</param>
 
 		public virtual void Add( EventBean _event )
 		{
@@ -49,6 +50,9 @@ namespace net.esper.core
 			}
 		}
 
+        /// <summary>
+        /// Execute any listeners.
+        /// </summary>
 		public virtual void Execute()
 		{
 			EventBean[] eventArray = null;

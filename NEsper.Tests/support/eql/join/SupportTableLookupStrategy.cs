@@ -6,7 +6,6 @@ using net.esper.events;
 
 namespace net.esper.support.eql.join
 {
-
     public class SupportTableLookupStrategy : TableLookupStrategy
     {
         private readonly int numResults;
@@ -16,7 +15,7 @@ namespace net.esper.support.eql.join
             this.numResults = numResults;
         }
 
-        public ISet<EventBean> lookup(EventBean _event)
+        public ISet<EventBean> Lookup(EventBean _event)
         {
             return SupportJoinResultNodeFactory.makeEventSet(numResults);
         }

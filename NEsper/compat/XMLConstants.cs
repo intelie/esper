@@ -3,6 +3,10 @@ using System.Xml;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// Contains constants for XML processing.
+    /// </summary>
+
 	public class XMLConstants
 	{
         /// <summary>

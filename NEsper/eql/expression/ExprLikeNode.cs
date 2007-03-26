@@ -13,6 +13,13 @@ namespace net.esper.eql.expression
 
     public class ExprLikeNode : ExprNode
     {
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         override public Type ReturnType
         {
             get
@@ -35,6 +42,12 @@ namespace net.esper.eql.expression
             this.isNot = not;
         }
 
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             if ((this.ChildNodes.Count != 2) && (this.ChildNodes.Count != 3))
@@ -73,6 +86,13 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Evaluate event tuple and return result.
+        /// </summary>
+        /// <param name="eventsPerStream">event tuple</param>
+        /// <returns>
+        /// evaluation result, a boolean value for OR/AND-type evalution nodes.
+        /// </returns>
         public override Object Evaluate(EventBean[] eventsPerStream)
         {
             if (likeUtil == null)
@@ -130,6 +150,11 @@ namespace net.esper.eql.expression
             return result;
         }
 
+        /// <summary>
+        /// Returns true if the objects are equal.
+        /// </summary>
+        /// <param name="node_">the node to compare against</param>
+        /// <returns></returns>
         public override bool EqualsNode(ExprNode node_)
         {
             if (!(node_ is ExprLikeNode))
@@ -145,6 +170,12 @@ namespace net.esper.eql.expression
             return true;
         }
 
+        /// <summary>
+        /// Returns the expression node rendered as a string.
+        /// </summary>
+        /// <value></value>
+        /// <returns> string rendering of expression
+        /// </returns>
         public override String ExpressionString
         {
             get

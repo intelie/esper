@@ -19,6 +19,11 @@ namespace net.esper.events
 			this.method = method;
 		}
 
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <param name="obj">The obj.</param>
+        /// <returns></returns>
         public Object GetValue(EventBean obj)
         {
             Object underlying = obj.Underlying;
@@ -48,7 +53,13 @@ namespace net.esper.events
                 throw new PropertyAccessException(e);
             }
         }
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return "ReflectionPropMethodGetter " + "method=" + method.ToString();

@@ -12,6 +12,10 @@ namespace net.esper.eql.core
 
     public class AggregationServiceGroupAllImpl : AggregationServiceBase
     {
+        /// <summary>
+        /// Sets the current row.
+        /// </summary>
+        /// <value>The current row.</value>
         override public MultiKey<Object> CurrentRow
         {
             set
@@ -21,34 +25,51 @@ namespace net.esper.eql.core
         }
 
         /// <summary> Ctor.</summary>
-        /// <param name="evaluators">- evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))
+        /// <param name="evaluators">evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))
         /// </param>
-        /// <param name="aggregators">- collect the aggregation state that evaluators evaluate to
+        /// <param name="aggregators">collect the aggregation state that evaluators evaluate to
         /// </param>
         public AggregationServiceGroupAllImpl(ExprEvaluator[] evaluators, Aggregator[] aggregators)
             : base(evaluators, aggregators)
         {
         }
 
-        public override void applyEnter(EventBean[] eventsPerStream, MultiKey<Object> optionalGroupKeyPerRow)
+        /// <summary>
+        /// Apply events as entering a window (new events).
+        /// </summary>
+        /// <param name="eventsPerStream">events for each stream entering window</param>
+        /// <param name="optionalGroupKeyPerRow">can be null if grouping without keys is desired, else the keys
+        /// to use for grouping, each distinct key value results in a new row of aggregation state.</param>
+        public override void ApplyEnter(EventBean[] eventsPerStream, MultiKey<Object> optionalGroupKeyPerRow)
         {
             for (int j = 0; j < evaluators.Length; j++)
             {
                 Object columnResult = evaluators[j].Evaluate(eventsPerStream);
-                aggregators[j].enter(columnResult);
+                aggregators[j].Enter(columnResult);
             }
         }
 
-        public override void applyLeave(EventBean[] eventsPerStream, MultiKey<Object> optionalGroupKeyPerRow)
+        /// <summary>
+        /// Apply events as leaving a window (old events).
+        /// </summary>
+        /// <param name="eventsPerStream">events for each stream entering window</param>
+        /// <param name="optionalGroupKeyPerRow">can be null if grouping without keys is desired, else the keys
+        /// to use for grouping, each distinct key value results in a new row of aggregation state.</param>
+        public override void ApplyLeave(EventBean[] eventsPerStream, MultiKey<Object> optionalGroupKeyPerRow)
         {
             for (int j = 0; j < evaluators.Length; j++)
             {
                 Object columnResult = evaluators[j].Evaluate(eventsPerStream);
-                aggregators[j].leave(columnResult);
+                aggregators[j].Leave(columnResult);
             }
         }
 
-        public override Object getValue(int column)
+        /// <summary>
+        /// Returns current aggregation state, for use by expression node representing an aggregation function.
+        /// </summary>
+        /// <param name="column">is assigned to the aggregation expression node and passed as an column (index) into a row</param>
+        /// <returns>current aggragation state</returns>
+        public override Object GetValue(int column)
         {
             return aggregators[column].Value;
         }

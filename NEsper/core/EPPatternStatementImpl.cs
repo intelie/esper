@@ -21,11 +21,23 @@ namespace net.esper.core
 		, EPStatement
 		, PatternMatchCallback
 	{
+        /// <summary>
+        /// Returns the type of events the iterable returns.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type of events the iterator returns
+        /// </returns>
         virtual public EventType EventType
 		{
 			get { return eventType; }
 		}
 
+        /// <summary>
+        /// Returns the underlying expression text or XML.
+        /// </summary>
+        /// <value></value>
+        /// <returns> expression text
+        /// </returns>
 		virtual public String Text
 		{
 			get { return expressionText;}
@@ -42,14 +54,14 @@ namespace net.esper.core
 		private EventBean lastEvent;
 		private PatternListenerDispatch dispatch;
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="expressionText">- expression</param>
-		/// <param name="eventType">- event type of events the pattern will fire</param>
-		/// <param name="dispatchService">- service for dispatching events</param>
-		/// <param name="eventAdapterService">- service for generating events or event wrappers and types</param>
-		/// <param name="StartMethod">- method to Start the pattern</param>
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="expressionText">expression</param>
+        /// <param name="eventType">event type of events the pattern will fire</param>
+        /// <param name="dispatchService">service for dispatching events</param>
+        /// <param name="eventAdapterService">service for generating events or event wrappers and types</param>
+        /// <param name="startMethod">The start method.</param>
 
 		public EPPatternStatementImpl( String expressionText, EventType eventType, DispatchService dispatchService, EventAdapterService eventAdapterService, EPPatternStmtStartMethod startMethod )
 		{
@@ -64,6 +76,10 @@ namespace net.esper.core
 			Start();
 		}
 
+        /// <summary>
+        /// Indicate matching events.
+        /// </summary>
+        /// <param name="matchEvent">contains a map of event tags and event objects</param>
 		public void matchFound( EDictionary<String, EventBean> matchEvent )
 		{
 			if ( log.IsDebugEnabled )
@@ -85,6 +101,9 @@ namespace net.esper.core
 			}
 		}
 
+        /// <summary>
+        /// Stop the statement.
+        /// </summary>
 		public virtual void Stop()
 		{
 			if ( stopMethod == null )
@@ -97,6 +116,9 @@ namespace net.esper.core
 			lastEvent = null;
 		}
 
+        /// <summary>
+        /// Start the statement.
+        /// </summary>
 		public virtual void Start()
 		{
 			if ( stopMethod != null )
@@ -110,16 +132,28 @@ namespace net.esper.core
 			dispatchService.Dispatch();
 		}
 
+        /// <summary>
+        /// Called when the last listener is removed.
+        /// </summary>
 		public override void listenerStop()
 		{
 			// No need to take action
 		}
 
+        /// <summary>
+        /// Called when the first listener is added.
+        /// </summary>
 		public override void listenerStart()
 		{
 			// No need to take action
 		}
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
 		public IEnumerator<EventBean> GetEnumerator()
 		{
 			if ( stopMethod != null )

@@ -7,8 +7,9 @@ using net.esper.pattern;
 
 namespace net.esper.filter
 {
-    /// <summary> This class represents one filter parameter in an {@link FilterSpec} filter specification.
-    /// <p> Each filerting parameter has an attribute name and operator type.
+    /// <summary>
+    /// This class represents one filter parameter in an {@link FilterSpec} filter specification.
+    /// <para>Each filerting parameter has an attribute name and operator type.</para>
     /// </summary>
 
     public abstract class FilterSpecParam
@@ -96,7 +97,13 @@ namespace net.esper.filter
             }
             return true;
         }
-        
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override int GetHashCode()
 		{
 			return base.GetHashCode();

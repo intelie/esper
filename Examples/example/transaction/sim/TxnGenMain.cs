@@ -14,11 +14,9 @@ using net.esper.example.transaction;
 
 namespace net.esper.example.transaction.sim
 {
-    /** Runs the generator.
-     * 
-     * @author Hans Gilde
-     *
-     */
+    /// <summary>Runs the generator.</summary>
+    /// <author>Hans Gilde</author>
+
     public class TxnGenMain
     {
         private static EDictionary<String, int?> BUCKET_SIZES = new LinkedDictionary<String, int?>();
@@ -33,11 +31,12 @@ namespace net.esper.example.transaction.sim
             BUCKET_SIZES.Put("larger", 1999993);
             BUCKET_SIZES.Put("largerer", 9999991);
         }
+        
+        /// <summary>
+        /// Application entry point
+        /// </summary>
+        /// <param name="args"></param>
 
-        /**
-         * @param args
-         * @throws IOException 
-         */
         public static void Main(String[] args)
         {
             if (args.Length < 2)
@@ -84,12 +83,20 @@ namespace net.esper.example.transaction.sim
         private int bucketSize;
         private int numTransactions;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TxnGenMain"/> class.
+        /// </summary>
+        /// <param name="bucketSize">Size of the bucket.</param>
+        /// <param name="numTransactions">The num transactions.</param>
         public TxnGenMain(int bucketSize, int numTransactions)
         {
             this.bucketSize = bucketSize;
             this.numTransactions = numTransactions;
         }
 
+        /// <summary>
+        /// Runs this instance.
+        /// </summary>
         public void Run()
         {
             // Configure engine with event names to make the statements more readable.

@@ -2,17 +2,20 @@ using System;
 
 namespace net.esper.schedule
 {
-	/// <summary> This class acts as a buckets for sorting schedule service callbacks that are scheduled to occur at the same
+	/// <summary>
+    /// This class acts as a buckets for sorting schedule service callbacks that are scheduled to occur at the same
 	/// time. Each buckets constists of {@link ScheduleSlot} slots that callbacks are
 	/// assigned to.
-	/// <p>
+	/// <para>
 	/// At the time of timer evaluation, callbacks that become triggerable are ordered using the bucket
 	/// as the first-level order, and slot as the second-level order.
-	/// <p>
+    /// </para>
+	/// <para>
 	/// Each statement at statement creation time allocates a buckets, and each timer within the
 	/// statement allocates a slot. Thus statements that depend on other statements (such as for insert-into),
 	/// and timers within their statement (such as time window or output rate limit timers) behave
 	/// deterministically.
+    /// </para>
 	/// </summary>
 
 	public class ScheduleBucket

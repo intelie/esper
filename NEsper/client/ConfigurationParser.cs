@@ -1,11 +1,10 @@
-/// <summary>***********************************************************************************
-/// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
-/// http://esper.codehaus.org                                                          *
-/// ---------------------------------------------------------------------------------- *
-/// The software in this package is published under the terms of the GPL license       *
-/// a copy of which has been included with this distribution in the license.txt file.  *
-/// ************************************************************************************
-/// </summary>
+// ************************************************************************************
+// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
+// http://esper.codehaus.org                                                          *
+// ---------------------------------------------------------------------------------- *
+// The software in this package is published under the terms of the GPL license       *
+// a copy of which has been included with this distribution in the license.txt file.  *
+// ************************************************************************************
 
 using System;
 using System.Data;
@@ -22,13 +21,17 @@ using org.apache.commons.logging;
 
 namespace net.esper.client
 {
+    /// <summary>
+    /// Parses configurations
+    /// </summary>
+
     public class ConfigurationParser
     {
         /// <summary>
-	/// Use the configuration specified in the given input stream.
-	/// </summary>
+        /// Use the configuration specified in the given input stream.
+        /// </summary>
         /// <param name="configuration">is the configuration object to populate</param>
-        /// <param name="stream	">Inputstream to be read from</param>
+        /// <param name="stream">The stream.</param>
         /// <param name="resourceName">The name to use in warning/error messages</param>
         /// <throws>  net.esper.client.EPException </throws>
 

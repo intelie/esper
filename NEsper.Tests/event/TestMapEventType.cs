@@ -77,17 +77,17 @@ namespace net.esper.events
         [Test]
         public virtual void testIsValidProperty()
         {
-            Assert.IsTrue(eventType.isProperty("myInt"));
-            Assert.IsTrue(eventType.isProperty("myString"));
-            Assert.IsTrue(eventType.isProperty("mySupportBean.intPrimitive"));
-            Assert.IsTrue(eventType.isProperty("myComplexBean.nested.nestedValue"));
-            Assert.IsTrue(eventType.isProperty("myComplexBean.indexed[1]"));
-            Assert.IsTrue(eventType.isProperty("myComplexBean.mapped('a')"));
+            Assert.IsTrue(eventType.IsProperty("myInt"));
+            Assert.IsTrue(eventType.IsProperty("myString"));
+            Assert.IsTrue(eventType.IsProperty("mySupportBean.intPrimitive"));
+            Assert.IsTrue(eventType.IsProperty("myComplexBean.nested.nestedValue"));
+            Assert.IsTrue(eventType.IsProperty("myComplexBean.indexed[1]"));
+            Assert.IsTrue(eventType.IsProperty("myComplexBean.mapped('a')"));
 
-            Assert.IsFalse(eventType.isProperty("dummy"));
-            Assert.IsFalse(eventType.isProperty("mySupportBean.dfgdg"));
-            Assert.IsFalse(eventType.isProperty("xxx.intPrimitive"));
-            Assert.IsFalse(eventType.isProperty("myComplexBean.nested.nestedValueXXX"));
+            Assert.IsFalse(eventType.IsProperty("dummy"));
+            Assert.IsFalse(eventType.IsProperty("mySupportBean.dfgdg"));
+            Assert.IsFalse(eventType.IsProperty("xxx.intPrimitive"));
+            Assert.IsFalse(eventType.IsProperty("myComplexBean.nested.nestedValueXXX"));
         }
 
         [Test]

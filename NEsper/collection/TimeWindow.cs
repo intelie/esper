@@ -32,6 +32,10 @@ namespace net.esper.collection
             get { return oldestTimestamp; }
         }
 
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <value>The count.</value>
 		public int Count
 		{
 			get { return window.Count; }
@@ -57,9 +61,9 @@ namespace net.esper.collection
         }
 
         /// <summary> Adds event to the time window for the specified timestamp.</summary>
-        /// <param name="timestamp">- the time slot for the event
+        /// <param name="timestamp">the time slot for the event
         /// </param>
-        /// <param name="bean">- event to add
+        /// <param name="bean">event to add
         /// </param>
 
         public void Add(long timestamp, EventBean bean)

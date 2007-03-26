@@ -91,9 +91,10 @@ namespace net.esper.type
             computers.Add(new MultiKey<Object>(new Object[] { typeof(uint?), MODULO }), ModuloUInt32);
         }
 
-        /**
-         * Interface for number cruncher.
-         */
+        /// <summary>
+        /// Interface for number cruncher.
+        /// </summary>
+
         public delegate Object Computer(Object d1, Object d2);
 
         private String expressionText;
@@ -129,256 +130,371 @@ namespace net.esper.type
             return computer;
         }
 
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Adds doubles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object AddDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) + Convert.ToDouble(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Adds singles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object AddSingle(Object d1, Object d2)
         {
             float? result = Convert.ToSingle(d1) + Convert.ToSingle(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Adds int64s.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object AddInt64(Object d1, Object d2)
         {
             long? result = Convert.ToInt64(d1) + Convert.ToInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Adds int32s.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object AddInt32(Object d1, Object d2)
         {
             int? result = Convert.ToInt32(d1) + Convert.ToInt32(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-        */
+
+        /// <summary>
+        /// Adds unsigned int64s.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object AddUInt64(Object d1, Object d2)
         {
             ulong? result = Convert.ToUInt64(d1) + Convert.ToUInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Adds unsigned 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object AddUInt32(Object d1, Object d2)
         {
             uint? result = Convert.ToUInt32(d1) + Convert.ToUInt32(d2);
             return result;
         }
 
-
-        /**
-         * Computer for type-specific arith. operations.
-         */
+        /// <summary>
+        /// Subtracts doubles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object SubtractDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) - Convert.ToDouble(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Subtracts singles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object SubtractSingle(Object d1, Object d2)
         {
             float? result = Convert.ToSingle(d1) - Convert.ToSingle(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Subtracts 64-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object SubtractInt64(Object d1, Object d2)
         {
             long? result = Convert.ToInt64(d1) - Convert.ToInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Subtracts 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object SubtractInt32(Object d1, Object d2)
         {
             int? result = Convert.ToInt32(d1) - Convert.ToInt32(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Subtracts unsigned 64-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object SubtractUInt64(Object d1, Object d2)
         {
             ulong? result = Convert.ToUInt64(d1) - Convert.ToUInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Subtracts unsigned 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object SubtractUInt32(Object d1, Object d2)
         {
             uint? result = Convert.ToUInt32(d1) - Convert.ToUInt32(d2);
             return result;
         }
 
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Divides doubles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object DivideDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) / Convert.ToDouble(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Divides singles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object DivideSingle(Object d1, Object d2)
         {
             float? result = Convert.ToSingle(d1) / Convert.ToSingle(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Divides 64-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
 		public static Object DivideInt64( Object d1, Object d2 )
         {
             long? result = Convert.ToInt64(d1) / Convert.ToInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Divides 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object DivideInt32(Object d1, Object d2)
         {
             int? result = Convert.ToInt32(d1) / Convert.ToInt32(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Divides unsigned 64-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object DivideUInt64(Object d1, Object d2)
         {
             ulong? result = Convert.ToUInt64(d1) / Convert.ToUInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Divides unsigned 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object DivideUInt32(Object d1, Object d2)
         {
             uint? result = Convert.ToUInt32(d1) / Convert.ToUInt32(d2);
             return result;
         }
 
-        /**
-         * Computer for type-specific arith. operations.
-         */
+        /// <summary>
+        /// Multiplies doubles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object MultiplyDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) * Convert.ToDouble(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Multiplies singles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object MultiplySingle(Object d1, Object d2)
         {
             float? result = Convert.ToSingle(d1) * Convert.ToSingle(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Multiplies 64-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
 		public static Object MultiplyInt64( Object d1, Object d2 )
         {
             long? result = Convert.ToInt64(d1) * Convert.ToInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Multiplies 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object MultiplyInt32(Object d1, Object d2)
         {
             int? result = Convert.ToInt32(d1) * Convert.ToInt32(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Multiplies unsigned 64-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object MultiplyUInt64(Object d1, Object d2)
         {
             ulong? result = Convert.ToUInt64(d1) * Convert.ToUInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Multiplies unsigned 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object MultiplyUInt32(Object d1, Object d2)
         {
             uint? result = Convert.ToUInt32(d1) * Convert.ToUInt32(d2);
             return result;
         }
 
-        /**
-         * Computer for type-specific arith. operations.
-         */
+        /// <summary>
+        /// Moduloes doubles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object ModuloDouble(Object d1, Object d2)
         {
             double? result = Convert.ToDouble(d1) % Convert.ToDouble(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Moduloes singles.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object ModuloSingle(Object d1, Object d2)
         {
             float result = Convert.ToSingle(d1) % Convert.ToSingle(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Moduloes 64-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
 		public static Object ModuloInt64( Object d1, Object d2 )
         {
             long result = Convert.ToInt64(d1) % Convert.ToInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Moduloes 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object ModuloInt32(Object d1, Object d2)
         {
             int result = Convert.ToInt32(d1) % Convert.ToInt32(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Moduloes unsigned 64-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object ModuloUInt64(Object d1, Object d2)
         {
             ulong result = Convert.ToUInt64(d1) % Convert.ToUInt64(d2);
             return result;
         }
-        /**
-         * Computer for type-specific arith. operations.
-         */
+
+        /// <summary>
+        /// Moduloes unsigned 32-bit ints.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
         public static Object ModuloUInt32(Object d1, Object d2)
         {
             uint result = Convert.ToUInt32(d1) % Convert.ToUInt32(d2);
             return result;
         }
 
-        /**
-         * Returns string representation of enum.
-         * @return text for enum
-         */
+        /// <summary>Returns string representation of enum.</summary>
+        /// <returns>text for enum</returns>
+
         public String getExpressionText()
         {
             return expressionText;

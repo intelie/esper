@@ -28,11 +28,19 @@ namespace net.esper.eql.join.assemble
             this.myNumStreams = numStreams;
         }
 
+        /// <summary>
+        /// Provides results to assembly nodes for initialization.
+        /// </summary>
+        /// <param name="result">is a list of result nodes per stream</param>
         public override void Init(IList<Node>[] result)
         {
             haveChildResults = false;
         }
 
+        /// <summary>
+        /// Process results.
+        /// </summary>
+        /// <param name="result">is a list of result nodes per stream</param>
         public override void Process(IList<Node>[] result)
         {
             // If we don't have child results, post an empty row
@@ -44,6 +52,13 @@ namespace net.esper.eql.join.assemble
             }
         }
 
+        /// <summary>
+        /// Publish a result row.
+        /// </summary>
+        /// <param name="row">is the result to publish</param>
+        /// <param name="fromStreamNum">is the originitor that publishes the row</param>
+        /// <param name="myEvent">is optional and is the event that led to the row result</param>
+        /// <param name="myNode">is optional and is the result node of the event that led to the row result</param>
         public override void Result(EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode)
         {
             parentNode.Result(row, streamNum, null, null);
@@ -52,6 +67,10 @@ namespace net.esper.eql.join.assemble
             haveChildResults = true;
         }
 
+        /// <summary>
+        /// Output this node using writer, not outputting child nodes.
+        /// </summary>
+        /// <param name="indentWriter">to use for output</param>
         public override void Print(IndentWriter indentWriter)
         {
             indentWriter.WriteLine("RootOptionalAssemblyNode streamNum=" + streamNum);

@@ -13,6 +13,12 @@ namespace net.esper.emit
 
     public class EmitServiceImpl : EmitService
 	{
+        /// <summary>
+        /// Number of events emitted.
+        /// </summary>
+        /// <value></value>
+        /// <returns> total of events emitted
+        /// </returns>
 		public long NumEventsEmitted
 		{
             get { return Interlocked.Read( ref numEventsEmitted ); }
@@ -21,6 +27,10 @@ namespace net.esper.emit
 		private readonly EDictionary<String, IList<EmittedListener>> channelEmitListeners ;
 		private readonly ReaderWriterLock channelEmitListenersRWLock ;
 		private long numEventsEmitted ;
+
+        /// <summary>
+        /// The default channel
+        /// </summary>
 
         public const string DEFAULT_CHANNEL = "" ;
 		
@@ -33,7 +43,14 @@ namespace net.esper.emit
         	this.channelEmitListeners = new EHashDictionary<String, IList<EmittedListener>>();
         	this.channelEmitListenersRWLock = new ReaderWriterLock() ;
 		}
-		
+
+        /// <summary>
+        /// Add emitted event listener for the specified channel, or the default channel if the channel value is null.
+        /// The listener will be invoked when an event is emitted on the subscribed channel. Listeners subscribed to the
+        /// default channel are invoked for all emitted events regardless of what channel the event is emitted onto.
+        /// </summary>
+        /// <param name="listener">is the callback to receive when events are emitted</param>
+        /// <param name="channel">is the channel to listen to, with null values allowed to indicate the default channel</param>
 		public void AddListener(EmittedListener listener, String channel)
 		{
             if (channel == null)
@@ -78,14 +95,23 @@ namespace net.esper.emit
 			
 			channelEmitListenersRWLock.ReleaseWriterLock();
 		}
-		
+
+        /// <summary>
+        /// Removes all listeners for emitted events.
+        /// </summary>
 		public void ClearListeners()
 		{
 			channelEmitListenersRWLock.AcquireWriterLock( LockConstants.WriterTimeout );
 			channelEmitListeners.Clear();
 			channelEmitListenersRWLock.ReleaseWriterLock();
 		}
-		
+
+        /// <summary>
+        /// Emit an event to the specified channel. All listeners listening to the exact same channel and
+        /// all listeners listening to the default channel are handed the event emitted.
+        /// </summary>
+        /// <param name="_object">is the event to emit</param>
+        /// <param name="channel">is the channel to emit to</param>
 		public void EmitEvent(Object _object, String channel)
 		{
             if (channel == null)

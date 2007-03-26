@@ -15,9 +15,9 @@ namespace net.esper.eql.join.plan
 	public class OuterJoinAnalyzer
 	{
 		/// <summary> Analyzes the outer join descriptor list to build a query graph model.</summary>
-		/// <param name="outerJoinDescList">- list of outer join descriptors
+		/// <param name="outerJoinDescList">list of outer join descriptors
 		/// </param>
-		/// <param name="queryGraph">- model containing relationships between streams that is written into
+		/// <param name="queryGraph">model containing relationships between streams that is written into
 		/// </param>
 		/// <returns> queryGraph object
 		/// </returns>

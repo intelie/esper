@@ -64,13 +64,13 @@ namespace net.esper.view
 		}
 
 		/// <summary> Instantiate a chain of views.</summary>
-		/// <param name="existingParentViews">- parent views
+		/// <param name="existingParentViews">parent views
 		/// </param>
-		/// <param name="parentViewable">- parent view to add the chain to
+		/// <param name="parentViewable">parent view to add the chain to
 		/// </param>
-		/// <param name="specifications">- view specification, one for each chain element
+		/// <param name="specifications">view specification, one for each chain element
 		/// </param>
-		/// <param name="context">- dependent services
+		/// <param name="context">dependent services
 		/// </param>
 		/// <returns> chain of views instantiated
 		/// </returns>
@@ -113,9 +113,9 @@ namespace net.esper.view
 		}
 
 		/// <summary> Removes a view from a parent view returning the orphaned parent views in a list.</summary>
-		/// <param name="parentViewable">- parent to remove view from
+		/// <param name="parentViewable">parent to remove view from
 		/// </param>
-		/// <param name="viewToRemove">- view to remove
+		/// <param name="viewToRemove">view to remove
 		/// </param>
 		/// <returns> chain of orphaned views
 		/// </returns>

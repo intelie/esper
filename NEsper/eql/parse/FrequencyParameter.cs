@@ -22,7 +22,7 @@ namespace net.esper.eql.parse
 		}
 
 		/// <summary> Ctor.</summary>
-		/// <param name="frequency">- divisor specifying frequency
+		/// <param name="frequency">divisor specifying frequency
 		/// </param>
 		
         public FrequencyParameter(int frequency)
@@ -33,7 +33,15 @@ namespace net.esper.eql.parse
 				throw new ArgumentException("Zero or negative value supplied as freqeuncy");
 			}
 		}
-		
+
+        /// <summary>
+        /// Returns true if all values between and including min and max are supplied by the parameter.
+        /// </summary>
+        /// <param name="min">lower end of range</param>
+        /// <param name="max">upper end of range</param>
+        /// <returns>
+        /// true if parameter specifies all int values between min and max, false if not
+        /// </returns>
 		public virtual bool IsWildcard(int min, int max)
 		{
 			if (frequency == 1)
@@ -42,7 +50,13 @@ namespace net.esper.eql.parse
 			}
 			return false;
 		}
-		
+
+        /// <summary>
+        /// Return a set of int values representing the value of the parameter for the given range.
+        /// </summary>
+        /// <param name="min">lower end of range</param>
+        /// <param name="max">upper end of range</param>
+        /// <returns>set of integer</returns>
 		public ISet<Int32> GetValuesInRange(int min, int max)
 		{
 			ISet<Int32> values = new EHashSet<Int32>();

@@ -7,7 +7,7 @@ namespace net.esper.util
 	public class AssertionException:SystemException
 	{
 		/// <summary> Ctor.</summary>
-		/// <param name="message">- assertion message
+		/// <param name="message">assertion message
 		/// </param>
 		public AssertionException(String message):base(message)
 		{

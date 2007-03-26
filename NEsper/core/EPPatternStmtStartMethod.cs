@@ -17,9 +17,9 @@ namespace net.esper.core
 		private readonly ScheduleBucket scheduleBucket;
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="services">- services for Starting
+		/// <param name="services">services for Starting
 		/// </param>
-		/// <param name="patternStarter">- pattern Start handle
+		/// <param name="patternStarter">pattern Start handle
 		/// </param>
 		
         public EPPatternStmtStartMethod(EPServicesContext services, PatternStarter patternStarter)
@@ -33,7 +33,7 @@ namespace net.esper.core
 		}
 		
 		/// <summary> Start pattern.</summary>
-		/// <param name="matchCallback">- callback by pattern when matches are found
+		/// <param name="matchCallback">callback by pattern when matches are found
 		/// </param>
 		/// <returns> Stop method used for Stopping pattern
 		/// </returns>

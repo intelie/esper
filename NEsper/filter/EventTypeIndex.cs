@@ -10,13 +10,16 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 
 namespace net.esper.filter
 {
-    /// <summary> Mapping of event type to a tree-like structure
+    /// <summary>
+    /// Mapping of event type to a tree-like structure
     /// containing filter parameter constants in indexes {@link FilterParamIndex} and filter callbacks in {@link FilterCallbackSetNode}.
-    /// <p>
+    /// <para>
     /// This class evaluates events for the purpose of filtering by (1) looking up the event's {@link EventType}
     /// and (2) asking the subtree for this event type to evaluate the event.
-    /// <p>
+    /// </para>
+    /// <para>
     /// The class performs all the locking required for multithreaded access.
+    /// </para>
     /// </summary>
     
     public class EventTypeIndex : EventEvaluator
@@ -53,11 +56,10 @@ namespace net.esper.filter
             eventTypesRWLock.ReleaseWriterLock();
         }
 
-        /**
-         * Returns the root node for the given event type, or null if this event type has not been seen before.
-         * @param eventType is an event type
-         * @return the subtree's root node
-         */
+        /// <summary>Returns the root node for the given event type, or null if this event type has not been seen before.</summary>
+        /// <param name="eventType">is an event type</param>
+        /// <returns>the subtree's root node</returns>
+
         public FilterCallbackSetNode this[EventType eventType]
         {
         	get
@@ -71,6 +73,11 @@ namespace net.esper.filter
         	}
         }
 
+        /// <summary>
+        /// Matches the event.
+        /// </summary>
+        /// <param name="ev">The ev.</param>
+        /// <param name="matches">The matches.</param>
         public void MatchEvent(EventBean ev, IList<FilterCallback> matches)
         {
             if (log.IsDebugEnabled)

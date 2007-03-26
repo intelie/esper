@@ -10,6 +10,12 @@ namespace net.esper.eql.core
 
     public class UniqueValueAggregator : Aggregator
 	{
+        /// <summary>
+        /// Returns the current value held.
+        /// </summary>
+        /// <value></value>
+        /// <returns> current value
+        /// </returns>
 		virtual public Object Value
 		{
 			get
@@ -18,6 +24,12 @@ namespace net.esper.eql.core
 			}
 			
 		}
+        /// <summary>
+        /// Returns the type of the current value.
+        /// </summary>
+        /// <value></value>
+        /// <returns> type of values held
+        /// </returns>
 		virtual public Type ValueType
 		{
 			get
@@ -39,28 +51,42 @@ namespace net.esper.eql.core
 			this.inner = inner;
 			this.valueSet = new RefCountedSet<Object>();
 		}
-		
-		public virtual void enter(Object value)
+
+        /// <summary>
+        /// Apply the value as entering aggregation (entering window).
+        /// The value can be null since 'null' values may be counted as unique separate values.
+        /// </summary>
+        /// <param name="value">to add to aggregate</param>
+		public virtual void Enter(Object value)
 		{
 			// if value not already encountered, enter into aggregate
 			if (valueSet.Add(value))
 			{
-				inner.enter(value);
+				inner.Enter(value);
 			}
 		}
-		
-		public virtual void leave(Object value)
+
+        /// <summary>
+        /// Apply the value as leaving aggregation (leaving window).
+        /// The value can be null since 'null' values may be counted as unique separate values.
+        /// </summary>
+        /// <param name="value">to remove from aggregate</param>
+		public virtual void Leave(Object value)
 		{
 			// if last reference to the value is removed, remove from aggregate
 			if (valueSet.Remove(value))
 			{
-				inner.leave(value);
+				inner.Leave(value);
 			}
 		}
-		
-		public virtual Aggregator newAggregator()
+
+        /// <summary>
+        /// Make a new, initalized aggregation state.
+        /// </summary>
+        /// <returns>initialized copy of the aggregator</returns>
+		public virtual Aggregator NewAggregator()
 		{
-			return new UniqueValueAggregator(inner.newAggregator());
+			return new UniqueValueAggregator(inner.NewAggregator());
 		}
 	}
 }

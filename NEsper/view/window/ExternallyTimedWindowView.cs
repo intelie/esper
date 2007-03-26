@@ -29,12 +29,10 @@ namespace net.esper.view.window
 
     public sealed class ExternallyTimedWindowView : ViewSupport, DataWindowView
     {
-        /// <summary> Returns the field name to get timestamp values from.</summary>
-        /// <returns> field name for timestamp values
-        /// </returns>
-        /// <summary> Sets the field name to get timestamp values from.</summary>
-        /// <param name="timestampFieldName">is the field name for timestamp values
-        /// </param>
+        /// <summary>
+        /// Gets or sets the field name to get timestamp values from.
+        /// </summary>
+        /// <value>The name of the timestamp field.</value>
 
         public String TimestampFieldName
         {
@@ -42,12 +40,10 @@ namespace net.esper.view.window
             set { this.timestampFieldName = value; }
         }
 
-        /// <summary> Retuns the window size in milliseconds.</summary>
-        /// <returns> number of milliseconds before events expire from the window
-        /// </returns>
-        /// <summary> Sets the window size in milliseconds.</summary>
-        /// <param name="millisecondsBeforeExpiry">number of milliseconds before events expire from the window
-        /// </param>
+        /// <summary>
+        /// Gets or sets the window size in milliseconds.
+        /// </summary>
+        /// <value>The milliseconds before expiry.</value>
 
         public long MillisecondsBeforeExpiry
         {
@@ -62,9 +58,8 @@ namespace net.esper.view.window
         private readonly TimeWindow timeWindow = new TimeWindow();
 
         /// <summary>
-        /// Default constructor - required by all views to adhere to the Java bean specification.
+        /// Initializes a new instance of the <see cref="ExternallyTimedWindowView"/> class.
         /// </summary>
-
         public ExternallyTimedWindowView()
         {
         }
@@ -113,6 +108,12 @@ namespace net.esper.view.window
         {
         }
 
+        /// <summary>
+        /// Gets or sets the View's parent viewable.
+        /// </summary>
+        /// <value></value>
+        /// <returns> viewable
+        /// </returns>
         public override Viewable Parent
         {
             set
@@ -126,11 +127,25 @@ namespace net.esper.view.window
             }
         }
 
+        /// <summary>
+        /// Return null if the view will accept being attached to a particular object.
+        /// </summary>
+        /// <param name="parentView">is the potential parent for this view</param>
+        /// <returns>
+        /// null if this view can successfully attach to the parent, an error message if it cannot.
+        /// </returns>
         public override String AttachesTo(Viewable parentView)
         {
             return PropertyCheckHelper.checkLong(parentView.EventType, timestampFieldName);
         }
 
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// metadata for the objects in the collection
+        /// </returns>
         public override EventType EventType
         {
             get
@@ -141,6 +156,27 @@ namespace net.esper.view.window
             set { }
         }
 
+        /// <summary>
+        /// Notify that data has been added or removed from the Viewable parent.
+        /// The last object in the newData array of objects would be the newest object added to the parent view.
+        /// The first object of the oldData array of objects would be the oldest object removed from the parent view.
+        /// <para>
+        /// If the call to update contains new (inserted) data, then the first argument will be a non-empty list and the
+        /// second will be empty. Similarly, if the call is a notification of deleted data, then the first argument will be
+        /// empty and the second will be non-empty. Either the newData or oldData will be non-null.
+        /// This method won't be called with both arguments being null, but either one could be null.
+        /// The same is true for zero-length arrays. Either newData or oldData will be non-empty.
+        /// If both are non-empty, then the update is a modification notification.
+        /// </para>
+        /// 	<para>
+        /// When update() is called on a view by the parent object, the data in newData will be in the collection of the
+        /// parent, and its data structures will be arranged to reflect that.
+        /// The data in oldData will not be in the parent's data structures, and any access to the parent will indicate that
+        /// that data is no longer there.
+        /// </para>
+        /// </summary>
+        /// <param name="newData">is the new data that has been added to the parent view</param>
+        /// <param name="oldData">is the old data that has been removed from the parent view</param>
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             long timestamp = -1;
@@ -177,11 +213,23 @@ namespace net.esper.view.window
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return timeWindow.GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             return

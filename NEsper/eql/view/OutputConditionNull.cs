@@ -24,8 +24,13 @@ namespace net.esper.eql.view
 			}
 			this.outputCallback = outputCallback;
 		}
-		
-		public virtual void  updateOutputCondition(int newEventsCount, int oldEventsCount)
+
+        /// <summary>
+        /// Update the output condition.
+        /// </summary>
+        /// <param name="newEventsCount">number of new events incoming</param>
+        /// <param name="oldEventsCount">number of old events incoming</param>
+		public virtual void UpdateOutputCondition(int newEventsCount, int oldEventsCount)
 		{
 			outputCallback(DO_OUTPUT, FORCE_UPDATE);
 		}

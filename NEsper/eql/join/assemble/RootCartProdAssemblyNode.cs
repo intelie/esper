@@ -24,11 +24,11 @@ namespace net.esper.eql.join.assemble
         private bool haveChildResults;
 
         /// <summary> Ctor.</summary>
-        /// <param name="streamNum">- is the stream number
+        /// <param name="streamNum">is the stream number
         /// </param>
-        /// <param name="numStreams">- is the number of streams
+        /// <param name="numStreams">is the number of streams
         /// </param>
-        /// <param name="allSubStreamsOptional">- true if all substreams are optional and none are required
+        /// <param name="allSubStreamsOptional">true if all substreams are optional and none are required
         /// </param>
         public RootCartProdAssemblyNode(int streamNum, int numStreams, bool allSubStreamsOptional)
             : base(streamNum, numStreams)
@@ -38,12 +38,20 @@ namespace net.esper.eql.join.assemble
             this.rowsPerStream = new IList<EventBean[]>[numStreams];
         }
 
+        /// <summary>
+        /// Add a child node.
+        /// </summary>
+        /// <param name="childNode">to add</param>
         public override void AddChild(BaseAssemblyNode childNode)
         {
             childStreamIndex[childNode.StreamNum] = childNodes.Count;
             base.AddChild(childNode);
         }
 
+        /// <summary>
+        /// Provides results to assembly nodes for initialization.
+        /// </summary>
+        /// <param name="result">is a list of result nodes per stream</param>
         public override void Init(IList<Node>[] result)
         {
             if (subStreamsNumsPerChild == null)
@@ -68,6 +76,10 @@ namespace net.esper.eql.join.assemble
             }
         }
 
+        /// <summary>
+        /// Process results.
+        /// </summary>
+        /// <param name="result">is a list of result nodes per stream</param>
         public override void Process(IList<Node>[] result)
         {
             // If no child has posted any rows, generate row and done
@@ -84,6 +96,13 @@ namespace net.esper.eql.join.assemble
             return;
         }
 
+        /// <summary>
+        /// Publish a result row.
+        /// </summary>
+        /// <param name="row">is the result to publish</param>
+        /// <param name="fromStreamNum">is the originitor that publishes the row</param>
+        /// <param name="myEvent">is optional and is the event that led to the row result</param>
+        /// <param name="myNode">is optional and is the result node of the event that led to the row result</param>
         public override void Result(EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode)
         {
             haveChildResults = true;
@@ -102,6 +121,10 @@ namespace net.esper.eql.join.assemble
             rows.Add(row);
         }
 
+        /// <summary>
+        /// Output this node using writer, not outputting child nodes.
+        /// </summary>
+        /// <param name="indentWriter">to use for output</param>
         public override void Print(IndentWriter indentWriter)
         {
             indentWriter.WriteLine("RootCartProdAssemblyNode streamNum=" + streamNum);

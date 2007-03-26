@@ -19,11 +19,11 @@ namespace net.esper.eql.join.plan
 	public class NStreamOuterQueryPlanBuilder
 	{
 		/// <summary> Build a query plan based on the stream property relationships indicated in queryGraph.</summary>
-		/// <param name="queryGraph">- navigation info between streams
+		/// <param name="queryGraph">navigation info between streams
 		/// </param>
-		/// <param name="streamNames">- stream names or aliases
+		/// <param name="streamNames">stream names or aliases
 		/// </param>
-		/// <param name="outerJoinDescList">- descriptors for all outer joins
+		/// <param name="outerJoinDescList">descriptors for all outer joins
 		/// </param>
 		/// <returns> query plan
 		/// </returns>
@@ -63,6 +63,16 @@ namespace net.esper.eql.join.plan
 			return queryPlan;
 		}
 
+        /// <summary>
+        /// Builds the specified num streams.
+        /// </summary>
+        /// <param name="numStreams">The num streams.</param>
+        /// <param name="streamNo">The stream no.</param>
+        /// <param name="streamNames">The stream names.</param>
+        /// <param name="queryGraph">The query graph.</param>
+        /// <param name="outerInnerGraph">The outer inner graph.</param>
+        /// <param name="indexSpecs">The index specs.</param>
+        /// <returns></returns>
 		public static QueryPlanNode build( int numStreams, int streamNo, String[] streamNames, QueryGraph queryGraph, OuterInnerDirectionalGraph outerInnerGraph, QueryPlanIndex[] indexSpecs )
 		{
 			// For each stream build an array of substreams, considering required streams (inner joins) first
@@ -91,6 +101,15 @@ namespace net.esper.eql.join.plan
 			return planNode;
 		}
 
+        /// <summary>
+        /// Builds the lookup instructions.
+        /// </summary>
+        /// <param name="substreamsPerStream">The substreams per stream.</param>
+        /// <param name="requiredPerStream">The required per stream.</param>
+        /// <param name="streamNames">The stream names.</param>
+        /// <param name="queryGraph">The query graph.</param>
+        /// <param name="indexSpecs">The index specs.</param>
+        /// <returns></returns>
 		public static IList<LookupInstructionPlan> buildLookupInstructions(
 					LinkedDictionary<Int32, int[]> substreamsPerStream,
 					Boolean[] requiredPerStream,
@@ -130,9 +149,10 @@ namespace net.esper.eql.join.plan
 
 		/// <summary> Recusivly builds a substream-per-stream ordered tree graph using the
 		/// join information supplied for outer joins and from the query graph (where clause).
-		/// <p>
+		/// <para>
 		/// Required streams are considered first and their lookup is placed first in the list
 		/// to gain performance.
+        /// </para>
 		/// </summary>
 		/// <param name="streamNum">is the root stream number that supplies the incoming event to build the tree for
 		/// </param>
@@ -211,6 +231,13 @@ namespace net.esper.eql.join.plan
 			}
 		}
 
+        /// <summary>
+        /// Gets the inner streams.
+        /// </summary>
+        /// <param name="fromStream">From stream.</param>
+        /// <param name="toStreams">To streams.</param>
+        /// <param name="outerInnerGraph">The outer inner graph.</param>
+        /// <returns></returns>
 		public static ISet<Int32> getInnerStreams(
             int fromStream,
             ISet<Int32> toStreams,
@@ -244,9 +271,9 @@ namespace net.esper.eql.join.plan
 		/// <summary> Builds a graph of outer joins given the outer join information from the statement.
 		/// Eliminates right and left joins and full joins by placing the information in a graph object.
 		/// </summary>
-		/// <param name="numStreams">- is the number of streams
+		/// <param name="numStreams">is the number of streams
 		/// </param>
-		/// <param name="outerJoinDescList">- list of outer join stream numbers and property names
+		/// <param name="outerJoinDescList">list of outer join stream numbers and property names
 		/// </param>
 		/// <returns> graph object
 		/// </returns>

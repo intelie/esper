@@ -87,7 +87,7 @@ namespace net.esper.regression.view
                 for (int j = 0; j < expected[i].Length; j++)
                 {
                     Assert.IsTrue(
-                        _event.EventType.isProperty(expected[i][j]),
+                        _event.EventType.IsProperty(expected[i][j]),
                         "failed property valid check for stmt=" + viewExpr[i]);
                     Assert.AreEqual(
                         expected[i][j],

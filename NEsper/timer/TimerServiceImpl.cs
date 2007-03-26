@@ -13,6 +13,10 @@ namespace net.esper.timer
 
     public class TimerServiceImpl : TimerService
     {
+        /// <summary>
+        /// Set the callback method to invoke for clock ticks.
+        /// </summary>
+        /// <value></value>
         public TimerCallback Callback
         {
             set
@@ -44,6 +48,10 @@ namespace net.esper.timer
             }
         }
 
+        /// <summary>
+        /// Start clock expecting callbacks at regular intervals and a fixed rate.
+        /// Catch-up callbacks are possible should the callback fall behind.
+        /// </summary>
         public void StartInternalClock()
         {
             if (timer != null)
@@ -67,6 +75,11 @@ namespace net.esper.timer
                 OnTimerElapsed, null, 0, TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC);
         }
 
+        /// <summary>
+        /// Stop internal clock.
+        /// </summary>
+        /// <param name="warnIfNotStarted">use true to indicate whether to warn if the clock is not Started, use false to not warn
+        /// and expect the clock to be not Started.</param>
         public void StopInternalClock(bool warnIfNotStarted)
         {
             if (timer == null)

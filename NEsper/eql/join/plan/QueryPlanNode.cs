@@ -16,9 +16,9 @@ namespace net.esper.eql.join.plan
 	public abstract class QueryPlanNode
 	{
 		/// <summary> Make execution node from this specification.</summary>
-		/// <param name="indexesPerStream">- tables build for each stream
+		/// <param name="indexesPerStream">tables build for each stream
 		/// </param>
-		/// <param name="streamTypes">- event type of each stream
+		/// <param name="streamTypes">event type of each stream
 		/// </param>
 		/// <returns> execution node matching spec
 		/// </returns>
@@ -30,7 +30,7 @@ namespace net.esper.eql.join.plan
 		public abstract void Print(IndentWriter writer);
 		
 		/// <summary> Print in readable format the execution plan spec.</summary>
-		/// <param name="execNodeSpecs">- plans to print
+		/// <param name="execNodeSpecs">plans to print
 		/// </param>
 		/// <returns> readable text with plans
 		/// </returns>

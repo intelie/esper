@@ -21,7 +21,12 @@ namespace net.esper.schedule
 			this.bucketNum = bucketNum;
 			this.slotNum = slotNum;
 		}
-		
+
+        /// <summary>
+        /// Compares to.
+        /// </summary>
+        /// <param name="scheduleCallbackSlot">The schedule callback slot.</param>
+        /// <returns></returns>
 		public virtual int CompareTo(ScheduleSlot scheduleCallbackSlot)
 		{
 			if (this.bucketNum > scheduleCallbackSlot.bucketNum)
@@ -44,6 +49,11 @@ namespace net.esper.schedule
 			return 0;
 		}
 
+        /// <summary>
+        /// Compares to.
+        /// </summary>
+        /// <param name="obj">The obj.</param>
+        /// <returns></returns>
         public virtual int CompareTo(Object obj)
 		{
             return CompareTo(obj as ScheduleSlot);

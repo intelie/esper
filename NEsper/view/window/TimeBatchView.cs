@@ -17,24 +17,26 @@ namespace net.esper.view.window
     /// The view works similar to a time_window but in not continuous.
     /// The view releases the batched events after the interval as new data to child views. The prior batch if
     /// not empty is released as old data to child view. The view doesn't release intervals with no old or new data.
-    /// It also does not getSelectListEvents old data published by a parent view.
-    /// 
+    /// It also does not GetSelectListEvents old data published by a parent view.
+    /// <para>
     /// For example, we want to calculate the average of IBM stock every hour, for the last hour.
     /// The view accepts 2 parameter combinations.
     /// (1) A time interval is supplied with a reference point - based on this point the intervals are set.
     /// (1) A time interval is supplied but no reference point - the reference point is set when the first event arrives.
-    /// 
+    /// </para>
+    /// <para>
     /// If there are no events in the current and prior batch, the view will not invoke the update method of child views.
     /// In that case also, no next callback is scheduled with the scheduling service until the next event arrives.
+    /// </para>
     /// </summary>
     public sealed class TimeBatchView : ViewSupport, ContextAwareView
     {
-        /// <summary> Returns the interval size in milliseconds.</summary>
+        /// <summary>
+        /// Gets or sets the interval size in milliseconds.
+        /// </summary>
+        /// <value>The size of the msec interval.</value>
         /// <returns> batch size
         /// </returns>
-        /// <summary> Sets the interval size in milliseconds.</summary>
-        /// <param name="msecIntervalSize">batch size
-        /// </param>
 
         public long MsecIntervalSize
         {
@@ -45,6 +47,7 @@ namespace net.esper.view.window
         /// <summary>
         /// Gets or sets the reference point to use to anchor interval Start and end dates to.
         /// </summary>
+        /// <value>The initial reference point.</value>
 
         public long? InitialReferencePoint
         {
@@ -52,6 +55,10 @@ namespace net.esper.view.window
             set { this.initialReferencePoint = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the context instances used by the view.
+        /// </summary>
+        /// <value>The view service context.</value>
         public ViewServiceContext ViewServiceContext
         {
             get { return viewServiceContext; }
@@ -76,7 +83,9 @@ namespace net.esper.view.window
         private bool isCallbackScheduled;
         private ScheduleSlot scheduleSlot;
 
-        /// <summary> Default constructor - required by all views to adhere to the Java bean specification.</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimeBatchView"/> class.
+        /// </summary>
         public TimeBatchView()
         {
         }
@@ -151,18 +160,53 @@ namespace net.esper.view.window
         {
         }
 
+        /// <summary>
+        /// Return null if the view will accept being attached to a particular object.
+        /// </summary>
+        /// <param name="parentView">is the potential parent for this view</param>
+        /// <returns>
+        /// null if this view can successfully attach to the parent, an error message if it cannot.
+        /// </returns>
         public override String AttachesTo(Viewable parentView)
         {
             // Attaches to any parent view
             return null;
         }
 
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// metadata for the objects in the collection
+        /// </returns>
         public override EventType EventType
         {
             get { return parent.EventType; }
             set { }
         }
 
+        /// <summary>
+        /// Notify that data has been added or removed from the Viewable parent.
+        /// The last object in the newData array of objects would be the newest object added to the parent view.
+        /// The first object of the oldData array of objects would be the oldest object removed from the parent view.
+        /// <para>
+        /// If the call to update contains new (inserted) data, then the first argument will be a non-empty list and the
+        /// second will be empty. Similarly, if the call is a notification of deleted data, then the first argument will be
+        /// empty and the second will be non-empty. Either the newData or oldData will be non-null.
+        /// This method won't be called with both arguments being null, but either one could be null.
+        /// The same is true for zero-length arrays. Either newData or oldData will be non-empty.
+        /// If both are non-empty, then the update is a modification notification.
+        /// </para>
+        /// 	<para>
+        /// When update() is called on a view by the parent object, the data in newData will be in the collection of the
+        /// parent, and its data structures will be arranged to reflect that.
+        /// The data in oldData will not be in the parent's data structures, and any access to the parent will indicate that
+        /// that data is no longer there.
+        /// </para>
+        /// </summary>
+        /// <param name="newData">is the new data that has been added to the parent view</param>
+        /// <param name="oldData">is the old data that has been removed from the parent view</param>
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             if (log.IsDebugEnabled)
@@ -271,11 +315,23 @@ namespace net.esper.view.window
             currentBatch = new ELinkedList<EventBean>();
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return currentBatch.GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             return

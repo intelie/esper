@@ -22,6 +22,13 @@ namespace net.esper.view
             streams = new EHashDictionary<EventStream, IDictionary<View, ViewSpec>>();
         }
 
+        /// <summary>
+        /// Creates the view.
+        /// </summary>
+        /// <param name="eventStream">The event stream.</param>
+        /// <param name="viewSpecDefinitions">The view spec definitions.</param>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
         public Viewable CreateView(EventStream eventStream, IList<ViewSpec> viewSpecDefinitions, ViewServiceContext context)
         {
             // Clone the view spec list to prevent parameter modification
@@ -86,6 +93,11 @@ namespace net.esper.view
             return lastView;
         }
 
+        /// <summary>
+        /// Removes the specified event stream.
+        /// </summary>
+        /// <param name="eventStream">The event stream.</param>
+        /// <param name="viewToRemove">The view to remove.</param>
         public void Remove(EventStream eventStream, Viewable viewToRemove)
         {
             // If the viewToRemove to remove has child viewToRemove, don't disconnect - the child viewToRemove(s) need this viewToRemove

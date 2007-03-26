@@ -29,9 +29,9 @@ namespace net.esper.eql.join.exec
         }
 
         /// <summary> Ctor.</summary>
-        /// <param name="indexedStream">- stream indexed for lookup
+        /// <param name="indexedStream">stream indexed for lookup
         /// </param>
-        /// <param name="lookupStrategy">- strategy to use for lookup (full table/indexed)
+        /// <param name="lookupStrategy">strategy to use for lookup (full table/indexed)
         /// </param>
         public TableLookupExecNode(int indexedStream, TableLookupStrategy lookupStrategy)
         {
@@ -39,10 +39,17 @@ namespace net.esper.eql.join.exec
             this.lookupStrategy = lookupStrategy;
         }
 
+        /// <summary>
+        /// Process single event using the prefill events to compile lookup results.
+        /// </summary>
+        /// <param name="lookupEvent">event to look up for or query for</param>
+        /// <param name="prefillPath">set of events currently in the example tuple to serve
+        /// as a prototype for result rows.</param>
+        /// <param name="result">is the list of tuples to add a result row to</param>
         public override void Process(EventBean lookupEvent, EventBean[] prefillPath, IList<EventBean[]> result)
         {
             // Lookup events
-            ISet<EventBean> joinedEvents = lookupStrategy.lookup(lookupEvent);
+            ISet<EventBean> joinedEvents = lookupStrategy.Lookup(lookupEvent);
 
             if (joinedEvents == null)
             {
@@ -62,6 +69,10 @@ namespace net.esper.eql.join.exec
             }
         }
 
+        /// <summary>
+        /// Output the execution strategy.
+        /// </summary>
+        /// <param name="writer">to output to</param>
         public override void Print(IndentWriter writer)
         {
             writer.WriteLine("TableLookupExecNode indexedStream=" + indexedStream + " lookup=" + lookupStrategy);

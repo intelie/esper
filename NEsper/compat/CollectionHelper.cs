@@ -5,6 +5,11 @@ using System.Text;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// Provides additional functions that are useful when operating on
+    /// collections.
+    /// </summary>
+
 	public class CollectionHelper
 	{
         /// <summary>
@@ -71,7 +76,7 @@ namespace net.esper.compat
         /// Primitive reversal of a collection
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="collectionObj"></param>
+        /// <param name="collection"></param>
 
         public static void Reverse<T>(ICollection<T> collection)
         {
@@ -199,6 +204,13 @@ namespace net.esper.compat
             return true;
         }
 
+        /// <summary>
+        /// Removes all items in itemEnum from the targetCollection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="targetCollection"></param>
+        /// <param name="itemEnum"></param>
+
         public static void RemoveAll<T>(ICollection<T> targetCollection, IEnumerable<T> itemEnum)
         {
             foreach (T item in itemEnum)
@@ -207,12 +219,27 @@ namespace net.esper.compat
             }
         }
 
+        /// <summary>
+        /// Returns the first item returned by the enumerator of the
+        /// collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sourceCollection"></param>
+        /// <returns></returns>
+
 		public static T First<T>( IEnumerable<T> sourceCollection )
 		{
 			IEnumerator<T> enumObj = sourceCollection.GetEnumerator();
 			enumObj.MoveNext();
 			return enumObj.Current;
 		}
+
+        /// <summary>
+        /// Advances the enumerator and returns the next item.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumObj"></param>
+        /// <returns></returns>
 
         public static T Next<T>(IEnumerator<T> enumObj)
         {

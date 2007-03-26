@@ -8,16 +8,22 @@ using net.esper.events;
 
 namespace net.esper.eql.core
 {
-
-    /// <summary> Result set processor for the case: aggregation functions used in the select clause, and no group-by,
+    /// <summary>
+    /// Result set processor for the case: aggregation functions used in the select clause, and no group-by,
     /// and not all of the properties in the select clause are under an aggregation function.
-    /// <p>
+    /// 
     /// This processor does not perform grouping, every event entering and leaving is in the same group.
     /// The processor generates one row for each event entering (new event) and one row for each event leaving (old event).
     /// Aggregation state is simply one row holding all the state.
     /// </summary>
     public class ResultSetProcessorAggregateAll : ResultSetProcessor
     {
+        /// <summary>
+        /// Returns the event type of processed results.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type of the resulting events posted by the processor.
+        /// </returns>
         virtual public EventType ResultEventType
         {
             get { return selectExprProcessor.ResultEventType; }
@@ -31,17 +37,17 @@ namespace net.esper.eql.core
         private readonly bool isOutputLimitLastOnly;
 
         /// <summary> Ctor.</summary>
-        /// <param name="selectExprProcessor">- for processing the select expression and generting the final output rows
+        /// <param name="selectExprProcessor">for processing the select expression and generting the final output rows
         /// </param>
-        /// <param name="orderByProcessor">- for sorting the outgoing events according to the order-by clause
+        /// <param name="orderByProcessor">for sorting the outgoing events according to the order-by clause
         /// </param>
-        /// <param name="aggregationService">- handles aggregation
+        /// <param name="aggregationService">handles aggregation
         /// </param>
-        /// <param name="optionalHavingNode">- having clause expression node
+        /// <param name="optionalHavingNode">having clause expression node
         /// </param>
-        /// <param name="isOutputLimiting">- true to indicate that we limit output
+        /// <param name="isOutputLimiting">true to indicate that we limit output
         /// </param>
-        /// <param name="isOutputLimitLastOnly">- true to indicate that we limit output to the last event
+        /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event
         /// </param>
         public ResultSetProcessorAggregateAll(SelectExprProcessor selectExprProcessor, OrderByProcessor orderByProcessor, AggregationService aggregationService, ExprNode optionalHavingNode, bool isOutputLimiting, bool isOutputLimitLastOnly)
         {
@@ -53,18 +59,26 @@ namespace net.esper.eql.core
             this.isOutputLimitLastOnly = isOutputLimitLastOnly;
         }
 
-        public Pair<EventBean[], EventBean[]> processJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        /// <summary>
+        /// For use by joins posting their result, process the event rows that are entered and removed (new and old events).
+        /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
+        /// old events as specified.
+        /// </summary>
+        /// <param name="newEvents">new events posted by join</param>
+        /// <param name="oldEvents">old events posted by join</param>
+        /// <returns>pair of new events and old events</returns>
+        public Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
         {
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents = null;
 
             if (optionalHavingNode == null)
             {
-                selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly);
             }
             else
             {
-                selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
             }
 
             if (!oldEvents.IsEmpty)
@@ -72,7 +86,7 @@ namespace net.esper.eql.core
                 // apply old data to aggregates
                 foreach (MultiKey<EventBean> events in oldEvents)
                 {
-                    aggregationService.applyLeave(events.Array, null);
+                    aggregationService.ApplyLeave(events.Array, null);
                 }
             }
 
@@ -81,17 +95,17 @@ namespace net.esper.eql.core
                 // apply new data to aggregates
                 foreach (MultiKey<EventBean> events in newEvents)
                 {
-                    aggregationService.applyEnter(events.Array, null);
+                    aggregationService.ApplyEnter(events.Array, null);
                 }
             }
 
             if (optionalHavingNode == null)
             {
-                selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly);
             }
             else
             {
-                selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
             }
 
             if ((selectNewEvents == null) && (selectOldEvents == null))
@@ -101,7 +115,15 @@ namespace net.esper.eql.core
             return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
         }
 
-        public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+        /// <summary>
+        /// For use by views posting their result, process the event rows that are entered and removed (new and old events).
+        /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
+        /// old events as specified.
+        /// </summary>
+        /// <param name="newData">new events posted by view</param>
+        /// <param name="oldData">old events posted by view</param>
+        /// <returns>pair of new events and old events</returns>
+        public Pair<EventBean[], EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData)
         {
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents = null;
@@ -109,12 +131,12 @@ namespace net.esper.eql.core
             // generate old events using select expressions
             if (optionalHavingNode == null)
             {
-                selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly);
             }
             // generate old events using having then select
             else
             {
-                selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
             }
 
             EventBean[] eventsPerStream = new EventBean[1];
@@ -124,7 +146,7 @@ namespace net.esper.eql.core
                 for (int i = 0; i < oldData.Length; i++)
                 {
                     eventsPerStream[0] = oldData[i];
-                    aggregationService.applyLeave(eventsPerStream, null);
+                    aggregationService.ApplyLeave(eventsPerStream, null);
                 }
             }
 
@@ -134,18 +156,18 @@ namespace net.esper.eql.core
                 for (int i = 0; i < newData.Length; i++)
                 {
                     eventsPerStream[0] = newData[i];
-                    aggregationService.applyEnter(eventsPerStream, null);
+                    aggregationService.ApplyEnter(eventsPerStream, null);
                 }
             }
 
             // generate new events using select expressions
             if (optionalHavingNode == null)
             {
-                selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly);
             }
             else
             {
-                selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
             }
 
             if ((selectNewEvents == null) && (selectOldEvents == null))

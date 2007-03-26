@@ -81,7 +81,7 @@ namespace net.esper.eql.parse
 		}
 		
 		/// <summary> Parse the AST constant node and return Object value.</summary>
-		/// <param name="node">- parse node for which to parse the string value
+		/// <param name="node">parse node for which to parse the string value
 		/// </param>
 		/// <returns> value matching AST node type
 		/// </returns>

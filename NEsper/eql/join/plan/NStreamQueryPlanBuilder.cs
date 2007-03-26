@@ -60,16 +60,17 @@ namespace net.esper.eql.join.plan
 	/// 
 	/// " where streamA.A1 = streamB.B1 " +
 	/// "   and streamB.B2 = streamC.C1"; (no table D join criteria)
-	/// </summary>
-	
-	/// <summary> Builds a query plan for 3 or more streams in a join. </summary>
+    /// <para>
+	/// Builds a query plan for 3 or more streams in a join.
+    /// </para>
+    /// </summary>
 	public class NStreamQueryPlanBuilder
 	{
-		/// <summary> Build a query plan based on the stream property relationships indicated in queryGraph.</summary>
-		/// <param name="queryGraph">- navigation info between streams
-		/// </param>
-		/// <returns> query plan
-		/// </returns>
+        /// <summary>
+        /// Build a query plan based on the stream property relationships indicated in queryGraph.
+        /// </summary>
+        /// <param name="queryGraph">navigation info between streams</param>
+        /// <returns>query plan</returns>
 		public static QueryPlan Build(QueryGraph queryGraph)
 		{
 			log.Debug(".build queryGraph=" + queryGraph);
@@ -91,20 +92,18 @@ namespace net.esper.eql.join.plan
 			
 			return new QueryPlan(indexSpecs, planNodeSpecs);
 		}
-		
-		/// <summary> Walks the chain of lookups and constructs lookup strategy and plan specification based
-		/// on the index specifications.
-		/// </summary>
-		/// <param name="lookupStream">- the stream to construct the query plan for
-		/// </param>
-		/// <param name="bestChain">- the chain that the lookup follows to make best use of indexes
-		/// </param>
-		/// <param name="queryGraph">- the repository for key properties to indexes
-		/// </param>
-		/// <param name="indexSpecsPerStream">- specifications of indexes
-		/// </param>
-		/// <returns> NestedIterationNode with lookups attached underneath
-		/// </returns>
+
+        /// <summary>
+        /// Walks the chain of lookups and constructs lookup strategy and plan specification based
+        /// on the index specifications.
+        /// </summary>
+        /// <param name="lookupStream">the stream to construct the query plan for</param>
+        /// <param name="bestChain">the chain that the lookup follows to make best use of indexes</param>
+        /// <param name="queryGraph">the repository for key properties to indexes</param>
+        /// <param name="indexSpecsPerStream">specifications of indexes</param>
+        /// <returns>
+        /// NestedIterationNode with lookups attached underneath
+        /// </returns>
 		public static QueryPlanNode CreateStreamPlan(int lookupStream, int[] bestChain, QueryGraph queryGraph, QueryPlanIndex[] indexSpecsPerStream)
 		{
 			NestedIterationNode nestedIterNode = new NestedIterationNode(bestChain);
@@ -124,21 +123,19 @@ namespace net.esper.eql.join.plan
 			
 			return nestedIterNode;
 		}
-		
-		/// <summary> Create the table lookup plan for a from-stream to look up in an indexed stream
-		/// using the columns supplied in the query graph and looking at the actual indexes available
-		/// and their index number.
-		/// </summary>
-		/// <param name="queryGraph">- contains properties joining the 2 streams
-		/// </param>
-		/// <param name="currentLookupStream">- stream to use key values from
-		/// </param>
-		/// <param name="indexedStream">- stream to look up in
-		/// </param>
-		/// <param name="indexSpecs">- index specification defining indexes to be created for stream
-		/// </param>
-		/// <returns> plan for performing a lookup in a given table using one of the indexes supplied
-		/// </returns>
+
+        /// <summary>
+        /// Create the table lookup plan for a from-stream to look up in an indexed stream
+        /// using the columns supplied in the query graph and looking at the actual indexes available
+        /// and their index number.
+        /// </summary>
+        /// <param name="queryGraph">contains properties joining the 2 streams</param>
+        /// <param name="currentLookupStream">stream to use key values from</param>
+        /// <param name="indexedStream">stream to look up in</param>
+        /// <param name="indexSpecs">index specification defining indexes to be created for stream</param>
+        /// <returns>
+        /// plan for performing a lookup in a given table using one of the indexes supplied
+        /// </returns>
 		public static TableLookupPlan CreateLookupPlan(QueryGraph queryGraph, int currentLookupStream, int indexedStream, QueryPlanIndex indexSpecs)
 		{
 			String[] indexedStreamIndexProps = queryGraph.GetIndexProperties(currentLookupStream, indexedStream);
@@ -172,23 +169,20 @@ namespace net.esper.eql.join.plan
 			
 			return tableLookupPlan;
 		}
-		
-		
-		/// <summary> Compute a best chain or path for lookups to take for the lookup stream passed in and the query
-		/// property relationships.
-		/// The method runs through all possible permutations of lookup path {@link NumberSetPermutationEnumeration}
-		/// until a path is found in which all streams can be accessed via an index.
-		/// If not such path is found, the method returns the path with the greatest depth, ie. where
-		/// the first one or more streams are index accesses.
-		/// If no depth other then zero is found, returns the default nesting order.
-		/// 
-		/// </summary>
-		/// <param name="lookupStream">- stream to Start look up
-		/// </param>
-		/// <param name="queryGraph">- navigability between streams
-		/// </param>
-		/// <returns> chain and chain depth
-		/// </returns>
+
+
+        /// <summary>
+        /// Compute a best chain or path for lookups to take for the lookup stream passed in and the query
+        /// property relationships.
+        /// The method runs through all possible permutations of lookup path {@link NumberSetPermutationEnumeration}
+        /// until a path is found in which all streams can be accessed via an index.
+        /// If not such path is found, the method returns the path with the greatest depth, ie. where
+        /// the first one or more streams are index accesses.
+        /// If no depth other then zero is found, returns the default nesting order.
+        /// </summary>
+        /// <param name="lookupStream">stream to Start look up</param>
+        /// <param name="queryGraph">navigability between streams</param>
+        /// <returns>chain and chain depth</returns>
 		public static BestChainResult ComputeBestPath(int lookupStream, QueryGraph queryGraph)
 		{
 			int[] defNestingorder = BuildDefaultNestingOrder(queryGraph.NumStreams, lookupStream);
@@ -216,18 +210,17 @@ namespace net.esper.eql.join.plan
 			
 			return new BestChainResult(bestDepth, bestPermutation);
 		}
-		
-		/// <summary> Given a chain of streams to look up and indexing information, compute the index within the
-		/// chain of the first non-index lookup.
-		/// </summary>
-		/// <param name="lookupStream">- stream to Start lookup for
-		/// </param>
-		/// <param name="nextStreams">- list of stream numbers next in lookup
-		/// </param>
-		/// <param name="queryGraph">- indexing information
-		/// </param>
-		/// <returns> value between 0 and (nextStreams.length - 1)
-		/// </returns>
+
+        /// <summary>
+        /// Given a chain of streams to look up and indexing information, compute the index within the
+        /// chain of the first non-index lookup.
+        /// </summary>
+        /// <param name="lookupStream">stream to Start lookup for</param>
+        /// <param name="nextStreams">list of stream numbers next in lookup</param>
+        /// <param name="queryGraph">indexing information</param>
+        /// <returns>
+        /// value between 0 and (nextStreams.length - 1)
+        /// </returns>
 		public static int ComputeNavigableDepth(int lookupStream, int[] nextStreams, QueryGraph queryGraph)
 		{
 			int currentStream = lookupStream;
@@ -246,14 +239,13 @@ namespace net.esper.eql.join.plan
 			
 			return currentDepth;
 		}
-		
-		/// <summary> Returns query plan based on all unindexed full table lookups and lookups based
-		/// on a simple nesting order.
-		/// </summary>
-		/// <param name="eventTypes">- stream event types
-		/// </param>
-		/// <returns> query plan
-		/// </returns>
+
+        /// <summary>
+        /// Returns query plan based on all unindexed full table lookups and lookups based
+        /// on a simple nesting order.
+        /// </summary>
+        /// <param name="eventTypes">stream event types</param>
+        /// <returns>query plan</returns>
 		public static QueryPlan BuildNStreamDefaultQuerySpec(EventType[] eventTypes)
 		{
 			QueryPlanIndex[] indexSpecs = new QueryPlanIndex[eventTypes.Length];
@@ -284,18 +276,18 @@ namespace net.esper.eql.join.plan
 			
 			return new QueryPlan(indexSpecs, execNodeSpecs);
 		}
-		
-		/// <summary> Returns default nesting order for a given number of streams for a certain stream.
-		/// Example: numStreams = 5, forStream = 2, result = {0, 1, 3, 4}
-		/// The resulting array has all streams except the forStream, in ascdending order.
-		/// </summary>
-		/// <param name="numStreams">- number of streams
-		/// </param>
-		/// <param name="forStream">- stream to generate a nesting order for
-		/// </param>
-		/// <returns> int array with all stream numbers Starting at 0 to (numStreams - 1) leaving the
-		/// forStream out
-		/// </returns>
+
+        /// <summary>
+        /// Returns default nesting order for a given number of streams for a certain stream.
+        /// Example: numStreams = 5, forStream = 2, result = {0, 1, 3, 4}
+        /// The resulting array has all streams except the forStream, in ascdending order.
+        /// </summary>
+        /// <param name="numStreams">number of streams</param>
+        /// <param name="forStream">stream to generate a nesting order for</param>
+        /// <returns>
+        /// int array with all stream numbers Starting at 0 to (numStreams - 1) leaving the
+        /// forStream out
+        /// </returns>
 		public static int[] BuildDefaultNestingOrder(int numStreams, int forStream)
 		{
 			int[] nestingOrder = new int[numStreams - 1];
@@ -316,20 +308,25 @@ namespace net.esper.eql.join.plan
 		/// <summary> Encapsulates the chain information.</summary>
 		public class BestChainResult
 		{
-			/// <summary> Returns depth of lookups via index in chain.</summary>
-			/// <returns> depth
-			/// </returns>
+            /// <summary>
+            /// Returns depth of lookups via index in chain.
+            /// </summary>
+            /// <value>The depth.</value>
+            /// <returns> depth
+            /// </returns>
 			virtual public int Depth
 			{
 				get
 				{
 					return depth;
-				}
-				
+				}				
 			}
-			/// <summary> Returns chain of stream numbers.</summary>
-			/// <returns> array of stream numbers
-			/// </returns>
+            /// <summary>
+            /// Returns chain of stream numbers.
+            /// </summary>
+            /// <value>The chain.</value>
+            /// <returns> array of stream numbers
+            /// </returns>
 			virtual public int[] Chain
 			{
 				get
@@ -342,16 +339,22 @@ namespace net.esper.eql.join.plan
 			private int[] chain;
 			
 			/// <summary> Ctor.</summary>
-			/// <param name="depth">- depth this chain resolves into a indexed lookup
+			/// <param name="depth">depth this chain resolves into a indexed lookup
 			/// </param>
-			/// <param name="chain">- chain for nested lookup
+			/// <param name="chain">chain for nested lookup
 			/// </param>
 			public BestChainResult(int depth, int[] chain)
 			{
 				this.depth = depth;
 				this.chain = chain;
 			}
-			
+
+            /// <summary>
+            /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </returns>
 			public override String ToString()
 			{
 				return "depth=" + depth + " chain=" + CollectionHelper.Render(chain);

@@ -48,14 +48,13 @@ namespace net.esper.eql.join.rep
 			}
 			
 		}
-		
-		/// <summary> Ctor.</summary>
-		/// <param name="event">is the current event
-		/// </param>
-		/// <param name="stream">is the current stream
-		/// </param>
-		/// <param name="node">is the node containing the set of events to which the event belongs to
-		/// </param>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="_event">is the current event</param>
+        /// <param name="stream">is the current stream</param>
+        /// <param name="node">is the node containing the set of events to which the event belongs to</param>
 		public Cursor(EventBean _event, int stream, Node node)
 		{
 			this._event = _event;

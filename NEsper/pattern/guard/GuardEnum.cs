@@ -27,6 +27,12 @@ namespace net.esper.pattern.guard
         private readonly String name;
         private readonly Type clazz;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GuardEnum"/> class.
+        /// </summary>
+        /// <param name="nspace">The nspace.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="clazz">The clazz.</param>
         GuardEnum(String nspace, String name, Type clazz)
         {
             this.nspace = nspace;
@@ -64,12 +70,11 @@ namespace net.esper.pattern.guard
             get { return clazz; }
         }
 
-        /**
-         * Returns the enum for the given namespace and name.
-         * @param nspace - guard namespace
-         * @param name - guard name
-         * @return enum
-         */
+        /// <summary>Returns the enum for the given namespace and name.</summary>
+        /// <param name="nspace">guard namespace</param>
+        /// <param name="name">guard name</param>
+        /// <returns>enum</returns>
+
         public static GuardEnum forName(String nspace, String name)
         {
             foreach (GuardEnum guardEnum in GuardEnum.Values)

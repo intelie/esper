@@ -22,26 +22,26 @@ namespace net.esper.eql.core
         /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
         /// old events as specified.
         /// </summary>
-        /// <param name="newData">- new events posted by view
+        /// <param name="newData">new events posted by view
         /// </param>
-        /// <param name="oldData">- old events posted by view
+        /// <param name="oldData">old events posted by view
         /// </param>
         /// <returns> pair of new events and old events
         /// </returns>
 
-        Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData);
+        Pair<EventBean[], EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData);
 
         /// <summary> For use by joins posting their result, process the event rows that are entered and removed (new and old events).
         /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
         /// old events as specified.
         /// </summary>
-        /// <param name="newEvents">- new events posted by join
+        /// <param name="newEvents">new events posted by join
         /// </param>
-        /// <param name="oldEvents">- old events posted by join
+        /// <param name="oldEvents">old events posted by join
         /// </param>
         /// <returns> pair of new events and old events 
         /// </returns>
 
-        Pair<EventBean[], EventBean[]> processJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
+        Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
     }
 }

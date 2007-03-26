@@ -15,6 +15,13 @@ namespace net.esper.eql.expression
     
     public class ExprInNode : ExprNode
     {
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         override public Type ReturnType
         {
             get { return typeof(bool?); }
@@ -32,6 +39,12 @@ namespace net.esper.eql.expression
             this.isNotIn = isNotIn;
         }
 
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
         	IList<ExprNode> children = this.ChildNodes ;
@@ -58,6 +71,13 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Evaluate event tuple and return result.
+        /// </summary>
+        /// <param name="eventsPerStream">event tuple</param>
+        /// <returns>
+        /// evaluation result, a boolean value for OR/AND-type evalution nodes.
+        /// </returns>
         public override Object Evaluate(EventBean[] eventsPerStream)
         {
             // Evaluate first child which is the base value to compare to
@@ -87,6 +107,11 @@ namespace net.esper.eql.expression
             return matched;
         }
 
+        /// <summary>
+        /// Returns true if the objects are equal.
+        /// </summary>
+        /// <param name="node_">The node to compare against.</param>
+        /// <returns></returns>
         public override bool EqualsNode(ExprNode node_)
         {
             if (!(node_ is ExprInNode))
@@ -98,6 +123,12 @@ namespace net.esper.eql.expression
             return other.isNotIn == this.isNotIn;
         }
 
+        /// <summary>
+        /// Returns the expression node rendered as a string.
+        /// </summary>
+        /// <value></value>
+        /// <returns> string rendering of expression
+        /// </returns>
         public override String ExpressionString
         {
             get
@@ -131,6 +162,12 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Compares the specified left result.
+        /// </summary>
+        /// <param name="leftResult">The left result.</param>
+        /// <param name="rightResult">The right result.</param>
+        /// <returns></returns>
         private bool compare(Object leftResult, Object rightResult)
         {
         	if ((leftResult == null) && (rightResult == null)) {

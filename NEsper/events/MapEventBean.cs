@@ -19,11 +19,23 @@ namespace net.esper.events
         private Int32 hashCode = 0;
         private bool hasHashCode = false;
 
+        /// <summary>
+        /// Return the {@link EventType} instance that describes the set of properties available for this event.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type
+        /// </returns>
         virtual public EventType EventType
         {
             get { return eventType; }
         }
 
+        /// <summary>
+        /// Get the underlying data object to this event wrapper.
+        /// </summary>
+        /// <value></value>
+        /// <returns> underlying data object.
+        /// </returns>
         virtual public Object Underlying
         {
             get { return properties; }
@@ -74,6 +86,13 @@ namespace net.esper.events
             this.eventType = eventType;
         }
 
+        /// <summary>
+        /// Returns the value of an event property.
+        /// </summary>
+        /// <value></value>
+        /// <returns> the value of a simple property with the specified name.
+        /// </returns>
+        /// <throws>  PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed </throws>
         public virtual Object this[String property]
         {
             get
@@ -88,6 +107,11 @@ namespace net.esper.events
             }
         }
 
+        /// <summary>
+        /// Returns true if the objects are equal.
+        /// </summary>
+        /// <param name="otherObject">The other object.</param>
+        /// <returns></returns>
         public override bool Equals(Object otherObject)
         {
             if (otherObject == this)
@@ -143,6 +167,12 @@ namespace net.esper.events
             return true;
         }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override int GetHashCode()
         {
             if (!hasHashCode)
@@ -165,6 +195,12 @@ namespace net.esper.events
             return hashCode;
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             return "MapEventBean " + "eventType=" + eventType;

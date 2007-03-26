@@ -11,11 +11,25 @@ namespace net.esper.eql.parse
 	
     public class WildcardParameter : NumberSetParameter
 	{
+        /// <summary>
+        /// Returns true if all values between and including min and max are supplied by the parameter.
+        /// </summary>
+        /// <param name="min">lower end of range</param>
+        /// <param name="max">upper end of range</param>
+        /// <returns>
+        /// true if parameter specifies all int values between min and max, false if not
+        /// </returns>
         public Boolean IsWildcard(int min, int max)
         {
             return true;
         }
 
+        /// <summary>
+        /// Return a set of int values representing the value of the parameter for the given range.
+        /// </summary>
+        /// <param name="min">lower end of range</param>
+        /// <param name="max">upper end of range</param>
+        /// <returns>set of integer</returns>
         public ISet<int> GetValuesInRange(int min, int max)
         {
             ISet<int> result = new EHashSet<Int32>();

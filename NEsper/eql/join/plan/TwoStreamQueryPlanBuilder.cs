@@ -11,9 +11,9 @@ namespace net.esper.eql.join.plan
     public class TwoStreamQueryPlanBuilder
 	{
 		/// <summary> Build query plan.</summary>
-		/// <param name="queryGraph">- navigability info
+		/// <param name="queryGraph">navigability info
 		/// </param>
-		/// <param name="optionalOuterJoinType">- outer join type, null if not an outer join
+		/// <param name="optionalOuterJoinType">outer join type, null if not an outer join
 		/// </param>
 		/// <returns> query plan
 		/// </returns>

@@ -22,11 +22,23 @@ namespace net.esper.core
         private volatile EPServiceEngine engine;
         private readonly ConfigurationSnapshot configSnapshot;
 
+        /// <summary>
+        /// Returns a class instance of EPRuntime.
+        /// </summary>
+        /// <value></value>
+        /// <returns> an instance of EPRuntime
+        /// </returns>
         virtual public EPRuntime EPRuntime
         {
             get { return engine.Runtime; }
         }
 
+        /// <summary>
+        /// Returns a class instance of EPAdministrator.
+        /// </summary>
+        /// <value></value>
+        /// <returns> an instance of EPAdministrator
+        /// </returns>
         virtual public EPAdministrator EPAdministrator
         {
             get { return engine.Admin; }
@@ -43,6 +55,10 @@ namespace net.esper.core
             Initialize();
         }
 
+        /// <summary>
+        /// Frees any resources associated with this runtime instance.
+        /// Stops and destroys any event filters, patterns, expressions, views.
+        /// </summary>
         public virtual void Initialize()
         {
             if (engine != null)
@@ -279,8 +295,9 @@ namespace net.esper.core
             private EDictionary<String, EDictionary<String,String>> mapAliases = new EHashDictionary<String, EDictionary<String,String>>();
             private EDictionary<String, ConfigurationDBRef> databaseRefs = new EHashDictionary<String, ConfigurationDBRef>();
 
-            /// <summary> Ctor.
-            /// <p>
+            /// <summary>
+            /// Ctor.
+            /// 
             /// Copies information out of configuration performing a deep copy
             /// to preserve configs.
             /// </summary>

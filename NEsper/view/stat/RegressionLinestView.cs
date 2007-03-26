@@ -4,7 +4,8 @@ using net.esper.events;
 
 namespace net.esper.view.stat
 {
-	/// <summary> A view that calculates regression on two fields. The view uses internally a {@link RegressionBean}
+	/// <summary>
+    /// A view that calculates regression on two fields. The view uses internally a {@link RegressionBean}
 	/// instance for the calculations, it also returns this bean as the result.
 	/// This class accepts most of its behaviour from its parent, {@link net.esper.view.stat.BaseBivariateStatisticsView}. It adds
 	/// the usage of the regression bean and the appropriate schema.
@@ -12,8 +13,10 @@ namespace net.esper.view.stat
 	public sealed class RegressionLinestView : BaseBivariateStatisticsView
 	{
 		private EventType eventType;
-		
-		/// <summary> Default constructor - required by all views to adhere to the Java bean specification.</summary>
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegressionLinestView"/> class.
+        /// </summary>
 		public RegressionLinestView()
 		{
 			statisticsBean = new RegressionBean();
@@ -27,7 +30,14 @@ namespace net.esper.view.stat
 		public RegressionLinestView(String xFieldName, String yFieldName):base(new RegressionBean(), xFieldName, yFieldName)
 		{
 		}
-		
+
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// metadata for the objects in the collection
+        /// </returns>
 		public override EventType EventType
 		{
             get
@@ -40,7 +50,13 @@ namespace net.esper.view.stat
             }
             set { }
 		}
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return this.GetType().FullName + " fieldX=" + this.FieldNameX + " fieldY=" + this.FieldNameY;

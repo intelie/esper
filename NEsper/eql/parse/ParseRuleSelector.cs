@@ -9,7 +9,7 @@ namespace net.esper.eql.parse
 	public interface ParseRuleSelector
 	{
 		/// <summary> Implementations can invoke a parse rule of their choice on the parser.</summary>
-		/// <param name="parser">- to invoke parse rule on
+		/// <param name="parser">to invoke parse rule on
 		/// </param>
 		/// <throws>  TokenStreamException is a parse exception </throws>
 		/// <throws>  RecognitionException is a parse exception </throws>

@@ -13,11 +13,23 @@ namespace net.esper.events
 		private readonly IDictionary<String, EventBean> wrappedEvents;
 		private EventType eventType;
 
+        /// <summary>
+        /// Return the {@link EventType} instance that describes the set of properties available for this event.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type
+        /// </returns>
 		virtual public EventType EventType
 		{
 			get { return eventType; }
 		}
 
+        /// <summary>
+        /// Get the underlying data object to this event wrapper.
+        /// </summary>
+        /// <value></value>
+        /// <returns> underlying data object, usually either a Map or a bean instance.
+        /// </returns>
 		virtual public Object Underlying
 		{
 			get { return wrappedEvents; }

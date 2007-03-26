@@ -9,10 +9,11 @@ using net.esper.eql.expression;
 
 namespace net.esper.eql.core
 {
-	
-	/// <summary> Processor for select-clause expressions that handles a list of selection items represented by
-	/// expression nodes. Computes results based on matching events.
+	/// <summary>
+    /// Processor for select-clause expressions that handles a list of selection items
+    /// represented by expression nodes. Computes results based on matching events.
 	/// </summary>
+    
     public class SelectExprEvalProcessor : SelectExprProcessor
     {
         private ExprNode[] expressionNodes;
@@ -20,13 +21,12 @@ namespace net.esper.eql.core
         private EventType resultEventType;
         private readonly EventAdapterService eventAdapterService;
 
-        /**
-         * Ctor.
-         * @param selectionList - list of select-clause items
-         * @param eventAdapterService - service for generating events and handling event types
-         * @param insertIntoDesc - descriptor for insert-into clause contains column names overriding select clause names
-         * @throws net.esper.eql.expression.ExprValidationException thrown if any of the expressions don't validate
-         */
+        /// <summary>Ctor.</summary>
+        /// <param name="selectionList">list of select-clause items</param>
+        /// <param name="eventAdapterService">service for generating events and handling event types</param>
+        /// <param name="insertIntoDesc">descriptor for insert-into clause contains column names overriding select clause names</param>
+        /// <throws>net.esper.eql.expression.ExprValidationException thrown if any of the expressions don't validate</throws>
+
         public SelectExprEvalProcessor(IList<SelectExprElementNamedSpec> selectionList,
                                        InsertIntoDesc insertIntoDesc,
                                        EventAdapterService eventAdapterService)
@@ -107,6 +107,14 @@ namespace net.esper.eql.core
             }
         }
 
+        /// <summary>
+        /// Computes the select-clause results and returns an event of the result event type that contains, in it's
+        /// properties, the selected items.
+        /// </summary>
+        /// <param name="eventsPerStream"></param>
+        /// <returns>
+        /// event with properties containing selected items
+        /// </returns>
         public EventBean Process(EventBean[] eventsPerStream)
         {
         	EDataDictionary props = new EDataDictionary() ;
@@ -120,6 +128,12 @@ namespace net.esper.eql.core
             return ev;
         }
 
+        /// <summary>
+        /// Returns the event type that represents the select-clause items.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type representing select-clause items
+        /// </returns>
         public EventType ResultEventType
         {
             get

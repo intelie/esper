@@ -21,6 +21,11 @@ namespace net.esper.collection
         private EventBean eventBean;
         private CurrentPosition currentPosition;
 
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        /// <value></value>
+        /// <returns>The element in the collection at the current position of the enumerator.</returns>
         public EventBean Current
 		{
 			get
@@ -48,7 +53,14 @@ namespace net.esper.collection
                 (CurrentPosition.Start) :
                 (CurrentPosition.End);
 		}
-		
+
+        /// <summary>
+        /// Advances the enumerator to the next element of the collection.
+        /// </summary>
+        /// <returns>
+        /// true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.
+        /// </returns>
+        /// <exception cref="T:System.InvalidOperationException">The collection was modified after the enumerator was created. </exception>
 		public virtual bool MoveNext()
 		{
             switch (currentPosition)

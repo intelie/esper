@@ -22,17 +22,17 @@ namespace net.esper.eql.join
     public class JoinSetComposerFactory
 	{
 		/// <summary> Builds join tuple composer.</summary>
-		/// <param name="outerJoinDescList">- list of descriptors for outer join criteria
+		/// <param name="outerJoinDescList">list of descriptors for outer join criteria
 		/// </param>
-		/// <param name="optionalFilterNode">- filter tree for analysis to build indexes for fast access
+		/// <param name="optionalFilterNode">filter tree for analysis to build indexes for fast access
 		/// </param>
-		/// <param name="streamTypes">- types of streams
+		/// <param name="streamTypes">types of streams
 		/// </param>
-		/// <param name="streamNames">- names of streams
+		/// <param name="streamNames">names of streams
 		/// </param>
-		/// <param name="streamViews">- leaf view per stream
+		/// <param name="streamViews">leaf view per stream
 		/// </param>
-		/// <param name="selectStreamSelectorEnum">- indicator for rstream or istream-only, for optimization
+		/// <param name="selectStreamSelectorEnum">indicator for rstream or istream-only, for optimization
 		/// </param>
 		/// <returns> composer implementation
 		/// </returns>
@@ -145,11 +145,11 @@ namespace net.esper.eql.join
         }
 		
 		/// <summary> Build an index/table instance using the event properties for the event type.</summary>
-		/// <param name="indexedStreamNum">- number of stream indexed
+		/// <param name="indexedStreamNum">number of stream indexed
 		/// </param>
-		/// <param name="indexProps">- properties to index
+		/// <param name="indexProps">properties to index
 		/// </param>
-		/// <param name="eventType">- type of event to expect
+		/// <param name="eventType">type of event to expect
 		/// </param>
 		/// <returns> table build
 		/// </returns>

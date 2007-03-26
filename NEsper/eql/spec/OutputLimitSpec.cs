@@ -7,6 +7,10 @@ namespace net.esper.eql.spec
 
     public class OutputLimitSpec
 	{
+        /// <summary>
+        /// Determines how many items are displayed within an event batch.
+        /// </summary>
+
 		public enum DisplayLimit
 		{
             /// <summary> Output first event.</summary>
@@ -17,49 +21,49 @@ namespace net.esper.eql.spec
 			ALL
 		}
 
-		/// <summary> Returns the event rate.</summary>
-		/// <returns> event rate
-		/// </returns>
-		virtual public int EventRate
+		/// <summary>
+        /// Gets the event rate.
+        /// </summary>
+		
+        virtual public int EventRate
 		{
 			get { return eventRate; }
 		}
 
-		/// <summary> Returns the number of events, or zero if no number of events was supplied.</summary>
-		/// <returns> event limit
-		/// </returns>
+		/// <summary>
+        /// Gets the number of events, or zero if no number of events was supplied.
+        /// </summary>
 		
         virtual public bool EventLimit
 		{
 			get { return isEventLimit; }
 		}
 		
-        /// <summary> Returns the rate in seconds, if supplied, or zero if not supplied.</summary>
-		/// <returns> rate
-		/// </returns>
+        /// <summary>
+        /// Gets the rate in seconds, if supplied, or zero if not supplied.
+        /// </summary>
 		
         virtual public double TimeRate
 		{
 			get { return timeRate; }
 		}
 
-		/// <summary> Returns true to output the last event only.</summary>
-		/// <returns> true if last only, false otherwise
-		/// </returns>
+		/// <summary>
+        /// Returns true to output the last event only.
+        /// </summary>
 		
         virtual public bool IsDisplayLastOnly
 		{
 			get { return displayLimit == DisplayLimit.LAST; }
 		}
 
-        /// <summary> Returns true to output the first event only.</summary>
-		/// <returns> true if first only, false otherwise
-		/// </returns>
+        /// <summary>
+        /// Returns true to output the first event only.
+        /// </summary>
 		
         virtual public bool IsDisplayFirstOnly
 		{
 			get { return displayLimit == DisplayLimit.FIRST; }
-			
 		}
 		
 		private readonly bool isEventLimit;
@@ -71,10 +75,8 @@ namespace net.esper.eql.spec
 		/// <summary> Ctor.
 		/// For batching events by event count.
 		/// </summary>
-		/// <param name="eventRate">- the number of events to batch.
-		/// </param>
-		/// <param name="displayLimit">- indicates whether to output only the first, only the last, or all events
-		/// </param>
+		/// <param name="eventRate">the number of events to batch.</param>
+		/// <param name="displayLimit">indicates whether to output only the first, only the last, or all events</param>
 		
         public OutputLimitSpec(int eventRate, DisplayLimit displayLimit)
 		{
@@ -87,9 +89,9 @@ namespace net.esper.eql.spec
 		/// <summary> Ctor.
 		/// Used for creating batching events by time.
 		/// </summary>
-		/// <param name="timeRate">- the number of seconds to batch for.
+		/// <param name="timeRate">the number of seconds to batch for.
 		/// </param>
-		/// <param name="displayLimit">- indicates whether to output only the first, only the last, or all events
+		/// <param name="displayLimit">indicates whether to output only the first, only the last, or all events
 		/// </param>
 		
         public OutputLimitSpec(double timeRate, DisplayLimit displayLimit)

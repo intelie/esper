@@ -1,11 +1,10 @@
-/// <summary>***********************************************************************************
-/// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
-/// http://esper.codehaus.org                                                          *
-/// ---------------------------------------------------------------------------------- *
-/// The software in this package is published under the terms of the GPL license       *
-/// a copy of which has been included with this distribution in the license.txt file.  *
-/// ************************************************************************************
-/// </summary>
+// ************************************************************************************
+// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
+// http://esper.codehaus.org                                                          *
+// ---------------------------------------------------------------------------------- *
+// The software in this package is published under the terms of the GPL license       *
+// a copy of which has been included with this distribution in the license.txt file.  *
+// ************************************************************************************
 
 using System;
 using System.Collections.Generic;
@@ -14,24 +13,14 @@ namespace net.esper.events
 {	
 	/// <summary>
     /// This interface provides metadata on events.
-	/// 
+	/// <para>
 	/// The interface exposes events as organizations of named values.
 	/// The contract is that any event in the system must have a name-based
     /// way of accessing sub-data within its event type. A simple example is
-    /// a Java bean: the names can be property names, and those properties can
-    /// have still more properties beneath them. Another example is a Map
+    /// an object: the names can be property names, and those properties can
+    /// have still more properties beneath them. Another example is a Dictionary
     /// structure. Here string names can refer to data objects.
-	/// 
-	/// The event type behaves somewhat similar to the DynaClass and DynaBean
-    /// interfaces in the Jakarta commons beanutils package. The Jakarta beanutils
-    /// were not used for the reason that they don't provide a Getter interface
-	/// for fast retrieval of event property values for a given property name
-    /// and given Java object or Map. Also, events are immutable which contradicts
-    /// the DynaBean interface.
-	/// 
-	/// Information on the super-types (superclass and interfaces implemented by
-    /// JavaBean events) is also available. Supertypes generally exclude Java language
-    /// interfaces and types.
+    /// </para>
 	/// </summary>
 	
     public interface EventType
@@ -84,12 +73,13 @@ namespace net.esper.events
         /// <param name="property">is the property to check</param>
         /// <returns>true if exists, false if not</returns>
 		
-        bool isProperty(String property);
+        bool IsProperty(String property);
 
         /// <summary>
-        /// Returns an array of event types that are super to this event type, from which this event type inherited event properties.
-        /// For Java bean instances underlying the event this method returns the event types for all
-        /// superclasses extended by the Java bean and all interfaces implemented by the Java bean.
+        /// Returns an array of event types that are super to this event type, from which this event type 
+        /// inherited event properties.  For object instances underlying the event this method returns the
+        /// event types for all superclasses extended by the object and all interfaces implemented by the
+        /// object.
         /// </summary>
         /// <returns>an array of event types</returns>
         
@@ -103,7 +93,7 @@ namespace net.esper.events
         IEnumerable<EventType> DeepSuperTypes { get; }
 	}
 
-    public class EventTypeArray
+    class EventTypeArray
     {
         public static readonly EventType[] Empty = new EventType[] { };
     }

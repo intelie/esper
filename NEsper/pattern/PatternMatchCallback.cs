@@ -38,7 +38,11 @@ namespace net.esper.pattern
     public sealed class PatternMatchCallbackImpl : PatternMatchCallback
     {
     	private PatternMatcherDelegate m_delegate ;
-    	
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PatternMatchCallbackImpl"/> class.
+        /// </summary>
+        /// <param name="_delegate">The _delegate.</param>
     	public PatternMatchCallbackImpl( PatternMatcherDelegate _delegate )
     	{
     		m_delegate = _delegate;

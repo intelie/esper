@@ -4,13 +4,22 @@ using System.Collections.Generic;
 namespace net.esper.filter
 {
 	
-	/// <summary> Comparator for DoubleRange values.
-	/// <p>Sorts double ranges as this:     sort by min asc, max asc.
+	/// <summary>
+    /// Comparator for DoubleRange values.
+	/// <para>
+    /// Sorts double ranges as this:     sort by min asc, max asc.
 	/// I.e. same minimum value sorts maximum value ascending.
+    /// </para>
 	/// </summary>
 
     public sealed class DoubleRangeComparator : IComparer<DoubleRange>
 	{
+        /// <summary>
+        /// Compares the specified double ranges.
+        /// </summary>
+        /// <param name="r1">The r1.</param>
+        /// <param name="r2">The r2.</param>
+        /// <returns></returns>
 		public int Compare(DoubleRange r1, DoubleRange r2)
 		{
 			double minOne = r1.Min;

@@ -6,7 +6,7 @@ using net.esper.events;
 
 namespace net.esper.eql.join
 {
-	/// <summary> Join execution strategy based on a 3-step getSelectListEvents of composing a join set, filtering the join set and
+	/// <summary> Join execution strategy based on a 3-step GetSelectListEvents of composing a join set, filtering the join set and
 	/// indicating.
 	/// </summary>
 	public class JoinExecutionStrategyImpl : JoinExecutionStrategy
@@ -16,11 +16,11 @@ namespace net.esper.eql.join
 		private readonly JoinSetProcessor indicator;
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="composer">- determines join tuple set
+		/// <param name="composer">determines join tuple set
 		/// </param>
-		/// <param name="filter">- for filtering among tuples
+		/// <param name="filter">for filtering among tuples
 		/// </param>
-		/// <param name="indicator">- for presenting the info to a view
+		/// <param name="indicator">for presenting the info to a view
 		/// </param>
 		
 		public JoinExecutionStrategyImpl(JoinSetComposer composer, JoinSetProcessor filter, JoinSetProcessor indicator)
@@ -29,10 +29,16 @@ namespace net.esper.eql.join
 			this.filter = filter;
 			this.indicator = indicator;
 		}
-		
-		public virtual void  join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+
+        /// <summary>
+        /// Execute join. The first dimension in the 2-dim arrays is the stream that generated the events,
+        /// and the second dimension is the actual events generated.
+        /// </summary>
+        /// <param name="newDataPerStream">new events for each stream</param>
+        /// <param name="oldDataPerStream">old events for each stream</param>
+		public virtual void Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
 		{
-			UniformPair<ISet<MultiKey<EventBean>>> joinSet = composer.join( newDataPerStream, oldDataPerStream );
+			UniformPair<ISet<MultiKey<EventBean>>> joinSet = composer.Join( newDataPerStream, oldDataPerStream );
 			
 			filter.Process(joinSet.First, joinSet.Second);
 			

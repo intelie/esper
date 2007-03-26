@@ -33,18 +33,37 @@ namespace net.esper.schedule
             this.currentTime = DateTimeHelper.TimeInMillis( DateTime.Now );
         }
 
+        /// <summary>
+        /// Returns a bucket from which slots can be allocated for ordering concurrent callbacks.
+        /// </summary>
+        /// <returns>bucket</returns>
         public ScheduleBucket allocateBucket()
         {
             curBucketNum++;
             return new ScheduleBucket(curBucketNum);
         }
 
+        /// <summary>
+        /// Gets the last time known to the scheduling service.
+        /// </summary>
+        /// <value></value>
+        /// <returns> time that has last been set on this service
+        /// </returns>
         public long Time
         {
             get { return this.currentTime; }
             set { this.currentTime = value; }
         }
 
+        /// <summary>
+        /// Add a callback for after the given milliseconds from the current time.
+        /// If the same callback (equals) was already added before, the method will not add a new
+        /// callback or change the existing callback to a new time, but throw an exception.
+        /// </summary>
+        /// <param name="afterMSec">number of millisec to get a callback</param>
+        /// <param name="callback">to add</param>
+        /// <param name="slot">allows ordering of concurrent callbacks</param>
+        /// <throws>  ScheduleServiceException thrown if the add operation did not complete </throws>
         public void Add(long afterMSec, ScheduleCallback callback, ScheduleSlot slot)
         {
             if (callbackSetMap.ContainsKey(callback))
@@ -59,6 +78,12 @@ namespace net.esper.schedule
             AddTrigger(slot, callback, triggerOnTime);
         }
 
+        /// <summary>
+        /// Adds the specified spec.
+        /// </summary>
+        /// <param name="spec">The spec.</param>
+        /// <param name="callback">The callback.</param>
+        /// <param name="slot">The slot.</param>
         public void Add(ScheduleSpec spec, ScheduleCallback callback, ScheduleSlot slot)
         {
             if (callbackSetMap.ContainsKey(callback))
@@ -80,6 +105,13 @@ namespace net.esper.schedule
             AddTrigger(slot, callback, nextScheduledTime);
         }
 
+        /// <summary>
+        /// Remove a callback.
+        /// If the callback to be removed was not found an exception is thrown.
+        /// </summary>
+        /// <param name="callback">to remove</param>
+        /// <param name="slot">for which the callback was added</param>
+        /// <throws>  ScheduleServiceException thrown if the callback was not located </throws>
         public void Remove(ScheduleCallback callback, ScheduleSlot slot)
         {
             ETreeDictionary<ScheduleSlot, ScheduleCallback> callbackSet = callbackSetMap.Fetch( callback ) ;
@@ -93,6 +125,9 @@ namespace net.esper.schedule
             callbackSetMap.Remove(callback);
         }
 
+        /// <summary>
+        /// Evaluate the current time and perform any callbacks.
+        /// </summary>
         public void Evaluate()
         {
             // Get the values on or before the current time - to get those that are exactly on the

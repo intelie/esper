@@ -23,8 +23,8 @@ namespace net.esper.filter
         }
 
         /// <summary> Ctor.</summary>
-        /// <param name="eventType">- type of event to filter for</param>
-        /// <param name="parameters">- list of filter parameters</param>
+        /// <param name="eventType">type of event to filter for</param>
+        /// <param name="parameters">list of filter parameters</param>
 
         public FilterValueSetImpl(EventType eventType, IList<FilterValueSetParam> parameters)
         {

@@ -35,21 +35,44 @@ namespace net.esper.view.stat.olap
 
 		private String[] dimensionNames;
 
+        /// <summary>
+        /// Returns array containing name of each dimension including the name of the cell.
+        /// The array size is getNumDimensions() + 1, with the first element as the cell name.
+        /// </summary>
+        /// <value></value>
+        /// <returns> dimension names array
+        /// </returns>
 		public IList<String> DimensionNames
 		{
 			get { return dimensionNames; }
 		}
 
+        /// <summary>
+        /// Get the number of dimensions of the cube. The minimum number of dimensions is 1.
+        /// </summary>
+        /// <value></value>
+        /// <returns> number of dimensions
+        /// </returns>
 		public int NumDimensions
 		{
 			get { return numDimensions; }
 		}
 
+        /// <summary>
+        /// Returns all cells.
+        /// </summary>
+        /// <value></value>
+        /// <returns> cell array
+        /// </returns>
 		public V[] Cells
 		{
 			get { return cells; }
 		}
 
+        /// <summary>
+        /// Gets the dimension sizes.
+        /// </summary>
+        /// <value>The dimension sizes.</value>
 		private int[] DimensionSizes
 		{
 			get
@@ -88,6 +111,11 @@ namespace net.esper.view.stat.olap
 			}
 		}
 
+        /// <summary>
+        /// Set dimension members from the enumeration Class.
+        /// </summary>
+        /// <param name="dimension">Starts at 0 and has a max of number of dimensions minus 1</param>
+        /// <param name="enumType">is the class for which the enum constants are obtained, and used as members</param>
 		public void SetMembers( int dimension, Type enumType )
 		{
             if (enumType.IsEnum)
@@ -100,6 +128,11 @@ namespace net.esper.view.stat.olap
             }
 		}
 
+        /// <summary>
+        /// Sets the members.
+        /// </summary>
+        /// <param name="dimension">The dimension.</param>
+        /// <param name="members">The members.</param>
         public void SetMembers(int dimension, Array members)
         {
             List<Object> tempList = new List<Object>();
@@ -111,6 +144,11 @@ namespace net.esper.view.stat.olap
             SetMembers(dimension, tempList);
         }
 
+        /// <summary>
+        /// Set dimension members from the list of value objects.
+        /// </summary>
+        /// <param name="dimension">Starts at 0 and has a max of number of dimensions minus 1</param>
+        /// <param name="members">is a list of objects making up the dimension member values</param>
 		public void SetMembers( int dimension, IList<Object> members )
 		{
 			IList<Object> memberKeys = dimensionMembers.Fetch( dimension );
@@ -164,11 +202,21 @@ namespace net.esper.view.stat.olap
 			this.cells = newFacts;
 		}
 
+        /// <summary>
+        /// Get the members making up a dimension.
+        /// </summary>
+        /// <param name="dimension">for which to return the members</param>
+        /// <returns>list of member object of the dimension</returns>
 		public IList<Object> GetMembers( int dimension )
 		{
 			return dimensionMembers[dimension];
 		}
 
+        /// <summary>
+        /// Get a cell, returns null if the cell does not yet exist.
+        /// </summary>
+        /// <param name="coordinates">contains member values for each dimension of the cube</param>
+        /// <returns>the cell</returns>
 		public V GetCell( MultiKeyUntyped coordinates )
 		{
 			if ( coordinates.Count != numDimensions )
@@ -186,6 +234,11 @@ namespace net.esper.view.stat.olap
 			return (V) cells[ordinal];
 		}
 
+        /// <summary>
+        /// Get a cell adding the coordinate members if the cell does not yet exist.
+        /// </summary>
+        /// <param name="coordinates">contains member values for each dimension of the cube</param>
+        /// <returns>the cell</returns>
 		public V GetCellAddMembers( MultiKeyUntyped coordinates )
 		{
 			if ( coordinates.Count != numDimensions )

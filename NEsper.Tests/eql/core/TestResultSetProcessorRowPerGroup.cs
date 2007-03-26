@@ -38,10 +38,10 @@ namespace net.esper.eql.core
             EventBean[] newData = new EventBean[] { MakeEvent(1, 2), MakeEvent(3, 4) };
             EventBean[] oldData = new EventBean[] { MakeEvent(1, 2), MakeEvent(1, 10) };
 
-            Pair<EventBean[], EventBean[]> result = processor.processViewResult(newData, oldData);
+            Pair<EventBean[], EventBean[]> result = processor.ProcessViewResult(newData, oldData);
 
-            Assert.AreEqual(2, supportAggregationService.getEnterList().Count);
-            Assert.AreEqual(2, supportAggregationService.getLeaveList().Count);
+            Assert.AreEqual(2, supportAggregationService.EnterList.Count);
+            Assert.AreEqual(2, supportAggregationService.LeaveList.Count);
 
             Assert.AreEqual(3, result.First.Length);
             Assert.AreEqual(3, result.Second.Length);

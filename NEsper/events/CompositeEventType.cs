@@ -7,19 +7,34 @@ using net.esper.compat;
 namespace net.esper.events
 {
 	/// <summary> Event type for events that itself have event properties that are event wrappers.
-	/// <p>
+	/// <para>
 	/// For use in pattern expression statements in which multiple events match a pattern. There the
 	/// composite event indicates that the whole patterns matched, and indicates the
 	/// individual events that caused the pattern as event properties to the event.
+    /// </para>
 	/// </summary>
 	
 	public class CompositeEventType : EventType
 	{
+        /// <summary>
+        /// Get the class that represents the type of the event type.
+        /// Returns a bean event class if the schema represents a bean event type.
+        /// Returns Map if the schema represents a collection of values in a Map.
+        /// </summary>
+        /// <value>The type of the underlying.</value>
+        /// <returns> type of the event object
+        /// </returns>
 		virtual public Type UnderlyingType
 		{
 			get { return typeof(System.Collections.IDictionary); }
 		}
-		
+
+        /// <summary>
+        /// Get all valid property names for the event type.
+        /// </summary>
+        /// <value>The property names.</value>
+        /// <returns> A string array containing the property names of this typed event data object.
+        /// </returns>
 		virtual public ICollection<String> PropertyNames
 		{
 			get { return taggedEventTypes.Keys; }
@@ -35,7 +50,12 @@ namespace net.esper.events
 		{
 			this.taggedEventTypes = taggedEventTypes ;
 		}
-		
+
+        /// <summary>
+        /// Gets the type of the property.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns></returns>
 		public virtual Type GetPropertyType(String propertyName)
 		{
             EventType result = taggedEventTypes.Fetch(propertyName);
@@ -63,7 +83,12 @@ namespace net.esper.events
 			// ask the nested class to resolve the property
 			return result.GetPropertyType(propertyNested);
 		}
-		
+
+        /// <summary>
+        /// Gets the getter.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns></returns>
 		public virtual EventPropertyGetter GetGetter(String propertyName)
 		{
 			// see if this is a nested property
@@ -99,18 +124,38 @@ namespace net.esper.events
 			
 			return new NestedEventPropertyGetter( propertyMap, getterNested ) ;
 		}
-		
-		public virtual bool isProperty(String propertyName)
+
+        /// <summary>
+        /// Determines whether the specified property name is property.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified property name is property; otherwise, <c>false</c>.
+        /// </returns>
+		public virtual bool IsProperty(String propertyName)
 		{
 			Type propertyType = GetPropertyType(propertyName);
 			return propertyType != null;
 		}
-		
+
+        /// <summary>
+        /// Returns an array of event types that are super to this event type, from which this event type
+        /// inherited event properties.  For object instances underlying the event this method returns the
+        /// event types for all superclasses extended by the object and all interfaces implemented by the
+        /// object.
+        /// </summary>
+        /// <value></value>
+        /// <returns>an array of event types</returns>
 		public virtual IEnumerable<EventType> SuperTypes
 		{
             get { return null; }
 		}
 
+        /// <summary>
+        /// Returns enumerable over all super types to event type, going up the hierarchy and including
+        /// all interfaces (and their extended interfaces) and superclasses as EventType instances.
+        /// </summary>
+        /// <value></value>
 		public IEnumerable<EventType> DeepSuperTypes
 		{
             get { return EventTypeArray.Empty ; }
@@ -123,12 +168,21 @@ namespace net.esper.events
 		internal class TagEventPropertyGetter : EventPropertyGetter
 		{
 			private string tag ;
-			
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="TagEventPropertyGetter"/> class.
+            /// </summary>
+            /// <param name="tag">The tag.</param>
 			public TagEventPropertyGetter(string tag)
 			{
 				this.tag = tag;
 			}
-			
+
+            /// <summary>
+            /// Gets the value.
+            /// </summary>
+            /// <param name="obj">The obj.</param>
+            /// <returns></returns>
 			public Object GetValue( EventBean obj )
 			{
                 EventBean wrapper = null;
@@ -172,13 +226,23 @@ namespace net.esper.events
 		{
 			private string tag ;
 			private EventPropertyGetter nestedGetter ;
-			
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="NestedEventPropertyGetter"/> class.
+            /// </summary>
+            /// <param name="tag">The tag.</param>
+            /// <param name="nestedGetter">The nested getter.</param>
 			public NestedEventPropertyGetter(string tag, EventPropertyGetter nestedGetter)
 			{
 				this.tag = tag;
 				this.nestedGetter = nestedGetter;
 			}
-			
+
+            /// <summary>
+            /// Gets the value.
+            /// </summary>
+            /// <param name="obj">The obj.</param>
+            /// <returns></returns>
 			public Object GetValue( EventBean obj )
 			{
                 EventBean wrapper = null;

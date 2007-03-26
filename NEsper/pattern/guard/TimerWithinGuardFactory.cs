@@ -44,7 +44,13 @@ namespace net.esper.pattern.guard
 			double milliseconds = timePeriodParameter.NumSeconds * 1000d;
 			this.milliseconds = (long) System.Math.Round(milliseconds);
 		}
-		
+
+        /// <summary>
+        /// Constructs a guard instance.
+        /// </summary>
+        /// <param name="context">services for use by guard</param>
+        /// <param name="quitable">to use for indicating the guard has quit</param>
+        /// <returns>guard instance</returns>
 		public virtual Guard MakeGuard(PatternContext context, Quitable quitable)
 		{
 			return new TimerWithinGuard(milliseconds, context, quitable);

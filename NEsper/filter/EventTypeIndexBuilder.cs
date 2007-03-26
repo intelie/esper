@@ -20,7 +20,7 @@ namespace net.esper.filter
         private readonly EventTypeIndex eventTypeIndex;
 
         /// <summary> Constructor - takes the event type index to manipulate as its parameter.</summary>
-        /// <param name="eventTypeIndex">- index to manipulate
+        /// <param name="eventTypeIndex">index to manipulate
         /// </param>
 
         public EventTypeIndexBuilder(EventTypeIndex eventTypeIndex)

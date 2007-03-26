@@ -65,6 +65,11 @@ namespace net.esper.events.property
 			return null;
 		}
 
+        /// <summary>
+        /// Returns the property type.
+        /// </summary>
+        /// <param name="eventType">is the event type representing the JavaBean</param>
+        /// <returns>property type class</returns>
 		public override Type GetPropertyType( BeanEventType eventType )
 		{
 			EventPropertyDescriptor descriptor = eventType.GetIndexedProperty( propertyName );

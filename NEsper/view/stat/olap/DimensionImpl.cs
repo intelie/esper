@@ -9,6 +9,12 @@ namespace net.esper.view.stat.olap
 	
 	public sealed class DimensionImpl : Dimension
 	{
+        /// <summary>
+        /// Returns the event property name or names providing the member values for the dimension.
+        /// </summary>
+        /// <value></value>
+        /// <returns> array of property names
+        /// </returns>
 		public String[] PropertyNames
 		{
 			get
@@ -35,7 +41,11 @@ namespace net.esper.view.stat.olap
 		{
 			this.members = members;
 		}
-		
+
+        /// <summary>
+        /// Returns the member values for the dimension.
+        /// </summary>
+        /// <returns>array of members</returns>
 		public DimensionMember[] GetMembers()
 		{
 			return members;

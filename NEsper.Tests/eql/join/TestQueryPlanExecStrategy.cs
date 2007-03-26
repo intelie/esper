@@ -29,7 +29,7 @@ namespace net.esper.eql.join
 		{
 			EventBean lookupEvent = SupportEventBeanFactory.createObject(new SupportBean());
 			
-			strategy.lookup(new EventBean[]{lookupEvent}, null);
+			strategy.Lookup(new EventBean[]{lookupEvent}, null);
 			
 			Assert.AreSame(lookupEvent, supportQueryExecNode.LastPrefillPath[4]);
 		}

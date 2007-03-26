@@ -29,31 +29,68 @@ namespace net.esper.compat
         //private Dictionary<object, TValue> dictionary;
         private WeakKeyComparer<TKey> comparer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeakDictionary&lt;TKey, TValue&gt;"/> class.
+        /// </summary>
         public WeakDictionary()
-            : this(16, null) { }
+            : this(16, null)
+        {
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeakDictionary&lt;TKey, TValue&gt;"/> class.
+        /// </summary>
+        /// <param name="capacity">The capacity.</param>
         public WeakDictionary(int capacity)
-            : this(capacity, null) { }
+            : this(capacity, null)
+        {
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeakDictionary&lt;TKey, TValue&gt;"/> class.
+        /// </summary>
+        /// <param name="comparer">The comparer.</param>
         public WeakDictionary(IEqualityComparer<TKey> comparer)
-            : this(16, comparer) { }
+            : this(16, comparer)
+        {
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeakDictionary&lt;TKey, TValue&gt;"/> class.
+        /// </summary>
+        /// <param name="capacity">The capacity.</param>
+        /// <param name="comparer">The comparer.</param>
         public WeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
         {
             this.comparer = new WeakKeyComparer<TKey>(comparer);
             this.dictionary = new C5.HashDictionary<object, TValue>(capacity, 0.6, this.comparer);
         }
 
-        // WARNING: The count returned here may include entries for which
-        // either the key or value objects have already been garbage
-        // collected. Call RemoveCollectedEntries to weed out collected
-        // entries and update the count accordingly.
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// </summary>
+        /// <remarks>
+        /// WARNING: The count returned here may include entries for which
+        /// either the key or value objects have already been garbage
+        /// collected. Call RemoveCollectedEntries to weed out collected
+        /// entries and update the count accordingly.
+        /// </remarks>
+        /// <value></value>
+        /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
         
         public int Count
         {
             get { return this.dictionary.Count; }
         }
 
+        /// <summary>
+        /// Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
+        /// </summary>
+        /// <param name="key">The object to use as the key of the element to add.</param>
+        /// <param name="value">The object to use as the value of the element to add.</param>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"></see> is read-only.</exception>
+        /// <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</exception>
+        /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
         public void Add(TKey key, TValue value)
         {
             if (key == null) throw new ArgumentNullException("key");
@@ -61,16 +98,39 @@ namespace net.esper.compat
             this.dictionary.Add(weakKey, value);
         }
 
+        /// <summary>
+        /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2"></see> contains an element with the specified key.
+        /// </summary>
+        /// <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</param>
+        /// <returns>
+        /// true if the <see cref="T:System.Collections.Generic.IDictionary`2"></see> contains an element with the key; otherwise, false.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
         public bool ContainsKey(TKey key)
         {
         	return this.dictionary.Contains( key ) ;
         }
 
+        /// <summary>
+        /// Removes the element with the specified key from the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
+        /// </summary>
+        /// <param name="key">The key of the element to remove.</param>
+        /// <returns>
+        /// true if the element is successfully removed; otherwise, false.  This method also returns false if key was not found in the original <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
+        /// </returns>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"></see> is read-only.</exception>
+        /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
         public bool Remove(TKey key)
         {
             return this.dictionary.Remove(key);
         }
 
+        /// <summary>
+        /// Tries the get value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
         	Object tempKey = key ;
@@ -91,17 +151,32 @@ namespace net.esper.compat
         	return false ;
         }
 
+        /// <summary>
+        /// Sets the value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         private void SetValue(TKey key, TValue value)
         {
             WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, this.comparer);
             this.dictionary[weakKey] = value;
         }
 
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// </summary>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only. </exception>
         public void Clear()
         {
             this.dictionary.Clear();
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             foreach (C5.KeyValuePair<object, TValue> kvp in this.dictionary)
@@ -116,11 +191,13 @@ namespace net.esper.compat
             }
         }
 
-        // Removes the left-over weak references for entries in the dictionary
-        // whose key or value has already been reclaimed by the garbage
-        // collector. This will reduce the dictionary's Count by the number
-        // of dead key-value pairs that were eliminated.
         
+        /// <summary>
+        /// Removes the left-over weak references for entries in the dictionary
+        /// whose key or value has already been reclaimed by the garbage
+        /// collector. This will reduce the dictionary's Count by the number
+        /// of dead key-value pairs that were eliminated.
+        /// </summary>
         public void RemoveCollectedEntries()
         {
             List<object> toRemove = null;
@@ -147,6 +224,11 @@ namespace net.esper.compat
             }
         }
 
+        /// <summary>
+        /// Gets an enumerator that enumerates the keys.
+        /// </summary>
+        /// <value>The keys enum.</value>
+        
         public IEnumerator<TKey> KeysEnum {
         	get 
         	{
@@ -163,6 +245,11 @@ namespace net.esper.compat
         
         #region IDictionary<TKey,TValue> Members
 
+        /// <summary>
+        /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
+        /// </summary>
+        /// <value></value>
+        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
         public ICollection<TKey> Keys
         {
             get
@@ -178,11 +265,20 @@ namespace net.esper.compat
         	}
         }
 
+        /// <summary>
+        /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
+        /// </summary>
+        /// <value></value>
+        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
         public ICollection<TValue> Values
         {
             get { throw new Exception("The method or operation is not implemented."); }
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="TValue"/> with the specified key.
+        /// </summary>
+        /// <value></value>
         public TValue this[TKey key]
         {
             get

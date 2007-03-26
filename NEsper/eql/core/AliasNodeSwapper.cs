@@ -15,11 +15,11 @@ namespace net.esper.eql.core
         /// <summary> Replace all instances of the node representing the alias with 
         /// the full expression. 
         /// </summary>
-        /// <param name="exprTree">- the expression node tree to make the changes in 
+        /// <param name="exprTree">the expression node tree to make the changes in 
         /// </param>
-        /// <param name="alias">- the select-clause alias that is to be expanded
+        /// <param name="alias">the select-clause alias that is to be expanded
         /// </param>
-        /// <param name="fullExpr">- the full expression that the alias represents
+        /// <param name="fullExpr">the full expression that the alias represents
         /// </param>
         /// <returns> exprTree with the appropriate swaps performed, or fullExpr, 
         /// if all of exprTree needed to be swapped
@@ -47,11 +47,11 @@ namespace net.esper.eql.core
         /// node, replacing any instances of the node representing the alias, 
         /// and visiting the children of all other nodes.
         /// </summary>
-        /// <param name="node">- the node whose children are to be examined for aliases
+        /// <param name="node">the node whose children are to be examined for aliases
         /// </param>
-        /// <param name="alias">- the alias to replace
+        /// <param name="alias">the alias to replace
         /// </param>
-        /// <param name="fullExpr">- the full expression corresponding to the alias
+        /// <param name="fullExpr">the full expression corresponding to the alias
         /// </param>
         private static void visitChildren(ExprNode node, String alias, ExprNode fullExpr)
         {

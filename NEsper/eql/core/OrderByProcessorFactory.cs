@@ -14,24 +14,23 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 namespace net.esper.eql.core
 {
     /// <summary>
-    /// Factory for {@link net.esper.eql.core.OrderByProcessor} processors.
+    /// Factory for <seealso cref="net.esper.eql.core.OrderByProcessor"/> processors.
     /// </summary>
 
     public class OrderByProcessorFactory
     {
         private static readonly Log log = LogFactory.GetLog(typeof(OrderByProcessorFactory));
 
-        /**
-         * Returns processor for order-by clauses.
-         * @param selectionList is a list of select expressions
-         * @param groupByNodes is a list of group-by expressions
-         * @param orderByList is a list of order-by expressions
-         * @param aggregationService is the service for aggregation, ie. building sums and averages per group or overall
-         * @param eventAdapterService provides event adapters
-         * @return ordering processor instance
-         * @throws net.esper.eql.expression.ExprValidationException when validation of expressions fails
-         */
-        public static OrderByProcessor getProcessor(IList<SelectExprElementNamedSpec> selectionList,
+        /// <summary>Returns processor for order-by clauses.</summary>
+        /// <param name="selectionList">is a list of select expressions</param>
+        /// <param name="groupByNodes">is a list of group-by expressions</param>
+        /// <param name="orderByList">is a list of order-by expressions</param>
+        /// <param name="aggregationService">is the service for aggregation, ie. building sums and averages per group or overall</param>
+        /// <param name="eventAdapterService">provides event adapters</param>
+        /// <returns>ordering processor instance</returns>
+        /// <throws>net.esper.eql.expression.ExprValidationException when validation of expressions fails</throws>
+
+        public static OrderByProcessor GetProcessor(IList<SelectExprElementNamedSpec> selectionList,
                                                    IList<ExprNode> groupByNodes,
                                                    IList<Pair<ExprNode, Boolean>> orderByList,
                                                    AggregationService aggregationService,
@@ -47,7 +46,7 @@ namespace net.esper.eql.core
             // No order-by clause
             if (orderByList.Count == 0)
             {
-                log.Debug(".getProcessor Using no OrderByProcessor");
+                log.Debug(".GetProcessor Using no OrderByProcessor");
                 return null;
             }
 
@@ -79,33 +78,32 @@ namespace net.esper.eql.core
             // keys if they are not present
             Boolean needsGroupByKeys = (selectionList.Count != 0) && (orderAggNodes.Count != 0);
 
-            log.Debug(".getProcessor Using OrderByProcessorSimple");
+            log.Debug(".GetProcessor Using OrderByProcessorSimple");
             return new OrderByProcessorSimple(orderByList, groupByNodes, needsGroupByKeys, aggregationService);
         }
 
-
-
-        private static void ValidateOrderByAggregates(IList<ExprAggregateNode> selectAggNodes,
-                                           IList<ExprAggregateNode> orderAggNodes)
-	{
-		// Check that the order-by clause doesn't contain 
-		// any aggregate functions not in the select expression
-		foreach(ExprAggregateNode orderAgg in orderAggNodes)
-		{
-			Boolean inSelect = false;
-			foreach(ExprAggregateNode selectAgg in selectAggNodes)
-			{
-				if(ExprNode.DeepEquals(selectAgg, orderAgg))
-				{
-					inSelect = true;
-					break;
-				}
-			}
-			if(!inSelect)
-			{
-				throw new ExprValidationException("Aggregate functions in the order-by clause must also occur in the select expression");
-			}
-		}
-	}
+        private static void ValidateOrderByAggregates(
+            IList<ExprAggregateNode> selectAggNodes,
+            IList<ExprAggregateNode> orderAggNodes)
+        {
+            // Check that the order-by clause doesn't contain 
+            // any aggregate functions not in the select expression
+            foreach (ExprAggregateNode orderAgg in orderAggNodes)
+            {
+                Boolean inSelect = false;
+                foreach (ExprAggregateNode selectAgg in selectAggNodes)
+                {
+                    if (ExprNode.DeepEquals(selectAgg, orderAgg))
+                    {
+                        inSelect = true;
+                        break;
+                    }
+                }
+                if (!inSelect)
+                {
+                    throw new ExprValidationException("Aggregate functions in the order-by clause must also occur in the select expression");
+                }
+            }
+        }
     }
 }

@@ -14,8 +14,7 @@ namespace net.esper.eql.expression
         /// Returns the type that the node's evaluate method returns an instance of.
         /// </summary>
         /// <value>The type.</value>
-        /// <returns> type returned when evaluated
-        /// </returns>
+        /// <returns> type returned when evaluated</returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 
         Type ReturnType
@@ -27,7 +26,7 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">- for resolving class names in library method invocations</param>
+        /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 		
         void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService);

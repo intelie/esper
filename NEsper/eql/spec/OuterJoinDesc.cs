@@ -45,11 +45,11 @@ namespace net.esper.eql.spec
 		private ExprIdentNode rightNode;
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="outerJoinType">- type of the outer join
+		/// <param name="outerJoinType">type of the outer join
 		/// </param>
-		/// <param name="leftNode">- left hand identifier node
+		/// <param name="leftNode">left hand identifier node
 		/// </param>
-		/// <param name="rightNode">- right hand identifier node
+		/// <param name="rightNode">right hand identifier node
 		/// </param>
 		public OuterJoinDesc(OuterJoinType outerJoinType, ExprIdentNode leftNode, ExprIdentNode rightNode)
 		{

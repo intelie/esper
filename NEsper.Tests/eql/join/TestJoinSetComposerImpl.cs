@@ -58,7 +58,7 @@ namespace net.esper.eql.join
         public virtual void testJoin()
         {
             // Should return all possible combinations, not matching performed, remember: duplicate pairs have been removed
-		    UniformPair<ISet<MultiKey<EventBean>>> result = joinSetComposerImpl.join(
+		    UniformPair<ISet<MultiKey<EventBean>>> result = joinSetComposerImpl.Join(
                 new EventBean[][] {newEventOne, newEventTwo},                 // new left and right
                 new EventBean[][] {new EventBean[] {indexedEventOne[0]}, new EventBean[] {indexedEventTwo[1]}} // old left and right
                 );

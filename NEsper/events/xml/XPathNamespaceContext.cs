@@ -12,6 +12,10 @@ namespace net.esper.events.xml
     
     public class XPathNamespaceContext
     {
+        /// <summary>
+        /// Creates this instance.
+        /// </summary>
+        /// <returns></returns>
         public static XmlNamespaceManager Create()
         {
             XmlNameTable nsTable = new NameTable() ;

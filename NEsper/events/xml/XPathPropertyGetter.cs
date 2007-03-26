@@ -15,6 +15,12 @@ namespace net.esper.events.xml
 		internal String property;
 		internal Type resultType;
 
+        /// <summary>
+        /// Returns type of event property.
+        /// </summary>
+        /// <value></value>
+        /// <returns> class of the objects returned by this getter
+        /// </returns>
 		virtual public Type ResultClass
 		{
 			get { return resultType; }

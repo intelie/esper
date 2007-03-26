@@ -34,6 +34,10 @@ namespace net.esper.view.stat
             }
         }
 
+        /// <summary>
+        /// Gets the correlation.
+        /// </summary>
+        /// <value>The correlation.</value>
         public double correlation
         {
             get { return this.Correlation; }

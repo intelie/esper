@@ -3,6 +3,10 @@ using System.Threading;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// Factory object that creates timers.
+    /// </summary>
+
     public interface ITimerFactory
     {
         /// <summary>

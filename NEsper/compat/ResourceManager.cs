@@ -12,6 +12,10 @@ namespace net.esper.compat
     {
         private static List<string> m_searchPath;
 
+        /// <summary>
+        /// Gets or sets the search path.
+        /// </summary>
+        /// <value>The search path.</value>
         public static IEnumerable<string> SearchPath
         {
             get { return m_searchPath; }
@@ -55,8 +59,6 @@ namespace net.esper.compat
         /// Resolves a resource and returns the file info.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="searchPath">The search path.</param>
-        /// <returns></returns>
 
         public static FileInfo ResolveResourceFile(string name)
         {

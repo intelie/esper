@@ -14,9 +14,9 @@ namespace net.esper.eql.join.exec
     public abstract class ExecNode
 	{
 		/// <summary> Process single event using the prefill events to compile lookup results.</summary>
-		/// <param name="lookupEvent">- event to look up for or query for
+		/// <param name="lookupEvent">event to look up for or query for
 		/// </param>
-		/// <param name="prefillPath">- set of events currently in the example tuple to serve
+		/// <param name="prefillPath">set of events currently in the example tuple to serve
 		/// as a prototype for result rows.
 		/// </param>
 		/// <param name="result">is the list of tuples to add a result row to
@@ -29,7 +29,7 @@ namespace net.esper.eql.join.exec
 		public abstract void Print(IndentWriter writer);
 		
 		/// <summary> Print in readable format the execution strategy.</summary>
-		/// <param name="execNode">- execution node to print
+		/// <param name="execNode">execution node to print
 		/// </param>
 		/// <returns> readable text with execution nodes constructed for actual streams
 		/// </returns>

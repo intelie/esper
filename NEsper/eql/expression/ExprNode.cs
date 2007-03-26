@@ -50,8 +50,10 @@ namespace net.esper.eql.expression
 			get { return childNodes; }
 		}
 		
-		/// <summary> Return true if a expression node semantically equals the current node, or false if not.
-        /// <p>Concrete implementations should compare the type and any additional information
+		/// <summary>
+        /// Return true if a expression node semantically equals the current node, or false if not.
+        /// 
+        /// Concrete implementations should compare the type and any additional information
         /// that impact the evaluation of a node.  
         /// </summary>
         /// <param name="node">to compare to
@@ -69,13 +71,14 @@ namespace net.esper.eql.expression
             childNodes = new List<ExprNode>();
         }
 
-        /// <summary> Validates the expression node subtree that has this
+        /// <summary>
+        /// Validates the expression node subtree that has this
         /// node as root. Some of the nodes of the tree, including the 
         /// root, might be replaced in the process.
         /// </summary>
-        /// <param name="streamTypeService">- serves stream type information
+        /// <param name="streamTypeService">serves stream type information
         /// </param>
-        /// <param name="autoImportService">- for resolving class names in library method invocations
+        /// <param name="autoImportService">for resolving class names in library method invocations
         /// </param>
         /// <throws>  ExprValidationException when the validation fails </throws>
         /// <returns> the root node of the validated subtree, possibly 
@@ -110,8 +113,10 @@ namespace net.esper.eql.expression
             return result;
         }
 
-        /// <summary> Accept the visitor. The visitor will first visit the parent then visit all child nodes, then their child nodes.
-        /// <p>The visitor can decide to skip child nodes by returning false in isVisit.
+        /// <summary>
+        /// Accept the visitor. The visitor will first visit the parent then visit all child nodes, then their child nodes.
+        /// 
+        /// The visitor can decide to skip child nodes by returning false in isVisit.
         /// </summary>
         /// <param name="visitor">to visit each node and each child node.
         /// </param>
@@ -128,7 +133,9 @@ namespace net.esper.eql.expression
             }
         }
 
-        /// <summary> Adds a child node.</summary>
+        /// <summary>
+        /// Adds a child node.
+        /// </summary>
         /// <param name="childNode">is the child evaluation tree node to add
         /// </param>
         public void AddChildNode(ExprNode childNode)
@@ -150,13 +157,13 @@ namespace net.esper.eql.expression
 
         /// <summary> Compare two expression nodes and their children in exact child-node sequence,
         /// returning true if the 2 expression nodes trees are equals, or false if they are not equals.
-        /// <p>
+        ///
         /// Recursive call since it uses this method to compare child nodes in the same exact sequence.
         /// Nodes are compared using the EqualsNode method.
         /// </summary>
-        /// <param name="nodeOne">- first expression top node of the tree to compare
+        /// <param name="nodeOne">first expression top node of the tree to compare
         /// </param>
-        /// <param name="nodeTwo">- second expression top node of the tree to compare
+        /// <param name="nodeTwo">second expression top node of the tree to compare
         /// </param>
         /// <returns> false if this or all child nodes are not equal, true if equal
         /// </returns>
@@ -233,8 +240,22 @@ namespace net.esper.eql.expression
             return result;
         }
 
-        public abstract Object Evaluate(EventBean[] param1);
-        public abstract void Validate(StreamTypeService param1, AutoImportService param2);
+        /// <summary>
+        /// Evaluate event tuple and return result.
+        /// </summary>
+        /// <param name="eventsPerStream">event tuple</param>
+        /// <returns>evaluation result, a boolean value for OR/AND-type evalution nodes.</returns>
+
+        public abstract Object Evaluate(EventBean[] eventsPerStream);
+
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
+
+        public abstract void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService);
 
         private static readonly Log log = LogFactory.GetLog(typeof(ExprNode));
     }

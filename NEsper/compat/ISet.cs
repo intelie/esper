@@ -4,6 +4,11 @@ using System.Text;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// A collection of objects.  An object will only appear once in a set.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+
 	public interface ISet<T> : ICollection<T>
 	{
 		/// <summary>

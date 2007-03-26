@@ -14,6 +14,10 @@ namespace net.esper.view.stat
 
     public sealed class UnivariateStatisticsView : ViewSupport, ContextAwareView
     {
+        /// <summary>
+        /// Gets or sets the context instances used by the view.
+        /// </summary>
+        /// <value>The view service context.</value>
         public ViewServiceContext ViewServiceContext
         {
             get
@@ -37,12 +41,12 @@ namespace net.esper.view.stat
 
         }
 
-        /// <summary> Returns field name of the field to report statistics on.</summary>
+        /// <summary>
+        /// Gets or sets field name of the field to report statistics on.
+        /// </summary>
+        /// <value>The name of the field.</value>
         /// <returns> field name
         /// </returns>
-        /// <summary> Set the field name of the field to report statistics on.</summary>
-        /// <param name="fieldName">is the field to report statistics on
-        /// </param>
         public String FieldName
         {
             get
@@ -54,18 +58,17 @@ namespace net.esper.view.stat
             {
                 this.fieldName = value;
             }
-
         }
+
         private ViewServiceContext viewServiceContext;
         private EventType eventType;
         private String fieldName;
         private EventPropertyGetter fieldGetter;
         private readonly BaseStatisticsBean baseStatisticsBean = new BaseStatisticsBean();
-
+        
         /// <summary>
-        /// Default constructor - required by all views to adhere to the Java bean specification.
+        /// Initializes a new instance of the <see cref="UnivariateStatisticsView"/> class.
         /// </summary>
-
         public UnivariateStatisticsView()
         {
         }
@@ -80,6 +83,12 @@ namespace net.esper.view.stat
             this.fieldName = fieldName;
         }
 
+        /// <summary>
+        /// Gets or sets the View's parent Viewable.
+        /// </summary>
+        /// <value></value>
+        /// <returns> viewable
+        /// </returns>
         public override Viewable Parent
         {
             set
@@ -94,11 +103,39 @@ namespace net.esper.view.stat
             }
         }
 
+        /// <summary>
+        /// Return null if the view will accept being attached to a particular object.
+        /// </summary>
+        /// <param name="parentView">is the potential parent for this view</param>
+        /// <returns>
+        /// null if this view can successfully attach to the parent, an error message if it cannot.
+        /// </returns>
         public override String AttachesTo(Viewable parentView)
         {
             return PropertyCheckHelper.checkNumeric(parentView.EventType, fieldName);
         }
 
+        /// <summary>
+        /// Notify that data has been added or removed from the Viewable parent.
+        /// The last object in the newData array of objects would be the newest object added to the parent view.
+        /// The first object of the oldData array of objects would be the oldest object removed from the parent view.
+        /// <para>
+        /// If the call to update contains new (inserted) data, then the first argument will be a non-empty list and the
+        /// second will be empty. Similarly, if the call is a notification of deleted data, then the first argument will be
+        /// empty and the second will be non-empty. Either the newData or oldData will be non-null.
+        /// This method won't be called with both arguments being null, but either one could be null.
+        /// The same is true for zero-length arrays. Either newData or oldData will be non-empty.
+        /// If both are non-empty, then the update is a modification notification.
+        /// </para>
+        /// 	<para>
+        /// When update() is called on a view by the parent object, the data in newData will be in the collection of the
+        /// parent, and its data structures will be arranged to reflect that.
+        /// The data in oldData will not be in the parent's data structures, and any access to the parent will indicate that
+        /// that data is no longer there.
+        /// </para>
+        /// </summary>
+        /// <param name="newData">is the new data that has been added to the parent view</param>
+        /// <param name="oldData">is the old data that has been removed from the parent view</param>
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             // If we have child views, keep a reference to the old values, so we can fire them as old data event.
@@ -136,6 +173,13 @@ namespace net.esper.view.stat
             }
         }
 
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// metadata for the objects in the collection
+        /// </returns>
         public override EventType EventType
         {
             get { return eventType; }

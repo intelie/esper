@@ -24,10 +24,11 @@ namespace net.esper.eql.db
         IList<EventBean> GetCached(Object[] lookupKeys);
 
         /// <summary> Puts into the cache a key and a list of rows, or an empty list if zero rows.
-        /// <p>
+        /// <para>
         /// The put method is designed to be called when the cache does not contain a key as
         /// determined by the get method. Implementations typically simply overwrite
         /// any keys put into the cache that already existed in the cache.
+        /// </para>
         /// </summary>
         /// <param name="lookupKeys">is the keys to the cache entry
         /// </param>

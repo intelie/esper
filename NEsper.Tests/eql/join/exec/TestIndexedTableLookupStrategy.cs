@@ -32,7 +32,7 @@ namespace net.esper.eql.join.exec
 		[Test]
 		public virtual void  testLookup()
 		{
-      ISet<EventBean> events = lookupStrategy.lookup(SupportEventBeanFactory.createObject(new SupportBean("a", 1)));
+      ISet<EventBean> events = lookupStrategy.Lookup(SupportEventBeanFactory.createObject(new SupportBean("a", 1)));
 			
 			Assert.AreEqual(1, events.Count);
 		}

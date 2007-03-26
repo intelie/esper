@@ -52,11 +52,19 @@ namespace net.esper.eql.db
             this.eventType = eventType;
         }
 
+        /// <summary>
+        /// Stops the view
+        /// </summary>
         public virtual void Stop()
         {
             pollExecStrategy.Destroy();
         }
 
+        /// <summary>
+        /// Validate the view.
+        /// </summary>
+        /// <param name="streamTypeService">supplies the types of streams against which to validate</param>
+        /// <throws>  ExprValidationException is thrown to indicate an exception in validating the view </throws>
         public virtual void Validate(StreamTypeService streamTypeService)
         {
             getters = new EventPropertyGetter[inputParameters.Count];
@@ -91,6 +99,18 @@ namespace net.esper.eql.db
             }
         }
 
+        /// <summary>
+        /// Poll for stored historical or reference data using events per stream and
+        /// returing for each event-per-stream row a separate list with events
+        /// representing the poll result.
+        /// </summary>
+        /// <param name="lookupEventsPerStream">is the events per stream where the
+        /// first dimension is a number of rows (often 1 depending on windows used) and
+        /// the second dimension is the number of streams participating in a join.</param>
+        /// <returns>
+        /// array of lists with one list for each event-per-stream row
+        /// </returns>
+        /// zh
         public IList<EventBean>[] Poll(EventBean[][] lookupEventsPerStream)
         {
             pollExecStrategy.Start();
@@ -140,31 +160,66 @@ namespace net.esper.eql.db
             return resultPerInputRow;
         }
 
+        /// <summary>
+        /// Add a view to the viewable object.
+        /// </summary>
+        /// <param name="view">to add</param>
+        /// <returns>view to add</returns>
         public virtual View AddView(View view)
         {
             return view;
         }
 
+        /// <summary>
+        /// Returns all added views.
+        /// </summary>
+        /// <returns>list of added views</returns>
         public IList<View> GetViews()
         {
             throw new NotSupportedException("Subviews not supported");
         }
 
+        /// <summary>
+        /// Remove a view.
+        /// </summary>
+        /// <param name="view">to remove</param>
+        /// <returns>
+        /// true to indicate that the view to be removed existed within this view, false if the view to
+        /// remove could not be found
+        /// </returns>
         public virtual bool RemoveView(View view)
         {
             throw new NotSupportedException("Subviews not supported");
         }
 
+        /// <summary>
+        /// Test is there are any views to the Viewable.
+        /// </summary>
+        /// <value></value>
+        /// <returns> true indicating there are child views, false indicating there are no child views
+        /// </returns>
         public virtual bool HasViews
         {
             get { return false; }
         }
 
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns> metadata for the objects in the collection
+        /// </returns>
         public virtual EventType EventType
         {
             get { return eventType; }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
         public IEnumerator<EventBean> GetEnumerator()
         {
             throw new NotSupportedException("Iterator not supported");

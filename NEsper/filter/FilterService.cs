@@ -4,13 +4,14 @@ namespace net.esper.filter
 {
 	
 	/// <summary> Interface for filtering events by event type and event property values. Allows adding and removing filters.
-	/// <p>
+	/// <para>
 	/// Filters are defined by a {@link FilterSpec} and are associated with a {@link FilterCallback}
-	/// callback.
-	/// Implementations may decide if the same filter callback can be registered twice for different or some
-	/// filter specifications.
-	/// <p>
+	/// callback. Implementations may decide if the same filter callback can be registered twice for different
+    /// or some filter specifications.
+    /// </para>
+	/// <para>
 	/// The performance of an implementation of this service is crucial in achieving a high overall event throughput.
+    /// </para>
 	/// </summary>
 	public interface FilterService
 	{
@@ -23,7 +24,7 @@ namespace net.esper.filter
 			
 		}
 		/// <summary> Finds matching filters to the event passed in and invokes their associated callback method.</summary>
-		/// <param name="event">is the event to be matched against filters
+		/// <param name="_event">is the event to be matched against filters
 		/// </param>
 		void  Evaluate(EventBean _event);
 		

@@ -27,7 +27,7 @@ namespace net.esper.pattern
         /// </param>
         /// <returns> state node containing the truth value state for the operator
         /// </returns>
-        public abstract EvalStateNode newState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context);
+        public abstract EvalStateNode NewState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context);
 
         /// <summary> Constructor creates a list of child nodes.</summary>
         internal EvalNode()

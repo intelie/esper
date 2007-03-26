@@ -7,7 +7,7 @@ namespace net.esper.eql.core
 	public class StreamNotFoundException:StreamTypesException
 	{
 		/// <summary> Ctor.</summary>
-		/// <param name="msg">- message
+		/// <param name="msg">message
 		/// </param>
 		public StreamNotFoundException(String msg):base(msg)
 		{

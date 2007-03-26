@@ -37,7 +37,13 @@ namespace net.esper.eql.db
 			this.sqlType = sqlType;
             this.dataType = dataType;
 		}
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return "type=" + sqlType + " dataType=" + dataType;

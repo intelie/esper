@@ -7,7 +7,7 @@ namespace net.esper.eql.expression
 	public class ExprValidationException:System.Exception
 	{
 		/// <summary> Ctor.</summary>
-		/// <param name="message">- validation error message
+		/// <param name="message">validation error message
 		/// </param>
 		public ExprValidationException(String message):base(message)
 		{

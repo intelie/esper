@@ -46,6 +46,11 @@ namespace net.esper.pattern
             this.context = context;
         }
 
+        /// <summary>
+        /// Starts the event expression or an instance of it.
+        /// Child classes are expected to initialize and Start any event listeners
+        /// or schedule any time-based callbacks as needed.
+        /// </summary>
         public override void Start()
         {
             if (log.IsDebugEnabled)
@@ -63,6 +68,10 @@ namespace net.esper.pattern
             StartFiltering();
         }
 
+        /// <summary>
+        /// Stops the event expression or an instance of it. Child classes are expected to free resources
+        /// and Stop any event listeners or remove any time-based callbacks.
+        /// </summary>
         public override void Quit()
         {
             if (log.IsDebugEnabled)
@@ -79,6 +88,11 @@ namespace net.esper.pattern
             this.ParentEvaluator.EvaluateTrue(_event, this, isQuitted);
         }
 
+        /// <summary>
+        /// Indicate that an event was evaluated by the {@link FilterService}
+        /// which matches the filter specification {@link FilterSpec} associated with this callback.
+        /// </summary>
+        /// <param name="_event"></param>
         public void matchFound(EventBean _event)
         {
             if (log.IsDebugEnabled)
@@ -116,16 +130,39 @@ namespace net.esper.pattern
             this.EvaluateTrue(passUp, isQuitted);
         }
 
+        /// <summary>
+        /// Accept a visitor. Child classes are expected to invoke the visit method on the visitor instance
+        /// passed in.
+        /// </summary>
+        /// <param name="visitor">on which the visit method is invoked by each node</param>
+        /// <param name="data">any additional data the visitor may need is passed in this parameter</param>
+        /// <returns>
+        /// any additional data the visitor may need or null
+        /// </returns>
         public override Object Accept(EvalStateNodeVisitor visitor, Object data)
         {
             return visitor.visit(this, data);
         }
 
+        /// <summary>
+        /// Pass the visitor to all child nodes.
+        /// </summary>
+        /// <param name="visitor">is the instance to be passed to all child nodes</param>
+        /// <param name="data">any additional data the visitor may need is passed in this parameter</param>
+        /// <returns>
+        /// any additional data the visitor may need or null
+        /// </returns>
         public override Object ChildrenAccept(EvalStateNodeVisitor visitor, Object data)
         {
             return data;
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             System.Text.StringBuilder buffer = new System.Text.StringBuilder();

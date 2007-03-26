@@ -81,7 +81,7 @@ namespace net.esper.events
         /// </summary>
         /// <param name="propertyName">name of property, from getter method</param>
         /// <param name="listedName">name the property may show up when listed as a valid property, such as indexed[], mapped()</param>
-        /// <param name="property">component property descriptor</param>
+        /// <param name="propertyDesc">The property descriptor.</param>
         /// <param name="propertyType">type of property</param>
 		
         public EventPropertyDescriptor(String propertyName, String listedName, PropertyDescriptor propertyDesc, EventPropertyType propertyType)
@@ -92,6 +92,14 @@ namespace net.esper.events
 			this.propertyType = propertyType;
 		}
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventPropertyDescriptor"/> class.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="listedName">Name of the listed.</param>
+        /// <param name="methodInfo">The method info.</param>
+        /// <param name="propertyType">Type of the property.</param>
+        
         public EventPropertyDescriptor(String propertyName, String listedName, MethodInfo methodInfo, EventPropertyType propertyType)
         {
             PropertyDescriptor descriptor =
@@ -105,6 +113,14 @@ namespace net.esper.events
             this.propertyDesc = descriptor;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventPropertyDescriptor"/> class.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="listedName">Name of the listed.</param>
+        /// <param name="fieldInfo">The field info.</param>
+        /// <param name="propertyType">Type of the property.</param>
+        
         public EventPropertyDescriptor(String propertyName, String listedName, FieldInfo fieldInfo, EventPropertyType propertyType)
         {
             this.propertyName = propertyName;
@@ -113,7 +129,13 @@ namespace net.esper.events
             this.propertyDesc = new SimpleFieldPropertyDescriptor(fieldInfo);
         }
 
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return
@@ -122,7 +144,12 @@ namespace net.esper.events
                 " propertyDesc=" + propertyDesc + 
                 " propertyType=" + propertyType;
 		}
-		
+
+        /// <summary>
+        /// Returns true if the objects are equal.
+        /// </summary>
+        /// <param name="other">The other object.</param>
+        /// <returns></returns>
 		public override bool Equals(Object other)
 		{
 			if (!(other is EventPropertyDescriptor))
@@ -153,7 +180,13 @@ namespace net.esper.events
 			
             return true;
 		}
-		
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override int GetHashCode()
 		{
 			return base.GetHashCode();

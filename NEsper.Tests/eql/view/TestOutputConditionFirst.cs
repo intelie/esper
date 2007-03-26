@@ -47,7 +47,7 @@ namespace net.esper.eql.view
             schedulingServiceStub.Time = startTime;
 
             // 2 new, 3 old
-            condition.updateOutputCondition(2, 3);
+            condition.UpdateOutputCondition(2, 3);
             // update time
             schedulingServiceStub.Time = startTime + TEST_INTERVAL_MSEC;
             // check callback scheduled, pretend callback
@@ -56,9 +56,9 @@ namespace net.esper.eql.view
             schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].scheduledTrigger();
 
             // 2 new, 3 old
-            condition.updateOutputCondition(2, 3);
+            condition.UpdateOutputCondition(2, 3);
             // 2 new, 3 old
-            condition.updateOutputCondition(2, 3);
+            condition.UpdateOutputCondition(2, 3);
             // update time
             schedulingServiceStub.Time = startTime + 2 * TEST_INTERVAL_MSEC;
             // check callback scheduled, pretend callback
@@ -68,7 +68,7 @@ namespace net.esper.eql.view
 
 
             // 0 new, 0 old
-            condition.updateOutputCondition(0, 0);
+            condition.UpdateOutputCondition(0, 0);
             // update time
             schedulingServiceStub.Time = startTime + 3 * TEST_INTERVAL_MSEC;
             // check update
@@ -87,31 +87,31 @@ namespace net.esper.eql.view
             OutputCondition condition = OutputConditionFactory.createCondition(outputConditionSpec, viewContext, callback);
 
             // Send first event of the batch, callback should be made
-            condition.updateOutputCondition(1, 0);
+            condition.UpdateOutputCondition(1, 0);
             bool doOutput = true;
             bool forceUpdate = false;
             assertCallbackAndReset(doOutput, forceUpdate);
 
             // Send more events in the same batch
-            condition.updateOutputCondition(1, 1);
+            condition.UpdateOutputCondition(1, 1);
             Assert.IsFalse(witnessedCallback);
 
             // Send enough events to end the batch
-            condition.updateOutputCondition(1, 0);
+            condition.UpdateOutputCondition(1, 0);
             doOutput = false;
             assertCallbackAndReset(doOutput, forceUpdate);
 
             // Start the next batch
-            condition.updateOutputCondition(1, 1);
+            condition.UpdateOutputCondition(1, 1);
             doOutput = true;
             assertCallbackAndReset(doOutput, forceUpdate);
 
             // More events in the same batch, not enough to end
-            condition.updateOutputCondition(1, 1);
+            condition.UpdateOutputCondition(1, 1);
             Assert.IsFalse(witnessedCallback);
 
             // Send enough events to end the batch
-            condition.updateOutputCondition(1, 0);
+            condition.UpdateOutputCondition(1, 0);
             doOutput = false;
             assertCallbackAndReset(doOutput, forceUpdate);
         }

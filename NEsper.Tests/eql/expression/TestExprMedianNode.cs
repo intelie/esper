@@ -40,18 +40,18 @@ namespace net.esper.eql.expression
         {
             ExprMedianNode.DoubleMedian median = new ExprMedianNode.DoubleMedian();
             Assert.AreEqual(null, median.Value);
-            median.enter(10);
+            median.Enter(10);
             Assert.AreEqual(10D, median.Value);
-            median.enter(20);
+            median.Enter(20);
             Assert.AreEqual(15D, median.Value);
-            median.enter(10);
+            median.Enter(10);
             Assert.AreEqual(10D, median.Value);
 
-            median.leave(10);
+            median.Leave(10);
             Assert.AreEqual(15D, median.Value);
-            median.leave(10);
+            median.Leave(10);
             Assert.AreEqual(20D, median.Value);
-            median.leave(20);
+            median.Leave(20);
             Assert.AreEqual(null, median.Value);
         }
 

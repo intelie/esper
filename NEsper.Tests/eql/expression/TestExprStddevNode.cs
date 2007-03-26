@@ -44,22 +44,22 @@ namespace net.esper.eql.expression
 
 			Assert.IsNull( agg.Value );
 
-			agg.enter( 10 );
+            agg.Enter(10);
 			Assert.IsNull( agg.Value );
 
-			agg.enter( 8 );
+            agg.Enter(8);
 			double result = (Double) agg.Value;
 			Assert.AreEqual( "1.4142", result.ToString().Substring( 0, ( 6 ) - ( 0 ) ) );
 
-			agg.enter( 5 );
+            agg.Enter(5);
 			result = (Double) agg.Value;
 			Assert.AreEqual( "2.5166", result.ToString().Substring( 0, ( 6 ) - ( 0 ) ) );
 
-			agg.enter( 9 );
+            agg.Enter(9);
 			result = (Double) agg.Value;
 			Assert.AreEqual( "2.1602", result.ToString().Substring( 0, ( 6 ) - ( 0 ) ) );
 
-			agg.leave( 10 );
+			agg.Leave( 10 );
 			result = (Double) agg.Value;
 			Assert.AreEqual( "2.0816", result.ToString().Substring( 0, ( 6 ) - ( 0 ) ) );
 		}

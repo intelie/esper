@@ -24,16 +24,27 @@ namespace net.esper.eql.db
         {
         }
 
+        /// <summary>
+        /// Returns a cached or new connection and statement pair.
+        /// </summary>
+        /// <returns>connection and statement pair</returns>
         public override Pair<DbConnection, DbCommand> GetConnection()
         {
             return MakeNew();
         }
 
+        /// <summary>
+        /// Indicate to return the connection and statement pair after use.
+        /// </summary>
+        /// <param name="pair">is the resources to return</param>
         public override void DoneWith(Pair<DbConnection, DbCommand> pair)
         {
             Close(pair);
         }
 
+        /// <summary>
+        /// Destroys cache closing all resources cached, if any.
+        /// </summary>
         public override void Destroy()
         {
             // no resources held

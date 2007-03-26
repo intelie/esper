@@ -26,6 +26,14 @@ namespace net.esper.eql.expression
             this.exprProperties = new List<Pair<Int32, String>>();
 		}
 
+        /// <summary>
+        /// Allows visitor to indicate whether to visit a given node.
+        /// Implicitly if a visitor doesn't visit a node it would also not visit any descendent child nodes of that node.
+        /// </summary>
+        /// <param name="exprNode">is the node in questions</param>
+        /// <returns>
+        /// true if the visitor wants to visit the child node (next call is visit), or false to skip child
+        /// </returns>
 		public virtual bool isVisit( ExprNode exprNode )
 		{
 			if ( isVisitAggregateNodes )
@@ -46,6 +54,10 @@ namespace net.esper.eql.expression
 			get { return exprProperties; }
 		}
 
+        /// <summary>
+        /// Visit the given expression node.
+        /// </summary>
+        /// <param name="exprNode">is the expression node to visit</param>
 		public virtual void visit( ExprNode exprNode )
 		{
 			ExprIdentNode identNode = exprNode as ExprIdentNode ;

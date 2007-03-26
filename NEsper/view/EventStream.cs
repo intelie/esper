@@ -11,8 +11,7 @@ namespace net.esper.view
     public interface EventStream : Viewable
     {
         /// <summary> Insert a new event onto the stream.</summary>
-        /// <param name="event">to insert
-        /// </param>
+        /// <param name="_event">to insert</param>
 
         void Insert(EventBean _event);
     }

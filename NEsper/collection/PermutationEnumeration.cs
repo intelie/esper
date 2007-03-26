@@ -22,10 +22,8 @@ namespace net.esper.collection
         private int currentPermutation;
         private int[] element;
 
-        /**
-         * Ctor.
-         * @param numElements - number of elements in each permutation.
-         */
+        /// <summary>Ctor.</summary>
+        /// <param name="numElements">number of elements in each permutation.</param>
         
         public PermutationEnumeration(int numElements)
         {
@@ -38,6 +36,13 @@ namespace net.esper.collection
             this.maxNumPermutation = Faculty(numElements);
         }
 
+        /// <summary>
+        /// Advances the enumerator to the next element of the collection.
+        /// </summary>
+        /// <returns>
+        /// true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.
+        /// </returns>
+        /// <exception cref="T:System.InvalidOperationException">The collection was modified after the enumerator was created. </exception>
         public Boolean MoveNext()
         {
             if (currentPermutation >= maxNumPermutation)
@@ -51,6 +56,11 @@ namespace net.esper.collection
             return true;
         }
 
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        /// <value></value>
+        /// <returns>The element in the collection at the current position of the enumerator.</returns>
         public int[] Current
         {
             get
@@ -64,13 +74,12 @@ namespace net.esper.collection
             }
         }
 
-        /**
-         * Returns permutation.
-         * @param numElements - number of elements in each permutation 
-         * @param permutation - number of permutation to compute, between 0 and numElements!
-         * @param factors - factors for each index
-         * @return permutation
-         */
+        /// <summary>Returns permutation.</summary>
+        /// <param name="numElements">number of elements in each permutation</param>
+        /// <param name="permutation">number of permutation to compute, between 0 and numElements!</param>
+        /// <param name="factors">factors for each index</param>
+        /// <returns>permutation</returns>
+
         public static int[] GetPermutation(int numElements, int permutation, int[] factors)
         {
             /*
@@ -109,11 +118,10 @@ namespace net.esper.collection
             return result;
         }
 
-        /**
-         * Returns factors for computing the permutation.
-         * @param numElements - number of factors to compute
-         * @return factors list
-         */
+        /// <summary>Returns factors for computing the permutation.</summary>
+        /// <param name="numElements">number of factors to compute</param>
+        /// <returns>factors list</returns>
+
         public static int[] GetFactors(int numElements)
         {
             int[] facultyFactors = new int[numElements];
@@ -126,11 +134,10 @@ namespace net.esper.collection
             return facultyFactors;
         }
 
-        /**
-         * Computes faculty of N.
-         * @param num to compute faculty for
-         * @return N!
-         */
+        /// <summary>Computes faculty of N.</summary>
+        /// <param name="num">to compute faculty for</param>
+        /// <returns>N!</returns>
+
         public static int Faculty(int num)
         {
             if (num == 0)

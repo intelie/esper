@@ -14,7 +14,7 @@ namespace net.esper.filter
         /// <summary> Perform the matching of an event based on the event property values,
         /// adding any callbacks for matches found to the matches list.
         /// </summary>
-        /// <param name="event">is the event object wrapper to obtain event property values from
+        /// <param name="_event">is the event object wrapper to obtain event property values from
         /// </param>
         /// <param name="matches">accumulates the matching filter callbacks
         /// </param>

@@ -4,6 +4,12 @@ using System.Reflection;
 
 namespace net.esper.events.property
 {
+    /// <summary>
+    /// Provides a simple property descriptor that is obtained through a
+    /// method.  The method should be a read method that has no parameters
+    /// and returns an object.
+    /// </summary>
+
 	public class SimpleAccessorPropertyDescriptor : PropertyDescriptor
 	{
 		private MethodInfo accessorMethod ;
@@ -136,6 +142,10 @@ namespace net.esper.events.property
 			this.accessorMethod = accessorMethod;
 		}
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleAccessorPropertyDescriptor"/> class.
+        /// </summary>
+        /// <param name="accessorMethod">The accessor method.</param>
         public SimpleAccessorPropertyDescriptor(MethodInfo accessorMethod)
             : base(accessorMethod.Name, null)
         {

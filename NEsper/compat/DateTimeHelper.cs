@@ -2,6 +2,11 @@ using System;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// Assistant class to help with conversions between Java-style and
+    /// granularity dates and CLR-style DateTime.
+    /// </summary>
+
     public class DateTimeHelper
     {
         /// <summary>

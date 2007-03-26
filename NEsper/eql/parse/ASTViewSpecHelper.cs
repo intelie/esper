@@ -13,7 +13,7 @@ namespace net.esper.eql.parse
     public class ASTViewSpecHelper : EqlTokenTypes
     {
         /// <summary> Build a view specification from the AST node supplied.</summary>
-        /// <param name="node">- parse node
+        /// <param name="node">parse node
         /// </param>
         /// <returns> view spec
         /// </returns>

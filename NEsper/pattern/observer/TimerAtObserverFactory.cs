@@ -21,7 +21,7 @@ namespace net.esper.pattern.observer
 		/// <summary> Ctor.
 		/// The crontab observer requires a schedule specification that is extracted from arguments.
 		/// </summary>
-		/// <param name="args">- schedule specification
+		/// <param name="args">schedule specification
 		/// </param>
 		public TimerAtObserverFactory(Object[] args)
 		{
@@ -69,7 +69,14 @@ namespace net.esper.pattern.observer
 
             return resultSorted;
         }
-		
+
+        /// <summary>
+        /// Make an observer instance.
+        /// </summary>
+        /// <param name="context">services that may be required by observer implementation</param>
+        /// <param name="beginState">Start state for observer</param>
+        /// <param name="observerEventEvaluator">receiver for events observed</param>
+        /// <returns>observer instance</returns>
 		public virtual EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
 		{
 			return new TimerAtObserver(spec, context, beginState, observerEventEvaluator);

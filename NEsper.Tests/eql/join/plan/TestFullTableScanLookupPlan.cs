@@ -31,7 +31,7 @@ namespace net.esper.eql.join.plan
 			TableLookupStrategy lookupStrategy = spec.MakeStrategy(indexes, null);
 			
 			FullTableScanLookupStrategy strategy = (FullTableScanLookupStrategy) lookupStrategy;
-			Assert.AreEqual(unindexedEventIndex, strategy.getEventIndex());
+			Assert.AreEqual(unindexedEventIndex, strategy.EventIndex);
 		}
 	}
 }

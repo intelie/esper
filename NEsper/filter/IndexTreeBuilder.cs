@@ -12,11 +12,15 @@ using org.apache.commons.logging;
 namespace net.esper.filter
 {
 	
-	/// <summary> Builder manipulates a tree structure consisting of {@link FilterCallbackSetNode} and {@link FilterParamIndex} instances.
-	/// Filters can be added to a top node (an instance of FilterCallbackSetNode) via the add method. This method returns
-	/// an instance of {@link IndexTreePath} which represents the tree path (list of indizes) that the filter callback was
-	/// added to. To remove filters the same IndexTreePath instance must be passed in.
-	/// <p>The implementation is designed to be multithread-safe in conjunction with the node classes manipulated by this class.
+	/// <summary>
+    /// Builder manipulates a tree structure consisting of {@link FilterCallbackSetNode} and {@link FilterParamIndex}
+    /// instances. Filters can be added to a top node (an instance of FilterCallbackSetNode) via the add method. This
+    /// method returns an instance of {@link IndexTreePath} which represents the tree path (list of indizes) that the
+    /// filter callback was added to. To remove filters the same IndexTreePath instance must be passed in.
+	/// <para>
+    /// The implementation is designed to be multithread-safe in conjunction with the node classes manipulated by this
+    /// class.
+    /// </para>
 	/// </summary>
     public sealed class IndexTreeBuilder
     {
@@ -25,21 +29,19 @@ namespace net.esper.filter
         private FilterCallback filterCallback;
         private long currentThreadId;
 
-        /**
-         * Constructor.
-         */
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IndexTreeBuilder"/> class.
+        /// </summary>
         public IndexTreeBuilder()
         {
         }
 
-        /**
-         * Add a filter callback according to the filter specification to the top node returning
-         * information to be used to remove the filter callback.
-         * @param filterValueSet is the filter definition
-         * @param filterCallback is the callback to be added
-         * @param topNode node to be added to any subnode beneath it
-         * @return an encapsulation of information need to allow for safe removal of the filter tree.
-         */
+        /// <summary>Add a filter callback according to the filter specification to the top node returninginformation to be used to remove the filter callback.</summary>
+        /// <param name="filterValueSet">is the filter definition</param>
+        /// <param name="filterCallback">is the callback to be added</param>
+        /// <param name="topNode">node to be added to any subnode beneath it</param>
+        /// <returns>an encapsulation of information need to allow for safe removal of the filter tree.</returns>
+
         public IndexTreePath Add(FilterValueSet filterValueSet,
                                         FilterCallback filterCallback,
                                         FilterCallbackSetNode topNode)
@@ -66,13 +68,11 @@ namespace net.esper.filter
             return treePathInfo;
         }
 
-        /**
-         * Remove an filterCallback from the given top node. The IndexTreePath instance passed in must be the
-         * same as obtained when the same filterCallback was added.
-         * @param filterCallback filter callback  to be removed
-         * @param treePathInfo encapsulates information need to allow for safe removal of the filterCallback
-         * @param topNode The top tree node beneath which the filterCallback was added
-         */
+        /// <summary>Remove an filterCallback from the given top node. The IndexTreePath instance passed in must be thesame as obtained when the same filterCallback was added.</summary>
+        /// <param name="filterCallback">filter callback  to be removed</param>
+        /// <param name="treePathInfo">encapsulates information need to allow for safe removal of the filterCallback</param>
+        /// <param name="topNode">The top tree node beneath which the filterCallback was added</param>
+
         public void Remove(FilterCallback filterCallback,
                            IndexTreePath treePathInfo,
                            FilterCallbackSetNode topNode)
@@ -94,11 +94,10 @@ namespace net.esper.filter
             this.filterCallback = null;
         }
 
-        /**
-         * Add to the current node building up the tree path information.
-         * @param currentNode is the node to add to
-         * @param treePathInfo is filled with information about which indizes were chosen to add the filter to
-         */
+        /// <summary>Add to the current node building up the tree path information.</summary>
+        /// <param name="currentNode">is the node to add to</param>
+        /// <param name="treePathInfo">is filled with information about which indizes were chosen to add the filter to</param>
+
         private void AddToNode(FilterCallbackSetNode currentNode, IndexTreePath treePathInfo)
         {
             if (log.IsDebugEnabled)
@@ -168,7 +167,13 @@ namespace net.esper.filter
             currentNode.NodeRWLock.ReleaseWriterLock();
         }
 
-        // Remove an filterCallback from the current node, return true if the node is the node is empty now
+        /// <summary>
+        /// Remove an filterCallback from the current node, return true if the node is the node is empty now
+        /// </summary>
+        /// <param name="currentNode"></param>
+        /// <param name="treePathInfo"></param>
+        /// <returns></returns>
+
         private Boolean RemoveFromNode(FilterCallbackSetNode currentNode,
                                        IndexTreePath treePathInfo)
         {
@@ -229,7 +234,13 @@ namespace net.esper.filter
             return isEmptyNode;
         }
 
-        // Remove filterCallback from index, returning true if index empty after removal
+        /// <summary>
+        /// Remove filterCallback from index, returning true if index empty after removal
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="treePathInfo"></param>
+        /// <param name="filterForValue"></param>
+        /// <returns></returns>
         private Boolean RemoveFromIndex(FilterParamIndex index,
                                         IndexTreePath treePathInfo,
                                         Object filterForValue)
@@ -304,12 +315,11 @@ namespace net.esper.filter
             return (_size == 0);
         }
 
-        /**
-        * Add to an index the value to filter for.
-        * @param index is the index to add to
-        * @param filterForValue is the filter parameter value to add
-        * @param treePathInfo is the specification to fill on where is was added
-        */
+        /// <summary>Add to an index the value to filter for.</summary>
+        /// <param name="index">is the index to add to</param>
+        /// <param name="filterForValue">is the filter parameter value to add</param>
+        /// <param name="treePathInfo">is the specification to fill on where is was added</param>
+
         private void AddToIndex(FilterParamIndex index,
                                 Object filterForValue,
                                 IndexTreePath treePathInfo)
@@ -390,12 +400,11 @@ namespace net.esper.filter
             index.ReadWriteLock.ReleaseWriterLock();
         }
 
-        /**
-         * Add filter callback to an event evaluator, which could be either an index node or a set node.
-         * @param eventEvaluator to add the filterCallback to.
-         * @param treePathInfo is for holding the information on where the add occured
-         * @return boolean indicating if the eventEvaluator was successfully added
-         */
+        /// <summary>Add filter callback to an event evaluator, which could be either an index node or a set node.</summary>
+        /// <param name="eventEvaluator">to add the filterCallback to.</param>
+        /// <param name="treePathInfo">is for holding the information on where the add occured</param>
+        /// <returns>boolean indicating if the eventEvaluator was successfully added</returns>
+
         private Boolean AddToEvaluator(EventEvaluator eventEvaluator, IndexTreePath treePathInfo)
         {
             if (eventEvaluator is FilterCallbackSetNode)
@@ -421,11 +430,10 @@ namespace net.esper.filter
             return false;
         }
 
-        /**
-         * Copy the parameter list - this also sorts the parameter list.
-         * @param parameters is a list of filter parameters
-         * @return sorted set of filter parameters
-         */
+        /// <summary>Copy the parameter list - this also sorts the parameter list.</summary>
+        /// <param name="parameters">is a list of filter parameters</param>
+        /// <returns>sorted set of filter parameters</returns>
+
         public static ETreeSet<FilterValueSetParam> CopySortParameters(IList<FilterValueSetParam> parameters)
         {
             ETreeSet<FilterValueSetParam> copy = new ETreeSet<FilterValueSetParam>(new FilterSpecParamComparator());

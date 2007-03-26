@@ -45,11 +45,11 @@ namespace net.esper.eql.join.exec
 		private readonly EventPropertyGetter[] propertyGetters;
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="eventType">- event type to expect for lookup
+		/// <param name="eventType">event type to expect for lookup
 		/// </param>
-		/// <param name="properties">- key properties
+		/// <param name="properties">key properties
 		/// </param>
-		/// <param name="index">- index to look up in
+		/// <param name="index">index to look up in
 		/// </param>
 		
         public IndexedTableLookupStrategy(EventType eventType, String[] properties, PropertyIndexedEventTable index)
@@ -70,18 +70,37 @@ namespace net.esper.eql.join.exec
 				}
 			}
 		}
-		
-        public ISet<EventBean> lookup(EventBean ev)
+
+        /// <summary>
+        /// Returns matched events for a event to look up for. Never returns an empty result set,
+        /// always returns null to indicate no results.
+        /// </summary>
+        /// <param name="ev">to look up</param>
+        /// <returns>
+        /// set of matching events, or null if none matching
+        /// </returns>
+        public ISet<EventBean> Lookup(EventBean ev)
         {
-            Object[] keys = getKeys(ev);
+            Object[] keys = GetKeys(ev);
             return index.lookup(keys);
         }
-		
-		private Object[] getKeys(EventBean _event)
+
+        /// <summary>
+        /// Gets the keys.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
+        /// <returns></returns>
+		private Object[] GetKeys(EventBean _event)
 		{
 			return EventBeanUtility.GetPropertyArray(_event, propertyGetters);
 		}
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return "IndexedTableLookupStrategy indexProps=" + properties + " index=(" + index + ")";

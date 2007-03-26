@@ -11,8 +11,10 @@ namespace net.esper.view.stat
 	public sealed class CorrelationView:BaseBivariateStatisticsView
 	{
 		private EventType eventType;
-		
-		/// <summary> Default constructor - required by all views to adhere to the Java bean specification.</summary>
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CorrelationView"/> class.
+        /// </summary>
 		public CorrelationView()
 		{
 			statisticsBean = new CorrelationBean();
@@ -26,7 +28,14 @@ namespace net.esper.view.stat
 		public CorrelationView(String xFieldName, String yFieldName):base(new CorrelationBean(), xFieldName, yFieldName)
 		{
 		}
-		
+
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// metadata for the objects in the collection
+        /// </returns>
 		public override EventType EventType
 		{
             get
@@ -39,7 +48,13 @@ namespace net.esper.view.stat
             }
             set { }
 		}
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return this.GetType().FullName + " fieldX=" + this.FieldNameX + " fieldY=" + this.FieldNameY;

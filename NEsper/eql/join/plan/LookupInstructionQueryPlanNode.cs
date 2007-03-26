@@ -52,6 +52,12 @@ namespace net.esper.eql.join.plan
             this.assemblyInstructions = assemblyInstructions;
         }
 
+        /// <summary>
+        /// Make execution node from this specification.
+        /// </summary>
+        /// <param name="indexesPerStream">tables build for each stream</param>
+        /// <param name="streamTypes">event type of each stream</param>
+        /// <returns>execution node matching spec</returns>
         public override ExecNode MakeExec(EventTable[][] indexesPerStream, EventType[] streamTypes)
         {
             LookupInstructionExec[] execs = new LookupInstructionExec[lookupInstructions.Count];
@@ -76,6 +82,10 @@ namespace net.esper.eql.join.plan
             return execNode;
         }
 
+        /// <summary>
+        /// Print a long readable format of the query node to the supplied PrintWriter.
+        /// </summary>
+        /// <param name="writer">is the indentation writer to print to</param>
         public override void Print(IndentWriter writer)
         {
             writer.WriteLine(

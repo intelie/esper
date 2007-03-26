@@ -29,14 +29,11 @@ namespace net.esper.core
 		private readonly EventAdapterService eventAdapterService;
 		private readonly AutoImportService autoImportService;
 		private readonly DatabaseConfigService databaseConfigService;
-		
-		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
-		/// <summary> Returns router for internal event processing.</summary>
-		/// <returns> router for internal event processing
-		/// </returns>
-		/// <summary> Set the router for internal event processing.</summary>
-		/// <param name="internalEventRouter">router to use
-		/// </param>
+
+        /// <summary>
+        /// Gets or sets router for internal event processing.
+        /// </summary>
+        /// <value>The internal event router.</value>
 		public InternalEventRouter InternalEventRouter
 		{
 			get
@@ -163,16 +160,14 @@ namespace net.esper.core
 		
 		// Must be set
 		private InternalEventRouter internalEventRouter;
-		
-		/// <summary> Constructor - sets up new set of services.</summary>
-		/// <param name="schedulingService">service to get time and schedule callbacks
-		/// </param>
-		/// <param name="eventAdapterService">service to resolve event types
-		/// </param>
-		/// <param name="autoImportService">service to resolve partial class names
-		/// </param>
-		/// <param name="databaseConfigService">service to resolve a database name to database connection factory and configs
-		/// </param>
+
+        /// <summary>
+        /// Constructor - sets up new set of services.
+        /// </summary>
+        /// <param name="schedulingService">service to get time and schedule callbacks</param>
+        /// <param name="eventAdapterService">service to resolve event types</param>
+        /// <param name="autoImportService">service to resolve partial class names</param>
+        /// <param name="databaseConfigService">service to resolve a database name to database connection factory and configs</param>
 		public EPServicesContext(SchedulingService schedulingService, EventAdapterService eventAdapterService, AutoImportService autoImportService, DatabaseConfigService databaseConfigService)
 		{
 			this.schedulingService = schedulingService;

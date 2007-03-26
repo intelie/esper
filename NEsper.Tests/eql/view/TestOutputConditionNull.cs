@@ -31,13 +31,13 @@ namespace net.esper.eql.view
 		public virtual void  testUpdateCondition()
 		{
 			// the callback should be made regardles of the update
-			condition.updateOutputCondition(1, 1);
+            condition.UpdateOutputCondition(1, 1);
 			Assert.IsTrue(listener.getAndClearIsInvoked());
-			condition.updateOutputCondition(1, 0);
+            condition.UpdateOutputCondition(1, 0);
 			Assert.IsTrue(listener.getAndClearIsInvoked());
-			condition.updateOutputCondition(0, 1);
+            condition.UpdateOutputCondition(0, 1);
 			Assert.IsTrue(listener.getAndClearIsInvoked());
-			condition.updateOutputCondition(0, 0);
+            condition.UpdateOutputCondition(0, 0);
 			Assert.IsTrue(listener.getAndClearIsInvoked());
 		}
 		

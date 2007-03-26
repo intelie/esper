@@ -8,14 +8,16 @@ using net.esper.events;
 
 namespace net.esper.eql.join.assemble
 {
-	/// <summary> Represents a node in a tree responsible for assembling outer join query results.
-	/// <p>
+	/// <summary>
+    /// Represents a node in a tree responsible for assembling outer join query results.
+	/// 
 	/// The tree is double-linked, child nodes know each parent and parent know all child nodes.
-	/// <p>
+    /// 
 	/// Each specific subclass of this abstract assembly node is dedicated to assembling results for
 	/// a certain event stream.
 	/// </summary>
-	public abstract class BaseAssemblyNode : ResultAssembler
+
+    public abstract class BaseAssemblyNode : ResultAssembler
 	{
 		/// <summary> Returns the stream number.</summary>
 		/// <returns> stream number
@@ -34,7 +36,7 @@ namespace net.esper.eql.join.assemble
 			get
 			{
 				IList<Int32> substreams = new List<Int32>();
-				recusiveAddSubstreams( substreams );
+				RecusiveAddSubstreams( substreams );
 
 				// copy to array
 				int[] substreamArr = new int[substreams.Count];
@@ -62,9 +64,9 @@ namespace net.esper.eql.join.assemble
 		internal readonly int numStreams;
 
 		/// <summary> Ctor.</summary>
-		/// <param name="streamNum">- stream number of the event stream that this node assembles results for.
+		/// <param name="streamNum">stream number of the event stream that this node assembles results for.
 		/// </param>
-		/// <param name="numStreams">- number of streams
+		/// <param name="numStreams">number of streams
 		/// </param>
 
 		protected BaseAssemblyNode( int streamNum, int numStreams )
@@ -118,13 +120,13 @@ namespace net.esper.eql.join.assemble
             set { this.parentNode = value ; }
 		}
 
-		private void recusiveAddSubstreams( IList<Int32> substreams )
+		private void RecusiveAddSubstreams( IList<Int32> substreams )
 		{
 			substreams.Add( streamNum );
 
 			foreach ( BaseAssemblyNode child in childNodes )
 			{
-				child.recusiveAddSubstreams( substreams );
+				child.RecusiveAddSubstreams( substreams );
 			}
 		}
 
@@ -203,6 +205,12 @@ namespace net.esper.eql.join.assemble
 			aggregates.Add( currentNode );
 		}
 
-		public abstract void Result( EventBean[] param1, int param2, EventBean param3, Node param4 );
+        /// <summary> Publish a result row.</summary>
+        /// <param name="row">is the result to publish</param>
+        /// <param name="fromStreamNum">is the originitor that publishes the row</param>
+        /// <param name="myEvent">is optional and is the event that led to the row result</param>
+        /// <param name="myNode">is optional and is the result node of the event that led to the row result</param>
+
+		public abstract void Result( EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode );
 	}
 }

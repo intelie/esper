@@ -1,11 +1,10 @@
-/// <summary>***********************************************************************************
-/// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
-/// http://esper.codehaus.org                                                          *
-/// ---------------------------------------------------------------------------------- *
-/// The software in this package is published under the terms of the GPL license       *
-/// a copy of which has been included with this distribution in the license.txt file.  *
-/// ************************************************************************************
-/// </summary>
+// ************************************************************************************
+// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
+// http://esper.codehaus.org                                                          *
+// ---------------------------------------------------------------------------------- *
+// The software in this package is published under the terms of the GPL license       *
+// a copy of which has been included with this distribution in the license.txt file.  *
+// ************************************************************************************
 
 using System;
 using System.IO;
@@ -21,7 +20,8 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 
 namespace net.esper.client
 {
-    /// <summary> An instance of <tt>Configuration</tt> allows the application
+    /// <summary> 
+    /// An instance of <tt>Configuration</tt> allows the application
     /// to specify properties to be used when
     /// creating a <tt>EPServiceProvider</tt>. Usually an application will create
     /// a single <tt>Configuration</tt>, then get one or more instances of
@@ -30,9 +30,10 @@ namespace net.esper.client
     /// only as an initialization-time object. <tt>EPServiceProvider</tt>s are
     /// immutable and do not retain any association back to the
     /// <tt>Configuration</tt>.
-    /// <br>
+    /// <para>
     /// The format of an Esper XML configuration file is defined in
     /// <tt>esper-configuration-1.0.xsd</tt>.
+    /// </para>
     /// </summary>
     public class Configuration
     {
@@ -148,7 +149,7 @@ namespace net.esper.client
         /// <summary>
         /// Add a namespace. Adding will suppress the use of the default namespaces.
         /// </summary>
-        /// <param name="autoImport">- the import to add
+        /// <param name="autoImport">the import to add
         /// </param>
         public virtual void AddImport(String autoImport)
         {
@@ -249,8 +250,9 @@ namespace net.esper.client
         /// <summary> Get the configuration file as an <tt>InputStream</tt>. Might be overridden
         /// by subclasses to allow the configuration to be located by some arbitrary
         /// mechanism.
-        /// <p>
-        /// See <tt>getResourceAsStream</tt> for information on how the resource name is resolved.
+        ///
+        /// See GetResourceAsStream for information on how the resource name is resolved.
+        /// <seealso>GetResourceAsStream</seealso>
         /// </summary>
         /// <param name="resource">is the resource name
         /// </param>
@@ -312,7 +314,6 @@ namespace net.esper.client
             return this;
         }
 
-
         /// <summary> Use the mappings and properties specified in the given XML document.
         /// The format of the file is defined in
         /// <tt>esper-configuration-1.0.xsd</tt>.
@@ -331,21 +332,21 @@ namespace net.esper.client
         }
 
         /// <summary> Returns an input stream from an application resource in the classpath.
-        /// <p>
+        /// 
         /// The method first removes the '/' character from the resource name if
         /// the first character is '/'.
-        /// <p>
+        /// 
         /// The lookup order is as follows:
-        /// <p>
+        /// 
         /// If a thread context class loader exists, use <tt>Thread.currentThread().getResourceAsStream</tt>
         /// to obtain an InputStream.
-        /// <p>
+        /// 
         /// If no input stream was returned, use the <tt>Configuration.class.getResourceAsStream</tt>.
         /// to obtain an InputStream.
-        /// <p>
+        /// 
         /// If no input stream was returned, use the <tt>Configuration.class.getClassLoader().getResourceAsStream</tt>.
         /// to obtain an InputStream.
-        /// <p>
+        /// 
         /// If no input stream was returned, throw an Exception.
         /// 
         /// </summary>

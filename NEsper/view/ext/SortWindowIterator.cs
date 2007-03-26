@@ -40,7 +40,7 @@ namespace net.esper.view.ext
         }
 
         /// <summary> Ctor.</summary>
-        /// <param name="window">- sorted map with events
+        /// <param name="window">sorted map with events
         /// </param>
 
         public SortWindowIterator(ETreeDictionary<MultiKey<Object>, LinkedList<EventBean>> window)

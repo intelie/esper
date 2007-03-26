@@ -15,6 +15,10 @@ namespace net.esper.pattern.observer
 		private ScheduleSpec scheduleSpec;
 		private long msec;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimerObserverFactory"/> class.
+        /// </summary>
+        /// <param name="args">The args.</param>
         public TimerObserverFactory(Object[] args)
         {
             Object value = args[0];
@@ -34,7 +38,7 @@ namespace net.esper.pattern.observer
         }
 
 		/// <summary> Ctor.</summary>
-		/// <param name="scheduleSpec">- schedule definition.
+		/// <param name="scheduleSpec">schedule definition.
 		/// </param>
 		public TimerObserverFactory(ScheduleSpec scheduleSpec)
 		{
@@ -42,7 +46,7 @@ namespace net.esper.pattern.observer
 		}
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="seconds">- time in seconds.
+		/// <param name="seconds">time in seconds.
 		/// </param>
 		public TimerObserverFactory(int seconds)
 		{
@@ -50,7 +54,7 @@ namespace net.esper.pattern.observer
 		}
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="seconds">- time in seconds.
+		/// <param name="seconds">time in seconds.
 		/// </param>
 		public TimerObserverFactory(double seconds)
 		{
@@ -58,13 +62,20 @@ namespace net.esper.pattern.observer
 		}
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="timePeriodParameter">- time in seconds.
+		/// <param name="timePeriodParameter">time in seconds.
 		/// </param>
 		public TimerObserverFactory(TimePeriodParameter timePeriodParameter)
 		{
 			this.msec = (long) Math.Round(timePeriodParameter.NumSeconds * 1000d);
 		}
-		
+
+        /// <summary>
+        /// Make an observer instance.
+        /// </summary>
+        /// <param name="context">services that may be required by observer implementation</param>
+        /// <param name="beginState">Start state for observer</param>
+        /// <param name="observerEventEvaluator">receiver for events observed</param>
+        /// <returns>observer instance</returns>
 		public virtual EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
 		{
 			if (scheduleSpec != null)

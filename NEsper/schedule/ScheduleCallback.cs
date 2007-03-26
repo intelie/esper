@@ -8,6 +8,10 @@ namespace net.esper.schedule
 
     public interface ScheduleCallback
     {
+        /// <summary>
+        /// Called when a scheduled callback occurs.
+        /// </summary>
+
         void scheduledTrigger();
     }
 
@@ -28,12 +32,19 @@ namespace net.esper.schedule
     public sealed class ScheduleCallbackImpl : ScheduleCallback
     {
     	private ScheduleCallbackDelegate m_delegate ;
-    	
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScheduleCallbackImpl"/> class.
+        /// </summary>
+        /// <param name="_delegate">The _delegate.</param>
     	public ScheduleCallbackImpl( ScheduleCallbackDelegate _delegate )
     	{
     		m_delegate = _delegate;
     	}
-    	
+
+        /// <summary>
+        /// Called when a scheduled callback occurs.
+        /// </summary>
         public void scheduledTrigger()
         {
         	m_delegate() ;

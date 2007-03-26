@@ -41,6 +41,10 @@ namespace net.esper.filter
 			}
 		}
 
+        /// <summary>
+        /// Gets or sets the <see cref="net.esper.filter.EventEvaluator"/> with the specified expression value.
+        /// </summary>
+        /// <value></value>
 		public override EventEvaluator this[Object expressionValue]
 		{
             get
@@ -71,6 +75,16 @@ namespace net.esper.filter
             }
 		}
 
+        /// <summary>
+        /// Remove the event evaluation instance for the given constant. Returns true if
+        /// the constant was found, or false if not.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded writes, the ReadWriteLock method must supply a lock for this purpose.
+        /// </summary>
+        /// <param name="filterConstant">is the value supplied in the filter paremeter</param>
+        /// <returns>
+        /// true if found and removed, false if not found
+        /// </returns>
 		public override bool Remove( Object filterConstant )
 		{
 			DoubleRange doubleRange = filterConstant as DoubleRange ;
@@ -82,16 +96,35 @@ namespace net.esper.filter
 			return ranges.Remove( doubleRange ) ;
 		}
 
+        /// <summary>
+        /// Return the number of distinct filter parameter constants stored.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded writes, the ReadWriteLock method must supply a lock for this purpose.
+        /// </summary>
+        /// <value></value>
+        /// <returns> Number of entries in index
+        /// </returns>
 		public override int Count
 		{
             get { return ranges.Count; }
 		}
 
+        /// <summary>
+        /// Supplies the lock for protected access.
+        /// </summary>
+        /// <value></value>
+        /// <returns> lock
+        /// </returns>
 		public override ReaderWriterLock ReadWriteLock
 		{
             get { return rangesRWLock; }
 		}
 
+        /// <summary>
+        /// Matches the event.
+        /// </summary>
+        /// <param name="eventBean">The event bean.</param>
+        /// <param name="matches">The matches.</param>
 		public override void MatchEvent( EventBean eventBean, IList<FilterCallback> matches )
 		{
 			Object objAttributeValue = this.Getter.GetValue( eventBean );

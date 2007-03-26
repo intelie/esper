@@ -8,6 +8,12 @@ namespace net.esper.type
 
     public sealed class LongValue : PrimitiveValueBase
     {
+        /// <summary>
+        /// Returns the type of primitive value this instance represents.
+        /// </summary>
+        /// <value></value>
+        /// <returns> enum type of primitive
+        /// </returns>
         override public PrimitiveValueType Type
         {
             get
@@ -16,6 +22,12 @@ namespace net.esper.type
             }
         }
 
+        /// <summary>
+        /// Returns a value object.
+        /// </summary>
+        /// <value></value>
+        /// <returns> value object
+        /// </returns>
         override public Object ValueObject
         {
             get
@@ -26,6 +38,10 @@ namespace net.esper.type
 
         private long? longValue;
 
+        /// <summary>
+        /// Parse the string literal value into the specific data type.
+        /// </summary>
+        /// <param name="value">is the textual value to parse</param>
         public override void Parse(String value)
         {
             longValue = ParseString(value);
@@ -50,7 +66,7 @@ namespace net.esper.type
         }
 
         /// <summary> Parse the string array returning a long array.</summary>
-        /// <param name="values">- string array
+        /// <param name="values">string array
         /// </param>
         /// <returns> typed array
         /// </returns>
@@ -64,6 +80,10 @@ namespace net.esper.type
             return result;
         }
 
+        /// <summary>
+        /// Set a long value.
+        /// </summary>
+        /// <value></value>
         public override long _Long
         {
             set { this.longValue = value; }
@@ -81,6 +101,12 @@ namespace net.esper.type
             return longValue.Value;
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             if (longValue == null)

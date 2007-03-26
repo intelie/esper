@@ -34,8 +34,19 @@ namespace net.esper.events.property
 		{
 			this.propertyName = propertyName;
 		}
-		
+
+        /// <summary>
+        /// Gets the getter.
+        /// </summary>
+        /// <param name="param1">The param1.</param>
+        /// <returns></returns>
         public abstract EventPropertyGetter GetGetter(BeanEventType param1);
+
+        /// <summary>
+        /// Gets the type of the property.
+        /// </summary>
+        /// <param name="param1">The param1.</param>
+        /// <returns></returns>
 		public abstract Type GetPropertyType(BeanEventType param1);
 	}
 }

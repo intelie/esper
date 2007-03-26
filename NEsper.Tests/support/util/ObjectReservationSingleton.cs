@@ -32,7 +32,7 @@ namespace net.esper.support.util
         }
 
         /// <summary> Reserve an object, returning true when successfully reserved or false when the object is already reserved.</summary>
-        /// <param name="object">- object to reserve
+        /// <param name="object">object to reserve
         /// </param>
         /// <returns> true if reserved, false to indicate already reserved
         /// </returns>
@@ -53,7 +53,7 @@ namespace net.esper.support.util
         }
 
         /// <summary> Unreserve an object. Logs a fatal error if the unreserve failed.</summary>
-        /// <param name="object">- object to unreserve
+        /// <param name="object">object to unreserve
         /// </param>
         public virtual void unreserve(Object _object)
         {

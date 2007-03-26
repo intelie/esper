@@ -25,9 +25,9 @@ namespace net.esper.eql.join.assemble
         private ISet<EventBean> completedEvents;
 
         /// <summary> Ctor.</summary>
-        /// <param name="streamNum">- is the stream number
+        /// <param name="streamNum">is the stream number
         /// </param>
-        /// <param name="numStreams">- is the number of streams
+        /// <param name="numStreams">is the number of streams
         /// </param>
 
         public BranchOptionalAssemblyNode(int streamNum, int numStreams)
@@ -35,6 +35,10 @@ namespace net.esper.eql.join.assemble
         {
         }
 
+        /// <summary>
+        /// Provides results to assembly nodes for initialization.
+        /// </summary>
+        /// <param name="result">is a list of result nodes per stream</param>
         public override void Init(IList<Node>[] result)
         {
             resultsForStream = result[streamNum];
@@ -65,6 +69,10 @@ namespace net.esper.eql.join.assemble
             }
         }
 
+        /// <summary>
+        /// Process results.
+        /// </summary>
+        /// <param name="result">is a list of result nodes per stream</param>
         public override void Process(IList<Node>[] result)
         {
             // there cannot be child nodes to compute a cartesian product if this node had no results
@@ -104,6 +112,13 @@ namespace net.esper.eql.join.assemble
             }
         }
 
+        /// <summary>
+        /// Publish a result row.
+        /// </summary>
+        /// <param name="row">is the result to publish</param>
+        /// <param name="fromStreamNum">is the originitor that publishes the row</param>
+        /// <param name="myEvent">is optional and is the event that led to the row result</param>
+        /// <param name="myNode">is optional and is the result node of the event that led to the row result</param>
         public override void Result(EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode)
         {
             row[streamNum] = myEvent;
@@ -121,11 +136,20 @@ namespace net.esper.eql.join.assemble
             }
         }
 
+        /// <summary>
+        /// Output this node using writer, not outputting child nodes.
+        /// </summary>
+        /// <param name="indentWriter">to use for output</param>
         public override void Print(IndentWriter indentWriter)
         {
             indentWriter.WriteLine("BranchOptionalAssemblyNode streamNum=" + streamNum);
         }
 
+        /// <summary>
+        /// Processes the event.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
+        /// <param name="currentNode">The current node.</param>
         private void processEvent(EventBean _event, Node currentNode)
         {
             EventBean[] row = new EventBean[numStreams];

@@ -13,9 +13,9 @@ namespace net.esper.eql.join.plan
     public class FilterExprAnalyzer
     {
         /// <summary> Analyzes filter expression to build query graph model.</summary>
-        /// <param name="topNode">- filter top node
+        /// <param name="topNode">filter top node
         /// </param>
-        /// <param name="queryGraph">- model containing relationships between streams, to be written to
+        /// <param name="queryGraph">model containing relationships between streams, to be written to
         /// </param>
         public static void Analyze(ExprNode topNode, QueryGraph queryGraph)
         {
@@ -36,9 +36,9 @@ namespace net.esper.eql.join.plan
         }
 
         /// <summary> Analye EQUALS (=) node.</summary>
-        /// <param name="EqualsNode">- node to analyze
+        /// <param name="EqualsNode">node to analyze
         /// </param>
-        /// <param name="queryGraph">- store relationships between stream properties
+        /// <param name="queryGraph">store relationships between stream properties
         /// </param>
         public static void AnalyzeEqualsNode(ExprEqualsNode EqualsNode, QueryGraph queryGraph)
         {
@@ -54,9 +54,9 @@ namespace net.esper.eql.join.plan
         }
 
         /// <summary> Analyze the AND-node.</summary>
-        /// <param name="andNode">- node to analyze
+        /// <param name="andNode">node to analyze
         /// </param>
-        /// <param name="queryGraph">- to store relationships between stream properties
+        /// <param name="queryGraph">to store relationships between stream properties
         /// </param>
         public static void AnalyzeAndNode(ExprAndNode andNode, QueryGraph queryGraph)
         {

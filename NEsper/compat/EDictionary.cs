@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// Extended dictionary functionality.
+    /// </summary>
+    /// <typeparam name="K"></typeparam>
+    /// <typeparam name="V"></typeparam>
+
 	public interface EDictionary<K,V> : IDictionary<K,V>
 	{
 		/// <summary>

@@ -41,7 +41,7 @@ namespace net.esper.eql.core
         [Test]
         public void testUpdateAll()
         {
-            Assert.IsNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[])null, false, false));
+            Assert.IsNull(ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[])null, false, false));
 
             EventBean testEvent1 = MakeEvent(10, 5, 6);
             EventBean testEvent2 = MakeEvent(11, 6, 7);
@@ -51,7 +51,7 @@ namespace net.esper.eql.core
             EventBean testEvent4 = MakeEvent(21, 3, 4);
             EventBean[] oldData = new EventBean[] { testEvent3, testEvent4 };
 
-            Pair<EventBean[], EventBean[]> result = outputProcessorAll.processViewResult(newData, oldData);
+            Pair<EventBean[], EventBean[]> result = outputProcessorAll.ProcessViewResult(newData, oldData);
             EventBean[] newEvents = result.First;
             EventBean[] oldEvents = result.Second;
 
@@ -73,7 +73,7 @@ namespace net.esper.eql.core
         [Test]
         public void testProcessAll()
         {
-            Assert.IsNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new EHashSet<MultiKey<EventBean>>(), false, false));
+            Assert.IsNull(ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new EHashSet<MultiKey<EventBean>>(), false, false));
 
             EventBean testEvent1 = MakeEvent(10, 5, 6);
             EventBean testEvent2 = MakeEvent(11, 6, 7);
@@ -85,7 +85,7 @@ namespace net.esper.eql.core
             ISet<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
             oldEventSet.Add(new MultiKey<EventBean>(new EventBean[] { testEvent4 }));
 
-            Pair<EventBean[], EventBean[]> result = outputProcessorAll.processJoinResult(newEventSet, oldEventSet);
+            Pair<EventBean[], EventBean[]> result = outputProcessorAll.ProcessJoinResult(newEventSet, oldEventSet);
             EventBean[] newEvents = result.First;
             EventBean[] oldEvents = result.Second;
 
@@ -123,7 +123,7 @@ namespace net.esper.eql.core
         [Test]
         public void testProcessLast()
         {
-            Assert.IsNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new EHashSet<MultiKey<EventBean>>(), false, false));
+            Assert.IsNull(ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new EHashSet<MultiKey<EventBean>>(), false, false));
 
             EventBean testEvent1 = MakeEvent(10, 5, 6);
             EventBean testEvent2 = MakeEvent(11, 6, 7);
@@ -135,7 +135,7 @@ namespace net.esper.eql.core
             ISet<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
             oldEventSet.Add(new MultiKey<EventBean>(new EventBean[] { testEvent4 }));
 
-            Pair<EventBean[], EventBean[]> result = outputProcessorLast.processJoinResult(newEventSet, oldEventSet);
+            Pair<EventBean[], EventBean[]> result = outputProcessorLast.ProcessJoinResult(newEventSet, oldEventSet);
             EventBean[] newEvents = result.First;
             EventBean[] oldEvents = result.Second;
 
@@ -151,7 +151,7 @@ namespace net.esper.eql.core
         [Test]
         public void testUpdateLast()
         {
-            Assert.IsNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[])null, false, false));
+            Assert.IsNull(ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[])null, false, false));
 
             EventBean testEvent1 = MakeEvent(10, 5, 6);
             EventBean testEvent2 = MakeEvent(11, 6, 7);
@@ -161,7 +161,7 @@ namespace net.esper.eql.core
             EventBean testEvent4 = MakeEvent(21, 3, 4);
             EventBean[] oldData = new EventBean[] { testEvent3, testEvent4 };
 
-            Pair<EventBean[], EventBean[]> result = outputProcessorLast.processViewResult(newData, oldData);
+            Pair<EventBean[], EventBean[]> result = outputProcessorLast.ProcessViewResult(newData, oldData);
             EventBean[] newEvents = result.First;
             EventBean[] oldEvents = result.Second;
 

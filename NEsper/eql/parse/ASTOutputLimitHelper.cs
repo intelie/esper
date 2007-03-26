@@ -12,7 +12,7 @@ namespace net.esper.eql.parse
 	public class ASTOutputLimitHelper : EqlTokenTypes
 	{
 		/// <summary> Build an output limit spec from the AST node supplied.</summary>
-		/// <param name="node">- parse node
+		/// <param name="node">parse node
 		/// </param>
 		/// <returns> output limit spec
 		/// </returns>

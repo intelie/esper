@@ -25,14 +25,12 @@ namespace net.esper.collection
         }
 
 
+        /// <summary>
+        /// Gets or sets the <see cref="V"/> with the specified key.
+        /// </summary>
+        /// <value></value>
         public virtual V this[K key]
         {
-            /// <summary> Get the value for a given key, returning null if the key was not found.</summary>
-            /// <param name="key">is the key to look up and return the value for
-            /// </param>
-            /// <returns> value for key, or default if key was not found
-            /// </returns>
-
             get
             {
                 Pair<V, Int32> refValue = null;
@@ -42,15 +40,6 @@ namespace net.esper.collection
                 }
                 return refValue.First;
             }
-
-            /// <summary>
-            /// Add and key and value with a reference count as one. If the key already exists,
-            /// throw an exception.  Clients should use the "get" method first to check if the
-            ///  key exists.
-            /// </summary>
-            /// <param name="key">to add</param>
-            /// <param name="val">to add</param>
-            /// <returns>value added</returns>
 
             set
             {

@@ -25,11 +25,11 @@ namespace net.esper.eql.join.table
         private readonly EDictionary<MultiKeyUntyped, ISet<EventBean>> propertyIndex;
 
         /// <summary> Ctor.</summary>
-        /// <param name="streamNum">- the stream number that is indexed
+        /// <param name="streamNum">the stream number that is indexed
         /// </param>
-        /// <param name="eventType">- types of events indexed
+        /// <param name="eventType">types of events indexed
         /// </param>
-        /// <param name="propertyNames">- property names to use for indexing
+        /// <param name="propertyNames">property names to use for indexing
         /// </param>
 
         public PropertyIndexedEventTable(int streamNum, EventType eventType, String[] propertyNames)
@@ -141,6 +141,12 @@ namespace net.esper.eql.join.table
             }
          }
 
+         /// <summary>
+         /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+         /// </summary>
+         /// <returns>
+         /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+         /// </returns>
         public override String ToString()
         {
             return

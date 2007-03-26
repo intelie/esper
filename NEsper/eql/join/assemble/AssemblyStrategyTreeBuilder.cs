@@ -17,12 +17,12 @@ namespace net.esper.eql.join.assemble
 	public class AssemblyStrategyTreeBuilder
 	{
 		/// <summary> Builds a tree of {@link BaseAssemblyNode} from join strategy information.</summary>
-		/// <param name="rootStream">- the root stream supplying the event to evaluate
+		/// <param name="rootStream">the root stream supplying the event to evaluate
 		/// </param>
-		/// <param name="streamsJoinedPerStream">- a map in which the key is the stream number to supply an event,
+		/// <param name="streamsJoinedPerStream">a map in which the key is the stream number to supply an event,
 		/// and the value is an array of streams to find events in for the given event
 		/// </param>
-		/// <param name="isRequiredPerStream">- indicates which streams are required join streams versus optional streams
+		/// <param name="isRequiredPerStream">indicates which streams are required join streams versus optional streams
 		/// </param>
 		/// <returns> root assembly node
 		/// </returns>

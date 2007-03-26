@@ -14,18 +14,31 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 namespace net.esper.core
 {
     /// <summary> Statement implementation for EQL statements.
-    /// 
+    /// <para>
     /// The statement Starts on construction.
-    /// When listeners are added and removed from the view a child dispatch view is added/removed to/from the parent view
-    /// to support push mode.
+    /// When listeners are added and removed from the view a child dispatch view is
+    /// added/removed to/from the parent view to support push mode.
+    /// </para>
     /// </summary>
     public class EPEQLStatementImpl : EPStatementSupport, EPStatement
     {
+        /// <summary>
+        /// Returns the underlying expression text or XML.
+        /// </summary>
+        /// <value></value>
+        /// <returns> expression text
+        /// </returns>
         virtual public String Text
         {
             get { return expressionText; }
         }
 
+        /// <summary>
+        /// Returns the type of events the iterable returns.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type of events the iterator returns
+        /// </returns>
         virtual public EventType EventType
         {
             get { return parentView.EventType; }
@@ -38,13 +51,12 @@ namespace net.esper.core
         private Viewable parentView;
         private EPStatementStopMethod stopMethod;
 
-        /// <summary> Ctor.</summary>
-        /// <param name="expressionText">expression
-        /// </param>
-        /// <param name="dispatchService">for dispatching
-        /// </param>
-        /// <param name="StartMethod">to Start the view
-        /// </param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="expressionText">expression</param>
+        /// <param name="dispatchService">for dispatching</param>
+        /// <param name="startMethod">to Start the view</param>
 
         public EPEQLStatementImpl(String expressionText, DispatchService dispatchService, EPEQLStmtStartMethod startMethod)
         {
@@ -55,6 +67,9 @@ namespace net.esper.core
             Start();
         }
 
+        /// <summary>
+        /// Stop the statement.
+        /// </summary>
         public virtual void Stop()
         {
             if (stopMethod == null)
@@ -72,6 +87,9 @@ namespace net.esper.core
             parentView = null;
         }
 
+        /// <summary>
+        /// Start the statement.
+        /// </summary>
         public virtual void Start()
         {
             if (stopMethod != null)
@@ -105,6 +123,12 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
         public virtual IEnumerator<EventBean> GetEnumerator()
         {
             // Return null if not Started
@@ -118,6 +142,12 @@ namespace net.esper.core
 
         #region IEnumerable Members
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+        /// </returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
@@ -125,6 +155,9 @@ namespace net.esper.core
 
         #endregion
 
+        /// <summary>
+        /// Called when the last listener is removed.
+        /// </summary>
         public override void listenerStop()
         {
             if (parentView != null)
@@ -133,6 +166,9 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Called when the first listener is added.
+        /// </summary>
         public override void listenerStart()
         {
             if (parentView != null)

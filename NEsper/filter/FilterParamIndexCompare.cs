@@ -25,11 +25,10 @@ namespace net.esper.filter
         private double? lowerBounds;
         private double? upperBounds;
 
-        /// <summary> Constructs the index for matching comparison operators (<, >, <=, >=).</summary>
-        /// <param name="propertyName">is the name of the event attribute field
-        /// </param>
-        /// <param name="filterOperator">is the type of relational comparison operator
-        /// </param>
+        /// <summary>
+        /// Constructs the index for matching comparison operators (&lt;, &gt;, &lt;=, &gt;=).</summary>
+        /// <param name="propertyName">is the name of the event attribute field</param>
+        /// <param name="filterOperator">is the type of relational comparison operator</param>
         /// <param name="eventType">describes the event type and is used to obtain a getter instance for the property
         /// for fast get value access.
         /// </param>
@@ -57,6 +56,13 @@ namespace net.esper.filter
             }
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="net.esper.filter.EventEvaluator"/> with the specified filter constant.
+        /// Returns null if no entry found for the constant.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded access, the ReadWriteLock method must supply a lock for this purpose.
+        /// </summary>
+        /// <value></value>
         public override EventEvaluator this[Object filterConstant]
         {
             get
@@ -84,6 +90,16 @@ namespace net.esper.filter
             }
         }
 
+        /// <summary>
+        /// Remove the event evaluation instance for the given constant. Returns true if
+        /// the constant was found, or false if not.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded writes, the ReadWriteLock method must supply a lock for this purpose.
+        /// </summary>
+        /// <param name="filterConstant">is the value supplied in the filter paremeter</param>
+        /// <returns>
+        /// true if found and removed, false if not found
+        /// </returns>
         public override bool Remove(Object filterConstant)
         {
             Double constant = Convert.ToDouble(filterConstant);
@@ -97,6 +113,14 @@ namespace net.esper.filter
             return true;
         }
 
+        /// <summary>
+        /// Return the number of distinct filter parameter constants stored.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded writes, the ReadWriteLock method must supply a lock for this purpose.
+        /// </summary>
+        /// <value></value>
+        /// <returns> Number of entries in index
+        /// </returns>
         public override int Count
         {
             get
@@ -105,6 +129,12 @@ namespace net.esper.filter
             }
         }
 
+        /// <summary>
+        /// Supplies the lock for protected access.
+        /// </summary>
+        /// <value></value>
+        /// <returns> lock
+        /// </returns>
         public override ReaderWriterLock ReadWriteLock
         {
             get
@@ -113,6 +143,11 @@ namespace net.esper.filter
             }
         }
 
+        /// <summary>
+        /// Matches the event.
+        /// </summary>
+        /// <param name="eventBean">The event bean.</param>
+        /// <param name="matches">The matches.</param>
         public override void MatchEvent(EventBean eventBean, IList<FilterCallback> matches)
         {
             Object propertyValue = this.Getter.GetValue(eventBean);

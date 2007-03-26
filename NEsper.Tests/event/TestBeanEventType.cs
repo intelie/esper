@@ -81,8 +81,8 @@ namespace net.esper.events
         [Test]
         public virtual void testIsValidProperty()
         {
-            Assert.IsTrue(eventTypeSimple.isProperty("myString"));
-            Assert.IsFalse(eventTypeSimple.isProperty("dummy"));
+            Assert.IsTrue(eventTypeSimple.IsProperty("myString"));
+            Assert.IsFalse(eventTypeSimple.IsProperty("dummy"));
         }
 
         [Test]
@@ -285,7 +285,7 @@ namespace net.esper.events
         {
             String propertyName = test.PropertyName;
 
-            Assert.AreEqual(test.Property, eventType.isProperty(propertyName),
+            Assert.AreEqual(test.Property, eventType.IsProperty(propertyName),
                 "isProperty mismatch on '" + propertyName + "',");
             //Assert.AreEqual(test.Clazz, eventType.GetPropertyType(propertyName),
             //    "GetPropertyType mismatch on '" + propertyName + "',");

@@ -4,6 +4,10 @@ using System.Threading;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// Creates timers.
+    /// </summary>
+
     public class TimerFactory
     {
         /// <summary>

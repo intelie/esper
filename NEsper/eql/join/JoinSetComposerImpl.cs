@@ -42,11 +42,11 @@ namespace net.esper.eql.join
         private ISet<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
 
         /// <summary> Ctor.</summary>
-        /// <param name="repositories">- for each stream an array of (indexed/unindexed) tables for lookup.
+        /// <param name="repositories">for each stream an array of (indexed/unindexed) tables for lookup.
         /// </param>
-        /// <param name="queryStrategies">- for each stream a strategy to execute the join
+        /// <param name="queryStrategies">for each stream a strategy to execute the join
         /// </param>
-        /// <param name="selectStreamSelectorEnum">- indicator for rstream or istream-only, for optimization
+        /// <param name="selectStreamSelectorEnum">indicator for rstream or istream-only, for optimization
         /// </param>
 
         public JoinSetComposerImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, SelectClauseStreamSelectorEnum selectStreamSelectorEnum)
@@ -56,7 +56,13 @@ namespace net.esper.eql.join
             this.selectStreamSelectorEnum = selectStreamSelectorEnum;
         }
 
-        public UniformPair<ISet<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+        /// <summary>
+        /// Return join tuple result set from new data and old data for each stream.
+        /// </summary>
+        /// <param name="newDataPerStream">for each stream the event array (can be null).</param>
+        /// <param name="oldDataPerStream">for each stream the event array (can be null).</param>
+        /// <returns>join tuples</returns>
+        public UniformPair<ISet<MultiKey<EventBean>>> Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
         {
             oldResults.Clear();
             newResults.Clear();
@@ -68,7 +74,7 @@ namespace net.esper.eql.join
                 {
                     if (oldDataPerStream[i] != null)
                     {
-                        queryStrategies[i].lookup(oldDataPerStream[i], oldResults);
+                        queryStrategies[i].Lookup(oldDataPerStream[i], oldResults);
                     }
                 }
             }
@@ -104,7 +110,7 @@ namespace net.esper.eql.join
                 {
                     if (newDataPerStream[i] != null)
                     {
-                        queryStrategies[i].lookup(newDataPerStream[i], newResults);
+                        queryStrategies[i].Lookup(newDataPerStream[i], newResults);
                     }
                 }
             }

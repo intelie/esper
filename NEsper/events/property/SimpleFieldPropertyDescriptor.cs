@@ -4,6 +4,11 @@ using System.Reflection;
 
 namespace net.esper.events.property
 {
+    /// <summary>
+    /// Provides a simple property descriptor that is obtained through a
+    /// field.  The field should be a public instance field.
+    /// </summary>
+
 	public class SimpleFieldPropertyDescriptor : PropertyDescriptor
 	{
 		private FieldInfo fieldInfo ;

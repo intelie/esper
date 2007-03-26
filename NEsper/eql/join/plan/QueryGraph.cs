@@ -26,7 +26,7 @@ namespace net.esper.eql.join.plan
 		private readonly IDictionary<GraphKey, GraphValue> streamJoinMap;
 
 		/// <summary> Ctor.</summary>
-		/// <param name="numStreams">- number of streams
+		/// <param name="numStreams">number of streams
 		/// </param>
 		public QueryGraph( int numStreams )
 		{
@@ -35,13 +35,13 @@ namespace net.esper.eql.join.plan
 		}
 
 		/// <summary> Add properties for 2 streams that are equal.</summary>
-		/// <param name="streamLeft">- left hand stream
+		/// <param name="streamLeft">left hand stream
 		/// </param>
-		/// <param name="propertyLeft">- left hand stream property
+		/// <param name="propertyLeft">left hand stream property
 		/// </param>
-		/// <param name="streamRight">- right hand stream
+		/// <param name="streamRight">right hand stream
 		/// </param>
-		/// <param name="propertyRight">- right hand stream property
+		/// <param name="propertyRight">right hand stream property
 		/// </param>
 		/// <returns> true if added and did not exist, false if already known
 		/// </returns>
@@ -77,9 +77,9 @@ namespace net.esper.eql.join.plan
 		}
 
 		/// <summary> Returns true if there is a relationship between streams via equal properties.</summary>
-		/// <param name="streamFrom">- from stream number
+		/// <param name="streamFrom">from stream number
 		/// </param>
-		/// <param name="streamTo">- to stream number
+		/// <param name="streamTo">to stream number
 		/// </param>
 		/// <returns> true if relationship exists, false if not
 		/// </returns>
@@ -91,7 +91,7 @@ namespace net.esper.eql.join.plan
 		}
 
 		/// <summary> Returns set of streams that the given stream is navigable to.</summary>
-		/// <param name="streamFrom">- from stream number
+		/// <param name="streamFrom">from stream number
 		/// </param>
 		/// <returns> set of streams related to this stream, or empty set if none
 		/// </returns>
@@ -110,9 +110,9 @@ namespace net.esper.eql.join.plan
 		}
 
 		/// <summary> Returns index properties.</summary>
-		/// <param name="streamLookup">- stream to serve as source for looking up events
+		/// <param name="streamLookup">stream to serve as source for looking up events
 		/// </param>
-		/// <param name="streamIndexed">- stream to look up in
+		/// <param name="streamIndexed">stream to look up in
 		/// </param>
 		/// <returns> index property names
 		/// </returns>
@@ -132,9 +132,9 @@ namespace net.esper.eql.join.plan
 		}
 
 		/// <summary> Returns key properties.</summary>
-		/// <param name="streamLookup">- stream to serve as source for looking up events
+		/// <param name="streamLookup">stream to serve as source for looking up events
 		/// </param>
-		/// <param name="streamIndexed">- stream to look up in
+		/// <param name="streamIndexed">stream to look up in
 		/// </param>
 		/// <returns> key property names
 		/// </returns>
@@ -158,7 +158,7 @@ namespace net.esper.eql.join.plan
 		/// For example, if  a=b and b=c  then add a=c. The method adds new equalivalent key properties
 		/// until no additional entries to be added are found, ie. several passes can be made.
 		/// </summary>
-		/// <param name="queryGraph">- navigablity info between streamss
+		/// <param name="queryGraph">navigablity info between streamss
 		/// </param>
 		public static void FillEquivalentNav( QueryGraph queryGraph )
 		{
@@ -287,9 +287,9 @@ namespace net.esper.eql.join.plan
 			}
 
 			/// <summary> Add key and index property.</summary>
-			/// <param name="keyProperty">- key property
+			/// <param name="keyProperty">key property
 			/// </param>
-			/// <param name="indexProperty">- index property
+			/// <param name="indexProperty">index property
 			/// </param>
 			/// <returns> true if added and either property did not exist, false if either already existed
 			/// </returns>
@@ -324,6 +324,12 @@ namespace net.esper.eql.join.plan
 				get { return propertiesRight; }
 			}
 
+            /// <summary>
+            /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </returns>
 			public override String ToString()
 			{
 				return
@@ -342,9 +348,9 @@ namespace net.esper.eql.join.plan
 			private UniformPair<Int32> streams;
 
 			/// <summary> Ctor.</summary>
-			/// <param name="streamOne">- from stream
+			/// <param name="streamOne">from stream
 			/// </param>
-			/// <param name="streamTwo">- to stream
+			/// <param name="streamTwo">to stream
 			/// </param>
 			public GraphKey( int streamOne, int streamTwo )
 			{
@@ -358,6 +364,13 @@ namespace net.esper.eql.join.plan
 				streams = new UniformPair<Int32>( streamOne, streamTwo );
 			}
 
+            /// <summary>
+            /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
+            /// </summary>
+            /// <param name="obj">The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>.</param>
+            /// <returns>
+            /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
+            /// </returns>
 			public override bool Equals( Object obj )
 			{
 				if ( this == obj )
@@ -374,17 +387,35 @@ namespace net.esper.eql.join.plan
 				return other.streams.Equals( this.streams );
 			}
 
+            /// <summary>
+            /// Serves as a hash function for a particular type.
+            /// </summary>
+            /// <returns>
+            /// A hash code for the current <see cref="T:System.Object"></see>.
+            /// </returns>
 			public override int GetHashCode()
 			{
 				return streams.GetHashCode();
 			}
 
+            /// <summary>
+            /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </returns>
 			public override String ToString()
 			{
 				return "GraphKey " + streams.First + " and " + streams.Second;
 			}
 		}
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			StringWriter writer = new StringWriter();

@@ -8,17 +8,15 @@ using net.esper.collection;
 namespace net.esper.events
 {
 	/// <summary>
-    /// Method to getSelectListEvents events in collections to other collections or other event types.
+    /// Method to GetSelectListEvents events in collections to other collections or other event types.
     /// </summary>
 
     public class EventBeanUtility
     {
-        /**
-         * Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
-         * return an array containing all the events.
-         * @param eventVector vector
-         * @return array with all events
-         */
+        /// <summary>Flatten the vector of arrays to an array. Return null if an empty vector was passed, elsereturn an array containing all the events.</summary>
+        /// <param name="eventVector">vector</param>
+        /// <returns>array with all events</returns>
+
         public static EventBean[] Flatten(IList<EventBean[]> eventVector)
         {
             if (eventVector.Count == 0)
@@ -49,12 +47,11 @@ namespace net.esper.events
             return result;
         }
 
-        /**
-        * Append arrays.
-        * @param source array
-        * @param append array
-        * @return appended array
-        */
+        /// <summary>Append arrays.</summary>
+        /// <param name="source">array</param>
+        /// <param name="append">array</param>
+        /// <returns>appended array</returns>
+
         public static EventBean[] Append(EventBean[] source, EventBean[] append)
         {
             EventBean[] result = new EventBean[source.Length + append.Length];
@@ -63,11 +60,10 @@ namespace net.esper.events
             return result;
         }
 
-        /**
-         * Convert list of events to array, returning null for empty or null lists.
-         * @param eventList
-         * @return array of events
-         */
+        /// <summary>Convert list of events to array, returning null for empty or null lists.</summary>
+        /// <param name="eventList"></param>
+        /// <returns>array of events</returns>
+
         public static EventBean[] ToArray(IList<EventBean> eventList)
         {
             if ((eventList == null) || (eventList.Count == 0))
@@ -78,13 +74,13 @@ namespace net.esper.events
             return CollectionHelper.ToArray(eventList);
         }
 
-        /**
-         * Returns object array containing property values of given properties, retrieved via EventPropertyGetter
-         * instances.
-         * @param event - event to get property values from
-         * @param propertyGetters - getters to use for getting property values
-         * @return object array with property values
-         */
+        /// <summary>
+        /// Returns object array containing property values of given properties, retrieved via EventPropertyGetterinstances.
+        /// </summary>
+        /// <param name="ev">event to get property values from</param>
+        /// <param name="propertyGetters">getters to use for getting property values</param>
+        /// <returns>object array with property values</returns>
+
         public static Object[] GetPropertyArray(EventBean ev, EventPropertyGetter[] propertyGetters)
         {
             Object[] keyValues = new Object[propertyGetters.Length];
@@ -95,23 +91,25 @@ namespace net.esper.events
             return keyValues;
         }
 
-        /**
-         * Returns Multikey instance for given event and getters.
-         * @param event - event to get property values from
-         * @param propertyGetters - getters for access to properties
-         * @return MultiKey with property values
-         */
+        /// <summary>
+        /// Returns Multikey instance for given event and getters.
+        /// </summary>
+        /// <param name="ev">event to get property values from</param>
+        /// <param name="propertyGetters">getters for access to properties</param>
+        /// <returns>MultiKey with property values</returns>
+
         public static MultiKeyUntyped GetMultiKey(EventBean ev, EventPropertyGetter[] propertyGetters)
         {
             Object[] keyValues = GetPropertyArray(ev, propertyGetters);
             return new MultiKeyUntyped(keyValues);
         }
 
-        /**
-         * Format the event and return a string representation.
-         * @param event is the event to format.
-         * @return string representation of event
-         */
+        /// <summary>
+        /// Format the event and return a string representation.
+        /// </summary>
+        /// <param name="ev">is the event to format.</param>
+        /// <returns>string representation of event</returns>
+
         public static String PrintEvent(EventBean ev)
         {
             StringWriter writer = new StringWriter();
@@ -119,6 +117,11 @@ namespace net.esper.events
             return writer.ToString();
         }
 
+        /// <summary>
+        /// Prints the event.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="ev">The ev.</param>
         public static void PrintEvent(TextWriter writer, EventBean ev)
         {
             IEnumerable<String> properties = ev.EventType.PropertyNames;

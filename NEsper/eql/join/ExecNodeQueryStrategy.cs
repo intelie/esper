@@ -18,12 +18,12 @@ namespace net.esper.eql.join
         private int numStreams;
         private ExecNode execNode;
 
-        /**
-         * CTor.
-         * @param forStream - stream the strategy is for
-         * @param numStreams - number of streams in total
-         * @param execNode - execution node for building join tuple set
-         */
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExecNodeQueryStrategy"/> class.
+        /// </summary>
+        /// <param name="forStream">stream the strategy is for.</param>
+        /// <param name="numStreams">number of streams in total.</param>
+        /// <param name="execNode">execution node for building join tuple set.</param>
         public ExecNodeQueryStrategy(int forStream, int numStreams, ExecNode execNode)
         {
             this.forStream = forStream;
@@ -31,7 +31,12 @@ namespace net.esper.eql.join
             this.execNode = execNode;
         }
 
-        public void lookup(EventBean[] lookupEvents, ISet<MultiKey<EventBean>> joinSet)
+        /// <summary>
+        /// Look up events returning tuples of joined events.
+        /// </summary>
+        /// <param name="lookupEvents">events to use to perform the join</param>
+        /// <param name="joinSet">result join tuples of events</param>
+        public void Lookup(EventBean[] lookupEvents, ISet<MultiKey<EventBean>> joinSet)
         {
             if (lookupEvents == null)
             {
@@ -56,28 +61,25 @@ namespace net.esper.eql.join
             }
         }
 
-        /**
-         * Return stream number this strategy is for.
-         * @return stream num
-         */
+        /// <summary>Return stream number this strategy is for.</summary>
+        /// <returns>stream num</returns>
+
         public int getForStream()
         {
             return forStream;
         }
 
-        /**
-         * Returns the total number of streams.
-         * @return number of streams
-         */
+        /// <summary>Returns the total number of streams.</summary>
+        /// <returns>number of streams</returns>
+
         public int NumStreams
         {
             get { return numStreams; }
         }
 
-        /**
-         * Returns execution node.
-         * @return execution node
-         */
+        /// <summary>Returns execution node.</summary>
+        /// <returns>execution node</returns>
+
         public ExecNode ExecNode
         {
 			get { return execNode; }

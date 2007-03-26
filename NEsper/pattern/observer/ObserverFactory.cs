@@ -8,11 +8,11 @@ namespace net.esper.pattern.observer
 	public interface ObserverFactory
 	{
 		/// <summary> Make an observer instance.</summary>
-		/// <param name="context">- services that may be required by observer implementation
+		/// <param name="context">services that may be required by observer implementation
 		/// </param>
-		/// <param name="beginState">- Start state for observer
+		/// <param name="beginState">Start state for observer
 		/// </param>
-		/// <param name="observerEventEvaluator">- receiver for events observed
+		/// <param name="observerEventEvaluator">receiver for events observed
 		/// </param>
 		/// <returns> observer instance
 		/// </returns>

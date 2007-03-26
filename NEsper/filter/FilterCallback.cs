@@ -13,7 +13,7 @@ namespace net.esper.filter
         /// <summary> Indicate that an event was evaluated by the {@link FilterService}
         /// which matches the filter specification {@link FilterSpec} associated with this callback.
         /// </summary>
-        /// <param name="event">the event received that matches the filter specification
+        /// <param name="_event">the event received that matches the filter specification
         /// </param>
 
         void matchFound(EventBean _event);
@@ -35,11 +35,20 @@ namespace net.esper.filter
     {
         private FilterCallbackDelegate _delegate;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FilterCallbackImpl"/> class.
+        /// </summary>
+        /// <param name="_delegate">The _delegate.</param>
         public FilterCallbackImpl(FilterCallbackDelegate _delegate)
         {
             this._delegate = _delegate;
         }
 
+        /// <summary>
+        /// Indicate that an event was evaluated by the {@link FilterService}
+        /// which matches the filter specification {@link FilterSpec} associated with this callback.
+        /// </summary>
+        /// <param name="_event">the event received that matches the filter specification</param>
         public void matchFound(EventBean _event)
         {
         	_delegate( _event ) ;

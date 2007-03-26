@@ -9,8 +9,6 @@ namespace net.esper.timer
     public interface TimerService
     {
         /// <summary> Set the callback method to invoke for clock ticks.</summary>
-        /// <param name="timerCallback">is the callback
-        /// </param>
         TimerCallback Callback
         {
             set;
@@ -27,6 +25,10 @@ namespace net.esper.timer
         /// </param>
         void StopInternalClock(bool warnIfNotStarted);
     }
+
+    /// <summary>
+    /// Fields needed for the timer service.
+    /// </summary>
 
 	public struct TimerService_Fields
 	{

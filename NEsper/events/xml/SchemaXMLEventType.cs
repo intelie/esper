@@ -33,7 +33,7 @@ namespace net.esper.events.xml
 		/// <summary>
 		/// Ctor.
 		/// </summary>
-		/// <param name="configurationEventTypeXMLDOM">- configuration for type</param>
+		/// <param name="configurationEventTypeXMLDOM">configuration for type</param>
         
 		public SchemaXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
             : base(configurationEventTypeXMLDOM.RootElementName)
@@ -75,7 +75,7 @@ namespace net.esper.events.xml
             base.NamespaceManager = nsManager;
 
             // Finally add XPath properties as that may depend on the rootElementNamespace
-            base.setExplicitProperties(configurationEventTypeXMLDOM.XPathProperties.Values);
+            base.SetExplicitProperties(configurationEventTypeXMLDOM.XPathProperties.Values);
         }
 
 		/// <summary>
@@ -110,7 +110,7 @@ namespace net.esper.events.xml
 			//}
         }
 
-        internal override Type doResolvePropertyType(String property)
+        internal override Type DoResolvePropertyType(String property)
         {
             TypedEventPropertyGetter getter = propertyGetterCache.Fetch(property, null);
             if (getter != null)
@@ -118,7 +118,7 @@ namespace net.esper.events.xml
                 return getter.ResultClass;
             }
 
-            getter = (TypedEventPropertyGetter)doResolvePropertyGetter(property);
+            getter = (TypedEventPropertyGetter)DoResolvePropertyGetter(property);
             if (getter != null)
             {
                 return getter.ResultClass;
@@ -127,7 +127,7 @@ namespace net.esper.events.xml
             return null;
         }
 
-        internal override EventPropertyGetter doResolvePropertyGetter(String property)
+        internal override EventPropertyGetter DoResolvePropertyGetter(String property)
         {
             TypedEventPropertyGetter getter = propertyGetterCache.Fetch(property);
             if (getter != null)
@@ -147,7 +147,7 @@ namespace net.esper.events.xml
             }
         }
 
-        internal override String[] doListPropertyNames()
+        internal override String[] DoListPropertyNames()
         {
             return null;
         }

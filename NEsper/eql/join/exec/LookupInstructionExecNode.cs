@@ -67,6 +67,13 @@ namespace net.esper.eql.join.exec
             }
         }
 
+        /// <summary>
+        /// Process single event using the prefill events to compile lookup results.
+        /// </summary>
+        /// <param name="lookupEvent">event to look up for or query for</param>
+        /// <param name="prefillPath">set of events currently in the example tuple to serve
+        /// as a prototype for result rows.</param>
+        /// <param name="result">is the list of tuples to add a result row to</param>
         public override void Process(EventBean lookupEvent, EventBean[] prefillPath, IList<EventBean[]> result)
         {
             RepositoryImpl repository = new RepositoryImpl(rootStream, lookupEvent, numStreams);
@@ -132,6 +139,10 @@ namespace net.esper.eql.join.exec
             }
         }
 
+        /// <summary>
+        /// Output the execution strategy.
+        /// </summary>
+        /// <param name="writer">to output to</param>
         public override void Print(IndentWriter writer)
         {
             writer.WriteLine(
@@ -192,6 +203,13 @@ namespace net.esper.eql.join.exec
                 this.m_rootEvent = rootEvent;
             }
 
+            /// <summary>
+            /// Publish a result row.
+            /// </summary>
+            /// <param name="row">is the result to publish</param>
+            /// <param name="fromStreamNum">is the originitor that publishes the row</param>
+            /// <param name="myEvent">is optional and is the event that led to the row result</param>
+            /// <param name="myNode">is optional and is the result node of the event that led to the row result</param>
             public virtual void Result(EventBean[] row, int fromStreamNum, EventBean myEvent, Node myNode)
             {
                 row[m_rootStream] = m_rootEvent;

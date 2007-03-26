@@ -3,10 +3,29 @@ using System.Collections.Generic;
 
 namespace net.esper.compat
 {
-	public class ETreeSet<T> : C5.TreeSet<T>, ISet<T>
+    /// <summary>
+    /// An extended set that uses a tree-based backing store.
+    /// As such, the set is always sorted.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    
+    public class ETreeSet<T> : C5.TreeSet<T>, ISet<T>
 	{
-		public ETreeSet() {}
-		public ETreeSet( IComparer<T> comparer ) : base( comparer ) {}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ETreeSet&lt;T&gt;"/> class.
+        /// </summary>
+        public ETreeSet()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ETreeSet&lt;T&gt;"/> class.
+        /// </summary>
+        /// <param name="comparer">The comparer.</param>
+        public ETreeSet(IComparer<T> comparer)
+            : base(comparer)
+        {
+        }
 		
 		/// <summary>
 		/// Gets the first item in the set.

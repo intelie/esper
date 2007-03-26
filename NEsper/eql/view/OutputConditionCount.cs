@@ -82,8 +82,13 @@ namespace net.esper.eql.view
 			this.eventRate = eventRate;
 			this.outputCallback = outputCallback;
 		}
-		
-		public void  updateOutputCondition(int newDataCount, int oldDataCount)
+
+        /// <summary>
+        /// Updates the output condition.
+        /// </summary>
+        /// <param name="newDataCount">The new data count.</param>
+        /// <param name="oldDataCount">The old data count.</param>
+		public void UpdateOutputCondition(int newDataCount, int oldDataCount)
 		{
 			this.newEventsCount += newDataCount;
 			this.oldEventsCount += oldDataCount;
@@ -101,7 +106,13 @@ namespace net.esper.eql.view
 				outputCallback(DO_OUTPUT, FORCE_UPDATE);
 			}
 		}
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return this.GetType().FullName + " eventRate=" + eventRate;

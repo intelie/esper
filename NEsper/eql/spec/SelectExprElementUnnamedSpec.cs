@@ -5,8 +5,9 @@ namespace net.esper.eql.spec
 	
 	/// <summary> Represents a single item in a SELECT-clause, potentially unnamed
 	/// as no "as" tag may have been supplied in the syntax.
-	/// <p>
+	/// <para>
 	/// Compare to {@link SelectExprElementNamedSpec} which carries a determined name.
+    /// </para>
 	/// </summary>
 	public class SelectExprElementUnnamedSpec
 	{
@@ -36,9 +37,9 @@ namespace net.esper.eql.spec
 		private String optionalAsName;
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="selectExpression">- the expression node to evaluate for matching events
+		/// <param name="selectExpression">the expression node to evaluate for matching events
 		/// </param>
-		/// <param name="optionalAsName">- the name of the item, null if not name supplied
+		/// <param name="optionalAsName">the name of the item, null if not name supplied
 		/// </param>
 		public SelectExprElementUnnamedSpec(ExprNode selectExpression, String optionalAsName)
 		{

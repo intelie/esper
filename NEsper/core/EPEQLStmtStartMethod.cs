@@ -78,7 +78,7 @@ namespace net.esper.core
                 if (streamSpec is FilterStreamSpec)
                 {
                     FilterStreamSpec filterStreamSpec = (FilterStreamSpec)streamSpec;
-                    EventStream eventStream = services.StreamService.createStream(filterStreamSpec.FilterSpec, services.FilterService);
+                    EventStream eventStream = services.StreamService.CreateStream(filterStreamSpec.FilterSpec, services.FilterService);
 
                     // Cascade views onto the (filter or pattern) stream
                     streamViews[i] = services.ViewService.CreateView(eventStream, streamSpec.ViewSpecs, viewContext);
@@ -143,7 +143,7 @@ namespace net.esper.core
                         if (streamSpec is FilterStreamSpec)
                         {
                             FilterStreamSpec filterStreamSpec = (FilterStreamSpec)streamSpec;
-                            services.StreamService.dropStream(filterStreamSpec.FilterSpec, services.FilterService);
+                            services.StreamService.DropStream(filterStreamSpec.FilterSpec, services.FilterService);
                         }
                     }
                     foreach (StopCallback stopCallback in stopCallbacks)
@@ -170,7 +170,7 @@ namespace net.esper.core
 
             // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
             // May return null if we don't need to post-process results posted by views or joins.
-            ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
+            ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.GetProcessor(
                     statementSpec.SelectListExpressions,
                     statementSpec.InsertIntoDesc,
                     statementSpec.GroupByExpressions,
@@ -238,7 +238,7 @@ namespace net.esper.core
         }
 
         /// <summary> Returns a stream name assigned for each stream, generated if none was supplied.</summary>
-        /// <param name="streams">- stream specifications
+        /// <param name="streams">stream specifications
         /// </param>
         /// <returns> array of stream names
         /// </returns>

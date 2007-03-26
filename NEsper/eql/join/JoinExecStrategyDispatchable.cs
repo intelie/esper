@@ -26,11 +26,11 @@ namespace net.esper.eql.join
         private bool isDispatchRegistered;
 
         /// <summary> CTor.</summary>
-        /// <param name="dispatchService">- dispatches to this object via execute method
+        /// <param name="dispatchService">dispatches to this object via execute method
         /// </param>
-        /// <param name="joinExecutionStrategy">- strategy for executing the join
+        /// <param name="joinExecutionStrategy">strategy for executing the join
         /// </param>
-        /// <param name="numStreams">- number of stream
+        /// <param name="numStreams">number of stream
         /// </param>
 
         public JoinExecStrategyDispatchable(DispatchService dispatchService, JoinExecutionStrategy joinExecutionStrategy, int numStreams)
@@ -43,6 +43,9 @@ namespace net.esper.eql.join
             newStreamBuffer = new EHashDictionary<Int32, EventBuffer>();
         }
 
+        /// <summary>
+        /// Execute pending dispatchable items.
+        /// </summary>
         public virtual void Execute()
         {
             isDispatchRegistered = false;
@@ -56,7 +59,7 @@ namespace net.esper.eql.join
                 newDataPerStream[i] = getBufferData(newStreamBuffer.Fetch(i, null));
             }
 
-            joinExecutionStrategy.join(newDataPerStream, oldDataPerStream);
+            joinExecutionStrategy.Join(newDataPerStream, oldDataPerStream);
         }
 
         private EventBean[] getBufferData(EventBuffer buffer)
@@ -69,6 +72,12 @@ namespace net.esper.eql.join
             return events;
         }
 
+        /// <summary>
+        /// Receive new and old events from a stream.
+        /// </summary>
+        /// <param name="streamId">the stream number sending the events</param>
+        /// <param name="newEventBuffer">buffer for new events</param>
+        /// <param name="oldEventBuffer">buffer for old events</param>
         public virtual void newData(int streamId, EventBuffer newEventBuffer, EventBuffer oldEventBuffer)
         {
             if (!isDispatchRegistered)

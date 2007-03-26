@@ -11,9 +11,9 @@ namespace net.esper.eql.parse
 	public class EPStatementSyntaxException:EPStatementException
 	{
 		/// <summary> Ctor.</summary>
-		/// <param name="message">- error message
+		/// <param name="message">error message
 		/// </param>
-		/// <param name="expression">- expression text
+		/// <param name="expression">expression text
 		/// </param>
 		public EPStatementSyntaxException(String message, String expression):base(message, expression)
 		{

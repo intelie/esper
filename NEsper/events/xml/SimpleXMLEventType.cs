@@ -33,16 +33,16 @@ namespace net.esper.events.xml
         public SimpleXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
             : base(configurationEventTypeXMLDOM.RootElementName)
         {
-            base.setExplicitProperties(configurationEventTypeXMLDOM.XPathProperties.Values);
+            base.SetExplicitProperties(configurationEventTypeXMLDOM.XPathProperties.Values);
             propertyGetterCache = new EHashDictionary<String, TypedEventPropertyGetter>();
         }
 
-        internal override Type doResolvePropertyType(String property)
+        internal override Type DoResolvePropertyType(String property)
         {
             return typeof(String);
         }
 
-        internal override EventPropertyGetter doResolvePropertyGetter(String property)
+        internal override EventPropertyGetter DoResolvePropertyGetter(String property)
         {
             TypedEventPropertyGetter getter = propertyGetterCache.Fetch(property);
             if (getter != null)

@@ -7,7 +7,7 @@ namespace net.esper.eql.core
 	public class DuplicatePropertyException:StreamTypesException
 	{
 		/// <summary> Ctor.</summary>
-		/// <param name="msg">- exception message
+		/// <param name="msg">exception message
 		/// </param>
 		public DuplicatePropertyException(String msg):base(msg)
 		{

@@ -22,15 +22,15 @@ namespace net.esper.eql.join.plan
         private readonly bool[] requiredPerStream;
 
         /// <summary> Ctor.</summary>
-        /// <param name="fromStream">- the stream supplying the lookup event
+        /// <param name="fromStream">the stream supplying the lookup event
         /// </param>
-        /// <param name="fromStreamName">- the stream name supplying the lookup event
+        /// <param name="fromStreamName">the stream name supplying the lookup event
         /// </param>
-        /// <param name="toStreams">- the set of streams to look up in
+        /// <param name="toStreams">the set of streams to look up in
         /// </param>
-        /// <param name="lookupPlans">- the plan to use for each stream to look up in
+        /// <param name="lookupPlans">the plan to use for each stream to look up in
         /// </param>
-        /// <param name="requiredPerStream">- indicates which of the lookup streams are required to build a result and which are not
+        /// <param name="requiredPerStream">indicates which of the lookup streams are required to build a result and which are not
         /// </param>
         public LookupInstructionPlan(int fromStream, String fromStreamName, int[] toStreams, TableLookupPlan[] lookupPlans, bool[] requiredPerStream)
         {

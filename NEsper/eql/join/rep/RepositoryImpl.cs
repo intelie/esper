@@ -36,6 +36,11 @@ namespace net.esper.eql.join.rep
             this.numStreams = numStreams;
         }
 
+        /// <summary>
+        /// Gets the cursors.
+        /// </summary>
+        /// <param name="lookupFromStream">The lookup from stream.</param>
+        /// <returns></returns>
         public IEnumerator<Cursor> GetCursors(int lookupFromStream)
         {
             if (lookupFromStream == rootStream)
@@ -52,6 +57,12 @@ namespace net.esper.eql.join.rep
             return new NodeCursorEnumerator(lookupFromStream, nodeList.GetEnumerator());
         }
 
+        /// <summary>
+        /// Add a lookup result.
+        /// </summary>
+        /// <param name="cursor">provides result position and parent event and node information</param>
+        /// <param name="lookupResults">is the events found</param>
+        /// <param name="resultStream">is the stream number of the stream providing the results</param>
         public void AddResult(Cursor cursor, ISet<EventBean> lookupResults, int resultStream)
         {
             if (lookupResults.Count == 0)

@@ -44,18 +44,32 @@ namespace net.esper.dispatch
             }
         }
 
+        /// <summary>
+        /// Dispatches events in either the internal or external queue.
+        /// </summary>
+
         public void Dispatch()
         {
             DispatchFromQueue(QueueInternal);
             DispatchFromQueue(QueueExternal);
         }
 
+        /// <summary>
+        /// Add an item to be dispatched.  The item is added to
+        /// the external dispatch queue.
+        /// </summary>
+        /// <param name="dispatchable">to execute later</param>
         public void AddExternal(Dispatchable dispatchable)
         {
             Queue<Dispatchable> dispatchQueue = QueueExternal;
             AddToQueue(dispatchable, dispatchQueue);
         }
 
+        /// <summary>
+        /// Add an item to be dispatched.  The item is added to
+        /// the internal dispatch queue.
+        /// </summary>
+        /// <param name="dispatchable">to execute later</param>
         public void AddInternal(Dispatchable dispatchable)
         {
             Queue<Dispatchable> dispatchQueue = QueueInternal;

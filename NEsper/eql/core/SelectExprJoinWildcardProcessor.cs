@@ -13,6 +13,12 @@ namespace net.esper.eql.core
     
     public class SelectExprJoinWildcardProcessor : SelectExprProcessor
     {
+        /// <summary>
+        /// Returns the event type that represents the select-clause items.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type representing select-clause items
+        /// </returns>
         virtual public EventType ResultEventType
         {
             get { return resultEventType; }
@@ -23,11 +29,11 @@ namespace net.esper.eql.core
         private readonly EventAdapterService eventAdapterService;
 
         /// <summary> Ctor.</summary>
-        /// <param name="streamNames">- name of each stream
+        /// <param name="streamNames">name of each stream
         /// </param>
-        /// <param name="streamTypes">- type of each stream
+        /// <param name="streamTypes">type of each stream
         /// </param>
-        /// <param name="eventAdapterService">- service for generating events and handling event types
+        /// <param name="eventAdapterService">service for generating events and handling event types
         /// </param>
         public SelectExprJoinWildcardProcessor(String[] streamNames, EventType[] streamTypes, EventAdapterService eventAdapterService)
         {
@@ -48,6 +54,14 @@ namespace net.esper.eql.core
             resultEventType = eventAdapterService.CreateAnonymousMapType(eventTypeMap);
         }
 
+        /// <summary>
+        /// Computes the select-clause results and returns an event of the result event type that contains, in it's
+        /// properties, the selected items.
+        /// </summary>
+        /// <param name="eventsPerStream"></param>
+        /// <returns>
+        /// event with properties containing selected items
+        /// </returns>
         public virtual EventBean Process(EventBean[] eventsPerStream)
         {
         	EDataDictionary tuple = new EDataDictionary() ;

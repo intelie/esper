@@ -44,26 +44,26 @@ namespace net.esper.eql.expression
 
             Assert.IsNull(agg.Value);
 
-            agg.enter(82);
+            agg.Enter(82);
             Assert.AreEqual(0D, agg.Value);
 
-            agg.enter(78);
+            agg.Enter(78);
             Assert.AreEqual(2D, agg.Value);
 
-            agg.enter(70);
+            agg.Enter(70);
             double result = (double)agg.Value;
             Assert.AreEqual("4.4444", result.ToString().Substring(0, (6) - (0)));
 
-            agg.enter(58);
+            agg.Enter(58);
             Assert.AreEqual(8D, agg.Value);
 
-            agg.enter(42);
+            agg.Enter(42);
             Assert.AreEqual(12.8D, agg.Value);
 
-            agg.leave(82);
+            agg.Leave(82);
             Assert.AreEqual(12D, agg.Value);
 
-            agg.leave(58);
+            agg.Leave(58);
             result = (Double)agg.Value;
             Assert.AreEqual("14.2222", result.ToString().Substring(0, (7) - (0)));
         }

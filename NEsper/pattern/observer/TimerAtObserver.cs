@@ -22,13 +22,13 @@ namespace net.esper.pattern.observer
         private bool isTimerActive = false;
 
         /// <summary> Ctor.</summary>
-        /// <param name="scheduleSpec">- specification containing the crontab schedule
+        /// <param name="scheduleSpec">specification containing the crontab schedule
         /// </param>
-        /// <param name="context">- timer serive to use
+        /// <param name="context">timer serive to use
         /// </param>
-        /// <param name="beginState">- Start state
+        /// <param name="beginState">Start state
         /// </param>
-        /// <param name="observerEventEvaluator">- receiver for events
+        /// <param name="observerEventEvaluator">receiver for events
         /// </param>
         public TimerAtObserver(ScheduleSpec scheduleSpec, PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
         {
@@ -39,6 +39,9 @@ namespace net.esper.pattern.observer
             this.scheduleSlot = context.ScheduleBucket.AllocateSlot();
         }
 
+        /// <summary>
+        /// Called when a scheduled callback occurs.
+        /// </summary>
         public void scheduledTrigger()
         {
             if (log.IsDebugEnabled)
@@ -50,6 +53,9 @@ namespace net.esper.pattern.observer
             isTimerActive = false;
         }
 
+        /// <summary>
+        /// Start observing.
+        /// </summary>
         public virtual void StartObserve()
         {
             if (log.IsDebugEnabled)
@@ -66,6 +72,9 @@ namespace net.esper.pattern.observer
             isTimerActive = true;
         }
 
+        /// <summary>
+        /// Stop observing.
+        /// </summary>
         public virtual void StopObserve()
         {
             if (log.IsDebugEnabled)

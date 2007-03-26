@@ -9,7 +9,7 @@ namespace net.esper.dispatch
 	/// instances then all external Dispatchable instances. Dispatchables are invoked
 	/// in the same order they are added. Any dispatchable added twice is dispatched once.
 	/// 
-	/// <p>Note: Each execution thread owns its own dispatch queue.
+	/// Note: Each execution thread owns its own dispatch queue.
 	/// 
 	/// Note: Dispatchs could result in further call to the dispatch service. This is because listener code
 	/// that is invoked as a result of a dispatch may create patterns that fire as soon as they are Started

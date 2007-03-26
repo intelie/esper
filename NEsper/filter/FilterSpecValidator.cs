@@ -32,7 +32,7 @@ namespace net.esper.filter
                 FilterOperator _operator = param.FilterOperator;
 
                 // Check valid
-                if (!eventType.isProperty(property))
+                if (!eventType.IsProperty(property))
                 {
                     throw new ASTFilterSpecValidationException("Invalid property named '" + property + "' for this event type");
                 }

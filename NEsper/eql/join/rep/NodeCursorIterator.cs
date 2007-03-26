@@ -17,6 +17,11 @@ namespace net.esper.eql.join.rep
         private IEnumerator<EventBean> currentEnumerator;
         private Node currentNode;
 
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        /// <value></value>
+        /// <returns>The element in the collection at the current position of the enumerator.</returns>
         public virtual Cursor Current
         {
             get

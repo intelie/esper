@@ -31,7 +31,16 @@ namespace net.esper.eql.db
             this.schedulingService = schedulingService;
             this.scheduleBucket = scheduleBucket;
         }
-		
+
+        /// <summary>
+        /// Returns true to indicate a setting to retain connections between lookups.
+        /// </summary>
+        /// <param name="databaseName">is the name of the database</param>
+        /// <param name="preparedStatementText">is the sql text</param>
+        /// <returns>
+        /// a cache implementation to cache connection and prepared statements
+        /// </returns>
+        /// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
 		public virtual ConnectionCache GetConnectionCache(String databaseName, String preparedStatementText)
 		{
             ConfigurationDBRef config = null;
@@ -51,7 +60,15 @@ namespace net.esper.eql.db
 				return new ConnectionNoCacheImpl(connectionFactory, preparedStatementText);
 			}
 		}
-		
+
+        /// <summary>
+        /// Returns a connection factory for a configured database.
+        /// </summary>
+        /// <param name="databaseName">is the name of the database</param>
+        /// <returns>
+        /// is a connection factory to use to get connections to the database
+        /// </returns>
+        /// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
 		public virtual DatabaseConnectionFactory GetConnectionFactory(String databaseName)
 		{
 			// check if we already have a reference
@@ -82,7 +99,13 @@ namespace net.esper.eql.db
 			
 			return factory;
 		}
-		
+
+        /// <summary>
+        /// Returns a new cache implementation for this database.
+        /// </summary>
+        /// <param name="databaseName">is the name of the database to return a new cache implementation for for</param>
+        /// <returns>cache implementation</returns>
+        /// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
 		public virtual DataCache GetDataCache(String databaseName)
 		{
             ConfigurationDBRef config = null;

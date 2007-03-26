@@ -17,7 +17,13 @@ namespace net.esper.filter
         private static readonly FilterOperator[] FilterOperator_SortOrder ;
 
         private static int[] filterSortOrder;
-		
+
+        /// <summary>
+        /// Compares a pair of parameters.
+        /// </summary>
+        /// <param name="param1">The param1.</param>
+        /// <param name="param2">The param2.</param>
+        /// <returns></returns>
 		public int Compare(FilterValueSetParam param1, FilterValueSetParam param2)
 		{
 			// Within the same filter operator type sort by attribute name

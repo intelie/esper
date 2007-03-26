@@ -1,11 +1,11 @@
-/// <summary>***********************************************************************************
-/// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
-/// http://esper.codehaus.org                                                          *
-/// ---------------------------------------------------------------------------------- *
-/// The software in this package is published under the terms of the GPL license       *
-/// a copy of which has been included with this distribution in the license.txt file.  *
-/// ************************************************************************************
-/// </summary>
+// ************************************************************************************
+// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
+// http://esper.codehaus.org                                                          *
+// ---------------------------------------------------------------------------------- *
+// The software in this package is published under the terms of the GPL license       *
+// a copy of which has been included with this distribution in the license.txt file.  *
+// ************************************************************************************
+
 using System;
 
 namespace net.esper.events
@@ -28,7 +28,7 @@ namespace net.esper.events
 		}
 
 		/// <summary> Get the underlying data object to this event wrapper.</summary>
-		/// <returns> underlying data object, usually either a Map or a Java bean instance.
+		/// <returns> underlying data object, usually either a Map or a bean instance.
 		/// </returns>
 		
         Object Underlying
@@ -37,7 +37,7 @@ namespace net.esper.events
 		}
 		
 		/// <summary> Returns the value of an event property.</summary>
-		/// <param name="property">- name of the property whose value is to be retrieved
+		/// <param name="property">name of the property whose value is to be retrieved
 		/// </param>
 		/// <returns> the value of a simple property with the specified name.
 		/// </returns>

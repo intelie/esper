@@ -8,22 +8,24 @@ namespace net.esper.util
 	/// <summary>
     /// Parser for strings with substitution parameters of the form ${parameter}.
     /// </summary>
-	
+
     public class PlaceholderParser
-	{
-		/// <summary> Parses a string to find placeholders of format ${placeholder}.
-		/// <p>
-		/// Example: "My ${thing} is ${color}"
-		/// <p>
-		/// The example above parses into 4 fragements: a text fragment of value "My ",
-		/// a parameter fragment "thing", a text fragement " is " and a parameter
-		/// fragment "color".
-		/// </summary>
-		/// <param name="ParseString">is the string to parse
-		/// </param>
-		/// <returns> list of fragements that can be either text fragments or placeholder fragments
-		/// </returns>
-		/// <throws>  PlaceholderParseException if the string cannot be parsed to indicate syntax errors </throws>
+    {
+        /// <summary> Parses a string to find placeholders of format ${placeholder}.
+        /// <para>
+        /// Example: "My ${thing} is ${color}"
+        /// </para>
+        /// <para>
+        /// The example above parses into 4 fragements: a text fragment of value "My ",
+        /// a parameter fragment "thing", a text fragement " is " and a parameter
+        /// fragment "color".
+        /// </para>
+        /// </summary>
+        /// <param name="parseString">is the string to parse
+        /// </param>
+        /// <returns> list of fragements that can be either text fragments or placeholder fragments
+        /// </returns>
+        /// <throws>  PlaceholderParseException if the string cannot be parsed to indicate syntax errors </throws>
 
         public static IList<Fragment> parsePlaceholder(String parseString)
         {
@@ -104,125 +106,176 @@ namespace net.esper.util
 
             return fragments;
         }
-		
-		/// <summary> Fragment is a parse result, a parse results in an ordered list of fragments.</summary>
-		public abstract class Fragment
-		{
-			/// <summary> Returns the string text of the fragment.</summary>
-			/// <returns> fragment string
-			/// </returns>
-			virtual public String Value
-			{
-				get
-				{
-					return value;
-				}
-				
-			}
-			/// <summary> Returns true to indicate this is a parameter and not a text fragment.</summary>
-			/// <returns> true if parameter fragement, false if text fragment.
-			/// </returns>
-			public abstract bool IsParameter
-			{
-				get;
-			}
-			
-			private String value;
-			
-			/// <summary> Ctor.</summary>
-			/// <param name="value">is the fragment text
-			/// </param>
-			internal Fragment(String value)
-			{
-				this.value = value;
-			}
-		}
-		
-		/// <summary>
-		/// Represents a piece of text in a parse string with placeholder values.
-		/// </summary>
-		
-		public class TextFragment : Fragment
-		{
-			override public bool IsParameter
-			{
-				get
-				{
-					return false;
-				}
-				
-			}
-		
-			/// <summary> Ctor.</summary>
-			/// <param name="value">is the text
-			/// </param>
-			
-			public TextFragment(String value):base(value)
-			{
-			}
-			
-			public override bool Equals(Object obj)
-			{
-				if (!(obj is TextFragment))
-				{
-					return false;
-				}
-				TextFragment other = (TextFragment) obj;
-				return other.Value.Equals(this.Value);
-			}
-			
-			public override String ToString()
-			{
-				return "text=" + Value;
-			}
 
-            public override int GetHashCode()
-			{
-				return base.GetHashCode();
-			}
-		}
-		
-		/// <summary>
-		///  Represents a parameter in a parsed string of texts and parameters.
-		/// </summary>
-		
-		public class ParameterFragment : Fragment
-		{
-			override public bool IsParameter
-			{
-				get
-				{
-					return true;
-				}
-				
-			}
-			/// <summary> Ctor.</summary>
-			/// <param name="value">is the parameter name
-			/// </param>
-			public ParameterFragment(String value)
-				: base(value)
-			{
-			}
-			
-			public  override bool Equals(Object obj)
-			{
-				if (!(obj is ParameterFragment))
-				{
-					return false;
-				}
-				ParameterFragment other = (ParameterFragment) obj;
-				return other.Value.Equals(this.Value);
-			}
-			
-			public override String ToString()
-			{
-				return "param=" + Value;
-			}
+        /// <summary> Fragment is a parse result, a parse results in an ordered list of fragments.</summary>
+        public abstract class Fragment
+        {
+            /// <summary> Returns the string text of the fragment.</summary>
+            /// <returns> fragment string
+            /// </returns>
+            virtual public String Value
+            {
+                get
+                {
+                    return value;
+                }
 
+            }
+            /// <summary> Returns true to indicate this is a parameter and not a text fragment.</summary>
+            /// <returns> true if parameter fragement, false if text fragment.
+            /// </returns>
+            public abstract bool IsParameter
+            {
+                get;
+            }
+
+            private String value;
+
+            /// <summary> Ctor.</summary>
+            /// <param name="value">is the fragment text
+            /// </param>
+            internal Fragment(String value)
+            {
+                this.value = value;
+            }
+        }
+
+        /// <summary>
+        /// Represents a piece of text in a parse string with placeholder values.
+        /// </summary>
+
+        public class TextFragment : Fragment
+        {
+            /// <summary>
+            /// Returns true to indicate this is a parameter and not a text fragment.
+            /// </summary>
+            /// <value></value>
+            /// <returns> true if parameter fragement, false if text fragment.
+            /// </returns>
+            override public bool IsParameter
+            {
+                get
+                {
+                    return false;
+                }
+
+            }
+
+            /// <summary> Ctor.</summary>
+            /// <param name="value">is the text
+            /// </param>
+
+            public TextFragment(String value)
+                : base(value)
+            {
+            }
+
+            /// <summary>
+            /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
+            /// </summary>
+            /// <param name="obj">The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>.</param>
+            /// <returns>
+            /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
+            /// </returns>
+            public override bool Equals(Object obj)
+            {
+                if (!(obj is TextFragment))
+                {
+                    return false;
+                }
+                TextFragment other = (TextFragment)obj;
+                return other.Value.Equals(this.Value);
+            }
+
+            /// <summary>
+            /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </returns>
+            public override String ToString()
+            {
+                return "text=" + Value;
+            }
+
+            /// <summary>
+            /// Serves as a hash function for a particular type.
+            /// </summary>
+            /// <returns>
+            /// A hash code for the current <see cref="T:System.Object"></see>.
+            /// </returns>
             public override int GetHashCode()
-			{
-				return base.GetHashCode();
-			}
-		}
-	}
+            {
+                return base.GetHashCode();
+            }
+        }
+
+        /// <summary>
+        ///  Represents a parameter in a parsed string of texts and parameters.
+        /// </summary>
+
+        public class ParameterFragment : Fragment
+        {
+            /// <summary>
+            /// Returns true to indicate this is a parameter and not a text fragment.
+            /// </summary>
+            /// <value></value>
+            /// <returns> true if parameter fragement, false if text fragment.
+            /// </returns>
+            override public bool IsParameter
+            {
+                get
+                {
+                    return true;
+                }
+
+            }
+            /// <summary> Ctor.</summary>
+            /// <param name="value">is the parameter name
+            /// </param>
+            public ParameterFragment(String value)
+                : base(value)
+            {
+            }
+
+            /// <summary>
+            /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
+            /// </summary>
+            /// <param name="obj">The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>.</param>
+            /// <returns>
+            /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
+            /// </returns>
+            public override bool Equals(Object obj)
+            {
+                if (!(obj is ParameterFragment))
+                {
+                    return false;
+                }
+                ParameterFragment other = (ParameterFragment)obj;
+                return other.Value.Equals(this.Value);
+            }
+
+            /// <summary>
+            /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+            /// </returns>
+            public override String ToString()
+            {
+                return "param=" + Value;
+            }
+
+            /// <summary>
+            /// Serves as a hash function for a particular type.
+            /// </summary>
+            /// <returns>
+            /// A hash code for the current <see cref="T:System.Object"></see>.
+            /// </returns>
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+        }
+    }
 }

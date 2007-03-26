@@ -10,10 +10,11 @@ namespace net.esper.eql.spec
 {
 	/// <summary> Specification for building an event stream out of a pattern statement and views staggered onto the
 	/// pattern statement.
-	/// <p>
+	/// <para>
 	/// The pattern statement is represented by the top EvalNode evaluation node.
 	/// A pattern statement contains tagged events (i.e. a=A -> b=B).
 	/// Thus the resulting event type is has properties "a" and "b" of the type of A and B.
+    /// </para>
 	/// </summary>
 
     public class PatternStreamSpec : StreamSpec

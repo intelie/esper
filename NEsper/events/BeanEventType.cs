@@ -29,12 +29,11 @@ namespace net.esper.events
         private IList<EventType> superTypes;
         private ICollection<EventType> deepSuperTypes;
 
-        /**
-         * Constructor takes a java bean class as an argument.
-         * @param type is the class of a java bean or other POJO
-         * @param beanEventAdapter is the cache and factory for event bean types and event wrappers
-         * @param optionalLegacyDef optional configuration supplying legacy event type information
-         */
+        /// <summary>Constructor takes a object type as an argument.</summary>
+        /// <param name="type">the type of an object</param>
+        /// <param name="beanEventAdapter">the cache and factory for event bean types and event wrappers</param>
+        /// <param name="optionalLegacyDef">optional configuration supplying legacy event type information</param>
+
         public BeanEventType(Type type,
                               BeanEventAdapter beanEventAdapter,
                               ConfigurationEventTypeLegacy optionalLegacyDef)
@@ -77,7 +76,7 @@ namespace net.esper.events
         /// 	<c>true</c> if the specified property name is property; otherwise, <c>false</c>.
         /// </returns>
 
-        public Boolean isProperty(String propertyName)
+        public Boolean IsProperty(String propertyName)
         {
             if (GetPropertyType(propertyName) == null)
             {
@@ -158,21 +157,46 @@ namespace net.esper.events
             return descriptor;
         }
 
+        /// <summary>
+        /// Get all valid property names for the event type.
+        /// </summary>
+        /// <value>The property names.</value>
+        /// <returns> A string array containing the property names of this typed event data object.
+        /// </returns>
         public ICollection<String> PropertyNames
         {
             get { return propertyNames; }
         }
 
+        /// <summary>
+        /// Returns an array of event types that are super to this event type, from which this event type
+        /// inherited event properties.  For object instances underlying the event this method returns the
+        /// event types for all superclasses extended by the object and all interfaces implemented by the
+        /// object.
+        /// </summary>
+        /// <value></value>
+        /// <returns>an array of event types</returns>
         public IEnumerable<EventType> SuperTypes
         {
             get { return superTypes; }
         }
 
+        /// <summary>
+        /// Returns enumerable over all super types to event type, going up the hierarchy and including
+        /// all interfaces (and their extended interfaces) and superclasses as EventType instances.
+        /// </summary>
+        /// <value></value>
         public IEnumerable<EventType> DeepSuperTypes
         {
             get { return deepSuperTypes; }
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             return String.Format("BeanEventType type={0}", type.FullName);
@@ -232,6 +256,12 @@ namespace net.esper.events
             }
         }
 
+        /// <summary>
+        /// Gets the super types.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="beanEventAdapter">The bean event adapter.</param>
+        /// <returns></returns>
         public static IList<EventType> GetSuperTypes(Type type, BeanEventAdapter beanEventAdapter)
         {
             IList<Type> superclasses = new List<Type>();

@@ -17,7 +17,7 @@ namespace net.esper.eql.join
         private ExprNode filterExprNode;
 
         /// <summary> Ctor.</summary>
-        /// <param name="filterExprNode">- filter tree
+        /// <param name="filterExprNode">filter tree
         /// </param>
 
         public JoinSetFilter(ExprNode filterExprNode)
@@ -25,6 +25,11 @@ namespace net.esper.eql.join
             this.filterExprNode = filterExprNode;
         }
 
+        /// <summary>
+        /// Process join result set.
+        /// </summary>
+        /// <param name="newEvents">set of event tuples representing new data</param>
+        /// <param name="oldEvents">set of event tuples representing old data</param>
         public void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
         {
             // Filter
@@ -36,9 +41,9 @@ namespace net.esper.eql.join
         }
 
         /// <summary> Filter event by applying the filter nodes evaluation method.</summary>
-        /// <param name="filterExprNode">- top node of the filter expression tree.
+        /// <param name="filterExprNode">top node of the filter expression tree.
         /// </param>
-        /// <param name="events">- set of tuples of events
+        /// <param name="events">set of tuples of events
         /// </param>
 
         public static void Filter(ExprNode filterExprNode, ISet<MultiKey<EventBean>> events)

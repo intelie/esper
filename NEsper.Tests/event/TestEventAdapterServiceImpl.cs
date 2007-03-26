@@ -146,7 +146,7 @@ namespace net.esper.events
 				new Type[] { typeof( Int32 ) }
 				);
 
-			Assert.IsTrue( newEventType.isProperty( "test" ) );
+			Assert.IsTrue( newEventType.IsProperty( "test" ) );
 			Assert.AreEqual( typeof( Int32 ), newEventType.GetPropertyType( "test" ) );
 		}
 

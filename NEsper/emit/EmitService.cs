@@ -19,7 +19,7 @@ namespace net.esper.emit
 		/// <summary> Emit an event to the specified channel. All listeners listening to the exact same channel and
 		/// all listeners listening to the default channel are handed the event emitted.
 		/// </summary>
-		/// <param name="object">is the event to emit
+		/// <param name="_object">is the event to emit
 		/// </param>
 		/// <param name="channel">is the channel to emit to
 		/// </param>

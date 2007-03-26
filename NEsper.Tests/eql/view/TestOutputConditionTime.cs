@@ -44,7 +44,7 @@ namespace net.esper.eql.view
 			schedulingServiceStub.Time = startTime;
 			
 			// 2 new, 3 old
-			condition.updateOutputCondition(2, 3);
+            condition.UpdateOutputCondition(2, 3);
 			// update time
 			schedulingServiceStub.Time = startTime + TEST_INTERVAL_MSEC;
 			// check callback scheduled, pretend callback
@@ -53,9 +53,9 @@ namespace net.esper.eql.view
 			schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].scheduledTrigger();
 			
 			// 2 new, 3 old
-			condition.updateOutputCondition(2, 3);
+            condition.UpdateOutputCondition(2, 3);
 			// 2 new, 3 old
-			condition.updateOutputCondition(2, 3);
+            condition.UpdateOutputCondition(2, 3);
 			// update time
 			schedulingServiceStub.Time = startTime + 2 * TEST_INTERVAL_MSEC;
 			// check callback scheduled, pretend callback
@@ -65,7 +65,7 @@ namespace net.esper.eql.view
 			
 			
 			// 0 new, 0 old
-			condition.updateOutputCondition(0, 0);
+            condition.UpdateOutputCondition(0, 0);
 			// update time
 			schedulingServiceStub.Time = startTime + 3 * TEST_INTERVAL_MSEC;
 			// check update

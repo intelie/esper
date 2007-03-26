@@ -11,17 +11,19 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 
 namespace net.esper.eql.join.plan
 {
-	/// <summary> Build a query plan based on filtering information.</summary>
+	/// <summary>
+    /// Build a query plan based on filtering information.
+    /// </summary>
+    
     public class QueryPlanBuilder
     {
-        /**
-         * Build query plan using the filter.
-         * @param numStreams - number of streams
-         * @param outerJoinDescList - list of outer join criteria, or null if there are no outer joins
-         * @param optionalFilterNode - filter tree
-         * @param streamNames - names of streams
-         * @return query plan
-         */
+        /// <summary>Build query plan using the filter.</summary>
+        /// <param name="numStreams">number of streams</param>
+        /// <param name="outerJoinDescList">list of outer join criteria, or null if there are no outer joins</param>
+        /// <param name="optionalFilterNode">filter tree</param>
+        /// <param name="streamNames">names of streams</param>
+        /// <returns>query plan</returns>
+
         public static QueryPlan getPlan(int numStreams,
                                         IList<OuterJoinDesc> outerJoinDescList,
                                         ExprNode optionalFilterNode,

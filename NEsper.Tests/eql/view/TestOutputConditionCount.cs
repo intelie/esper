@@ -162,9 +162,9 @@ namespace net.esper.eql.view
 		
 		private void  sendEventToAll(int newEventsLength, int oldEventsLength)
 		{
-			fireEvery1.updateOutputCondition(newEventsLength, oldEventsLength);
-			fireEvery2.updateOutputCondition(newEventsLength, oldEventsLength);
-			fireEvery3.updateOutputCondition(newEventsLength, oldEventsLength);
+			fireEvery1.UpdateOutputCondition(newEventsLength, oldEventsLength);
+            fireEvery2.UpdateOutputCondition(newEventsLength, oldEventsLength);
+            fireEvery3.UpdateOutputCondition(newEventsLength, oldEventsLength);
 		}
 		
 		[Test]

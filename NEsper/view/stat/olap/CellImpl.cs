@@ -8,6 +8,12 @@ namespace net.esper.view.stat.olap
 	
 	public sealed class CellImpl : Cell
 	{
+        /// <summary>
+        /// Returns the value.
+        /// </summary>
+        /// <value></value>
+        /// <returns> double value
+        /// </returns>
 		public double Value
 		{
 			get { return value; }

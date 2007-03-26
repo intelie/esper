@@ -8,6 +8,12 @@ namespace net.esper.type
 
     public sealed class BoolValue : PrimitiveValueBase
     {
+        /// <summary>
+        /// Returns the type of primitive value this instance represents.
+        /// </summary>
+        /// <value></value>
+        /// <returns> enum type of primitive
+        /// </returns>
         override public PrimitiveValueType Type
         {
             get
@@ -16,6 +22,12 @@ namespace net.esper.type
             }
         }
 
+        /// <summary>
+        /// Returns a value object.
+        /// </summary>
+        /// <value></value>
+        /// <returns> value object
+        /// </returns>
         override public Object ValueObject
         {
             get
@@ -25,6 +37,10 @@ namespace net.esper.type
 
         }
 
+        /// <summary>
+        /// Set a boolean value.
+        /// </summary>
+        /// <value></value>
         override public bool _Boolean
         {
             set { this.boolValue = value; }
@@ -62,7 +78,7 @@ namespace net.esper.type
         }
 
         /// <summary> Parse the string array returning a boolean array.</summary>
-        /// <param name="values">- string array
+        /// <param name="values">string array
         /// </param>
         /// <returns> typed array
         /// </returns>
@@ -76,11 +92,21 @@ namespace net.esper.type
             return result;
         }
 
+        /// <summary>
+        /// Parse the string literal value into the specific data type.
+        /// </summary>
+        /// <param name="value">is the textual value to parse</param>
         public override void Parse(String value)
         {
             boolValue = ParseString(value);
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             if (boolValue == null)

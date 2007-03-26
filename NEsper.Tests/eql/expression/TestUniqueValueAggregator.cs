@@ -23,20 +23,20 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testEnter()
         {
-            agg.enter(1);
-            agg.enter(10);
-            agg.enter(null);
+            agg.Enter(1);
+            agg.Enter(10);
+            agg.Enter(null);
         }
 
         [Test]
         public virtual void testLeave()
         {
-            agg.enter(1);
-            agg.leave(1);
+            agg.Enter(1);
+            agg.Leave(1);
 
             try
             {
-                agg.leave(1);
+                agg.Leave(1);
                 Assert.Fail();
             }
             catch (System.SystemException ex)
@@ -48,9 +48,9 @@ namespace net.esper.eql.expression
         [Test]
         public virtual void testNewAggregator()
         {
-            agg.enter(1);
-            Assert.AreNotSame(agg, agg.newAggregator());
-            Assert.AreEqual(0, agg.newAggregator().Value);
+            agg.Enter(1);
+            Assert.AreNotSame(agg, agg.NewAggregator());
+            Assert.AreEqual(0, agg.NewAggregator().Value);
         }
 
         [Test]
@@ -58,22 +58,22 @@ namespace net.esper.eql.expression
         {
             Assert.AreEqual(0, agg.Value);
 
-            agg.enter(10);
+            agg.Enter(10);
             Assert.AreEqual(10, agg.Value);
 
-            agg.enter(10);
+            agg.Enter(10);
             Assert.AreEqual(10, agg.Value);
 
-            agg.enter(2);
+            agg.Enter(2);
             Assert.AreEqual(12, agg.Value);
 
-            agg.leave(10);
+            agg.Leave(10);
             Assert.AreEqual(12, agg.Value);
 
-            agg.leave(10);
+            agg.Leave(10);
             Assert.AreEqual(2, agg.Value);
 
-            agg.leave(2);
+            agg.Leave(2);
             Assert.AreEqual(0, agg.Value);
         }
 

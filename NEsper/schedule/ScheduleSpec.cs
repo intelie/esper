@@ -72,6 +72,12 @@ namespace net.esper.schedule
 			_set.Add(value);
 		}
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			StringBuilder buffer = new StringBuilder();
@@ -102,6 +108,11 @@ namespace net.esper.schedule
 			return buffer.ToString();
 		}
 
+        /// <summary>
+        /// Returns true if this object equals the other object.
+        /// </summary>
+        /// <param name="otherObject">The other object.</param>
+        /// <returns></returns>
 		public override bool Equals( Object otherObject )
 		{
 			if ( otherObject == this )
@@ -160,6 +171,12 @@ namespace net.esper.schedule
 			return true;
 		}
 
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override int GetHashCode()
 		{
 			int hashCode = 0;

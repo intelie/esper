@@ -11,16 +11,16 @@ namespace net.esper.eql.parse
 	public class ASTFilterSpecValidationException : ASTWalkException
 	{
 		/// <summary> Ctor.</summary>
-		/// <param name="message">- error message
+		/// <param name="message">error message
 		/// </param>
-		/// <param name="t">- inner throwable
+		/// <param name="t">inner throwable
 		/// </param>
 		public ASTFilterSpecValidationException(String message, System.Exception t):base(message, t)
 		{
 		}
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="message">- error message
+		/// <param name="message">error message
 		/// </param>
 		public ASTFilterSpecValidationException(String message):base(message)
 		{

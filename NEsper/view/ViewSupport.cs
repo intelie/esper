@@ -15,9 +15,10 @@ namespace net.esper.view
     /// Methods that contain the actual logic of the view are not implemented in this class.
     /// A common implementation normally does not need to override any of the methods implemented here, their
     /// implementation is generic and should suffice.
-    /// 
+    /// <para>
     /// The class provides a convenience method for updateing it's children data UpdateChildren(Object[], Object[]).
     /// This method should be called from within the View.update(Object[], Object[]) methods in the subclasses.
+    /// </para>
     /// </summary>
 
     public abstract class ViewSupport : View
@@ -50,12 +51,23 @@ namespace net.esper.view
             children = new ELinkedList<View>();
         }
 
+        /// <summary>
+        /// Gets or sets the View's parent Viewable.
+        /// </summary>
+        /// <value></value>
+        /// <returns> viewable
+        /// </returns>
         public virtual Viewable Parent
         {
             get { return parent; }
             set { this.parent = value; }
         }
 
+        /// <summary>
+        /// Add a view to the viewable object.
+        /// </summary>
+        /// <param name="view">to add</param>
+        /// <returns>view to add</returns>
         public virtual View AddView(View view)
         {
             children.Add(view);
@@ -63,6 +75,14 @@ namespace net.esper.view
             return view;
         }
 
+        /// <summary>
+        /// Remove a view.
+        /// </summary>
+        /// <param name="view">to remove</param>
+        /// <returns>
+        /// true to indicate that the view to be removed existed within this view, false if the view to
+        /// remove could not be found
+        /// </returns>
         public virtual bool RemoveView(View view)
         {
             bool isRemoved = children.Remove(view);
@@ -70,11 +90,21 @@ namespace net.esper.view
             return isRemoved;
         }
 
+        /// <summary>
+        /// Returns all added views.
+        /// </summary>
+        /// <returns>list of added views</returns>
         public virtual IList<View> GetViews()
         {
             return children;
         }
 
+        /// <summary>
+        /// Test is there are any views to the Viewable.
+        /// </summary>
+        /// <value></value>
+        /// <returns> true indicating there are child views, false indicating there are no child views
+        /// </returns>
         public virtual Boolean HasViews
         {
             get { return (children.Count > 0); }
@@ -128,7 +158,7 @@ namespace net.esper.view
         /// </summary>
         /// <param name="view">to be copied</param>
         /// <returns>
-        /// copy of the view, populated via Java bean property getter and setter methods
+        /// copy of the view, populated via object property getter and setter methods
         /// </returns>
 
         public static View ShallowCopyView(View view)
@@ -340,19 +370,25 @@ namespace net.esper.view
         /// Notify that data has been added or removed from the Viewable parent.
         /// The last object in the newData array of objects would be the newest object added to the parent view.
         /// The first object of the oldData array of objects would be the oldest object removed from the parent view.
+        /// <para>
         /// If the call to update contains new (inserted) data, then the first argument will be a non-empty list and the
         /// second will be empty. Similarly, if the call is a notification of deleted data, then the first argument will be
         /// empty and the second will be non-empty. Either the newData or oldData will be non-null.
         /// This method won't be called with both arguments being null, but either one could be null.
         /// The same is true for zero-length arrays. Either newData or oldData will be non-empty.
         /// If both are non-empty, then the update is a modification notification.
+        /// </para>
+        /// <para>
         /// When update() is called on a view by the parent object, the data in newData will be in the collection of the
         /// parent, and its data structures will be arranged to reflect that.
         /// The data in oldData will not be in the parent's data structures, and any access to the parent will indicate that
         /// that data is no longer there.
+        /// </para>
         /// </summary>
-        /// <param name="newData">is the new data that has been added to the parent view</param>
-        /// <param name="oldData">is the old data that has been removed from the parent view</param>
+        /// <param name="newData">is the new data that has been added to the parent view
+        /// </param>
+        /// <param name="oldData">is the old data that has been removed from the parent view
+        /// </param>
         
         abstract public void Update(EventBean[] newData, EventBean[] oldData);
 

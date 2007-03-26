@@ -16,12 +16,12 @@ namespace net.esper.view.window
         private int size = 0;
         private readonly ELinkedList<EventBean> events = new ELinkedList<EventBean>();
 
-        /// <summary> Returns the size of the length window.</summary>
+        /// <summary>
+        /// Gets or sets the size of the length window.
+        /// </summary>
+        /// <value>The size.</value>
         /// <returns> size of length window
         /// </returns>
-        /// <summary> Sets the size of the length window.</summary>
-        /// <param name="size">size of length window
-        /// </param>
         public int Size
         {
             get { return size; }
@@ -29,9 +29,8 @@ namespace net.esper.view.window
         }
 
         /// <summary>
-        /// Default constructor - required by all views to adhere to the Java bean specification.
+        /// Initializes a new instance of the <see cref="LengthWindowView"/> class.
         /// </summary>
-
         public LengthWindowView()
         {
         }
@@ -50,12 +49,26 @@ namespace net.esper.view.window
             this.size = size;
         }
 
+        /// <summary>
+        /// Return null if the view will accept being attached to a particular object.
+        /// </summary>
+        /// <param name="parentView">is the potential parent for this view</param>
+        /// <returns>
+        /// null if this view can successfully attach to the parent, an error message if it cannot.
+        /// </returns>
         public override String AttachesTo(Viewable parentView)
         {
             // Attaches to just about anything
             return null;
         }
 
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// metadata for the objects in the collection
+        /// </returns>
         public override EventType EventType
         {
             get
@@ -68,6 +81,27 @@ namespace net.esper.view.window
             }
         }
 
+        /// <summary>
+        /// Notify that data has been added or removed from the Viewable parent.
+        /// The last object in the newData array of objects would be the newest object added to the parent view.
+        /// The first object of the oldData array of objects would be the oldest object removed from the parent view.
+        /// <para>
+        /// If the call to update contains new (inserted) data, then the first argument will be a non-empty list and the
+        /// second will be empty. Similarly, if the call is a notification of deleted data, then the first argument will be
+        /// empty and the second will be non-empty. Either the newData or oldData will be non-null.
+        /// This method won't be called with both arguments being null, but either one could be null.
+        /// The same is true for zero-length arrays. Either newData or oldData will be non-empty.
+        /// If both are non-empty, then the update is a modification notification.
+        /// </para>
+        /// 	<para>
+        /// When update() is called on a view by the parent object, the data in newData will be in the collection of the
+        /// parent, and its data structures will be arranged to reflect that.
+        /// The data in oldData will not be in the parent's data structures, and any access to the parent will indicate that
+        /// that data is no longer there.
+        /// </para>
+        /// </summary>
+        /// <param name="newData">is the new data that has been added to the parent view</param>
+        /// <param name="oldData">is the old data that has been removed from the parent view</param>
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             // add data points to the window
@@ -99,11 +133,23 @@ namespace net.esper.view.window
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return events.GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             return this.GetType().FullName + " size=" + size;

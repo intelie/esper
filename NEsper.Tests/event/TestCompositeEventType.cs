@@ -59,8 +59,8 @@ namespace net.esper.events
 		[Test]
 		public virtual void testIsProperty()
 		{
-			Assert.IsTrue( eventType.isProperty( "b.nested.nestedValue" ) );
-			Assert.IsFalse( eventType.isProperty( "b.nested.xxx" ) );
+			Assert.IsTrue( eventType.IsProperty( "b.nested.nestedValue" ) );
+			Assert.IsFalse( eventType.IsProperty( "b.nested.xxx" ) );
 		}
 	}
 }

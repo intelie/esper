@@ -24,11 +24,23 @@ namespace net.esper.core
         , InternalEventRouter
         , TimerCallback
     {
+        /// <summary>
+        /// Number of events received over the lifetime of the event stream processing runtime.
+        /// </summary>
+        /// <value></value>
+        /// <returns> number of events received
+        /// </returns>
         virtual public long NumEventsReceived
         {
             get { return services.FilterService.NumEventsEvaluated; }
         }
 
+        /// <summary>
+        /// Number of events emitted over the lifetime of the event stream processing runtime.
+        /// </summary>
+        /// <value></value>
+        /// <returns> number of events emitted
+        /// </returns>
         virtual public long NumEventsEmitted
         {
             get { return services.EmitService.NumEventsEmitted; }
@@ -39,7 +51,7 @@ namespace net.esper.core
         private ThreadWorkQueue threadWorkQueue;
 
         /// <summary> Constructor.</summary>
-        /// <param name="services">- references to services
+        /// <param name="services">references to services
         /// </param>
         public EPRuntimeImpl(EPServicesContext services)
         {
@@ -48,6 +60,9 @@ namespace net.esper.core
             threadWorkQueue = new ThreadWorkQueue();
         }
 
+        /// <summary>
+        /// Invoked by the internal clocking service at regular intervals.
+        /// </summary>
         public virtual void TimerCallback()
         {
             if (log.IsDebugEnabled)
@@ -60,6 +75,10 @@ namespace net.esper.core
             SendEvent(currentTimeEvent);
         }
 
+        /// <summary>
+        /// Sends the event.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
         public virtual void SendEvent(Object _event)
         {
             if (_event == null)
@@ -77,6 +96,10 @@ namespace net.esper.core
             ProcessEvent(_event);
         }
 
+        /// <summary>
+        /// Sends the event.
+        /// </summary>
+        /// <param name="document">The document.</param>
         public virtual void SendEvent(XmlNode document)
         {
             if (document == null)
@@ -95,6 +118,14 @@ namespace net.esper.core
             ProcessEvent(eventBean);
         }
 
+        /// <summary>
+        /// Send a map containing event property values to the event stream processing runtime.
+        /// Use the route method for sending events into the runtime from within UpdateListener code.
+        /// </summary>
+        /// <param name="map">map that contains event property values. Keys are expected to be of type String while values
+        /// can be of any type. Keys and values should match those declared via Configuration for the given eventTypeAlias.</param>
+        /// <param name="eventTypeAlias">the alias for the (property name, property type) information for this map</param>
+        /// <throws>  EPException - when the processing of the event leads to an error </throws>
         public virtual void SendEvent(IDataDictionary map, String eventTypeAlias)
         {
             if (map == null)
@@ -112,36 +143,75 @@ namespace net.esper.core
             ProcessEvent(eventBean);
         }
 
+        /// <summary>
+        /// Route the event object back to the event stream processing runtime for internal dispatching.
+        /// The route event is processed just like it was sent to the runtime, that is any
+        /// active expressions seeking that event receive it. The routed event has priority over other
+        /// events sent to the runtime. In a single-threaded application the routed event is
+        /// processed before the next event is sent to the runtime through the
+        /// EPRuntime.sendEvent method.
+        /// </summary>
+        /// <param name="_event"></param>
         public virtual void Route(Object _event)
         {
             threadWorkQueue.Add(_event);
         }
 
+        /// <summary>
+        /// Route the event such that the event is processed as required.
+        /// </summary>
+        /// <param name="_event"></param>
         public virtual void Route(EventBean _event)
         {
             threadWorkQueue.Add(_event);
         }
 
+        /// <summary>
+        /// Emit an event object to any registered EmittedListener instances listening to the default channel.
+        /// </summary>
+        /// <param name="_object"></param>
         public virtual void Emit(Object _object)
         {
             services.EmitService.EmitEvent(_object, null);
         }
 
+        /// <summary>
+        /// Emit an event object to any registered EmittedListener instances on the specified channel.
+        /// Event listeners listening to all channels as well as those listening to the specific channel
+        /// are called. Supplying a null value in the channel has the same result as the Emit(Object object) method.
+        /// </summary>
+        /// <param name="_object"></param>
+        /// <param name="channel">channel to emit the object to, or null if emitting to the default channel</param>
         public virtual void Emit(Object _object, String channel)
         {
             services.EmitService.EmitEvent(_object, channel);
         }
 
+        /// <summary>
+        /// Register an object that listens for events emitted from the event stream processing runtime on the
+        /// specified channel. A null value can be supplied for the channel in which case the
+        /// emit listener will be invoked for events emitted an any channel.
+        /// </summary>
+        /// <param name="listener">called when an event is emitted by the runtime.</param>
+        /// <param name="channel">is the channel to add the listener to, a null value can be used to listen to events emitted
+        /// on all channels</param>
         public virtual void AddEmittedListener(EmittedListener listener, String channel)
         {
             services.EmitService.AddListener(listener, channel);
         }
 
+        /// <summary>
+        /// Deregister all emitted event listeners.
+        /// </summary>
         public virtual void ClearEmittedListeners()
         {
             services.EmitService.ClearListeners();
         }
 
+        /// <summary>
+        /// Processes the event.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
         private void ProcessEvent(Object _event)
         {
             if (_event is TimerEvent)
@@ -184,6 +254,10 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Processes the time event.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
         private void ProcessTimeEvent(TimerEvent _event)
         {
             if (_event is TimerControlEvent)

@@ -10,11 +10,24 @@ namespace net.esper.eql.expression
     
     public class ExprSumNode : ExprAggregateNode
     {
+        /// <summary>
+        /// Returns the aggregation function name for representation in a generate expression string.
+        /// </summary>
+        /// <value></value>
+        /// <returns> aggregation function name
+        /// </returns>
 		override protected internal String AggregationFunctionName
         {
             get { return "sum"; }
         }
 
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         override public Type ReturnType
         {
             get { return computer.ValueType; }
@@ -23,13 +36,19 @@ namespace net.esper.eql.expression
         private Aggregator computer;
 
         /// <summary> Ctor.</summary>
-        /// <param name="distinct">- flag indicating unique or non-unique value aggregation
+        /// <param name="distinct">flag indicating unique or non-unique value aggregation
         /// </param>
         public ExprSumNode(bool distinct)
             : base(distinct)
         {
         }
 
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
             Type childType = base.ValidateSingleNumericChild(streamTypeService);
@@ -37,6 +56,12 @@ namespace net.esper.eql.expression
             computer = getSumComputer(childType);
         }
 
+        /// <summary>
+        /// Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
+        /// </summary>
+        /// <value></value>
+        /// <returns> prototype aggregation state as a factory for aggregation states per group-by key value
+        /// </returns>
         public override Aggregator AggregationFunction
         {
             get
@@ -49,6 +74,14 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Return true if a expression aggregate node semantically equals the current node, or false if not.
+        /// For use by the EqualsNode implementation which compares the distinct flag.
+        /// </summary>
+        /// <param name="node">to compare to</param>
+        /// <returns>
+        /// true if semantically equal, or false if not equals
+        /// </returns>
         public override bool EqualsNodeAggregate(ExprAggregateNode node)
         {
             if (!(node is ExprSumNode))
@@ -88,6 +121,12 @@ namespace net.esper.eql.expression
         /// <summary> Sum for any number value.</summary>
         public class NumberIntegerSum : Aggregator
         {
+            /// <summary>
+            /// Returns the current value held.
+            /// </summary>
+            /// <value></value>
+            /// <returns> current value
+            /// </returns>
             virtual public Object Value
             {
                 get
@@ -100,6 +139,12 @@ namespace net.esper.eql.expression
                     return value;
                 }
             }
+            /// <summary>
+            /// Returns the type of the current value.
+            /// </summary>
+            /// <value></value>
+            /// <returns> type of values held
+            /// </returns>
             virtual public Type ValueType
             {
                 get
@@ -111,7 +156,11 @@ namespace net.esper.eql.expression
             private int sum;
             private long numDataPoints;
 
-            public virtual void enter(Object _object)
+            /// <summary>
+            /// Enters the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Enter(Object _object)
             {
                 if (_object == null)
                 {
@@ -122,7 +171,11 @@ namespace net.esper.eql.expression
                 sum += Convert.ToInt32(number);
             }
 
-            public virtual void leave(Object _object)
+            /// <summary>
+            /// Leaves the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Leave(Object _object)
             {
                 if (_object == null)
                 {
@@ -133,7 +186,11 @@ namespace net.esper.eql.expression
                 sum -= Convert.ToInt32(number);
             }
 
-            public virtual Aggregator newAggregator()
+            /// <summary>
+            /// Make a new, initalized aggregation state.
+            /// </summary>
+            /// <returns>initialized copy of the aggregator</returns>
+            public virtual Aggregator NewAggregator()
             {
                 return new NumberIntegerSum();
             }
@@ -142,6 +199,12 @@ namespace net.esper.eql.expression
         /// <summary> Sum for integer values.</summary>
         public class IntegerSum : Aggregator
         {
+            /// <summary>
+            /// Returns the current value held.
+            /// </summary>
+            /// <value></value>
+            /// <returns> current value
+            /// </returns>
             virtual public Object Value
             {
                 get
@@ -156,6 +219,12 @@ namespace net.esper.eql.expression
                 }
             }
 
+            /// <summary>
+            /// Returns the type of the current value.
+            /// </summary>
+            /// <value></value>
+            /// <returns> type of values held
+            /// </returns>
             virtual public Type ValueType
             {
                 get
@@ -167,7 +236,11 @@ namespace net.esper.eql.expression
             private int sum;
             private long numDataPoints;
 
-            public virtual void enter(Object _object)
+            /// <summary>
+            /// Enters the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Enter(Object _object)
             {
                 if (_object == null)
                 {
@@ -177,7 +250,11 @@ namespace net.esper.eql.expression
                 sum += (Int32)_object;
             }
 
-            public virtual void leave(Object _object)
+            /// <summary>
+            /// Leaves the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Leave(Object _object)
             {
                 if (_object == null)
                 {
@@ -187,7 +264,11 @@ namespace net.esper.eql.expression
                 sum -= (Int32)_object;
             }
 
-            public virtual Aggregator newAggregator()
+            /// <summary>
+            /// Make a new, initalized aggregation state.
+            /// </summary>
+            /// <returns>initialized copy of the aggregator</returns>
+            public virtual Aggregator NewAggregator()
             {
                 return new IntegerSum();
             }
@@ -196,6 +277,12 @@ namespace net.esper.eql.expression
         /// <summary> Sum for double values.</summary>
         public class DoubleSum : Aggregator
         {
+            /// <summary>
+            /// Returns the current value held.
+            /// </summary>
+            /// <value></value>
+            /// <returns> current value
+            /// </returns>
             virtual public Object Value
             {
                 get
@@ -209,6 +296,12 @@ namespace net.esper.eql.expression
                 }
             }
 
+            /// <summary>
+            /// Returns the type of the current value.
+            /// </summary>
+            /// <value></value>
+            /// <returns> type of values held
+            /// </returns>
             virtual public Type ValueType
             {
                 get
@@ -220,7 +313,11 @@ namespace net.esper.eql.expression
             private double sum;
             private long numDataPoints;
 
-            public virtual void enter(Object _object)
+            /// <summary>
+            /// Enters the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Enter(Object _object)
             {
                 if (_object == null)
                 {
@@ -230,7 +327,11 @@ namespace net.esper.eql.expression
                 sum += (Double)_object;
             }
 
-            public virtual void leave(Object _object)
+            /// <summary>
+            /// Leaves the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Leave(Object _object)
             {
                 if (_object == null)
                 {
@@ -240,15 +341,28 @@ namespace net.esper.eql.expression
                 sum -= (Double)_object;
             }
 
-            public virtual Aggregator newAggregator()
+            /// <summary>
+            /// Make a new, initalized aggregation state.
+            /// </summary>
+            /// <returns>initialized copy of the aggregator</returns>
+            public virtual Aggregator NewAggregator()
             {
                 return new DoubleSum();
             }
         }
 
-        /// <summary> Sum for long values.</summary>
+        /// <summary>
+        /// Sum for long values.
+        /// </summary>
+        
         public class LongSum : Aggregator
         {
+            /// <summary>
+            /// Returns the current value held.
+            /// </summary>
+            /// <value></value>
+            /// <returns> current value
+            /// </returns>
             virtual public Object Value
             {
                 get
@@ -263,6 +377,12 @@ namespace net.esper.eql.expression
                 }
             }
 
+            /// <summary>
+            /// Returns the type of the current value.
+            /// </summary>
+            /// <value></value>
+            /// <returns> type of values held
+            /// </returns>
             virtual public Type ValueType
             {
                 get
@@ -274,7 +394,11 @@ namespace net.esper.eql.expression
             private long sum;
             private long numDataPoints;
 
-            public virtual void enter(Object _object)
+            /// <summary>
+            /// Enters the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Enter(Object _object)
             {
                 if (_object == null)
                 {
@@ -284,7 +408,11 @@ namespace net.esper.eql.expression
                 sum += (long)_object;
             }
 
-            public virtual void leave(Object _object)
+            /// <summary>
+            /// Leaves the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Leave(Object _object)
             {
                 if (_object == null)
                 {
@@ -294,15 +422,28 @@ namespace net.esper.eql.expression
                 sum -= (long)_object;
             }
 
-            public virtual Aggregator newAggregator()
+            /// <summary>
+            /// Make a new, initalized aggregation state.
+            /// </summary>
+            /// <returns>initialized copy of the aggregator</returns>
+            public virtual Aggregator NewAggregator()
             {
                 return new LongSum();
             }
         }
 
-        /// <summary> Sum for float values.</summary>
+        /// <summary> 
+        /// Sum for float values.
+        /// </summary>
+        
         public class FloatSum : Aggregator
         {
+            /// <summary>
+            /// Returns the current value held.
+            /// </summary>
+            /// <value></value>
+            /// <returns> current value
+            /// </returns>
             virtual public Object Value
             {
                 get
@@ -316,6 +457,12 @@ namespace net.esper.eql.expression
                 }
             }
 
+            /// <summary>
+            /// Returns the type of the current value.
+            /// </summary>
+            /// <value></value>
+            /// <returns> type of values held
+            /// </returns>
             virtual public Type ValueType
             {
                 get
@@ -327,7 +474,11 @@ namespace net.esper.eql.expression
             private float sum;
             private long numDataPoints;
 
-            public virtual void enter(Object _object)
+            /// <summary>
+            /// Enters the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Enter(Object _object)
             {
                 if (_object == null)
                 {
@@ -337,7 +488,11 @@ namespace net.esper.eql.expression
                 sum += (Single)_object;
             }
 
-            public virtual void leave(Object _object)
+            /// <summary>
+            /// Leaves the specified _object.
+            /// </summary>
+            /// <param name="_object">The _object.</param>
+            public virtual void Leave(Object _object)
             {
                 if (_object == null)
                 {
@@ -347,7 +502,11 @@ namespace net.esper.eql.expression
                 sum -= (Single)_object;
             }
 
-            public virtual Aggregator newAggregator()
+            /// <summary>
+            /// Make a new, initalized aggregation state.
+            /// </summary>
+            /// <returns>initialized copy of the aggregator</returns>
+            public virtual Aggregator NewAggregator()
             {
                 return new FloatSum();
             }

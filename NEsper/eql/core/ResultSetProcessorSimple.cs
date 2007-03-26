@@ -11,10 +11,13 @@ using org.apache.commons.logging;
 
 namespace net.esper.eql.core
 {
-
-    /// <summary> Result set processor for the simplest case: no aggregation functions used in the select clause, and no group-by.
-    /// <p>
-    /// The processor generates one row for each event entering (new event) and one row for each event leaving (old event).
+    /// <summary>
+    /// Result set processor for the simplest case: no aggregation functions used
+    /// in the select clause, and no group-by.
+    /// <para>
+    /// The processor generates one row for each event entering (new event) and one 
+    /// row for each event leaving (old event).
+    /// </para>
     /// </summary>
     
     public class ResultSetProcessorSimple : ResultSetProcessor
@@ -27,15 +30,13 @@ namespace net.esper.eql.core
         private readonly OrderByProcessor orderByProcessor;
         private readonly ExprNode optionalHavingExpr;
 
-        /**
-         * Ctor.
-         * @param selectExprProcessor - for processing the select expression and generting the final output rows
-         * @param orderByProcessor - for sorting the outgoing events according to the order-by clause
-         * @param optionalHavingNode - having clause expression node
-         * @param isOutputLimiting - true to indicate we are output limiting and must keep producing
-         * a row per group even if groups didn't change
-         * @param isOutputLimitLastOnly - true if output limiting and interested in last event only
-         */
+        /// <summary>Ctor.</summary>
+        /// <param name="selectExprProcessor">for processing the select expression and generting the final output rows</param>
+        /// <param name="orderByProcessor">for sorting the outgoing events according to the order-by clause</param>
+        /// <param name="optionalHavingNode">having clause expression node</param>
+        /// <param name="isOutputLimiting">true to indicate we are output limiting and must keep producinga row per group even if groups didn't change</param>
+        /// <param name="isOutputLimitLastOnly">true if output limiting and interested in last event only</param>
+
         public ResultSetProcessorSimple(SelectExprProcessor selectExprProcessor,
                                         OrderByProcessor orderByProcessor,
                                         ExprNode optionalHavingNode,
@@ -49,6 +50,13 @@ namespace net.esper.eql.core
             this.isOutputLimitLastOnly = isOutputLimitLastOnly;
         }
 
+        /// <summary>
+        /// Returns the event type of processed results.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type of the resulting events posted by the processor.
+        /// </returns>
+        
         public EventType ResultEventType
         {
             get
@@ -57,48 +65,66 @@ namespace net.esper.eql.core
             }
         }
 
-        public Pair<EventBean[], EventBean[]> processJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        /// <summary>
+        /// For use by joins posting their result, process the event rows that are entered and removed (new and old events).
+        /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
+        /// old events as specified.
+        /// </summary>
+        /// <param name="newEvents">new events posted by join</param>
+        /// <param name="oldEvents">old events posted by join</param>
+        /// <returns>pair of new events and old events</returns>
+        public Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
         {
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents = null;
 
             if (optionalHavingExpr == null)
             {
-                selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly);
-                selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly);
             }
             else
             {
-                selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly);
-                selectNewEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly);
             }
 
             return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
         }
 
-        public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+        /// <summary>
+        /// For use by views posting their result, process the event rows that are entered and removed (new and old events).
+        /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
+        /// old events as specified.
+        /// </summary>
+        /// <param name="newData">new events posted by view</param>
+        /// <param name="oldData">old events posted by view</param>
+        /// <returns>pair of new events and old events</returns>
+        public Pair<EventBean[], EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData)
         {
-            EventBean[] selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly);
-            EventBean[] selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly);
+            EventBean[] selectOldEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly);
+            EventBean[] selectNewEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly);
 
             return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
         }
 
-        /**
-         * Applies the select-clause to the given events returning the selected events. The number of events stays the
-         * same, i.e. this method does not filter it just transforms the result set.
-         * @param exprProcessor - processes each input event and returns output event
-         * @param orderByProcessor - orders the outgoing events according to the order-by clause
-         * @param events - input events
-         * @param isOutputLimiting - true to indicate that we limit output
-         * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
-         * @return output events, one for each input event
-         */
-        public static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
+        /// <summary>
+        /// Applies the select-clause to the given events returning the selected
+        /// events. The number of events stays thesame, i.e. this method does not
+        /// filter it just transforms the result set.
+        /// </summary>
+        /// <param name="exprProcessor">processes each input event and returns output event</param>
+        /// <param name="orderByProcessor">orders the outgoing events according to the order-by clause</param>
+        /// <param name="events">input events</param>
+        /// <param name="isOutputLimiting">true to indicate that we limit output</param>
+        /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event</param>
+        /// <returns>output events, one for each input event</returns>
+
+        public static EventBean[] GetSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
         {
             if (isOutputLimiting)
             {
-                events = applyOutputLimit(events, isOutputLimitLastOnly);
+                events = ApplyOutputLimit(events, isOutputLimitLastOnly);
             }
 
             if (events == null)
@@ -136,7 +162,7 @@ namespace net.esper.eql.core
 
             if (orderByProcessor != null)
             {
-                return orderByProcessor.sort(result, eventGenerators);
+                return orderByProcessor.Sort(result, eventGenerators);
             }
             else
             {
@@ -144,13 +170,12 @@ namespace net.esper.eql.core
             }
         }
 
-        /**
-         * Applies the last/all event output limit clause.
-         * @param events to output
-         * @param isOutputLimitLastOnly - flag to indicate output all versus output last
-         * @return events to output
-         */
-        public static EventBean[] applyOutputLimit(EventBean[] events, Boolean isOutputLimitLastOnly)
+        /// <summary>Applies the last/all event output limit clause.</summary>
+        /// <param name="events">to output</param>
+        /// <param name="isOutputLimitLastOnly">flag to indicate output all versus output last</param>
+        /// <returns>events to output</returns>
+
+        public static EventBean[] ApplyOutputLimit(EventBean[] events, Boolean isOutputLimitLastOnly)
         {
             if (isOutputLimitLastOnly && events != null && events.Length > 0)
             {
@@ -162,13 +187,12 @@ namespace net.esper.eql.core
             }
         }
 
-        /**
-         * Applies the last/all event output limit clause.
-         * @param eventSet to output
-         * @param isOutputLimitLastOnly - flag to indicate output all versus output last
-         * @return events to output
-         */
-        public static ISet<MultiKey<EventBean>> applyOutputLimit(ISet<MultiKey<EventBean>> eventSet, Boolean isOutputLimitLastOnly)
+        /// <summary>Applies the last/all event output limit clause.</summary>
+        /// <param name="eventSet">to output</param>
+        /// <param name="isOutputLimitLastOnly">flag to indicate output all versus output last</param>
+        /// <returns>events to output</returns>
+
+        public static ISet<MultiKey<EventBean>> ApplyOutputLimit(ISet<MultiKey<EventBean>> eventSet, Boolean isOutputLimitLastOnly)
         {
             if (isOutputLimitLastOnly && eventSet != null && eventSet.Count > 0)
             {
@@ -183,21 +207,22 @@ namespace net.esper.eql.core
             }
         }
 
-        /**
-         * Applies the select-clause to the given events returning the selected events. The number of events stays the
-         * same, i.e. this method does not filter it just transforms the result set.
-         * @param exprProcessor - processes each input event and returns output event
-         * @param orderByProcessor - for sorting output events according to the order-by clause
-         * @param events - input events
-         * @param isOutputLimiting - true to indicate that we limit output
-         * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
-         * @return output events, one for each input event
-         */
-        public static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, ISet<MultiKey<EventBean>> events, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
+        /// <summary>
+        /// Applies the select-clause to the given events returning the selected
+        /// events. The number of events stays thesame, i.e. this method does not 
+        /// filter it just transforms the result set.
+        /// </summary>
+        /// <param name="exprProcessor">processes each input event and returns output event</param>
+        /// <param name="orderByProcessor">for sorting output events according to the order-by clause</param>
+        /// <param name="events">input events</param>
+        /// <param name="isOutputLimiting">true to indicate that we limit output</param>
+        /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event</param>
+        /// <returns>output events, one for each input event</returns>
+        public static EventBean[] GetSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, ISet<MultiKey<EventBean>> events, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
         {
             if (isOutputLimiting)
             {
-                events = applyOutputLimit(events, isOutputLimitLastOnly);
+                events = ApplyOutputLimit(events, isOutputLimitLastOnly);
             }
 
             int length = events.Count;
@@ -227,7 +252,7 @@ namespace net.esper.eql.core
 
             if (orderByProcessor != null)
             {
-                return orderByProcessor.sort(result, eventGenerators);
+                return orderByProcessor.Sort(result, eventGenerators);
             }
             else
             {
@@ -235,24 +260,24 @@ namespace net.esper.eql.core
             }
         }
 
-        /**
-         * Applies the select-clause to the given events returning the selected events. The number of events stays the
-         * same, i.e. this method does not filter it just transforms the result set.
-         * <p>
-         * Also applies a having clause.
-         * @param exprProcessor - processes each input event and returns output event
-         * @param orderByProcessor - for sorting output events according to the order-by clause
-         * @param events - input events
-         * @param optionalHavingNode - supplies the having-clause expression
-         * @param isOutputLimiting - true to indicate that we limit output
-         * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
-         * @return output events, one for each input event
-         */
-        public static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
+        /// <summary>
+        /// Applies the select-clause to the given events returning the selected events.
+        /// The number of events stays thesame, i.e. this method does not filter it just
+        /// transforms the result set.
+        /// <para>Also applies a having clause.</para>
+        /// </summary>
+        /// <param name="exprProcessor">processes each input event and returns output event</param>
+        /// <param name="orderByProcessor">for sorting output events according to the order-by clause</param>
+        /// <param name="events">input events</param>
+        /// <param name="optionalHavingNode">supplies the having-clause expression</param>
+        /// <param name="isOutputLimiting">true to indicate that we limit output</param>
+        /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event</param>
+        /// <returns>output events, one for each input event</returns>
+        public static EventBean[] GetSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
         {
             if (isOutputLimiting)
             {
-                events = ResultSetProcessorSimple.applyOutputLimit(events, isOutputLimitLastOnly);
+                events = ResultSetProcessorSimple.ApplyOutputLimit(events, isOutputLimitLastOnly);
             }
 
             if (events == null)
@@ -289,7 +314,7 @@ namespace net.esper.eql.core
             {
                 if (orderByProcessor != null)
                 {
-                    return orderByProcessor.sort(result.ToArray(), eventGenerators.ToArray());
+                    return orderByProcessor.Sort(result.ToArray(), eventGenerators.ToArray());
                 }
                 else
                 {
@@ -302,24 +327,26 @@ namespace net.esper.eql.core
             }
         }
 
-        /**
-         * Applies the select-clause to the given events returning the selected events. The number of events stays the
-         * same, i.e. this method does not filter it just transforms the result set.
-         * <p>
-         * Also applies a having clause.
-         * @param exprProcessor - processes each input event and returns output event
-         * @param orderByProcessor - for sorting output events according to the order-by clause
-         * @param events - input events
-         * @param optionalHavingNode - supplies the having-clause expression
-         * @param isOutputLimiting - true to indicate that we limit output
-         * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
-         * @return output events, one for each input event
-         */
-        public static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, ISet<MultiKey<EventBean>> events, ExprNode optionalHavingNode, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
+        /// <summary>
+        /// Applies the select-clause to the given events returning the selected events. The number of events stays the
+        /// same, i.e. this method does not filter it just transforms the result set.
+        ///<para>
+        /// Also applies a having clause.
+        /// </para>
+        /// </summary>
+        /// <param name="exprProcessor">processes each input event and returns output event</param>
+        /// <param name="orderByProcessor">for sorting output events according to the order-by clause</param>
+        /// <param name="events">input events</param>
+        /// <param name="optionalHavingNode">supplies the having-clause expression</param>
+        /// <param name="isOutputLimiting">true to indicate that we limit output</param>
+        /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event</param>
+        /// <returns>output events, one for each input event</returns>
+        
+        public static EventBean[] GetSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, ISet<MultiKey<EventBean>> events, ExprNode optionalHavingNode, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
         {
             if (isOutputLimiting)
             {
-                events = ResultSetProcessorSimple.applyOutputLimit(events, isOutputLimitLastOnly);
+                events = ResultSetProcessorSimple.ApplyOutputLimit(events, isOutputLimitLastOnly);
             }
 
             ELinkedList<EventBean> result = new ELinkedList<EventBean>();
@@ -351,7 +378,7 @@ namespace net.esper.eql.core
             {
                 if (orderByProcessor != null)
                 {
-                    return orderByProcessor.sort(result.ToArray(), eventGenerators.ToArray()) ;
+                    return orderByProcessor.Sort(result.ToArray(), eventGenerators.ToArray()) ;
                 }
                 else
                 {

@@ -8,13 +8,7 @@ namespace net.esper.pattern
 	/// </summary>
 	public abstract class EvalStateNode
 	{
-		//UPGRADE_NOTE: Respective javadoc comments were merged.  It should be changed in order to comply with .NET documentation conventions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1199'"
-		/// <summary> Returns the parent evaluator.</summary>
-		/// <returns> parent evaluator instance
-		/// </returns>
-		/// <summary> Sets the parent evaluator.</summary>
-		/// <param name="parentEvaluator">for this node
-		/// </param>
+		/// <summary> Gets or sets the parent evaluator.</summary>
 		virtual internal Evaluator ParentEvaluator
 		{
 			get

@@ -12,16 +12,16 @@ namespace net.esper.eql.join.plan
     
     public class QueryPlanIndexBuilder
     {
-        /// <summary> Build index specification from navigability info.
-        /// <p>
+        /// <summary>
+        /// Build index specification from navigability info.
+        /// <para>
         /// Looks at each stream and determines which properties in the stream must be indexed
         /// in order for other streams to look up into the stream. Determines the unique set of properties
         /// to avoid building duplicate indexes on the same set of properties.
+        /// </para>
         /// </summary>
-        /// <param name="queryGraph">- navigability info
-        /// </param>
-        /// <returns> query index specs for each stream
-        /// </returns>
+        /// <param name="queryGraph">navigability info</param>
+        /// <returns>query index specs for each stream</returns>
         public static QueryPlanIndex[] buildIndexSpec(QueryGraph queryGraph)
         {
             int numStreams = queryGraph.NumStreams;

@@ -19,7 +19,7 @@ namespace net.esper.events.property
         /// <summary>
         /// Return getter for the given member
         /// </summary>
-        /// <param name="memberInfo">The member info.</param>
+        /// <param name="propertyDesc">The property descriptor.</param>
         /// <returns></returns>
 
         public static EventPropertyGetter GetGetter( PropertyDescriptor propertyDesc )

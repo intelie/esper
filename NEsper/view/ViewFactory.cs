@@ -48,7 +48,7 @@ namespace net.esper.view
 			Object[] arguments = CollectionHelper.ToArray( spec.ObjectParameters ) ;
 			
 			// If the view requires parameters, the empty argument list would be a problem
-			// since all views are also Java beans
+			// since all views are also objects.
 			if ((arguments.Length == 0) && (viewEnum.IsRequiresParameters))
 			{
 				String message = "No parameters have been supplied for view " + spec.ObjectName;

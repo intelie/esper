@@ -14,9 +14,9 @@ namespace net.esper.eql.join
     public interface JoinSetProcessor
 	{
 		/// <summary> Process join result set.</summary>
-		/// <param name="newEvents">- set of event tuples representing new data
+		/// <param name="newEvents">set of event tuples representing new data
 		/// </param>
-		/// <param name="oldEvents">- set of event tuples representing old data
+		/// <param name="oldEvents">set of event tuples representing old data
 		/// </param>
 		void  Process( ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
 	}

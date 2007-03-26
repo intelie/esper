@@ -38,28 +38,28 @@ namespace net.esper.eql.core
 		public virtual void  testGetValue()
 		{
 			// apply 3 rows to group key 1, all aggregators evaluated their sub-expressions(constants 5 and 2)
-			service.applyEnter(new EventBean[1], groupOneKey);
-			service.applyEnter(new EventBean[1], groupOneKey);
-			service.applyEnter(new EventBean[1], groupTwoKey);
+			service.ApplyEnter(new EventBean[1], groupOneKey);
+			service.ApplyEnter(new EventBean[1], groupOneKey);
+			service.ApplyEnter(new EventBean[1], groupTwoKey);
 			
 			service.CurrentRow = groupOneKey;
-			Assert.AreEqual(10, service.getValue(0));
-			Assert.AreEqual(4, service.getValue(1));
+            Assert.AreEqual(10, service.GetValue(0));
+            Assert.AreEqual(4, service.GetValue(1));
 			service.CurrentRow = groupTwoKey;
-			Assert.AreEqual(5, service.getValue(0));
-			Assert.AreEqual(2, service.getValue(1));
+            Assert.AreEqual(5, service.GetValue(0));
+            Assert.AreEqual(2, service.GetValue(1));
 			
-			service.applyLeave(new EventBean[1], groupTwoKey);
-			service.applyLeave(new EventBean[1], groupTwoKey);
-			service.applyLeave(new EventBean[1], groupTwoKey);
-			service.applyLeave(new EventBean[1], groupOneKey);
+			service.ApplyLeave(new EventBean[1], groupTwoKey);
+			service.ApplyLeave(new EventBean[1], groupTwoKey);
+			service.ApplyLeave(new EventBean[1], groupTwoKey);
+			service.ApplyLeave(new EventBean[1], groupOneKey);
 			
 			service.CurrentRow = groupOneKey;
-			Assert.AreEqual(10 - 5, service.getValue(0));
-			Assert.AreEqual(4 - 2, service.getValue(1));
+            Assert.AreEqual(10 - 5, service.GetValue(0));
+            Assert.AreEqual(4 - 2, service.GetValue(1));
 			service.CurrentRow = groupTwoKey;
-			Assert.AreEqual(5 - 15, service.getValue(0));
-			Assert.AreEqual(2 - 6, service.getValue(1));
+            Assert.AreEqual(5 - 15, service.GetValue(0));
+            Assert.AreEqual(2 - 6, service.GetValue(1));
 		}
 	}
 }

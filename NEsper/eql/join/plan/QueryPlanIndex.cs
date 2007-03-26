@@ -22,7 +22,7 @@ namespace net.esper.eql.join.plan
 		private String[][] indexProps;
 
 		/// <summary> Ctor.</summary>
-		/// <param name="indexProps">- array of property names with the first dimension suplying the number of
+		/// <param name="indexProps">array of property names with the first dimension suplying the number of
 		/// distinct indexes. The second dimension can be empty and indicates a full table scan.
 		/// </param>
 		
@@ -36,7 +36,7 @@ namespace net.esper.eql.join.plan
 		}
 
 		/// <summary> Find a matching index for the property names supplied.</summary>
-		/// <param name="indexFields">- property names to search for
+		/// <param name="indexFields">property names to search for
 		/// </param>
 		/// <returns> -1 if not found, or offset within indexes if found
 		/// </returns>
@@ -54,7 +54,7 @@ namespace net.esper.eql.join.plan
 		}
 
 		/// <summary> Add an index specification element.</summary>
-		/// <param name="indexProperties">- list of property names to index
+		/// <param name="indexProperties">list of property names to index
 		/// </param>
 		/// <returns> number indicating position of index that was added
 		/// </returns>
@@ -73,6 +73,12 @@ namespace net.esper.eql.join.plan
 			return numElements;
 		}
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			if ( indexProps == null )
@@ -90,7 +96,7 @@ namespace net.esper.eql.join.plan
 		}
 
 		/// <summary> Print index specifications in readable format.</summary>
-		/// <param name="indexSpecs">- define indexes
+		/// <param name="indexSpecs">define indexes
 		/// </param>
 		/// <returns> readable format of index info
 		/// </returns>

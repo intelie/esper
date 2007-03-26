@@ -16,6 +16,13 @@ namespace net.esper.eql.db
         private readonly DbProviderFactoryConnection dbConfig;
         private readonly ConnectionSettings connectionSettings;
 
+        /// <summary>
+        /// Creates a new database connection.
+        /// </summary>
+        /// <value></value>
+        /// <returns> new connection
+        /// </returns>
+        /// <throws>  DatabaseConfigException throws to indicate a problem getting a new connection </throws>
         virtual public DbConnection Connection
 		{
 			get
@@ -45,12 +52,12 @@ namespace net.esper.eql.db
 			}
 		}
 
-		/// <summary> Ctor.</summary>
-		/// <param name="driverConfig">is the driver manager configuration
-		/// </param>
-		/// <param name="connectionSettings">are connection-level settings
-		/// </param>
-		/// <throws>  DatabaseConfigException thrown if the driver class cannot be loaded </throws>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="dbConfig">is the database provider configuration</param>
+        /// <param name="connectionSettings">are connection-level settings</param>
+        /// <throws>  DatabaseConfigException thrown if the driver class cannot be loaded </throws>
 
         public DatabaseProviderConnFactory(DbProviderFactoryConnection dbConfig, ConnectionSettings connectionSettings)
 		{

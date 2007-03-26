@@ -19,7 +19,7 @@ namespace net.esper.eql.join.plan
         private readonly int[] nestingOrder;
 
         /// <summary> Ctor.</summary>
-        /// <param name="nestingOrder">- order of streams in nested iteration
+        /// <param name="nestingOrder">order of streams in nested iteration
         /// </param>
 
         public NestedIterationNode(int[] nestingOrder)
@@ -51,6 +51,12 @@ namespace net.esper.eql.join.plan
             get { return childNodes; }
         }
 
+        /// <summary>
+        /// Makes the exec.
+        /// </summary>
+        /// <param name="indexPerStream">The index per stream.</param>
+        /// <param name="streamTypes">The stream types.</param>
+        /// <returns></returns>
         public override ExecNode MakeExec(EventTable[][] indexPerStream, EventType[] streamTypes)
         {
             if (childNodes.Count == 0)
@@ -68,6 +74,10 @@ namespace net.esper.eql.join.plan
             return execNode;
         }
 
+        /// <summary>
+        /// Prints the specified indent writer.
+        /// </summary>
+        /// <param name="indentWriter">The indent writer.</param>
         public override void Print(IndentWriter indentWriter)
         {
             indentWriter.WriteLine("NestedIterationNode with nesting order " + CollectionHelper.Render(nestingOrder));

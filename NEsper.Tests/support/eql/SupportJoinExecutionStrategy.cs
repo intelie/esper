@@ -27,7 +27,7 @@ namespace net.esper.support.eql
 		private EventBean[][] lastNewDataPerStream;
 		private EventBean[][] lastOldDataPerStream;
 		
-		public virtual void  join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+		public virtual void  Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
 		{
 			lastNewDataPerStream = newDataPerStream;
 			lastOldDataPerStream = oldDataPerStream;

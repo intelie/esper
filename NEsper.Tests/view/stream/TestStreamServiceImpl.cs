@@ -35,10 +35,10 @@ namespace net.esper.view.stream
 			filterSpecs[2] = SupportFilterSpecBuilder.build(eventType, new Object[]{"str", FilterOperator.EQUAL, "b"});
 			
 			streams = new EventStream[4];
-			streams[0] = streamReuseService.createStream(filterSpecs[0], supportFilterService);
-			streams[1] = streamReuseService.createStream(filterSpecs[0], supportFilterService);
-			streams[2] = streamReuseService.createStream(filterSpecs[1], supportFilterService);
-			streams[3] = streamReuseService.createStream(filterSpecs[2], supportFilterService);
+			streams[0] = streamReuseService.CreateStream(filterSpecs[0], supportFilterService);
+            streams[1] = streamReuseService.CreateStream(filterSpecs[0], supportFilterService);
+            streams[2] = streamReuseService.CreateStream(filterSpecs[1], supportFilterService);
+            streams[3] = streamReuseService.CreateStream(filterSpecs[2], supportFilterService);
 		}
 		
 		[Test]
@@ -59,21 +59,21 @@ namespace net.esper.view.stream
 		[Test]
 		public virtual void  testDrop()
 		{
-			streamReuseService.dropStream(filterSpecs[0], supportFilterService);
-			streamReuseService.dropStream(filterSpecs[1], supportFilterService);
+			streamReuseService.DropStream(filterSpecs[0], supportFilterService);
+            streamReuseService.DropStream(filterSpecs[1], supportFilterService);
 			Assert.AreEqual(0, supportFilterService.getRemoved().Count);
 			
 			// Filter removed
-			streamReuseService.dropStream(filterSpecs[0], supportFilterService);
+            streamReuseService.DropStream(filterSpecs[0], supportFilterService);
 			Assert.AreEqual(1, supportFilterService.getRemoved().Count);
-			
-			streamReuseService.dropStream(filterSpecs[2], supportFilterService);
+
+            streamReuseService.DropStream(filterSpecs[2], supportFilterService);
 			Assert.AreEqual(2, supportFilterService.getRemoved().Count);
 			
 			// Something already removed
 			try
 			{
-				streamReuseService.dropStream(filterSpecs[2], supportFilterService);
+                streamReuseService.DropStream(filterSpecs[2], supportFilterService);
 				Assert.Fail();
 			}
 			catch (System.SystemException ex)

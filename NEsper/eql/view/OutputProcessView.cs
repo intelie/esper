@@ -32,13 +32,12 @@ namespace net.esper.eql.view
 
         private static readonly Log log = LogFactory.GetLog(typeof(OutputProcessView));
 
-        /**
-         * Ctor.
-         * @param resultSetProcessor is processing the result set for publishing it out
-         * @param streamCount is the number of streams, indicates whether or not this view participates in a join
-         * @param outputLimitSpec is the specification for limiting output (the output condition and the result set processor)
-         * @param viewContext is the services the output condition may depend on
-         */
+        /// <summary>Ctor.</summary>
+        /// <param name="resultSetProcessor">is processing the result set for publishing it out</param>
+        /// <param name="streamCount">is the number of streams, indicates whether or not this view participates in a join</param>
+        /// <param name="outputLimitSpec">is the specification for limiting output (the output condition and the result set processor)</param>
+        /// <param name="viewContext">is the services the output condition may depend on</param>
+
         public OutputProcessView(
             ResultSetProcessor resultSetProcessor,
             int streamCount,
@@ -58,11 +57,10 @@ namespace net.esper.eql.view
             this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.IsDisplayLastOnly);
         }
 
-        /**
-         * The update method is called if the view does not participate in a join.
-         * @param newData - new events
-         * @param oldData - old events
-         */
+        /// <summary>The update method is called if the view does not participate in a join.</summary>
+        /// <param name="newData">new events</param>
+        /// <param name="oldData">old events</param>
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             if (log.IsDebugEnabled)
@@ -92,14 +90,13 @@ namespace net.esper.eql.view
                 }
             }
 
-            outputCondition.updateOutputCondition(newDataLength, oldDataLength);
+            outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
         }
 
-        /**
-         * This process (update) method is for participation in a join.
-         * @param newEvents - new events
-         * @param oldEvents - old events
-         */
+        /// <summary>This process (update) method is for participation in a join.</summary>
+        /// <param name="newEvents">new events</param>
+        /// <param name="oldEvents">old events</param>
+
         public void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
         {
             if (log.IsDebugEnabled)
@@ -120,16 +117,13 @@ namespace net.esper.eql.view
                 oldEventsSet.Add(ev);
             }
 
-            outputCondition.updateOutputCondition(newEvents.Count, oldEvents.Count);
+            outputCondition.UpdateOutputCondition(newEvents.Count, oldEvents.Count);
         }
 
-        /**
-         * Called once the output condition has been met.
-         * Invokes the result set processor.
-         * Used for non-join event data.
-         * @param doOutput - true if the batched events should actually be output as well as processed, false if they should just be processed
-         * @param forceUpdate - true if output should be made even when no updating events have arrived
-         * */
+        /// <summary>Called once the output condition has been met.Invokes the result set processor.Used for non-join event data.</summary>
+        /// <param name="doOutput">true if the batched events should actually be output as well as processed, false if they should just be processed</param>
+        /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
+
         protected void continueOutputProcessingView(Boolean doOutput, Boolean forceUpdate)
         {
             log.Debug(".continueOutputProcessingView");
@@ -142,7 +136,7 @@ namespace net.esper.eql.view
             if (resultSetProcessor != null)
             {
                 // Process the events and get the result
-                Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents);
+                Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.ProcessViewResult(newEvents, oldEvents);
                 newEvents = newOldEvents != null ? newOldEvents.First : null;
                 oldEvents = newOldEvents != null ? newOldEvents.Second : null;
             }
@@ -180,13 +174,10 @@ namespace net.esper.eql.view
             oldEventsSet.Clear();
         }
 
-        /**
-         * Called once the output condition has been met.
-         * Invokes the result set processor.
-         * Used for join event data.
-         * @param doOutput - true if the batched events should actually be output as well as processed, false if they should just be processed
-         * @param forceUpdate - true if output should be made even when no updating events have arrived	
-         */
+        /// <summary>Called once the output condition has been met.Invokes the result set processor.Used for join event data.</summary>
+        /// <param name="doOutput">true if the batched events should actually be output as well as processed, false if they should just be processed</param>
+        /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
+
         protected void continueOutputProcessingJoin(Boolean doOutput, Boolean forceUpdate)
         {
             log.Debug(".continueOutputProcessingJoin");
@@ -194,7 +185,7 @@ namespace net.esper.eql.view
             EventBean[] newEvents = null;
             EventBean[] oldEvents = null;
 
-            Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet);
+            Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.ProcessJoinResult(newEventsSet, oldEventsSet);
             if (newOldEvents != null)
             {
                 newEvents = newOldEvents.First;
@@ -208,6 +199,13 @@ namespace net.esper.eql.view
             resetEventBatches();
         }
 
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// metadata for the objects in the collection
+        /// </returns>
         public override EventType EventType
         {
             get
@@ -226,6 +224,12 @@ namespace net.esper.eql.view
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
             if (resultSetProcessor != null)
@@ -239,6 +243,13 @@ namespace net.esper.eql.view
         }
 
 
+        /// <summary>
+        /// Return null if the view will accept being attached to a particular object.
+        /// </summary>
+        /// <param name="parentViewable">is the potential parent for this view</param>
+        /// <returns>
+        /// null if this view can successfully attach to the parent, an error message if it cannot.
+        /// </returns>
         public override String AttachesTo(Viewable parentViewable)
         {
             return null;

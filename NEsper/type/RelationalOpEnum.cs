@@ -25,6 +25,10 @@ namespace net.esper.type
 
         private static IDictionary<MultiKey<Object>, RelationalOpEnum.Computer> computers;
 
+        /// <summary>
+        /// Array of values exposed by this meta-enumeration.
+        /// </summary>
+
         public static readonly RelationalOpEnum[] Values = new RelationalOpEnum[]
 		{
 			GT,
@@ -61,11 +65,13 @@ namespace net.esper.type
             computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), LE }), LEDoubleComputer);
         }
 
-        /**
-         * Returns the computer to use for the relational operation based on the coercion type.
-         * @param coercedType is the object type
-         * @return computer for performing the relational op
-         */
+        /// <summary>
+        /// Returns the computer to use for the relational operation based on the
+        /// coercion type.
+        /// </summary>
+        /// <param name="coercedType">is the object type</param>
+        /// <returns>computer for performing the relational op</returns>
+
         public RelationalOpEnum.Computer GetComputer(Type coercedType)
         {
             if ((coercedType != typeof(double?)) &&
@@ -84,11 +90,21 @@ namespace net.esper.type
                 (null);
         }
 
+        /// <summary>
+        /// Delegate for computing a relational operation on two objects.
+        /// </summary>
+        /// <param name="objOne"></param>
+        /// <param name="objTwo"></param>
+        /// <returns></returns>
+
         public delegate Boolean Computer(Object objOne, Object objTwo);
 
-        /**
-         * Computer for relational op compare.
-         */
+        /// <summary>
+        /// Greater than string computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool GTStringComputer(Object objOne, Object objTwo)
         {
             String s1 = (String)objOne;
@@ -96,27 +112,39 @@ namespace net.esper.type
             int result = s1.CompareTo(s2);
             return result > 0;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Greater-than or equal to string computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool GEStringComputer(Object objOne, Object objTwo)
         {
             String s1 = (String)objOne;
             String s2 = (String)objTwo;
             return s1.CompareTo(s2) >= 0;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Less-than or equal to string computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool LEStringComputer(Object objOne, Object objTwo)
         {
             String s1 = (String)objOne;
             String s2 = (String)objTwo;
             return s1.CompareTo(s2) <= 0;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Less-than string computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool LTStringComputer(Object objOne, Object objTwo)
         {
             String s1 = (String)objOne;
@@ -124,36 +152,51 @@ namespace net.esper.type
             return s1.CompareTo(s2) < 0;
         }
 
-        /**
-         * Computer for relational op compare.
-         */
+        /// <summary>
+        /// Greater-than long computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool GTLongComputer(Object objOne, Object objTwo)
         {
             Int64 s1 = Convert.ToInt64(objOne);
             Int64 s2 = Convert.ToInt64(objTwo);
             return s1 > s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Greater-than or equal to long computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool GELongComputer(Object objOne, Object objTwo)
         {
             Int64 s1 = Convert.ToInt64(objOne);
             Int64 s2 = Convert.ToInt64(objTwo);
             return s1 >= s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Less-than long computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool LTLongComputer(Object objOne, Object objTwo)
         {
             Int64 s1 = Convert.ToInt64(objOne);
             Int64 s2 = Convert.ToInt64(objTwo);
             return s1 < s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Less-than or equal to long computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool LELongComputer(Object objOne, Object objTwo)
         {
             Int64 s1 = Convert.ToInt64(objOne);
@@ -161,36 +204,51 @@ namespace net.esper.type
             return s1 <= s2;
         }
 
-        /**
- * Computer for relational op compare.
- */
+        /// <summary>
+        /// Greater-than unsigned long computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool GTULongComputer(Object objOne, Object objTwo)
         {
             UInt64 s1 = Convert.ToUInt64(objOne);
             UInt64 s2 = Convert.ToUInt64(objTwo);
             return s1 > s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Greater-than or equal to unsigned long computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool GEULongComputer(Object objOne, Object objTwo)
         {
             UInt64 s1 = Convert.ToUInt64(objOne);
             UInt64 s2 = Convert.ToUInt64(objTwo);
             return s1 >= s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Less-than unsigned long computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool LTULongComputer(Object objOne, Object objTwo)
         {
             UInt64 s1 = Convert.ToUInt64(objOne);
             UInt64 s2 = Convert.ToUInt64(objTwo);
             return s1 < s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Less-than or equal to unsigned long computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool LEULongComputer(Object objOne, Object objTwo)
         {
             UInt64 s1 = Convert.ToUInt64(objOne);
@@ -198,36 +256,51 @@ namespace net.esper.type
             return s1 <= s2;
         }
 
-        /**
-         * Computer for relational op compare.
-         */
+        /// <summary>
+        /// Greater-than double computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool GTDoubleComputer(Object objOne, Object objTwo)
         {
             double s1 = Convert.ToDouble(objOne);
             double s2 = Convert.ToDouble(objTwo);
             return s1 > s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Greater-than or equal to double computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool GEDoubleComputer(Object objOne, Object objTwo)
         {
             double s1 = Convert.ToDouble(objOne);
             double s2 = Convert.ToDouble(objTwo);
             return s1 >= s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Less-than double computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool LTDoubleComputer(Object objOne, Object objTwo)
         {
             double s1 = Convert.ToDouble(objOne);
             double s2 = Convert.ToDouble(objTwo);
             return s1 < s2;
         }
-        /**
-         * Computer for relational op compare.
-         */
+
+        /// <summary>
+        /// Less-than or equal to double computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static bool LEDoubleComputer(Object objOne, Object objTwo)
         {
             double s1 = Convert.ToDouble(objOne);
@@ -235,10 +308,9 @@ namespace net.esper.type
             return s1 <= s2;
         }
 
-        /**
-         * Returns string rendering of enum.
-         * @return relational op string
-         */
+        /// <summary>Returns string rendering of enum.</summary>
+        /// <returns>relational op string</returns>
+
         public String getExpressionText()
         {
             return expressionText;

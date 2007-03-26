@@ -7,18 +7,17 @@ namespace net.esper.filter
 	/// <summary> Factory for {@link FilterParamIndex} instances based on event property name and filter operator type.</summary>
 	public class IndexFactory
 	{
-		/// <summary> Factory for indexes that store filter parameter constants for a given event property and filter
-		/// operator.
-		/// <p>Does not perform any check of validity of property name.
-		/// </summary>
-		/// <param name="eventType">is the event type to create an index for
-		/// </param>
-		/// <param name="propertyName">is the event property name
-		/// </param>
-		/// <param name="filterOperator">is the type of index to use
-		/// </param>
-		/// <returns> the proper index based on the filter operator type
-		/// </returns>
+        /// <summary>
+        /// Factory for indexes that store filter parameter constants for a given event property and filter
+        /// operator.
+        /// <para>Does not perform any check of validity of property name.</para>
+        /// </summary>
+        /// <param name="eventType">is the event type to create an index for</param>
+        /// <param name="propertyName">is the event property name</param>
+        /// <param name="filterOperator">is the type of index to use</param>
+        /// <returns>
+        /// the proper index based on the filter operator type
+        /// </returns>
 		public static FilterParamIndex CreateIndex(
 			EventType eventType,
 			String propertyName,

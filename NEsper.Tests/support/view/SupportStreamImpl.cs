@@ -42,9 +42,10 @@ namespace net.esper.support.view
             this.childViews = new List<View>();
         }
 
-        /// <summary> Insert a single event to the stream</summary>
-        /// <param name="event">
-        /// </param>
+        /// <summary>
+        /// Insert a single event to the stream
+        /// </summary>
+        /// <param name="_event">to insert</param>
         public virtual void Insert(EventBean _event)
         {
             events.Add(_event);

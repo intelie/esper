@@ -17,15 +17,25 @@ namespace net.esper.compat
 
     public class HighResolutionTimer : ITimer
     {
+        /// <summary>
+        /// Delegate that is called by the windows multimedia timer upon trigger
+        /// of the timer.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        /// <param name="userCtx"></param>
+        /// <param name="rsv1"></param>
+        /// <param name="rsv2"></param>
+
         public delegate void TimerEventHandler(uint id, uint msg, IntPtr userCtx, uint rsv1, uint rsv2);
 
-        public class NativeMethods
+        internal class NativeMethods
         {
 	        [DllImport("WinMM.dll", SetLastError = true)]
-	        public static extern uint timeSetEvent(uint msDelay, uint msResolution, TimerEventHandler handler, IntPtr userCtx, uint eventType);
+            internal static extern uint timeSetEvent(uint msDelay, uint msResolution, TimerEventHandler handler, IntPtr userCtx, uint eventType);
 	
 	        [DllImport("WinMM.dll", SetLastError = true)]
-	        public static extern uint timeKillEvent(uint timerEventId);
+            internal static extern uint timeKillEvent(uint timerEventId);
         }
 
         private const int TIME_ONESHOT    = 0x0000   ; /* program timer for single event */
@@ -85,11 +95,6 @@ namespace net.esper.compat
         /// <summary>
         /// Destructor
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="msg"></param>
-        /// <param name="userCtx"></param>
-        /// <param name="rsv1"></param>
-        /// <param name="rsv2"></param>
         
         ~HighResolutionTimer()
         {

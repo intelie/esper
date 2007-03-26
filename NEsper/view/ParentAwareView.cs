@@ -9,9 +9,9 @@ namespace net.esper.view
 	
     public interface ParentAwareView
 	{
-		/// <summary> Called to indicate the parent views.</summary>
-		/// <param name="parentViews">is a list of parent views in top-down order 
-		/// </param>
+		/// <summary>
+        /// Sets a flag indicating that the view must couple to parent views.
+        /// </summary>
 
         IList<View> ParentAware
         {

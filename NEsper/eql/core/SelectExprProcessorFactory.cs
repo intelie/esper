@@ -25,7 +25,7 @@ namespace net.esper.eql.core
 		/// <param name="eventAdapterService">for generating wrapper instances for events.</param>
 		/// <returns>Returns the processor to use for a given select-clause.</returns>
 
-		public static SelectExprProcessor getProcessor( IList<SelectExprElementNamedSpec> selectionList,
+		public static SelectExprProcessor GetProcessor( IList<SelectExprElementNamedSpec> selectionList,
 													   InsertIntoDesc insertIntoDesc,
 													   StreamTypeService typeService,
 													   EventAdapterService eventAdapterService )
@@ -42,13 +42,13 @@ namespace net.esper.eql.core
 				// For joins
 				if ( typeService.StreamNames.Length > 1 )
 				{
-					log.Debug( ".getProcessor Using SelectExprJoinWildcardProcessor" );
+					log.Debug( ".GetProcessor Using SelectExprJoinWildcardProcessor" );
 					return new SelectExprJoinWildcardProcessor( typeService.StreamNames, typeService.EventTypes, eventAdapterService );
 				}
 				// Single-table selects don't need extra processing
 				else
 				{
-					log.Debug( ".getProcessor Using no select expr processor" );
+					log.Debug( ".GetProcessor Using no select expr processor" );
 					return null;
 				}
 			}
@@ -57,7 +57,7 @@ namespace net.esper.eql.core
 			verifyNameUniqueness( selectionList );
 
 			// Construct processor
-			log.Debug( ".getProcessor Using SelectExprEvalProcessor" );
+			log.Debug( ".GetProcessor Using SelectExprEvalProcessor" );
 			return new SelectExprEvalProcessor( selectionList, insertIntoDesc, eventAdapterService );
 		}
 

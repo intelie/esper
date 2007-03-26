@@ -25,7 +25,7 @@ namespace net.esper.eql.core
 
             try
             {
-                SelectExprProcessorFactory.getProcessor(selectionList, null, new SupportStreamTypeSvc3Stream(), null);
+                SelectExprProcessorFactory.GetProcessor(selectionList, null, new SupportStreamTypeSvc3Stream(), null);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -38,7 +38,7 @@ namespace net.esper.eql.core
         public virtual void testGetProcessorWildcard()
         {
             IList<SelectExprElementNamedSpec> selectionList = new List<SelectExprElementNamedSpec>();
-            SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, null, new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service);
+            SelectExprProcessor processor = SelectExprProcessorFactory.GetProcessor(selectionList, null, new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service);
             Assert.IsTrue(processor is SelectExprJoinWildcardProcessor);
         }
 
@@ -48,7 +48,7 @@ namespace net.esper.eql.core
             IList<SelectExprElementNamedSpec> selectionList = new List<SelectExprElementNamedSpec>();
             ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
             selectionList.Add(new SelectExprElementNamedSpec(identNode, "result"));
-            SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, null, new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service);
+            SelectExprProcessor processor = SelectExprProcessorFactory.GetProcessor(selectionList, null, new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service);
             Assert.IsTrue(processor != null);
         }
 

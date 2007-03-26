@@ -11,13 +11,13 @@ namespace net.esper.eql.join
 	public interface JoinSetComposer
 	{
 		/// <summary> Return join tuple result set from new data and old data for each stream.</summary>
-		/// <param name="newDataPerStream">- for each stream the event array (can be null).
+		/// <param name="newDataPerStream">for each stream the event array (can be null).
 		/// </param>
-		/// <param name="oldDataPerStream">- for each stream the event array (can be null).
+		/// <param name="oldDataPerStream">for each stream the event array (can be null).
 		/// </param>
 		/// <returns> join tuples
 		/// </returns>
 
-		UniformPair<ISet<MultiKey<EventBean>>> join( EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream );
+		UniformPair<ISet<MultiKey<EventBean>>> Join( EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream );
 	}
 }

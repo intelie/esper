@@ -6,9 +6,9 @@ using net.esper.compat;
 
 namespace net.esper.util
 {
-    /// <summary> Helper for questions about Java classes such as
-    /// <p> what is the boxed type for a primitive type
-    /// <p> is this a numeric type.
+    /// <summary> Helper for questions about types.
+    /// <para> what is the boxed type for a primitive type</para>
+    /// <para> is this a numeric type.</para>
     /// </summary>
     public class TypeHelper
     {
@@ -75,6 +75,7 @@ namespace net.esper.util
         /// <summary>
         /// Returns for the class name given the class name of the boxed (wrapped) type if
         /// the class name is one of the CLR primitive types.
+        /// </summary>
         /// <param name="typeName">a type name, a CLR primitive type or other class</param>
         /// <returns>boxed type name if CLR primitive type, or just same class name passed in if not a primitive type</returns>
 
@@ -131,6 +132,13 @@ namespace net.esper.util
             return typeName;
         }
 
+        /// <summary>
+        /// Determines whether the specified type is boolean.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified type is boolean; otherwise, <c>false</c>.
+        /// </returns>
         public static bool IsBoolean(Type type)
         {
             return
@@ -187,7 +195,7 @@ namespace net.esper.util
         /// Coerce the given number to the given type. Allows coerce to lower resultion number.
         /// Doesn't coerce to primitive types.
         /// <param name="numToCoerce">numToCoerce is the number to coerce to the given type</param>
-        /// <param name="resultType">the result type to return</result>
+        /// <param name="resultType">the result type to return</param>
         /// </summary>
 
         public static Object CoerceNumber(Object numToCoerce, Type resultType)
@@ -255,12 +263,9 @@ namespace net.esper.util
         /// Returns the coercion type for the 2 numeric types for use in arithmatic.
         /// Note: byte and short types always result in integer.
         /// </summary>
-        /// <param name="typeOne">
-        /// </param>
-        /// <param name="typeTwo">
-        /// </param>
-        /// <returns> coerced type
-        /// </returns>
+        /// <param name="typeOne">The type one.</param>
+        /// <param name="typeTwo">The type two.</param>
+        /// <returns>coerced type</returns>
         /// <throws>  CoercionException if types don't allow coercion </throws>
 
         public static Type GetArithmaticCoercionType(Type typeOne, Type typeTwo)
@@ -304,11 +309,10 @@ namespace net.esper.util
 
 
         /// <summary>
-        /// Returns true if the Number instance is a floating point number.</summary>
-        /// <param name="number">to check
-        /// </param>
-        /// <returns> true if number is Float or double type 
-        /// </returns>
+        /// Returns true if the Number instance is a floating point number.
+        /// </summary>
+        /// <param name="number">to check</param>
+        /// <returns>true if number is Float or double type</returns>
 
         public static bool IsFloatingPointNumber(ValueType number)
         {
@@ -317,10 +321,12 @@ namespace net.esper.util
                 (number is double);
         }
 
-        /// <summary> Returns true if the supplied type is a floating point number.</summary>
-        /// <param name="clazz">to check
-        /// </param>
-        /// <returns> true if primitive or boxed float or double
+        /// <summary>
+        /// Returns true if the supplied type is a floating point number.
+        /// </summary>
+        /// <param name="clazz">to check</param>
+        /// <returns>
+        /// true if primitive or boxed float or double
         /// </returns>
         public static bool IsFloatingPointClass(Type clazz)
         {
@@ -332,16 +338,16 @@ namespace net.esper.util
             ;
         }
 
-        /// <summary> Returns for 2 classes to be compared via relational operator the Class type of
+        /// <summary>
+        /// Returns for 2 classes to be compared via relational operator the Class type of
         /// common comparison. The output is always Long.class, double.class, String.class or bool.class
         /// depending on whether the passed types are numeric and floating-point.
         /// Accepts primitive as well as boxed types.
         /// </summary>
-        /// <param name="typeOne">
-        /// </param>
-        /// <param name="typeTwo">
-        /// </param>
-        /// <returns> One of Long.class, double.class or String.class
+        /// <param name="typeOne">The type one.</param>
+        /// <param name="typeTwo">The type two.</param>
+        /// <returns>
+        /// One of Long.class, double.class or String.class
         /// </returns>
         /// <throws>  ArgumentException if the types cannot be compared </throws>
 
@@ -379,8 +385,9 @@ namespace net.esper.util
         /// Returns true if the class passed in is a built-in data type (primitive or wrapper)
         /// including String.
         /// </summary>
-        /// <param name="clazz">to check</param>
-        /// <returns> true if built-in data type, or false if not
+        /// <param name="type">The type.</param>
+        /// <returns>
+        /// true if built-in data type, or false if not
         /// </returns>
         public static bool IsBuiltinDataType(Type type)
         {
@@ -400,9 +407,11 @@ namespace net.esper.util
         /// <summary>
         /// Returns true if 2 classes are assignment compatible.
         /// </summary>
-        /// <param name="parameterType"> type to assign from</param>
-        /// <param name="parameterization"> type to assign to</param>
-        /// <returns>true if assignment compatible, false if not</returns>
+        /// <param name="parameterType">type to assign from</param>
+        /// <param name="parameterization">type to assign to</param>
+        /// <returns>
+        /// true if assignment compatible, false if not
+        /// </returns>
 
         public static bool IsAssignmentCompatible(Type parameterType, Type parameterization)
         {
@@ -425,15 +434,18 @@ namespace net.esper.util
 
         /// <summary> Determines a common denominator type to which one or more types can be casted or coerced.
         /// For use in determining the result type in certain expressions (coalesce, case).
-        /// <p>
+        /// <para>
         /// Null values are allowed as part of the input and indicate a 'null' constant value
         /// in an expression tree. Such as value doesn't have any type and can be ignored in
         /// determining a result type.
-        /// <p>
+        /// </para>
+        /// <para>
         /// For numeric types, determines a coercion type that all types can be converted to
         /// via the method GetArithmaticCoercionType.
-        /// <p>
+        /// </para>
+        /// <para>
         /// Indicates that there is no common denominator type by throwing {@link CoercionException}.
+        /// </para>
         /// </summary>
         /// <param name="types">is an array of one or more types, which can be Java built-in (primitive or wrapper)
         /// or user types

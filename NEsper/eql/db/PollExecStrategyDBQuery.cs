@@ -26,15 +26,11 @@ namespace net.esper.eql.db
         private Pair<DbConnection, DbCommand> resources;
 
         /// <summary> Ctor.</summary>
-        /// <param name="eventAdapterService">for generating event beans
-        /// </param>
-        /// <param name="preparedStatementText">is the SQL to use for polling
-        /// </param>
-        /// <param name="outputTypes">describe columns selected by the SQL
-        /// </param>
-        /// <param name="eventType">is the event type that this poll generates
-        /// <param name="connectionCache">caches Connection and DbCommand
-        /// </param>
+        /// <param name="eventAdapterService">for generating event beans</param>
+        /// <param name="eventType">is the event type that this poll generates</param>
+        /// <param name="connectionCache">caches Connection and DbCommand</param>
+        /// <param name="preparedStatementText">is the SQL to use for polling</param>
+        /// <param name="outputTypes">describe columns selected by the SQL</param>
         public PollExecStrategyDBQuery(EventAdapterService eventAdapterService,
                                        EventType eventType,
                                        ConnectionCache connectionCache,
@@ -48,21 +44,35 @@ namespace net.esper.eql.db
             this.outputTypes = outputTypes;
         }
 
+        /// <summary>
+        /// Start the poll, called before any poll operation.
+        /// </summary>
         public virtual void Start()
         {
             resources = connectionCache.GetConnection();
         }
 
+        /// <summary>
+        /// Indicate we are done polling and can release resources.
+        /// </summary>
         public virtual void Done()
         {
             connectionCache.DoneWith(resources);
         }
 
+        /// <summary>
+        /// Indicate we are no going to use this object again.
+        /// </summary>
         public virtual void Destroy()
         {
             connectionCache.Destroy();
         }
 
+        /// <summary>
+        /// Poll events using the keys provided.
+        /// </summary>
+        /// <param name="lookupValues">is keys for exeuting a query or such</param>
+        /// <returns>a list of events for the keys</returns>
         public IList<EventBean> Poll(Object[] lookupValues)
         {
             IList<EventBean> result = null;

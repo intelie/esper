@@ -54,7 +54,8 @@ namespace net.esper.events.property
         /// <summary>
         /// Call the accessor method
         /// </summary>
-        /// <param name="component"></param>
+        /// <param name="component">Object to be queries</param>
+        /// <param name="index">Index of the query</param>
         /// <returns></returns>
 
         public override Object GetValue(object component, object index)

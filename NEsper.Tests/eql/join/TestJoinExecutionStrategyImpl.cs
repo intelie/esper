@@ -36,7 +36,7 @@ namespace net.esper.eql.join
         [Test]
         public virtual void testJoin()
         {
-            join.join(null, null);
+            join.Join(null, null);
 
             Assert.AreSame(newEvents, filter.getLastNewEvents());
             Assert.AreSame(oldEvents, filter.getLastOldEvents());

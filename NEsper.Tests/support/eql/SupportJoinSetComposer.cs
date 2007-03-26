@@ -16,7 +16,7 @@ namespace net.esper.support.eql
             this.result = result;
         }
 
-        public UniformPair<ISet<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+        public UniformPair<ISet<MultiKey<EventBean>>> Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
         {
             return result;
         }

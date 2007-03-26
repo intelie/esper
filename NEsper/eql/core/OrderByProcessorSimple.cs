@@ -30,20 +30,12 @@ namespace net.esper.eql.core
 
         private readonly IComparer<MultiKey<Object>> comparator;
 
-        /**
-         * Ctor.
-         * 
-         * @param orderByList -
-         *            the nodes that generate the keys to sort events on
-         * @param groupByNodes -
-         *            generate the keys for determining aggregation groups
-         * @param needsGroupByKeys -
-         *            indicates whether this processor needs to have individual
-         *            group by keys to evaluate the sort condition successfully
-         * @param aggregationService -
-         *            used to evaluate aggregate functions in the group-by and
-         *            sort-by clauses
-         */
+        /// <summary>Ctor.</summary>
+        /// <param name="orderByList">the nodes that generate the keys to sort events on</param>
+        /// <param name="groupByNodes">generate the keys for determining aggregation groups</param>
+        /// <param name="needsGroupByKeys">indicates whether this processor needs to have individualgroup by keys to evaluate the sort condition successfully</param>
+        /// <param name="aggregationService">used to evaluate aggregate functions in the group-by andsort-by clauses</param>
+
         public OrderByProcessorSimple(IList<Pair<ExprNode, Boolean>> orderByList,
                                       IList<ExprNode> groupByNodes,
                                       Boolean needsGroupByKeys,
@@ -57,8 +49,14 @@ namespace net.esper.eql.core
             this.comparator = new MultiKeyComparator<Object>(getIsDescendingValues());
         }
 
-
-        public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents)
+        /// <summary>
+        /// Sorts the specified outgoing events.
+        /// </summary>
+        /// <param name="outgoingEvents">The outgoing events.</param>
+        /// <param name="generatingEvents">The generating events.</param>
+        /// <returns></returns>
+        
+        public EventBean[] Sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents)
         {
             if (outgoingEvents == null || outgoingEvents.Length < 2)
             {
@@ -72,10 +70,18 @@ namespace net.esper.eql.core
                 groupByKeys = generateGroupKeys(generatingEvents);
             }
 
-            return sort(outgoingEvents, generatingEvents, groupByKeys);
+            return Sort(outgoingEvents, generatingEvents, groupByKeys);
         }
 
-        public EventBean[] sort(
+        /// <summary>
+        /// Sorts the specified outgoing events.
+        /// </summary>
+        /// <param name="outgoingEvents">The outgoing events.</param>
+        /// <param name="generatingEvents">The generating events.</param>
+        /// <param name="groupByKeys">The group by keys.</param>
+        /// <returns></returns>
+        
+        public EventBean[] Sort(
             EventBean[] outgoingEvents,
             EventBean[][] generatingEvents,
             MultiKey<Object>[] groupByKeys)
@@ -127,13 +133,12 @@ namespace net.esper.eql.core
             return result;
         }
 
-        /**
-         * Compares values for sorting.
-         * @param valueOne -first value to compare, can be null
-         * @param valueTwo -second value to compare, can be null
-         * @param descending - true if ascending, false if descending
-         * @return 0 if equal, -1 if smaller, +1 if larger
-         */
+        /// <summary>Compares values for sorting.</summary>
+        /// <param name="valueOne">first value to compare, can be null</param>
+        /// <param name="valueTwo">second value to compare, can be null</param>
+        /// <param name="descending">true if ascending, false if descending</param>
+        /// <returns>0 if equal, -1 if smaller, +1 if larger</returns>
+
         protected static int compareValues(Object valueOne, Object valueTwo, Boolean descending)
         {
             if (descending)

@@ -4,6 +4,11 @@ using System.Text;
 
 namespace net.esper.compat
 {
+    /// <summary>
+    /// An extended set using a hashing algorithm.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+
 	public sealed class EHashSet<T> : ISet<T>
 	{
 		private Dictionary<T, T> m_dataTable = new Dictionary<T, T>() ;

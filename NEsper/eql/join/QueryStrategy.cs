@@ -14,11 +14,11 @@ namespace net.esper.eql.join
     public interface QueryStrategy
     {
         /// <summary> Look up events returning tuples of joined events.</summary>
-        /// <param name="lookupEvents">- events to use to perform the join
+        /// <param name="lookupEvents">events to use to perform the join
         /// </param>
-        /// <param name="joinSet">- result join tuples of events 
+        /// <param name="joinSet">result join tuples of events 
         /// </param>
 
-        void lookup(EventBean[] lookupEvents, ISet<MultiKey<EventBean>> joinSet);
+        void Lookup(EventBean[] lookupEvents, ISet<MultiKey<EventBean>> joinSet);
     }
 }

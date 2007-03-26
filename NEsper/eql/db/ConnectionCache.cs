@@ -11,12 +11,14 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 namespace net.esper.eql.db
 {
     /// <summary> Base class for a Connection and DbCommand cache.
-    /// <p>
+    /// <para>
     /// Implementations control the lifecycle via lifecycle methods, or
     /// may simple obtain new resources and close new resources every time.
-    /// <p>
+    /// </para>
+    /// <para>
     /// This is not a pool - a cache is associated with one client class and that
     /// class is expected to use cache methods in well-defined order of get, done-with and destroy.
+    /// </para>
     /// </summary>
     public abstract class ConnectionCache : IDisposable
     {
@@ -37,8 +39,8 @@ namespace net.esper.eql.db
         public abstract void Destroy();
 
         /// <summary> Ctor.</summary>
-        /// <param name="databaseConnectionFactory">- connection factory</param>
-        /// <param name="sql">- statement sql</param>
+        /// <param name="databaseConnectionFactory">connection factory</param>
+        /// <param name="sql">statement sql</param>
 
         internal ConnectionCache(DatabaseConnectionFactory databaseConnectionFactory, String sql)
         {

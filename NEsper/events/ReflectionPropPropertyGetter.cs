@@ -12,7 +12,7 @@ namespace net.esper.events
 		private readonly PropertyInfo property;
 		
 		/// <summary> Constructor.</summary>
-		/// <param name="field">is the regular reflection field to use to obtain values for a property
+		/// <param name="property">is the reflection property info to use to obtain values for a property
 		/// </param>
 		
         public ReflectionPropPropertyGetter(PropertyInfo property)
@@ -46,7 +46,13 @@ namespace net.esper.events
                 throw new PropertyAccessException(e);
             }
         }
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return "ReflectionPropPropertyGetter " + "property=" + property.ToString();

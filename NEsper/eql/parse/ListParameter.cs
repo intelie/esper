@@ -38,6 +38,14 @@ namespace net.esper.eql.parse
             get { return parameters; }
 		}
 
+        /// <summary>
+        /// Returns true if all values between and including min and max are supplied by the parameter.
+        /// </summary>
+        /// <param name="min">lower end of range</param>
+        /// <param name="max">upper end of range</param>
+        /// <returns>
+        /// true if parameter specifies all int values between min and max, false if not
+        /// </returns>
 		public virtual bool IsWildcard( int min, int max )
 		{
 			foreach ( NumberSetParameter param in parameters )
@@ -50,6 +58,12 @@ namespace net.esper.eql.parse
 			return false;
 		}
 
+        /// <summary>
+        /// Return a set of int values representing the value of the parameter for the given range.
+        /// </summary>
+        /// <param name="min">lower end of range</param>
+        /// <param name="max">upper end of range</param>
+        /// <returns>set of integer</returns>
 		public ISet<Int32> GetValuesInRange( int min, int max )
 		{
 			ISet<Int32> result = new EHashSet<Int32>();

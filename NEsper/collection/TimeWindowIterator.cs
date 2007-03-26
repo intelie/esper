@@ -15,6 +15,11 @@ namespace net.esper.collection
         private IEnumerator<Pair<Int64, List<EventBean>>> keyIterator;
         private IEnumerator<EventBean> currentListIterator;
 
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        /// <value></value>
+        /// <returns>The element in the collection at the current position of the enumerator.</returns>
         public EventBean Current
         {
             get

@@ -61,13 +61,18 @@ namespace net.esper.core
         private EPServicesContext services;
 
         /// <summary> Constructor - takes the services context as argument.</summary>
-        /// <param name="services">- references to services
+        /// <param name="services">references to services
         /// </param>
         public EPAdministratorImpl(EPServicesContext services)
         {
             this.services = services;
         }
 
+        /// <summary>
+        /// Creates the pattern.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
         public virtual EPStatement CreatePattern(String expression)
         {
             // Parse and walk
@@ -116,6 +121,14 @@ namespace net.esper.core
             return patternStatement;
         }
 
+        /// <summary>
+        /// Create a query language statement.
+        /// </summary>
+        /// <param name="eqlStatement">is the query language statement</param>
+        /// <returns>
+        /// EPStatement to poll data from or to add listeners to
+        /// </returns>
+        /// <throws>  EPException when the expression was not valid </throws>
         public virtual EPStatement CreateEQL(String eqlStatement)
         {
             AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
@@ -151,6 +164,9 @@ namespace net.esper.core
 
         private static Log log = LogFactory.GetLog(typeof(EPAdministratorImpl));
 
+        /// <summary>
+        /// Initializes the <see cref="EPAdministratorImpl"/> class.
+        /// </summary>
         static EPAdministratorImpl()
         {
             patternParseRule = new AnonymousClassParseRuleSelector();

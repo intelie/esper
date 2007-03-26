@@ -38,7 +38,11 @@ namespace net.esper.type
 			this.expressionText = expressionText;
 		}
 
-		static BitWiseOpEnum()
+        /// <summary>
+        /// Initializes the <see cref="BitWiseOpEnum"/> class.
+        /// </summary>
+		
+        static BitWiseOpEnum()
 		{
 			computers = new Dictionary<MultiKey<Object>, BitWiseOpEnum.Computer>();
 			computers.Add( new MultiKey<Object>( new Object[] { typeof( sbyte? ),  BAND } ), BAndByte );
@@ -58,11 +62,10 @@ namespace net.esper.type
 			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool? ),  BXOR } ), BXorBoolean );
 		}
 
-		/**
-		 * Returns number or boolean computation for the target coercion type.
-		 * @param coercedType - target type
-		 * @return number cruncher
-		 */
+        /// <summary>Returns number or boolean computation for the target coercion type.</summary>
+        /// <param name="coercedType">target type</param>
+        /// <returns>number cruncher</returns>
+
 		public Computer GetComputer( Type coercedType )
 		{
 			if ( ( coercedType != typeof( sbyte? ) ) &&
@@ -78,18 +81,17 @@ namespace net.esper.type
             return computers[key];
 		}
 
-		/**
-		 * Computer for relational op.
-		 */
-
+        /// <summary>Computer for relational op.</summary>
+        
 		public delegate Object Computer( Object objOne, Object objTwo );
 
-		/**
-		 * Computer for type-specific arith. operations.
-		 */
-		/**
-		 * Bit Wise And.
-		 */
+        /// <summary>
+        /// Bit Wise And.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
 		public static Object BAndByte( Object objOne, Object objTwo )
 		{
 			sbyte? n1 = (sbyte?) objOne;
@@ -98,9 +100,13 @@ namespace net.esper.type
 			return result;
 		}
 
-		/**
-		 * Bit Wise Or.
-		 */
+        /// <summary>
+        /// Bit Wise Or.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
         public static Object BOrByte(Object objOne, Object objTwo)
 		{
 			sbyte? n1 = (sbyte?) objOne;
@@ -109,9 +115,13 @@ namespace net.esper.type
 			return result;
 		}
 
-		/**
-     * Bit Wise Xor.
-     */
+        /// <summary>
+        /// Bit Wise Xor.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
         public static Object BXorByte(Object objOne, Object objTwo)
 		{
 			sbyte? n1 = (sbyte?) objOne;
@@ -120,12 +130,13 @@ namespace net.esper.type
 			return result;
 		}
 
-		/**
-		 * Computer for type-specific arith. operations.
-		 */
-		/**
-		 * Bit Wise And.
-		 */
+        /// <summary>
+        /// Bit Wise And.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
         public static Object BAndShort(Object objOne, Object objTwo)
 		{
 			short? n1 = (short?) objOne;
@@ -133,9 +144,14 @@ namespace net.esper.type
 			short? result = (short?) ( n1 & n2 );
 			return result;
 		}
-		/**
-		 * Bit Wise Or.
-		 */
+
+        /// <summary>
+        /// Bit Wise Or.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
         public static Object BOrShort(Object objOne, Object objTwo)
 		{
 			short? n1 = (short?) objOne;
@@ -143,9 +159,14 @@ namespace net.esper.type
 			short? result = (short?) ( n1 | n2 );
 			return result;
 		}
-		/**
-		 * Bit Wise Xor.
-		 */
+
+        /// <summary>
+        /// Bit Wise Xor.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        
         public static Object BXorShort(Object objOne, Object objTwo)
 		{
 			short? n1 = (short?) objOne;
@@ -154,12 +175,12 @@ namespace net.esper.type
 			return result;
 		}
 
-		/**
-		 * Computer for type-specific arith. operations.
-		 */
-		/**
-		 * Bit Wise And.
-		 */
+        /// <summary>
+        /// Bit Wise And.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static Object BAndInt(Object objOne, Object objTwo)
 		{
 			int? n1 = (int?) objOne;
@@ -167,9 +188,14 @@ namespace net.esper.type
 			int? result = n1 & n2;
 			return result;
 		}
-		/**
-		 * Bit Wise Or.
-		 */
+
+        /// <summary>
+        /// Bit Wise Or.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
         public static Object BOrInt(Object objOne, Object objTwo)
 		{
 			int? n1 = (int?) objOne;
@@ -177,9 +203,13 @@ namespace net.esper.type
 			int? result = n1 | n2;
 			return result;
 		}
-		/**
-		 * Bit Wise Xor.
-		 */
+
+        /// <summary>
+        /// Bit Wise Xor.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static Object BXorInt(Object objOne, Object objTwo)
 		{
 			int? n1 = (int?) objOne;
@@ -188,12 +218,12 @@ namespace net.esper.type
 			return result;
 		}
 
-		/**
-		 * Computer for type-specific arith. operations.
-		 */
-		/**
-		 * Bit Wise And.
-		 */
+        /// <summary>
+        /// Bit Wise And.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static Object BAndLong(Object objOne, Object objTwo)
 		{
 			long? n1 = (long?) objOne;
@@ -201,9 +231,14 @@ namespace net.esper.type
 			long? result = n1 & n2;
 			return result;
 		}
-		/**
-		 * Bit Wise Or.
-		 */
+
+        /// <summary>
+        /// Bit Wise Or.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
         public static Object BOrLong(Object objOne, Object objTwo)
 		{
 			long? n1 = (long?) objOne;
@@ -211,9 +246,13 @@ namespace net.esper.type
 			long? result = n1 | n2;
 			return result;
 		}
-		/**
-		 * Bit Wise Xor.
-		 */
+
+        /// <summary>
+        /// Bit Wise Xor.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static Object BXorLong(Object objOne, Object objTwo)
 		{
 			long? n1 = (long?) objOne;
@@ -222,12 +261,12 @@ namespace net.esper.type
 			return result;
 		}
 
-		/**
-		 * Computer for type-specific arith. operations.
-		 */
-		/**
-		 * Bit Wise And.
-		 */
+        /// <summary>
+        /// Bit Wise And.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
         public static Object BAndBoolean(Object objOne, Object objTwo)
 		{
 			bool? b1 = (bool?) objOne;
@@ -235,9 +274,14 @@ namespace net.esper.type
 			bool? result = b1 & b2;
 			return result;
 		}
-		/**
-		 * Bit Wise Or.
-		 */
+
+        /// <summary>
+        /// Bit Wise Or.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
         public static Object BOrBoolean(Object objOne, Object objTwo)
 		{
 			bool? b1 = (bool?) objOne;
@@ -245,9 +289,14 @@ namespace net.esper.type
 			bool? result = b1 | b2;
 			return result;
 		}
-		/**
-		 * Bit Wise Xor.
-		 */
+
+        /// <summary>
+        /// Bit Wise Xor.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+
         public static Object BXorBoolean(Object objOne, Object objTwo)
 		{
 			bool? b1 = (bool?) objOne;
@@ -256,10 +305,9 @@ namespace net.esper.type
 			return result;
 		}
 
-		/**
-		 * Returns string rendering of enum.
-		 * @return bitwise operator string
-		 */
+        /// <summary>Returns string rendering of enum.</summary>
+        /// <returns>bitwise operator string</returns>
+
 		public String getComputeDescription()
 		{
 			return expressionText;

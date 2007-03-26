@@ -30,24 +30,32 @@ namespace net.esper.compat
 			return this.comparer.GetHashCode( (T) obj );
 		}
 
-		// Note: There are actually 9 cases to handle here.
-		//
-		//  Let Wa = Alive Weak Reference
-		//  Let Wd = Dead Weak Reference
-		//  Let S  = Strong Reference
-		//  
-		//  x  | y  | Equals(x,y)
-		// -------------------------------------------------
-		//  Wa | Wa | comparer.Equals(x.Target, y.Target)
-		//  Wa | Wd | false
-		//  Wa | S  | comparer.Equals(x.Target, y)
-		//  Wd | Wa | false
-		//  Wd | Wd | x == y
-		//  Wd | S  | false
-		//  S  | Wa | comparer.Equals(x, y.Target)
-		//  S  | Wd | false
-		//  S  | S  | comparer.Equals(x, y)
-		// -------------------------------------------------
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <param name="x">The first object of type T to compare.</param>
+        /// <param name="y">The second object of type T to compare.</param>
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
+        /// </returns>
+        /// <remark>
+        /// Note: There are actually 9 cases to handle here.
+        /// Let Wa = Alive Weak Reference
+        /// Let Wd = Dead Weak Reference
+        /// Let S  = Strong Reference
+        /// x  | y  | Equals(x,y)
+        /// -------------------------------------------------
+        /// Wa | Wa | comparer.Equals(x.Target, y.Target)
+        /// Wa | Wd | false
+        /// Wa | S  | comparer.Equals(x.Target, y)
+        /// Wd | Wa | false
+        /// Wd | Wd | x == y
+        /// Wd | S  | false
+        /// S  | Wa | comparer.Equals(x, y.Target)
+        /// S  | Wd | false
+        /// S  | S  | comparer.Equals(x, y)
+        /// -------------------------------------------------
+        /// </remark>
 		public new bool Equals( object x, object y )
 		{
 			bool xIsDead, yIsDead;

@@ -12,6 +12,12 @@ namespace net.esper.view.stat.olap
 		private Dimension dimension;
 		private readonly Object[] values;
 
+        /// <summary>
+        /// Returns member values.
+        /// </summary>
+        /// <value></value>
+        /// <returns> array of member values
+        /// </returns>
 		public Object[] Values
 		{
 			get { return values; }			
@@ -32,7 +38,11 @@ namespace net.esper.view.stat.olap
 		{
 			this.dimension = dimension;
 		}
-		
+
+        /// <summary>
+        /// Returns the dimension the member belongs to.
+        /// </summary>
+        /// <returns>dimension that this member is a value of</returns>
 		public Dimension getDimension()
 		{
 			return dimension;

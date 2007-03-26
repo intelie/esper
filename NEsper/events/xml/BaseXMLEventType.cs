@@ -32,9 +32,9 @@ namespace net.esper.events.xml
             get { return rootElementName; }
         }
 
-        /// <summary> Sets the namespace context for use in XPath expression resolution.</summary>
-        /// <param name="namespaceContext">for XPath expressions
-        /// </param>
+        /// <summary>
+        /// Sets the namespace context for use in XPath expression resolution.
+        /// </summary>
 
         virtual internal XmlNamespaceManager NamespaceManager
         {
@@ -62,7 +62,7 @@ namespace net.esper.events.xml
         /// <param name="explicitProperties">are preconfigured event properties
         /// </param>
         
-        protected void setExplicitProperties(ICollection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitProperties)
+        protected void SetExplicitProperties(ICollection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitProperties)
         {
             // Convert explicit properties to XPath expressions
             EDictionary<String, TypedEventPropertyGetter> getters = new EHashDictionary<String, TypedEventPropertyGetter>();
@@ -85,20 +85,32 @@ namespace net.esper.events.xml
                 throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + "'", ex);
             }
 
-            setExplicitProperties(getters);
+            SetExplicitProperties(getters);
         }
 
+        /// <summary>
+        /// Returns an array of event types that are super to this event type, from which this event type
+        /// inherited event properties.  For bean instances underlying the event this method returns the
+        /// event types for all superclasses extended by the bean and all interfaces implemented by the bean.
+        /// </summary>
+        /// <value></value>
+        /// <returns>an array of event types</returns>
         public override IEnumerable<EventType> SuperTypes
         {
             get { return null; }
         }
 
+        /// <summary>
+        /// Returns enumerable over all super types to event type, going up the hierarchy and including
+        /// all interfaces (and their extended interfaces) and superclasses as EventType instances.
+        /// </summary>
+        /// <value></value>
         public override IEnumerable<EventType> DeepSuperTypes
         {
             get { return EventTypeArray.Empty ; }
         }
 
-        internal override String[] doListPropertyNames()
+        internal override String[] DoListPropertyNames()
         {
             return EMPTY_STRING_ARRAY;
         }

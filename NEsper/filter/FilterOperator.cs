@@ -1,14 +1,17 @@
 using System;
 namespace net.esper.filter
 {
-	/// <summary> Defines the different operator types available for event filters.
-	/// 
+	/// <summary>
+    /// Defines the different operator types available for event filters.
+    /// <para>
 	/// Mathematical notation for defining ranges of floating point numbers is used as defined below:
-	/// <p>[a,b]  a closed range from value a to value b with the end-points a and b included in the range
-	/// <p>(a,b)  an open range from value a to value b with the end-points a and b not included in the range
-	/// <p>[a,b)  a half-open range from value a to value b with the end-point a included and end-point b not included
-	/// in the range
-	/// <p>(a,b]  a half-open range from value a to value b with the end-point a not included and end-point b included in the range
+    /// <list>
+    /// <item>[a,b] a closed range from value a to value b with the end-points a and b included in the range</item>
+    /// <item>(a,b) an open range from value a to value b with the end-points a and b not included in the range</item>
+    /// <item>[a,b) a half-open range from value a to value b with the end-point a included and end-point b not included in the range</item>
+    /// <item>(a,b] a half-open range from value a to value b with the end-point a not included and end-point b included in the range</item>
+    /// </list>
+    /// </para>
 	/// </summary>
     public enum FilterOperator
     {
@@ -16,13 +19,13 @@ namespace net.esper.filter
         EQUAL,
         /// <summary> Exact not matches (!=).</summary>
         NOT_EQUAL,
-        /// <summary> Less (<).</summary>
+        /// <summary> Less (&lt;).</summary>
         LESS,
-        /// <summary> Less or equal (<=).</summary>
+        /// <summary> Less or equal (&lt;=).</summary>
         LESS_OR_EQUAL,
-        /// <summary> Greater or equal (>=).</summary>
+        /// <summary> Greater or equal (&gt;=).</summary>
         GREATER_OR_EQUAL,
-        /// <summary> Greater (>).</summary>
+        /// <summary> Greater (&gt;).</summary>
         GREATER,
         /// <summary> Range contains neither endpoint, i.e. (a,b)</summary>
         RANGE_OPEN,
@@ -33,6 +36,10 @@ namespace net.esper.filter
         /// <summary> Range includes high endpoint but not low endpoint, i.e. (a,b]</summary>
         RANGE_HALF_CLOSED
     };
+
+    /// <summary>
+    /// Contains static methods useful for help with FilterOperators.
+    /// </summary>
     
     public class FilterOperatorHelper
     {
@@ -74,7 +81,7 @@ namespace net.esper.filter
         }
 
         /// <summary> Parse the comparison operator returning null if not a valid operator.</summary>
-        /// <param name="operator">
+        /// <param name="op">
         /// </param>
         /// <returns> FilterOperator or null if not valid
         /// </returns>

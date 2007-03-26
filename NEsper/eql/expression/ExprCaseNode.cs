@@ -18,6 +18,13 @@ namespace net.esper.eql.expression
     
     public class ExprCaseNode : ExprNode
     {
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
         override public Type ReturnType
         {
             get { return resultType; }
@@ -34,14 +41,19 @@ namespace net.esper.eql.expression
 
         /// <summary> Ctor.</summary>
         /// <param name="isCase2">is an indicator of which Case statement we are working on.
-        /// <p> True indicates a 'Case2' statement with syntax "case a when a1 then b1 else b2".
-        /// <p> False indicates a 'Case1' statement with syntax "case when a=a1 then b1 else b2".
+        /// <para> True indicates a 'Case2' statement with syntax "case a when a1 then b1 else b2".</para>
+        /// <para> False indicates a 'Case1' statement with syntax "case when a=a1 then b1 else b2".</para>
         /// </param>
         public ExprCaseNode(bool isCase2)
         {
             this.isCase2 = isCase2;
         }
 
+        /// <summary>
+        /// Validates the specified stream type service_.
+        /// </summary>
+        /// <param name="streamTypeService_">The stream type service_.</param>
+        /// <param name="autoImportService">The auto import service.</param>
         public override void Validate(StreamTypeService streamTypeService_, AutoImportService autoImportService)
         {
             if (isCase2)
@@ -79,6 +91,13 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Evaluate event tuple and return result.
+        /// </summary>
+        /// <param name="eventsPerStream">event tuple</param>
+        /// <returns>
+        /// evaluation result, a boolean value for OR/AND-type evalution nodes.
+        /// </returns>
         public override Object Evaluate(EventBean[] eventsPerStream)
         {
             if (!isCase2)
@@ -91,6 +110,11 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Returns true if the nodes are equal.
+        /// </summary>
+        /// <param name="node_"></param>
+        /// <returns></returns>
         public override bool EqualsNode(ExprNode node_)
         {
             if (!(node_ is ExprCaseNode))
@@ -102,6 +126,12 @@ namespace net.esper.eql.expression
             return this.isCase2 == otherExprCaseNode.isCase2;
         }
 
+        /// <summary>
+        /// Returns the expression node rendered as a string.
+        /// </summary>
+        /// <value></value>
+        /// <returns> string rendering of expression
+        /// </returns>
         public override String ExpressionString
         {
             get

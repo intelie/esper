@@ -28,7 +28,7 @@ namespace net.esper.eql.join.plan
 			ExecNode execNode = spec.MakeExec(indexesPerStream, null);
 			TableLookupExecNode exec = (TableLookupExecNode) execNode;
 			
-			Assert.AreSame(indexesPerStream[1][0], ((FullTableScanLookupStrategy) exec.LookupStrategy).getEventIndex());
+			Assert.AreSame(indexesPerStream[1][0], ((FullTableScanLookupStrategy) exec.LookupStrategy).EventIndex);
 			Assert.AreEqual(1, exec.IndexedStream);
 		}
 	}

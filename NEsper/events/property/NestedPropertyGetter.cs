@@ -26,6 +26,14 @@ namespace net.esper.events.property
             this.beanEventAdapter = beanEventAdapter;
         }
 
+        /// <summary>
+        /// Return the value for the property in the event object specified when the instance was obtained.
+        /// Useful for fast access to event properties. Throws a PropertyAccessException if the getter instance
+        /// doesn't match the EventType it was obtained from, and to indicate other property access problems.
+        /// </summary>
+        /// <param name="eventBean">is the event to get the value of a property from</param>
+        /// <returns>value of property in event</returns>
+        /// <throws>  PropertyAccessException to indicate that property access failed </throws>
         public virtual Object GetValue(EventBean eventBean)
         {
             Object _value = null;

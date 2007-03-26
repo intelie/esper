@@ -61,8 +61,13 @@ namespace net.esper.eql.view
 			this.outputCallback = outputCallback;
 			this.scheduleSlot = context.ScheduleBucket.AllocateSlot();
 		}
-		
-		public void updateOutputCondition(int newEventsCount, int oldEventsCount)
+
+        /// <summary>
+        /// Update the output condition.
+        /// </summary>
+        /// <param name="newEventsCount">number of new events incoming</param>
+        /// <param name="oldEventsCount">number of old events incoming</param>
+		public void UpdateOutputCondition(int newEventsCount, int oldEventsCount)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -80,7 +85,13 @@ namespace net.esper.eql.view
 				scheduleCallback();
 			}
 		}
-		
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override String ToString()
 		{
 			return this.GetType().FullName + " msecIntervalSize=" + msecIntervalSize;

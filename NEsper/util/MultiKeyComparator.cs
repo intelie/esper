@@ -15,7 +15,7 @@ namespace net.esper.util
 		private readonly Boolean[] isDescendingValues;
 		
 		/// <summary> Ctor.</summary>
-		/// <param name="isDescendingValues">- each value is true if the corresponding (same index)
+		/// <param name="isDescendingValues">each value is true if the corresponding (same index)
 		/// entry in the multi-keys is to be sorted in descending order. The multikeys
 		/// to be compared must have the same number of values as this array.
 		/// </param>
@@ -24,7 +24,13 @@ namespace net.esper.util
 		{
 			this.isDescendingValues = isDescendingValues;
 		}
-		
+
+        /// <summary>
+        /// Compares the specified first values.
+        /// </summary>
+        /// <param name="firstValues">The first values.</param>
+        /// <param name="secondValues">The second values.</param>
+        /// <returns></returns>
 		public int Compare(MultiKey<T> firstValues, MultiKey<T> secondValues)
 		{
 			if (firstValues.Count != isDescendingValues.Length || secondValues.Count != isDescendingValues.Length)

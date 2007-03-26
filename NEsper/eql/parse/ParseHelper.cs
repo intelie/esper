@@ -15,13 +15,13 @@ namespace net.esper.eql.parse
     public class ParseHelper
     {
         /// <summary> Walk parse tree Starting at the rule the walkRuleSelector supplies.</summary>
-        /// <param name="ast">- ast to walk
+        /// <param name="ast">ast to walk
         /// </param>
-        /// <param name="walker">- walker instance
+        /// <param name="walker">walker instance
         /// </param>
-        /// <param name="walkRuleSelector">- walk rule
+        /// <param name="walkRuleSelector">walk rule
         /// </param>
-        /// <param name="expression">- the expression we are walking in string form
+        /// <param name="expression">the expression we are walking in string form
         /// </param>
         public static void walk(AST ast, EQLBaseWalker walker, WalkRuleSelector walkRuleSelector, String expression)
         {
@@ -48,9 +48,9 @@ namespace net.esper.eql.parse
         }
 
         /// <summary> Parse expression using the rule the ParseRuleSelector instance supplies.</summary>
-        /// <param name="expression">- text to parse
+        /// <param name="expression">text to parse
         /// </param>
-        /// <param name="parseRuleSelector">- parse rule to select
+        /// <param name="parseRuleSelector">parse rule to select
         /// </param>
         /// <returns> AST - syntax tree
         /// </returns>

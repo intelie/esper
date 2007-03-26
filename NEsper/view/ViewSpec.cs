@@ -4,10 +4,10 @@ using System.Text;
 
 namespace net.esper.view
 {
-	
-	/// <summary> Encapsulates the information required to specify a object construction.
-	/// A object construction specification can be equal to another specification. This information is
-	/// important to determine reuse of any object.
+	/// <summary>
+    /// Encapsulates the information required to specify a object construction.
+	/// A object construction specification can be equal to another specification.
+    /// This information is important to determine reuse of any object.
 	/// </summary>
 
     public sealed class ViewSpec
@@ -16,12 +16,13 @@ namespace net.esper.view
         private readonly String objectName;
         private readonly IList<Object> objectParameters;
 
-        /**
-         * Constructor.
-         * @param namespace if the namespace the object is in
-         * @param objectName is the name of the object
-         * @param objectParameters is a list of PrimitiveValue instances representing the object parameters
-         */
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ViewSpec"/> class.
+        /// </summary>
+        /// <param name="nspace">The nspace.</param>
+        /// <param name="objectName">is the name of the object</param>
+        /// <param name="objectParameters">is a list of PrimitiveValue instances representing the object parameters</param>
+
         public ViewSpec(String nspace, String objectName, IList<Object> objectParameters)
         {
             this.objectNamespace = nspace;
@@ -29,33 +30,36 @@ namespace net.esper.view
             this.objectParameters = objectParameters;
         }
 
-        /**
-         * Returns namespace for view object.
-         * @return namespace
-         */
+        /// <summary>Returns namespace for view object.</summary>
+        /// <returns>namespace</returns>
+
         public String ObjectNamespace
         {
             get { return objectNamespace; }
         }
 
-        /**
-         * Returns the object name.
-         * @return object name
-         */
+        /// <summary>Returns the object name.</summary>
+        /// <returns>object name</returns>
+
         public String ObjectName
         {
             get { return objectName; }
         }
 
-        /**
-         * Returns the list of object parameters.
-         * @return list of PrimitiveValue representing object parameters
-         */
+        /// <summary>Returns the list of object parameters.</summary>
+        /// <returns>list of PrimitiveValue representing object parameters</returns>
+
         public IList<Object> ObjectParameters
         {
             get { return objectParameters; }
         }
 
+        /// <summary>
+        /// Returns true if the objects are equal.
+        /// </summary>
+        /// <param name="otherObject">The other object.</param>
+        /// <returns></returns>
+        
         public override bool Equals(Object otherObject)
         {
             if (otherObject == this)
@@ -100,6 +104,12 @@ namespace net.esper.view
             return true;
         }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
         public override String ToString()
         {
             StringBuilder buffer = new StringBuilder();
@@ -119,7 +129,13 @@ namespace net.esper.view
 
             return buffer.ToString();
         }
-        
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override int GetHashCode()
 		{
 			return base.GetHashCode();

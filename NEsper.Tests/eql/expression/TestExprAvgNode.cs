@@ -25,15 +25,15 @@ namespace net.esper.eql.expression
             ExprAvgNode.DoubleAvg agg = new ExprAvgNode.DoubleAvg();
             Assert.AreEqual(typeof(double?), agg.ValueType);
             Assert.AreEqual(null, agg.Value);
-            Assert.IsTrue(agg.newAggregator() is ExprAvgNode.DoubleAvg);
+            Assert.IsTrue(agg.NewAggregator() is ExprAvgNode.DoubleAvg);
 
-            agg.enter(5);
+            agg.Enter(5);
             Assert.AreEqual(5d, agg.Value);
 
-            agg.enter(10);
+            agg.Enter(10);
             Assert.AreEqual(7.5d, agg.Value);
 
-            agg.leave(5);
+            agg.Leave(5);
             Assert.AreEqual(10d, agg.Value);
         }
 

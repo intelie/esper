@@ -54,6 +54,10 @@ namespace net.esper.view.stat
 
         }
 
+        /// <summary>
+        /// Gets the slope.
+        /// </summary>
+        /// <value>The slope.</value>
         public double slope
         {
             get { return this.Slope; }

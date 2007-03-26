@@ -1,11 +1,10 @@
-/// <summary>
-/// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
-/// http://esper.codehaus.org                                                          *
-/// ---------------------------------------------------------------------------------- *
-/// The software in this package is published under the terms of the GPL license       *
-/// a copy of which has been included with this distribution in the license.txt file.  *
-/// ---------------------------------------------------------------------------------- *
-/// </summary>
+// ************************************************************************************
+// Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
+// http://esper.codehaus.org                                                          *
+// ---------------------------------------------------------------------------------- *
+// The software in this package is published under the terms of the GPL license       *
+// a copy of which has been included with this distribution in the license.txt file.  *
+// ************************************************************************************
 
 using System;
 using System.Xml;
@@ -36,7 +35,7 @@ namespace net.esper.client
         /// Send an event represented by a plain Java object to the event stream processing runtime.
         /// Use the route method for sending events into the runtime from within UpdateListener code.
         /// </summary>
-        /// <param name="object">is the event to sent to the runtime
+        /// <param name="_object">is the event to sent to the runtime
         /// </param>
         /// <throws>  EPException is thrown when the processing of the event lead to an error </throws>
 
@@ -46,10 +45,10 @@ namespace net.esper.client
         /// Send a map containing event property values to the event stream processing runtime.
         /// Use the route method for sending events into the runtime from within UpdateListener code.
         /// </summary>
-        /// <param name="map">- map that contains event property values. Keys are expected to be of type String while values
+        /// <param name="map">map that contains event property values. Keys are expected to be of type String while values
         /// can be of any type. Keys and values should match those declared via Configuration for the given eventTypeAlias. 
         /// </param>
-        /// <param name="eventTypeAlias">- the alias for the (property name, property type) information for this map
+        /// <param name="eventTypeAlias">the alias for the (property name, property type) information for this map
         /// </param>
         /// <throws>  EPException - when the processing of the event leads to an error </throws>
         
@@ -67,7 +66,7 @@ namespace net.esper.client
 
         /// <summary>
         /// Emit an event object to any registered EmittedListener instances listening to the default channel.</summary>
-        /// <param name="object">to be emitted to the default channel
+        /// <param name="_object">to be emitted to the default channel
         /// </param>
         
         void Emit(Object _object);
@@ -77,7 +76,7 @@ namespace net.esper.client
         /// Event listeners listening to all channels as well as those listening to the specific channel
         /// are called. Supplying a null value in the channel has the same result as the Emit(Object object) method.
         /// </summary>
-        /// <param name="object">to be emitted
+        /// <param name="_object">to be emitted
         /// </param>
         /// <param name="channel">channel to emit the object to, or null if emitting to the default channel
         /// </param>
@@ -110,7 +109,7 @@ namespace net.esper.client
         /// processed before the next event is sent to the runtime through the
         /// EPRuntime.sendEvent method.
         /// </summary>
-        /// <param name="event">to route internally for processing by the event stream processing runtime
+        /// <param name="_event">to route internally for processing by the event stream processing runtime
         /// </param>
         
         void Route(Object _event);

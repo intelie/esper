@@ -7,9 +7,10 @@ using net.esper.compat;
 namespace net.esper.events
 {
 	/// <summary>
-	/// A cache and factory class for obtaining {@link EventType} instances and {@link EventBean} instances
-	/// for Java Bean events. The class caches {@link EventType} instances already known for performance
-	/// reasons.
+	/// A cache and factory class for obtaining 
+    /// <seealso cref="EventType"/> instances and <seealso cref="EventBean"/> instances
+	/// for object events. The class caches <seealso cref="EventType"/> instances
+    /// already known for performance reasons.
 	/// </summary>
 
 	public class BeanEventAdapter
@@ -33,10 +34,10 @@ namespace net.esper.events
 		}
 
 		/// <summary>
-		/// Returns an adapter for the given Java Bean.
+		/// Returns an adapter for the given object.
 		/// </summary>
-		/// <param name="ev">The ev.</param>
-		/// <returns>EventBean wrapping Java Bean</returns>
+		/// <param name="_event">The ev.</param>
+		/// <returns>EventBean wrapping object</returns>
 
 		public virtual EventBean AdapterForBean(Object _event)
 		{
@@ -46,10 +47,11 @@ namespace net.esper.events
 		}
 
 		/// <summary>
-		/// Creates a new EventType object for a java bean of the specified class if this is the first time
-		/// the class has been seen. Else uses a cached EventType instance, i.e. client classes do not need to cache.
+		/// Creates a new EventType object for a specified type if this is the first time
+		/// the type has been seen. Else uses a cached EventType instance, i.e. client types
+        /// do not need to cache.
 		/// </summary>
-		/// <param name="type">is the class of the Java bean.</param>
+		/// <param name="type">the type of the object.</param>
 		/// <returns>EventType implementation for bean class</returns>
 		
 		public BeanEventType CreateOrGetBeanType(Type type)

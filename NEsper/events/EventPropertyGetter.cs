@@ -38,11 +38,23 @@ namespace net.esper.events
     {
         private EventPropertyGetterDelegate getterDelegate;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventPropertyGetterImpl"/> class.
+        /// </summary>
+        /// <param name="getterDelegate">The getter delegate.</param>
         public EventPropertyGetterImpl(EventPropertyGetterDelegate getterDelegate)
         {
             this.getterDelegate = getterDelegate;
         }
 
+        /// <summary>
+        /// Return the value for the property in the event object specified when the instance was obtained.
+        /// Useful for fast access to event properties. Throws a PropertyAccessException if the getter instance
+        /// doesn't match the EventType it was obtained from, and to indicate other property access problems.
+        /// </summary>
+        /// <param name="eventBean">is the event to get the value of a property from</param>
+        /// <returns>value of property in event</returns>
+        /// <throws>  PropertyAccessException to indicate that property access failed </throws>
         public Object GetValue(EventBean eventBean)
         {
             return this.getterDelegate(eventBean);

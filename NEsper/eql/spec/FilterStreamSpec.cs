@@ -14,7 +14,7 @@ namespace net.esper.eql.spec
 	{
 		private FilterSpec filterSpec;
 
-		/// <summary> Returns filter specification for which events the stream will getSelectListEvents.</summary>
+		/// <summary> Returns filter specification for which events the stream will GetSelectListEvents.</summary>
 		/// <returns> filter spec
 		/// </returns>
 
@@ -24,11 +24,11 @@ namespace net.esper.eql.spec
 		}
 
 		/// <summary> Ctor.</summary>
-		/// <param name="filterSpec">- specifies what events we are interested in.
+		/// <param name="filterSpec">specifies what events we are interested in.
 		/// </param>
-		/// <param name="viewSpecs">- specifies what view to use to derive data
+		/// <param name="viewSpecs">specifies what view to use to derive data
 		/// </param>
-		/// <param name="optionalStreamName">- stream name, or null if none supplied
+		/// <param name="optionalStreamName">stream name, or null if none supplied
 		/// </param>
 		
 		public FilterStreamSpec( FilterSpec filterSpec, IList<ViewSpec> viewSpecs, String optionalStreamName )

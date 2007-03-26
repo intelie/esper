@@ -13,6 +13,9 @@ namespace net.esper.eql.spec
 
     public class StatementSpec
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatementSpec"/> class.
+        /// </summary>
         public StatementSpec()
         {
         }
@@ -28,12 +31,10 @@ namespace net.esper.eql.spec
             }
 
         }
-        /// <summary> Returns expression root node representing the having-clause, if present, or null if no having clause was supplied.</summary>
-        /// <returns> having-clause expression top node
-        /// </returns>
-        /// <summary> Sets the having-clause filter expression node.</summary>
-        /// <param name="havingExprRootNode">the having-clause expression
-        /// </param>
+        /// <summary>
+        /// Gets or sets expression root node representing the having-clause, if present, or null if no having clause was supplied.
+        /// </summary>
+        /// <value>The having expr root node.</value>
         virtual public ExprNode HavingExprRootNode
         {
             get
@@ -47,12 +48,10 @@ namespace net.esper.eql.spec
             }
 
         }
-        /// <summary> Returns the output limit definition, if any.</summary>
-        /// <returns> output limit spec
-        /// </returns>
-        /// <summary> Sets the output limiting definition.</summary>
-        /// <param name="outputLimitSpec">defines the rules for output limiting
-        /// </param>
+        /// <summary>
+        /// Gets or sets the output limit definition, if any.
+        /// </summary>
+        /// <value>The output limit spec.</value>
         virtual public OutputLimitSpec OutputLimitSpec
         {
             get
@@ -66,12 +65,10 @@ namespace net.esper.eql.spec
             }
 
         }
-        /// <summary> Return a descriptor with the insert-into event name and optional list of columns.</summary>
-        /// <returns> insert into specification
-        /// </returns>
-        /// <summary> Sets the definition for any insert-into clause.</summary>
-        /// <param name="insertIntoDesc">is the descriptor for insert-into rules
-        /// </param>
+        /// <summary>
+        /// Gets or sets a descriptor with the insert-into event name and optional list of columns.
+        /// </summary>
+        /// <value>The insert into desc.</value>
         virtual public InsertIntoDesc InsertIntoDesc
         {
             get
@@ -96,17 +93,19 @@ namespace net.esper.eql.spec
             }
 
         }
-        /// <summary> Sets the where clause filter expression node.</summary>
-        /// <param name="filterExprRootNode">the where clause expression
-        /// </param>
+        /// <summary>
+        /// Sets the where clause filter expression node.
+        /// </summary>
+        /// <value>The filter expr root node.</value>
         virtual public ExprNode FilterExprRootNode
         {
         	get { return this.filterExprRootNode ; }
             set { this.filterExprRootNode = value; }
         }
-        /// <summary> Sets the stream selector (rstream/istream/both etc).</summary>
-        /// <param name="selectStreamDirEnum">to be set
-        /// </param>
+        /// <summary>
+        /// Sets the stream selector (rstream/istream/both etc).
+        /// </summary>
+        /// <value>The select stream dir enum.</value>
         virtual public SelectClauseStreamSelectorEnum SelectStreamDirEnum
         {
             set
