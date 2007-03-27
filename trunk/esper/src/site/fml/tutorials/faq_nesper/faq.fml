@@ -4,7 +4,7 @@
   <part id="technical">
   	<title>Technical</title>
     <faq id="deployment-dependencies">
-      <question>What additional components does Esper require to run?</question>
+      <question>What additional components does NEsper require to run?</question>
       <answer>
         <p>
           Please see the feature list for this information. And the "lib" folder in the source distribution contains a readme file
