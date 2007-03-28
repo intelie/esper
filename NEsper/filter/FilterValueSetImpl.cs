@@ -6,7 +6,7 @@ using net.esper.events;
 namespace net.esper.filter
 {
 	/// <summary>
-    /// Container for filter values for use by the {@link FilterService} to filter and distribute incoming events.
+    /// Container for filter values for use by the <seealso cref="FilterService"/> to filter and distribute incoming events.
     /// </summary>
 
     public class FilterValueSetImpl : FilterValueSet

@@ -6,8 +6,8 @@ using net.esper.view.stat;
 
 namespace net.esper.view.stat.olap
 {
-	/// <summary> Cube implementation derives the cells of the cube from a measures list and a {@link MultidimCube} containing
-	/// {@link BaseStatisticsBean}.
+	/// <summary> Cube implementation derives the cells of the cube from a measures list and a <seealso cref="MultidimCube"/> containing
+	/// <seealso cref="BaseStatisticsBean"/>.
 	/// </summary>
 
     public sealed class CubeImpl : Cube

@@ -7,7 +7,7 @@ using net.esper.collection;
 namespace net.esper.filter
 {
     /// <summary>
-    /// Encapsulates the information required by {@link IndexTreeBuilder} to maintain the filter parameter tree structure
+    /// Encapsulates the information required by <seealso cref="IndexTreeBuilder"/> to maintain the filter parameter tree structure
     /// when filters are added and removed from the tree.
     /// </summary>
 

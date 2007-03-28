@@ -8,7 +8,7 @@ namespace net.esper.events
 {
     /// <summary>
     /// Wrapper for events represented by a Map of key-value pairs that are the event properties.
-    /// MapEventBean instances are equal if they have the same {@link EventType} and all property names
+    /// MapEventBean instances are equal if they have the same <seealso cref="EventType" /> and all property names
     /// and values are reference-equal. 
     /// </summary>
 
@@ -20,7 +20,7 @@ namespace net.esper.events
         private bool hasHashCode = false;
 
         /// <summary>
-        /// Return the {@link EventType} instance that describes the set of properties available for this event.
+        /// Return the <seealso cref="EventType" /> instance that describes the set of properties available for this event.
         /// </summary>
         /// <value></value>
         /// <returns> event type

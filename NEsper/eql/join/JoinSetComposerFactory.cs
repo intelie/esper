@@ -15,7 +15,7 @@ using org.apache.commons.logging;
 namespace net.esper.eql.join
 {
 	/// <summary>
-    /// Factory for building a {@link JoinSetComposer} from analyzing filter nodes, for
+    /// Factory for building a <seealso cref="JoinSetComposer"/> from analyzing filter nodes, for
 	/// fast join tuple result set composition.
 	/// </summary>
 

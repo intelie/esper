@@ -11,8 +11,8 @@ using Log = org.apache.commons.logging.Log;
 
 namespace net.esper.filter
 {
-    /// <summary> This class holds a list of indizes storing filter constants in {@link FilterParamIndex} nodes
-    /// and a set of {@link FilterCallback}.
+    /// <summary> This class holds a list of indizes storing filter constants in <seealso cref="FilterParamIndex" /> nodes
+    /// and a set of <seealso cref="FilterCallback"/>.
     /// An instance of this class represents a leaf-node (no indizes stored, just filter callbacks)
     /// but can also be non-leaf (some indizes exist) in a filter evaluation tree.
     /// Events are evaluated by asking each of the indizes to evaluate the event and by

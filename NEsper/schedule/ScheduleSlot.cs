@@ -3,7 +3,7 @@ using System;
 namespace net.esper.schedule
 {
 	/// <summary>
-    /// This class is a slot in a {@link ScheduleBucket} for sorting schedule service callbacks.
+    /// This class is a slot in a <seealso cref="ScheduleBucket"/> for sorting schedule service callbacks.
     /// </summary>
 
     public class ScheduleSlot : IComparable<ScheduleSlot>

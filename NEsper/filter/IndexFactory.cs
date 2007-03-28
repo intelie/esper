@@ -4,7 +4,7 @@ using net.esper.events;
 
 namespace net.esper.filter
 {
-	/// <summary> Factory for {@link FilterParamIndex} instances based on event property name and filter operator type.</summary>
+	/// <summary> Factory for <seealso cref="FilterParamIndex" /> instances based on event property name and filter operator type.</summary>
 	public class IndexFactory
 	{
         /// <summary>

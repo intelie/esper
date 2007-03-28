@@ -8,7 +8,7 @@ using net.esper.pattern;
 namespace net.esper.filter
 {
     /// <summary>
-    /// This class represents one filter parameter in an {@link FilterSpec} filter specification.
+    /// This class represents one filter parameter in an <seealso cref="FilterSpec"/> filter specification.
     /// <para>Each filerting parameter has an attribute name and operator type.</para>
     /// </summary>
 

@@ -8,8 +8,8 @@ using net.esper.events;
 
 namespace net.esper.filter
 {
-    /// <summary> This class is responsible for changes to {@link EventTypeIndex} for addition and removal of filters.
-    /// It delegates the work to make modifications to the filter parameter tree to an {@link IndexTreeBuilder}.
+    /// <summary> This class is responsible for changes to <seealso cref="EventTypeIndex"/> for addition and removal of filters.
+    /// It delegates the work to make modifications to the filter parameter tree to an <seealso cref="IndexTreeBuilder"/>.
     /// It enforces a policy that a filter callback can only be added once.
     /// </summary>
 

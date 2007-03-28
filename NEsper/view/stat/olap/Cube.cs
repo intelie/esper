@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace net.esper.view.stat.olap
 {
 	/// <summary> Interface for querying multidimensional data.
-	/// {@link Dimension} presents information about the dimensionality of the data.
-	/// Cells are {@link Cell} instances.
+	/// <seealso cref="Dimension"/> presents information about the dimensionality of the data.
+	/// Cells are <seealso cref="Cell"/> instances.
 	/// The identification of cell in the cube occurs by member values for each dimension.
 	/// </summary>
 

@@ -7,7 +7,7 @@ using net.esper.compat;
 namespace net.esper.events
 {
     /// <summary>
-    /// Implementation of the {@link EventType} interface for handling plain Maps containing name value pairs.
+    /// Implementation of the <seealso cref="EventType" /> interface for handling plain Maps containing name value pairs.
     /// </summary>
 
     public class MapEventType : EventType

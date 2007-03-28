@@ -25,7 +25,7 @@ namespace net.esper.client
     /// to specify properties to be used when
     /// creating a <tt>EPServiceProvider</tt>. Usually an application will create
     /// a single <tt>Configuration</tt>, then get one or more instances of
-    /// {@link EPServiceProvider} via {@link EPServiceProviderManager}.
+    /// <seealso cref="EPServiceProvider" /> via <seealso cref="EPServiceProviderManager" />.
     /// The <tt>Configuration</tt> is meant
     /// only as an initialization-time object. <tt>EPServiceProvider</tt>s are
     /// immutable and do not retain any association back to the

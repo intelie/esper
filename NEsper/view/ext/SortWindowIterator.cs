@@ -11,7 +11,7 @@ namespace net.esper.view.ext
     using _WindowListEnum = IEnumerator<KeyValuePair<MultiKey<Object>, LinkedList<EventBean>>>;
 
     /// <summary>
-    /// Iterator for use by {@link SortWindowView}.
+    /// Iterator for use by <seealso cref="SortWindowView"/>.
     /// </summary>
 
     public sealed class SortWindowIterator : IEnumerator<EventBean>

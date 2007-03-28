@@ -14,7 +14,7 @@ namespace net.esper.events
 		private EventType eventType;
 
         /// <summary>
-        /// Return the {@link EventType} instance that describes the set of properties available for this event.
+        /// Return the <seealso cref="EventType" /> instance that describes the set of properties available for this event.
         /// </summary>
         /// <value></value>
         /// <returns> event type

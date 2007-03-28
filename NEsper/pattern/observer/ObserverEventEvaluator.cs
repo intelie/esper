@@ -3,7 +3,7 @@ using net.esper.pattern;
 namespace net.esper.pattern.observer
 {
 	
-	/// <summary> For use by {@link EventObserver} instances to place an event for processing/evaluation.</summary>
+	/// <summary> For use by <seealso cref="EventObserver"/> instances to place an event for processing/evaluation.</summary>
 	public interface ObserverEventEvaluator
 	{
 		/// <summary> Indicate an event for evaluation (sub-expression the observer represents has turned true).</summary>

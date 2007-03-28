@@ -13,7 +13,7 @@ using net.esper.example.transaction;
 using org.apache.commons.logging;
 
 /** Generates events for a continuous stream of transactions.
- * Rules for generating events are coded in {@link #createNextTransaction()}.
+ * Rules for generating events are coded in <see cref="createNextTransaction"/>.
  * 
  * @author Hans Gilde
  *

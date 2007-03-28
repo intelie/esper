@@ -13,9 +13,9 @@ namespace net.esper.filter
 {
 	
 	/// <summary>
-    /// Builder manipulates a tree structure consisting of {@link FilterCallbackSetNode} and {@link FilterParamIndex}
+    /// Builder manipulates a tree structure consisting of <seealso cref="FilterCallbackSetNode"/> and <seealso cref="FilterParamIndex" />
     /// instances. Filters can be added to a top node (an instance of FilterCallbackSetNode) via the add method. This
-    /// method returns an instance of {@link IndexTreePath} which represents the tree path (list of indizes) that the
+    /// method returns an instance of <seealso cref="IndexTreePath"/> which represents the tree path (list of indizes) that the
     /// filter callback was added to. To remove filters the same IndexTreePath instance must be passed in.
 	/// <para>
     /// The implementation is designed to be multithread-safe in conjunction with the node classes manipulated by this

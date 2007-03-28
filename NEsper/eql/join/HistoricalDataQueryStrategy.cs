@@ -9,7 +9,7 @@ using net.esper.view;
 
 namespace net.esper.eql.join
 {
-    /// <summary> Query strategy for use with {@link HistoricalEventViewable}
+    /// <summary> Query strategy for use with <seealso cref="HistoricalEventViewable"/>
     /// to perform lookup for a given stream using the poll method on a viewable.
     /// </summary>
 

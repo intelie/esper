@@ -2,7 +2,7 @@ using System;
 
 namespace net.esper.view.stat.olap
 {
-	/// <summary> Implementations provide a factory for cells to use by {@link MultidimCubeImpl}.</summary>
+	/// <summary> Implementations provide a factory for cells to use by <seealso cref="MultidimCubeImpl"/>.</summary>
     public interface MultidimCubeCellFactory<V>
     {
         /// <summary> Supplies an instance of the object representing a cell.</summary>

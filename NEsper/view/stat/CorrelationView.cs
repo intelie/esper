@@ -3,9 +3,10 @@ using EventType = net.esper.events.EventType;
 
 namespace net.esper.view.stat
 {	
-	/// <summary> A view that calculates correlation on two fields. The view uses internally a {@link CorrelationBean}
+	/// <summary>
+    /// A view that calculates correlation on two fields. The view uses internally a <seealso cref="CorrelationBean"/>
 	/// instance for the calculations, it also returns this bean as the result.
-	/// This class accepts most of its behaviour from its parent, {@link net.esper.view.stat.BaseBivariateStatisticsView}. It adds
+	/// This class accepts most of its behaviour from its parent, <seealso cref="net.esper.view.stat.BaseBivariateStatisticsView"/>. It adds
 	/// the usage of the correlation bean and the appropriate schema.
 	/// </summary>
 	public sealed class CorrelationView:BaseBivariateStatisticsView

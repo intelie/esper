@@ -4,7 +4,7 @@ namespace net.esper.eql.core
 {
 	
 	/// <summary> Encapsulates the result of resolving a property and optional stream name against a supplied list of streams
-	/// {@link net.esper.eql.core.StreamTypeService}.
+	/// <seealso cref="net.esper.eql.core.StreamTypeService"/>.
 	/// </summary>
 	public class PropertyResolutionDescriptor
 	{

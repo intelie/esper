@@ -27,7 +27,7 @@ namespace net.esper.events
         /// 
         /// If the alias already exists with different event property information, throws an exception.
         /// 
-        /// If the alias does not already exists, adds the alias and constructs a new {@link net.esper.event.MapEventType}.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.event.MapEventType" />.
         /// </summary>
         /// <param name="eventTypeAlias">is the alias name for the event type</param>
         /// <param name="propertyTypes">is the names and types of event properties</param>
@@ -83,7 +83,7 @@ namespace net.esper.events
         ///
         /// If the alias already exists with different class name, throws an exception.
         ///
-        /// If the alias does not already exists, adds the alias and constructs a new {@link net.esper.event.BeanEventType}.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.event.BeanEventType" />.
         /// </summary>
         /// <param name="eventTypeAlias">is the alias name for the event type
         /// </param>
@@ -100,7 +100,7 @@ namespace net.esper.events
         ///
         /// If the alias already exists with different Class name, throws an exception.
         ///
-        /// If the alias does not already exists, adds the alias and constructs a new {@link net.esper.event.BeanEventType}.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.event.BeanEventType" />.
         /// </summary>
         /// <param name="eventTypeAlias">is the alias name for the event type
         /// </param>
@@ -111,7 +111,7 @@ namespace net.esper.events
         /// <throws>  EventAdapterException if alias already exists and doesn't match class names </throws>
         EventType AddBeanType(String eventTypeAlias, Type clazz);
 
-        /// <summary> Wrap the native event returning an {@link EventBean}.</summary>
+        /// <summary> Wrap the native event returning an <seealso cref="EventBean" />.</summary>
         /// <param name="ev">event to be wrapped
         /// </param>
         /// <returns> event bean wrapping native underlying event
@@ -119,7 +119,7 @@ namespace net.esper.events
         EventBean AdapterForBean(Object ev);
 
         /// <summary>
-        /// Wrap the Map-type event returning an {@link EventBean} using the event type alias name
+        /// Wrap the Map-type event returning an <seealso cref="EventBean" /> using the event type alias name
         /// to identify the EventType that the event should carry.
         /// </summary>
         /// <param name="ev">to be wrapped</param>

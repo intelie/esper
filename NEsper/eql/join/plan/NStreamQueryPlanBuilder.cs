@@ -174,7 +174,7 @@ namespace net.esper.eql.join.plan
         /// <summary>
         /// Compute a best chain or path for lookups to take for the lookup stream passed in and the query
         /// property relationships.
-        /// The method runs through all possible permutations of lookup path {@link NumberSetPermutationEnumeration}
+        /// The method runs through all possible permutations of lookup path <seealso cref="NumberSetPermutationEnumeration"/>
         /// until a path is found in which all streams can be accessed via an index.
         /// If not such path is found, the method returns the path with the greatest depth, ie. where
         /// the first one or more streams are index accesses.

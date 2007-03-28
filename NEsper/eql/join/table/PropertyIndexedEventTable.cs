@@ -11,7 +11,7 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 namespace net.esper.eql.join.table
 {
     /// <summary> Index that organizes events by the event property values into hash buckets. Based on a HashMap
-    /// with {@link net.esper.collection.MultiKeyUntyped} keys that store the property values.
+    /// with <seealso cref="net.esper.collection.MultiKeyUntyped"/> keys that store the property values.
     /// 
     /// Takes a list of property names as parameter. Doesn't care which event type the events have as long as the properties
     /// exist. If the same event is added twice, the class throws an exception on add.

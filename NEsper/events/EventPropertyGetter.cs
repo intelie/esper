@@ -3,8 +3,8 @@ using System;
 namespace net.esper.events
 {
 	/// <summary> Get property values from an event instance for a given event property.
-	/// Instances that implement this interface are usually bound to a particular {@link EventType} and cannot
-	/// be used to access {@link EventBean} instances of a different type.
+	/// Instances that implement this interface are usually bound to a particular <seealso cref="EventType" /> and cannot
+	/// be used to access <seealso cref="EventBean" /> instances of a different type.
 	/// </summary>
 
     public interface EventPropertyGetter

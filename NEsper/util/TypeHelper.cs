@@ -444,7 +444,7 @@ namespace net.esper.util
         /// via the method GetArithmaticCoercionType.
         /// </para>
         /// <para>
-        /// Indicates that there is no common denominator type by throwing {@link CoercionException}.
+        /// Indicates that there is no common denominator type by throwing <seealso cref="CoercionException"/>.
         /// </para>
         /// </summary>
         /// <param name="types">is an array of one or more types, which can be Java built-in (primitive or wrapper)

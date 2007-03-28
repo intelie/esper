@@ -89,8 +89,8 @@ namespace net.esper.pattern
         }
 
         /// <summary>
-        /// Indicate that an event was evaluated by the {@link FilterService}
-        /// which matches the filter specification {@link FilterSpec} associated with this callback.
+        /// Indicate that an event was evaluated by the <seealso cref="FilterService"/>
+        /// which matches the filter specification <seealso cref="FilterSpec"/> associated with this callback.
         /// </summary>
         /// <param name="_event"></param>
         public void matchFound(EventBean _event)

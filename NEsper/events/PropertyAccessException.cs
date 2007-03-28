@@ -4,7 +4,7 @@ namespace net.esper.events
 {
 	/// <summary>
 	/// This exception is thrown to indicate a problem with a accessing a
-	/// property of an {@link EventBean}.
+	/// property of an <seealso cref="EventBean" />.
 	/// </summary>
 	
 	[Serializable]

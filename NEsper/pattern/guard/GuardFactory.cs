@@ -3,7 +3,7 @@ using PatternContext = net.esper.pattern.PatternContext;
 namespace net.esper.pattern.guard
 {
 	
-	/// <summary> Interface for a factory for {@link Guard} instances.</summary>
+	/// <summary> Interface for a factory for <seealso cref="Guard"/> instances.</summary>
 	public interface GuardFactory
 	{
 		/// <summary> Constructs a guard instance.</summary>

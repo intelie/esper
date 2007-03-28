@@ -2,7 +2,7 @@ using System;
 namespace net.esper.filter
 {
 	
-	/// <summary> Static factory for implementations of the {@link FilterService} interface.</summary>
+	/// <summary> Static factory for implementations of the <seealso cref="FilterService"/> interface.</summary>
 	public sealed class FilterServiceProvider
 	{
 		/// <summary> Creates an implementation of the FilterEvaluationService interface.</summary>

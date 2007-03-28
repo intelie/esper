@@ -12,9 +12,9 @@ namespace net.esper.filter
 {
     /// <summary>
     /// Mapping of event type to a tree-like structure
-    /// containing filter parameter constants in indexes {@link FilterParamIndex} and filter callbacks in {@link FilterCallbackSetNode}.
+    /// containing filter parameter constants in indexes <seealso cref="FilterParamIndex" /> and filter callbacks in <seealso cref="FilterCallbackSetNode"/>.
     /// <para>
-    /// This class evaluates events for the purpose of filtering by (1) looking up the event's {@link EventType}
+    /// This class evaluates events for the purpose of filtering by (1) looking up the event's <seealso cref="EventType" />
     /// and (2) asking the subtree for this event type to evaluate the event.
     /// </para>
     /// <para>

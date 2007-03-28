@@ -7,8 +7,8 @@ using net.esper.compat;
 namespace net.esper.filter
 {
 	/// <summary>
-    /// Utility class for matching filter parameters to indizes. Matches are indicated by the index {@link FilterParamIndex}
-	/// and the filter parameter {@link FilterSpecParam} featuring the same event property name and filter operator.
+    /// Utility class for matching filter parameters to indizes. Matches are indicated by the index <seealso cref="FilterParamIndex" />
+	/// and the filter parameter <seealso cref="FilterSpecParam"/> featuring the same event property name and filter operator.
 	/// </summary>
 
     public class IndexHelper

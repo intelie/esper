@@ -12,8 +12,8 @@ using net.esper.compat;
 
 namespace net.esper.client.time
 {
-	/// <summary> Event for externally controlling the time within an {@link net.esper.client.EPRuntime} instance.
-	/// External clocking must be enabled via {@link TimerControlEvent} before this class can be used
+	/// <summary> Event for externally controlling the time within an <seealso cref="net.esper.client.EPRuntime"/> instance.
+	/// External clocking must be enabled via <seealso cref="TimerControlEvent"/> before this class can be used
 	/// to externally feed time.
 	/// </summary>
 	

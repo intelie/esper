@@ -10,15 +10,16 @@ using net.esper.util;
 namespace net.esper.eql.expression
 {
     ///	<summary>
-    /// Base expression	node that represents an aggregation function such as 'sum' or 'count'.
+    /// Base expression node that represents an aggregation function such as 'sum' or 'count'.
     ///
-    ///	In terms of	validation each	concrete aggregation node	must implement it's	own	validation.
+    /// In terms of validation each concrete aggregation node must implement it's own validation.
     ///
-    ///	In terms of	evaluation this	base class will	ask	the	assigned {@link	net.esper.eql.core.AggregationResultFuture}	for	the	current	state,
-    ///	using	a	column number	assigned to	the	node.
+    /// In terms of evaluation this base class will ask the assigned
+    /// <seealso cref="net.esper.eql.core.AggregationResultFuture"/>
+    /// for the current state, using a column number assigned to the node.
     ///
-    ///	Concrete subclasses	must supply	an aggregation state prototype node	{@link Aggregator} that	reflects
-    ///	each group's (there	may	be group-by	critera) current aggregation state.
+    /// Concrete subclasses must supply an aggregation state prototype node <seealso cref="Aggregator"/>
+    /// that reflects each group's (there may be group-by critera) current aggregation state.
     ///	</summary>
 
     public abstract class ExprAggregateNode : ExprNode

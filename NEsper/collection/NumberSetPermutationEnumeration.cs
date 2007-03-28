@@ -2,7 +2,7 @@ using System;
 
 namespace net.esper.collection
 {
-	/// <summary> Based on the {@link PermutationEnumeration} this enumeration provides, among a set of supplied integer
+	/// <summary> Based on the <seealso cref="PermutationEnumeration" /> this enumeration provides, among a set of supplied integer
 	/// values, all permutations of order these values can come in, ie.
 	/// Example: {0, 2, 3} results in 6 enumeration values ending in {3, 2, 0}.
 	/// </summary>

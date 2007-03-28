@@ -5,9 +5,9 @@ using net.esper.events;
 namespace net.esper.view.stat
 {
 	/// <summary>
-    /// A view that calculates regression on two fields. The view uses internally a {@link RegressionBean}
+    /// A view that calculates regression on two fields. The view uses internally a <seealso cref="RegressionBean"/>
 	/// instance for the calculations, it also returns this bean as the result.
-	/// This class accepts most of its behaviour from its parent, {@link net.esper.view.stat.BaseBivariateStatisticsView}. It adds
+	/// This class accepts most of its behaviour from its parent, <seealso cref="net.esper.view.stat.BaseBivariateStatisticsView"/>. It adds
 	/// the usage of the regression bean and the appropriate schema.
 	/// </summary>
 	public sealed class RegressionLinestView : BaseBivariateStatisticsView

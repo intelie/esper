@@ -11,11 +11,11 @@ namespace net.esper.events.xml
 {
     /// <summary> Base class for XMLEventTypes.
     /// Using this class as EventType only allow preconfigured properties 
-    /// (normally via {@link net.esper.event.xml.XPathPropertyGetter XPathPropertyGetter} ).
+    /// (normally via <seealso cref="net.esper.event.xml.XPathPropertyGetter XPathPropertyGetter"/> ).
     /// 
     /// For "on the fly" property resolvers, use either
-    /// {@link net.esper.event.xml.SimpleXMLEventType SimpleXMLEventType} or
-    /// {@link net.esper.event.xml.SchemaXMLEventType SchemaXMLEventType}
+    /// <seealso cref="net.esper.event.xml.SimpleXMLEventType SimpleXMLEventType"/> or
+    /// <seealso cref="net.esper.event.xml.SchemaXMLEventType SchemaXMLEventType"/>
     /// 
     /// </summary>
     /// <author>  pablo

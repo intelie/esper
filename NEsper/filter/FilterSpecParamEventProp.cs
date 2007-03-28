@@ -9,7 +9,7 @@ namespace net.esper.filter
 {
     /// <summary>
     /// This class represents a filter parameter containing a reference to another event's property
-    /// in the event pattern result, for use to describe a filter parameter in a {@link FilterSpec} filter specification.
+    /// in the event pattern result, for use to describe a filter parameter in a <seealso cref="FilterSpec"/> filter specification.
     /// </summary>
 
     public sealed class FilterSpecParamEventProp : FilterSpecParam

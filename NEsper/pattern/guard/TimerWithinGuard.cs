@@ -8,7 +8,7 @@ namespace net.esper.pattern.guard
 {
 
     /// <summary> Guard implementation that keeps a timer instance and quits when the timer expired,
-    /// letting all {@link MatchedEventMap} instances pass until then.
+    /// letting all <seealso cref="MatchedEventMap"/> instances pass until then.
     /// </summary>
 
     public class TimerWithinGuard : Guard, ScheduleCallback

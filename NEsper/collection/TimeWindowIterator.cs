@@ -7,7 +7,7 @@ using net.esper.events;
 namespace net.esper.collection
 {
 	/// <summary>
-    /// Iterator for {@link TimeWindow} to iterate over a timestamp slots that hold events.
+    /// Iterator for <seealso cref="TimeWindow"/> to iterate over a timestamp slots that hold events.
     /// </summary>
 
     public sealed class TimeWindowIterator : IEnumerator<EventBean>

@@ -16,7 +16,7 @@ namespace net.esper.eql.join.assemble
 
 	public class AssemblyStrategyTreeBuilder
 	{
-		/// <summary> Builds a tree of {@link BaseAssemblyNode} from join strategy information.</summary>
+		/// <summary> Builds a tree of <seealso cref="BaseAssemblyNode" /> from join strategy information.</summary>
 		/// <param name="rootStream">the root stream supplying the event to evaluate
 		/// </param>
 		/// <param name="streamsJoinedPerStream">a map in which the key is the stream number to supply an event,

@@ -10,8 +10,8 @@ namespace net.esper.filter
 
     public interface FilterCallback
     {
-        /// <summary> Indicate that an event was evaluated by the {@link FilterService}
-        /// which matches the filter specification {@link FilterSpec} associated with this callback.
+        /// <summary> Indicate that an event was evaluated by the <seealso cref="FilterService"/>
+        /// which matches the filter specification <seealso cref="FilterSpec"/> associated with this callback.
         /// </summary>
         /// <param name="_event">the event received that matches the filter specification
         /// </param>
@@ -45,8 +45,8 @@ namespace net.esper.filter
         }
 
         /// <summary>
-        /// Indicate that an event was evaluated by the {@link FilterService}
-        /// which matches the filter specification {@link FilterSpec} associated with this callback.
+        /// Indicate that an event was evaluated by the <seealso cref="FilterService"/>
+        /// which matches the filter specification <seealso cref="FilterSpec"/> associated with this callback.
         /// </summary>
         /// <param name="_event">the event received that matches the filter specification</param>
         public void matchFound(EventBean _event)

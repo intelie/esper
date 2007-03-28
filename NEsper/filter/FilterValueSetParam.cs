@@ -3,7 +3,7 @@ using System;
 namespace net.esper.filter
 {
 	/// <summary>
-    /// This interface represents one filter parameter in an {@link FilterValueSet} filter specification.
+    /// This interface represents one filter parameter in an <seealso cref="FilterValueSet"/> filter specification.
 	/// <para>
     /// Each filtering parameter has an property name and operator type, and a value to filter for.
     /// </para>

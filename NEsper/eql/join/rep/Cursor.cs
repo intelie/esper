@@ -5,7 +5,7 @@ using EventBean = net.esper.events.EventBean;
 namespace net.esper.eql.join.rep
 {
 	/// <summary>
-	/// This class supplies position information for {@link net.esper.eql.join.exec.LookupInstructionExec}
+	/// This class supplies position information for <seealso cref="net.esper.eql.join.exec.LookupInstructionExec"/>
 	/// to use for iterating over events for lookup.
 	/// </summary>
 

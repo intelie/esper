@@ -14,7 +14,7 @@ using net.esper.core;
 namespace net.esper.client
 {
     /// <summary>
-    /// Factory for instances of {@link EPServiceProvider}.
+    /// Factory for instances of <seealso cref="EPServiceProvider" />.
     /// </summary>
 
     public sealed class EPServiceProviderManager

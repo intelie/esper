@@ -7,7 +7,7 @@ using net.esper.events;
 namespace net.esper.eql.join.rep
 {
     /// <summary>
-    /// Iterator over a set of nodes supplying node and event-within-node position information in a {@link Cursor}.
+    /// Iterator over a set of nodes supplying node and event-within-node position information in a <seealso cref="Cursor"/>.
     /// </summary>
 
     public class NodeCursorEnumerator : IEnumerator<Cursor>

@@ -6,7 +6,7 @@ using net.esper.eql.parse;
 namespace net.esper.pattern.guard
 {
 	/// <summary>
-	/// Factory for {@link TimerWithinGuard} instances.
+	/// Factory for <seealso cref="TimerWithinGuard"/> instances.
 	/// </summary>
 	
 	public class TimerWithinGuardFactory : GuardFactory

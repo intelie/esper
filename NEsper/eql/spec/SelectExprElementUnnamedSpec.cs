@@ -6,7 +6,7 @@ namespace net.esper.eql.spec
 	/// <summary> Represents a single item in a SELECT-clause, potentially unnamed
 	/// as no "as" tag may have been supplied in the syntax.
 	/// <para>
-	/// Compare to {@link SelectExprElementNamedSpec} which carries a determined name.
+	/// Compare to <seealso cref="SelectExprElementNamedSpec"/> which carries a determined name.
     /// </para>
 	/// </summary>
 	public class SelectExprElementUnnamedSpec

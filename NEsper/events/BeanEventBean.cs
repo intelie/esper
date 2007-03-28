@@ -5,7 +5,7 @@ namespace net.esper.events
     /// <summary>
     /// Wrapper for regular objects the represent events.
     /// Allows access to event properties, which is done through the getter supplied by the event type.
-    /// {@link EventType} instances containing type information are obtained from {@link BeanEventAdapter}.
+    /// <seealso cref="EventType" /> instances containing type information are obtained from <seealso cref="BeanEventAdapter"/>.
     /// Two BeanEventBean instances are equal if they have the same event type and refer to the same
     /// instance of event object.  Clients that need to compute equality between objects wrapped by
     /// this class need to obtain the underlying object.
@@ -25,7 +25,7 @@ namespace net.esper.events
         }
 
         /// <summary>
-        /// Return the {@link EventType} instance that describes the set of properties available for this event.
+        /// Return the <seealso cref="EventType" /> instance that describes the set of properties available for this event.
         /// </summary>
         /// <value></value>
         /// <returns> event type

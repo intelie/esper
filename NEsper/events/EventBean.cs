@@ -11,14 +11,14 @@ using System;
 namespace net.esper.events
 {
 	/// <summary>
-    /// Interface for event representation. All events have an {@link EventType}. Events also
+    /// Interface for event representation. All events have an <seealso cref="EventType" />. Events also
 	/// usually have one or more event properties. This interface allows the querying of event type,
 	/// event property values and the underlying event object.
 	/// </summary>
 	
     public interface EventBean
 	{
-		/// <summary> Return the {@link EventType} instance that describes the set of properties available for this event.</summary>
+		/// <summary> Return the <seealso cref="EventType" /> instance that describes the set of properties available for this event.</summary>
 		/// <returns> event type
 		/// </returns>
 	

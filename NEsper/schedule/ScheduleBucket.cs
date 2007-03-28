@@ -4,7 +4,7 @@ namespace net.esper.schedule
 {
 	/// <summary>
     /// This class acts as a buckets for sorting schedule service callbacks that are scheduled to occur at the same
-	/// time. Each buckets constists of {@link ScheduleSlot} slots that callbacks are
+	/// time. Each buckets constists of <seealso cref="ScheduleSlot"/> slots that callbacks are
 	/// assigned to.
 	/// <para>
 	/// At the time of timer evaluation, callbacks that become triggerable are ordered using the bucket
