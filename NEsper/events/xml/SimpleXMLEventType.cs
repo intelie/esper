@@ -17,7 +17,7 @@ namespace net.esper.events.xml
     /// No namespace support.
     /// Cannot access to xml attributes, only elements content.
     /// 
-    /// If an xsd is present, then use <seealso cref="net.esper.event.xml.SchemaXMLEventType SchemaXMLEventType"/>
+    /// If an xsd is present, then use <seealso cref="net.esper.events.xml.SchemaXMLEventType SchemaXMLEventType"/>
     /// 
     /// </summary>
     /// <author>  pablo

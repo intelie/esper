@@ -66,7 +66,7 @@ namespace net.esper.example.marketdatafeed
             // Configure engine with event names to make the statements more readable.
             // This could also be done in a configuration file.
             Configuration configuration = new Configuration();
-            configuration.AddEventTypeAlias("MarketDataEvent", typeof(MarketDataEvent).Name);
+            configuration.AddEventTypeAlias("MarketDataEvent", typeof(MarketDataEvent).FullName);
 
             // Get engine instance
             EPServiceProvider epService = EPServiceProviderManager.GetProvider("FeedSimMain", configuration);

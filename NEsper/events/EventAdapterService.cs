@@ -27,7 +27,7 @@ namespace net.esper.events
         /// 
         /// If the alias already exists with different event property information, throws an exception.
         /// 
-        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.event.MapEventType" />.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.events.MapEventType" />.
         /// </summary>
         /// <param name="eventTypeAlias">is the alias name for the event type</param>
         /// <param name="propertyTypes">is the names and types of event properties</param>
@@ -83,7 +83,7 @@ namespace net.esper.events
         ///
         /// If the alias already exists with different class name, throws an exception.
         ///
-        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.event.BeanEventType" />.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.events.BeanEventType" />.
         /// </summary>
         /// <param name="eventTypeAlias">is the alias name for the event type
         /// </param>
@@ -100,7 +100,7 @@ namespace net.esper.events
         ///
         /// If the alias already exists with different Class name, throws an exception.
         ///
-        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.event.BeanEventType" />.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.events.BeanEventType" />.
         /// </summary>
         /// <param name="eventTypeAlias">is the alias name for the event type
         /// </param>

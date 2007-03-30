@@ -11,7 +11,7 @@ namespace net.esper.example.marketdatafeed
         public TicksPerSecondStatement(EPAdministrator admin)
         {
             String stmt = "insert into TicksPerSecond " +
-                          "select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1 sec) group by feed";
+                          "select Feed, count(*) as cnt from MarketDataEvent.win:time_batch(1 sec) group by feed";
 
             statement = admin.CreateEQL(stmt);
         }
