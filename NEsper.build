@@ -82,6 +82,12 @@
       <arg value="/property:Configuration=${project.build.config}" />
       <arg value="/t:Clean" />
     </msbuild>
+    
+    <delete>
+       <fileset basedir="${sandcastle.workingdir}">
+          <include name="**\*" />
+       </fileset>
+    </delete>
   </target>
 
   <target name="BuildSolution">
