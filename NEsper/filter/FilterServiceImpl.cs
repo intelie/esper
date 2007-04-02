@@ -78,7 +78,7 @@ namespace net.esper.filter
 
             foreach (FilterCallback actionable in matches)
             {
-                actionable.matchFound(eventBean);
+                actionable.MatchFound(eventBean);
             }
         }
     }

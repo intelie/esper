@@ -8,7 +8,7 @@ namespace net.esper.view.stream
 		/// <summary> Creates an implementation of the StreamReuseService interface.</summary>
 		/// <returns> implementation
 		/// </returns>
-		public static StreamReuseService newService()
+		public static StreamReuseService NewService()
 		{
 			return new StreamReuseServiceImpl();
 		}

@@ -125,7 +125,7 @@ namespace net.esper.eql.expression
                     {
                         return null;
                     }
-                    likeUtil.resetPattern(patternVal);
+                    likeUtil.ResetPattern(patternVal);
                 }
             }
 
@@ -140,7 +140,7 @@ namespace net.esper.eql.expression
                 evalValue = evalValue.ToString();
             }
 
-            bool? result = likeUtil.compare((String)evalValue);
+            bool? result = likeUtil.Compare((String)evalValue);
 
             if (isNot)
             {

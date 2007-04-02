@@ -50,7 +50,7 @@ namespace net.esper.eql.view
 			// check callback scheduled, pretend callback
 			Assert.IsTrue(schedulingServiceStub.getAdded().Count == 1);
 			Assert.IsTrue(schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC] != null);
-			schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].scheduledTrigger();
+			schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].ScheduledTrigger();
 			
 			// 2 new, 3 old
             condition.UpdateOutputCondition(2, 3);
@@ -61,7 +61,7 @@ namespace net.esper.eql.view
 			// check callback scheduled, pretend callback
 			Assert.IsTrue(schedulingServiceStub.getAdded().Count == 1);
 			Assert.IsTrue(schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC] != null);
-			schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].scheduledTrigger();
+			schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].ScheduledTrigger();
 			
 			
 			// 0 new, 0 old

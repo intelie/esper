@@ -37,7 +37,7 @@ namespace net.esper.eql.join.plan
         [Test]
         public virtual void testCreateStreamPlan()
         {
-            QueryPlanIndex[] indexes = QueryPlanIndexBuilder.buildIndexSpec(queryGraph);
+            QueryPlanIndex[] indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
             for (int i = 0; i < indexes.Length; i++)
             {
                 log.Debug(".testCreateStreamPlan index " + i + " = " + indexes[i]);

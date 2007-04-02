@@ -18,7 +18,7 @@ namespace net.esper.eql.core
 		[SetUp]
 		public virtual void  setUp()
 		{
-			EventType[] eventTypes = new EventType[]{SupportEventTypeFactory.createBeanType(typeof(SupportBean)), SupportEventTypeFactory.createBeanType(typeof(SupportBean)), SupportEventTypeFactory.createBeanType(typeof(SupportBean_A)), SupportEventTypeFactory.createBeanType(typeof(SupportMarketDataBean))};
+			EventType[] eventTypes = new EventType[]{SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), SupportEventTypeFactory.CreateBeanType(typeof(SupportBean_A)), SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean))};
 			
 			String[] streamNames = new String[]{"s1", null, "s3", "s4"};
 			
@@ -29,7 +29,7 @@ namespace net.esper.eql.core
 		public virtual void  testResolveByStreamAndPropNameBoth()
 		{
 			// Test lookup by stream name and prop name
-			PropertyResolutionDescriptor desc = service.resolveByStreamAndPropName("s4", "volume");
+			PropertyResolutionDescriptor desc = service.ResolveByStreamAndPropName("s4", "volume");
 			Assert.AreEqual(3, (int) desc.StreamNum);
 			Assert.AreEqual(typeof(long?), desc.PropertyType);
 			Assert.AreEqual("volume", desc.PropertyName);
@@ -38,7 +38,7 @@ namespace net.esper.eql.core
 			
 			try
 			{
-				service.resolveByStreamAndPropName("xxx", "volume");
+				service.ResolveByStreamAndPropName("xxx", "volume");
 				Assert.Fail();
 			}
 			catch (StreamNotFoundException ex)
@@ -48,7 +48,7 @@ namespace net.esper.eql.core
 			
 			try
 			{
-				service.resolveByStreamAndPropName("s4", "xxxx");
+				service.ResolveByStreamAndPropName("s4", "xxxx");
 				Assert.Fail();
 			}
 			catch (PropertyNotFoundException ex)
@@ -61,7 +61,7 @@ namespace net.esper.eql.core
 		public virtual void  testResolveByPropertyName()
 		{
 			// Test lookup by property name only
-			PropertyResolutionDescriptor desc = service.resolveByPropertyName("volume");
+            PropertyResolutionDescriptor desc = service.ResolveByPropertyName("volume");
 			Assert.AreEqual(3, (int) (desc.StreamNum));
 			Assert.AreEqual(typeof(long?), desc.PropertyType);
 			Assert.AreEqual("volume", desc.PropertyName);
@@ -70,7 +70,7 @@ namespace net.esper.eql.core
 			
 			try
 			{
-				service.resolveByPropertyName("boolPrimitive");
+                service.ResolveByPropertyName("boolPrimitive");
 				Assert.Fail();
 			}
 			catch (DuplicatePropertyException ex)
@@ -80,7 +80,7 @@ namespace net.esper.eql.core
 			
 			try
 			{
-				service.resolveByPropertyName("xxxx");
+                service.ResolveByPropertyName("xxxx");
 				Assert.Fail();
 			}
 			catch (PropertyNotFoundException ex)
@@ -93,7 +93,7 @@ namespace net.esper.eql.core
 		public virtual void  testResolveByStreamAndPropNameInOne()
 		{
 			// Test lookup by stream name and prop name
-			PropertyResolutionDescriptor desc = service.resolveByStreamAndPropName("s4.volume");
+			PropertyResolutionDescriptor desc = service.ResolveByStreamAndPropName("s4.volume");
 			Assert.AreEqual(3, (int) desc.StreamNum);
 			Assert.AreEqual(typeof(long?), desc.PropertyType);
 			Assert.AreEqual("volume", desc.PropertyName);
@@ -102,7 +102,7 @@ namespace net.esper.eql.core
 			
 			try
 			{
-				service.resolveByStreamAndPropName("xxx.volume");
+				service.ResolveByStreamAndPropName("xxx.volume");
 				Assert.Fail();
 			}
 			catch (PropertyNotFoundException ex)
@@ -112,7 +112,7 @@ namespace net.esper.eql.core
 			
 			try
 			{
-				service.resolveByStreamAndPropName("s4.xxxx");
+				service.ResolveByStreamAndPropName("s4.xxxx");
 				Assert.Fail();
 			}
 			catch (PropertyNotFoundException ex)

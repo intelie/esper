@@ -65,7 +65,7 @@ namespace net.esper.view.std
         [Test]
         public virtual void testCopyView()
         {
-            EventType someEventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+            EventType someEventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
             myView.Parent = parent;
             myView.EventType = someEventType;

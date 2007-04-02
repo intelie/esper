@@ -61,9 +61,9 @@ namespace net.esper.eql.join.table
         /// <returns> all events
         /// </returns>
 
-        public ISet<EventBean> getEventSet()
+        public ISet<EventBean> EventSet
         {
-            return eventSet;
+            get { return eventSet; }
         }
 
         /// <summary>

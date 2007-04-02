@@ -36,7 +36,7 @@ namespace net.esper.view
 			}
 			
 			// Determine view class
-			ViewEnum viewEnum = ViewEnum.forName(spec.ObjectNamespace, spec.ObjectName);
+			ViewEnum viewEnum = ViewEnum.ForName(spec.ObjectNamespace, spec.ObjectName);
 			
 			if (viewEnum == null)
 			{

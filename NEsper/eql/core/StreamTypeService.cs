@@ -16,15 +16,13 @@ namespace net.esper.eql.core
 		String[] StreamNames
 		{
 			get;
-			
 		}
 		/// <summary> Returns an array of event types for each event stream in the order declared.</summary>
 		/// <returns> event types
 		/// </returns>
 		EventType[] EventTypes
 		{
-			get;
-			
+			get;			
 		}
         /// <summary>
         /// Returns the offset of the stream and the type of the property for the given property name,
@@ -39,7 +37,7 @@ namespace net.esper.eql.core
         /// </returns>
         /// <throws>  DuplicatePropertyException to indicate property was found twice </throws>
         /// <throws>  PropertyNotFoundException to indicate property could not be resolved </throws>
-		PropertyResolutionDescriptor resolveByPropertyName(String propertyName);
+		PropertyResolutionDescriptor ResolveByPropertyName(String propertyName);
 
         /// <summary>
         /// Returns the offset of the stream and the type of the property for the given property name,
@@ -55,7 +53,7 @@ namespace net.esper.eql.core
         /// </returns>
         /// <throws>  PropertyNotFoundException to indicate property could not be resolved </throws>
         /// <throws>  StreamNotFoundException to indicate stream name could not be resolved </throws>
-		PropertyResolutionDescriptor resolveByStreamAndPropName(String streamName, String propertyName);
+		PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamName, String propertyName);
 
         /// <summary>
         /// Returns the offset of the stream and the type of the property for the given property name,
@@ -72,6 +70,6 @@ namespace net.esper.eql.core
         /// </returns>
         /// <throws>  DuplicatePropertyException to indicate property was found twice </throws>
         /// <throws>  PropertyNotFoundException to indicate property could not be resolved </throws>
-		PropertyResolutionDescriptor resolveByStreamAndPropName(String streamAndPropertyName);
+		PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamAndPropertyName);
 	}
 }

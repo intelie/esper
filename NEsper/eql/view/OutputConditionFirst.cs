@@ -30,7 +30,7 @@ namespace net.esper.eql.view
             this.outputCallback = outputCallback;
             OutputLimitSpec innerSpec = createInnerSpec(outputLimitSpec);
             OutputCallback localCallback = createCallbackToLocal();
-            this.innerCondition = OutputConditionFactory.createCondition(innerSpec, viewContext, localCallback);
+            this.innerCondition = OutputConditionFactory.CreateCondition(innerSpec, viewContext, localCallback);
             this.witnessedFirst = false;
         }
 

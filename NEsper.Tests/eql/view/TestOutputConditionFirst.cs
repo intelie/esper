@@ -53,7 +53,7 @@ namespace net.esper.eql.view
             // check callback scheduled, pretend callback
             Assert.IsTrue(schedulingServiceStub.getAdded().Count == 1);
             Assert.IsTrue(schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC] != null);
-            schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].scheduledTrigger();
+            schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].ScheduledTrigger();
 
             // 2 new, 3 old
             condition.UpdateOutputCondition(2, 3);
@@ -64,7 +64,7 @@ namespace net.esper.eql.view
             // check callback scheduled, pretend callback
             Assert.IsTrue(schedulingServiceStub.getAdded().Count == 1);
             Assert.IsTrue(schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC] != null);
-            schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].scheduledTrigger();
+            schedulingServiceStub.getAdded()[TEST_INTERVAL_MSEC].ScheduledTrigger();
 
 
             // 0 new, 0 old
@@ -84,7 +84,7 @@ namespace net.esper.eql.view
             OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3, OutputLimitSpec.DisplayLimit.FIRST);
             ViewServiceContext viewContext = null;
 
-            OutputCondition condition = OutputConditionFactory.createCondition(outputConditionSpec, viewContext, callback);
+            OutputCondition condition = OutputConditionFactory.CreateCondition(outputConditionSpec, viewContext, callback);
 
             // Send first event of the batch, callback should be made
             condition.UpdateOutputCondition(1, 0);

@@ -23,7 +23,7 @@ namespace net.esper.eql.join.table
 		public virtual void setUp()
 		{
             propertyNames = new String[] { "intPrimitive", "str" };
-			eventType = SupportEventTypeFactory.createBeanType( typeof( SupportBean ) );
+			eventType = SupportEventTypeFactory.CreateBeanType( typeof( SupportBean ) );
 			index = new PropertyIndexedEventTable( 1, eventType, propertyNames );
 
 			// Populate with testEvents
@@ -41,19 +41,19 @@ namespace net.esper.eql.join.table
 		[Test]
 		public virtual void testFind()
 		{
-			ISet<EventBean> result = index.lookup( new Object[] { 1, "a" } );
+			ISet<EventBean> result = index.Lookup( new Object[] { 1, "a" } );
 			Assert.IsNull( result );
 
-			result = index.lookup( new Object[] { 1, "b" } );
+            result = index.Lookup(new Object[] { 1, "b" });
 			Assert.AreEqual( 2, result.Count );
 			Assert.IsTrue( result.Contains( testEvents[1] ) );
 			Assert.IsTrue( result.Contains( testEvents[4] ) );
 
-			result = index.lookup( new Object[] { 0, "c" } );
+            result = index.Lookup(new Object[] { 0, "c" });
 			Assert.AreEqual( 1, result.Count );
 			Assert.IsTrue( result.Contains( testEvents[5] ) );
 
-			result = index.lookup( new Object[] { 0, "a" } );
+            result = index.Lookup(new Object[] { 0, "a" });
 			Assert.AreEqual( 1, result.Count );
 			Assert.IsTrue( result.Contains( testEvents[0] ) );
 		}
@@ -118,7 +118,7 @@ namespace net.esper.eql.join.table
 			events[1] = testEvents[4];
 			index.Add( events );
 
-			ISet<EventBean> result = index.lookup( new Object[] { 1, "b" } );
+            ISet<EventBean> result = index.Lookup(new Object[] { 1, "b" });
 			Assert.AreEqual( 2, result.Count );
 
 			try
@@ -137,7 +137,7 @@ namespace net.esper.eql.join.table
 		{
 			index.Remove( testEvents );
 
-			ISet<EventBean> result = index.lookup( new Object[] { 1, "b" } );
+            ISet<EventBean> result = index.Lookup(new Object[] { 1, "b" });
 			Assert.IsNull( result );
 
 			// Remove again - already removed but won't throw an exception
@@ -148,16 +148,16 @@ namespace net.esper.eql.join.table
 		public virtual void testMixed()
 		{
 			index.Remove( new EventBean[] { testEvents[1] } );
-			ISet<EventBean> result = index.lookup( new Object[] { 1, "b" } );
+            ISet<EventBean> result = index.Lookup(new Object[] { 1, "b" });
 			Assert.AreEqual( 1, result.Count );
 			Assert.IsTrue( result.Contains( testEvents[4] ) );
 
 			index.Remove( new EventBean[] { testEvents[4] } );
-			result = index.lookup( new Object[] { 1, "b" } );
+            result = index.Lookup(new Object[] { 1, "b" });
 			Assert.IsNull( result );
 
 			index.Add( new EventBean[] { testEvents[1] } );
-			result = index.lookup( new Object[] { 1, "b" } );
+            result = index.Lookup(new Object[] { 1, "b" });
 			Assert.AreEqual( 1, result.Count );
 			Assert.IsTrue( result.Contains( testEvents[1] ) );
 		}

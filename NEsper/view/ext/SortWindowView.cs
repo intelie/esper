@@ -176,7 +176,7 @@ namespace net.esper.view.ext
             String result = null;
             foreach (String name in sortFieldNames)
             {
-                result = PropertyCheckHelper.exists(parentView.EventType, name);
+                result = PropertyCheckHelper.Exists(parentView.EventType, name);
 
                 if (result != null)
                 {
@@ -229,7 +229,7 @@ namespace net.esper.view.ext
             if (log.IsDebugEnabled)
             {
                 log.Debug(".update Updating view");
-                dumpUpdateParams("SortWindowView", newData, oldData);
+                DumpUpdateParams("SortWindowView", newData, oldData);
             }
 
             List<EventBean> removedEvents = new List<EventBean>() ;

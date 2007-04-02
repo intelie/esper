@@ -23,7 +23,7 @@ namespace net.esper.util
 		/// <returns> instance
 		/// </returns>
 		
-        public virtual T create()
+        public virtual T Create()
 		{
 			return (T) Activator.CreateInstance( this.clazz );
 		}

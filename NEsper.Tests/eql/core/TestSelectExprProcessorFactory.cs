@@ -60,13 +60,13 @@ namespace net.esper.eql.core
             elements.Add(new SelectExprElementNamedSpec(null, "xx"));
             elements.Add(new SelectExprElementNamedSpec(null, "yy"));
 
-            SelectExprProcessorFactory.verifyNameUniqueness(elements);
+            SelectExprProcessorFactory.VerifyNameUniqueness(elements);
 
             // try invalid case
             elements.Add(new SelectExprElementNamedSpec(null, "yy"));
             try
             {
-                SelectExprProcessorFactory.verifyNameUniqueness(elements);
+                SelectExprProcessorFactory.VerifyNameUniqueness(elements);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)

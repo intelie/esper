@@ -26,8 +26,8 @@ namespace net.esper.eql.join
         public virtual void setUp()
         {
             streamTypes = new EventType[2];
-            streamTypes[0] = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
-            streamTypes[1] = SupportEventTypeFactory.createBeanType(typeof(SupportBean_A));
+            streamTypes[0] = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
+            streamTypes[1] = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean_A));
 
             streamViewables = new Viewable[2];
         }
@@ -35,15 +35,15 @@ namespace net.esper.eql.join
         [Test]
         public virtual void testBuildIndex()
         {
-            EventTable table = JoinSetComposerFactory.buildIndex(0, new String[] { "intPrimitive", "boolBoxed" }, streamTypes[0]);
+            EventTable table = JoinSetComposerFactory.BuildIndex(0, new String[] { "intPrimitive", "boolBoxed" }, streamTypes[0]);
             Assert.IsTrue(table is PropertyIndexedEventTable);
 
-            table = JoinSetComposerFactory.buildIndex(0, new String[0], streamTypes[0]);
+            table = JoinSetComposerFactory.BuildIndex(0, new String[0], streamTypes[0]);
             Assert.IsTrue(table is UnindexedEventTable);
 
             try
             {
-                JoinSetComposerFactory.buildIndex(0, null, streamTypes[0]);
+                JoinSetComposerFactory.BuildIndex(0, null, streamTypes[0]);
                 Assert.Fail();
             }
             catch (System.NullReferenceException ex)
@@ -56,7 +56,7 @@ namespace net.esper.eql.join
         public virtual void testBuildComposer()
         {
             IList<OuterJoinDesc> outerJoins = new List<OuterJoinDesc>();
-            JoinSetComposerImpl composer = (JoinSetComposerImpl)JoinSetComposerFactory.makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[] { "a", "b", "c", "d" }, streamViewables, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
+            JoinSetComposerImpl composer = (JoinSetComposerImpl)JoinSetComposerFactory.MakeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[] { "a", "b", "c", "d" }, streamViewables, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
 
             // verify default indexes build
             Assert.AreEqual(2, composer.Tables.Length);
@@ -66,11 +66,11 @@ namespace net.esper.eql.join
             // verify default strategies
             Assert.AreEqual(2, composer.QueryStrategies.Length);
             ExecNodeQueryStrategy plan = (ExecNodeQueryStrategy)composer.QueryStrategies[0];
-            Assert.AreEqual(0, plan.getForStream());
+            Assert.AreEqual(0, plan.ForStream);
             Assert.AreEqual(2, plan.NumStreams);
             Assert.IsTrue(plan.ExecNode is TableLookupExecNode);
             plan = (ExecNodeQueryStrategy)composer.QueryStrategies[1];
-            Assert.AreEqual(1, plan.getForStream());
+            Assert.AreEqual(1, plan.ForStream);
             Assert.AreEqual(2, plan.NumStreams);
             Assert.IsTrue(plan.ExecNode is TableLookupExecNode);
         }

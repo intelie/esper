@@ -93,7 +93,7 @@ namespace net.esper.pattern
         /// which matches the filter specification <seealso cref="FilterSpec"/> associated with this callback.
         /// </summary>
         /// <param name="_event"></param>
-        public void matchFound(EventBean _event)
+        public void MatchFound(EventBean _event)
         {
             if (log.IsDebugEnabled)
             {
@@ -106,7 +106,7 @@ namespace net.esper.pattern
                 return;
             }
 
-            MatchedEventMap passUp = beginState.shallowCopy();
+            MatchedEventMap passUp = beginState.ShallowCopy();
 
             // Add event itself to the match event structure if a tag was provided
             if (eventAsName != null)
@@ -141,7 +141,7 @@ namespace net.esper.pattern
         /// </returns>
         public override Object Accept(EvalStateNodeVisitor visitor, Object data)
         {
-            return visitor.visit(this, data);
+            return visitor.Visit(this, data);
         }
 
         /// <summary>

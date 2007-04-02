@@ -271,7 +271,7 @@ namespace net.esper.filter
 
         private FilterValueSet makeFilterValues(params object[] filterSpecArgs)
         {
-            FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterSpecArgs);
+            FilterSpec spec = SupportFilterSpecBuilder.Build(eventType, filterSpecArgs);
             FilterValueSet filterValues = spec.GetValueSet(null);
             return filterValues;
         }

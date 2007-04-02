@@ -82,13 +82,13 @@ namespace net.esper.regression.events
             ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.PUBLIC;
             legacyDef.CodeGeneration = codeGeneration;
-            legacyDef.addFieldProperty("explicitFSimple", "fieldLegacyVal");
-            legacyDef.addFieldProperty("explicitFIndexed", "fieldStringArray");
-            legacyDef.addFieldProperty("explicitFNested", "fieldNested");
-            legacyDef.addMethodProperty("explicitMSimple", "readLegacyBeanVal");
-            legacyDef.addMethodProperty("explicitMArray", "readStringArray");
-            legacyDef.addMethodProperty("explicitMIndexed", "readStringIndexed");
-            legacyDef.addMethodProperty("explicitMMapped", "readMapByKey");
+            legacyDef.AddFieldProperty("explicitFSimple", "fieldLegacyVal");
+            legacyDef.AddFieldProperty("explicitFIndexed", "fieldStringArray");
+            legacyDef.AddFieldProperty("explicitFNested", "fieldNested");
+            legacyDef.AddMethodProperty("explicitMSimple", "readLegacyBeanVal");
+            legacyDef.AddMethodProperty("explicitMArray", "readStringArray");
+            legacyDef.AddMethodProperty("explicitMIndexed", "readStringIndexed");
+            legacyDef.AddMethodProperty("explicitMMapped", "readMapByKey");
             config.AddEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
@@ -181,15 +181,15 @@ namespace net.esper.regression.events
             ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
-            legacyDef.addFieldProperty("explicitFNested", "fieldNested");
-            legacyDef.addMethodProperty("explicitMNested", "readLegacyNested");
+            legacyDef.AddFieldProperty("explicitFNested", "fieldNested");
+            legacyDef.AddMethodProperty("explicitMNested", "readLegacyNested");
             config.AddEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.EXPLICIT;
             legacyDef.CodeGeneration = codeGeneration;
-            legacyDef.addFieldProperty("fieldNestedClassValue", "fieldNestedValue");
-            legacyDef.addMethodProperty("readNestedClassValue", "readNestedValue");
+            legacyDef.AddFieldProperty("fieldNestedClassValue", "fieldNestedValue");
+            legacyDef.AddMethodProperty("readNestedClassValue", "readNestedValue");
             config.AddEventTypeAlias("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested).FullName, legacyDef);
 
             legacyDef = new ConfigurationEventTypeLegacy();
@@ -238,9 +238,9 @@ namespace net.esper.regression.events
             ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
             legacyDef.AccessorStyle = ConfigurationEventTypeLegacy.AccessorStyleEnum.NATIVE;
             legacyDef.CodeGeneration = codeGeneration;
-            legacyDef.addFieldProperty("explicitFInt", "fieldIntPrimitive");
-            legacyDef.addMethodProperty("explicitMGetInt", "getIntPrimitive");
-            legacyDef.addMethodProperty("explicitMReadInt", "readIntPrimitive");
+            legacyDef.AddFieldProperty("explicitFInt", "fieldIntPrimitive");
+            legacyDef.AddMethodProperty("explicitMGetInt", "getIntPrimitive");
+            legacyDef.AddMethodProperty("explicitMReadInt", "readIntPrimitive");
             config.AddEventTypeAlias("MyLegacyEvent", typeof(SupportLegacyBeanInt).FullName, legacyDef);
 
             epService = EPServiceProviderManager.GetProvider(this.GetType().Name + ".test3" + codeGeneration, config);

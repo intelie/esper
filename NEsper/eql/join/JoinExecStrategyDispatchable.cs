@@ -5,7 +5,7 @@ using net.esper.collection;
 using net.esper.compat;
 using net.esper.dispatch;
 using net.esper.events;
-using net.esper.view.internal_Renamed;
+using net.esper.view.internals;
 
 namespace net.esper.eql.join
 {
@@ -78,7 +78,7 @@ namespace net.esper.eql.join
         /// <param name="streamId">the stream number sending the events</param>
         /// <param name="newEventBuffer">buffer for new events</param>
         /// <param name="oldEventBuffer">buffer for old events</param>
-        public virtual void newData(int streamId, EventBuffer newEventBuffer, EventBuffer oldEventBuffer)
+        public virtual void NewData(int streamId, EventBuffer newEventBuffer, EventBuffer oldEventBuffer)
         {
             if (!isDispatchRegistered)
             {

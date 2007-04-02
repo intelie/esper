@@ -12,8 +12,8 @@ namespace net.esper.filter
 		[Test]
 		public virtual void  testGetService()
 		{
-			FilterService serviceOne = FilterServiceProvider.newService();
-			FilterService serviceTwo = FilterServiceProvider.newService();
+			FilterService serviceOne = FilterServiceProvider.NewService();
+			FilterService serviceTwo = FilterServiceProvider.NewService();
 			
 			Assert.IsTrue(serviceOne != null);
 			Assert.IsTrue(serviceOne != serviceTwo);

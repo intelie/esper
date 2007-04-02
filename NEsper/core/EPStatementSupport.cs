@@ -15,10 +15,10 @@ namespace net.esper.core
         private ISet<UpdateListener> listeners = new LinkedHashSet<UpdateListener>();
 
         /// <summary> Called when the last listener is removed.</summary>
-        public abstract void listenerStop();
+        public abstract void ListenerStop();
 
         /// <summary> Called when the first listener is added.</summary>
-        public abstract void listenerStart();
+        public abstract void ListenerStart();
 
         /// <summary> Returns the set of listeners to the statement.</summary>
         /// <returns> statement listeners
@@ -43,7 +43,7 @@ namespace net.esper.core
             listeners.Add(listener);
             if (listeners.Count == 1)
             {
-                listenerStart();
+                ListenerStart();
             }
         }
 
@@ -60,7 +60,7 @@ namespace net.esper.core
             listeners.Remove(listener);
             if (listeners.Count == 0)
             {
-                listenerStop();
+                ListenerStop();
             }
         }
 
@@ -71,7 +71,7 @@ namespace net.esper.core
         public virtual void RemoveAllListeners()
         {
             listeners.Clear();
-            listenerStop();
+            ListenerStop();
         }
     }
 }

@@ -25,18 +25,18 @@ namespace net.esper.events.property
 		[Test]
 		public virtual void  testParse()
 		{
-			Property property = PropertyParser.parse("i[1]", beanEventAdapter);
+			Property property = PropertyParser.Parse("i[1]", beanEventAdapter);
 			Assert.AreEqual("i", ((IndexedProperty) property).PropertyName);
 			Assert.AreEqual(1, ((IndexedProperty) property).Index);
-			
-			property = PropertyParser.parse("m('key')", beanEventAdapter);
+
+            property = PropertyParser.Parse("m('key')", beanEventAdapter);
 			Assert.AreEqual("m", ((MappedProperty) property).PropertyName);
 			Assert.AreEqual("key", ((MappedProperty) property).Key);
-			
-			property = PropertyParser.parse("a", beanEventAdapter);
+
+            property = PropertyParser.Parse("a", beanEventAdapter);
 			Assert.AreEqual("a", ((SimpleProperty) property).PropertyName);
-			
-			property = PropertyParser.parse("a.b[2].c('m')", beanEventAdapter);
+
+            property = PropertyParser.Parse("a.b[2].c('m')", beanEventAdapter);
       IList<Property> nested = ((NestedProperty)property).Properties;
 			Assert.AreEqual(3, nested.Count);
 			Assert.AreEqual("a", ((SimpleProperty) nested[0]).PropertyName);
@@ -56,7 +56,7 @@ namespace net.esper.events.property
 		{
 			String propertyName = "m(\"" + key + "\")";
 			log.Debug(".tryKey propertyName=" + propertyName + " key=" + key);
-			Property property = PropertyParser.parse(propertyName, beanEventAdapter);
+            Property property = PropertyParser.Parse(propertyName, beanEventAdapter);
 			return ((MappedProperty) property).Key;
 		}
 

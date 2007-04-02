@@ -31,7 +31,7 @@ namespace net.esper.schedule
 
             for (int i = 0; i < buckets.Length; i++)
             {
-                buckets[i] = service.allocateBucket();
+                buckets[i] = service.AllocateBucket();
                 slots[i] = new ScheduleSlot[2];
                 for (int j = 0; j < slots[i].Length; j++)
                 {
@@ -80,7 +80,7 @@ namespace net.esper.schedule
             startTime += 1;
             service.Time = startTime;
             service.Evaluate();
-            Assert.AreEqual(0, callbacks[3].clearAndGetOrderTriggered());
+            Assert.AreEqual(0, callbacks[3].ClearAndGetOrderTriggered());
 
             // Adding the same callback more than once should cause an exception
             service.Add(20, callbacks[0], slots[0][0]);
@@ -206,7 +206,7 @@ namespace net.esper.schedule
 
             for (int i = 0; i < callbacks.Length; i++)
             {
-                Assert.AreEqual((int)results[i], (int)callbacks[i].clearAndGetOrderTriggered());
+                Assert.AreEqual((int)results[i], (int)callbacks[i].ClearAndGetOrderTriggered());
             }
         }
     }

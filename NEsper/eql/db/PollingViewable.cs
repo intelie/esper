@@ -78,7 +78,7 @@ namespace net.esper.eql.db
                 // try to resolve the property name alone
                 try
                 {
-                    desc = streamTypeService.resolveByStreamAndPropName(inputParam);
+                    desc = streamTypeService.ResolveByStreamAndPropName(inputParam);
                 }
                 catch (StreamTypesException ex)
                 {

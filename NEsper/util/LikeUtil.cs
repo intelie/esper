@@ -14,22 +14,21 @@ namespace net.esper.util
             {
                 return isNull;
             }
-
         }
+
         virtual internal bool EquivalentToEqualsPredicate
         {
             get
             {
                 return iFirstWildCard == -1;
             }
-
         }
+
         virtual internal bool EquivalentToNotNullPredicate
         {
             get
             {
-
-                if (isNull || !hasWildcards())
+                if (isNull || !HasWildcards)
                 {
                     return false;
                 }
@@ -44,25 +43,25 @@ namespace net.esper.util
 
                 return true;
             }
-
         }
+
         virtual internal bool EquivalentToBetweenPredicate
         {
             get
             {
-
                 return iFirstWildCard > 0 && iFirstWildCard == wildCardType.Length - 1 && cLike[iFirstWildCard] == '%';
             }
 
         }
+
         virtual internal bool EquivalentToBetweenPredicateAugmentedWithLike
         {
             get
             {
                 return iFirstWildCard > 0 && cLike[iFirstWildCard] == '%';
             }
-
         }
+
         private const int UNDERSCORE_CHAR = 1;
         private const int PERCENT_CHAR = 2;
 
@@ -83,7 +82,7 @@ namespace net.esper.util
         {
             escapeChar = escape;
             isIgnoreCase = ignorecase;
-            normalize(pattern);
+            Normalize(pattern);
         }
 
         /// <summary> Execute the string.</summary>
@@ -92,7 +91,7 @@ namespace net.esper.util
         /// <returns> true if pattern matches, or false if not
         /// </returns>
 
-        public virtual bool? compare(String compareString)
+        public virtual bool? Compare(String compareString)
         {
             if (compareString == null)
             {
@@ -104,21 +103,20 @@ namespace net.esper.util
                 compareString = compareString.ToUpper();
             }
 
-            return compareAt(compareString, 0, 0, compareString.Length) ? true : false;
+            return CompareAt(compareString, 0, 0, compareString.Length) ? true : false;
         }
 
         /// <summary> Resets the search pattern.</summary>
         /// <param name="pattern">is the new pattern to match against
         /// </param>
 
-        public virtual void resetPattern(String pattern)
+        public virtual void ResetPattern(String pattern)
         {
-            normalize(pattern);
+            Normalize(pattern);
         }
 
-        private bool compareAt(String s, int i, int j, int jLen)
+        private bool CompareAt(String s, int i, int j, int jLen)
         {
-
             for (; i < iLen; i++)
             {
                 switch (wildCardType[i])
@@ -147,7 +145,7 @@ namespace net.esper.util
 
                         while (j < jLen)
                         {
-                            if ((cLike[i] == s[j]) && compareAt(s, i, j, jLen))
+                            if ((cLike[i] == s[j]) && CompareAt(s, i, j, jLen))
                             {
                                 return true;
                             }
@@ -167,7 +165,7 @@ namespace net.esper.util
             return true;
         }
 
-        private void normalize(String pattern)
+        private void Normalize(String pattern)
         {
 
             isNull = pattern == null;
@@ -247,9 +245,9 @@ namespace net.esper.util
             }
         }
 
-        internal virtual bool hasWildcards()
+        internal virtual bool HasWildcards
         {
-            return iFirstWildCard != -1;
+            get { return iFirstWildCard != -1; }
         }
     }
 }

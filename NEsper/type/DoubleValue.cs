@@ -99,7 +99,7 @@ namespace net.esper.type
         /// <returns> value
         /// </returns>
 
-        public double getDouble()
+        public double GetDouble()
         {
             if (doubleValue == null)
             {

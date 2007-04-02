@@ -11,7 +11,7 @@ namespace net.esper.schedule
 		/// <summary>
         /// Creates an implementation of the SchedulingService interface.
         /// </summary>
-		public static SchedulingService newService()
+		public static SchedulingService NewService()
 		{
 			return new SchedulingServiceImpl();
 		}

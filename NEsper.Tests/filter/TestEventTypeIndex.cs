@@ -74,7 +74,7 @@ namespace net.esper.filter
         public virtual void testSuperclassMatch()
         {
             testEventBean = SupportEventBeanFactory.createObject(new ISupportAImplSuperGImplPlus());
-            testEventType = SupportEventTypeFactory.createBeanType(typeof(ISupportA));
+            testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportA));
 
             testIndex = new EventTypeIndex();
             testIndex.Add(testEventType, callbackSetNode);
@@ -90,7 +90,7 @@ namespace net.esper.filter
         public virtual void testInterfaceMatch()
         {
             testEventBean = SupportEventBeanFactory.createObject(new ISupportABCImpl("a", "b", "ab", "c"));
-            testEventType = SupportEventTypeFactory.createBeanType(typeof(ISupportBaseAB));
+            testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportBaseAB));
 
             testIndex = new EventTypeIndex();
             testIndex.Add(testEventType, callbackSetNode);

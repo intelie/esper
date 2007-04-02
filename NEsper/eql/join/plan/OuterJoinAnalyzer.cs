@@ -21,7 +21,7 @@ namespace net.esper.eql.join.plan
 		/// </param>
 		/// <returns> queryGraph object
 		/// </returns>
-		public static QueryGraph analyze( IList<OuterJoinDesc> outerJoinDescList, QueryGraph queryGraph )
+		public static QueryGraph Analyze( IList<OuterJoinDesc> outerJoinDescList, QueryGraph queryGraph )
 		{
 			foreach ( OuterJoinDesc outerJoinDesc in outerJoinDescList )
 			{

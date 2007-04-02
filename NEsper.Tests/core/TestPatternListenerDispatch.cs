@@ -34,13 +34,13 @@ namespace net.esper.core
 		{
 			listener.reset();
 
-			Assert.IsFalse( dispatch.hasData() );
+			Assert.IsFalse( dispatch.HasData );
 			dispatch.Add( eventOne );
-			Assert.IsTrue( dispatch.hasData() );
+			Assert.IsTrue( dispatch.HasData );
 
 			dispatch.Execute();
 
-			Assert.IsFalse( dispatch.hasData() );
+			Assert.IsFalse( dispatch.HasData );
 			Assert.AreEqual( 1, listener.LastNewData.Length );
 			Assert.AreEqual( eventOne, listener.LastNewData[0] );
 		}
@@ -49,15 +49,15 @@ namespace net.esper.core
 		public virtual void testTwo()
 		{
 			listener.reset();
-			Assert.IsFalse( dispatch.hasData() );
+			Assert.IsFalse( dispatch.HasData );
 
 			dispatch.Add( eventOne );
 			dispatch.Add( eventTwo );
-			Assert.IsTrue( dispatch.hasData() );
+			Assert.IsTrue( dispatch.HasData );
 
 			dispatch.Execute();
 
-			Assert.IsFalse( dispatch.hasData() );
+			Assert.IsFalse( dispatch.HasData );
 			Assert.AreEqual( 2, listener.LastNewData.Length );
 			Assert.AreEqual( eventOne, listener.LastNewData[0] );
 			Assert.AreEqual( eventTwo, listener.LastNewData[1] );

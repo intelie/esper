@@ -6,7 +6,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.support.schedule
 {
-	
 	public class SupportScheduleCallback : ScheduleCallback
 	{
 		public static int CallbackOrderNum
@@ -21,14 +20,14 @@ namespace net.esper.support.schedule
 		
 		private int orderTriggered = 0;
 		
-		public virtual void  scheduledTrigger()
+		public virtual void ScheduledTrigger()
 		{
 			log.Debug(".scheduledTrigger");
 			orderAllCallbacks++;
 			orderTriggered = orderAllCallbacks;
 		}
 		
-		public virtual int clearAndGetOrderTriggered()
+		public virtual int ClearAndGetOrderTriggered()
 		{
 			int result = orderTriggered;
 			orderTriggered = 0;

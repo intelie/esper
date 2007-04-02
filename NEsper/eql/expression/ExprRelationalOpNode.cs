@@ -103,7 +103,7 @@ namespace net.esper.eql.expression
                 System.Text.StringBuilder buffer = new System.Text.StringBuilder();
 
                 buffer.Append(this.ChildNodes[0].ExpressionString);
-                buffer.Append(relationalOpEnum.getExpressionText());
+                buffer.Append(relationalOpEnum.ExpressionText);
                 buffer.Append(this.ChildNodes[1].ExpressionString);
 
                 return buffer.ToString();

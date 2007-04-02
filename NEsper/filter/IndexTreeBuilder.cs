@@ -177,7 +177,7 @@ namespace net.esper.filter
         private Boolean RemoveFromNode(FilterCallbackSetNode currentNode,
                                        IndexTreePath treePathInfo)
         {
-            Pair<FilterParamIndex, Object> nextPair = treePathInfo.removeFirst();
+            Pair<FilterParamIndex, Object> nextPair = treePathInfo.RemoveFirst();
 
             // No remaining filter parameters
             if (nextPair == null)
@@ -281,7 +281,7 @@ namespace net.esper.filter
             }
 
             FilterParamIndex nextIndex = (FilterParamIndex)eventEvaluator;
-            Pair<FilterParamIndex, Object> nextPair = treePathInfo.removeFirst();
+            Pair<FilterParamIndex, Object> nextPair = treePathInfo.RemoveFirst();
 
             if (nextPair == null)
             {

@@ -23,17 +23,17 @@ namespace net.esper.events.property
         public virtual void setUp()
         {
             ConfigurationEventTypeLegacy config = new ConfigurationEventTypeLegacy();
-            config.addFieldProperty("f_legVal", "fieldLegacyVal");
-            config.addFieldProperty("f_strArr", "fieldStringArray");
-            config.addFieldProperty("f_strMap", "fieldMapped");
-            config.addFieldProperty("f_legNested", "fieldNested");
+            config.AddFieldProperty("f_legVal", "fieldLegacyVal");
+            config.AddFieldProperty("f_strArr", "fieldStringArray");
+            config.AddFieldProperty("f_strMap", "fieldMapped");
+            config.AddFieldProperty("f_legNested", "fieldNested");
 
-            config.addMethodProperty("m_legVal", "readLegacyBeanVal");
-            config.addMethodProperty("m_strArr", "readStringArray");
-            config.addMethodProperty("m_strInd", "readStringIndexed");
-            config.addMethodProperty("m_strMapKeyed", "readMapByKey");
-            config.addMethodProperty("m_strMap", "readMap");
-            config.addMethodProperty("m_legNested", "readLegacyNested");
+            config.AddMethodProperty("m_legVal", "readLegacyBeanVal");
+            config.AddMethodProperty("m_strArr", "readStringArray");
+            config.AddMethodProperty("m_strInd", "readStringIndexed");
+            config.AddMethodProperty("m_strMapKeyed", "readMapByKey");
+            config.AddMethodProperty("m_strMap", "readMap");
+            config.AddMethodProperty("m_legNested", "readLegacyNested");
 
             builder = new PropertyListBuilderExplicit(config);
         }
@@ -74,7 +74,7 @@ namespace net.esper.events.property
         private void tryInvalidMethod(String methodName, Type clazz)
         {
             ConfigurationEventTypeLegacy config = new ConfigurationEventTypeLegacy();
-            config.addMethodProperty("name", methodName);
+            config.AddMethodProperty("name", methodName);
             builder = new PropertyListBuilderExplicit(config);
 
             try
@@ -91,7 +91,7 @@ namespace net.esper.events.property
         private void tryInvalidField(String fieldName, Type clazz)
         {
             ConfigurationEventTypeLegacy config = new ConfigurationEventTypeLegacy();
-            config.addFieldProperty("name", fieldName);
+            config.AddFieldProperty("name", fieldName);
             builder = new PropertyListBuilderExplicit(config);
 
             try

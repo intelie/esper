@@ -54,7 +54,7 @@ namespace net.esper.eql.core
 			}
 
 			// Verify the name used is unique
-			verifyNameUniqueness( selectionList );
+			VerifyNameUniqueness( selectionList );
 
 			// Construct processor
 			log.Debug( ".GetProcessor Using SelectExprEvalProcessor" );
@@ -66,7 +66,7 @@ namespace net.esper.eql.core
 		/// </summary>
 		/// <param name="selectionList">The list of select items to verify names</param>
 
-		public static void verifyNameUniqueness( IList<SelectExprElementNamedSpec> selectionList )
+		public static void VerifyNameUniqueness( IList<SelectExprElementNamedSpec> selectionList )
 		{
 			ISet<String> names = new EHashSet<String>();
 			foreach ( SelectExprElementNamedSpec element in selectionList )

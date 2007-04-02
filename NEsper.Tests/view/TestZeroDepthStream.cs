@@ -22,7 +22,7 @@ namespace net.esper.view
 		[SetUp]
 		public virtual void  setUp()
 		{
-			eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean_A));
+			eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean_A));
 			
 			stream = new ZeroDepthStream(eventType);
 			

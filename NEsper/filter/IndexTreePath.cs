@@ -39,7 +39,7 @@ namespace net.esper.filter
         /// <returns> first index
         /// </returns>
 
-        public Pair<FilterParamIndex, Object> removeFirst()
+        public Pair<FilterParamIndex, Object> RemoveFirst()
         {
             if (indizes.Count > 0)
             {

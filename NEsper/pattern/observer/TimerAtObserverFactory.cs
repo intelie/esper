@@ -77,7 +77,7 @@ namespace net.esper.pattern.observer
         /// <param name="beginState">Start state for observer</param>
         /// <param name="observerEventEvaluator">receiver for events observed</param>
         /// <returns>observer instance</returns>
-		public virtual EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
+		public virtual EventObserver MakeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
 		{
 			return new TimerAtObserver(spec, context, beginState, observerEventEvaluator);
 		}

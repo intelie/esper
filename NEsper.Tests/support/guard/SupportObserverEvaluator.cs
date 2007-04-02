@@ -13,12 +13,12 @@ namespace net.esper.support.guard
         private int evaluateFalseCounter;
 
 
-        public void observerEvaluateTrue(MatchedEventMap matchEvent)
+        public void ObserverEvaluateTrue(MatchedEventMap matchEvent)
         {
             matchEvents.Add(matchEvent);
         }
 
-        public void observerEvaluateFalse()
+        public void ObserverEvaluateFalse()
         {
             evaluateFalseCounter++;
         }

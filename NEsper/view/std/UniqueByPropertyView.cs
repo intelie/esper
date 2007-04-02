@@ -89,7 +89,7 @@ namespace net.esper.view.std
         public override String AttachesTo(Viewable parentView)
         {
             // Attaches to just about anything as long as the field exists
-            return PropertyCheckHelper.exists(parentView.EventType, uniqueFieldName);
+            return PropertyCheckHelper.Exists(parentView.EventType, uniqueFieldName);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace net.esper.view.std
             if (log.IsDebugEnabled)
             {
                 log.Debug(".update Updating view");
-                dumpUpdateParams("UniqueByPropertyView", newData, oldData);
+                DumpUpdateParams("UniqueByPropertyView", newData, oldData);
             }
 
             List<EventBean> postOldData = null;

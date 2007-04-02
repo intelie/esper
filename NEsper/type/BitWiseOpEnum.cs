@@ -308,9 +308,9 @@ namespace net.esper.type
         /// <summary>Returns string rendering of enum.</summary>
         /// <returns>bitwise operator string</returns>
 
-		public String getComputeDescription()
+		public String ComputeDescription
 		{
-			return expressionText;
+            get { return expressionText; }
 		}
 	}
 }

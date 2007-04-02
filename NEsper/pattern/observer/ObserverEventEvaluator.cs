@@ -9,9 +9,9 @@ namespace net.esper.pattern.observer
 		/// <summary> Indicate an event for evaluation (sub-expression the observer represents has turned true).</summary>
 		/// <param name="matchEvent">is the matched events so far
 		/// </param>
-		void  observerEvaluateTrue(MatchedEventMap matchEvent);
+		void  ObserverEvaluateTrue(MatchedEventMap matchEvent);
 		
 		/// <summary> Indicate that the observer turned permanently false.</summary>
-		void  observerEvaluateFalse();
+		void  ObserverEvaluateFalse();
 	}
 }

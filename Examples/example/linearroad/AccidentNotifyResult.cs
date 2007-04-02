@@ -62,5 +62,13 @@ namespace net.esper.example.linearroad
 
             return true;
         }
+
+        public override int GetHashCode()
+        {
+            return
+                this.expressway * 31 * 31 +
+                this.direction * 31 +
+                this.segment;
+        }
     }
 }

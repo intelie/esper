@@ -8,7 +8,7 @@ namespace net.esper.filter
 		/// <summary> Creates an implementation of the FilterEvaluationService interface.</summary>
 		/// <returns> implementation
 		/// </returns>
-		public static FilterService newService()
+		public static FilterService NewService()
 		{
 			return new FilterServiceImpl();
 		}

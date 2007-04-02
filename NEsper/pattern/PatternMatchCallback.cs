@@ -16,7 +16,7 @@ namespace net.esper.pattern
         /// <summary>Indicate matching events.</summary>
         /// <param name="matchEvent">contains a map of event tags and event objects</param>
 
-        void matchFound(EDictionary<String, EventBean> matchEvent);
+        void MatchFound(EDictionary<String, EventBean> matchEvent);
     }
     
     /// <summary>
@@ -51,7 +51,7 @@ namespace net.esper.pattern
         /// <summary>Indicate matching events.</summary>
         /// <param name="matchEvent">contains a map of event tags and event objects</param>
 
-        public void matchFound(EDictionary<String, EventBean> matchEvent)
+        public void MatchFound(EDictionary<String, EventBean> matchEvent)
         {
         	m_delegate( matchEvent ) ;
         }

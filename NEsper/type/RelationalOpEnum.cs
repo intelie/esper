@@ -311,9 +311,9 @@ namespace net.esper.type
         /// <summary>Returns string rendering of enum.</summary>
         /// <returns>relational op string</returns>
 
-        public String getExpressionText()
+        public String ExpressionText
         {
-            return expressionText;
+            get { return expressionText; }
         }
     }
 }

@@ -25,7 +25,7 @@ namespace net.esper.filter
         [SetUp]
         public virtual void setUp()
         {
-            eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+            eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             parameters = new ETreeSet<FilterValueSetParam>(new FilterSpecParamComparator());
 
             // Create parameter test list

@@ -50,7 +50,7 @@ namespace net.esper.indicator.pretty
 
             foreach( DimensionMember member in members )
             {
-                String renderedValues = DimensionMemberRenderHelper.renderMember(member);
+                String renderedValues = DimensionMemberRenderHelper.RenderMember(member);
                 buffer.Append(memberDelimiter) ;
                 buffer.Append(renderedValues);
                 memberDelimiter = MEMBER_DELIMITER;

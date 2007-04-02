@@ -12,12 +12,15 @@ namespace net.esper.view.stat.olap
 		/// </returns>
 		Object[] Values
 		{
-			get;
-			
+			get;			
 		}
+
 		/// <summary> Returns the dimension the member belongs to.</summary>
 		/// <returns> dimension that this member is a value of
 		/// </returns>
-		Dimension getDimension();
+        Dimension Dimension
+        {
+            get;
+        }
 	}
 }

@@ -54,8 +54,7 @@ namespace net.esper.view.window
 			{
 				this.viewServiceContext = value;
 				this.scheduleSlot = value.ScheduleBucket.AllocateSlot();
-			}
-			
+			}			
 		}
 
         private const string dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS";
@@ -198,7 +197,7 @@ namespace net.esper.view.window
 		/// <summary> This method removes (expires) objects from the window and schedules a new callback for the
 		/// time when the next oldest message would expire from the window.
 		/// </summary>
-		public void expire()
+		public void Expire()
 		{
 			long expireBeforeTimestamp = viewServiceContext.SchedulingService.Time - millisecondsBeforeExpiry + 1;
 			
@@ -248,7 +247,7 @@ namespace net.esper.view.window
 		
 		private void scheduleCallback(long msecAfterCurrentTime)
 		{
-            ScheduleCallback callback = new ScheduleCallbackImpl( delegate() { this.expire(); } ) ;
+            ScheduleCallback callback = new ScheduleCallbackImpl( delegate() { this.Expire(); } ) ;
 			viewServiceContext.SchedulingService.Add(msecAfterCurrentTime, callback, scheduleSlot);
 		}
 

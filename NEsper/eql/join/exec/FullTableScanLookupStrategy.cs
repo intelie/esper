@@ -29,7 +29,7 @@ namespace net.esper.eql.join.exec
         /// <returns></returns>
         public ISet<EventBean> Lookup(EventBean ev)
         {
-            ISet<EventBean> result = eventIndex.getEventSet();
+            ISet<EventBean> result = eventIndex.EventSet;
             if (result.IsEmpty)
             {
                 return null;

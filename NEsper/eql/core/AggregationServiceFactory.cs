@@ -23,7 +23,7 @@ namespace net.esper.eql.core
         /// <param name="sortByNodes">the nodes for the sort-by clause</param>
         /// <returns>instance for aggregation handling</returns>
 
-        public static AggregationService getService(IList<ExprAggregateNode> aggregateExprNodes,
+        public static AggregationService GetService(IList<ExprAggregateNode> aggregateExprNodes,
                                                     Boolean hasGroupByClause,
                                                     ExprNode optionalHavingNode,
                                                     IList<ExprNode> sortByNodes)

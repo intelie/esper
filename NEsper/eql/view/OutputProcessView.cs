@@ -52,7 +52,7 @@ namespace net.esper.eql.view
             }
 
             OutputCallback outputCallback = getCallbackToLocal(streamCount);
-            this.outputCondition = OutputConditionFactory.createCondition(outputLimitSpec, viewContext, outputCallback);
+            this.outputCondition = OutputConditionFactory.CreateCondition(outputLimitSpec, viewContext, outputCallback);
             this.resultSetProcessor = resultSetProcessor;
             this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.IsDisplayLastOnly);
         }
@@ -124,9 +124,9 @@ namespace net.esper.eql.view
         /// <param name="doOutput">true if the batched events should actually be output as well as processed, false if they should just be processed</param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
 
-        protected void continueOutputProcessingView(Boolean doOutput, Boolean forceUpdate)
+        protected void ContinueOutputProcessingView(Boolean doOutput, Boolean forceUpdate)
         {
-            log.Debug(".continueOutputProcessingView");
+            log.Debug(".ContinueOutputProcessingView");
 
             // Get the arrays of new and old events, or null if none
             EventBean[] newEvents = newEventsList.Count > 0 ? newEventsList.ToArray() : null;
@@ -178,9 +178,9 @@ namespace net.esper.eql.view
         /// <param name="doOutput">true if the batched events should actually be output as well as processed, false if they should just be processed</param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
 
-        protected void continueOutputProcessingJoin(Boolean doOutput, Boolean forceUpdate)
+        protected void ContinueOutputProcessingJoin(Boolean doOutput, Boolean forceUpdate)
         {
-            log.Debug(".continueOutputProcessingJoin");
+            log.Debug(".ContinueOutputProcessingJoin");
 
             EventBean[] newEvents = null;
             EventBean[] oldEvents = null;
@@ -264,7 +264,7 @@ namespace net.esper.eql.view
                 return new OutputCallback(
                     delegate(Boolean doOutput, Boolean forceUpdate)
                     {
-                        continueOutputProcessingView(doOutput, forceUpdate);
+                        ContinueOutputProcessingView(doOutput, forceUpdate);
                     });
             }
             else
@@ -272,7 +272,7 @@ namespace net.esper.eql.view
                 return new OutputCallback(
                     delegate(Boolean doOutput, Boolean forceUpdate)
                     {
-                        continueOutputProcessingJoin(doOutput, forceUpdate);
+                        ContinueOutputProcessingJoin(doOutput, forceUpdate);
                     });
             }
         }

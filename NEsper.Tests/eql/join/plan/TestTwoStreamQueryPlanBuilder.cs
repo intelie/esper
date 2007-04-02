@@ -17,7 +17,7 @@ namespace net.esper.eql.join.plan
 		public virtual void  testBuildNoOuter()
 		{
 			QueryGraph graph = makeQueryGraph();
-			QueryPlan spec = TwoStreamQueryPlanBuilder.build(graph, null);
+			QueryPlan spec = TwoStreamQueryPlanBuilder.Build(graph, null);
 			
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) spec.IndexSpecs[0].IndexProps[0],
@@ -32,7 +32,7 @@ namespace net.esper.eql.join.plan
 		public virtual void  testBuildOuter()
 		{
 			QueryGraph graph = makeQueryGraph();
-			QueryPlan spec = TwoStreamQueryPlanBuilder.build(graph, OuterJoinType.LEFT);
+			QueryPlan spec = TwoStreamQueryPlanBuilder.Build(graph, OuterJoinType.LEFT);
 			
 			ArrayAssertionUtil.assertEqualsExactOrder(
                 (ICollection<string>) spec.IndexSpecs[0].IndexProps[0],

@@ -149,7 +149,7 @@ namespace net.esper.view
         /// view enumeration value, or null if no such view name is among the enumerated values
         /// </returns>
 
-        public static ViewEnum forName(String nspace, String name)
+        public static ViewEnum ForName(String nspace, String name)
         {
             foreach (ViewEnum viewEnum in ViewEnum.Values)
             {

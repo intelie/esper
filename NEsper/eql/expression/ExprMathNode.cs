@@ -113,7 +113,7 @@ namespace net.esper.eql.expression
                 buffer.Append("(");
 
                 buffer.Append(this.ChildNodes[0].ExpressionString);
-                buffer.Append(mathArithTypeEnum.getExpressionText());
+                buffer.Append(mathArithTypeEnum.ExpressionText);
                 buffer.Append(this.ChildNodes[1].ExpressionString);
 
                 buffer.Append(")");

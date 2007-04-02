@@ -45,7 +45,7 @@ namespace net.esper.support.eql.parse
 			log.Debug( ".displayAST DumpASTVisitor..." );
 			if ( log.IsDebugEnabled )
 			{
-				DebugFacility.dumpAST( ast );
+				DebugFacility.DumpAST( ast );
 			}
 		}
 

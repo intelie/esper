@@ -28,11 +28,11 @@ namespace net.esper.eql.core
         {
             // Test with aggregates but no group by
             aggregateNodes.Add(SupportExprNodeFactory.makeSumAggregateNode());
-            AggregationService service = AggregationServiceFactory.getService(aggregateNodes, false, null, sortByNodes);
+            AggregationService service = AggregationServiceFactory.GetService(aggregateNodes, false, null, sortByNodes);
             Assert.IsTrue(service is AggregationServiceGroupAllImpl);
 
             // Test with aggregates and group by
-            service = AggregationServiceFactory.getService(aggregateNodes, true, null, sortByNodes);
+            service = AggregationServiceFactory.GetService(aggregateNodes, true, null, sortByNodes);
             Assert.IsTrue(service is AggregationServiceGroupByImpl);
         }
 
@@ -40,7 +40,7 @@ namespace net.esper.eql.core
         public virtual void testGetNullService()
         {
             // Test no aggregates and no group-by
-            AggregationService service = AggregationServiceFactory.getService(aggregateNodes, false, null, sortByNodes);
+            AggregationService service = AggregationServiceFactory.GetService(aggregateNodes, false, null, sortByNodes);
             Assert.IsTrue(service is AggregationServiceNull);
         }
     }

@@ -147,7 +147,7 @@ namespace net.esper.pattern
         /// </returns>
 		public override Object Accept( EvalStateNodeVisitor visitor, Object data )
 		{
-			return visitor.visit( this, data );
+			return visitor.Visit( this, data );
 		}
 
         /// <summary>

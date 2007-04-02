@@ -25,8 +25,8 @@ namespace net.esper.events.property
             ConfigurationEventTypeLegacy config = new ConfigurationEventTypeLegacy();
 
             // add 2 explicit properties, also supported
-            config.addFieldProperty("x", "fieldNested");
-            config.addMethodProperty("y", "readLegacyBeanVal");
+            config.AddFieldProperty("x", "fieldNested");
+            config.AddMethodProperty("y", "readLegacyBeanVal");
 
             builder = new PropertyListBuilderNative(config);
         }

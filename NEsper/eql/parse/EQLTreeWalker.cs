@@ -1056,7 +1056,7 @@ namespace net.esper.eql.parse
             }
 
             // From object name construct guard factory
-            GuardEnum guardEnum = GuardEnum.forName(objectNamespace, objectName);
+            GuardEnum guardEnum = GuardEnum.ForName(objectNamespace, objectName);
             if (guardEnum == null)
             {
                 throw new ASTWalkException("Guard in namespace " + objectNamespace + " and name " + objectName + " is not a known guard");
@@ -1123,7 +1123,7 @@ namespace net.esper.eql.parse
             }
 
             // From object name construct observer factory
-            ObserverEnum observerEnum = ObserverEnum.forName(objectNamespace, objectName);
+            ObserverEnum observerEnum = ObserverEnum.ForName(objectNamespace, objectName);
             if (observerEnum == null)
             {
                 throw new ASTWalkException("EventObserver in namespace " + objectNamespace + " and name " + objectName + " is not a known observer");
@@ -1132,7 +1132,7 @@ namespace net.esper.eql.parse
             ObserverFactory observerFactory = null;
             try
             {
-                Object obsFactory = ConstructorHelper.invokeConstructor(observerEnum.Clazz, new Object[] { observerParameters });
+                Object obsFactory = ConstructorHelper.InvokeConstructor(observerEnum.Clazz, new Object[] { observerParameters });
                 observerFactory = (ObserverFactory)obsFactory;
 
                 if (log.IsDebugEnabled)

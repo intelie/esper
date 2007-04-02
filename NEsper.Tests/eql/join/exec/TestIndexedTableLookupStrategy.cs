@@ -21,7 +21,7 @@ namespace net.esper.eql.join.exec
 		[SetUp]
 		public virtual void  setUp()
 		{
-			eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+			eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 			
 			propertyMapEventIndex = new PropertyIndexedEventTable(0, eventType, new String[]{"str", "intPrimitive"});
             lookupStrategy = new IndexedTableLookupStrategy(eventType, new String[] { "str", "intPrimitive" }, propertyMapEventIndex);

@@ -8,12 +8,12 @@ namespace net.esper.support.filter
 {
     public class SupportFilterSpecBuilder
     {
-        public static FilterSpec build(EventType eventType, Object[] objects)
+        public static FilterSpec Build(EventType eventType, Object[] objects)
         {
-            return new FilterSpec(eventType, buildList(objects));
+            return new FilterSpec(eventType, BuildList(objects));
         }
 
-        public static IList<FilterSpecParam> buildList(Object[] objects)
+        public static IList<FilterSpecParam> BuildList(Object[] objects)
         {
             IList<FilterSpecParam> filterParams = new List<FilterSpecParam>();
 

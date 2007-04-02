@@ -40,7 +40,7 @@ namespace net.esper.eql.join.assemble
         [Test]
         public virtual void testValidBuildSimpleReqOpt()
         {
-            BaseAssemblyNode node = AssemblyStrategyTreeBuilder.build(2, convert(new int[][] { new int[] { }, new int[] { 0 }, new int[] { 1 } }), new bool[] { false, true, true });
+            BaseAssemblyNode node = AssemblyStrategyTreeBuilder.Build(2, convert(new int[][] { new int[] { }, new int[] { 0 }, new int[] { 1 } }), new bool[] { false, true, true });
 
             RootRequiredAssemblyNode child1 = (RootRequiredAssemblyNode)node;
             Assert.AreEqual(2, child1.StreamNum);
@@ -61,7 +61,7 @@ namespace net.esper.eql.join.assemble
         [Test]
         public virtual void testValidBuildSimpleOptReq()
         {
-            BaseAssemblyNode node = AssemblyStrategyTreeBuilder.build(2, convert(
+            BaseAssemblyNode node = AssemblyStrategyTreeBuilder.Build(2, convert(
 				new int[][] {
 					new int[] { },
 					new int[] { 0 },
@@ -87,7 +87,7 @@ namespace net.esper.eql.join.assemble
         [Test]
         public virtual void testValidBuildCartesian()
         {
-            BaseAssemblyNode node = AssemblyStrategyTreeBuilder.build(1, convert(
+            BaseAssemblyNode node = AssemblyStrategyTreeBuilder.Build(1, convert(
 				new int[][] {
 					new int[] { },
 					new int[] { 0, 2 },
@@ -112,7 +112,7 @@ namespace net.esper.eql.join.assemble
         {
             try
             {
-                AssemblyStrategyTreeBuilder.build(rootStream, joinedPerStream, isInnerPerStream);
+                AssemblyStrategyTreeBuilder.Build(rootStream, joinedPerStream, isInnerPerStream);
 				Assert.Fail();
             }
             catch (ArgumentException ex)

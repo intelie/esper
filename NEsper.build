@@ -76,9 +76,20 @@
     <property name="project.build.config" value="Release" />
     <call target="Clean"/>
   </target>
+
+ 	<!-- Clean                                   -->
+	<!--                                         -->
+  <!-- Cleans the solution removing any files  -->
+  <!-- created by the BuildSolution, Examples, -->
+  <!-- and Documentation.                      -->
   
   <target name="Clean">
     <msbuild project="${project.basedir}/NEsper/NEsper.sln">
+      <arg value="/property:Configuration=${project.build.config}" />
+      <arg value="/t:Clean" />
+    </msbuild>
+
+    <msbuild project="${project.basedir}/Examples/Examples.sln">
       <arg value="/property:Configuration=${project.build.config}" />
       <arg value="/t:Clean" />
     </msbuild>
@@ -90,6 +101,10 @@
     </delete>
   </target>
 
+ 	<!-- BuildSolution                           -->
+	<!--                                         -->
+  <!-- Builds the core solution and unit tests -->
+
   <target name="BuildSolution">
     <echo message = "Start building the solution in ${project.build.config} mode ..." />
 
@@ -97,7 +112,30 @@
       <arg value="/property:Configuration=${project.build.config}" />
       <arg value="/t:Rebuild" />
     </msbuild>
+
+		<!-- Copy the libraries to libdir.  Copying the files here -->
+		<!-- ensures that the examples can compile whether the     -->
+		<!-- NEsper solution is built (e.g. build from source) or  -->
+		<!-- whether built from a release distribution.            -->
+
+    <copy todir="${project.libdir}">
+	      <fileset basedir="${project.basedir}/NEsper/bin/${project.build.config}">
+	        <include name="*.dll" />
+	      </fileset>
+	  </copy>
+
+    <copy todir="${project.libdir}">
+	      <fileset basedir="${project.basedir}/NEsper.Tests/bin/${project.build.config}">
+	        <include name="*.dll" />
+	      </fileset>
+	  </copy>
   </target>
+  
+ 	<!-- Test                                    -->
+	<!--                                         -->
+  <!-- Runs the unit tests.  Generates a       -->
+  <!-- report from the results of the test     -->
+  <!-- run.                                    -->
 
   <target name="Test">
     <if test="${not directory::exists(${project.basedir}/NEsper.Tests/bin/${project.build.config}/regression)}">
@@ -127,7 +165,27 @@
     </nunit2report>
   </target>
 
-  <!-- Generate documentation -->
+	<!-- Examples                                -->
+	<!--                                         -->
+	<!-- Build the examples shipped with NEsper. -->
+	<!-- While "Examples" should normally depend -->
+	<!-- on the "BuildSolution" target, we need  -->
+	<!-- to account for building the examples    -->
+	<!-- against a release distribution.  In     -->
+	<!-- those cases, the libs are in libdir.    -->
+
+  <target name="Examples">    
+    <msbuild project="${project.basedir}/Examples/Examples.sln">
+      <arg value="/property:Configuration=${project.build.config}" />
+      <arg value="/t:Rebuild" />
+    </msbuild>
+  </target>
+
+	<!-- Documentation                           -->
+	<!--                                         -->
+  <!-- Generate documentation.  Assumes you    -->
+  <!-- Sandcastle installed.                   -->
+  
   <target name="Documentation">
     <call target="DocumentationPrep" />
     <call target="DocumentationTransforms" />

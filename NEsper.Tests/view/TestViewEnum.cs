@@ -12,13 +12,13 @@ namespace net.esper.view
 		[Test]
 		public virtual void  testForName()
 		{
-			ViewEnum enumValue = ViewEnum.forName(ViewEnum.CORRELATION.Namespace, ViewEnum.CORRELATION.Name);
+			ViewEnum enumValue = ViewEnum.ForName(ViewEnum.CORRELATION.Namespace, ViewEnum.CORRELATION.Name);
 			Assert.AreEqual(enumValue, ViewEnum.CORRELATION);
 			
-			enumValue = ViewEnum.forName(ViewEnum.CORRELATION.Namespace, "dummy");
+			enumValue = ViewEnum.ForName(ViewEnum.CORRELATION.Namespace, "dummy");
 			Assert.IsNull(enumValue);
 			
-			enumValue = ViewEnum.forName("dummy", ViewEnum.CORRELATION.Name);
+			enumValue = ViewEnum.ForName("dummy", ViewEnum.CORRELATION.Name);
 			Assert.IsNull(enumValue);
 		}
 	}

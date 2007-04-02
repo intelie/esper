@@ -60,7 +60,7 @@ namespace net.esper.events.xml
 		/// <returns>xpath expression</returns>
 		/// <throws>  XPathExpressionException </throws>
 
-		public static TypedEventPropertyGetter parse(
+		public static TypedEventPropertyGetter Parse(
 			String propertyName,
 			String rootElementName,
 			String namespace_,
@@ -75,12 +75,12 @@ namespace net.esper.events.xml
                 nsManager.AddNamespace( "n" + i, name.Namespace ) ;
 			}
 
-			AST ast = SimpleXMLPropertyParser.parse( propertyName );
+			AST ast = SimpleXMLPropertyParser.Parse( propertyName );
 
 			// Find the element that has the same rootElementName and namespace as
 			// the information that we have been provided with.
 			
-            XmlSchemaElement root = SchemaUtil.findRootElement(xsModel, namespace_, rootElementName);
+            XmlSchemaElement root = SchemaUtil.FindRootElement(xsModel, namespace_, rootElementName);
             if (root == null) {
                 throw new PropertyAccessException("Invalid rootElementName - name must match the rootElement defined in the schema and have the correct namespace");
             }
@@ -104,7 +104,7 @@ namespace net.esper.events.xml
             Pair<String, XmlQualifiedName> pair = null;
             if (ast.getNumberOfChildren() == 1)
             {
-                pair = makeProperty(rootElementType, ast.getFirstChild(), nsManager);
+                pair = MakeProperty(rootElementType, ast.getFirstChild(), nsManager);
                 if (pair == null)
                 {
                     throw new PropertyAccessException("Failed to locate property '" + propertyName + "' in schema");
@@ -118,7 +118,7 @@ namespace net.esper.events.xml
                 
                 do
                 {
-                    pair = makeProperty(rootElementType, child, nsManager);
+                    pair = MakeProperty(rootElementType, child, nsManager);
                     if (pair == null)
                     {
                         throw new PropertyAccessException("Failed to locate property '" + propertyName + "' nested property part '" + child.ToString() + "' in schema");
@@ -134,7 +134,7 @@ namespace net.esper.events.xml
                     
                     String text = child.getFirstChild().getText();
 
-                    XmlSchemaObject obj = SchemaUtil.findPropertyMapping(rootElementType, text);
+                    XmlSchemaObject obj = SchemaUtil.FindPropertyMapping(rootElementType, text);
                     if (obj is XmlSchemaElement)
                     {
                     	XmlSchemaElement elementObj = obj as XmlSchemaElement ;
@@ -160,21 +160,21 @@ namespace net.esper.events.xml
             return new XPathPropertyGetter(propertyName, expr, GetTypeForName( pair.Second ) ) ;
 		}
 
-		private static Pair<String, XmlQualifiedName> makeProperty(
+		private static Pair<String, XmlQualifiedName> MakeProperty(
             XmlSchemaComplexType parent,
             AST child,
             XmlNamespaceManager nsManager )
 		{
 			String text = child.getFirstChild().getText();
-            XmlSchemaObject obj = SchemaUtil.findPropertyMapping( parent, text );
+            XmlSchemaObject obj = SchemaUtil.FindPropertyMapping( parent, text );
             
 			if ( obj is XmlSchemaElement )
 			{
-				return makeElementProperty( obj as XmlSchemaElement, child, nsManager );
+				return MakeElementProperty( obj as XmlSchemaElement, child, nsManager );
 			}
 			else if ( obj is XmlSchemaAttribute )
 			{
-				return makeAttributeProperty( obj as XmlSchemaAttribute, child, nsManager );
+				return MakeAttributeProperty( obj as XmlSchemaAttribute, child, nsManager );
 			}
 			else if ( obj != null )
 			{
@@ -186,7 +186,7 @@ namespace net.esper.events.xml
 			}
 		}
 
-        private static Pair<String, XmlQualifiedName> makeAttributeProperty(
+        private static Pair<String, XmlQualifiedName> MakeAttributeProperty(
             XmlSchemaAttribute use,
             AST child,
             XmlNamespaceManager nsManager )
@@ -216,7 +216,7 @@ namespace net.esper.events.xml
 			}
 		}
 
-        private static Pair<String, XmlQualifiedName> makeElementProperty(
+        private static Pair<String, XmlQualifiedName> MakeElementProperty(
             XmlSchemaElement elementDecl,
             AST child,
             XmlNamespaceManager nsManager )

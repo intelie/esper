@@ -5,7 +5,7 @@ using net.esper.collection;
 using net.esper.events;
 using net.esper.view;
 
-namespace net.esper.view.internal_Renamed
+namespace net.esper.view.internals
 {
     /// <summary> A view that acts as an adapter between views and update listeners.
     /// The view can be added to a parent view. When the parent view publishes data, the view will forward the
@@ -99,7 +99,7 @@ namespace net.esper.view.internal_Renamed
         {
             newDataBuffer.Add(newData);
             oldDataBuffer.Add(oldData);
-            observer.newData(streamId, newDataBuffer, oldDataBuffer);
+            observer.NewData(streamId, newDataBuffer, oldDataBuffer);
         }
     }
 }

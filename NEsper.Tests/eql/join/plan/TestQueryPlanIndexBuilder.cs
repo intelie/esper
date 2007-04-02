@@ -27,7 +27,7 @@ namespace net.esper.eql.join.plan
 		[Test]
 		public virtual void  testBuildIndexSpec()
 		{
-			QueryPlanIndex[] indexes = QueryPlanIndexBuilder.buildIndexSpec(queryGraph);
+			QueryPlanIndex[] indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
 			
 			String[][] expected = new String[][]{new String[]{"p00"}, new String[]{"p01"}};
 			ArrayAssertionUtil.assertEqualsStringArr(indexes[0].IndexProps, expected);
@@ -46,7 +46,7 @@ namespace net.esper.eql.join.plan
 			
 			// Test no index, should have a single entry with a zero-length property name array
 			queryGraph = new QueryGraph(3);
-			indexes = QueryPlanIndexBuilder.buildIndexSpec(queryGraph);
+			indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
 			Assert.AreEqual(1, indexes[1].IndexProps.Length);
 			Assert.AreEqual(0, indexes[1].IndexProps[0].Length);
 		}
@@ -58,7 +58,7 @@ namespace net.esper.eql.join.plan
 			queryGraph.Add(0, "p00", 1, "p10");
 			queryGraph.Add(0, "p00", 2, "p20");
 			
-			QueryPlanIndex[] indexes = QueryPlanIndexBuilder.buildIndexSpec(queryGraph);
+			QueryPlanIndex[] indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
 			
 			String[][] expected = new String[][]{new String[]{"p00"}};
 			ArrayAssertionUtil.assertEqualsStringArr(indexes[0].IndexProps, expected);

@@ -1,4 +1,5 @@
 using System;
+
 namespace net.esper.eql.expression
 {
 	/// <summary>
@@ -14,11 +15,11 @@ namespace net.esper.eql.expression
 		/// </param>
 		/// <returns> true if the visitor wants to visit the child node (next call is visit), or false to skip child
 		/// </returns>
-		bool isVisit(ExprNode exprNode);
+		bool IsVisit(ExprNode exprNode);
 		
 		/// <summary> Visit the given expression node.</summary>
 		/// <param name="exprNode">is the expression node to visit
 		/// </param>
-		void  visit(ExprNode exprNode);
+		void  Visit(ExprNode exprNode);
 	}
 }

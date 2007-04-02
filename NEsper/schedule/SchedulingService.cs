@@ -70,6 +70,6 @@ namespace net.esper.schedule
         /// <returns> bucket
         /// </returns>
  
-        ScheduleBucket allocateBucket();
+        ScheduleBucket AllocateBucket();
     }
 }

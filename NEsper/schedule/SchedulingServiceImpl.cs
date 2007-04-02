@@ -37,7 +37,7 @@ namespace net.esper.schedule
         /// Returns a bucket from which slots can be allocated for ordering concurrent callbacks.
         /// </summary>
         /// <returns>bucket</returns>
-        public ScheduleBucket allocateBucket()
+        public ScheduleBucket AllocateBucket()
         {
             curBucketNum++;
             return new ScheduleBucket(curBucketNum);
@@ -154,7 +154,7 @@ namespace net.esper.schedule
             // Trigger callbacks can themselves remove further callbacks
             foreach (ScheduleCallback triggerable in triggerables)
             {
-                triggerable.scheduledTrigger();
+                triggerable.ScheduledTrigger();
             }
 
             // Next remove all callbacks

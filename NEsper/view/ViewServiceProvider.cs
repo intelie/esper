@@ -10,7 +10,7 @@ namespace net.esper.view
 		/// <summary> Creates an implementation of the ViewService interface.</summary>
 		/// <returns> implementation
 		/// </returns>
-		public static ViewService newService()
+		public static ViewService NewService()
 		{
 			return new ViewServiceImpl();
 		}

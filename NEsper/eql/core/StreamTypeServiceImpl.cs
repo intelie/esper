@@ -68,7 +68,7 @@ namespace net.esper.eql.core
         /// </returns>
         /// <throws>  DuplicatePropertyException to indicate property was found twice </throws>
         /// <throws>  PropertyNotFoundException to indicate property could not be resolved </throws>
-		public virtual PropertyResolutionDescriptor resolveByPropertyName(String propertyName)
+        public virtual PropertyResolutionDescriptor ResolveByPropertyName(String propertyName)
 		{
 			if (propertyName == null)
 			{
@@ -91,7 +91,7 @@ namespace net.esper.eql.core
         /// </returns>
         /// <throws>  PropertyNotFoundException to indicate property could not be resolved </throws>
         /// <throws>  StreamNotFoundException to indicate stream name could not be resolved </throws>
-		public virtual PropertyResolutionDescriptor resolveByStreamAndPropName(String streamName, String propertyName)
+		public virtual PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamName, String propertyName)
 		{
 			if (streamName == null)
 			{
@@ -119,7 +119,7 @@ namespace net.esper.eql.core
         /// </returns>
         /// <throws>  DuplicatePropertyException to indicate property was found twice </throws>
         /// <throws>  PropertyNotFoundException to indicate property could not be resolved </throws>
-		public virtual PropertyResolutionDescriptor resolveByStreamAndPropName(String streamAndPropertyName)
+		public virtual PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamAndPropertyName)
 		{
 			if (streamAndPropertyName == null)
 			{

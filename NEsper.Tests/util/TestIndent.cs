@@ -12,16 +12,16 @@ namespace net.esper.util
 		[Test]
 		public virtual void  testIndent()
 		{
-			Assert.AreEqual("", Indent.indent(0));
-			Assert.AreEqual(" ", Indent.indent(1));
-			Assert.AreEqual("  ", Indent.indent(2));
+			Assert.AreEqual("", Indent.CreateIndent(0));
+            Assert.AreEqual(" ", Indent.CreateIndent(1));
+            Assert.AreEqual("  ", Indent.CreateIndent(2));
 			
 			try
 			{
-				Indent.indent(- 1);
+                Indent.CreateIndent(-1);
 				Assert.Fail();
 			}
-			catch (ArgumentException ex)
+			catch (ArgumentException)
 			{
 				// expected
 			}

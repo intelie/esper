@@ -13,13 +13,13 @@ namespace net.esper.support.view
 		public static ViewServiceContext makeContext()
 		{
 			SupportSchedulingServiceImpl sched = new SupportSchedulingServiceImpl();
-			ScheduleBucket bucket = sched.allocateBucket();
+			ScheduleBucket bucket = sched.AllocateBucket();
 			return new ViewServiceContext(sched, bucket, SupportEventAdapterService.Service);
 		}
 		
 		public static ViewServiceContext makeContext(SupportSchedulingServiceImpl stub)
 		{
-			return new ViewServiceContext(stub, stub.allocateBucket(), SupportEventAdapterService.Service);
+			return new ViewServiceContext(stub, stub.AllocateBucket(), SupportEventAdapterService.Service);
 		}
 	}
 }

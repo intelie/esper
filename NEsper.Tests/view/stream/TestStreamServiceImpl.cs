@@ -26,13 +26,13 @@ namespace net.esper.view.stream
 		public virtual void  setUp()
 		{
 			streamReuseService = new StreamReuseServiceImpl();
-			EventType eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+			EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 			supportFilterService = new SupportFilterServiceImpl();
 			
 			filterSpecs = new FilterSpec[3];
-			filterSpecs[0] = SupportFilterSpecBuilder.build(eventType, new Object[]{"str", FilterOperator.EQUAL, "a"});
-			filterSpecs[1] = SupportFilterSpecBuilder.build(eventType, new Object[]{"str", FilterOperator.EQUAL, "a"});
-			filterSpecs[2] = SupportFilterSpecBuilder.build(eventType, new Object[]{"str", FilterOperator.EQUAL, "b"});
+			filterSpecs[0] = SupportFilterSpecBuilder.Build(eventType, new Object[]{"str", FilterOperator.EQUAL, "a"});
+			filterSpecs[1] = SupportFilterSpecBuilder.Build(eventType, new Object[]{"str", FilterOperator.EQUAL, "a"});
+			filterSpecs[2] = SupportFilterSpecBuilder.Build(eventType, new Object[]{"str", FilterOperator.EQUAL, "b"});
 			
 			streams = new EventStream[4];
 			streams[0] = streamReuseService.CreateStream(filterSpecs[0], supportFilterService);

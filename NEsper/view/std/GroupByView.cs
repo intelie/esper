@@ -120,7 +120,7 @@ namespace net.esper.view.std
             // Attaches to just about anything as long as all the fields exists
             for (int i = 0; i < groupFieldNames.Length; i++)
             {
-                String message = PropertyCheckHelper.exists(parentView.EventType, groupFieldNames[i]);
+                String message = PropertyCheckHelper.Exists(parentView.EventType, groupFieldNames[i]);
                 if (message != null)
                 {
                     return message;
@@ -172,7 +172,7 @@ namespace net.esper.view.std
             if (log.IsDebugEnabled)
             {
                 log.Debug(".update Updating view");
-                dumpUpdateParams("GroupByView", newData, oldData);
+                DumpUpdateParams("GroupByView", newData, oldData);
             }
 
             if (newData != null)

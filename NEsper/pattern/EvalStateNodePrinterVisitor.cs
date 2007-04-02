@@ -21,7 +21,7 @@ namespace net.esper.pattern
         /// <returns>
         /// any additional data useful to implementations or null
         /// </returns>
-		public Object visit(EvalStateNode node, Object data)
+		public Object Visit(EvalStateNode node, Object data)
 		{
 			log.Debug("visit " + indent(level++) + node.ToString());
 			node.ChildrenAccept(this, data);

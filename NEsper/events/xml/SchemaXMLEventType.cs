@@ -137,7 +137,7 @@ namespace net.esper.events.xml
 
             try
             {
-                getter = SchemaXMLPropertyParser.parse(property, RootElementName, rootElementNamespace, schema);
+                getter = SchemaXMLPropertyParser.Parse(property, RootElementName, rootElementNamespace, schema);
                 propertyGetterCache[property] = getter;
                 return getter;
             }

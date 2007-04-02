@@ -17,18 +17,18 @@ namespace net.esper.indicator.pretty
 			// Render a member without values
 			DimensionImpl dimensionOne = new DimensionImpl(new String[]{"a", "b"});
 			DimensionMemberImpl memberOne = new DimensionMemberImpl(new Object[0]);
-			memberOne.setDimension(dimensionOne);
-			Assert.AreEqual("[a, b]", DimensionMemberRenderHelper.renderMember(memberOne));
+			memberOne.SetDimension(dimensionOne);
+			Assert.AreEqual("[a, b]", DimensionMemberRenderHelper.RenderMember(memberOne));
 			
 			// Render a member representing a single value
 			DimensionMemberImpl memberTwo = new DimensionMemberImpl(new Object[]{"x"});
-			memberTwo.setDimension(dimensionOne);
-			Assert.AreEqual("x", DimensionMemberRenderHelper.renderMember(memberTwo));
+			memberTwo.SetDimension(dimensionOne);
+			Assert.AreEqual("x", DimensionMemberRenderHelper.RenderMember(memberTwo));
 			
 			// Render a member representing a aggregate value
 			DimensionMemberImpl memberThree = new DimensionMemberImpl(new Object[]{"x", "y"});
-			memberThree.setDimension(dimensionOne);
-			Assert.AreEqual("[x, y]", DimensionMemberRenderHelper.renderMember(memberThree));
+			memberThree.SetDimension(dimensionOne);
+			Assert.AreEqual("[x, y]", DimensionMemberRenderHelper.RenderMember(memberThree));
 		}
 	}
 }

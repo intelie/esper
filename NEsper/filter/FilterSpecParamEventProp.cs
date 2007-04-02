@@ -80,7 +80,7 @@ namespace net.esper.filter
         /// <returns>filter parameter constant's value</returns>
         public override Object GetFilterValue(MatchedEventMap matchedEvents)
         {
-            EventBean _event = matchedEvents.getMatchingEvent(resultEventAsName);
+            EventBean _event = matchedEvents.GetMatchingEvent(resultEventAsName);
             if (_event == null)
             {
                 throw new SystemException("Event named '" + "'" + resultEventAsName + "' not found in event pattern result set");

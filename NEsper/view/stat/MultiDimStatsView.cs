@@ -208,13 +208,13 @@ namespace net.esper.view.stat
         /// </returns>
         public override String AttachesTo(Viewable parentViewable)
 		{
-			String message = PropertyCheckHelper.checkNumeric( parentViewable.EventType, measureField );
+            String message = PropertyCheckHelper.CheckNumeric(parentViewable.EventType, measureField);
 			if ( message != null )
 			{
 				return message;
 			}
 
-			message = PropertyCheckHelper.exists( parentViewable.EventType, columnField );
+            message = PropertyCheckHelper.Exists(parentViewable.EventType, columnField);
 			if ( message != null )
 			{
 				return message;
@@ -222,7 +222,7 @@ namespace net.esper.view.stat
 
 			if ( rowField != null )
 			{
-				message = PropertyCheckHelper.exists( parentViewable.EventType, rowField );
+                message = PropertyCheckHelper.Exists(parentViewable.EventType, rowField);
 				if ( message != null )
 				{
 					return message;
@@ -231,7 +231,7 @@ namespace net.esper.view.stat
 
 			if ( pageField != null )
 			{
-				return PropertyCheckHelper.exists( parentViewable.EventType, pageField );
+                return PropertyCheckHelper.Exists(parentViewable.EventType, pageField);
 			}
 
 			foreach ( String measureName in derivedMeasures )

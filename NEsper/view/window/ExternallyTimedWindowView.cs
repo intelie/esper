@@ -136,7 +136,7 @@ namespace net.esper.view.window
         /// </returns>
         public override String AttachesTo(Viewable parentView)
         {
-            return PropertyCheckHelper.checkLong(parentView.EventType, timestampFieldName);
+            return PropertyCheckHelper.CheckLong(parentView.EventType, timestampFieldName);
         }
 
         /// <summary>

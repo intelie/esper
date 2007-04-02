@@ -16,7 +16,7 @@ namespace net.esper.support.view
         }
 
         public SupportBeanClassView(Type clazz)
-            : base(SupportEventTypeFactory.createBeanType(clazz))
+            : base(SupportEventTypeFactory.CreateBeanType(clazz))
         {
             instances.Add(this);
         }

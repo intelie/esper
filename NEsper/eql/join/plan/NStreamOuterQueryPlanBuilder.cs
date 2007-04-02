@@ -28,29 +28,29 @@ namespace net.esper.eql.join.plan
 		/// <returns> query plan
 		/// </returns>
 
-		public static QueryPlan build( QueryGraph queryGraph, IList<OuterJoinDesc> outerJoinDescList, String[] streamNames )
+		public static QueryPlan Build( QueryGraph queryGraph, IList<OuterJoinDesc> outerJoinDescList, String[] streamNames )
 		{
-			log.Debug( ".build queryGraph=" + queryGraph );
+            log.Debug(".Build queryGraph=" + queryGraph);
 
 			int numStreams = queryGraph.NumStreams;
 			QueryPlanNode[] planNodeSpecs = new QueryPlanNode[numStreams];
 
 			// Build index specifications
-			QueryPlanIndex[] indexSpecs = QueryPlanIndexBuilder.buildIndexSpec( queryGraph );
-			log.Debug( ".build Index build completed, indexes=" + QueryPlanIndex.Print( indexSpecs ) );
+			QueryPlanIndex[] indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec( queryGraph );
+            log.Debug(".Build Index build completed, indexes=" + QueryPlanIndex.Print(indexSpecs));
 
 			// Build graph of the outer and inner joins
-			OuterInnerDirectionalGraph outerInnerGraph = graphOuterJoins( numStreams, outerJoinDescList );
-			log.Debug( ".build directional graph=" + outerInnerGraph.Print() );
+			OuterInnerDirectionalGraph outerInnerGraph = GraphOuterJoins( numStreams, outerJoinDescList );
+            log.Debug(".Build directional graph=" + outerInnerGraph.Print());
 
 			// For each stream determine the query plan
 			for ( int streamNo = 0 ; streamNo < numStreams ; streamNo++ )
 			{
-				QueryPlanNode queryPlanNode = build( numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, indexSpecs );
+				QueryPlanNode queryPlanNode = Build( numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, indexSpecs );
 
 				if ( log.IsDebugEnabled )
 				{
-					log.Debug( ".build spec for stream '" + streamNames[streamNo] +
+                    log.Debug(".Build spec for stream '" + streamNames[streamNo] +
 							"' number " + streamNo + " is " + queryPlanNode );
 				}
 
@@ -58,7 +58,7 @@ namespace net.esper.eql.join.plan
 			}
 
 			QueryPlan queryPlan = new QueryPlan( indexSpecs, planNodeSpecs );
-			log.Debug( ".build query plan=" + queryPlan.ToString() );
+            log.Debug(".Build query plan=" + queryPlan.ToString());
 
 			return queryPlan;
 		}
@@ -73,7 +73,7 @@ namespace net.esper.eql.join.plan
         /// <param name="outerInnerGraph">The outer inner graph.</param>
         /// <param name="indexSpecs">The index specs.</param>
         /// <returns></returns>
-		public static QueryPlanNode build( int numStreams, int streamNo, String[] streamNames, QueryGraph queryGraph, OuterInnerDirectionalGraph outerInnerGraph, QueryPlanIndex[] indexSpecs )
+        public static QueryPlanNode Build(int numStreams, int streamNo, String[] streamNames, QueryGraph queryGraph, OuterInnerDirectionalGraph outerInnerGraph, QueryPlanIndex[] indexSpecs)
 		{
 			// For each stream build an array of substreams, considering required streams (inner joins) first
 			// The order is relevant therefore preserving order via a LinkedHashMap.
@@ -83,17 +83,17 @@ namespace net.esper.eql.join.plan
 			// Recursive populating the required (outer) and optional (inner) relationships
 			// of this stream and the substream
 			ISet<Int32> completedStreams = new EHashSet<Int32>();
-			recursiveBuild( streamNo, queryGraph, outerInnerGraph, completedStreams, substreamsPerStream, requiredPerStream );
+			RecursiveBuild( streamNo, queryGraph, outerInnerGraph, completedStreams, substreamsPerStream, requiredPerStream );
 
 			// verify the substreamsPerStream, all streams must exists and be linked
-			verifyJoinedPerStream( streamNo, substreamsPerStream );
+			VerifyJoinedPerStream( streamNo, substreamsPerStream );
 
 			// build list of instructions for lookup
-			IList<LookupInstructionPlan> lookupInstructions = buildLookupInstructions( substreamsPerStream, requiredPerStream,
+			IList<LookupInstructionPlan> lookupInstructions = BuildLookupInstructions( substreamsPerStream, requiredPerStream,
 				streamNames, queryGraph, indexSpecs );
 
 			// build strategy tree for putting the result back together
-			BaseAssemblyNode assemblyTopNode = AssemblyStrategyTreeBuilder.build( streamNo, substreamsPerStream, requiredPerStream );
+            BaseAssemblyNode assemblyTopNode = AssemblyStrategyTreeBuilder.Build(streamNo, substreamsPerStream, requiredPerStream);
 			IList<BaseAssemblyNode> assemblyInstructions = BaseAssemblyNode.GetDescendentNodesBottomUp( assemblyTopNode );
 
 			QueryPlanNode planNode = new LookupInstructionQueryPlanNode( streamNo, streamNames[streamNo], numStreams, requiredPerStream, lookupInstructions, assemblyInstructions );
@@ -110,7 +110,7 @@ namespace net.esper.eql.join.plan
         /// <param name="queryGraph">The query graph.</param>
         /// <param name="indexSpecs">The index specs.</param>
         /// <returns></returns>
-		public static IList<LookupInstructionPlan> buildLookupInstructions(
+		public static IList<LookupInstructionPlan> BuildLookupInstructions(
 					LinkedDictionary<Int32, int[]> substreamsPerStream,
 					Boolean[] requiredPerStream,
 					String[] streamNames,
@@ -167,7 +167,7 @@ namespace net.esper.eql.join.plan
 		/// <param name="requiredPerStream">indicates which streams are required and which are optional
 		/// </param>
 		
-        public static void recursiveBuild( int streamNum,
+        public static void RecursiveBuild( int streamNum,
 			QueryGraph queryGraph,
 			OuterInnerDirectionalGraph outerInnerGraph,
 			ISet<Int32> completedStreams,
@@ -184,8 +184,8 @@ namespace net.esper.eql.join.plan
 			navigableStreams.RemoveAll( completedStreams );
 
 			// Which streams are inner streams to this stream (optional), which ones are outer to the stream (required)
-			ISet<Int32> requiredStreams = getOuterStreams( streamNum, navigableStreams, outerInnerGraph );
-			ISet<Int32> optionalStreams = getInnerStreams( streamNum, navigableStreams, outerInnerGraph );
+			ISet<Int32> requiredStreams = GetOuterStreams( streamNum, navigableStreams, outerInnerGraph );
+			ISet<Int32> optionalStreams = GetInnerStreams( streamNum, navigableStreams, outerInnerGraph );
 
 			// Remove from the required streams the optional streams which places 'full' joined streams
 			// into the optional stream category
@@ -220,13 +220,13 @@ namespace net.esper.eql.join.plan
 			// next we look at all the required streams and add their dependent streams
 			foreach ( int stream in requiredStreams )
 			{
-				recursiveBuild( stream, queryGraph, outerInnerGraph,
+				RecursiveBuild( stream, queryGraph, outerInnerGraph,
 							   completedStreams, substreamsPerStream, requiredPerStream );
 			}
 			// look at all the optional streams and add their dependent streams
 			foreach ( int stream in optionalStreams )
 			{
-				recursiveBuild( stream, queryGraph, outerInnerGraph,
+				RecursiveBuild( stream, queryGraph, outerInnerGraph,
 							   completedStreams, substreamsPerStream, requiredPerStream );
 			}
 		}
@@ -238,7 +238,7 @@ namespace net.esper.eql.join.plan
         /// <param name="toStreams">To streams.</param>
         /// <param name="outerInnerGraph">The outer inner graph.</param>
         /// <returns></returns>
-		public static ISet<Int32> getInnerStreams(
+		public static ISet<Int32> GetInnerStreams(
             int fromStream,
             ISet<Int32> toStreams,
             OuterInnerDirectionalGraph outerInnerGraph )
@@ -246,7 +246,7 @@ namespace net.esper.eql.join.plan
 			ISet<Int32> innerStreams = new EHashSet<Int32>();
 			foreach ( int toStream in toStreams )
 			{
-				if ( outerInnerGraph.isInner( fromStream, toStream ) )
+				if ( outerInnerGraph.IsInner( fromStream, toStream ) )
 				{
                     innerStreams.Add(toStream);
 				}
@@ -255,12 +255,12 @@ namespace net.esper.eql.join.plan
 		}
 
 		// which streams are to this table an outer stream
-		private static ISet<Int32> getOuterStreams( int fromStream, ISet<Int32> toStreams, OuterInnerDirectionalGraph outerInnerGraph )
+		private static ISet<Int32> GetOuterStreams( int fromStream, ISet<Int32> toStreams, OuterInnerDirectionalGraph outerInnerGraph )
 		{
 			ISet<Int32> outerStreams = new EHashSet<Int32>();
 			foreach ( int toStream in toStreams )
 			{
-				if ( outerInnerGraph.isOuter( toStream, fromStream ) )
+				if ( outerInnerGraph.IsOuter( toStream, fromStream ) )
 				{
                     outerStreams.Add(toStream);
 				}
@@ -278,7 +278,7 @@ namespace net.esper.eql.join.plan
 		/// <returns> graph object
 		/// </returns>
 
-		public static OuterInnerDirectionalGraph graphOuterJoins( int numStreams, IList<OuterJoinDesc> outerJoinDescList )
+		public static OuterInnerDirectionalGraph GraphOuterJoins( int numStreams, IList<OuterJoinDesc> outerJoinDescList )
 		{
 			if ( ( outerJoinDescList.Count + 1 ) != numStreams )
 			{
@@ -342,12 +342,12 @@ namespace net.esper.eql.join.plan
 		/// <param name="streamsJoinedPerStream">is keyed by the from-stream number and contains as values all
 		/// stream numbers of lookup into to-streams. 
 		/// </param>
-		public static void verifyJoinedPerStream( int rootStream, IDictionary<Int32, int[]> streamsJoinedPerStream )
+		public static void VerifyJoinedPerStream( int rootStream, IDictionary<Int32, int[]> streamsJoinedPerStream )
 		{
 			ISet<Int32> streams = new EHashSet<Int32>();
             streams.Add(rootStream);
 
-			recursiveAdd( rootStream, streamsJoinedPerStream, streams );
+			RecursiveAdd( rootStream, streamsJoinedPerStream, streams );
 
 			if ( streams.Count != streamsJoinedPerStream.Count )
 			{
@@ -356,7 +356,7 @@ namespace net.esper.eql.join.plan
 			}
 		}
 
-		private static void recursiveAdd( int currentStream, IDictionary<Int32, int[]> streamsJoinedPerStream, ISet<Int32> streams )
+		private static void RecursiveAdd( int currentStream, IDictionary<Int32, int[]> streamsJoinedPerStream, ISet<Int32> streams )
 		{
 			if ( currentStream >= streamsJoinedPerStream.Count )
 			{
@@ -372,7 +372,7 @@ namespace net.esper.eql.join.plan
 					throw new ArgumentException( "Stream " + addStream + " found twice" );
 				}
                 streams.Add(addStream);
-				recursiveAdd( addStream, streamsJoinedPerStream, streams );
+				RecursiveAdd( addStream, streamsJoinedPerStream, streams );
 			}
 		}
 

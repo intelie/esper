@@ -7,7 +7,6 @@ using org.apache.commons.logging;
 
 namespace net.esper.support.schedule
 {
-
     public class SupportSchedulingServiceImpl : SchedulingService
     {
         private EDictionary<long, ScheduleCallback> added = new EHashDictionary<long, ScheduleCallback>();
@@ -54,7 +53,7 @@ namespace net.esper.support.schedule
             log.Debug(".evaluate Not implemented");
         }
 
-        public virtual ScheduleBucket allocateBucket()
+        public virtual ScheduleBucket AllocateBucket()
         {
             return new ScheduleBucket(0);
         }

@@ -212,13 +212,13 @@ namespace net.esper.client
                 {
                     String name = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("name").InnerText;
                     String method = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("accessor-method").InnerText;
-                    legacyDesc.addMethodProperty(name, method);
+                    legacyDesc.AddMethodProperty(name, method);
                 }
                 else if (propertyElement.Name.Equals("field-property"))
                 {
                     String name = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("name").InnerText;
                     String field = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("accessor-field").InnerText;
-                    legacyDesc.addFieldProperty(name, field);
+                    legacyDesc.AddFieldProperty(name, field);
                 }
                 else
                 {
@@ -290,7 +290,7 @@ namespace net.esper.client
                     {
                         String maxAge = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("max-age-seconds").InnerText;
                         String purgeInterval = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("purge-interval-seconds").InnerText;
-                        configDBRef.setExpiryTimeCache(Double.Parse(maxAge), Double.Parse(purgeInterval));
+                        configDBRef.SetExpiryTimeCache(Double.Parse(maxAge), Double.Parse(purgeInterval));
                     }
                     else if (subElement.Name.Equals("lru-cache"))
                     {

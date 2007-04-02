@@ -42,14 +42,14 @@ namespace net.esper.pattern.observer
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public void scheduledTrigger()
+        public void ScheduledTrigger()
         {
             if (log.IsDebugEnabled)
             {
                 log.Debug(".scheduledTrigger");
             }
 
-            observerEventEvaluator.observerEvaluateTrue(beginState);
+            observerEventEvaluator.ObserverEvaluateTrue(beginState);
             isTimerActive = false;
         }
 

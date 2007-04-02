@@ -76,7 +76,7 @@ namespace net.esper.eql.join.plan
 			log.Debug(".build queryGraph=" + queryGraph);
 			
 			int numStreams = queryGraph.NumStreams;
-			QueryPlanIndex[] indexSpecs = QueryPlanIndexBuilder.buildIndexSpec(queryGraph);
+			QueryPlanIndex[] indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
 			log.Debug(".build Index build completed, indexes=" + QueryPlanIndex.Print(indexSpecs));
 			
 			QueryPlanNode[] planNodeSpecs = new QueryPlanNode[numStreams];

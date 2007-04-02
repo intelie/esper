@@ -43,7 +43,7 @@ namespace net.esper.util
             String ParseString = (String)inputAndResults[0];
             Object[] expected = (Object[])inputAndResults[1];
 
-            IList<PlaceholderParser.Fragment> result = PlaceholderParser.parsePlaceholder(ParseString);
+            IList<PlaceholderParser.Fragment> result = PlaceholderParser.ParsePlaceholder(ParseString);
 
             Assert.AreEqual(expected.Length, result.Count,
                 "Incorrect count for '" + ParseString + "'");
@@ -66,7 +66,7 @@ namespace net.esper.util
         {
             try
             {
-                PlaceholderParser.parsePlaceholder(parseString);
+                PlaceholderParser.ParsePlaceholder(parseString);
                 Assert.Fail();
             }
             catch (PlaceholderParseException)

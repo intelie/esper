@@ -88,15 +88,6 @@ namespace net.esper.eql.core
         }
 
         /// <summary>
-        /// Gets the type of the result event.
-        /// </summary>
-        /// <returns></returns>
-        public EventType getResultEventType()
-        {
-            return selectExprProcessor.ResultEventType;
-        }
-
-        /// <summary>
         /// For use by joins posting their result, process the event rows that are entered and removed (new and old events).
         /// Processes according to select-clauses, group-by clauses and having-clauses and returns new events and
         /// old events as specified.

@@ -79,13 +79,16 @@ namespace net.esper.core
 		/// <returns> true if it has data, false if not
 		/// </returns>
 
-		public virtual bool hasData()
+		public virtual bool HasData
 		{
-			if ( singleEvent != null )
-			{
-				return true;
-			}
-			return false;
+            get
+            {
+                if (singleEvent != null)
+                {
+                    return true;
+                }
+                return false;
+            }
 		}
 	}
 }

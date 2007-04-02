@@ -157,7 +157,7 @@ namespace net.esper.eql.core
 
             // Construct the appropriate aggregation service
             bool hasGroupBy = groupByNodes.Count > 0;
-            AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, hasGroupBy, optionalHavingNode, orderByNodes);
+            AggregationService aggregationService = AggregationServiceFactory.GetService(selectAggregateExprNodes, hasGroupBy, optionalHavingNode, orderByNodes);
 
             // Construct the processor for sorting output events
             OrderByProcessor orderByProcessor = OrderByProcessorFactory.GetProcessor(namedSelectionList, groupByNodes, orderByList, aggregationService, eventAdapterService);
@@ -435,7 +435,7 @@ namespace net.esper.eql.core
                     for( int ii = 0 ; ii < orderByListLength ; ii++ )
                     {
                     	Pair<ExprNode, Boolean> orderByElement = orderByList[ii] ;
-                        ExprNode swapped = AliasNodeSwapper.swap(orderByElement.First, alias, fullExpr);
+                        ExprNode swapped = AliasNodeSwapper.Swap(orderByElement.First, alias, fullExpr);
                         Pair<ExprNode, Boolean> newOrderByElement = new Pair<ExprNode, Boolean>(swapped, orderByElement.Second);
                         orderByList[ii] = newOrderByElement;
                     }

@@ -92,7 +92,7 @@ namespace net.esper.type
         /// <summary> Returns the long value.</summary>
         /// <returns> long value
         /// </returns>
-        public long getLong()
+        public long GetLong()
         {
             if (longValue == null)
             {

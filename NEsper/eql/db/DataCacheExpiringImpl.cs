@@ -123,7 +123,7 @@ namespace net.esper.eql.db
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public virtual void scheduledTrigger()
+        public virtual void ScheduledTrigger()
         {
             // purge expired
             long now = schedulingService.Time;

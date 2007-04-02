@@ -29,7 +29,7 @@ namespace net.esper.core
 			
 			// Allocate the statement's schedule bucket which stays constant over it's lifetime.
 			// The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
-			scheduleBucket = services.SchedulingService.allocateBucket();
+			scheduleBucket = services.SchedulingService.AllocateBucket();
 		}
 		
 		/// <summary> Start pattern.</summary>

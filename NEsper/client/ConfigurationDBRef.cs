@@ -124,7 +124,7 @@ namespace net.esper.client
         /// <param name="purgeIntervalSeconds">is the interval at which the engine purges stale data from the cache
         /// </param>
 
-        public virtual void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
+        public virtual void SetExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
         {
             dataCacheDesc = new ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds);
         }

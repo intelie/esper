@@ -139,7 +139,7 @@ namespace net.esper.eql.core
         /// <param name="descending">true if ascending, false if descending</param>
         /// <returns>0 if equal, -1 if smaller, +1 if larger</returns>
 
-        protected static int compareValues(Object valueOne, Object valueTwo, Boolean descending)
+        protected static int CompareValues(Object valueOne, Object valueTwo, Boolean descending)
         {
             if (descending)
             {

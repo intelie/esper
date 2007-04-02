@@ -41,9 +41,9 @@ namespace net.esper.pattern.observer
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public void scheduledTrigger()
+        public void ScheduledTrigger()
         {
-            observerEventEvaluator.observerEvaluateTrue(beginState);
+            observerEventEvaluator.ObserverEvaluateTrue(beginState);
             isTimerActive = false;
         }
 
@@ -59,7 +59,7 @@ namespace net.esper.pattern.observer
 
             if (msec <= 0)
             {
-                observerEventEvaluator.observerEvaluateTrue(beginState);
+                observerEventEvaluator.ObserverEvaluateTrue(beginState);
             }
             else
             {

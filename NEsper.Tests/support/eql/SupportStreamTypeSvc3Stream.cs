@@ -23,9 +23,9 @@ namespace net.esper.support.eql
 			get
 			{
                 EventType[] eventTypes = new EventType[]{
-                    SupportEventTypeFactory.createBeanType(typeof(SupportBean)),
-                    SupportEventTypeFactory.createBeanType(typeof(SupportBean)),
-                    SupportEventTypeFactory.createBeanType(typeof(SupportBeanComplexProps))
+                    SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)),
+                    SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)),
+                    SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanComplexProps))
                 };
 				return eventTypes;
 			}
@@ -45,20 +45,20 @@ namespace net.esper.support.eql
 		{
 			impl = new StreamTypeServiceImpl(EventTypes, StreamNames);
 		}
-		
-		public virtual PropertyResolutionDescriptor resolveByPropertyName(String propertyName)
+
+        public virtual PropertyResolutionDescriptor ResolveByPropertyName(String propertyName)
 		{
-			return impl.resolveByPropertyName(propertyName);
+            return impl.ResolveByPropertyName(propertyName);
 		}
 		
-		public virtual PropertyResolutionDescriptor resolveByStreamAndPropName(String streamName, String propertyName)
+		public virtual PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamName, String propertyName)
 		{
-			return impl.resolveByStreamAndPropName(streamName, propertyName);
+			return impl.ResolveByStreamAndPropName(streamName, propertyName);
 		}
 		
-		public virtual PropertyResolutionDescriptor resolveByStreamAndPropName(String streamAndPropertyName)
+		public virtual PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamAndPropertyName)
 		{
-			return impl.resolveByStreamAndPropName(streamAndPropertyName);
+			return impl.ResolveByStreamAndPropName(streamAndPropertyName);
 		}
 	}
 }

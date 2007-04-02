@@ -39,7 +39,7 @@ namespace net.esper.eql.join
 		/// <throws>  ExprValidationException is thrown to indicate that </throws>
 		/// <summary> validation of view use in joins failed.
 		/// </summary>
-        public static JoinSetComposer makeComposer(IList<OuterJoinDesc> outerJoinDescList, ExprNode optionalFilterNode, EventType[] streamTypes, String[] streamNames, Viewable[] streamViews, SelectClauseStreamSelectorEnum selectStreamSelectorEnum)
+        public static JoinSetComposer MakeComposer(IList<OuterJoinDesc> outerJoinDescList, ExprNode optionalFilterNode, EventType[] streamTypes, String[] streamNames, Viewable[] streamViews, SelectClauseStreamSelectorEnum selectStreamSelectorEnum)
         {
             // Determine if there is a historical
             bool hasHistorical = false;
@@ -109,7 +109,7 @@ namespace net.esper.eql.join
             }
             else
             {
-                QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes.Length, outerJoinDescList, optionalFilterNode, streamNames);
+                QueryPlan queryPlan = QueryPlanBuilder.GetPlan(streamTypes.Length, outerJoinDescList, optionalFilterNode, streamNames);
 
                 // Build indexes
                 QueryPlanIndex[] indexSpecs = queryPlan.IndexSpecs;
@@ -120,7 +120,7 @@ namespace net.esper.eql.join
                     indexes[streamNo] = new EventTable[indexProps.Length];
                     for (int indexNo = 0; indexNo < indexProps.Length; indexNo++)
                     {
-                        indexes[streamNo][indexNo] = buildIndex(streamNo, indexProps[indexNo], streamTypes[streamNo]);
+                        indexes[streamNo][indexNo] = BuildIndex(streamNo, indexProps[indexNo], streamTypes[streamNo]);
                     }
                 }
 
@@ -153,7 +153,7 @@ namespace net.esper.eql.join
 		/// </param>
 		/// <returns> table build
 		/// </returns>
-		public static EventTable buildIndex(int indexedStreamNum, String[] indexProps, EventType eventType)
+		public static EventTable BuildIndex(int indexedStreamNum, String[] indexProps, EventType eventType)
 		{
 			EventTable table = null;
 			if (indexProps.Length == 0)

@@ -12,7 +12,7 @@ namespace net.esper.schedule
         /// Called when a scheduled callback occurs.
         /// </summary>
 
-        void scheduledTrigger();
+        void ScheduledTrigger();
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ namespace net.esper.schedule
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public void scheduledTrigger()
+        public void ScheduledTrigger()
         {
         	m_delegate() ;
         }

@@ -31,21 +31,25 @@ namespace net.esper.view.stat.olap
 			this.values = values;
 		}
 		
-		/// <summary> Set the dimension this member belongs to.</summary>
-		/// <param name="dimension">the member belongs to
-		/// </param>
-		public void  setDimension(Dimension dimension)
+        /// <summary>
+        /// Gets the dimension the member belongs to.
+        /// </summary>
+        /// <returns>dimension that this member is a value of</returns>
+
+        public Dimension Dimension
 		{
-			this.dimension = dimension;
+            get { return dimension; }
 		}
 
         /// <summary>
-        /// Returns the dimension the member belongs to.
+        /// Sets the dimension the member belongs to.
         /// </summary>
-        /// <returns>dimension that this member is a value of</returns>
-		public Dimension getDimension()
-		{
-			return dimension;
-		}
+        /// <param name="dimension"></param>
+        /// <returns></returns>
+
+        public void SetDimension( Dimension dimension )
+        {
+            this.dimension = dimension;
+        }
 	}
 }

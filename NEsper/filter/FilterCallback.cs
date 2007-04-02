@@ -16,7 +16,7 @@ namespace net.esper.filter
         /// <param name="_event">the event received that matches the filter specification
         /// </param>
 
-        void matchFound(EventBean _event);
+        void MatchFound(EventBean _event);
     }
     
     /// <summary>
@@ -49,7 +49,7 @@ namespace net.esper.filter
         /// which matches the filter specification <seealso cref="FilterSpec"/> associated with this callback.
         /// </summary>
         /// <param name="_event">the event received that matches the filter specification</param>
-        public void matchFound(EventBean _event)
+        public void MatchFound(EventBean _event)
         {
         	_delegate( _event ) ;
         }

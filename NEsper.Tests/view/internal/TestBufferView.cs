@@ -8,7 +8,7 @@ using net.esper.support.view;
 using NUnit.Core;
 using NUnit.Framework;
 
-namespace net.esper.view.internal_Renamed
+namespace net.esper.view.internals
 {
 	
 	[TestFixture]
@@ -29,7 +29,7 @@ namespace net.esper.view.internal_Renamed
 		public virtual void  testUpdate()
 		{
 			// Observer Starts with no data
-			Assert.IsFalse(observer.AndResetHasNewData);
+			Assert.IsFalse(observer.GetAndResetHasNewData());
 			
 			// Send some data
 			EventBean[] newEvents = makeBeans("n", 1);
@@ -37,15 +37,15 @@ namespace net.esper.view.internal_Renamed
 			bufferView.Update(newEvents, oldEvents);
 			
 			// make sure received
-			Assert.IsTrue(observer.AndResetHasNewData);
-			Assert.AreEqual(1, observer.AndResetStreamId);
-			Assert.IsNotNull(observer.AndResetNewEventBuffer);
-			Assert.IsNotNull(observer.AndResetOldEventBuffer);
+			Assert.IsTrue(observer.GetAndResetHasNewData());
+			Assert.AreEqual(1, observer.GetAndResetStreamId());
+            Assert.IsNotNull(observer.GetAndResetNewEventBuffer());
+            Assert.IsNotNull(observer.GetAndResetOldEventBuffer());
 			
 			// Reset and send null data
-			Assert.IsFalse(observer.AndResetHasNewData);
+			Assert.IsFalse(observer.GetAndResetHasNewData());
             bufferView.Update(null, null);
-			Assert.IsTrue(observer.AndResetHasNewData);
+			Assert.IsTrue(observer.GetAndResetHasNewData());
 		}
 		
 		[Test]

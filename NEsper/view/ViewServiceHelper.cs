@@ -33,7 +33,7 @@ namespace net.esper.view
 
 			foreach ( ViewSpec spec in specifications )
 			{
-				ViewEnum viewEnum = ViewEnum.forName( spec.ObjectNamespace, spec.ObjectName );
+				ViewEnum viewEnum = ViewEnum.ForName( spec.ObjectNamespace, spec.ObjectName );
 				if ( viewEnum == null )
 				{
 					continue;
@@ -51,7 +51,7 @@ namespace net.esper.view
                     spec.ObjectParameters );
 
 				// The merge views are added to the beginning of the list.
-				// This enables group views to stagger ie. marketdata.group("symbol").group("feed").xxx.merge(...).merge(...)
+				// This enables group views to stagger ie. marketdata.group("symbol").group("feed").xxx.Merge(...).Merge(...)
 				mergeViewSpecs.AddFirst( mergeViewSpec );
 			}
 
@@ -130,7 +130,7 @@ namespace net.esper.view
 			}
 
 			// Find child viewToRemove among descendent views
-			IList<View> viewPath = ViewSupport.findDescendent( parentViewable, viewToRemove );
+			IList<View> viewPath = ViewSupport.FindDescendent( parentViewable, viewToRemove );
 			if ( viewPath == null )
 			{
 				String message = "Viewable not found when removing view " + viewToRemove;

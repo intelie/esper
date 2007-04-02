@@ -113,7 +113,7 @@ namespace net.esper.view.stat
         /// </returns>
 		public override String AttachesTo( Viewable parentViewable )
 		{
-			return PropertyCheckHelper.checkNumeric( parentViewable.EventType, fieldNameX, fieldNameY );
+            return PropertyCheckHelper.CheckNumeric(parentViewable.EventType, fieldNameX, fieldNameY);
 		}
 
         /// <summary>

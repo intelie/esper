@@ -8,7 +8,7 @@ namespace net.esper.emit
 		/// <summary> Creates an implementation of the EmitService interface.</summary>
 		/// <returns> implementation
 		/// </returns>
-		public static EmitService newService()
+		public static EmitService NewService()
 		{
 			return new EmitServiceImpl();
 		}

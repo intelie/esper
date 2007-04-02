@@ -79,7 +79,7 @@ namespace net.esper.pattern.observer
 		/// <param name="nspace">namespace name</param>
 		/// <param name="name">observer name</param>
         
-        public static ObserverEnum forName(String nspace, String name)
+        public static ObserverEnum ForName(String nspace, String name)
         {
             foreach (ObserverEnum observerEnum in ObserverEnum.Values)
             {

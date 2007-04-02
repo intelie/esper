@@ -78,7 +78,7 @@ namespace net.esper.eql.parse
             String expression = "n1=" + typeof(SupportBean).FullName + "(intPrimitive=n2.intBoxed)";
 
             EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
-            taggedEventTypes.Put("n2", SupportEventTypeFactory.createBeanType(typeof(SupportBean)));
+            taggedEventTypes.Put("n2", SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)));
 
             FilterSpec spec = getFilterSpec(expression, taggedEventTypes);
 
@@ -126,7 +126,7 @@ namespace net.esper.eql.parse
             String expression = "myname=" + typeof(SupportBean).FullName + "(intPrimitive in (asName.intPrimitive:asName.intBoxed))";
 
             EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
-            taggedEventTypes.Put("asName", SupportEventTypeFactory.createBeanType(typeof(SupportBean)));
+            taggedEventTypes.Put("asName", SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)));
 
             FilterSpec spec = getFilterSpec(expression, taggedEventTypes);
             Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);
@@ -170,7 +170,7 @@ namespace net.esper.eql.parse
         private FilterSpec getFilterSpec(string expressionText, EDictionary<String, EventType> taggedEventTypes)
         {
             AST filterNode = parse(expressionText);
-            DebugFacility.dumpAST(filterNode);
+            DebugFacility.DumpAST(filterNode);
             return ASTFilterSpecHelper.buildSpec(filterNode, taggedEventTypes, SupportEventAdapterService.Service);
         }
 

@@ -20,7 +20,7 @@ namespace net.esper.events.property
         /// <param name="optionalLegacyClassConfigs">configures how event property listy is build</param>
         /// <returns>builder/introspector implementation</returns>
 
-        public static PropertyListBuilder createBuilder(ConfigurationEventTypeLegacy optionalLegacyClassConfigs)
+        public static PropertyListBuilder CreateBuilder(ConfigurationEventTypeLegacy optionalLegacyClassConfigs)
         {
             if (optionalLegacyClassConfigs == null)
             {

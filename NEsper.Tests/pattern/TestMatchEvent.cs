@@ -31,9 +31,9 @@ namespace net.esper.pattern
             MatchedEventMap _event = new MatchedEventMap();
             _event.Add("tag", events.Fetch("a"));
             _event.Add("test", events.Fetch("b"));
-            Assert.IsTrue(_event.getMatchingEvents().Fetch("tag") == events.Fetch("a"));
-            Assert.IsTrue(_event.getMatchingEvent("tag") == events.Fetch("a"));
-            Assert.IsTrue(_event.getMatchingEvent("test") == events.Fetch("b"));
+            Assert.IsTrue(_event.GetMatchingEvents().Fetch("tag") == events.Fetch("a"));
+            Assert.IsTrue(_event.GetMatchingEvent("tag") == events.Fetch("a"));
+            Assert.IsTrue(_event.GetMatchingEvent("test") == events.Fetch("b"));
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace net.esper.pattern
             MatchedEventMap _event = new MatchedEventMap();
 
             _event.Add("tag", events.Fetch("0"));
-            MatchedEventMap copy = _event.shallowCopy();
+            MatchedEventMap copy = _event.ShallowCopy();
 
             Assert.IsTrue(copy.Equals(_event));
             _event.Add("a", events.Fetch("a"));
@@ -78,22 +78,22 @@ namespace net.esper.pattern
             copy.Add("a", events.Fetch("a"));
             Assert.IsTrue(copy.Equals(_event));
 
-            MatchedEventMap copyTwo = copy.shallowCopy();
+            MatchedEventMap copyTwo = copy.ShallowCopy();
             Assert.IsTrue(copy.Equals(copyTwo));
             copyTwo.Add("b", events.Fetch("b"));
 
-            Assert.IsTrue(copyTwo.getMatchingEvents().Count == 3);
-            Assert.IsTrue(copyTwo.getMatchingEvent("tag") == events.Fetch("0"));
-            Assert.IsTrue(copyTwo.getMatchingEvent("a") == events.Fetch("a"));
-            Assert.IsTrue(copyTwo.getMatchingEvent("b") == events.Fetch("b"));
+            Assert.IsTrue(copyTwo.GetMatchingEvents().Count == 3);
+            Assert.IsTrue(copyTwo.GetMatchingEvent("tag") == events.Fetch("0"));
+            Assert.IsTrue(copyTwo.GetMatchingEvent("a") == events.Fetch("a"));
+            Assert.IsTrue(copyTwo.GetMatchingEvent("b") == events.Fetch("b"));
 
-            Assert.IsTrue(copy.getMatchingEvents().Count == 2);
-            Assert.IsTrue(copy.getMatchingEvent("tag") == events.Fetch("0"));
-            Assert.IsTrue(copy.getMatchingEvent("a") == events.Fetch("a"));
+            Assert.IsTrue(copy.GetMatchingEvents().Count == 2);
+            Assert.IsTrue(copy.GetMatchingEvent("tag") == events.Fetch("0"));
+            Assert.IsTrue(copy.GetMatchingEvent("a") == events.Fetch("a"));
 
-            Assert.IsTrue(_event.getMatchingEvents().Count == 2);
-            Assert.IsTrue(_event.getMatchingEvent("tag") == events.Fetch("0"));
-            Assert.IsTrue(_event.getMatchingEvent("a") == events.Fetch("a"));
+            Assert.IsTrue(_event.GetMatchingEvents().Count == 2);
+            Assert.IsTrue(_event.GetMatchingEvent("tag") == events.Fetch("0"));
+            Assert.IsTrue(_event.GetMatchingEvent("a") == events.Fetch("a"));
         }
 
         [Test]
@@ -108,11 +108,11 @@ namespace net.esper.pattern
             eventTwo.Add("tagB", events.Fetch("c"));
             eventTwo.Add("xyz", events.Fetch("d"));
 
-            eventOne.merge(eventTwo);
-            Assert.IsTrue(eventOne.getMatchingEvent("tagA") == events.Fetch("a"));
-            Assert.IsTrue(eventOne.getMatchingEvent("tagB") == events.Fetch("c"));
-            Assert.IsTrue(eventOne.getMatchingEvent("xyz") == events.Fetch("d"));
-            Assert.IsTrue(eventOne.getMatchingEvents().Count == 3);
+            eventOne.Merge(eventTwo);
+            Assert.IsTrue(eventOne.GetMatchingEvent("tagA") == events.Fetch("a"));
+            Assert.IsTrue(eventOne.GetMatchingEvent("tagB") == events.Fetch("c"));
+            Assert.IsTrue(eventOne.GetMatchingEvent("xyz") == events.Fetch("d"));
+            Assert.IsTrue(eventOne.GetMatchingEvents().Count == 3);
         }
     }
 }

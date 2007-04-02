@@ -22,7 +22,7 @@ namespace net.esper.eql.join.plan
         /// </summary>
         /// <param name="queryGraph">navigability info</param>
         /// <returns>query index specs for each stream</returns>
-        public static QueryPlanIndex[] buildIndexSpec(QueryGraph queryGraph)
+        public static QueryPlanIndex[] BuildIndexSpec(QueryGraph queryGraph)
         {
             int numStreams = queryGraph.NumStreams;
             QueryPlanIndex[] indexSpecs = new QueryPlanIndex[numStreams];

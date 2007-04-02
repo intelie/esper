@@ -31,7 +31,7 @@ namespace net.esper.filter
         public virtual void testCheckType()
         {
             EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
-            taggedEventTypes.Put("asName", SupportEventTypeFactory.createBeanType(typeof(SupportBean)));
+            taggedEventTypes.Put("asName", SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)));
 
             tryInvalidCheckType(taggedEventTypes, _params[0]);
             tryInvalidCheckType(taggedEventTypes, _params[1]);

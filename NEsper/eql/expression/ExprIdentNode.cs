@@ -179,7 +179,7 @@ namespace net.esper.eql.expression
             {
                 try
                 {
-                    propertyInfo = streamTypeService.resolveByPropertyName(unresolvedPropertyName);
+                    propertyInfo = streamTypeService.ResolveByPropertyName(unresolvedPropertyName);
                 }
                 catch (StreamTypesException ex)
                 {
@@ -197,7 +197,7 @@ namespace net.esper.eql.expression
             // try to resolve the property name and stream name as it is (ie. stream name as a stream name)
             try
             {
-                propertyInfo = streamTypeService.resolveByStreamAndPropName(streamOrPropertyName, unresolvedPropertyName);
+                propertyInfo = streamTypeService.ResolveByStreamAndPropName(streamOrPropertyName, unresolvedPropertyName);
                 // resolves with a stream name, return descriptor and stream name
                 return new Pair<PropertyResolutionDescriptor, String>(propertyInfo, streamOrPropertyName);
             }
@@ -210,7 +210,7 @@ namespace net.esper.eql.expression
             String propertyNameCandidate = streamOrPropertyName + "." + unresolvedPropertyName;
             try
             {
-                propertyInfo = streamTypeService.resolveByPropertyName(propertyNameCandidate);
+                propertyInfo = streamTypeService.ResolveByPropertyName(propertyNameCandidate);
                 // resolves without a stream name, return null for stream name
                 return new Pair<PropertyResolutionDescriptor, String>(propertyInfo, null);
             }

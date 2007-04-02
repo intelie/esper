@@ -25,7 +25,7 @@ namespace net.esper.events
         [Test]
         public virtual void testGet()
         {
-            EventType eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+            EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             BeanEventBean eventBean = new MyBeanEventBean(testEvent, eventType);
 
             Assert.AreEqual(eventType, eventBean.EventType);
@@ -48,7 +48,7 @@ namespace net.esper.events
             // Test wrong event type - not possible to happen under normal use
             try
             {
-                eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBeanSimple));
+                eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
                 eventBean = new MyBeanEventBean(testEvent, eventType);
                 Object temp = eventBean["myString"];
                 Assert.IsTrue(false);

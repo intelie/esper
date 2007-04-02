@@ -16,13 +16,13 @@ namespace net.esper.indicator.pretty
 		/// </param>
 		/// <returns> rendered dimensionMember
 		/// </returns>
-		public static String renderMember(DimensionMember dimensionMember)
+		public static String RenderMember(DimensionMember dimensionMember)
 		{
 			Object[] values = dimensionMember.Values;
 			
 			if (values.Length == 0)
 			{
-				return renderPropertyNames(dimensionMember.getDimension().PropertyNames);
+				return renderPropertyNames(dimensionMember.Dimension.PropertyNames);
 			}
 			
 			return renderObjects(dimensionMember.Values);

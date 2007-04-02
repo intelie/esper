@@ -53,7 +53,7 @@ namespace net.esper.events.xml
             XPathExpression xPathExpression = null;
             try
             {
-                xPathExpression = SimpleXMLPropertyParser.parse(property, RootElementName);
+                xPathExpression = SimpleXMLPropertyParser.Parse(property, RootElementName);
             }
             catch (XPathException e)
             {

@@ -67,7 +67,7 @@ namespace net.esper.pattern.guard
         /// </summary>
         /// <param name="matchEvent"></param>
         /// <returns>true to pass, false to not pass</returns>
-        public virtual bool inspect(MatchedEventMap matchEvent)
+        public virtual bool Inspect(MatchedEventMap matchEvent)
         {
             // no need to test: for timing only, if the timer expired the guardQuit Stops any events from coming here
             return true;
@@ -76,11 +76,11 @@ namespace net.esper.pattern.guard
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public void scheduledTrigger()
+        public void ScheduledTrigger()
         {
             // Timer callback is automatically removed when triggering
             isTimerActive = false;
-            quitable.guardQuit();
+            quitable.GuardQuit();
         }
     }
 }

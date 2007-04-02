@@ -42,7 +42,7 @@ namespace net.esper.pattern
 		/// <returns> Hashtable containing event instances
 		/// </returns>
 
-		public EDictionary<String, EventBean> getMatchingEvents()
+		public EDictionary<String, EventBean> GetMatchingEvents()
 		{
 			return events;
 		}
@@ -53,7 +53,7 @@ namespace net.esper.pattern
 		/// <returns> event instances for the tag
 		/// </returns>
 		
-		public EventBean getMatchingEvent(String tag)
+		public EventBean GetMatchingEvent(String tag)
 		{
 			return events.Fetch(tag);
 		}
@@ -94,7 +94,7 @@ namespace net.esper.pattern
 				String tag = entry.Key;
 				EventBean eventBean = entry.Value;
 				
-				if (other.getMatchingEvent(tag) != eventBean)
+				if (other.GetMatchingEvent(tag) != eventBean)
 				{
 					return false;
 				}
@@ -139,7 +139,7 @@ namespace net.esper.pattern
 		/// <returns> shallow copy
 		/// </returns>
 
-        public MatchedEventMap shallowCopy()
+        public MatchedEventMap ShallowCopy()
 		{
 			MatchedEventMap copy = new MatchedEventMap();
 			copy.events = new EHashDictionary<String, EventBean>() ;
@@ -153,7 +153,7 @@ namespace net.esper.pattern
 		/// <param name="other">is the other instance to merge in.
 		/// </param>
 		
-		public void merge(MatchedEventMap other)
+		public void Merge(MatchedEventMap other)
 		{
 			foreach ( KeyValuePair<String, EventBean> entry in other.events )
 			{

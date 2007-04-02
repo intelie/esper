@@ -24,20 +24,20 @@ namespace net.esper.eql.core
         /// <returns> exprTree with the appropriate swaps performed, or fullExpr, 
         /// if all of exprTree needed to be swapped
         /// </returns>
-        public static ExprNode swap(ExprNode exprTree, String alias, ExprNode fullExpr)
+        public static ExprNode Swap(ExprNode exprTree, String alias, ExprNode fullExpr)
         {
             if (fullExpr == null)
             {
                 throw new NullReferenceException();
             }
 
-            if (isAliasNode(exprTree, alias))
+            if (IsAliasNode(exprTree, alias))
             {
                 return fullExpr;
             }
             else
             {
-                visitChildren(exprTree, alias, fullExpr);
+                VisitChildren(exprTree, alias, fullExpr);
             }
 
             return exprTree;
@@ -53,7 +53,7 @@ namespace net.esper.eql.core
         /// </param>
         /// <param name="fullExpr">the full expression corresponding to the alias
         /// </param>
-        private static void visitChildren(ExprNode node, String alias, ExprNode fullExpr)
+        private static void VisitChildren(ExprNode node, String alias, ExprNode fullExpr)
         {
             IList<ExprNode> childNodes = node.ChildNodes;
             int childNodesLength = childNodes.Count;
@@ -61,18 +61,18 @@ namespace net.esper.eql.core
             for( int ii = 0 ; ii < childNodesLength ; ii++ )
             {
                 ExprNode childNode = childNodes[ii];
-                if (isAliasNode(childNode, alias))
+                if (IsAliasNode(childNode, alias))
                 {
                     childNodes[ii] = fullExpr;
                 }
                 else
                 {
-                    visitChildren(childNode, alias, fullExpr);
+                    VisitChildren(childNode, alias, fullExpr);
                 }
             }
         }
 
-        private static bool isAliasNode(ExprNode node, String alias)
+        private static bool IsAliasNode(ExprNode node, String alias)
         {
             if (node is ExprIdentNode)
             {

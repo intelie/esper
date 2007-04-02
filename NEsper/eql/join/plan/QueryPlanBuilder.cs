@@ -24,7 +24,7 @@ namespace net.esper.eql.join.plan
         /// <param name="streamNames">names of streams</param>
         /// <returns>query plan</returns>
 
-        public static QueryPlan getPlan(int numStreams,
+        public static QueryPlan GetPlan(int numStreams,
                                         IList<OuterJoinDesc> outerJoinDescList,
                                         ExprNode optionalFilterNode,
                                         String[] streamNames)
@@ -45,7 +45,7 @@ namespace net.esper.eql.join.plan
             // For outer joins the query graph will just contain outer join relationships
             if (outerJoinDescList.Count != 0)
             {
-                OuterJoinAnalyzer.analyze(outerJoinDescList, queryGraph);
+                OuterJoinAnalyzer.Analyze(outerJoinDescList, queryGraph);
                 log.Debug(methodName + " After outer join queryGraph=\n" + queryGraph);
             }
             else
@@ -72,7 +72,7 @@ namespace net.esper.eql.join.plan
                     outerJoinType = outerJoinDescList[0].OuterJoinType;
                 }
 
-                QueryPlan queryPlan = TwoStreamQueryPlanBuilder.build(queryGraph, outerJoinType);
+                QueryPlan queryPlan = TwoStreamQueryPlanBuilder.Build(queryGraph, outerJoinType);
 
                 if (log.IsInfoEnabled)
                 {
@@ -93,7 +93,7 @@ namespace net.esper.eql.join.plan
                 return queryPlan;
             }
 
-            return NStreamOuterQueryPlanBuilder.build(queryGraph, outerJoinDescList, streamNames);
+            return NStreamOuterQueryPlanBuilder.Build(queryGraph, outerJoinDescList, streamNames);
         }
 
         private static readonly Log log = LogFactory.GetLog(typeof(QueryPlanBuilder));

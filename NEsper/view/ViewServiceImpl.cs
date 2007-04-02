@@ -57,7 +57,7 @@ namespace net.esper.view
                 if (log.IsDebugEnabled)
                 {
                     log.Debug(".createView No new views created, dumping stream ... " + eventStream);
-                    ViewSupport.dumpChildViews("EventStream ", eventStream);
+                    ViewSupport.DumpChildViews("EventStream ", eventStream);
                 }
 
                 return parentViewable; // we know its a view here since the spec list is empty 
@@ -85,7 +85,7 @@ namespace net.esper.view
             if (log.IsDebugEnabled)
             {
                 log.Debug(".createView New views created for stream, all views ... " + eventStream);
-                ViewSupport.dumpChildViews("EventStream ", eventStream);
+                ViewSupport.DumpChildViews("EventStream ", eventStream);
             }
 
             View lastView = views[views.Count - 1];
@@ -118,7 +118,7 @@ namespace net.esper.view
             if (log.IsDebugEnabled)
             {
                 log.Debug(".remove Views before the remove of view " + viewToRemove + ", for event stream " + eventStream);
-                ViewSupport.dumpChildViews("EventStream ", eventStream);
+                ViewSupport.DumpChildViews("EventStream ", eventStream);
             }
 
             // Remove views in chain leaving only non-empty parent views to the child view to be removed
@@ -131,7 +131,7 @@ namespace net.esper.view
             if (log.IsDebugEnabled)
             {
                 log.Debug(".remove Views after the remove, for event stream " + eventStream);
-                ViewSupport.dumpChildViews("EventStream ", eventStream);
+                ViewSupport.DumpChildViews("EventStream ", eventStream);
             }
         }
 

@@ -199,7 +199,7 @@ namespace net.esper.view.std
             if (log.IsDebugEnabled)
             {
                 log.Debug(".update Updating view");
-                dumpUpdateParams("MergeView", newData, oldData);
+                DumpUpdateParams("MergeView", newData, oldData);
             }
 
             UpdateChildren(newData, oldData);

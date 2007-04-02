@@ -18,7 +18,7 @@ namespace net.esper.util
 		/// <param name="ast">to dump
 		/// </param>
 		
-		public static void dumpAST(AST ast)
+		public static void DumpAST(AST ast)
 		{
 			if ( ConfigurationManager.AppSettings[PROPERTY_ENABLED_AST_DUMP] != null)
 			{

@@ -33,7 +33,7 @@ namespace net.esper.pattern
                 log.Debug(".constructor");
             }
 
-            this.beginState = beginState.shallowCopy();
+            this.beginState = beginState.ShallowCopy();
             this.childNode = notNodeChildNode.NewState(this, beginState, context);
         }
 
@@ -125,7 +125,7 @@ namespace net.esper.pattern
         /// </returns>
         public override Object Accept(EvalStateNodeVisitor visitor, Object data)
         {
-            return visitor.visit(this, data);
+            return visitor.Visit(this, data);
         }
 
         /// <summary>

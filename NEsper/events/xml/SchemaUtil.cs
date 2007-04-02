@@ -20,7 +20,7 @@ namespace net.esper.events.xml
 		/// <param name="definition">The definition.</param>
 		/// <returns>XPathConstants type</returns>
 		
-		public static XmlQualifiedName simpleTypeToQName(XmlSchemaSimpleType definition)
+		public static XmlQualifiedName SimpleTypeToQName(XmlSchemaSimpleType definition)
 		{
 			return definition.QualifiedName;
 
@@ -51,7 +51,7 @@ namespace net.esper.events.xml
 		/// <param name="elementName">is the name of the root element</param>
 		/// <returns>declaration of root element</returns>
 		
-		public static XmlSchemaElement findRootElement(XmlSchema schema, String namespace_, String elementName)
+		public static XmlSchemaElement FindRootElement(XmlSchema schema, String namespace_, String elementName)
 		{
             XmlSchemaObjectTable elements = schema.Elements;
             foreach (XmlQualifiedName qname in elements.Names)
@@ -90,7 +90,7 @@ namespace net.esper.events.xml
 		/// or null if not found in schema
 		/// </returns>
 		
-		public static XmlSchemaObject findPropertyMapping( XmlSchemaComplexType def, String property )
+		public static XmlSchemaObject FindPropertyMapping( XmlSchemaComplexType def, String property )
 		{
 			XmlSchemaObjectTable attrs = def.AttributeUses;
 			foreach ( System.Collections.DictionaryEntry entry in attrs )

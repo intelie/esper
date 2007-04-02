@@ -18,7 +18,7 @@ namespace net.esper.filter
 		[SetUp]
 		public virtual void  setUp()
 		{
-			eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+			eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 		}
 		
 		[Test]

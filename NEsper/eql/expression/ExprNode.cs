@@ -122,9 +122,9 @@ namespace net.esper.eql.expression
         /// </param>
         public virtual void Accept(ExprNodeVisitor visitor)
         {
-            if (visitor.isVisit(this))
+            if (visitor.IsVisit(this))
             {
-                visitor.visit(this);
+                visitor.Visit(this);
 
                 foreach (ExprNode childNode in childNodes)
                 {

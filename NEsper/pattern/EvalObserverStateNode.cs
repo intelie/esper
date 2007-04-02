@@ -31,14 +31,14 @@ namespace net.esper.pattern
                 log.Debug(".constructor");
             }
 
-            eventObserver = observerFactory.makeObserver(context, beginState, this);
+            eventObserver = observerFactory.MakeObserver(context, beginState, this);
         }
 
         /// <summary>
         /// Indicate an event for evaluation (sub-expression the observer represents has turned true).
         /// </summary>
         /// <param name="matchEvent">is the matched events so far</param>
-        public void observerEvaluateTrue(MatchedEventMap matchEvent)
+        public void ObserverEvaluateTrue(MatchedEventMap matchEvent)
         {
             this.ParentEvaluator.EvaluateTrue(matchEvent, this, true);
         }
@@ -46,7 +46,7 @@ namespace net.esper.pattern
         /// <summary>
         /// Indicate that the observer turned permanently false.
         /// </summary>
-        public void observerEvaluateFalse()
+        public void ObserverEvaluateFalse()
         {
             this.ParentEvaluator.EvaluateFalse(this);
         }
@@ -81,7 +81,7 @@ namespace net.esper.pattern
         /// </returns>
         public override Object Accept(EvalStateNodeVisitor visitor, Object data)
         {
-            return visitor.visit(this, data);
+            return visitor.Visit(this, data);
         }
 
         /// <summary>

@@ -67,7 +67,7 @@ namespace net.esper.eql.expression
             Type childTypeTwo = this.ChildNodes[1].ReturnType;
             if ((TypeHelper.IsFloatingPointClass(childTypeOne)) || (TypeHelper.IsFloatingPointClass(childTypeTwo)))
             {
-                throw new ExprValidationException("Invalid type for bitwise " + _bitWiseOpEnum.getComputeDescription() + " operator");
+                throw new ExprValidationException("Invalid type for bitwise " + _bitWiseOpEnum.ComputeDescription + " operator");
             }
             else
             {
@@ -81,7 +81,7 @@ namespace net.esper.eql.expression
                 }
                 else
                 {
-                    throw new ExprValidationException("Both nodes muts be of the same type for bitwise " + _bitWiseOpEnum.getComputeDescription() + " operator");
+                    throw new ExprValidationException("Both nodes muts be of the same type for bitwise " + _bitWiseOpEnum.ComputeDescription + " operator");
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace net.esper.eql.expression
                 buffer.Append("(");
 
                 buffer.Append(ChildNodes[0].ExpressionString);
-                buffer.Append(_bitWiseOpEnum.getComputeDescription());
+                buffer.Append(_bitWiseOpEnum.ComputeDescription);
                 buffer.Append(ChildNodes[1].ExpressionString);
 
                 buffer.Append(")");

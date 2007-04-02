@@ -19,7 +19,7 @@ namespace net.esper.view.stat.olap
         /// </param>
         /// <returns> dimensions and cells
         /// </returns>
-        public static Pair<Dimension[], Cell[]> derive(String[] measuresToDerive, MultidimCube<BaseStatisticsBean> cube)
+        public static Pair<Dimension[], Cell[]> Derive(String[] measuresToDerive, MultidimCube<BaseStatisticsBean> cube)
         {
             int numDimensions = cube.NumDimensions;
             IList<String> dimPropertyNames = cube.DimensionNames;
@@ -38,7 +38,7 @@ namespace net.esper.view.stat.olap
                 // Derived members have no direct member dimension value
                 DimensionMemberImpl newMember = new DimensionMemberImpl(new Object[] { measuresToDerive[derivedIndex] });
                 cellMembers[derivedIndex] = newMember;
-                newMember.setDimension(cellDimension);
+                newMember.SetDimension(cellDimension);
             }
             cellDimension.setMembers(cellMembers);
 
@@ -79,7 +79,7 @@ namespace net.esper.view.stat.olap
             foreach (Object obj in memberList)
             {
                 DimensionMemberImpl newMember = new DimensionMemberImpl(new Object[] { obj });
-                newMember.setDimension(dimension);
+                newMember.SetDimension(dimension);
                 members[index] = newMember;
                 index++;
             }

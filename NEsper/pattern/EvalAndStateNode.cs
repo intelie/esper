@@ -187,8 +187,8 @@ namespace net.esper.pattern
 
             foreach (MatchedEventMap ev in events)
             {
-                MatchedEventMap current = matchEvent.shallowCopy();
-                current.merge(ev);
+                MatchedEventMap current = matchEvent.ShallowCopy();
+                current.Merge(ev);
 
                 // If this is the very last list in the array of lists, add accumulated MatchedEventMap events to result
                 if ((index + 1) == eventList.Count)
@@ -233,7 +233,7 @@ namespace net.esper.pattern
         /// </returns>
         public override Object Accept(EvalStateNodeVisitor visitor, Object data)
         {
-            return visitor.visit(this, data);
+            return visitor.Visit(this, data);
         }
 
         /// <summary>

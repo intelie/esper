@@ -17,6 +17,6 @@ namespace net.esper.pattern.guard
 		/// </param>
 		/// <returns> true to pass, false to not pass
 		/// </returns>
-		bool inspect(MatchedEventMap matchEvent);
+		bool Inspect(MatchedEventMap matchEvent);
 	}
 }

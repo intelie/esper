@@ -71,7 +71,7 @@ namespace net.esper.pattern
 
             this.everyChildNode = everyChildNode;
             this.spawnedNodes = new List<EvalStateNode>();
-            this.beginState = beginState.shallowCopy();
+            this.beginState = beginState.ShallowCopy();
             this.context = context;
 
             EvalStateNode child = everyChildNode.NewState(this, beginState, context);
@@ -201,7 +201,7 @@ namespace net.esper.pattern
         /// </returns>
         public override Object Accept(EvalStateNodeVisitor visitor, Object data)
         {
-            return visitor.visit(this, data);
+            return visitor.Visit(this, data);
         }
 
         /// <summary>

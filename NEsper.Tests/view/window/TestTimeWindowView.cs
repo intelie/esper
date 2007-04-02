@@ -89,7 +89,7 @@ namespace net.esper.view.window
 
 			// Pretend we are getting the callback from scheduling, check old data and check new scheduling
 			schedulingServiceStub.Time = startTime + TEST_WINDOW_MSEC;
-			myView.expire();
+			myView.Expire();
 			ArrayAssertionUtil.assertEqualsExactOrder( myView.GetEnumerator(), new EventBean[] {
 				events.Fetch( "b1" ),
 				events.Fetch( "b2" ),
@@ -122,7 +122,7 @@ namespace net.esper.view.window
 			// Pretend callback received
 			Assert.IsTrue( schedulingServiceStub.getAdded().Count == 0 );
 			schedulingServiceStub.Time = startTime + TEST_WINDOW_MSEC + 10000;
-			myView.expire();
+            myView.Expire();
 			SupportViewDataChecker.checkOldData( childView, new EventBean[] {
 				events.Fetch( "b1" ), 
 				events.Fetch( "b2" ) } );
@@ -138,7 +138,7 @@ namespace net.esper.view.window
 
 			// Pretend callback received
 			schedulingServiceStub.Time = startTime + TEST_WINDOW_MSEC + 59999;
-			myView.expire();
+            myView.Expire();
 			SupportViewDataChecker.checkOldData( childView, new EventBean[] { events.Fetch( "c1" ) } );
 			SupportViewDataChecker.checkNewData( childView, null );
 			ArrayAssertionUtil.assertEqualsExactOrder( myView.GetEnumerator(), new EventBean[] {
@@ -166,7 +166,7 @@ namespace net.esper.view.window
 			// Pretend callback received, we didn't schedule for 1 msec after, but for 100 msec after
 			// testing what happens when clock resolution or some other delay happens
 			schedulingServiceStub.Time = startTime + TEST_WINDOW_MSEC + 60099;
-			myView.expire();
+            myView.Expire();
 			SupportViewDataChecker.checkOldData( childView, new EventBean[] {
 				events.Fetch( "d1" ),
 				events.Fetch( "e1" ) } );
@@ -181,7 +181,7 @@ namespace net.esper.view.window
 
 			// Pretend callback received
 			schedulingServiceStub.Time = startTime + TEST_WINDOW_MSEC + 60201;
-			myView.expire();
+            myView.Expire();
 			SupportViewDataChecker.checkOldData( childView, new EventBean[] {
 				events.Fetch( "f1" ),
 				events.Fetch( "f2" ) } );

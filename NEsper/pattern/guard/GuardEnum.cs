@@ -75,7 +75,7 @@ namespace net.esper.pattern.guard
         /// <param name="name">guard name</param>
         /// <returns>enum</returns>
 
-        public static GuardEnum forName(String nspace, String name)
+        public static GuardEnum ForName(String nspace, String name)
         {
             foreach (GuardEnum guardEnum in GuardEnum.Values)
             {

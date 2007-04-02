@@ -4,7 +4,7 @@ using net.esper.dispatch;
 using net.esper.events;
 using net.esper.support.eql;
 using net.esper.support.events;
-using net.esper.view.internal_Renamed;
+using net.esper.view.internals;
 
 using NUnit.Core;
 using NUnit.Framework;

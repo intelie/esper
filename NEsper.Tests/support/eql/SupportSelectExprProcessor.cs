@@ -14,7 +14,7 @@ namespace net.esper.support.eql
 		{
 			get
 			{
-				return SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+				return SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 			}
 			
 		}

@@ -15,11 +15,11 @@ using org.apache.commons.logging;
 
 namespace net.esper.events.xml
 {
-	
 	/// <summary> Parses event property names and transforms to XPath expressions. Supports
 	/// nested, indexed and mapped event properties.
 	/// </summary>
-	public class SimpleXMLPropertyParser : EqlTokenTypes
+	
+    public class SimpleXMLPropertyParser : EqlTokenTypes
 	{
 		/// <summary>
 		/// Return the xPath corresponding to the given property.
@@ -30,9 +30,9 @@ namespace net.esper.events.xml
 		/// <returns>xpath expression</returns>
 		/// <throws>  XPathExpressionException </throws>
 		
-		public static XPathExpression parse(String propertyName, String rootElementName)
+		public static XPathExpression Parse(String propertyName, String rootElementName)
 		{
-			AST ast = parse(propertyName);
+			AST ast = Parse(propertyName);
 			
 			StringBuilder xPathBuf = new StringBuilder();
 			xPathBuf.Append("/");
@@ -40,14 +40,14 @@ namespace net.esper.events.xml
 			
 			if (ast.getNumberOfChildren() == 1)
 			{
-				xPathBuf.Append(makeProperty(ast.getFirstChild()));
+                xPathBuf.Append(MakeProperty(ast.getFirstChild()));
 			}
 			else
 			{
 				AST child = ast.getFirstChild();
 				do 
 				{
-					xPathBuf.Append(makeProperty(child));
+                    xPathBuf.Append(MakeProperty(child));
 					child = child.getNextSibling();
 				}
 				while (child != null);
@@ -59,7 +59,7 @@ namespace net.esper.events.xml
 			return XPathExpression.Compile( xPath );
 		}
 		
-		private static String makeProperty(AST child)
+		private static String MakeProperty(AST child)
 		{
 			switch (child.Type)
 			{
@@ -86,7 +86,7 @@ namespace net.esper.events.xml
 		/// <returns> AST syntax tree
 		/// </returns>
 
-		internal static AST parse(String propertyName)
+		internal static AST Parse(String propertyName)
 		{
 			EQLStatementLexer lexer = new EQLStatementLexer(new StringReader(propertyName));
 			EQLStatementParser parser = new EQLStatementParser(lexer);

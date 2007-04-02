@@ -51,7 +51,7 @@ namespace net.esper.eql.join.exec
         public override void Process(EventBean lookupEvent, EventBean[] prefillPath, IList<EventBean[]> result)
         {
             nestingOrderLength = childNodes.Count;
-            recursiveNestedJoin(lookupEvent, 0, prefillPath, result);
+            RecursiveNestedJoin(lookupEvent, 0, prefillPath, result);
         }
 
         /// <summary>Recursive method to run through all child nodes and, for each result set tuple returnedby a child node, execute the inner child of the child node until there are no inner child nodes.</summary>
@@ -60,7 +60,7 @@ namespace net.esper.eql.join.exec
         /// <param name="currentPath">prototype result row to use by child nodes for generating result rows</param>
         /// <param name="result">result tuple rows to be populated</param>
 
-        protected void recursiveNestedJoin(EventBean lookupEvent, int nestingOrderIndex, EventBean[] currentPath, IList<EventBean[]> result)
+        protected void RecursiveNestedJoin(EventBean lookupEvent, int nestingOrderIndex, EventBean[] currentPath, IList<EventBean[]> result)
         {
             IList<EventBean[]> nestedResult = new List<EventBean[]>();
             ExecNode nestedExecNode = childNodes[nestingOrderIndex];
@@ -74,7 +74,7 @@ namespace net.esper.eql.join.exec
                 foreach (EventBean[] row in nestedResult)
                 {
                     EventBean lookup = row[nestedStreams[nestingOrderIndex]];
-                    recursiveNestedJoin(lookup, nestingOrderIndex + 1, row, result);
+                    RecursiveNestedJoin(lookup, nestingOrderIndex + 1, row, result);
                 }
                 return;
             }

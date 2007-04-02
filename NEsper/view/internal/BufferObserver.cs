@@ -1,6 +1,6 @@
 using System;
 using EventBuffer = net.esper.collection.EventBuffer;
-namespace net.esper.view.internal_Renamed
+namespace net.esper.view.internals
 {
 	
 	/// <summary> Observer interface to a stream publishing new and old events.</summary>
@@ -13,6 +13,6 @@ namespace net.esper.view.internal_Renamed
 		/// </param>
 		/// <param name="oldEventBuffer">buffer for old events
 		/// </param>
-		void  newData(int streamId, EventBuffer newEventBuffer, EventBuffer oldEventBuffer);
+		void  NewData(int streamId, EventBuffer newEventBuffer, EventBuffer oldEventBuffer);
 	}
 }

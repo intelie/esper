@@ -15,7 +15,7 @@ using net.esper.pattern;
 using net.esper.schedule;
 using net.esper.util;
 using net.esper.view;
-using net.esper.view.internal_Renamed;
+using net.esper.view.internals;
 
 using org.apache.commons.logging;
 
@@ -50,7 +50,7 @@ namespace net.esper.core
 
             // Allocate the statement's schedule bucket which stays constant over it's lifetime.
             // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
-            scheduleBucket = services.SchedulingService.allocateBucket();
+            scheduleBucket = services.SchedulingService.AllocateBucket();
 
             viewContext = new ViewServiceContext(services.SchedulingService, scheduleBucket, services.EventAdapterService);
         }
@@ -216,7 +216,7 @@ namespace net.esper.core
         private Viewable handleJoin(String[] streamNames, EventType[] streamTypes, Viewable[] streamViews, ResultSetProcessor optionalResultSetProcessor, SelectClauseStreamSelectorEnum selectStreamSelectorEnum)
         {
             // Handle joins
-            JoinSetComposer composer = JoinSetComposerFactory.makeComposer(statementSpec.OuterJoinDescList, statementSpec.FilterRootNode, streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
+            JoinSetComposer composer = JoinSetComposerFactory.MakeComposer(statementSpec.OuterJoinDescList, statementSpec.FilterRootNode, streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
             JoinSetFilter filter = new JoinSetFilter(statementSpec.FilterRootNode);
             OutputProcessView indicatorView = new OutputProcessView(optionalResultSetProcessor, statementSpec.StreamSpecs.Count, statementSpec.OutputLimitSpec, viewContext);
 

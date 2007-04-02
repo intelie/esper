@@ -30,7 +30,7 @@ namespace net.esper.view.stat.olap
 			};
 
 			// derive
-			Pair<Dimension[], Cell[]> result = CubeDerivedValueHelper.derive( measureList, testCube );
+			Pair<Dimension[], Cell[]> result = CubeDerivedValueHelper.Derive( measureList, testCube );
 
 			Dimension[] dimensions = result.First;
 			Cell[] measures = result.Second;
@@ -46,7 +46,7 @@ namespace net.esper.view.stat.olap
 
 				for ( int i = 0 ; i < members.Length ; i++ )
 				{
-					Assert.IsTrue( members[i].getDimension() == dimensions[dimension] );
+					Assert.IsTrue( members[i].Dimension == dimensions[dimension] );
 				}
 			}
 

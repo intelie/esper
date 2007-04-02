@@ -20,13 +20,13 @@ namespace net.esper.filter
         [SetUp]
         public virtual void setUp()
         {
-            eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+            eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
         }
 
         [Test]
         public virtual void testHashCode()
         {
-            FilterSpec spec = SupportFilterSpecBuilder.build(eventType, new Object[] { "intPrimitive", FilterOperator.EQUAL, 2, "intBoxed", FilterOperator.EQUAL, 3 });
+            FilterSpec spec = SupportFilterSpecBuilder.Build(eventType, new Object[] { "intPrimitive", FilterOperator.EQUAL, 2, "intBoxed", FilterOperator.EQUAL, 3 });
             int expectedHash = eventType.GetHashCode() ^ "intPrimitive".GetHashCode() ^ "intBoxed".GetHashCode();
             Assert.AreEqual(expectedHash, spec.GetHashCode());
         }
@@ -47,7 +47,7 @@ namespace net.esper.filter
             List<FilterSpec> specVec = new List<FilterSpec>();
             foreach (Object[] param in paramList)
             {
-                FilterSpec spec = SupportFilterSpecBuilder.build(eventType, param);
+                FilterSpec spec = SupportFilterSpecBuilder.Build(eventType, param);
                 specVec.Add(spec);
             }
 
@@ -64,7 +64,7 @@ namespace net.esper.filter
         [Test]
         public virtual void testGetValueSet()
         {
-            IList<FilterSpecParam> _params = SupportFilterSpecBuilder.buildList(
+            IList<FilterSpecParam> _params = SupportFilterSpecBuilder.BuildList(
                 new Object[] { "intPrimitive", FilterOperator.EQUAL, 2 });
             _params.Add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive"));
             FilterSpec filterSpec = new FilterSpec(eventType, _params);

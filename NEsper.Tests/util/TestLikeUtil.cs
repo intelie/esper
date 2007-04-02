@@ -79,14 +79,14 @@ namespace net.esper.util
             for (int i = 0; i < stringMatching.Length; i++)
             {
                 String text = "Expected match for pattern '" + pattern + "' and string '" + stringMatching[i] + "'";
-                bool? testComp = helper.compare(stringMatching[i]);
+                bool? testComp = helper.Compare(stringMatching[i]);
                 Assert.IsTrue(testComp.GetValueOrDefault(false), text);
             }
 
             for (int i = 0; i < stringNotMatching.Length; i++)
             {
                 String text = "Expected mismatch for pattern '" + pattern + "' and string '" + stringNotMatching[i] + "'";
-                bool? testComp = helper.compare(stringNotMatching[i]);
+                bool? testComp = helper.Compare(stringNotMatching[i]);
                 Assert.IsFalse(testComp.GetValueOrDefault(false), text);
             }
         }

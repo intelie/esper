@@ -90,7 +90,7 @@ namespace net.esper.eql.join.table
         /// <returns> set of events with property value, or null if none found (never returns zero-sized set)
         /// </returns>
 
-        public ISet<EventBean> lookup(Object[] keys)
+        public ISet<EventBean> Lookup(Object[] keys)
         {
             MultiKeyUntyped key = new MultiKeyUntyped(keys);
             ISet<EventBean> events = propertyIndex.Fetch(key);

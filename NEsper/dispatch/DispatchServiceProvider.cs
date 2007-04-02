@@ -8,7 +8,7 @@ namespace net.esper.dispatch
 		/// <summary> Returns new service.</summary>
 		/// <returns> new dispatch service implementation.
 		/// </returns>
-		public static DispatchService newService()
+		public static DispatchService NewService()
 		{
 			return new DispatchServiceImpl();
 		}

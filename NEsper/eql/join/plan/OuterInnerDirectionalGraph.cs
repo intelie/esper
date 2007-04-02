@@ -36,7 +36,7 @@ namespace net.esper.eql.join.plan
         /// </returns>
         public virtual OuterInnerDirectionalGraph Add(int outerStream, int innerStream)
         {
-            checkArgs(outerStream, innerStream);
+            CheckArgs(outerStream, innerStream);
 
             // add set
             ISet<int> innerSet = streamToInnerMap.Fetch( outerStream, null ) ;
@@ -62,9 +62,9 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <returns> set of inner streams, or null if empty
         /// </returns>
-        public ISet<int> getInner(int outerStream)
+        public ISet<int> GetInner(int outerStream)
         {
-            checkArgs(outerStream);
+            CheckArgs(outerStream);
             ISet<int> innerSet = streamToInnerMap.Fetch(outerStream, null);
             return innerSet;
         }
@@ -74,9 +74,9 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <returns> set of outer streams, or null if empty
         /// </returns>
-        public ISet<int> getOuter(int innerStream)
+        public ISet<int> GetOuter(int innerStream)
         {
-            checkArgs(innerStream);
+            CheckArgs(innerStream);
 
             ISet<int> result = new EHashSet<int>();
             foreach( KeyValuePair<int, ISet<int>> keyValuePair in streamToInnerMap )
@@ -105,9 +105,9 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <returns> true if outer-inner relationship between streams, false if not
         /// </returns>
-        public virtual bool isInner(int outerStream, int innerStream)
+        public virtual bool IsInner(int outerStream, int innerStream)
         {
-            checkArgs(outerStream, innerStream);
+            CheckArgs(outerStream, innerStream);
 
             ISet<int> innerSet = streamToInnerMap.Fetch(outerStream, null);
             if (innerSet == null)
@@ -124,10 +124,10 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <returns> true if outer-inner relationship between streams, false if not
         /// </returns>
-        public virtual bool isOuter(int outerStream, int innerStream)
+        public virtual bool IsOuter(int outerStream, int innerStream)
         {
-            checkArgs(outerStream, innerStream);
-            ISet<int> outerStreams = getOuter(innerStream);
+            CheckArgs(outerStream, innerStream);
+            ISet<int> outerStreams = GetOuter(innerStream);
             if (outerStreams == null)
             {
                 return false;
@@ -158,7 +158,7 @@ namespace net.esper.eql.join.plan
             return buffer.ToString();
         }
 
-        private void checkArgs(int stream)
+        private void CheckArgs(int stream)
         {
             if ((stream >= numStreams) || (stream < 0))
             {
@@ -166,7 +166,7 @@ namespace net.esper.eql.join.plan
             }
         }
 
-        private void checkArgs(int outerStream, int innerStream)
+        private void CheckArgs(int outerStream, int innerStream)
         {
             if ((outerStream >= numStreams) || (innerStream >= numStreams) || (outerStream < 0) || (innerStream < 0))
             {

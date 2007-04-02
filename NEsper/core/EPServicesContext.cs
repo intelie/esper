@@ -175,12 +175,12 @@ namespace net.esper.core
 			this.autoImportService = autoImportService;
 			this.databaseConfigService = databaseConfigService;
 			
-			this.filterService = FilterServiceProvider.newService();
-			this.timerService = TimerServiceProvider.newService();
-			this.emitService = EmitServiceProvider.newService();
-			this.dispatchService = DispatchServiceProvider.newService();
-			this.viewService = ViewServiceProvider.newService();
-			this.streamReuseService = StreamReuseServiceProvider.newService();
+			this.filterService = FilterServiceProvider.NewService();
+			this.timerService = TimerServiceProvider.NewService();
+			this.emitService = EmitServiceProvider.NewService();
+			this.dispatchService = DispatchServiceProvider.NewService();
+			this.viewService = ViewServiceProvider.NewService();
+			this.streamReuseService = StreamReuseServiceProvider.NewService();
 		}
 	}
 }

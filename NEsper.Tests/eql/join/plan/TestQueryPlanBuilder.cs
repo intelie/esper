@@ -22,16 +22,16 @@ namespace net.esper.eql.join.plan
             OuterJoinDesc joinDesc = SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT);
             descList.Add(joinDesc);
 
-            QueryPlan plan = QueryPlanBuilder.getPlan(2, new List<OuterJoinDesc>(), null, null);
+            QueryPlan plan = QueryPlanBuilder.GetPlan(2, new List<OuterJoinDesc>(), null, null);
             assertPlan(plan);
 
-            plan = QueryPlanBuilder.getPlan(2, descList, null, null);
+            plan = QueryPlanBuilder.GetPlan(2, descList, null, null);
             assertPlan(plan);
 
-            plan = QueryPlanBuilder.getPlan(2, descList, SupportExprNodeFactory.makeEqualsNode(), null);
+            plan = QueryPlanBuilder.GetPlan(2, descList, SupportExprNodeFactory.makeEqualsNode(), null);
             assertPlan(plan);
 
-            plan = QueryPlanBuilder.getPlan(2, new List<OuterJoinDesc>(), SupportExprNodeFactory.makeEqualsNode(), null);
+            plan = QueryPlanBuilder.GetPlan(2, new List<OuterJoinDesc>(), SupportExprNodeFactory.makeEqualsNode(), null);
             assertPlan(plan);
         }
 

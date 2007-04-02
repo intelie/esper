@@ -24,7 +24,7 @@ namespace net.esper.eql.join.plan
             // simpleProperty in s2
 
             QueryGraph graph = new QueryGraph(3);
-            OuterJoinAnalyzer.analyze(descList, graph);
+            OuterJoinAnalyzer.Analyze(descList, graph);
             Assert.AreEqual(3, graph.NumStreams);
 
             Assert.IsTrue(graph.IsNavigable(0, 1));

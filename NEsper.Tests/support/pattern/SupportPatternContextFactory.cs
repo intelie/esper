@@ -15,7 +15,7 @@ namespace net.esper.support.pattern
 		public static PatternContext makeContext()
 		{
 			SupportSchedulingServiceImpl sched = new SupportSchedulingServiceImpl();
-			return new PatternContext(null, sched, sched.allocateBucket(), SupportEventAdapterService.Service);
+			return new PatternContext(null, sched, sched.AllocateBucket(), SupportEventAdapterService.Service);
 		}
 	}
 }

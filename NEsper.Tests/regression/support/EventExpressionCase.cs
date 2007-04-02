@@ -16,9 +16,9 @@ namespace net.esper.regression.support
             this.expectedResults = new LinkedDictionary<String, List<EventDescriptor>>();
         }
 
-        public String getExpressionText()
+        public String ExpressionText
         {
-            return expressionText;
+            get { return expressionText; }
         }
 
         public LinkedDictionary<String, List<EventDescriptor>> getExpectedResults()

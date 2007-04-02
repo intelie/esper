@@ -38,7 +38,7 @@ namespace net.esper.eql.parse
                 if (log.IsDebugEnabled)
                 {
                     log.Debug(".walk AST tree after walking");
-                    DebugFacility.dumpAST(ast);
+                    DebugFacility.DumpAST(ast);
                 }
             }
             catch (RecognitionException e)
@@ -83,7 +83,7 @@ namespace net.esper.eql.parse
             if (log.IsDebugEnabled)
             {
                 log.Debug(".parse Dumping AST...");
-                DebugFacility.dumpAST(ast);
+                DebugFacility.DumpAST(ast);
             }
 
             return ast;

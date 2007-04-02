@@ -37,7 +37,7 @@ namespace net.esper.filter
 			FilterSpecParamEventProp param = makeParam( "asName", "intBoxed" );
 
 			EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
-			taggedEventTypes.Put( "asName", SupportEventTypeFactory.createBeanType( typeof( SupportBean ) ) );
+			taggedEventTypes.Put( "asName", SupportEventTypeFactory.CreateBeanType( typeof( SupportBean ) ) );
 
 			Assert.AreEqual( typeof( int? ), param.GetFilterValueClass( taggedEventTypes ) );
 

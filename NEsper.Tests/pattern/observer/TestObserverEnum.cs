@@ -12,13 +12,13 @@ namespace net.esper.pattern.observer
 		[Test]
 		public virtual void  testForName()
 		{
-			ObserverEnum enumValue = ObserverEnum.forName(ObserverEnum.TIMER_INTERVAL.Namespace, ObserverEnum.TIMER_INTERVAL.Name);
+			ObserverEnum enumValue = ObserverEnum.ForName(ObserverEnum.TIMER_INTERVAL.Namespace, ObserverEnum.TIMER_INTERVAL.Name);
 			Assert.AreEqual(enumValue, ObserverEnum.TIMER_INTERVAL);
 			
-			enumValue = ObserverEnum.forName(ObserverEnum.TIMER_INTERVAL.Namespace, "dummy");
+			enumValue = ObserverEnum.ForName(ObserverEnum.TIMER_INTERVAL.Namespace, "dummy");
 			Assert.IsNull(enumValue);
 			
-			enumValue = ObserverEnum.forName("dummy", ObserverEnum.TIMER_INTERVAL.Name);
+			enumValue = ObserverEnum.ForName("dummy", ObserverEnum.TIMER_INTERVAL.Name);
 			Assert.IsNull(enumValue);
 		}
 	}

@@ -29,6 +29,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\commons-logging.dll</HintPath>
     </Reference>
+    <Reference Include="NEsper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\NEsper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -45,11 +49,5 @@
     <Compile Include="monitor\LatencySpikeMonitor.cs" />
     <Compile Include="monitor\ServiceHealthMonitor.cs" />
     <Compile Include="monitor\SpikeAndErrorMonitor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\NEsper\NEsper.csproj">
-      <Project>{8376DC7A-06AC-40F1-9338-9AC5AF788356}</Project>
-      <Name>NEsper</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

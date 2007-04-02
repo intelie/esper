@@ -65,7 +65,7 @@ namespace net.esper.indicator.pretty
                 for (int i = 0; i < sizeLastDimension; i++)
                 {
                     DataTable tableData = renderTable(cube, ordinalOffset * i);
-                    String renderedMember = DimensionMemberRenderHelper.renderMember(dimension[3].GetMembers()[i]);
+                    String renderedMember = DimensionMemberRenderHelper.RenderMember(dimension[3].GetMembers()[i]);
                     String renderedTable = TABLE_NAME + " " + i + " : " + renderedMember;
 
                     renderedCube[renderedTable] = tableData;
@@ -114,7 +114,7 @@ namespace net.esper.indicator.pretty
             	            	
                 // Store index and row key in map
                 dataRow[0] = rowIndex;
-                dataRow[1] = DimensionMemberRenderHelper.renderMember(rowDimensionMembers[rowIndex]);
+                dataRow[1] = DimensionMemberRenderHelper.RenderMember(rowDimensionMembers[rowIndex]);
 
                 // Iterate over all columns
                 DimensionMember[] columnDimensionMembers = columnDimension.GetMembers() ;
@@ -158,8 +158,8 @@ namespace net.esper.indicator.pretty
     	            // Store index and row key in map
         	        dataRow[0] = index;
 
-                    String renderedRow = DimensionMemberRenderHelper.renderMember(rowDimensionMembers[rowIndex]);
-                    String renderedCell = DimensionMemberRenderHelper.renderMember(cellDimensionMembers[cellIndex]);
+                    String renderedRow = DimensionMemberRenderHelper.RenderMember(rowDimensionMembers[rowIndex]);
+                    String renderedCell = DimensionMemberRenderHelper.RenderMember(cellDimensionMembers[cellIndex]);
                     String renderedRowKey = renderedRow + CELL_ROW_PRETTY_DELIMITER + renderedCell;
                     dataRow[1] = renderedRowKey;
 
@@ -219,7 +219,7 @@ namespace net.esper.indicator.pretty
             	dataColumn.ColumnName = String.Format(
             		"{0} {1}",
             		renderColumnId( pseudoColumnIndex ),
-            		DimensionMemberRenderHelper.renderMember(dimensionMember) ) ;
+            		DimensionMemberRenderHelper.RenderMember(dimensionMember) ) ;
             	dataColumnList.Add( dataColumn ) ;
             }
 

@@ -23,7 +23,7 @@ namespace net.esper.eql.join.plan
 		[SetUp]
 		public virtual void  setUp()
 		{
-			types = new EventType[]{SupportEventTypeFactory.createBeanType(typeof(SupportBean))};
+			types = new EventType[]{SupportEventTypeFactory.CreateBeanType(typeof(SupportBean))};
 			
 			propertyMapEventIndex = new PropertyIndexedEventTable(1, types[0], new String[]{"intBoxed"});
 		}

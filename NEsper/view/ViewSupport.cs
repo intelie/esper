@@ -226,7 +226,7 @@ namespace net.esper.view
         /// <param name="newData">is the new data in an update call</param>
         /// <param name="oldData">is the old data in an update call</param>
 
-        public static void dumpUpdateParams(String prefix, Object[] newData, Object[] oldData)
+        public static void DumpUpdateParams(String prefix, Object[] newData, Object[] oldData)
         {
             if (!log.IsDebugEnabled)
             {
@@ -273,14 +273,14 @@ namespace net.esper.view
         /// <param name="prefix">is a text to print for each view printed</param>
         /// <param name="parentViewable">is the parent for which the child views are displayed.</param>
         
-        public static void dumpChildViews(String prefix, Viewable parentViewable)
+        public static void DumpChildViews(String prefix, Viewable parentViewable)
         {
             if (log.IsDebugEnabled)
             {
                 foreach (View child in parentViewable.GetViews())
                 {
                     log.Debug(".dumpChildViews " + prefix + " " + child.ToString());
-                    dumpChildViews(prefix + "  ", child);
+                    DumpChildViews(prefix + "  ", child);
                 }
             }
         }
@@ -295,7 +295,7 @@ namespace net.esper.view
         /// <param name="descendentView">is the view to find</param>
         /// <returns>list of Viewable nodes between parent and descendent view.</returns>
         
-        public static IList<View> findDescendent(Viewable parentView, Viewable descendentView)
+        public static IList<View> FindDescendent(Viewable parentView, Viewable descendentView)
         {
             Stack<View> stack = new Stack<View>();
 

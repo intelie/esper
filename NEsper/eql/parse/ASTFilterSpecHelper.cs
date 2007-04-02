@@ -119,7 +119,7 @@ namespace net.esper.eql.parse
 			}
 			
 			// Get type representation
-			PrimitiveValue primitiveValue = PrimitiveValueFactory.create(propertyType);
+			PrimitiveValue primitiveValue = PrimitiveValueFactory.Create(propertyType);
 			if (primitiveValue == null)
 			{
 				throw new ASTFilterSpecValidationException("Property named '" + propertyName + "' of type '" + propertyType.FullName + "' is not supported type");

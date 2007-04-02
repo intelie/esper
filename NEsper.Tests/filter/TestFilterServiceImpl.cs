@@ -35,7 +35,7 @@ namespace net.esper.filter
                 }
 
             }
-            public virtual void matchFound(EventBean _event)
+            public virtual void MatchFound(EventBean _event)
             {
                 TestFilterServiceImpl.log.Debug(".matchFound Removing callbackTwo");
                 Enclosing_Instance.filterService.Remove(callbackTwo);
@@ -54,8 +54,8 @@ namespace net.esper.filter
         {
             filterService = new MyFilterServiceImpl();
 
-            eventTypeOne = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
-            eventTypeTwo = SupportEventTypeFactory.createBeanType(typeof(SupportBeanSimple));
+            eventTypeOne = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
+            eventTypeTwo = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
 
             Object[] eventTypeTwoArgs = new Object[]
             {
@@ -70,10 +70,10 @@ namespace net.esper.filter
 
 
             filterSpecs = new List<FilterValueSet>();
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).GetValueSet(null));
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeOne, new Object[] { "intPrimitive", FilterOperator.RANGE_CLOSED, 10, 20, "str", FilterOperator.EQUAL, "HELLO", "boolPrimitive", FilterOperator.EQUAL, false, "doubleBoxed", FilterOperator.GREATER, 100d }).GetValueSet(null));
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeTwo, new Object[0]).GetValueSet(null));
-            filterSpecs.Add(SupportFilterSpecBuilder.build(eventTypeTwo, eventTypeTwoArgs).GetValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.Build(eventTypeOne, new Object[0]).GetValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.Build(eventTypeOne, new Object[] { "intPrimitive", FilterOperator.RANGE_CLOSED, 10, 20, "str", FilterOperator.EQUAL, "HELLO", "boolPrimitive", FilterOperator.EQUAL, false, "doubleBoxed", FilterOperator.GREATER, 100d }).GetValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.Build(eventTypeTwo, new Object[0]).GetValueSet(null));
+            filterSpecs.Add(SupportFilterSpecBuilder.Build(eventTypeTwo, eventTypeTwoArgs).GetValueSet(null));
 
             // Create callbacks and add
             filterCallbacks = new List<SupportFilterCallback>();
@@ -148,7 +148,7 @@ namespace net.esper.filter
         {
             try
             {
-                FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeTwo, new Object[] { "myString", FilterOperator.GREATER, 2 }).GetValueSet(null);
+                FilterValueSet spec = SupportFilterSpecBuilder.Build(eventTypeTwo, new Object[] { "myString", FilterOperator.GREATER, 2 }).GetValueSet(null);
                 filterService.Add(spec, new SupportFilterCallback());
                 Assert.IsTrue(false);
             }
@@ -194,7 +194,7 @@ namespace net.esper.filter
         [Test]
         public virtual void testActiveCallbackRemove()
         {
-            FilterValueSet spec = SupportFilterSpecBuilder.build(eventTypeOne, new Object[0]).GetValueSet(null);
+            FilterValueSet spec = SupportFilterSpecBuilder.Build(eventTypeOne, new Object[0]).GetValueSet(null);
             SupportFilterCallback callbackTwo = new SupportFilterCallback();
 
             // callback that removes another matching filter spec callback

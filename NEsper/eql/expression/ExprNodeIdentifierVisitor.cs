@@ -34,7 +34,7 @@ namespace net.esper.eql.expression
         /// <returns>
         /// true if the visitor wants to visit the child node (next call is visit), or false to skip child
         /// </returns>
-		public virtual bool isVisit( ExprNode exprNode )
+		public virtual bool IsVisit( ExprNode exprNode )
 		{
 			if ( isVisitAggregateNodes )
 			{
@@ -58,7 +58,7 @@ namespace net.esper.eql.expression
         /// Visit the given expression node.
         /// </summary>
         /// <param name="exprNode">is the expression node to visit</param>
-		public virtual void visit( ExprNode exprNode )
+		public virtual void Visit( ExprNode exprNode )
 		{
 			ExprIdentNode identNode = exprNode as ExprIdentNode ;
 			if ( identNode == null )

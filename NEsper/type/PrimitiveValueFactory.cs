@@ -16,7 +16,7 @@ namespace net.esper.type
 		/// <returns> instance of placeholder representing the type, or null if not a primitive type
 		/// </returns>
 	
-        public static PrimitiveValue create(Type type)
+        public static PrimitiveValue Create(Type type)
 		{
 			if ((type == typeof(bool)) || type == typeof(bool?))
 			{

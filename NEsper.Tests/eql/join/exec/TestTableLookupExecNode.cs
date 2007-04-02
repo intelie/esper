@@ -21,10 +21,10 @@ namespace net.esper.eql.join.exec
 		[SetUp]
 		public virtual void setUp()
 		{
-			EventType eventTypeIndex = SupportEventTypeFactory.createBeanType( typeof( SupportBean ) );
+			EventType eventTypeIndex = SupportEventTypeFactory.CreateBeanType( typeof( SupportBean ) );
             index = new PropertyIndexedEventTable(0, eventTypeIndex, new String[] { "str" });
 
-			EventType eventTypeKeyGen = SupportEventTypeFactory.createBeanType( typeof( SupportMarketDataBean ) );
+			EventType eventTypeKeyGen = SupportEventTypeFactory.CreateBeanType( typeof( SupportMarketDataBean ) );
 
 			exec = new TableLookupExecNode( 1, new IndexedTableLookupStrategy( eventTypeKeyGen, new String[] { "symbol" }, index ) );
 		}

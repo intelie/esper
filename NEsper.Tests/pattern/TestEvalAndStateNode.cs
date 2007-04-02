@@ -57,21 +57,21 @@ namespace net.esper.pattern
 				}
 			}
 
-			Assert.IsTrue( result[0].getMatchingEvent( "0" ) == events.Fetch( "0" ) );
+			Assert.IsTrue( result[0].GetMatchingEvent( "0" ) == events.Fetch( "0" ) );
 
-			Assert.IsTrue( result[0].getMatchingEvent( "a" ) == events.Fetch( "a" ) );
-			Assert.IsTrue( result[0].getMatchingEvent( "c" ) == events.Fetch( "c" ) );
-			Assert.IsTrue( result[0].getMatchingEvent( "e" ) == events.Fetch( "e" ) );
+			Assert.IsTrue( result[0].GetMatchingEvent( "a" ) == events.Fetch( "a" ) );
+			Assert.IsTrue( result[0].GetMatchingEvent( "c" ) == events.Fetch( "c" ) );
+			Assert.IsTrue( result[0].GetMatchingEvent( "e" ) == events.Fetch( "e" ) );
 
-			Assert.IsTrue( result[1].getMatchingEvent( "0" ) == events.Fetch( "0" ) );
-			Assert.IsTrue( result[1].getMatchingEvent( "a" ) == events.Fetch( "a" ) );
-			Assert.IsTrue( result[1].getMatchingEvent( "c" ) == events.Fetch( "c" ) );
-			Assert.IsTrue( result[1].getMatchingEvent( "f" ) == events.Fetch( "f" ) );
+			Assert.IsTrue( result[1].GetMatchingEvent( "0" ) == events.Fetch( "0" ) );
+			Assert.IsTrue( result[1].GetMatchingEvent( "a" ) == events.Fetch( "a" ) );
+			Assert.IsTrue( result[1].GetMatchingEvent( "c" ) == events.Fetch( "c" ) );
+			Assert.IsTrue( result[1].GetMatchingEvent( "f" ) == events.Fetch( "f" ) );
 
-			Assert.IsTrue( result[7].getMatchingEvent( "0" ) == events.Fetch( "0" ) );
-			Assert.IsTrue( result[7].getMatchingEvent( "b" ) == events.Fetch( "b" ) );
-			Assert.IsTrue( result[7].getMatchingEvent( "d" ) == events.Fetch( "d" ) );
-			Assert.IsTrue( result[7].getMatchingEvent( "f" ) == events.Fetch( "f" ) );
+			Assert.IsTrue( result[7].GetMatchingEvent( "0" ) == events.Fetch( "0" ) );
+			Assert.IsTrue( result[7].GetMatchingEvent( "b" ) == events.Fetch( "b" ) );
+			Assert.IsTrue( result[7].GetMatchingEvent( "d" ) == events.Fetch( "d" ) );
+			Assert.IsTrue( result[7].GetMatchingEvent( "f" ) == events.Fetch( "f" ) );
 		}
 
 		/// <summary> Make a list of MatchEvents for testing each containing 2 entries in the list</summary>

@@ -109,7 +109,7 @@ namespace net.esper.pattern
                 topStateNode = null;
             }
 
-            callback.matchFound(matchEvent.getMatchingEvents());
+            callback.MatchFound(matchEvent.GetMatchingEvents());
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace net.esper.pattern
         /// </returns>
         public override Object Accept(EvalStateNodeVisitor visitor, Object data)
         {
-            return visitor.visit(this, data);
+            return visitor.Visit(this, data);
         }
 
         /// <summary>

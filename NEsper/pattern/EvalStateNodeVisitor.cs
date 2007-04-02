@@ -12,6 +12,6 @@ namespace net.esper.pattern
 		/// </param>
 		/// <returns> any additional data useful to implementations or null
 		/// </returns>
-		Object visit(EvalStateNode node, Object data);
+		Object Visit(EvalStateNode node, Object data);
 	}
 }

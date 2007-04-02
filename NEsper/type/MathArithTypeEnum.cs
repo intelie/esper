@@ -495,9 +495,9 @@ namespace net.esper.type
         /// <summary>Returns string representation of enum.</summary>
         /// <returns>text for enum</returns>
 
-        public String getExpressionText()
+        public String ExpressionText
         {
-            return expressionText;
+            get { return expressionText; }
         }
     }
 }

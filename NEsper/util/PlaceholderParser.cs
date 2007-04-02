@@ -27,7 +27,7 @@ namespace net.esper.util
         /// </returns>
         /// <throws>  PlaceholderParseException if the string cannot be parsed to indicate syntax errors </throws>
 
-        public static IList<Fragment> parsePlaceholder(String parseString)
+        public static IList<Fragment> ParsePlaceholder(String parseString)
         {
             List<Fragment> result = new List<Fragment>();
             int currOutputIndex = 0;

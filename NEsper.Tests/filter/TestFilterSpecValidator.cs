@@ -20,7 +20,7 @@ namespace net.esper.filter
 		[SetUp]
 		public virtual void  setUp()
 		{
-			eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+			eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 		}
 		
 		[Test]
@@ -47,7 +47,7 @@ namespace net.esper.filter
 		private
 		void assertValid(params object[] filterParameters)
 		{
-			FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterParameters);
+			FilterSpec spec = SupportFilterSpecBuilder.Build(eventType, filterParameters);
 			FilterSpecValidator.Validate(spec, null);
 		}
 		
@@ -56,7 +56,7 @@ namespace net.esper.filter
 		{
 			try
 			{
-				FilterSpec spec = SupportFilterSpecBuilder.build(eventType, filterParameters);
+				FilterSpec spec = SupportFilterSpecBuilder.Build(eventType, filterParameters);
 				FilterSpecValidator.Validate(spec, null);
 				Assert.Fail();
 			}

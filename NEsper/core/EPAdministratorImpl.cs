@@ -96,7 +96,7 @@ namespace net.esper.core
 
             if (log.IsDebugEnabled)
             {
-                DebugFacility.dumpAST(walker.getAST());
+                DebugFacility.DumpAST(walker.getAST());
             }
 
             if (walker.StatementSpec.StreamSpecs.Count > 1)
@@ -151,7 +151,7 @@ namespace net.esper.core
 
             if (log.IsDebugEnabled)
             {
-                DebugFacility.dumpAST(walker.getAST());
+                DebugFacility.DumpAST(walker.getAST());
             }
 
 

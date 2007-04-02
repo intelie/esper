@@ -35,7 +35,7 @@ namespace net.esper.support.view
 
         public SupportStreamImpl(Type clazz, int depth)
         {
-            this.eventType = SupportEventTypeFactory.createBeanType(clazz);
+            this.eventType = SupportEventTypeFactory.CreateBeanType(clazz);
             this.depth = depth;
 
             this.events = new List<EventBean>();

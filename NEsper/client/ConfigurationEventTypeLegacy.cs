@@ -114,7 +114,7 @@ namespace net.esper.client
         /// <param name="name">is the event property name</param>
         /// <param name="accessorMethod">is the accessor method name.</param>
         
-        public virtual void addMethodProperty(String name, String accessorMethod)
+        public virtual void AddMethodProperty(String name, String accessorMethod)
         {
         	methodProperties.Add(new LegacyMethodPropDesc(name, accessorMethod));
         }
@@ -125,7 +125,7 @@ namespace net.esper.client
         /// <param name="name">is the event property name</param>
         /// <param name="accessorField">is the accessor field underlying the name</param>
         
-        public virtual void addFieldProperty(String name, String accessorField)
+        public virtual void AddFieldProperty(String name, String accessorField)
         {
             fieldProperties.Add(new LegacyFieldPropDesc(name, accessorField));
         }

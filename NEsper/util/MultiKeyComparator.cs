@@ -44,7 +44,7 @@ namespace net.esper.util
 				Object valueTwo = secondValues[i];
 				bool isDescending = isDescendingValues[i];
 				
-				int comparisonResult = compareValues(valueOne, valueTwo, isDescending);
+				int comparisonResult = CompareValues(valueOne, valueTwo, isDescending);
 				if (comparisonResult != 0)
 				{
 					return comparisonResult;
@@ -62,7 +62,7 @@ namespace net.esper.util
 			}
 		}
 		
-		private static int compareValues(Object valueOne, Object valueTwo, bool isDescending)
+		private static int CompareValues(Object valueOne, Object valueTwo, bool isDescending)
 		{
 			if (isDescending)
 			{

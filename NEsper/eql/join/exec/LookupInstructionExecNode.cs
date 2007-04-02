@@ -111,7 +111,7 @@ namespace net.esper.eql.join.exec
             }
 
             // provide a place for the result
-            myResultAssembler.setResult(result, lookupEvent);
+            myResultAssembler.SetResult(result, lookupEvent);
 
             // go over the assembly instruction set
             IList<Node>[] results = repository.NodesPerStream;
@@ -197,7 +197,7 @@ namespace net.esper.eql.join.exec
             /// <param name="rootEvent">is the event for lookup in other streams
             /// </param>
 
-            public void setResult(IList<EventBean[]> result, EventBean rootEvent)
+            public void SetResult(IList<EventBean[]> result, EventBean rootEvent)
             {
                 this.m_result = result;
                 this.m_rootEvent = rootEvent;

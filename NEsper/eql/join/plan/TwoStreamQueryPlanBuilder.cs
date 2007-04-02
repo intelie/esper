@@ -17,7 +17,7 @@ namespace net.esper.eql.join.plan
 		/// </param>
 		/// <returns> query plan
 		/// </returns>
-		public static QueryPlan build(QueryGraph queryGraph, OuterJoinType? optionalOuterJoinType)
+		public static QueryPlan Build(QueryGraph queryGraph, OuterJoinType? optionalOuterJoinType)
 		{
 			QueryPlanIndex[] indexSpecs = new QueryPlanIndex[2];
 			QueryPlanNode[] execNodeSpecs = new QueryPlanNode[2];

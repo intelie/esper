@@ -71,7 +71,7 @@ namespace net.esper.regression.support
             int index = 0;
             foreach (EventExpressionCase descriptor in caseList.Results)
             {
-                String expressionText = descriptor.getExpressionText();
+                String expressionText = descriptor.ExpressionText;
 
                 EPStatement statement = null;
 

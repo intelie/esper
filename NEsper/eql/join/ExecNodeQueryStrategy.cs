@@ -64,9 +64,9 @@ namespace net.esper.eql.join
         /// <summary>Return stream number this strategy is for.</summary>
         /// <returns>stream num</returns>
 
-        public int getForStream()
+        public int ForStream
         {
-            return forStream;
+            get { return forStream; }
         }
 
         /// <summary>Returns the total number of streams.</summary>

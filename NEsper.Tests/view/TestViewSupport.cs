@@ -76,26 +76,26 @@ namespace net.esper.view
 		public virtual void testFindDescendent()
 		{
 			// Test a deep find
-			IList<View> descendents = ViewSupport.findDescendent( top, child_2_2_1 );
+			IList<View> descendents = ViewSupport.FindDescendent( top, child_2_2_1 );
 			Assert.AreEqual( 2, descendents.Count );
 			Assert.AreEqual( child_2, descendents[0] );
 			Assert.AreEqual( child_2_2, descendents[1] );
 
-			descendents = ViewSupport.findDescendent( top, child_2_1_1 );
+			descendents = ViewSupport.FindDescendent( top, child_2_1_1 );
 			Assert.AreEqual( 2, descendents.Count );
 			Assert.AreEqual( child_2, descendents[0] );
 			Assert.AreEqual( child_2_1, descendents[1] );
 
-			descendents = ViewSupport.findDescendent( top, child_2_1 );
+			descendents = ViewSupport.FindDescendent( top, child_2_1 );
 			Assert.AreEqual( 1, descendents.Count );
 			Assert.AreEqual( child_2, descendents[0] );
 
 			// Test a shallow find
-			descendents = ViewSupport.findDescendent( top, child_2 );
+			descendents = ViewSupport.FindDescendent( top, child_2 );
 			Assert.AreEqual( 0, descendents.Count );
 
 			// Test a no find
-			descendents = ViewSupport.findDescendent( top, new SupportSchemaNeutralView() );
+			descendents = ViewSupport.FindDescendent( top, new SupportSchemaNeutralView() );
 			Assert.AreEqual( null, descendents );
 		}
 	}

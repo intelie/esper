@@ -52,12 +52,12 @@ namespace net.esper.eql.db
 
 			config = new ConfigurationDBRef();
             config.SetDatabaseProviderConnection(settings);
-			config.setExpiryTimeCache( 1, 3 );
+			config.SetExpiryTimeCache( 1, 3 );
 			configs.Put( "name3", config );
 
 			SchedulingService schedulingService = new SchedulingServiceImpl();
 			databaseServiceImpl = new DatabaseConfigServiceImpl(
-                configs, schedulingService, schedulingService.allocateBucket() );
+                configs, schedulingService, schedulingService.AllocateBucket() );
 		}
 
 		[Test]

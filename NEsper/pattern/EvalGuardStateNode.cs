@@ -88,7 +88,7 @@ namespace net.esper.pattern
                 guard.StopGuard();
             }
 
-            bool guardPass = guard.inspect(matchEvent);
+            bool guardPass = guard.Inspect(matchEvent);
             if (guardPass)
             {
                 this.ParentEvaluator.EvaluateTrue(matchEvent, this, isQuitted);
@@ -138,7 +138,7 @@ namespace net.esper.pattern
         /// </returns>
         public override Object Accept(EvalStateNodeVisitor visitor, Object data)
         {
-            return visitor.visit(this, data);
+            return visitor.Visit(this, data);
         }
 
         /// <summary>
@@ -172,7 +172,8 @@ namespace net.esper.pattern
         /// <summary>
         /// Indicate guard quitted.
         /// </summary>
-        public void guardQuit()
+        
+        public void GuardQuit()
         {
             if (log.IsDebugEnabled)
             {

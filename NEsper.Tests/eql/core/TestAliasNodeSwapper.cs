@@ -29,7 +29,7 @@ namespace net.esper.eql.core
 		{
 			exprTree = new ExprIdentNode("alias");
 			alias = "alias";
-			resultingTree = AliasNodeSwapper.swap(exprTree, alias, fullExpr);
+			resultingTree = AliasNodeSwapper.Swap(exprTree, alias, fullExpr);
 			Assert.IsTrue(resultingTree == fullExpr);
 		}
 		
@@ -38,7 +38,7 @@ namespace net.esper.eql.core
 		{
 			exprTree = SupportExprNodeFactory.makeEqualsNode();
 			alias = "intPrimitive";
-			resultingTree = AliasNodeSwapper.swap(exprTree, alias, fullExpr);
+            resultingTree = AliasNodeSwapper.Swap(exprTree, alias, fullExpr);
 			
 			Assert.IsTrue(resultingTree == exprTree);
 			IList<ExprNode> childNodes = resultingTree.ChildNodes;
@@ -49,7 +49,7 @@ namespace net.esper.eql.core
 			
 			exprTree = resultingTree;
 			alias = "intBoxed";
-			resultingTree = AliasNodeSwapper.swap(exprTree, alias, fullExpr);
+            resultingTree = AliasNodeSwapper.Swap(exprTree, alias, fullExpr);
 			childNodes = resultingTree.ChildNodes;
 			Assert.IsTrue(childNodes.Count == 2);
 			Assert.IsTrue(childNodes[0] == fullExpr);
@@ -58,7 +58,7 @@ namespace net.esper.eql.core
 			exprTree = resultingTree;
 			ExprNode newFullExpr = new ExprIdentNode("new full expr");
 			alias = "full expression";
-			resultingTree = AliasNodeSwapper.swap(exprTree, alias, newFullExpr);
+            resultingTree = AliasNodeSwapper.Swap(exprTree, alias, newFullExpr);
 			childNodes = resultingTree.ChildNodes;
 			Assert.IsTrue(childNodes.Count == 2);
 			Assert.IsTrue(childNodes[0] == newFullExpr);

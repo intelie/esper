@@ -11,7 +11,7 @@ namespace net.esper.timer
 		/// <summary> Creates an implementation of the TimerService interface.</summary>
 		/// <returns> implementation
 		/// </returns>
-		public static TimerService newService()
+		public static TimerService NewService()
 		{
 			return new TimerServiceImpl();
 		}

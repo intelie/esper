@@ -27,7 +27,7 @@ namespace net.esper.eql.join.assemble
 		/// <returns> root assembly node
 		/// </returns>
 
-		public static BaseAssemblyNode build( int rootStream, IDictionary<Int32, int[]> streamsJoinedPerStream, bool[] isRequiredPerStream )
+		public static BaseAssemblyNode Build( int rootStream, IDictionary<Int32, int[]> streamsJoinedPerStream, bool[] isRequiredPerStream )
 		{
 			if ( streamsJoinedPerStream.Count < 3 )
 			{
@@ -42,7 +42,7 @@ namespace net.esper.eql.join.assemble
 				throw new ArgumentException( "Arrays not matching up" );
 			}
 
-			NStreamOuterQueryPlanBuilder.verifyJoinedPerStream( rootStream, streamsJoinedPerStream );
+			NStreamOuterQueryPlanBuilder.VerifyJoinedPerStream( rootStream, streamsJoinedPerStream );
 
 			if ( log.IsDebugEnabled )
 			{
@@ -52,14 +52,14 @@ namespace net.esper.eql.join.assemble
                     " isRequiredPerStream=" + CollectionHelper.Render( isRequiredPerStream ) );
 			}
 
-			BaseAssemblyNode topNode = createNode(
+			BaseAssemblyNode topNode = CreateNode(
                 true,
                 rootStream,
                 streamsJoinedPerStream.Count,
                 streamsJoinedPerStream[rootStream],
                 isRequiredPerStream );
 
-			recursiveBuild( rootStream, topNode, streamsJoinedPerStream, isRequiredPerStream );
+			RecursiveBuild( rootStream, topNode, streamsJoinedPerStream, isRequiredPerStream );
 
 			if ( log.IsDebugEnabled )
 			{
@@ -73,14 +73,14 @@ namespace net.esper.eql.join.assemble
 			return topNode;
 		}
 
-		private static void recursiveBuild( int parentStreamNum, BaseAssemblyNode parentNode, IDictionary<Int32, int[]> streamsJoinedPerStream, bool[] isRequiredPerStream )
+		private static void RecursiveBuild( int parentStreamNum, BaseAssemblyNode parentNode, IDictionary<Int32, int[]> streamsJoinedPerStream, bool[] isRequiredPerStream )
 		{
 			int numStreams = streamsJoinedPerStream.Count;
 
 			for ( int i = 0 ; i < streamsJoinedPerStream[parentStreamNum].Length ; i++ )
 			{
 				int streamJoined = streamsJoinedPerStream[parentStreamNum][i];
-				BaseAssemblyNode childNode = createNode(
+				BaseAssemblyNode childNode = CreateNode(
                     false,
                     streamJoined,
                     numStreams,
@@ -90,12 +90,12 @@ namespace net.esper.eql.join.assemble
 
 				if ( streamsJoinedPerStream[streamJoined].Length > 0 )
 				{
-					recursiveBuild( streamJoined, childNode, streamsJoinedPerStream, isRequiredPerStream );
+					RecursiveBuild( streamJoined, childNode, streamsJoinedPerStream, isRequiredPerStream );
 				}
 			}
 		}
 
-		private static BaseAssemblyNode createNode( bool isRoot, int streamNum, int numStreams, int[] joinedStreams, bool[] isRequiredPerStream )
+		private static BaseAssemblyNode CreateNode( bool isRoot, int streamNum, int numStreams, int[] joinedStreams, bool[] isRequiredPerStream )
 		{
 			if ( joinedStreams.Length == 0 )
 			{

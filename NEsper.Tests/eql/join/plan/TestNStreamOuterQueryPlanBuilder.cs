@@ -23,7 +23,7 @@ namespace net.esper.eql.join.plan
             descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.RIGHT));
             descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.FULL));
 
-            OuterInnerDirectionalGraph graph = NStreamOuterQueryPlanBuilder.graphOuterJoins(3, descList);
+            OuterInnerDirectionalGraph graph = NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 
             // assert the inner and outer streams for each stream
             assertInners(new int[][] { null, new int[] { 0, 2 }, new int[] { 1 } }, graph);
@@ -33,7 +33,7 @@ namespace net.esper.eql.join.plan
             descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s1", "intBoxed", "s0", OuterJoinType.LEFT));
             descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.RIGHT));
 
-            graph = NStreamOuterQueryPlanBuilder.graphOuterJoins(3, descList);
+            graph = NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 
             // assert the inner and outer streams for each stream
             assertInners(new int[][] { new int[] { 1 }, null, new int[] { 1 } }, graph);
@@ -42,7 +42,7 @@ namespace net.esper.eql.join.plan
             try
             {
                 descList.Clear();
-                NStreamOuterQueryPlanBuilder.graphOuterJoins(3, descList);
+                NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 				Assert.Fail();
             }
             catch (ArgumentException)
@@ -76,7 +76,7 @@ namespace net.esper.eql.join.plan
             queryGraph.Add(2, "", 1, "");
             queryGraph.Add(1, "", 0, "");
 
-            NStreamOuterQueryPlanBuilder.recursiveBuild(streamNum, queryGraph, outerInnerGraph, completedStreams, substreamsPerStream, requiredPerStream);
+            NStreamOuterQueryPlanBuilder.RecursiveBuild(streamNum, queryGraph, outerInnerGraph, completedStreams, substreamsPerStream, requiredPerStream);
 
             Assert.AreEqual(6, substreamsPerStream.Count);
             ArrayAssertionUtil.assertEqualsExactOrder(new int[] { 3, 1 }, substreamsPerStream[2]);
@@ -86,7 +86,7 @@ namespace net.esper.eql.join.plan
             ArrayAssertionUtil.assertEqualsExactOrder(new int[] { }, substreamsPerStream[5]);
             ArrayAssertionUtil.assertEqualsExactOrder(new int[] { }, substreamsPerStream[0]);
 
-            NStreamOuterQueryPlanBuilder.verifyJoinedPerStream(2, substreamsPerStream);
+            NStreamOuterQueryPlanBuilder.VerifyJoinedPerStream(2, substreamsPerStream);
             ArrayAssertionUtil.assertEqualsExactOrder(new bool[] { false, false, false, true, true, false }, requiredPerStream);
         }
 
@@ -111,7 +111,7 @@ namespace net.esper.eql.join.plan
         {
             try
             {
-                NStreamOuterQueryPlanBuilder.verifyJoinedPerStream(0, map);
+                NStreamOuterQueryPlanBuilder.VerifyJoinedPerStream(0, map);
 				Assert.Fail();
             }
             catch (ArgumentException)
@@ -124,14 +124,14 @@ namespace net.esper.eql.join.plan
         {
             for (int i = 0; i < innersPerStream.Length; i++)
             {
-                ArrayAssertionUtil.assertEqualsAnyOrder(innersPerStream[i], graph.getInner(i));
+                ArrayAssertionUtil.assertEqualsAnyOrder(innersPerStream[i], graph.GetInner(i));
             }
         }
         private void assertOuters(int[][] outersPerStream, OuterInnerDirectionalGraph graph)
         {
             for (int i = 0; i < outersPerStream.Length; i++)
             {
-                ArrayAssertionUtil.assertEqualsAnyOrder(outersPerStream[i], graph.getOuter(i));
+                ArrayAssertionUtil.assertEqualsAnyOrder(outersPerStream[i], graph.GetOuter(i));
             }
         }
 

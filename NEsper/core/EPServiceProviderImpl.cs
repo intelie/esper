@@ -76,7 +76,7 @@ namespace net.esper.core
             }
 
             // Make services that depend on snapshot config entries
-            SchedulingService schedulingService = SchedulingServiceProvider.newService();
+            SchedulingService schedulingService = SchedulingServiceProvider.NewService();
             EventAdapterService eventAdapterService = MakeEventAdapterService(configSnapshot);
             AutoImportService autoImportService = MakeAutoImportService(configSnapshot);
             DatabaseConfigService databaseConfigService = MakeDatabaseRefService(configSnapshot, schedulingService);
@@ -262,7 +262,7 @@ namespace net.esper.core
             // Add auto-imports
             try
             {
-                ScheduleBucket allStatementsBucket = schedulingService.allocateBucket();
+                ScheduleBucket allStatementsBucket = schedulingService.AllocateBucket();
                 databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.DatabaseRefs, schedulingService, allStatementsBucket);
             }
             catch (ArgumentException ex)

@@ -33,7 +33,7 @@ namespace net.esper.filter
         public virtual void setUp()
         {
             builder = new IndexTreeBuilder();
-            eventType = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+            eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             topNode = new FilterCallbackSetNode();
             filterCallbacks = new List<FilterCallback>();
             pathsAddedTo = new List<IndexTreePath>();
@@ -199,7 +199,7 @@ namespace net.esper.filter
 
         private FilterSpec makeSpec(Object[] args)
         {
-            return SupportFilterSpecBuilder.build(eventType, args);
+            return SupportFilterSpecBuilder.Build(eventType, args);
         }
 
         private EventBean MakeEvent(int aInt, double aDouble)

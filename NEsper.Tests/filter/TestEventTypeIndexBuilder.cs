@@ -32,11 +32,11 @@ namespace net.esper.filter
 			eventTypeIndex = new EventTypeIndex();
 			indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);
 			
-			typeOne = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
-			typeTwo = SupportEventTypeFactory.createBeanType(typeof(SupportBeanSimple));
+			typeOne = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
+			typeTwo = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
 			
-			valueSetOne = SupportFilterSpecBuilder.build(typeOne, new Object[0]).GetValueSet(null);
-			valueSetTwo = SupportFilterSpecBuilder.build(typeTwo, new Object[0]).GetValueSet(null);
+			valueSetOne = SupportFilterSpecBuilder.Build(typeOne, new Object[0]).GetValueSet(null);
+			valueSetTwo = SupportFilterSpecBuilder.Build(typeTwo, new Object[0]).GetValueSet(null);
 			
 			callbackOne = new SupportFilterCallback();
 			callbackTwo = new SupportFilterCallback();

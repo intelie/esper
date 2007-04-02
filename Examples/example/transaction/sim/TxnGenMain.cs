@@ -50,7 +50,7 @@ namespace net.esper.example.transaction.sim
             {
                 bucketSize = BUCKET_SIZES.Fetch(args[0]);
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException)
             {
                 Console.Out.WriteLine("Invalid bucket size:");
                 foreach (String key in BUCKET_SIZES.Keys)
@@ -67,7 +67,7 @@ namespace net.esper.example.transaction.sim
             {
                 numTransactions = Int32.Parse(args[1]);
             }
-            catch (FormatException e)
+            catch (FormatException)
             {
                 Console.Out.WriteLine("Invalid num transactions");
                 Environment.Exit(-2);

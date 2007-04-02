@@ -80,7 +80,7 @@ namespace net.esper.core
         /// Indicate matching events.
         /// </summary>
         /// <param name="matchEvent">contains a map of event tags and event objects</param>
-		public void matchFound( EDictionary<String, EventBean> matchEvent )
+		public void MatchFound( EDictionary<String, EventBean> matchEvent )
 		{
 			if ( log.IsDebugEnabled )
 			{
@@ -93,7 +93,7 @@ namespace net.esper.core
 			if ( Listeners.Count > 0 )
 			{
 				// The dispatch has no data after initialization and after it fired
-				if ( !( dispatch.hasData() ) )
+				if ( !( dispatch.HasData ) )
 				{
 					dispatchService.AddExternal( dispatch );
 				}
@@ -135,7 +135,7 @@ namespace net.esper.core
         /// <summary>
         /// Called when the last listener is removed.
         /// </summary>
-		public override void listenerStop()
+		public override void ListenerStop()
 		{
 			// No need to take action
 		}
@@ -143,7 +143,7 @@ namespace net.esper.core
         /// <summary>
         /// Called when the first listener is added.
         /// </summary>
-		public override void listenerStart()
+		public override void ListenerStart()
 		{
 			// No need to take action
 		}

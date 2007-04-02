@@ -26,7 +26,7 @@ namespace net.esper.util
         /// <param name="arguments">is the arguments for the constructor to match in number and type
         /// </param>
 
-        public static Object invokeConstructor(Type type, Object[] arguments)
+        public static Object InvokeConstructor(Type type, Object[] arguments)
         {
             if (log.IsDebugEnabled)
             {

@@ -39,18 +39,18 @@ namespace net.esper.eql.join.plan
 		public virtual void  testIsInner()
 		{
 			graph.Add(0, 1);
-			Assert.IsTrue(graph.isInner(0, 1));
-			Assert.IsFalse(graph.isInner(1, 0));
-			Assert.IsFalse(graph.isInner(2, 0));
-			Assert.IsFalse(graph.isInner(0, 2));
+			Assert.IsTrue(graph.IsInner(0, 1));
+			Assert.IsFalse(graph.IsInner(1, 0));
+			Assert.IsFalse(graph.IsInner(2, 0));
+			Assert.IsFalse(graph.IsInner(0, 2));
 			
 			graph.Add(1, 0);
-			Assert.IsTrue(graph.isInner(0, 1));
-			Assert.IsTrue(graph.isInner(1, 0));
+			Assert.IsTrue(graph.IsInner(0, 1));
+			Assert.IsTrue(graph.IsInner(1, 0));
 			
 			graph.Add(2, 0);
-			Assert.IsTrue(graph.isInner(2, 0));
-			Assert.IsFalse(graph.isInner(0, 2));
+			Assert.IsTrue(graph.IsInner(2, 0));
+			Assert.IsFalse(graph.IsInner(0, 2));
 			
 			tryInvalidIsInner(4, 0);
 			tryInvalidIsInner(0, 4);
@@ -63,18 +63,18 @@ namespace net.esper.eql.join.plan
 		public virtual void  testIsOuter()
 		{
 			graph.Add(0, 1);
-			Assert.IsTrue(graph.isOuter(0, 1));
-			Assert.IsFalse(graph.isOuter(1, 0));
-			Assert.IsFalse(graph.isOuter(0, 2));
-			Assert.IsFalse(graph.isOuter(2, 0));
+			Assert.IsTrue(graph.IsOuter(0, 1));
+			Assert.IsFalse(graph.IsOuter(1, 0));
+			Assert.IsFalse(graph.IsOuter(0, 2));
+			Assert.IsFalse(graph.IsOuter(2, 0));
 			
 			graph.Add(1, 0);
-			Assert.IsTrue(graph.isOuter(1, 0));
-			Assert.IsTrue(graph.isOuter(0, 1));
+			Assert.IsTrue(graph.IsOuter(1, 0));
+			Assert.IsTrue(graph.IsOuter(0, 1));
 			
 			graph.Add(2, 0);
-			Assert.IsTrue(graph.isOuter(2, 0));
-			Assert.IsFalse(graph.isOuter(0, 2));
+			Assert.IsTrue(graph.IsOuter(2, 0));
+			Assert.IsFalse(graph.IsOuter(0, 2));
 			
 			tryInvalidIsInner(4, 0);
 			tryInvalidIsInner(0, 4);
@@ -89,18 +89,18 @@ namespace net.esper.eql.join.plan
 			tryInvalidGetInner(4);
 			tryInvalidGetInner(- 1);
 			
-			Assert.IsNull(graph.getInner(0));
+			Assert.IsNull(graph.GetInner(0));
 			
 			graph.Add(0, 1);
-			Assert.IsNull(graph.getInner(1));
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{1}, graph.getInner(0));
+			Assert.IsNull(graph.GetInner(1));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{1}, graph.GetInner(0));
 			graph.Add(0, 3);
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{1, 3}, graph.getInner(0));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{1, 3}, graph.GetInner(0));
 			graph.Add(1, 0);
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0}, graph.getInner(1));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0}, graph.GetInner(1));
 			graph.Add(1, 2);
 			graph.Add(1, 3);
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0, 2, 3}, graph.getInner(1));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0, 2, 3}, graph.GetInner(1));
 		}
 		
 		[Test]
@@ -109,26 +109,26 @@ namespace net.esper.eql.join.plan
 			tryInvalidGetOuter(4);
 			tryInvalidGetOuter(- 1);
 			
-			Assert.IsNull(graph.getOuter(0));
+			Assert.IsNull(graph.GetOuter(0));
 			
 			graph.Add(0, 1);
-			Assert.IsNull(graph.getOuter(0));
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0}, graph.getOuter(1));
+			Assert.IsNull(graph.GetOuter(0));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0}, graph.GetOuter(1));
 			graph.Add(0, 3);
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0}, graph.getOuter(3));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0}, graph.GetOuter(3));
 			graph.Add(1, 0);
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0}, graph.getOuter(1));
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{1}, graph.getOuter(0));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0}, graph.GetOuter(1));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{1}, graph.GetOuter(0));
 			graph.Add(1, 3);
 			graph.Add(2, 3);
-			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0, 1, 2}, graph.getOuter(3));
+			ArrayAssertionUtil.assertEqualsAnyOrder(new int[]{0, 1, 2}, graph.GetOuter(3));
 		}
 		
 		private void  tryInvalidGetOuter(int stream)
 		{
 			try
 			{
-				graph.getOuter(stream);
+				graph.GetOuter(stream);
 				Assert.Fail();
 			}
 			catch (System.Exception ex)
@@ -141,7 +141,7 @@ namespace net.esper.eql.join.plan
 		{
 			try
 			{
-				graph.getInner(stream);
+				graph.GetInner(stream);
 				Assert.Fail();
 			}
 			catch (System.Exception ex)
@@ -154,7 +154,7 @@ namespace net.esper.eql.join.plan
 		{
 			try
 			{
-				graph.isInner(inner, outer);
+				graph.IsInner(inner, outer);
 				Assert.Fail();
 			}
 			catch (System.Exception ex)
@@ -167,7 +167,7 @@ namespace net.esper.eql.join.plan
 		{
 			try
 			{
-				graph.isOuter(outer, inner);
+				graph.IsOuter(outer, inner);
 				Assert.Fail();
 			}
 			catch (System.Exception ex)

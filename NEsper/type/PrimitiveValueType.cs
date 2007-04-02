@@ -43,9 +43,9 @@ namespace net.esper.type
 		/// <returns> type name
 		/// </returns>
 
-		public String getTypeName()
+		public String TypeName
 		{
-			return typeName;
+			get { return typeName; }
 		}
 
         /// <summary>

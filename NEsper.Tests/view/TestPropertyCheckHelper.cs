@@ -15,56 +15,56 @@ namespace net.esper.view
         [Test]
         public virtual void testCheckNumeric()
         {
-            EventType mySchema = SupportEventTypeFactory.createBeanType(typeof(SupportMarketDataBean));
+            EventType mySchema = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
 
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "dummy") != null);
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "symbol") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "dummy") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "symbol") != null);
 
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "volume") == null);
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "price") == null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "volume") == null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "price") == null);
 
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "dummy", "dummy2") != null);
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "symbol", "dummy2") != null);
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "symbol", "price") != null);
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "price", "dummy") != null);
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "dummy", "price") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "dummy", "dummy2") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "symbol", "dummy2") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "symbol", "price") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "price", "dummy") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "dummy", "price") != null);
 
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "price", "price") == null);
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "price", "volume") == null);
-            Assert.IsTrue(PropertyCheckHelper.checkNumeric(mySchema, "volume", "price") == null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "price", "price") == null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "price", "volume") == null);
+            Assert.IsTrue(PropertyCheckHelper.CheckNumeric(mySchema, "volume", "price") == null);
         }
 
         [Test]
         public virtual void testCheckLong()
         {
-            EventType mySchema = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+            EventType mySchema = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 
-            Assert.AreEqual(null, PropertyCheckHelper.checkLong(mySchema, "longPrimitive"));
-            Assert.AreEqual(null, PropertyCheckHelper.checkLong(mySchema, "longBoxed"));
-            Assert.AreEqual(null, PropertyCheckHelper.checkLong(mySchema, "longBoxed"));
-            Assert.IsTrue(PropertyCheckHelper.checkLong(mySchema, "dummy") != null);
-            Assert.IsTrue(PropertyCheckHelper.checkLong(mySchema, "intPrimitive") != null);
-            Assert.IsTrue(PropertyCheckHelper.checkLong(mySchema, "doubleBoxed") != null);
+            Assert.AreEqual(null, PropertyCheckHelper.CheckLong(mySchema, "longPrimitive"));
+            Assert.AreEqual(null, PropertyCheckHelper.CheckLong(mySchema, "longBoxed"));
+            Assert.AreEqual(null, PropertyCheckHelper.CheckLong(mySchema, "longBoxed"));
+            Assert.IsTrue(PropertyCheckHelper.CheckLong(mySchema, "dummy") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckLong(mySchema, "intPrimitive") != null);
+            Assert.IsTrue(PropertyCheckHelper.CheckLong(mySchema, "doubleBoxed") != null);
         }
 
         [Test]
         public virtual void testFieldExist()
         {
-            EventType mySchema = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+            EventType mySchema = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 
-            Assert.AreEqual(null, PropertyCheckHelper.exists(mySchema, "longPrimitive"));
-            Assert.IsTrue(PropertyCheckHelper.exists(mySchema, "dummy") != null);
+            Assert.AreEqual(null, PropertyCheckHelper.Exists(mySchema, "longPrimitive"));
+            Assert.IsTrue(PropertyCheckHelper.Exists(mySchema, "dummy") != null);
         }
 
         [Test]
         public virtual void test2FieldExist()
         {
-            EventType mySchema = SupportEventTypeFactory.createBeanType(typeof(SupportBean));
+            EventType mySchema = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 
-            Assert.AreEqual(null, PropertyCheckHelper.exists(mySchema, "longPrimitive", "longBoxed"));
-            Assert.IsTrue(PropertyCheckHelper.exists(mySchema, "dummy", "longPrimitive") != null);
-            Assert.IsTrue(PropertyCheckHelper.exists(mySchema, "longPrimitive", "dummy") != null);
-            Assert.IsTrue(PropertyCheckHelper.exists(mySchema, "dummy", "dummy") != null);
+            Assert.AreEqual(null, PropertyCheckHelper.Exists(mySchema, "longPrimitive", "longBoxed"));
+            Assert.IsTrue(PropertyCheckHelper.Exists(mySchema, "dummy", "longPrimitive") != null);
+            Assert.IsTrue(PropertyCheckHelper.Exists(mySchema, "longPrimitive", "dummy") != null);
+            Assert.IsTrue(PropertyCheckHelper.Exists(mySchema, "dummy", "dummy") != null);
         }
     }
 }

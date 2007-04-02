@@ -28,7 +28,7 @@ namespace net.esper.pattern.observer
 			ScheduleSpec spec = new ScheduleSpec();
 			TimerObserverFactory factory = new TimerObserverFactory(spec);
 			
-			EventObserver eventObserver = factory.makeObserver(patternContext, null, null);
+			EventObserver eventObserver = factory.MakeObserver(patternContext, null, null);
 			
 			Assert.IsTrue(eventObserver is TimerAtObserver);
 		}
@@ -38,7 +38,7 @@ namespace net.esper.pattern.observer
 		{
 			TimerObserverFactory factory = new TimerObserverFactory(10);
 			
-			EventObserver eventObserver = factory.makeObserver(patternContext, null, null);
+			EventObserver eventObserver = factory.MakeObserver(patternContext, null, null);
 			
 			Assert.IsTrue(eventObserver is TimerIntervalObserver);
 		}

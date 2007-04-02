@@ -18,9 +18,9 @@ namespace net.esper.type
             Assert.IsTrue(lvp.ValueObject == null);
             lvp.Parse("10");
             Assert.IsTrue(lvp.ValueObject.Equals(10L));
-            Assert.IsTrue(lvp.getLong() == 10L);
+            Assert.IsTrue(lvp.GetLong() == 10L);
             lvp._Long = 200L;
-            Assert.IsTrue(lvp.getLong() == 200L);
+            Assert.IsTrue(lvp.GetLong() == 200L);
             Assert.IsTrue(lvp.ValueObject.Equals(200L));
 
             try
@@ -56,7 +56,7 @@ namespace net.esper.type
             try
             {
                 lvp = new LongValue();
-                lvp.getLong();
+                lvp.GetLong();
             }
             catch (System.Exception ex)
             {

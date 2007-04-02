@@ -40,7 +40,7 @@ namespace net.esper.eql.db
             IList<PlaceholderParser.Fragment> sqlFragments = null;
             try
             {
-                sqlFragments = PlaceholderParser.parsePlaceholder(databaseStreamSpec.SqlWithSubsParams);
+                sqlFragments = PlaceholderParser.ParsePlaceholder(databaseStreamSpec.SqlWithSubsParams);
             }
             catch (PlaceholderParseException ex)
             {

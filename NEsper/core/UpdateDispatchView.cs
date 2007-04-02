@@ -70,7 +70,7 @@ namespace net.esper.core
         {
             if (log.IsDebugEnabled)
             {
-                ViewSupport.dumpUpdateParams(".update for view " + this, newData, oldData);
+                ViewSupport.DumpUpdateParams(".update for view " + this, newData, oldData);
             }
             if (newData != null)
             {
@@ -122,7 +122,7 @@ namespace net.esper.core
 
             if (log.IsDebugEnabled)
             {
-                ViewSupport.dumpUpdateParams(".Execute", newEvents, oldEvents);
+                ViewSupport.DumpUpdateParams(".Execute", newEvents, oldEvents);
             }
 
             foreach (UpdateListener listener in updateListeners)

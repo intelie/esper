@@ -22,7 +22,7 @@ namespace net.esper.pattern.guard
 		public virtual void  setUp()
 		{
 			scheduleService = new SchedulingServiceImpl();
-			PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.Service);
+			PatternContext context = new PatternContext(null, scheduleService, scheduleService.AllocateBucket(), SupportEventAdapterService.Service);
 			
 			quitable = new SupportQuitable();
 			
@@ -32,7 +32,7 @@ namespace net.esper.pattern.guard
 		[Test]
 		public virtual void  testInspect()
 		{
-			Assert.IsTrue(guard.inspect(null));
+			Assert.IsTrue(guard.Inspect(null));
 		}
 		
 		/// <summary> Make sure the timer calls guardQuit after the set time period</summary>
@@ -43,12 +43,12 @@ namespace net.esper.pattern.guard
 			
 			guard.StartGuard();
 			
-			Assert.AreEqual(0, quitable.AndResetQuitCounter);
+			Assert.AreEqual(0, quitable.GetAndResetQuitCounter());
 			
 			scheduleService.Time = 1000;
 			scheduleService.Evaluate();
-			
-			Assert.AreEqual(1, quitable.AndResetQuitCounter);
+
+            Assert.AreEqual(1, quitable.GetAndResetQuitCounter());
 		}
 		
 		[Test]
@@ -62,8 +62,8 @@ namespace net.esper.pattern.guard
 			
 			scheduleService.Time = 1001;
 			scheduleService.Evaluate();
-			
-			Assert.AreEqual(0, quitable.AndResetQuitCounter);
+
+            Assert.AreEqual(0, quitable.GetAndResetQuitCounter());
 		}
 		
 		[Test]

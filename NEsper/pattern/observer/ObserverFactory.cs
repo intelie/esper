@@ -16,6 +16,6 @@ namespace net.esper.pattern.observer
 		/// </param>
 		/// <returns> observer instance
 		/// </returns>
-		EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator);
+		EventObserver MakeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator);
 	}
 }

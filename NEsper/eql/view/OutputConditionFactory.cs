@@ -24,7 +24,7 @@ namespace net.esper.eql.view
 		/// </param>
 		/// <returns> instance for performing output
 		/// </returns>
-		public static OutputCondition createCondition(OutputLimitSpec outputLimitSpec, ViewServiceContext viewContext, OutputCallback outputCallback)
+		public static OutputCondition CreateCondition(OutputLimitSpec outputLimitSpec, ViewServiceContext viewContext, OutputCallback outputCallback)
 		{
 			if (outputCallback == null)
 			{

@@ -25,7 +25,7 @@ namespace net.esper.pattern.observer
             beginState = new MatchedEventMap();
 
             scheduleService = new SchedulingServiceImpl();
-            PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.Service);
+            PatternContext context = new PatternContext(null, scheduleService, scheduleService.AllocateBucket(), SupportEventAdapterService.Service);
 
             ScheduleSpec scheduleSpec = new ScheduleSpec();
             scheduleSpec.AddValue(ScheduleUnit.SECONDS, 1);

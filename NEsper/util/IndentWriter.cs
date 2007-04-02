@@ -16,13 +16,13 @@ namespace net.esper.util
         /// <summary> Ctor.</summary>
         /// <param name="writer">to output to
         /// </param>
-        /// <param name="StartIndent">is the depth of indent to Start
+        /// <param name="startIndent">is the depth of indent to Start
         /// </param>
         /// <param name="deltaIndent">is the number of characters to indent for every incrIndent() call
         /// </param>
-        public IndentWriter(TextWriter writer, int StartIndent, int deltaIndent)
+        public IndentWriter(TextWriter writer, int startIndent, int deltaIndent)
         {
-            if (StartIndent < 0)
+            if (startIndent < 0)
             {
                 throw new ArgumentException("Invalid Start indent");
             }
@@ -33,7 +33,7 @@ namespace net.esper.util
 
             this.writer = writer;
             this.deltaIndent = deltaIndent;
-            this.currentIndent = StartIndent;
+            this.currentIndent = startIndent;
         }
 
         /// <summary> Increase the indentation one level.</summary>
@@ -59,7 +59,7 @@ namespace net.esper.util
                 indent = 0;
             }
 
-            writer.WriteLine(Indent.indent(indent) + text);
+            writer.WriteLine(Indent.CreateIndent(indent) + text);
         }
     }
 }

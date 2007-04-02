@@ -158,7 +158,7 @@ namespace net.esper.core
         /// <summary>
         /// Called when the last listener is removed.
         /// </summary>
-        public override void listenerStop()
+        public override void ListenerStop()
         {
             if (parentView != null)
             {
@@ -169,7 +169,7 @@ namespace net.esper.core
         /// <summary>
         /// Called when the first listener is added.
         /// </summary>
-        public override void listenerStart()
+        public override void ListenerStart()
         {
             if (parentView != null)
             {

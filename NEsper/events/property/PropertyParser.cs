@@ -25,7 +25,7 @@ namespace net.esper.events.property
         /// </param>
         /// <returns> Property instance for property
         /// </returns>
-        public static Property parse(String propertyName, BeanEventAdapter beanEventAdapter)
+        public static Property Parse(String propertyName, BeanEventAdapter beanEventAdapter)
         {
             EQLStatementLexer lexer = new EQLStatementLexer(new System.IO.StringReader(propertyName));
             EQLStatementParser parser = new EQLStatementParser(lexer);

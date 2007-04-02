@@ -62,7 +62,7 @@ namespace net.esper.filter
         /// <returns>filter value</returns>
         public double GetFilterValue(MatchedEventMap matchedEvents)
         {
-            EventBean ev = matchedEvents.getMatchingEvent(resultEventAsName);
+            EventBean ev = matchedEvents.GetMatchingEvent(resultEventAsName);
             if (ev == null)
             {
                 throw new IllegalStateException("Matching event named " +

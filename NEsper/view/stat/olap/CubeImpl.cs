@@ -24,7 +24,7 @@ namespace net.esper.view.stat.olap
             {
                 if (dimensions == null)
                 {
-                    derive();
+                    Derive();
                 }
                 return dimensions;
             }
@@ -47,7 +47,7 @@ namespace net.esper.view.stat.olap
             {
                 if (measures == null)
                 {
-                    derive();
+                    Derive();
                 }
                 return measures;
             }
@@ -93,7 +93,7 @@ namespace net.esper.view.stat.olap
 
             if (measures == null)
             {
-                derive();
+                Derive();
             }
 
             if (intersections == null)
@@ -117,7 +117,7 @@ namespace net.esper.view.stat.olap
         {
             if (measures == null)
             {
-                derive();
+                Derive();
             }
 
             if (members == null)
@@ -151,9 +151,9 @@ namespace net.esper.view.stat.olap
         /// Derive from the fact cube the measure cube using the given strategy.
         /// </summary>
 
-        private void derive()
+        private void Derive()
         {
-            Pair<Dimension[], Cell[]> derivedCube = CubeDerivedValueHelper.derive(measuresToDerive, cube);
+            Pair<Dimension[], Cell[]> derivedCube = CubeDerivedValueHelper.Derive(measuresToDerive, cube);
             dimensions = derivedCube.First;
             measures = derivedCube.Second;
         }

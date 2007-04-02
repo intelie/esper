@@ -47,7 +47,7 @@ namespace net.esper.support.filter
 		private int countInvoked;
 		private EventBean lastEvent;
 		
-		public virtual void  matchFound(EventBean _event)
+		public virtual void  MatchFound(EventBean _event)
 		{
 			countInvoked++;
 			lastEvent = _event;

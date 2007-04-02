@@ -36,19 +36,19 @@ namespace net.esper.eql.join.plan
         }
 
         /// <summary> Analye EQUALS (=) node.</summary>
-        /// <param name="EqualsNode">node to analyze
+        /// <param name="equalsNode">node to analyze
         /// </param>
         /// <param name="queryGraph">store relationships between stream properties
         /// </param>
-        public static void AnalyzeEqualsNode(ExprEqualsNode EqualsNode, QueryGraph queryGraph)
+        public static void AnalyzeEqualsNode(ExprEqualsNode equalsNode, QueryGraph queryGraph)
         {
-            if ((!(EqualsNode.ChildNodes[0] is ExprIdentNode)) || (!(EqualsNode.ChildNodes[1] is ExprIdentNode)))
+            if ((!(equalsNode.ChildNodes[0] is ExprIdentNode)) || (!(equalsNode.ChildNodes[1] is ExprIdentNode)))
             {
                 return;
             }
 
-            ExprIdentNode identNodeLeft = (ExprIdentNode)EqualsNode.ChildNodes[0];
-            ExprIdentNode identNodeRight = (ExprIdentNode)EqualsNode.ChildNodes[1];
+            ExprIdentNode identNodeLeft = (ExprIdentNode)equalsNode.ChildNodes[0];
+            ExprIdentNode identNodeRight = (ExprIdentNode)equalsNode.ChildNodes[1];
 
             queryGraph.Add(identNodeLeft.StreamId, identNodeLeft.ResolvedPropertyName, identNodeRight.StreamId, identNodeRight.ResolvedPropertyName);
         }

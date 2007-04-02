@@ -59,7 +59,7 @@ namespace net.esper.events
                 return propertyType;
             }
 
-            Property prop = PropertyParser.parse(propertyName, beanEventAdapter);
+            Property prop = PropertyParser.Parse(propertyName, beanEventAdapter);
             if (prop is SimpleProperty)
             {
                 // there is no such property since it wasn't in simplePropertyTypes
@@ -112,7 +112,7 @@ namespace net.esper.events
                 return getter;
             }
 
-            Property prop = PropertyParser.parse(propertyName, beanEventAdapter);
+            Property prop = PropertyParser.Parse(propertyName, beanEventAdapter);
             if (prop is SimpleProperty)
             {
                 // there is no such property since it wasn't in simplePropertyGetters
@@ -204,7 +204,7 @@ namespace net.esper.events
 
         private void Initialize()
         {
-            PropertyListBuilder propertyListBuilder = PropertyListBuilderFactory.createBuilder(optionalLegacyDef);
+            PropertyListBuilder propertyListBuilder = PropertyListBuilderFactory.CreateBuilder(optionalLegacyDef);
             IList<EventPropertyDescriptor> properties = propertyListBuilder.AssessProperties(type);
 
             this.propertyNames = new String[properties.Count];
