@@ -11,6 +11,7 @@ import net.esper.filter.*;
 import net.esper.pattern.EvalFilterNode;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.parse.SupportParserHelper;
+import net.esper.support.eql.parse.SupportEQLTreeWalkerFactory;
 import net.esper.support.event.SupportEventAdapterService;
 
 import java.util.List;
@@ -203,7 +204,7 @@ public class TestPatternStreamSpecRaw extends TestCase
         AST ast = SupportParserHelper.parseEQL(expression);
         SupportParserHelper.displayAST(ast);
 
-        EQLTreeWalker walker = new EQLTreeWalker(new EngineImportServiceImpl());
+        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker();        
         walker.startEQLExpressionRule(ast);
 
         PatternStreamSpecRaw spec = (PatternStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);

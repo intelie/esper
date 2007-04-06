@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.event.PropertyAccessException;
 import net.esper.pattern.MatchedEventMap;
+import net.esper.pattern.MatchedEventMapImpl;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventBeanFactory;
 
@@ -25,7 +26,7 @@ public class TestRangeValueEventProp extends TestCase
         SupportBean eventBean = new SupportBean();
         eventBean.setIntPrimitive(1000);
         EventBean event = SupportEventBeanFactory.createObject(eventBean);
-        MatchedEventMap matchedEvents = new MatchedEventMap();
+        MatchedEventMap matchedEvents = new MatchedEventMapImpl();
         matchedEvents.add("asName", event);
 
         tryInvalidGetFilterValue(matchedEvents, params[0]);

@@ -16,8 +16,8 @@ import org.apache.commons.logging.Log;
 public final class EvalOrNode extends EvalNode
 {
     public final EvalStateNode newState(Evaluator parentNode,
-                                                 MatchedEventMap beginState,
-                                                 PatternContext context)
+                                        MatchedEventMap beginState,
+                                        PatternContext context, Object stateNodeId)
     {
         if (log.isDebugEnabled())
         {
@@ -30,7 +30,7 @@ public final class EvalOrNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return new EvalOrStateNode(parentNode, this.getChildNodes(), beginState, context);
+        return context.getPatternStateFactory().makeOrState(parentNode, this, beginState, context, stateNodeId);
     }
 
     public final String toString()

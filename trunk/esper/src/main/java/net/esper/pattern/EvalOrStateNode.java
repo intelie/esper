@@ -19,36 +19,34 @@ import org.apache.commons.logging.Log;
  */
 public final class EvalOrStateNode extends EvalStateNode implements Evaluator
 {
-    private final LinkedList<EvalNode> orNodeChildNodes;
     private final List<EvalStateNode> childNodes;
 
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
-     * @param orNodeChildNodes are the child nodes of the or-node
      * @param beginState contains the events that make up prior matches
      * @param context contains handles to services required
+     * @param evalOrNode is the factory node associated to the state
      */
     public EvalOrStateNode(Evaluator parentNode,
-                                 LinkedList<EvalNode> orNodeChildNodes,
+                                 EvalOrNode evalOrNode,
                                  MatchedEventMap beginState,
                                  PatternContext context)
     {
-        super(parentNode);
+        super(evalOrNode, parentNode, null);
 
         if (log.isDebugEnabled())
         {
             log.debug(".constructor");
         }
 
-        this.orNodeChildNodes = orNodeChildNodes;
         this.childNodes = new LinkedList<EvalStateNode>();
 
         // In an "or" expression we need to create states for all child expressions/listeners,
         // since all are going to be started
-        for (EvalNode node : orNodeChildNodes)
+        for (EvalNode node : getFactoryNode().getChildNodes())
         {
-            EvalStateNode childState = node.newState(this, beginState, context);
+            EvalStateNode childState = node.newState(this, beginState, context, null);
             childNodes.add(childState);
         }
     }
@@ -57,10 +55,10 @@ public final class EvalOrStateNode extends EvalStateNode implements Evaluator
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".start Starting or-expression all children, size=" + orNodeChildNodes.size());
+            log.debug(".start Starting or-expression all children, size=" + getFactoryNode().getChildNodes().size());
         }
 
-        if (childNodes.size() != orNodeChildNodes.size())
+        if (childNodes.size() != getFactoryNode().getChildNodes().size())
         {
             throw new IllegalStateException("OR state node does not have the required child state nodes");
         }
@@ -79,7 +77,7 @@ public final class EvalOrStateNode extends EvalStateNode implements Evaluator
             log.debug(".evaluateTrue fromNode=" + fromNode.hashCode());
         }
 
-        // If one of the children quits, the whole or expression turns true and all subexpressions must guardQuit
+        // If one of the children quits, the whole or expression turns true and all subexpressions must quit
         if (isQuitted)
         {
             childNodes.remove(fromNode);
@@ -97,11 +95,11 @@ public final class EvalOrStateNode extends EvalStateNode implements Evaluator
         }
     }
 
-    protected final void quit()
+    public final void quit()
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".guardQuit Stopping all children");
+            log.debug(".quit Stopping all children");
         }
 
         for (EvalStateNode child : childNodes)

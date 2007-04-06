@@ -11,6 +11,7 @@ import net.esper.client.ConfigurationPlugInView;
 import net.esper.client.ConfigurationException;
 import net.esper.support.view.SupportViewFactoryOne;
 import net.esper.support.view.SupportViewFactoryTwo;
+import net.esper.eql.spec.ViewSpec;
 
 public class TestViewResolutionService extends TestCase
 {

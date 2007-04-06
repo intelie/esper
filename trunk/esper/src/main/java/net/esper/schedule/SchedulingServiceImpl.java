@@ -15,6 +15,9 @@ import java.util.*;
 /**
  * Implements the schedule service by simply keeping a sorted set of long millisecond
  * values and a set of handles for each.
+ * <p>
+ * Synchronized since statement creation and event evaluation by multiple (event send) threads
+ * can lead to callbacks added/removed asynchronously.
  */
 public final class SchedulingServiceImpl implements SchedulingService
 {
@@ -40,30 +43,30 @@ public final class SchedulingServiceImpl implements SchedulingService
         this.currentTime = System.currentTimeMillis();
     }
 
-    public ScheduleBucket allocateBucket()
+    public synchronized ScheduleBucket allocateBucket()
     {
         curBucketNum++;
         return new ScheduleBucket(curBucketNum);
     }
 
-    public long getTime()
+    public synchronized long getTime()
     {
         return this.currentTime;
     }
 
-    public final void setTime(long currentTime)
+    public synchronized final void setTime(long currentTime)
     {
         this.currentTime = currentTime;
     }
 
-    public final void add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot)
+    public synchronized final void add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot)
             throws ScheduleServiceException
     {
         if (handleSetMap.containsKey(handle))
         {
             String message = "Handle already in collection";
             SchedulingServiceImpl.log.fatal(".add " + message);
-            throw new ScheduleServiceException(message);
+            throw new ScheduleHandleExistsException(message);
         }
 
         long triggerOnTime = currentTime + afterMSec;
@@ -71,13 +74,13 @@ public final class SchedulingServiceImpl implements SchedulingService
         addTrigger(slot, handle, triggerOnTime);
     }
 
-    public final void add(ScheduleSpec spec, ScheduleHandle handle, ScheduleSlot slot)
+    public synchronized final void add(ScheduleSpec spec, ScheduleHandle handle, ScheduleSlot slot)
     {
         if (handleSetMap.containsKey(handle))
         {
             String message = "Handle already in collection";
             SchedulingServiceImpl.log.fatal(".add " + message);
-            throw new ScheduleServiceException(message);
+            throw new ScheduleHandleExistsException(message);
         }
 
         long nextScheduledTime = ScheduleComputeHelper.computeNextOccurance(spec, currentTime);
@@ -93,7 +96,7 @@ public final class SchedulingServiceImpl implements SchedulingService
         addTrigger(slot, handle, nextScheduledTime);
     }
 
-    public final void remove(ScheduleHandle handle, ScheduleSlot slot)
+    public synchronized final void remove(ScheduleHandle handle, ScheduleSlot slot)
     {
         SortedMap<ScheduleSlot, ScheduleHandle> handleSet = handleSetMap.get(handle);
         if (handleSet == null)
@@ -106,7 +109,18 @@ public final class SchedulingServiceImpl implements SchedulingService
         handleSetMap.remove(handle);
     }
 
-    public final void evaluate(Collection<ScheduleHandle> handles)
+
+    public void evaluateLock()
+    {
+        // no additional locking before evaluation required
+    }
+
+    public void evaluateUnLock()
+    {
+        // no additional locking before evaluation required
+    }
+
+    public synchronized final void evaluate(Collection<ScheduleHandle> handles)
     {
         // Get the values on or before the current time - to get those that are exactly on the
         // current time we just add one to the current time for getting the head map

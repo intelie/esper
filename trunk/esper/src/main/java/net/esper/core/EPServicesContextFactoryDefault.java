@@ -19,6 +19,8 @@ import net.esper.util.JavaClassHelper;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.view.ViewResolutionService;
 import net.esper.view.ViewResolutionServiceImpl;
+import net.esper.pattern.PatternObjectResolutionService;
+import net.esper.pattern.PatternObjectResolutionServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,13 +37,14 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl();
         init(eventAdapterService, configSnapshot);
 
+        // New read-write lock for concurrent event processing
+        ManagedReadWriteLock eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock");
+
         SchedulingService schedulingService = SchedulingServiceProvider.newService();
         EngineImportService engineImportService = makeEngineImportService(configSnapshot);
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
         ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(configSnapshot.getPlugInViews());
-
-        // New read-write lock for concurrent event processing
-        ManagedReadWriteLock eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock");
+        PatternObjectResolutionService patternObjectResolutionService = new PatternObjectResolutionServiceImpl(configSnapshot.getPlugInPatternObjects());
 
         // JNDI context for binding resources
         EngineEnvContext jndiContext = new EngineEnvContext();
@@ -50,9 +53,10 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         StatementContextFactory statementContextFactory = new StatementContextFactoryDefault();
 
         // New services context
-        EPServicesContext services = new EPServicesContext(schedulingService,
+        EPServicesContext services = new EPServicesContext(engineURI, engineURI, schedulingService,
                 eventAdapterService, engineImportService, databaseConfigService, viewResolutionService,
-                new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory);
+                new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
+                patternObjectResolutionService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(services);

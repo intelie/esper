@@ -1,17 +1,16 @@
 package net.esper.eql.db;
 
-import net.esper.client.ConfigurationDBRef;
-import net.esper.support.eql.SupportDatabaseService;
-import net.esper.schedule.SchedulingServiceImpl;
-import net.esper.schedule.SchedulingService;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
-
 import junit.framework.TestCase;
+import net.esper.client.ConfigurationDBRef;
+import net.esper.schedule.SchedulingService;
+import net.esper.schedule.SchedulingServiceImpl;
+import net.esper.support.eql.SupportDatabaseService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class TestDatabaseServiceImpl extends TestCase
 {

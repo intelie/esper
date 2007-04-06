@@ -248,30 +248,17 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             return;
         }
 
-        // Evaluation of all time events is protected from regular event stream processing
-        services.getEventProcessingRWLock().acquireReadLock();
-
-        try
+        // Evaluation of all time events is protected from statement management
+        if (log.isDebugEnabled())
         {
-            if (log.isDebugEnabled())
-            {
-                log.debug(".processTimeEvent Setting time and evaluating schedules");
-            }
+            log.debug(".processTimeEvent Setting time and evaluating schedules");
+        }
 
-            CurrentTimeEvent current = (CurrentTimeEvent) event;
-            long currentTime = current.getTimeInMillis();
-            services.getSchedulingService().setTime(currentTime);
+        CurrentTimeEvent current = (CurrentTimeEvent) event;
+        long currentTime = current.getTimeInMillis();
+        services.getSchedulingService().setTime(currentTime);
 
-            processSchedule();
-        }
-        catch (RuntimeException ex)
-        {
-            throw new EPException(ex);
-        }
-        finally
-        {
-            services.getEventProcessingRWLock().releaseReadLock();
-        }
+        processSchedule();
 
         // Let listeners know of results
         dispatch();
@@ -283,8 +270,43 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     private void processSchedule()
     {
         ArrayBackedCollection<ScheduleHandle> handles = scheduleArrayThreadLocal.get();
-        services.getSchedulingService().evaluate(handles);
 
+        // Evaluation of schedules is protected by an optional scheduling service lock and then the engine lock
+        // We want to stay in this order for allowing the engine lock as a second-order lock to the
+        // services own lock, if it has one.
+        services.getSchedulingService().evaluateLock();
+        services.getEventProcessingRWLock().acquireReadLock();
+        try
+        {
+            services.getSchedulingService().evaluate(handles);
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            services.getEventProcessingRWLock().releaseReadLock();
+            services.getSchedulingService().evaluateUnLock();
+        }
+
+        services.getEventProcessingRWLock().acquireReadLock();
+        try
+        {
+            processScheduleHandles(handles);
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            services.getEventProcessingRWLock().releaseReadLock();
+        }
+    }
+
+    private void processScheduleHandles(ArrayBackedCollection<ScheduleHandle> handles)
+    {
         if (ThreadLogUtil.ENABLED_TRACE)
         {
             ThreadLogUtil.trace("Found schedules for", handles.size());

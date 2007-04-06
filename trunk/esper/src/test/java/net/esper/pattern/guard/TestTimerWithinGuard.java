@@ -3,9 +3,11 @@ package net.esper.pattern.guard;
 import junit.framework.TestCase;
 import net.esper.pattern.PatternContext;
 import net.esper.schedule.SchedulingServiceImpl;
-import net.esper.support.guard.SupportQuitable;
 import net.esper.support.event.SupportEventAdapterService;
+import net.esper.support.guard.SupportQuitable;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
+import net.esper.support.view.SupportStatementContextFactory;
+import net.esper.core.StatementContext;
 
 public class TestTimerWithinGuard extends TestCase
 {
@@ -16,7 +18,8 @@ public class TestTimerWithinGuard extends TestCase
     public void setUp()
     {
         scheduleService = new SchedulingServiceImpl();
-        PatternContext context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService(), null);
+        StatementContext stmtContext = SupportStatementContextFactory.makeContext();
+        PatternContext context = new PatternContext(stmtContext, 1, null);
 
         quitable = new SupportQuitable();
 

@@ -7,6 +7,8 @@
  **************************************************************************************/
 package net.esper.schedule;
 
+import net.esper.util.MetaDefItem;
+
 import java.util.*;
 
 /**
@@ -15,7 +17,7 @@ import java.util.*;
  * There is always an element in the specification for each unit minutes, hours, day of month, month, and day of week.
  * There is optionally an element in the specification for the unit seconds.
  */
-public final class ScheduleSpec
+public final class ScheduleSpec implements MetaDefItem
 {
     // Per unit hold the set of valid integer values, or null if wildcarded.
     // The seconds unit is optional.

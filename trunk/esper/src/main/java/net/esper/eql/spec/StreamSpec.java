@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.spec;
 
-import net.esper.view.ViewSpec;
+import net.esper.eql.spec.ViewSpec;
 import java.util.List;
 
 /**

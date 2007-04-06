@@ -7,54 +7,56 @@
  **************************************************************************************/
 package net.esper.pattern.guard;
 
-import net.esper.pattern.PatternContext;
 import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.pattern.PatternContext;
+import net.esper.util.JavaClassHelper;
+import net.esper.util.MetaDefItem;
+
+import java.util.List;
 
 /**
  * Factory for {@link TimerWithinGuard} instances.
  */
-public class TimerWithinGuardFactory implements GuardFactory
+public class TimerWithinGuardFactory implements GuardFactory, MetaDefItem
 {
-    private final long milliseconds;
-
     /**
-     * Creates a timer guard.
-     * @param seconds number of seconds before guard expiration
+     * Number of milliseconds.
      */
-    public TimerWithinGuardFactory(int seconds)
+    protected long milliseconds;
+
+    public void setGuardParameters(List<Object> guardParameters) throws GuardParameterException
     {
-        this((long)seconds);
+        String errorMessage = "Timer-within guard requires a single numeric or time period parameter";
+        if (guardParameters.size() != 1)
+        {
+            throw new GuardParameterException(errorMessage);
+        }
+
+        Object parameter = guardParameters.get(0);
+        if (parameter instanceof TimePeriodParameter)
+        {
+            TimePeriodParameter param = (TimePeriodParameter) parameter;
+            milliseconds = Math.round(1000d * param.getNumSeconds());
+        }
+        else if (!(parameter instanceof Number))
+        {
+            throw new GuardParameterException(errorMessage);
+        }
+        else
+        {
+            Number param = (Number) parameter;
+            if (JavaClassHelper.isFloatingPointNumber(param))
+            {
+                milliseconds = Math.round(1000d * param.doubleValue());
+            }
+            else
+            {
+                milliseconds = 1000 * param.longValue();
+            }
+        }
     }
 
-    /**
-     * Creates a timer guard.
-     * @param seconds number of seconds before guard expiration
-     */
-    public TimerWithinGuardFactory(double seconds)
-    {
-        this.milliseconds = Math.round(seconds * 1000d);
-    }
-
-    /**
-     * Creates a timer guard.
-     * @param seconds number of seconds before guard expiration
-     */
-    public TimerWithinGuardFactory(long seconds)
-    {
-        this.milliseconds = seconds * 1000;
-    }
-
-    /**
-     * Creates a timer guard.
-     * @param timePeriodParameter number of milliseconds before guard expiration
-     */
-    public TimerWithinGuardFactory(TimePeriodParameter timePeriodParameter)
-    {
-        double milliseconds = timePeriodParameter.getNumSeconds() * 1000d;
-        this.milliseconds = Math.round(milliseconds);
-    }
-
-    public Guard makeGuard(PatternContext context, Quitable quitable)
+    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId)
     {
         return new TimerWithinGuard(milliseconds, context, quitable);
     }

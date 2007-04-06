@@ -25,16 +25,16 @@ public final class EvalNotStateNode extends EvalStateNode implements Evaluator
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
-     * @param notNodeChildNode is the single child node of the not-node
      * @param beginState contains the events that make up prior matches
      * @param context contains handles to services required
+     * @param evalNotNode is the factory node associated to the state
      */
     public EvalNotStateNode(Evaluator parentNode,
-                                  EvalNode notNodeChildNode,
+                                  EvalNotNode evalNotNode,
                                   MatchedEventMap beginState,
                                   PatternContext context)
     {
-        super(parentNode);
+        super(evalNotNode, parentNode, null);
 
         if (log.isDebugEnabled())
         {
@@ -42,7 +42,7 @@ public final class EvalNotStateNode extends EvalStateNode implements Evaluator
         }
 
         this.beginState = beginState.shallowCopy();
-        this.childNode = notNodeChildNode.newState(this, beginState, context);
+        this.childNode = evalNotNode.getChildNodes().get(0).newState(this, beginState, context, null);
     }
 
     public final void start()
@@ -86,7 +86,7 @@ public final class EvalNotStateNode extends EvalStateNode implements Evaluator
         }
         else
         {
-            // If the subexpression did not guardQuit, we stay in the "true" state
+            // If the subexpression did not quit, we stay in the "true" state
         }
     }
 
@@ -94,7 +94,7 @@ public final class EvalNotStateNode extends EvalStateNode implements Evaluator
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".guardQuit Quitting not-node single child, childNode=" + childNode);
+            log.debug(".quit Quitting not-node single child, childNode=" + childNode);
         }
 
         if (childNode != null)

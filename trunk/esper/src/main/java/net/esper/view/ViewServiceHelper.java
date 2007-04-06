@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.collection.Pair;
 import net.esper.core.StatementContext;
+import net.esper.eql.spec.ViewSpec;
 
 /**
  * Utility methods to deal with chains of views, and for merge/group-by views.

@@ -1,22 +1,18 @@
-/**************************************************************************************
- * Copyright (C) 2006 Esper Team. All rights reserved.                                *
- * http://esper.codehaus.org                                                          *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the GPL license       *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
-package net.esper.view;
+package net.esper.eql.spec;
 
 import net.esper.util.MetaDefItem;
 
 import java.util.List;
 
 /**
- * Encapsulates the information required to specify a object construction.
- * A object construction specification can be equal to another specification. This information is
+ * Encapsulates the information required to specify an object identification and construction.
+ * <p>
+ * Abstract class for use with any object, such as views, pattern guards or pattern observers.
+ * <p>
+ * A object construction specification can be equal to another specification. This information can be
  * important to determine reuse of any object.
  */
-public final class ViewSpec implements MetaDefItem
+public abstract class ObjectSpec implements MetaDefItem
 {
     private final String objectNamespace;
     private final String objectName;
@@ -26,9 +22,9 @@ public final class ViewSpec implements MetaDefItem
      * Constructor.
      * @param namespace if the namespace the object is in
      * @param objectName is the name of the object
-     * @param objectParameters is a list of PrimitiveValue instances representing the object parameters
+     * @param objectParameters is a list of values representing the object parameters
      */
-    public ViewSpec(String namespace, String objectName, List<Object> objectParameters)
+    public ObjectSpec(String namespace, String objectName, List<Object> objectParameters)
     {
         this.objectNamespace = namespace;
         this.objectName = objectName;
@@ -55,7 +51,7 @@ public final class ViewSpec implements MetaDefItem
 
     /**
      * Returns the list of object parameters.
-     * @return list of PrimitiveValue representing object parameters
+     * @return list of values representing object parameters
      */
     public final List<Object> getObjectParameters()
     {
@@ -79,7 +75,7 @@ public final class ViewSpec implements MetaDefItem
             return false;
         }
 
-        final ViewSpec other = (ViewSpec) otherObject;
+        final ObjectSpec other = (ObjectSpec) otherObject;
         if (!(this.objectName).equals(other.objectName))
         {
             return false;
@@ -106,7 +102,6 @@ public final class ViewSpec implements MetaDefItem
         return true;
     }
 
-    @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
     public final String toString()
     {
         StringBuilder buffer = new StringBuilder();

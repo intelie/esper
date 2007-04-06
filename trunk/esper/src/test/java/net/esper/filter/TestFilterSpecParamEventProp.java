@@ -2,6 +2,7 @@ package net.esper.filter;
 
 import junit.framework.TestCase;
 import net.esper.pattern.MatchedEventMap;
+import net.esper.pattern.MatchedEventMapImpl;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.event.SupportEventBeanFactory;
@@ -37,14 +38,14 @@ public class TestFilterSpecParamEventProp extends TestCase
         eventBean.setIntBoxed(1000);
         EventBean event = SupportEventBeanFactory.createObject(eventBean);
 
-        MatchedEventMap matchedEvents = new MatchedEventMap();
+        MatchedEventMap matchedEvents = new MatchedEventMapImpl();
         matchedEvents.add("asName", event);
 
         assertEquals(1000, params.getFilterValue(matchedEvents));
 
         try
         {
-            params.getFilterValue(new MatchedEventMap());
+            params.getFilterValue(new MatchedEventMapImpl());
             fail();
         }
         catch (IllegalStateException ex)

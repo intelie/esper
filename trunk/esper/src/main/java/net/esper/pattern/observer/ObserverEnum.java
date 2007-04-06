@@ -15,7 +15,7 @@ public enum ObserverEnum
     /**
      * Observer for letting pass/waiting an interval amount of time.
      */
-    TIMER_INTERVAL("timer", "interval", TimerObserverFactory.class),
+    TIMER_INTERVAL("timer", "interval", TimerIntervalObserverFactory.class),
 
     /**
      * Observer for 'at' (crontab) observation of timer events.

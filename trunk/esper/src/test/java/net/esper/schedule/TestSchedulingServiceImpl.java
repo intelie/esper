@@ -38,6 +38,31 @@ public class TestSchedulingServiceImpl extends TestCase
         }
     }
 
+    public void testAddTwice()
+    {
+        service.add(100, callbacks[0], slots[0][0]);
+        try
+        {
+            service.add(100, callbacks[0], slots[0][0]);
+            fail();
+        }
+        catch (ScheduleHandleExistsException ex)
+        {
+            // expected
+        }
+
+        service.add(new ScheduleSpec(), callbacks[1], slots[0][0]);
+        try
+        {
+            service.add(new ScheduleSpec(), callbacks[1], slots[0][0]);
+            fail();
+        }
+        catch (ScheduleHandleExistsException ex)
+        {
+            // expected
+        }
+    }
+
     public void testTrigger()
     {
         long startTime = 0;

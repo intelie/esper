@@ -74,11 +74,11 @@ public class TestInvalidView extends TestCase
 
         // class in method invocation not found
         exceptionText = getStatementExceptionView("select unknownClass.method() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting view: Unknown class unknownClass [select unknownClass.method() from net.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting view: Could not load class by name 'unknownClass'  [select unknownClass.method() from net.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
         
         // method not found
         exceptionText = getStatementExceptionView("select Math.unknownMethod() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting view: Unknown method Math.unknownMethod() [select Math.unknownMethod() from net.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting view: Could not find method named 'unknownMethod' in class 'Math'  [select Math.unknownMethod() from net.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
         
         // invalid property in group-by
         exceptionText = getStatementExceptionView("select intPrimitive from " + EVENT_ALLTYPES + ".win:length(1) group by xxx");

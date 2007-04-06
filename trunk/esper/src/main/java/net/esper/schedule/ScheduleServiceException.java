@@ -8,10 +8,9 @@
 package net.esper.schedule;
 
 /**
- * This exception is thrown to indicate a problem with scheduling, such as trying to add a scheduling callback
- * that already existed or trying to remove one that didn't exist.
+ * This exception is thrown to indicate a problem with scheduling.
  */
-public final class ScheduleServiceException extends RuntimeException
+public class ScheduleServiceException extends RuntimeException
 {
     /**
      * Constructor.

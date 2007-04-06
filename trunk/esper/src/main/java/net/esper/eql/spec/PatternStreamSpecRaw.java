@@ -19,7 +19,7 @@ import net.esper.filter.FilterSpecCompiler;
 import net.esper.pattern.EvalFilterNode;
 import net.esper.pattern.EvalNode;
 import net.esper.util.UuidGenerator;
-import net.esper.view.ViewSpec;
+import net.esper.eql.spec.ViewSpec;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

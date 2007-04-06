@@ -24,7 +24,7 @@ public class TestMatchEvent extends TestCase
 
     public void testPutAndGet()
     {
-        MatchedEventMap event = new MatchedEventMap();
+        MatchedEventMap event = new MatchedEventMapImpl();
         event.add("tag", events.get("a"));
         event.add("test", events.get("b"));
         assertTrue(event.getMatchingEvents().get("tag") == events.get("a"));
@@ -34,8 +34,8 @@ public class TestMatchEvent extends TestCase
 
     public void testEquals()
     {
-        MatchedEventMap eventOne = new MatchedEventMap();
-        MatchedEventMap eventTwo = new MatchedEventMap();
+        MatchedEventMap eventOne = new MatchedEventMapImpl();
+        MatchedEventMap eventTwo = new MatchedEventMapImpl();
         assertTrue(eventOne.equals(eventTwo));
 
         eventOne.add("test", events.get("a"));
@@ -61,7 +61,7 @@ public class TestMatchEvent extends TestCase
 
     public void testClone()
     {
-        MatchedEventMap event = new MatchedEventMap();
+        MatchedEventMap event = new MatchedEventMapImpl();
 
         event.add("tag", events.get("0"));
         MatchedEventMap copy = event.shallowCopy();
@@ -92,8 +92,8 @@ public class TestMatchEvent extends TestCase
 
     public void testMerge()
     {
-        MatchedEventMap eventOne = new MatchedEventMap();
-        MatchedEventMap eventTwo = new MatchedEventMap();
+        MatchedEventMap eventOne = new MatchedEventMapImpl();
+        MatchedEventMap eventTwo = new MatchedEventMapImpl();
 
         eventOne.add("tagA", events.get("a"));
         eventOne.add("tagB", events.get("b"));

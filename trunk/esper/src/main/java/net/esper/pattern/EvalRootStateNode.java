@@ -14,7 +14,7 @@ import org.apache.commons.logging.Log;
  * This class is always the root node in the evaluation state tree representing any activated event expression.
  * It hold the handle to a further state node with subnodes making up a whole evaluation state tree.
  */
-public final class EvalRootStateNode extends EvalStateNode implements Evaluator, PatternStopCallback
+public final class EvalRootStateNode extends EvalStateNode implements Evaluator, PatternStopCallback, EvalRootState
 {
     private EvalStateNode topStateNode;
     private PatternMatchCallback callback;
@@ -29,14 +29,14 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
                                    MatchedEventMap beginState,
                                    PatternContext context)
     {
-        super(null);
+        super(rootSingleChildNode, null, null);
 
         if (log.isDebugEnabled())
         {
             log.debug(".constructor");
         }
 
-        topStateNode = rootSingleChildNode.newState(this, beginState, context);
+        topStateNode = rootSingleChildNode.newState(this, beginState, context, null);
 
         if (log.isDebugEnabled())
         {
@@ -75,7 +75,7 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
         quit();
     }
 
-    protected final void quit()
+    public final void quit()
     {
         if (topStateNode != null)
         {
@@ -104,7 +104,7 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
         log.debug(".evaluateFalse");
     }
 
-    protected final Object accept(EvalStateNodeVisitor visitor, Object data)
+    public final Object accept(EvalStateNodeVisitor visitor, Object data)
     {
         return visitor.visit(this, data);
     }

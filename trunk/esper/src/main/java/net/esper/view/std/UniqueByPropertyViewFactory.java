@@ -15,7 +15,11 @@ import java.util.List;
  */
 public class UniqueByPropertyViewFactory implements ViewFactory
 {
-    private String propertyName;
+    /**
+     * Property name to evaluate unique values.
+     */
+    protected String propertyName;
+    
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException

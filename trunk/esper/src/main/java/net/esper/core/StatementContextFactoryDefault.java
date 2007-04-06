@@ -1,10 +1,12 @@
 package net.esper.core;
 
-import net.esper.schedule.ScheduleBucket;
-import net.esper.view.StatementStopServiceImpl;
-import net.esper.util.ManagedLock;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.MethodResolutionServiceImpl;
+import net.esper.pattern.PatternContextFactory;
+import net.esper.pattern.PatternContextFactoryDefault;
+import net.esper.schedule.ScheduleBucket;
+import net.esper.util.ManagedLock;
+import net.esper.view.StatementStopServiceImpl;
 
 /**
  * Default implementation for making a statement-specific context class.
@@ -26,10 +28,13 @@ public class StatementContextFactoryDefault implements StatementContextFactory
 
         MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineServices.getEngineImportService());
 
+        PatternContextFactory patternContextFactory = new PatternContextFactoryDefault();
+
         // Create statement context
-        return new StatementContext(statementId, statementName, expression, engineServices.getSchedulingService(),
+        return new StatementContext(engineServices.getEngineURI(),
+                engineServices.getEngineInstanceId(), statementId, statementName, expression, engineServices.getSchedulingService(),
                 scheduleBucket, engineServices.getEventAdapterService(), epStatementHandle,
                 engineServices.getViewResolutionService(), engineServices.getExtensionServicesContext(),
-                new StatementStopServiceImpl(), methodResolutionService);
+                new StatementStopServiceImpl(), methodResolutionService, patternContextFactory, engineServices.getFilterService());
     }
 }

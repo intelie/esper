@@ -27,6 +27,7 @@ public interface SchedulingService
      * @param handle to add
      * @param slot allows ordering of concurrent callbacks
      * @throws ScheduleServiceException thrown if the add operation did not complete
+     * @throws ScheduleHandleExistsException to indicate the handle already existed
      */
     public void add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot)
             throws ScheduleServiceException;
@@ -64,6 +65,16 @@ public interface SchedulingService
      * @param timestamp to set
      */
     public void setTime(long timestamp);
+
+    /**
+     * Scheduling service evaluation lock to synchronize evaluation with engine locks.
+     */
+    public void evaluateLock();
+
+    /**
+     * Scheduling service evaluation unlock to synchronize evaluation with engine locks.
+     */
+    public void evaluateUnLock();
 
     /**
      * Evaluate the current time and add to the collection any handles scheduled for execution.

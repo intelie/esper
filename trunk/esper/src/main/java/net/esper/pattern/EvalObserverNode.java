@@ -8,7 +8,6 @@
 package net.esper.pattern;
 
 import net.esper.pattern.observer.ObserverFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,16 +21,26 @@ public final class EvalObserverNode extends EvalNode
 
     /**
      * Constructor.
-     * @param observerFactory is the factory to use for the observer instance
+     * @param observerFactory is the factory to use to get an observer instance
      */
     public EvalObserverNode(ObserverFactory observerFactory)
     {
         this.observerFactory = observerFactory;
     }
 
+    /**
+     * Returns the observer factory.
+     * @return factory for observer instances
+     */
+    public ObserverFactory getObserverFactory()
+    {
+        return observerFactory;
+    }
+
     public final EvalStateNode newState(Evaluator parentNode,
-                                                 MatchedEventMap beginState,
-                                                 PatternContext context)
+                                        MatchedEventMap beginState,
+                                        PatternContext context,
+                                        Object stateNodeId)
     {
         if (log.isDebugEnabled())
         {
@@ -44,7 +53,7 @@ public final class EvalObserverNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return new EvalObserverStateNode(parentNode, observerFactory, beginState, context);
+        return context.getPatternStateFactory().makeObserverNode(parentNode, this, beginState, stateNodeId);
     }
 
     public final String toString()

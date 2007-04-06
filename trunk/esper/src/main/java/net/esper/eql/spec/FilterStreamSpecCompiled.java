@@ -8,7 +8,7 @@
 package net.esper.eql.spec;
 
 import net.esper.filter.FilterSpecCompiled;
-import net.esper.view.ViewSpec;
+import net.esper.eql.spec.ViewSpec;
 import net.esper.eql.spec.StreamSpecBase;
 
 import java.util.List;

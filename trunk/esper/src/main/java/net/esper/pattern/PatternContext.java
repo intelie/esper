@@ -12,37 +12,31 @@ import net.esper.schedule.ScheduleBucket;
 import net.esper.filter.FilterService;
 import net.esper.event.EventAdapterService;
 import net.esper.core.EPStatementHandle;
+import net.esper.core.ExtensionServicesContext;
+import net.esper.core.StatementContext;
 
 /**
  * Contains handles to implementations of services needed by evaluation nodes.
  */
 public final class PatternContext
 {
-    private final FilterService filterService;
-    private final SchedulingService schedulingService;
-    private final ScheduleBucket scheduleBucket;
-    private final EventAdapterService eventAdapterService;
-    private final EPStatementHandle epStatementHande;
+    private final int streamNumber;
+    private final StatementContext statementContext;
+    private final PatternStateFactory patternStateFactory;
 
     /**
      * Constructor.
-     * @param filterService implementation for filtering service
-     * @param scheduleBucket schedule buckets for use by scheduling service for ordering scheduling callbacks for pattern statements
-     * @param schedulingService implementation for schedule evaluation
-     * @param eventAdapterService service for event adapters or wrappers
-     * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
+     * @param patternStateFactory is the state node factory for the pattern
+     * @param statementContext is the statement context
+     * @param streamNumber is the stream number
      */
-    public PatternContext(FilterService filterService,
-                          SchedulingService schedulingService,
-                          ScheduleBucket scheduleBucket,
-                          EventAdapterService eventAdapterService,
-                          EPStatementHandle epStatementHandle)
+    public PatternContext(StatementContext statementContext,
+                          int streamNumber,
+                          PatternStateFactory patternStateFactory)
     {
-        this.filterService = filterService;
-        this.schedulingService = schedulingService;
-        this.scheduleBucket = scheduleBucket;
-        this.eventAdapterService = eventAdapterService;
-        this.epStatementHande = epStatementHandle;
+        this.streamNumber = streamNumber;
+        this.statementContext = statementContext;
+        this.patternStateFactory = patternStateFactory;
     }
 
     /**
@@ -51,7 +45,7 @@ public final class PatternContext
      */
     public final FilterService getFilterService()
     {
-        return filterService;
+        return statementContext.getFilterService();
     }
 
     /**
@@ -60,7 +54,7 @@ public final class PatternContext
      */
     public final SchedulingService getSchedulingService()
     {
-        return schedulingService;
+        return statementContext.getSchedulingService();
     }
 
     /**
@@ -69,7 +63,7 @@ public final class PatternContext
      */
     public ScheduleBucket getScheduleBucket()
     {
-        return scheduleBucket;
+        return statementContext.getScheduleBucket();
     }
 
     /**
@@ -78,7 +72,7 @@ public final class PatternContext
      */
     public EventAdapterService getEventAdapterService()
     {
-        return eventAdapterService;
+        return statementContext.getEventAdapterService();
     }
 
     /**
@@ -87,6 +81,69 @@ public final class PatternContext
      */
     public EPStatementHandle getEpStatementHandle()
     {
-        return epStatementHande;
+        return statementContext.getEpStatementHandle();
+    }
+
+    /**
+     * Returns the pattern state node factory to use.
+     * @return factory for pattern state
+     */
+    public PatternStateFactory getPatternStateFactory()
+    {
+        return patternStateFactory;
+    }
+
+    /**
+     * Returns the statement id.
+     * @return statement id
+     */
+    public String getStatementId()
+    {
+        return statementContext.getStatementId();
+    }
+
+    /**
+     * Returns the statement name.
+     * @return statement name
+     */
+    public String getStatementName()
+    {
+        return statementContext.getStatementName();
+    }
+
+    /**
+     * Returns the stream number.
+     * @return stream number
+     */
+    public int getStreamNumber()
+    {
+        return streamNumber;
+    }
+
+    /**
+     * Returns the engine URI.
+     * @return engine URI
+     */
+    public String getEngineURI()
+    {
+        return statementContext.getEngineURI();
+    }
+
+    /**
+     * Returns the engine instance id.
+     * @return engine instance id
+     */
+    public String getEngineInstanceId()
+    {
+        return statementContext.getEngineInstanceId();
+    }
+
+    /**
+     * Returns extension services context.
+     * @return extension services
+     */
+    public ExtensionServicesContext getExtensionServicesContext()
+    {
+        return statementContext.getExtensionServicesContext();
     }
 }

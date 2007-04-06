@@ -91,6 +91,11 @@ public class Configuration implements ConfigurationOperations {
     protected List<ConfigurationPlugInView> plugInViews;
 
     /**
+     * List of configured plug-in pattern objects.
+     */
+    protected List<ConfigurationPlugInPatternObject> plugInPatternObjects;
+
+    /**
      * List of configured plug-in aggregation functions.
      */
     protected List<ConfigurationPlugInAggregationFunction> plugInAggregationFunctions;
@@ -311,6 +316,15 @@ public class Configuration implements ConfigurationOperations {
     }
 
     /**
+     * Returns a list of configured plug-ins for pattern observers and guards.
+     * @return list of pattern plug-ins
+     */
+    public List<ConfigurationPlugInPatternObject> getPlugInPatternObjects()
+    {
+        return plugInPatternObjects;
+    }
+
+    /**
      * Add an input/output adapter loader.
      * @param loaderName is the name of the loader
      * @param className is the fully-qualified classname of the loader class
@@ -338,6 +352,38 @@ public class Configuration implements ConfigurationOperations {
         configurationPlugInView.setName(name);
         configurationPlugInView.setFactoryClassName(viewFactoryClass);
         plugInViews.add(configurationPlugInView);
+    }
+
+    /**
+     * Add a pattern event observer for plug-in.
+     * @param namespace is the namespace the observer should be available under
+     * @param name is the name of the observer
+     * @param observerFactoryClass is the observer factory class to use
+     */
+    public void addPlugInPatternObserver(String namespace, String name, String observerFactoryClass)
+    {
+        ConfigurationPlugInPatternObject entry = new ConfigurationPlugInPatternObject();
+        entry.setNamespace(namespace);
+        entry.setName(name);
+        entry.setFactoryClassName(observerFactoryClass);
+        entry.setPatternObjectType(ConfigurationPlugInPatternObject.PatternObjectType.OBSERVER);
+        plugInPatternObjects.add(entry);
+    }
+
+    /**
+     * Add a pattern guard for plug-in.
+     * @param namespace is the namespace the guard should be available under
+     * @param name is the name of the guard
+     * @param guardFactoryClass is the guard factory class to use
+     */
+    public void addPlugInPatternGuard(String namespace, String name, String guardFactoryClass)
+    {
+        ConfigurationPlugInPatternObject entry = new ConfigurationPlugInPatternObject();
+        entry.setNamespace(namespace);
+        entry.setName(name);
+        entry.setFactoryClassName(guardFactoryClass);
+        entry.setPatternObjectType(ConfigurationPlugInPatternObject.PatternObjectType.GUARD);
+        plugInPatternObjects.add(entry);
     }
 
     /**
@@ -509,6 +555,7 @@ public class Configuration implements ConfigurationOperations {
         plugInViews = new ArrayList<ConfigurationPlugInView>();
         adapterLoaders = new ArrayList<ConfigurationAdapterLoader>();
         plugInAggregationFunctions = new ArrayList<ConfigurationPlugInAggregationFunction>();
+        plugInPatternObjects = new ArrayList<ConfigurationPlugInPatternObject>();
     }
 
     /**

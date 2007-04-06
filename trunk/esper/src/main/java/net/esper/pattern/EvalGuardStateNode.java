@@ -7,11 +7,10 @@
  **************************************************************************************/
 package net.esper.pattern;
 
+import net.esper.pattern.guard.Guard;
+import net.esper.pattern.guard.Quitable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.pattern.guard.Quitable;
-import net.esper.pattern.guard.GuardFactory;
-import net.esper.pattern.guard.Guard;
 
 /**
  * This class represents the state of a "within" operator in the evaluation state tree.
@@ -26,27 +25,27 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
-     * @param guardFactory is the factory to use for the guard node
-     * @param singleWithinChildNode is the single child node of the within node
      * @param beginState contains the events that make up prior matches
      * @param context contains handles to services required
+     * @param evalGuardNode is the factory node associated to the state
+     * @param stateObjectId is the state object's id value
      */
     public EvalGuardStateNode(Evaluator parentNode,
-                               GuardFactory guardFactory,
-                                 EvalNode singleWithinChildNode,
+                               EvalGuardNode evalGuardNode,
                                  MatchedEventMap beginState,
-                                 PatternContext context)
+                                 PatternContext context,
+                                 Object stateObjectId)
     {
-        super(parentNode);
+        super(evalGuardNode, parentNode, null);
 
         if (log.isDebugEnabled())
         {
             log.debug(".constructor");
         }
 
-        guard = guardFactory.makeGuard(context, this);
+        guard = evalGuardNode.getGuardFactory().makeGuard(context, this, stateObjectId);
 
-        this.activeChildNode = singleWithinChildNode.newState(this, beginState, context);
+        this.activeChildNode = evalGuardNode.getChildNodes().get(0).newState(this, beginState, context, null);
     }
 
     public final void start()
@@ -99,11 +98,11 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
         }
     }
 
-    protected final void quit()
+    public final void quit()
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".guardQuit Stopping all children");
+            log.debug(".quit Stopping all children");
         }
 
         if (activeChildNode != null)
@@ -139,7 +138,7 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".guardQuit Guard has quit, stopping child node, activeChildNode=" + activeChildNode);
+            log.debug(".quit Guard has quit, stopping child node, activeChildNode=" + activeChildNode);
         }
 
         // It is possible that the child node has already been quit such as when the parent wait time was shorter.

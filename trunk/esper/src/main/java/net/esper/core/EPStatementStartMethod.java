@@ -16,10 +16,7 @@ import net.esper.eql.view.InternalRouteView;
 import net.esper.eql.view.OutputProcessView;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.pattern.EvalRootNode;
-import net.esper.pattern.PatternContext;
-import net.esper.pattern.PatternMatchCallback;
-import net.esper.pattern.PatternStopCallback;
+import net.esper.pattern.*;
 import net.esper.util.StopCallback;
 import net.esper.view.*;
 import net.esper.view.internal.BufferView;
@@ -97,17 +94,17 @@ public class EPStatementStartMethod
 
                 EvalRootNode rootNode = new EvalRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
-                final PatternContext patternContext = new PatternContext(services.getFilterService(),
-                        services.getSchedulingService(), statementContext.getScheduleBucket(), services.getEventAdapterService(), statementContext.getEpStatementHandle());
 
                 PatternMatchCallback callback = new PatternMatchCallback() {
                     public void matchFound(Map<String, EventBean> matchEvent)
                     {
-                        EventBean compositeEvent = patternContext.getEventAdapterService().adapterForCompositeEvent(eventType, matchEvent);
+                        EventBean compositeEvent = statementContext.getEventAdapterService().adapterForCompositeEvent(eventType, matchEvent);
                         sourceEventStream.insert(compositeEvent);
                     }
                 };
 
+                PatternContext patternContext = statementContext.getPatternContextFactory().createContext(statementContext,
+                        i, rootNode);
                 PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
                 stopCallbacks.add(patternStopCallback);
             }

@@ -7,10 +7,9 @@
  **************************************************************************************/
 package net.esper.pattern;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 import net.esper.pattern.guard.GuardFactory;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a guard in the evaluation tree representing an event expressions.
@@ -21,7 +20,7 @@ public final class EvalGuardNode extends EvalNode
 
     /**
      * Constructor.
-     * @param guardFactory - factory for guard node
+     * @param guardFactory - fcatory for guard construction
      */
     public EvalGuardNode(GuardFactory guardFactory)
     {
@@ -29,8 +28,8 @@ public final class EvalGuardNode extends EvalNode
     }
 
     public final EvalStateNode newState(Evaluator parentNode,
-                                                 MatchedEventMap beginState,
-                                                 PatternContext context)
+                                        MatchedEventMap beginState,
+                                        PatternContext context, Object stateNodeId)
     {
         if (log.isDebugEnabled())
         {
@@ -43,7 +42,16 @@ public final class EvalGuardNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return new EvalGuardStateNode(parentNode, guardFactory, getChildNodes().get(0), beginState, context);
+        return context.getPatternStateFactory().makeGuardState(parentNode, this, beginState, context, stateNodeId);
+    }
+
+    /**
+     * Returns the guard factory.
+     * @return guard factory
+     */
+    public GuardFactory getGuardFactory()
+    {
+        return guardFactory;
     }
 
     public final String toString()

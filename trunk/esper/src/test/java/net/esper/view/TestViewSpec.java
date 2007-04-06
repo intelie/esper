@@ -5,6 +5,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import net.esper.support.view.SupportViewSpecFactory;
+import net.esper.eql.spec.ViewSpec;
 
 public class TestViewSpec extends TestCase
 {

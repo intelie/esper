@@ -9,7 +9,7 @@ package net.esper.eql.spec;
 
 import net.esper.pattern.EvalNode;
 import net.esper.event.EventType;
-import net.esper.view.ViewSpec;
+import net.esper.eql.spec.ViewSpec;
 
 import java.util.Map;
 import java.util.HashMap;

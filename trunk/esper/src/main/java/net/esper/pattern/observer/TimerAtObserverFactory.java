@@ -17,40 +17,39 @@ import net.esper.pattern.MatchedEventMap;
 import net.esper.schedule.ScheduleUnit;
 import net.esper.schedule.ScheduleSpec;
 import net.esper.eql.parse.NumberSetParameter;
+import net.esper.util.MetaDefItem;
 
 /**
  * Factory for 'crontab' observers that indicate truth when a time point was reached.
  */
-public class TimerAtObserverFactory implements ObserverFactory
+public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
 {
-    private ScheduleSpec spec = null;
-
     /**
-     * Ctor.
-     * The crontab observer requires a schedule specification that is extracted from arguments.
-     * @param args - schedule specification
+     * The specification of the crontab schedule.
      */
-    public TimerAtObserverFactory(Object[] args)
+    protected ScheduleSpec spec = null;
+
+    public void setObserverParameters(List<Object> observerParameters) throws ObserverParameterException
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".TimerAtObserverFactory " + Arrays.toString(args));
+            log.debug(".setObserverParameters " + observerParameters);
         }
 
-        if ((args.length < 5) || (args.length > 6))
+        if ((observerParameters.size() < 5) || (observerParameters.size() > 6))
         {
-            throw new IllegalArgumentException("Invalid number of parameters for timer:at");
+            throw new ObserverParameterException("Invalid number of parameters for timer:at");
         }
 
         EnumMap<ScheduleUnit, SortedSet<Integer>> unitMap = new EnumMap<ScheduleUnit, SortedSet<Integer>>(ScheduleUnit.class);
-        unitMap.put(ScheduleUnit.MINUTES, computeValues(args[0], ScheduleUnit.MINUTES));
-        unitMap.put(ScheduleUnit.HOURS, computeValues(args[1], ScheduleUnit.HOURS));
-        unitMap.put(ScheduleUnit.DAYS_OF_WEEK, computeValues(args[2], ScheduleUnit.DAYS_OF_WEEK));
-        unitMap.put(ScheduleUnit.DAYS_OF_MONTH, computeValues(args[3], ScheduleUnit.DAYS_OF_MONTH));
-        unitMap.put(ScheduleUnit.MONTHS, computeValues(args[4], ScheduleUnit.MONTHS));
-        if (args.length > 5)
+        unitMap.put(ScheduleUnit.MINUTES, computeValues(observerParameters.get(0), ScheduleUnit.MINUTES));
+        unitMap.put(ScheduleUnit.HOURS, computeValues(observerParameters.get(1), ScheduleUnit.HOURS));
+        unitMap.put(ScheduleUnit.DAYS_OF_WEEK, computeValues(observerParameters.get(2), ScheduleUnit.DAYS_OF_WEEK));
+        unitMap.put(ScheduleUnit.DAYS_OF_MONTH, computeValues(observerParameters.get(3), ScheduleUnit.DAYS_OF_MONTH));
+        unitMap.put(ScheduleUnit.MONTHS, computeValues(observerParameters.get(4), ScheduleUnit.MONTHS));
+        if (observerParameters.size() > 5)
         {
-            unitMap.put(ScheduleUnit.SECONDS, computeValues(args[5], ScheduleUnit.SECONDS));
+            unitMap.put(ScheduleUnit.SECONDS, computeValues(observerParameters.get(5), ScheduleUnit.SECONDS));
         }
         spec = new ScheduleSpec(unitMap);
     }
@@ -77,7 +76,8 @@ public class TimerAtObserverFactory implements ObserverFactory
         return resultSorted;
     }
 
-    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
+    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator,
+                                      Object stateNodeId)
     {
         return new TimerAtObserver(spec, context, beginState, observerEventEvaluator);
     }

@@ -9,21 +9,19 @@ package net.esper.eql.parse;
 
 import antlr.collections.AST;
 import net.esper.collection.Pair;
+import net.esper.eql.agg.AggregationSupport;
+import net.esper.eql.core.EngineImportException;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineImportUndefinedException;
-import net.esper.eql.core.EngineImportException;
 import net.esper.eql.expression.*;
 import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.spec.*;
-import net.esper.eql.agg.AggregationSupport;
 import net.esper.pattern.*;
-import net.esper.pattern.guard.GuardEnum;
-import net.esper.pattern.guard.GuardFactory;
-import net.esper.pattern.observer.ObserverEnum;
 import net.esper.pattern.observer.ObserverFactory;
+import net.esper.pattern.observer.ObserverParameterException;
+import net.esper.pattern.guard.GuardFactory;
+import net.esper.pattern.guard.GuardParameterException;
 import net.esper.type.*;
-import net.esper.util.ConstructorHelper;
-import net.esper.view.ViewSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,14 +50,18 @@ public class EQLTreeWalker extends EQLBaseWalker
     private final StatementSpecRaw statementSpec;
 
     private final EngineImportService engineImportService;
+    private final PatternObjectResolutionService patternObjectResolutionService; 
 
     /**
      * Ctor.
-     * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions 
+     * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
+     * @param  patternObjectResolutionService resolves plug-in pattern object names (guards and observers)
      */
-    public EQLTreeWalker(EngineImportService engineImportService)
+    public EQLTreeWalker(EngineImportService engineImportService,
+                         PatternObjectResolutionService patternObjectResolutionService)
     {
         this.engineImportService = engineImportService;
+        this.patternObjectResolutionService = patternObjectResolutionService;
         statementSpec = new StatementSpecRaw();
     }
 
@@ -1078,7 +1080,6 @@ public class EQLTreeWalker extends EQLBaseWalker
         String objectName = startGuard.getNextSibling().getText();
 
         List<Object> objectParams = new LinkedList<Object>();
-
         AST child = startGuard.getNextSibling().getNextSibling();
         while (child != null)
         {
@@ -1087,34 +1088,25 @@ public class EQLTreeWalker extends EQLBaseWalker
             child = child.getNextSibling();
         }
 
-        // From object name construct guard factory
-        GuardEnum guardEnum = GuardEnum.forName(objectNamespace, objectName);
-        if (guardEnum == null)
-        {
-            throw new ASTWalkException("Guard in namespace " + objectNamespace + " and name " + objectName +
-                    " is not a known guard");
-        }
+        PatternGuardSpec guardSpec = new PatternGuardSpec(objectNamespace, objectName, objectParams);
 
-        GuardFactory guardFactory;
+        // try out the specification at compile time since the node may not get used till later
+        GuardFactory factory;
         try
         {
-            guardFactory = (GuardFactory) ConstructorHelper.invokeConstructor(guardEnum.getClazz(), objectParams.toArray());
-
-            if (log.isDebugEnabled())
-            {
-                log.debug(".leaveGuard Successfully instantiated guard");
-            }
+            factory = patternObjectResolutionService.create(guardSpec);
+            factory.setGuardParameters(objectParams);
         }
-        catch (Exception e)
+        catch (PatternObjectException e)
         {
-            StringBuilder message = new StringBuilder("Error invoking constructor for guard '");
-            message.append(objectName);
-            message.append("', invalid parameter list for the object");
-            log.fatal(".leaveGuard " + message, e);
-            throw new ASTWalkException(message.toString());
+            throw new ASTWalkException(e.getMessage(), e);
+        }
+        catch (GuardParameterException e)
+        {
+            throw new ASTWalkException(e.getMessage(), e);
         }
 
-        EvalGuardNode guardNode = new EvalGuardNode(guardFactory);
+        EvalGuardNode guardNode = new EvalGuardNode(factory);
         astPatternNodeMap.put(node, guardNode);
     }
 
@@ -1144,49 +1136,34 @@ public class EQLTreeWalker extends EQLBaseWalker
         String objectNamespace = node.getFirstChild().getText();
         String objectName = node.getFirstChild().getNextSibling().getText();
 
-        int numNodes = node.getNumberOfChildren();
-        Object[] observerParameters = new Object[numNodes - 2];
-
+        List<Object> objectParams = new LinkedList<Object>();
         AST child = node.getFirstChild().getNextSibling().getNextSibling();
-        int index = 0;
         while (child != null)
         {
             Object object = ASTParameterHelper.makeParameter(child);
-            observerParameters[index++] = object;
+            objectParams.add(object);
             child = child.getNextSibling();
         }
 
-        // From object name construct observer factory
-        ObserverEnum observerEnum = ObserverEnum.forName(objectNamespace, objectName);
-        if (observerEnum == null)
-        {
-            throw new ASTWalkException("EventObserver in namespace " + objectNamespace + " and name " + objectName +
-                    " is not a known observer");
-        }
+        PatternObserverSpec observerSpec = new PatternObserverSpec(objectNamespace, objectName, objectParams);
 
-        ObserverFactory observerFactory;
+        // try out the specification at compile time since the node may not get used till later
+        ObserverFactory factory;
         try
         {
-            Object obsFactory = ConstructorHelper.invokeConstructor(observerEnum.getClazz(), observerParameters);
-            observerFactory = (ObserverFactory) obsFactory;
-
-            if (log.isDebugEnabled())
-            {
-                log.debug(".create Successfully instantiated observer");
-            }
+            factory = patternObjectResolutionService.create(observerSpec);
+            factory.setObserverParameters(objectParams);
         }
-        catch (Exception e)
+        catch (PatternObjectException e)
         {
-            StringBuilder message = new StringBuilder("Error invoking constructor for observer '");
-            message.append(objectNamespace);
-            message.append(':');
-            message.append(objectName);
-            message.append("', invalid parameter list for the object");
-            log.fatal(".leaveObserver " + message, e);
-            throw new ASTWalkException(message.toString());
+            throw new ASTWalkException(e.getMessage(), e);
+        }
+        catch (ObserverParameterException e)
+        {
+            throw new ASTWalkException(e.getMessage(), e);
         }
 
-        EvalObserverNode observerNode = new EvalObserverNode(observerFactory);
+        EvalObserverNode observerNode = new EvalObserverNode(factory);
         astPatternNodeMap.put(node, observerNode);
     }
 

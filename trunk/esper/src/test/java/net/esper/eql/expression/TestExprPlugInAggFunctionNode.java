@@ -17,7 +17,7 @@ public class TestExprPlugInAggFunctionNode extends TestCase
     public void testGetType() throws Exception
     {
         plugInNode.validate(null, null, null);
-        assertEquals(String.class, plugInNode.getType());
+        assertEquals(int.class, plugInNode.getType());
     }
 
     public void testValidate() throws Exception
@@ -38,10 +38,12 @@ public class TestExprPlugInAggFunctionNode extends TestCase
 
     public void testEqualsNode() throws Exception
     {
-        ExprPlugInAggFunctionNode other = new ExprPlugInAggFunctionNode(false, new SupportPluginAggregationMethodOne(), "matrix");
+        ExprPlugInAggFunctionNode otherOne = new ExprPlugInAggFunctionNode(false, new SupportPluginAggregationMethodOne(), "matrix");
+        ExprPlugInAggFunctionNode otherTwo = new ExprPlugInAggFunctionNode(false, new SupportPluginAggregationMethodOne(), "matrix2");
 
         assertTrue(plugInNode.equalsNode(plugInNode));
         assertFalse(plugInNode.equalsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
-        assertFalse(other.equalsNode(plugInNode));
-    }       
+        assertTrue(otherOne.equalsNode(plugInNode));
+        assertFalse(otherTwo.equalsNode(plugInNode));
+    }
 }

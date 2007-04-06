@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.pattern.MatchedEventMap;
+import net.esper.pattern.MatchedEventMapImpl;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.event.SupportEventBeanFactory;
@@ -73,7 +74,7 @@ public class TestFilterSpecCompiled extends TestCase
         SupportBean eventBean = new SupportBean();
         eventBean.setDoublePrimitive(999.999);
         EventBean event = SupportEventBeanFactory.createObject(eventBean);
-        MatchedEventMap matchedEvents = new MatchedEventMap();
+        MatchedEventMap matchedEvents = new MatchedEventMapImpl();
         matchedEvents.add("asName", event);
         FilterValueSet valueSet = filterSpec.getValueSet(matchedEvents);
 

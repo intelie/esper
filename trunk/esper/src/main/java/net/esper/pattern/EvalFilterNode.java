@@ -22,8 +22,8 @@ public final class EvalFilterNode extends EvalNode
     private FilterSpecCompiled filterSpec;
 
     public final EvalStateNode newState(Evaluator parentNode,
-                                                 MatchedEventMap beginState,
-                                                 PatternContext context)
+                                        MatchedEventMap beginState,
+                                        PatternContext context, Object stateNodeId)
     {
         if (log.isDebugEnabled())
         {
@@ -36,7 +36,7 @@ public final class EvalFilterNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return new EvalFilterStateNode(parentNode, filterSpec, eventAsName, beginState, context);
+        return context.getPatternStateFactory().makeFilterStateNode(parentNode, this, beginState, stateNodeId);
     }
 
     /**

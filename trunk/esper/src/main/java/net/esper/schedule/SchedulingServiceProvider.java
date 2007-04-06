@@ -7,6 +7,8 @@
  **************************************************************************************/
 package net.esper.schedule;
 
+import net.esper.util.ManagedReadWriteLock;
+
 /**
  * Static factory for implementations of the SchedulingService interface.
  */

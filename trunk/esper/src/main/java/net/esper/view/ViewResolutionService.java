@@ -1,5 +1,7 @@
 package net.esper.view;
 
+import net.esper.eql.spec.ViewSpec;
+
 /**
  * Factory service for resolving view names and for creating view instances based on a view specification including view name and namespace. 
  */

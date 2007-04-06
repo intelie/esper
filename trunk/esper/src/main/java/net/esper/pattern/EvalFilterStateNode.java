@@ -7,22 +7,19 @@
  **************************************************************************************/
 package net.esper.pattern;
 
+import net.esper.core.EPStatementHandleCallback;
+import net.esper.event.EventBean;
+import net.esper.filter.FilterHandleCallback;
+import net.esper.filter.FilterValueSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.filter.FilterSpecCompiled;
-import net.esper.filter.FilterValueSet;
-import net.esper.filter.FilterHandleCallback;
-import net.esper.event.EventBean;
-import net.esper.event.EventType;
-import net.esper.core.EPStatementHandleCallback;
 
 /**
  * This class contains the state of a single filter expression in the evaluation state tree.
  */
 public final class EvalFilterStateNode extends EvalStateNode implements FilterHandleCallback
 {
-    private final FilterSpecCompiled filterSpec;
-    private final String eventAsName;
+    private final EvalFilterNode evalFilterNode;
     private final MatchedEventMap beginState;
     private final PatternContext context;
 
@@ -32,26 +29,23 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
-     * @param filterSpec is the filter definition
-     * @param eventAsName is the name to use to store the event
      * @param beginState contains the events that make up prior matches
      * @param context contains handles to services required
+     * @param evalFilterNode is the factory node associated to the state
      */
     public EvalFilterStateNode(Evaluator parentNode,
-                                     FilterSpecCompiled filterSpec,
-                                     String eventAsName,
+                                     EvalFilterNode evalFilterNode,
                                      MatchedEventMap beginState,
                                      PatternContext context)
     {
-        super(parentNode);
+        super(evalFilterNode, parentNode, null);
 
         if (log.isDebugEnabled())
         {
             log.debug(".constructor");
         }
 
-        this.filterSpec = filterSpec;
-        this.eventAsName = eventAsName;
+        this.evalFilterNode = evalFilterNode;
         this.beginState = beginState;
         this.context = context;
     }
@@ -77,7 +71,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".guardQuit Stop filter expression");
+            log.debug(".quit Stop filter expression");
         }
 
         isStarted = false;
@@ -105,9 +99,9 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         MatchedEventMap passUp = beginState.shallowCopy();
 
         // Add event itself to the match event structure if a tag was provided
-        if (eventAsName != null)
+        if (evalFilterNode.getEventAsName() != null)
         {
-            passUp.add(eventAsName, event);
+            passUp.add(evalFilterNode.getEventAsName(), event);
         }
 
         // Explanation for the type cast...
@@ -135,20 +129,21 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         return data;
     }
 
-    @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
     public final String toString()
     {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("EvalFilterStateNode spec=" + this.filterSpec);
-        buffer.append(" tag=" + this.filterSpec);
+        buffer.append("EvalFilterStateNode");
+        buffer.append(" tag=");
+        buffer.append(evalFilterNode.getFilterSpec());
+        buffer.append(" spec=");
+        buffer.append(evalFilterNode.getFilterSpec());
         return buffer.toString();
     }
 
     private void startFiltering()
     {
         handle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
-        EventType eventType = filterSpec.getEventType();
-        FilterValueSet filterValues = filterSpec.getValueSet(beginState);
+        FilterValueSet filterValues = evalFilterNode.getFilterSpec().getValueSet(beginState);
         context.getFilterService().add(filterValues, handle);
     }
 

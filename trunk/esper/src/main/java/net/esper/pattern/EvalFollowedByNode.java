@@ -17,7 +17,8 @@ public final class EvalFollowedByNode extends EvalNode
 {
     public final EvalStateNode newState(Evaluator parentNode,
                                                  MatchedEventMap beginState,
-                                                 PatternContext context)
+                                                 PatternContext context,
+                                                 Object stateNodeId)
     {
         if (log.isDebugEnabled())
         {
@@ -30,7 +31,7 @@ public final class EvalFollowedByNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return new EvalFollowedByStateNode(parentNode, this.getChildNodes(), beginState, context);
+        return context.getPatternStateFactory().makeFollowedByState(parentNode, this, beginState, stateNodeId);
     }
 
     public final String toString()

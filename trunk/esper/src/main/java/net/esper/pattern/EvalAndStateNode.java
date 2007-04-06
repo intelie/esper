@@ -14,41 +14,39 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This class represents the state of a "and" operator in the evaluation state tree.
+ * This class represents the state of an "and" operator in the evaluation state tree.
  */
 public final class EvalAndStateNode extends EvalStateNode implements Evaluator
 {
-    private final LinkedList<EvalNode> childNodes;
     private final List<EvalStateNode> activeChildNodes;
-    private Hashtable<EvalStateNode, List<MatchedEventMap>> eventsPerChild;
+    private Map<EvalStateNode, List<MatchedEventMap>> eventsPerChild;
 
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
-     * @param childNodes is the and-nodes child nodes
      * @param beginState contains the events that make up prior matches
      * @param context contains handles to services required
+     * @param evalAndNode is the factory node associated to the state
      */
     public EvalAndStateNode(Evaluator parentNode,
-                                  LinkedList<EvalNode> childNodes,
+                                  EvalAndNode evalAndNode,
                                   MatchedEventMap beginState,
                                   PatternContext context)
     {
-        super(parentNode);
+        super(evalAndNode, parentNode, null);
 
         if (log.isDebugEnabled())
         {
             log.debug(".constructor");
         }
 
-        this.childNodes = childNodes;
         this.activeChildNodes = new LinkedList<EvalStateNode>();
         this.eventsPerChild = new Hashtable<EvalStateNode, List<MatchedEventMap>>();
 
         // In an "and" expression we need to create a state for all child listeners
-        for (EvalNode node : childNodes)
+        for (EvalNode node : evalAndNode.getChildNodes())
         {
-            EvalStateNode childState = node.newState(this, beginState, context);
+            EvalStateNode childState = node.newState(this, beginState, context, null);
             activeChildNodes.add(childState);
         }
     }
@@ -57,12 +55,12 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".start Starting and-expression all children, size=" + childNodes.size());
+            log.debug(".start Starting and-expression all children, size=" + getFactoryNode().getChildNodes().size());
         }
 
         if (activeChildNodes.size() < 2)
         {
-            throw new IllegalStateException("EVERY state node is inactive");
+            throw new IllegalStateException("AND state node is inactive");
         }
 
         // Start all child nodes
@@ -95,7 +93,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
         eventList.add(matchEvent);
 
         // If all nodes have events received, the AND expression turns true
-        if (eventsPerChild.size() < childNodes.size())
+        if (eventsPerChild.size() < getFactoryNode().getChildNodes().size())
         {
             return;
         }
@@ -140,7 +138,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
      */
     protected static List<MatchedEventMap> generateMatchEvents(MatchedEventMap matchEvent,
                                                               EvalStateNode fromNode,
-                                                              Hashtable<EvalStateNode, List<MatchedEventMap>> eventsPerChild)
+                                                              Map<EvalStateNode, List<MatchedEventMap>> eventsPerChild)
     {
         // Place event list for each child state node into an array, excluding the node where the event came from
         ArrayList<List<MatchedEventMap>> listArray = new ArrayList<List<MatchedEventMap>>();
@@ -193,11 +191,11 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
         }
     }
 
-    protected final void quit()
+    public final void quit()
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".guardQuit Stopping all children");
+            log.debug(".quit Stopping all children");
         }
 
         for (EvalStateNode child : activeChildNodes)

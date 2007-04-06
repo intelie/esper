@@ -56,7 +56,7 @@ public class BeanEventBean implements EventBeanSPI
         {
             return false;
         }
-        if (o.event != event)
+        if (!(o.event.equals(event)))
         {
             return false;
         }

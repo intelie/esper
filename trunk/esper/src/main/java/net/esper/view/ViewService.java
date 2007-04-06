@@ -2,6 +2,7 @@ package net.esper.view;
 
 import net.esper.event.EventType;
 import net.esper.core.StatementContext;
+import net.esper.eql.spec.ViewSpec;
 
 import java.util.List;
 

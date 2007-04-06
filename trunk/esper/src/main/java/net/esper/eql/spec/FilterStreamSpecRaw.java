@@ -16,7 +16,7 @@ import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
 import net.esper.filter.FilterSpecCompiled;
 import net.esper.filter.FilterSpecCompiler;
-import net.esper.view.ViewSpec;
+import net.esper.eql.spec.ViewSpec;
 import net.esper.util.MetaDefItem;
 
 import java.util.List;

@@ -1,17 +1,21 @@
 package net.esper.core;
 
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.event.EventAdapterService;
+import net.esper.filter.FilterService;
+import net.esper.pattern.PatternContextFactory;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 import net.esper.view.StatementStopService;
 import net.esper.view.ViewResolutionService;
-import net.esper.eql.core.MethodResolutionService;
 
 /**
  * Contains handles to the implementation of the the scheduling service for use in view evaluation.
  */
 public final class StatementContext
 {
+    private final String engineURI;
+    private final String engineInstanceId;
     private final String statementId;
     private final String statementName;
     private final String expression;
@@ -23,9 +27,13 @@ public final class StatementContext
     private final ExtensionServicesContext extensionServicesContext;
     private final StatementStopService statementStopService;
     private final MethodResolutionService methodResolutionService;
+    private final PatternContextFactory patternContextFactory;
+    private final FilterService filterService;
 
     /**
      * Constructor.
+     * @param engineURI is the engine URI
+     * @param engineInstanceId is the name of the engine instance
      * @param statementId is the statement is assigned for the statement for which this context exists
      * @param statementName is the statement name
      * @param expression is the EQL or pattern expression used
@@ -37,10 +45,14 @@ public final class StatementContext
      * @param extensionServicesContext provide extension points for custom statement resources
      * @param statementStopService for registering a callback invoked when a statement is stopped
      * @param methodResolutionService is a service for resolving static methods and aggregation functions
+     * @param patternContextFactory is the pattern-level services and context information factory
+     * @param filterService is the filtering service
      */
-    public StatementContext(String statementId,
-                                   String statementName,
-                                   String expression,
+    public StatementContext(String engineURI,
+                            String engineInstanceId,
+                              String statementId,
+                              String statementName,
+                              String expression,
                               SchedulingService schedulingService,
                               ScheduleBucket scheduleBucket,
                               EventAdapterService eventAdapterService,
@@ -48,8 +60,12 @@ public final class StatementContext
                               ViewResolutionService viewResultionService,
                               ExtensionServicesContext extensionServicesContext,
                               StatementStopService statementStopService,
-                              MethodResolutionService methodResolutionService)
+                              MethodResolutionService methodResolutionService,
+                              PatternContextFactory patternContextFactory,
+                              FilterService filterService)
     {
+        this.engineURI = engineURI;
+        this.engineInstanceId = engineInstanceId;
         this.statementId = statementId;
         this.statementName = statementName;
         this.expression = expression;
@@ -61,6 +77,8 @@ public final class StatementContext
         this.extensionServicesContext = extensionServicesContext;
         this.statementStopService = statementStopService;
         this.methodResolutionService = methodResolutionService;
+        this.patternContextFactory = patternContextFactory;
+        this.filterService = filterService;
     }
 
     /**
@@ -154,12 +172,48 @@ public final class StatementContext
     }
 
     /**
+     * Returns the pattern context factory for the statement.
+     * @return pattern context factory
+     */
+    public PatternContextFactory getPatternContextFactory()
+    {
+        return patternContextFactory;
+    }
+
+    /**
      * Returns the statement expression text
      * @return expression text
      */
     public String getExpression()
     {
         return expression;
+    }
+
+    /**
+     * Returns the engine URI.
+     * @return engine URI
+     */
+    public String getEngineURI()
+    {
+        return engineURI;
+    }
+
+    /**
+     * Returns the engine instance id.
+     * @return instance id
+     */
+    public String getEngineInstanceId()
+    {
+        return engineInstanceId;
+    }
+
+    /**
+     * Returns the filter service.
+     * @return filter service
+     */
+    public FilterService getFilterService()
+    {
+        return filterService;
     }
 
     public String toString()

@@ -9,8 +9,6 @@ package net.esper.pattern;
 
 import net.esper.pattern.observer.EventObserver;
 import net.esper.pattern.observer.ObserverEventEvaluator;
-import net.esper.pattern.observer.ObserverFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,23 +23,23 @@ public final class EvalObserverStateNode extends EvalStateNode implements Observ
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
-     * @param observerFactory is the observer factory that makes observer instances
      * @param beginState contains the events that make up prior matches
      * @param context contains handles to services required
+     * @param evalObserverNode is the factory node associated to the state
      */
     public EvalObserverStateNode(Evaluator parentNode,
-                             ObserverFactory observerFactory,
+                             EvalObserverNode evalObserverNode,
                                    MatchedEventMap beginState,
                                    PatternContext context)
     {
-        super(parentNode);
+        super(evalObserverNode, parentNode, null);
 
         if (log.isDebugEnabled())
         {
             log.debug(".constructor");
         }
 
-        eventObserver = observerFactory.makeObserver(context, beginState, this);
+        eventObserver = evalObserverNode.getObserverFactory().makeObserver(context, beginState, this, null);
     }
 
     public void observerEvaluateTrue(MatchedEventMap matchEvent)
@@ -59,7 +57,7 @@ public final class EvalObserverStateNode extends EvalStateNode implements Observ
         eventObserver.startObserve();
     }
 
-    protected final void quit()
+    public final void quit()
     {
         eventObserver.stopObserve();
     }

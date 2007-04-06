@@ -1,10 +1,10 @@
 package net.esper.eql.db;
 
 import net.esper.eql.spec.DBStatementStreamSpec;
+import net.esper.eql.spec.ViewSpec;
 import net.esper.eql.db.PollingViewableFactory;
 import net.esper.support.eql.SupportDatabaseService;
 import net.esper.support.event.SupportEventAdapterService;
-import net.esper.view.ViewSpec;
 import net.esper.view.EventCollection;
 
 import java.util.LinkedList;

@@ -12,30 +12,28 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * This class represents the state of a followed-by operator in the evaluation state tree.
  */
 public final class EvalFollowedByStateNode extends EvalStateNode implements Evaluator
 {
-    private final LinkedList<EvalNode> childNodes;
     private final HashMap<EvalStateNode, Integer> nodes;
     private final PatternContext context;
 
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
-     * @param childNodes are the child nodes of the followed by node
      * @param beginState contains the events that make up prior matches
      * @param context contains handles to services required
+     * @param evalFollowedByNode is the factory node associated to the state
      */
     public EvalFollowedByStateNode(Evaluator parentNode,
-                                         LinkedList<EvalNode> childNodes,
+                                         EvalFollowedByNode evalFollowedByNode,
                                          MatchedEventMap beginState,
                                          PatternContext context)
     {
-        super(parentNode);
+        super(evalFollowedByNode, parentNode, null);
 
         if (log.isDebugEnabled())
         {
@@ -43,11 +41,10 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
         }
 
         this.nodes = new HashMap<EvalStateNode, Integer>();
-        this.childNodes = childNodes;
         this.context = context;
 
-        EvalNode child = childNodes.get(0);
-        EvalStateNode childState = child.newState(this, beginState, context);
+        EvalNode child = evalFollowedByNode.getChildNodes().get(0);
+        EvalStateNode childState = child.newState(this, beginState, context, null);
         nodes.put(childState, 0);
     }
 
@@ -84,7 +81,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
         }
 
         // If the match came from the very last filter, need to escalate
-        int numChildNodes = childNodes.size();
+        int numChildNodes = getFactoryNode().getChildNodes().size();
         if (index == (numChildNodes - 1))
         {
             boolean isFollowedByQuitted = false;
@@ -98,8 +95,8 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
         // Else start a new listener for the next-in-line filter
         else
         {
-            EvalNode child = childNodes.get(index + 1);
-            EvalStateNode childState = child.newState(this, matchEvent, context);
+            EvalNode child = getFactoryNode().getChildNodes().get(index + 1);
+            EvalStateNode childState = child.newState(this, matchEvent, context, null);
             nodes.put(childState, index + 1);
             childState.start();
         }
@@ -116,7 +113,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".guardQuit Stopping followed-by all children");
+            log.debug(".quit Stopping followed-by all children");
         }
 
         for (EvalStateNode child : nodes.keySet())

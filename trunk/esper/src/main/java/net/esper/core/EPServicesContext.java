@@ -11,7 +11,6 @@ import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.DispatchServiceProvider;
 import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
-import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.event.EventAdapterService;
@@ -26,12 +25,15 @@ import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
 import net.esper.view.stream.StreamFactoryService;
 import net.esper.view.stream.StreamFactoryServiceProvider;
+import net.esper.pattern.PatternObjectResolutionService;
 
 /**
  * Convenience class to hold implementations for all services.
  */
 public final class EPServicesContext
 {
+    private final String engineURI;
+    private final String engineInstanceId;
     private final FilterService filterService;
     private final TimerService timerService;
     private final SchedulingService schedulingService;
@@ -48,6 +50,7 @@ public final class EPServicesContext
     private final ExtensionServicesContext extensionServicesContext;
     private final EngineEnvContext engineEnvContext;
     private final StatementContextFactory statementContextFactory;
+    private final PatternObjectResolutionService patternObjectResolutionService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -55,6 +58,8 @@ public final class EPServicesContext
 
     /**
      * Constructor - sets up new set of services.
+     * @param engineURI is the engine URI
+     * @param engineInstanceId is the name of the engine instance
      * @param schedulingService service to get time and schedule callbacks
      * @param eventAdapterService service to resolve event types
      * @param databaseConfigService service to resolve a database name to database connection factory and configs
@@ -65,8 +70,11 @@ public final class EPServicesContext
      * @param engineImportService is engine imported static func packages and aggregation functions
      * @param statementContextFactory is the factory to use to create statement context objects
      * @param engineEnvContext is engine environment/directory information for use with adapters and external env
+     * @param patternObjectResolutionService resolves plug-in pattern objects 
      */
-    public EPServicesContext(SchedulingService schedulingService,
+    public EPServicesContext(String engineURI,
+                             String engineInstanceId,
+                             SchedulingService schedulingService,
                              EventAdapterService eventAdapterService,
                              EngineImportService engineImportService,
                              DatabaseConfigService databaseConfigService,
@@ -75,8 +83,11 @@ public final class EPServicesContext
                              ManagedReadWriteLock eventProcessingRWLock,
                              ExtensionServicesContext extensionServicesContext,
                              EngineEnvContext engineEnvContext,
-                             StatementContextFactory statementContextFactory)
+                             StatementContextFactory statementContextFactory,
+                             PatternObjectResolutionService patternObjectResolutionService)
     {
+        this.engineURI = engineURI;
+        this.engineInstanceId = engineInstanceId;
         this.schedulingService = schedulingService;
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
@@ -93,6 +104,7 @@ public final class EPServicesContext
         this.extensionServicesContext = extensionServicesContext;
         this.engineEnvContext = engineEnvContext;
         this.statementContextFactory = statementContextFactory;
+        this.patternObjectResolutionService = patternObjectResolutionService;
     }
 
     /**
@@ -284,5 +296,32 @@ public final class EPServicesContext
     public StatementContextFactory getStatementContextFactory()
     {
         return statementContextFactory;
+    }
+
+    /**
+     * Returns the engine URI.
+     * @return engine URI
+     */
+    public String getEngineURI()
+    {
+        return engineURI;
+    }
+
+    /**
+     * Returns the engine instance ID.
+     * @return instance id
+     */
+    public String getEngineInstanceId()
+    {
+        return engineInstanceId;
+    }
+
+    /**
+     * Returns the pattern object resolver.
+     * @return resolver for plug-in pattern objects.
+     */
+    public PatternObjectResolutionService getPatternObjectResolutionService()
+    {
+        return patternObjectResolutionService;
     }
 }

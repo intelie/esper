@@ -9,16 +9,26 @@ package net.esper.pattern.guard;
 
 import net.esper.pattern.PatternContext;
 
+import java.util.List;
+
 /**
  * Interface for a factory for {@link Guard} instances.
  */
 public interface GuardFactory
 {
     /**
+     * Sets the guard object parameters.
+     * @param guardParameters is a list of parameters
+     * @throws GuardParameterException thrown to indicate a parameter problem
+     */
+    public void setGuardParameters(List<Object> guardParameters) throws GuardParameterException;
+
+    /**
      * Constructs a guard instance.
      * @param context - services for use by guard
      * @param quitable - to use for indicating the guard has quit
+     * @param stateNodeId - a node id for the state object
      * @return guard instance
      */
-    public Guard makeGuard(PatternContext context, Quitable quitable);
+    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId);
 }

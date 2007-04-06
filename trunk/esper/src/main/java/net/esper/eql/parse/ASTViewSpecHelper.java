@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.esper.eql.generated.EqlTokenTypes;
-import net.esper.view.ViewSpec;
+import net.esper.eql.spec.ViewSpec;
 import antlr.collections.AST;
 
 /**

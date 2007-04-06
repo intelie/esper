@@ -4,11 +4,12 @@ import net.esper.schedule.ScheduleSpec;
 import net.esper.pattern.observer.TimerIntervalObserver;
 import net.esper.pattern.observer.EventObserver;
 import net.esper.pattern.observer.TimerAtObserver;
-import net.esper.pattern.observer.TimerObserverFactory;
+import net.esper.pattern.observer.TimerIntervalObserverFactory;
 import net.esper.pattern.PatternContext;
-import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.pattern.SupportPatternContextFactory;
 import junit.framework.TestCase;
+
+import java.util.Arrays;
 
 public class TestTimerObserverFactory extends TestCase
 {
@@ -19,21 +20,11 @@ public class TestTimerObserverFactory extends TestCase
         patternContext = SupportPatternContextFactory.makeContext();
     }
 
-    public void testCron()
+    public void testIntervalWait() throws Exception
     {
-        ScheduleSpec spec = new ScheduleSpec();
-        TimerObserverFactory factory = new TimerObserverFactory(spec);
-
-        EventObserver eventObserver = factory.makeObserver(patternContext, null, null);
-
-        assertTrue(eventObserver instanceof TimerAtObserver);
-    }
-
-    public void testIntervalWait()
-    {
-        TimerObserverFactory factory = new TimerObserverFactory(10);
-
-        EventObserver eventObserver = factory.makeObserver(patternContext, null, null);
+        TimerIntervalObserverFactory factory = new TimerIntervalObserverFactory();
+        factory.setObserverParameters(Arrays.asList(new Object[] {1}));
+        EventObserver eventObserver = factory.makeObserver(patternContext, null, null, null);
 
         assertTrue(eventObserver instanceof TimerIntervalObserver);
     }

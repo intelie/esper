@@ -222,7 +222,8 @@ public class TestAggregationFunctionPlugIn extends TestCase
         configuration.addPlugInAggregationFunction("abcdef", String.class.getName());
         try
         {
-            EPServiceProviderManager.getDefaultProvider(configuration);
+            EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(configuration);
+            engine.initialize();
             fail();
         }
         catch (ConfigurationException ex)
@@ -238,7 +239,8 @@ public class TestAggregationFunctionPlugIn extends TestCase
         {
             Configuration configuration = new Configuration();
             configuration.addPlugInAggregationFunction(funcName, className);
-            EPServiceProviderManager.getDefaultProvider(configuration);
+            EPServiceProvider provider = EPServiceProviderManager.getDefaultProvider(configuration);
+            provider.initialize();
             fail();
         }
         catch (ConfigurationException ex)
@@ -248,20 +250,9 @@ public class TestAggregationFunctionPlugIn extends TestCase
         }        
     }
 
-    // TODO: test adding at runtime
-    public void testPlugInAggregation()
-    {
-        String text = "select concatstring(symbol) as myvalue from A.win:length(3)";
-        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
-        stmt.addListener(testListener);
-
-        sendEvent("abc");
-        assertReceived("abc", null);
-    }
-
     public void testInvalid()
     {
-        tryInvalid("select xxx(id) from A ", "");
+        tryInvalid("select xxx(id) from A ", "Unknown method named 'xxx' could not be resolved [select xxx(id) from A ]");
     }
 
     private void sendEvent(String symbol)

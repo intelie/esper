@@ -19,16 +19,17 @@ public final class EvalRootNode extends EvalNode implements PatternStarter
     public final PatternStopCallback start(PatternMatchCallback callback,
                                            PatternContext context)
     {
-        MatchedEventMap beginState = new MatchedEventMap();
-        EvalRootStateNode rootState = (EvalRootStateNode) newState(null, beginState, context);
+        MatchedEventMap beginState = new MatchedEventMapImpl();
+        EvalStateNode rootStateNode = newState(null, beginState, context, null);
+        EvalRootState rootState = (EvalRootState) rootStateNode;
         rootState.setCallback(callback);
-        rootState.start();
+        rootStateNode.start();
         return rootState;
     }
 
     public final EvalStateNode newState(Evaluator parentNode,
-                                                 MatchedEventMap beginState,
-                                                 PatternContext context)
+                                        MatchedEventMap beginState,
+                                        PatternContext context, Object stateNodeId)
     {
         if (log.isDebugEnabled())
         {
@@ -41,7 +42,7 @@ public final class EvalRootNode extends EvalNode implements PatternStarter
                     + getChildNodes().size());
         }
 
-        return new EvalRootStateNode(this.getChildNodes().get(0), beginState, context);
+        return context.getPatternStateFactory().makeRootNode(this.getChildNodes().get(0), beginState);
     }
 
     public final String toString()

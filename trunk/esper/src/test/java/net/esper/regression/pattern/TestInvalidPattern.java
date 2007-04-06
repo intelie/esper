@@ -34,6 +34,18 @@ public class TestInvalidPattern extends TestCase
     {
         String exceptionText = null;
 
+        exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " -> timer:within()");
+        assertEquals("Invalid use for pattern guard named 'within' outside of where-clause [net.esper.support.bean.SupportBean -> timer:within()]", exceptionText);
+
+        exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " where timer:interval(100)");
+        assertEquals("Invalid use for pattern observer named 'interval' [net.esper.support.bean.SupportBean where timer:interval(100)]", exceptionText);
+
+        exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " -> timer:interval()");
+        assertEquals("Timer-interval observer requires a single numeric or time period parameter [net.esper.support.bean.SupportBean -> timer:interval()]", exceptionText);
+
+        exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " where timer:within()");
+        assertEquals("Timer-within guard requires a single numeric or time period parameter [net.esper.support.bean.SupportBean where timer:within()]", exceptionText);
+
         // class not found
         exceptionText = getStatementExceptionPattern("dummypkg.dummy()");
         assertEquals("Failed to resolve event type: Failed to load class dummypkg.dummy [dummypkg.dummy()]", exceptionText);
@@ -68,11 +80,11 @@ public class TestInvalidPattern extends TestCase
 
         // invalid observer arg
         exceptionText = getStatementExceptionPattern("timer:at(9l)");
-        assertEquals("Error invoking constructor for observer 'timer:at', invalid parameter list for the object [timer:at(9l)]", exceptionText);
+        assertEquals("Invalid number of parameters for timer:at [timer:at(9l)]", exceptionText);
 
         // invalid guard arg
         exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " where timer:within('s')");
-        assertEquals("Error invoking constructor for guard 'within', invalid parameter list for the object [net.esper.support.bean.SupportBean where timer:within('s')]", exceptionText);
+        assertEquals("Timer-within guard requires a single numeric or time period parameter [net.esper.support.bean.SupportBean where timer:within('s')]", exceptionText);
 
         // use-result property is wrong type
         exceptionText = getStatementExceptionPattern("x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(doublePrimitive=x.boolBoxed)");

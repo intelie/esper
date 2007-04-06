@@ -16,8 +16,8 @@ import org.apache.commons.logging.LogFactory;
 public final class EvalNotNode extends EvalNode
 {
     public final EvalStateNode newState(Evaluator parentNode,
-                                                 MatchedEventMap beginState,
-                                                 PatternContext context)
+                                        MatchedEventMap beginState,
+                                        PatternContext context, Object stateNodeId)
     {
         if (log.isDebugEnabled())
         {
@@ -30,7 +30,7 @@ public final class EvalNotNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return new EvalNotStateNode(parentNode, this.getChildNodes().get(0), beginState, context);
+        return context.getPatternStateFactory().makeNotNode(parentNode, this, beginState, stateNodeId);
     }
 
     public final String toString()

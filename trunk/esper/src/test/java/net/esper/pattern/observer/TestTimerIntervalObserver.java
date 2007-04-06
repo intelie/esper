@@ -1,12 +1,15 @@
 package net.esper.pattern.observer;
 
-import net.esper.schedule.SchedulingServiceImpl;
-import net.esper.support.guard.SupportObserverEvaluator;
-import net.esper.support.event.SupportEventAdapterService;
-import net.esper.support.schedule.SupportSchedulingServiceImpl;
-import net.esper.pattern.PatternContext;
-import net.esper.pattern.MatchedEventMap;
 import junit.framework.TestCase;
+import net.esper.pattern.MatchedEventMap;
+import net.esper.pattern.PatternContext;
+import net.esper.pattern.MatchedEventMapImpl;
+import net.esper.schedule.SchedulingServiceImpl;
+import net.esper.support.event.SupportEventAdapterService;
+import net.esper.support.guard.SupportObserverEvaluator;
+import net.esper.support.schedule.SupportSchedulingServiceImpl;
+import net.esper.support.view.SupportStatementContextFactory;
+import net.esper.core.StatementContext;
 
 public class TestTimerIntervalObserver extends TestCase
 {
@@ -18,10 +21,12 @@ public class TestTimerIntervalObserver extends TestCase
 
     public void setUp()
     {
-        beginState = new MatchedEventMap();
+        
+        beginState = new MatchedEventMapImpl();
 
         scheduleService = new SchedulingServiceImpl();
-        context = new PatternContext(null, scheduleService, scheduleService.allocateBucket(), SupportEventAdapterService.getService(), null);
+        StatementContext stmtContext = SupportStatementContextFactory.makeContext(scheduleService);
+        context = new PatternContext(stmtContext, 1, null);
 
         evaluator = new SupportObserverEvaluator();
 

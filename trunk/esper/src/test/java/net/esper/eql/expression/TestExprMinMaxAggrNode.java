@@ -22,16 +22,16 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
     public void testGetType() throws Exception
     {
         maxNode.addChildNode(new SupportExprNode(Integer.class));
-        maxNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(maxNode);
         assertEquals(Integer.class, maxNode.getType());
 
         minNode.addChildNode(new SupportExprNode(Float.class));
-        minNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(minNode);
         assertEquals(Float.class, minNode.getType());
 
         maxNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MAX);
         maxNode.addChildNode(new SupportExprNode(Short.class));
-        maxNode.validate(null, null, null);
+        SupportExprNodeFactory.validate(maxNode);
         assertEquals(Short.class, maxNode.getType());
     }
 

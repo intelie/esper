@@ -2,7 +2,7 @@ package net.esper.eql.parse;
 
 import junit.framework.TestCase;
 import net.esper.eql.generated.EqlEvalTokenTypes;
-import net.esper.view.ViewSpec;
+import net.esper.eql.spec.ViewSpec;
 import antlr.CommonAST;
 import antlr.collections.AST;
 

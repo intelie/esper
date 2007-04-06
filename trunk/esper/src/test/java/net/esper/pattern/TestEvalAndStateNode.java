@@ -25,7 +25,7 @@ public class TestEvalAndStateNode extends TestCase
 
     public void testGenerate() throws Exception
     {
-        MatchedEventMap beginState = new MatchedEventMap();
+        MatchedEventMap beginState = new MatchedEventMapImpl();
         beginState.add("0", events.get("0"));
 
         ArrayList<List<MatchedEventMap>> listArray = new ArrayList<List<MatchedEventMap>>();
@@ -75,11 +75,11 @@ public class TestEvalAndStateNode extends TestCase
     {
         List<MatchedEventMap> list = new LinkedList<MatchedEventMap>();
 
-        MatchedEventMap event1 = new MatchedEventMap();
+        MatchedEventMap event1 = new MatchedEventMapImpl();
         event1.add(valueOne, events.get(valueOne));
         list.add(event1);
 
-        MatchedEventMap event2 = new MatchedEventMap();
+        MatchedEventMap event2 = new MatchedEventMapImpl();
         event2.add(valueTwo, events.get(valueTwo));
         list.add(event2);
 

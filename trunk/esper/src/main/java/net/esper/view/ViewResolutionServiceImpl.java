@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.client.ConfigurationPlugInView;
 import net.esper.client.ConfigurationException;
+import net.esper.eql.spec.ViewSpec;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,19 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
 
         for (ConfigurationPlugInView entry : configurationPlugInViews)
         {
+            if (entry.getFactoryClassName() == null)
+            {
+                throw new ConfigurationException("Factory class name has not been supplied for object '" + entry.getName() + "'");
+            }
+            if (entry.getNamespace() == null)
+            {
+                throw new ConfigurationException("Namespace name has not been supplied for object '" + entry.getName() + "'");
+            }
+            if (entry.getName() == null)
+            {
+                throw new ConfigurationException("Name has not been supplied for object in namespace '" + entry.getNamespace() + "'");
+            }
+
             Class clazz;
             try
             {
@@ -40,7 +54,7 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
             }
             catch (ClassNotFoundException ex)
             {
-                throw new ConfigurationException("View factory class " + entry.getFactoryClassName() + " count not be loaded");
+                throw new ConfigurationException("View factory class " + entry.getFactoryClassName() + " could not be loaded");
             }
 
             Map<String, Class> namespaceMap = nameToFactoryMap.get(entry.getNamespace());
@@ -101,13 +115,13 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
         }
         catch (IllegalAccessException e)
         {
-            String message = "Error invoking view factory constructor for view '" + spec.getObjectName() + "'";
+            String message = "Error invoking view factory constructor for view '" + spec.getObjectName();
             message += "', no invocation access for Class.newInstance";
             throw new ViewProcessingException(message, e);
         }
         catch (InstantiationException e)
         {
-            String message = "Error invoking view factory constructor for view '" + spec.getObjectName() + "'";
+            String message = "Error invoking view factory constructor for view '" + spec.getObjectName();
             message += "' using Class.newInstance";
             throw new ViewProcessingException(message, e);
         }
