@@ -215,7 +215,8 @@ namespace net.esper.compat
         {
             foreach (T item in itemEnum)
             {
-                targetCollection.Remove(item);
+                while (targetCollection.Remove(item))
+                    ;
             }
         }
 

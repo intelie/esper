@@ -298,9 +298,10 @@ namespace net.esper.eql.core
             return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
         }
 
-        private static void ValidateHaving(IList<ExprAggregateNode> selectAggregateExprNodes,
-        ISet<Pair<Int32, String>> propertiesGroupedBy,
-        ExprNode havingNode)
+        private static void ValidateHaving(
+            IList<ExprAggregateNode> selectAggregateExprNodes,
+            ISet<Pair<Int32, String>> propertiesGroupedBy,
+            ExprNode havingNode)
         {
             // All aggregation functions in the having node must match with an aggregation function in the select
             IList<ExprAggregateNode> aggregateNodesHaving = new List<ExprAggregateNode>();
