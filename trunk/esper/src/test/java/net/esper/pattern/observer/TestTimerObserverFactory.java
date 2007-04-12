@@ -24,7 +24,7 @@ public class TestTimerObserverFactory extends TestCase
     {
         TimerIntervalObserverFactory factory = new TimerIntervalObserverFactory();
         factory.setObserverParameters(Arrays.asList(new Object[] {1}));
-        EventObserver eventObserver = factory.makeObserver(patternContext, null, null, null);
+        EventObserver eventObserver = factory.makeObserver(patternContext, null, null, null, null);
 
         assertTrue(eventObserver instanceof TimerIntervalObserver);
     }

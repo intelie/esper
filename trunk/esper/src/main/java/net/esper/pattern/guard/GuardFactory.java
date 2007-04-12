@@ -30,5 +30,5 @@ public interface GuardFactory
      * @param stateNodeId - a node id for the state object
      * @return guard instance
      */
-    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId);
+    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId, Object guardState);
 }

@@ -163,7 +163,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementId is the statement id
      * @param desc is the cached statement info
      */
-    public synchronized void start(String statementId, EPStatementDesc desc)
+    public void start(String statementId, EPStatementDesc desc)
     {
         if (log.isDebugEnabled())
         {
@@ -322,7 +322,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param id is the statement id
      * @return statement
      */
-    public synchronized EPStatementSPI getStatementById(String id)
+    public EPStatementSPI getStatementById(String id)
     {
         return this.stmtIdToDescMap.get(id).getEpStatement();
     }

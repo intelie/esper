@@ -92,7 +92,7 @@ public abstract class EvalStateNode
      * Sets the parent evaluator.
      * @param parentEvaluator for this node
      */
-    final void setParentEvaluator(Evaluator parentEvaluator)
+    public final void setParentEvaluator(Evaluator parentEvaluator)
     {
         this.parentEvaluator = parentEvaluator;
     }

@@ -16,21 +16,6 @@ public class TestNotOperator extends TestCase implements SupportBeanConstants
         testCase.add("B1", "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
 
-        /**
-         * As of release 1.6 this no longer updates listeners when the statement is started.
-         * The reason is that the dispatch view only gets attached after a pattern started, therefore
-         * ZeroDepthEventStream looses the event.
-         * There should be no use case requiring this
-         *
-        testCase = new EventExpressionCase("not (b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + ")");
-        testCase.add(EventCollection.ON_START_EVENT_ID);
-        testCaseList.addTest(testCase);
-
-        testCase = new EventExpressionCase("not a=" + EVENT_A_CLASS);
-        testCase.add(EventCollection.ON_START_EVENT_ID);
-        testCaseList.addTest(testCase);
-         */
-
         testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " and not g=" + EVENT_G_CLASS);
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
@@ -83,6 +68,21 @@ public class TestNotOperator extends TestCase implements SupportBeanConstants
 
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
         util.runTest();
+
+        /**
+         * As of release 1.6 this no longer updates listeners when the statement is started.
+         * The reason is that the dispatch view only gets attached after a pattern started, therefore
+         * ZeroDepthEventStream looses the event.
+         * There should be no use case requiring this
+         *
+        testCase = new EventExpressionCase("not (b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS + ")");
+        testCase.add(EventCollection.ON_START_EVENT_ID);
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("not a=" + EVENT_A_CLASS);
+        testCase.add(EventCollection.ON_START_EVENT_ID);
+        testCaseList.addTest(testCase);
+         */
     }
 
     public void testUniformEvents() throws Exception

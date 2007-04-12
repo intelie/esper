@@ -36,5 +36,6 @@ public interface ObserverFactory
     public EventObserver makeObserver(PatternContext context,
                                       MatchedEventMap beginState,
                                       ObserverEventEvaluator observerEventEvaluator,
-                                      Object stateNodeId);
+                                      Object stateNodeId,
+                                      Object observerState);
 }

@@ -8,6 +8,7 @@
 package net.esper.eql.parse;
 
 import antlr.collections.AST;
+import antlr.SemanticException;
 import net.esper.collection.Pair;
 import net.esper.eql.agg.AggregationSupport;
 import net.esper.eql.core.EngineImportException;
@@ -25,10 +26,7 @@ import net.esper.type.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Called during the walks of a EQL expression AST tree as specified in the grammar file.
@@ -47,7 +45,8 @@ public class EQLTreeWalker extends EQLBaseWalker
     private boolean isProcessingPattern;
 
     // AST Walk result
-    private final StatementSpecRaw statementSpec;
+    private StatementSpecRaw statementSpec;
+    private final Stack<StatementSpecRaw> statementSpecStack;
 
     private final EngineImportService engineImportService;
     private final PatternObjectResolutionService patternObjectResolutionService; 
@@ -62,6 +61,16 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
         this.engineImportService = engineImportService;
         this.patternObjectResolutionService = patternObjectResolutionService;
+        statementSpec = new StatementSpecRaw();
+        statementSpecStack = new Stack<StatementSpecRaw>();
+    }
+
+    protected void pushStatement() throws SemanticException {
+        if (log.isDebugEnabled())
+        {
+            log.debug(".pushStatement");
+        }
+        statementSpecStack.push(statementSpec);
         statementSpec = new StatementSpecRaw();
     }
 
@@ -262,6 +271,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case ARRAY_EXPR:
                 leaveArray(node);
                 break;
+            case SUBSELECT_EXPR:
+                leaveSubselect(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -331,6 +343,17 @@ public class EQLTreeWalker extends EQLBaseWalker
         log.debug(".leaveArray");
 
         ExprArrayNode arrayNode = new ExprArrayNode();
+        astExprNodeMap.put(node, arrayNode);
+    }
+
+    private void leaveSubselect(AST node)
+    {
+        log.debug(".leaveSubselect");
+
+        StatementSpecRaw currentSpec = statementSpec;
+        statementSpec = statementSpecStack.pop();
+
+        ExprSubselectNode arrayNode = new ExprSubselectNode(currentSpec);
         astExprNodeMap.put(node, arrayNode);
     }
 

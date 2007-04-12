@@ -717,6 +717,27 @@ public class TestEQLTreeWalker extends TestCase
         parseAndWalkEQL(expression);
     }
 
+    public void testSubselect() throws Exception
+    {
+        String expression = "select (select a from B(id=1) where cox=mox) from C";
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        SelectExprElementRawSpec element = walker.getStatementSpec().getSelectClauseSpec().getSelectList().get(0);
+        ExprSubselectNode exprNode = (ExprSubselectNode) element.getSelectExpression();
+
+        // check select expressions
+        StatementSpecRaw spec = exprNode.getStatementSpec();
+        assertEquals(1, spec.getSelectClauseSpec().getSelectList().size());
+
+        // check filter
+        assertEquals(1, spec.getStreamSpecs().size());
+        FilterStreamSpecRaw filter = (FilterStreamSpecRaw) spec.getStreamSpecs().get(0);
+        assertEquals("B", filter.getRawFilterSpec().getEventTypeAlias());
+        assertEquals(1, filter.getRawFilterSpec().getFilterExpressions().size());
+
+        // check where clause
+        assertTrue(spec.getFilterRootNode() instanceof ExprEqualsNode);
+    }
+
     public void testWalkPatternObject() throws Exception
     {
         String expression = "select * from pattern [" + SupportBean.class.getName() + " -> timer:interval(100)]";

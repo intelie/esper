@@ -43,7 +43,7 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
             log.debug(".constructor");
         }
 
-        guard = evalGuardNode.getGuardFactory().makeGuard(context, this, stateObjectId);
+        guard = evalGuardNode.getGuardFactory().makeGuard(context, this, stateObjectId, null);
 
         this.activeChildNode = evalGuardNode.getChildNodes().get(0).newState(this, beginState, context, null);
     }
@@ -74,6 +74,8 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
             log.debug(".evaluateTrue fromNode=" + fromNode.hashCode());
         }
 
+        boolean haveQuitted = activeChildNode == null;
+
         // If one of the children quits, remove the child
         if (isQuitted)
         {
@@ -83,10 +85,13 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
             guard.stopGuard();
         }
 
-        boolean guardPass = guard.inspect(matchEvent);
-        if (guardPass)
+        if (!(haveQuitted))
         {
-            this.getParentEvaluator().evaluateTrue(matchEvent, this, isQuitted);
+            boolean guardPass = guard.inspect(matchEvent);
+            if (guardPass)
+            {
+                this.getParentEvaluator().evaluateTrue(matchEvent, this, isQuitted);
+            }
         }
     }
 

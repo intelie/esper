@@ -15,7 +15,7 @@ public class SupportGuardFactory implements GuardFactory
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateObjectId)
+    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateObjectId, Object guardState)
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

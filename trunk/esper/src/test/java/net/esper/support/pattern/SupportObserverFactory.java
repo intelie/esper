@@ -16,7 +16,7 @@ public class SupportObserverFactory implements ObserverFactory
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId)
+    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
     {
         return null;
     }

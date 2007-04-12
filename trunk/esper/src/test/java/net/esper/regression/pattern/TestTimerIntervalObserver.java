@@ -57,16 +57,6 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         testCase.add("B3");
         testCaseList.addTest(testCase);
 
-        /**
-         * As of release 1.6 this no longer updates listeners when the statement is started.
-         * The reason is that the dispatch view only gets attached after a pattern started, therefore
-         * ZeroDepthEventStream looses the event.
-         * There should be no use case requiring this
-         *
-        testCase = new EventExpressionCase("not timer:interval(5000 millisecond)");
-        testCase.add(EventCollection.ON_START_EVENT_ID);
-        testCaseList.addTest(testCase);
-         */
 
         testCase = new EventExpressionCase("timer:interval(3.999 second) -> b=" + EVENT_B_CLASS);
         testCase.add("B2", "b", events.getEvent("B2"));
@@ -157,13 +147,23 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("timer:interval(3.000) where timer:within (3.000)");
-        testCase.add("C1");
         testCaseList.addTest(testCase);
 
         // Run all tests
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
         util.runTest();
     }
+
+    /**
+     * As of release 1.6 this no longer updates listeners when the statement is started.
+     * The reason is that the dispatch view only gets attached after a pattern started, therefore
+     * ZeroDepthEventStream looses the event.
+     * There should be no use case requiring this
+     *
+    testCase = new EventExpressionCase("not timer:interval(5000 millisecond)");
+    testCase.add(EventCollection.ON_START_EVENT_ID);
+    testCaseList.addTest(testCase);
+     */
 
     public void testIntervalSpec()
     {

@@ -59,7 +59,7 @@ public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefIte
         }
     }
 
-    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId)
+    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
     {
         return new TimerIntervalObserver(milliseconds, context, beginState, observerEventEvaluator);
     }

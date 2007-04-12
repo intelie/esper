@@ -142,6 +142,7 @@ tokens
 	INSERTINTO_STREAM_NAME;
 	IN_RANGE;
 	NOT_IN_RANGE;
+	SUBSELECT_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -256,7 +257,7 @@ selectionListElement
 	|	expression (AS! IDENT)?
 		{ #selectionListElement = #([SELECTION_ELEMENT_EXPR,"selectionListElement"], #selectionListElement); }
 	;
-		
+	
 streamExpression
 	:	(eventFilterExpression | patternInclusionExpression | databaseJoinExpression)
 		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)?
@@ -441,8 +442,22 @@ unaryExpression
 	| eventPropertyOrLibFunction
 	| builtinFunc
 	| arrayExpression
+	| LPAREN! subSelectExpression RPAREN!
 	;
 	
+subSelectExpression 
+	:	SELECT! selectionListElement
+	    FROM! subSelectFilterExpr
+	    (WHERE! whereClause)?
+		{ #subSelectExpression = #([SUBSELECT_EXPR,"subSelectExpression"], #subSelectExpression); }	
+	;
+	
+subSelectFilterExpr
+	:	eventFilterExpression
+		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)?
+		{ #subSelectFilterExpr = #([STREAM_EXPR,"subSelectFilterExpr"], #subSelectFilterExpr); }
+	;
+		
 arrayExpression
 	: LCURLY! (expression (COMMA! expression)* )? RCURLY!
 	{ #arrayExpression = #([ARRAY_EXPR,"arrayExpression"], #arrayExpression); }	

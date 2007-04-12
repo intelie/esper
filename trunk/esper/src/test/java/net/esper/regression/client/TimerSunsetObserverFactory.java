@@ -19,7 +19,7 @@ public class TimerSunsetObserverFactory implements ObserverFactory
         }
     }
 
-    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId)
+    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
     {
         return new TimerSunsetObserver(context.getSchedulingService(), observerEventEvaluator); 
     }

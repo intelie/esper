@@ -39,7 +39,7 @@ public final class EvalObserverStateNode extends EvalStateNode implements Observ
             log.debug(".constructor");
         }
 
-        eventObserver = evalObserverNode.getObserverFactory().makeObserver(context, beginState, this, null);
+        eventObserver = evalObserverNode.getObserverFactory().makeObserver(context, beginState, this, null, null);
     }
 
     public void observerEvaluateTrue(MatchedEventMap matchEvent)

@@ -77,7 +77,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
     }
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator,
-                                      Object stateNodeId)
+                                      Object stateNodeId, Object observerState)
     {
         return new TimerAtObserver(spec, context, beginState, observerEventEvaluator);
     }

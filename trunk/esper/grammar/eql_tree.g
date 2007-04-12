@@ -31,6 +31,7 @@ tokens
 	protected void setIsPatternWalk(boolean isPatternWalk) throws SemanticException {}
 	protected void endPattern() throws SemanticException {}
 	
+	protected void pushStatement() throws SemanticException {};
 	protected void leaveNode(AST node) throws SemanticException {}
 	protected void end() throws SemanticException {}
 }
@@ -160,8 +161,17 @@ valueExpr
 	|	li:likeExpr { leaveNode(#li); }
 	|	r:regExpExpr { leaveNode(#r); }
 	|	arr:arrayExpr { leaveNode(#arr); }
+	| 	{pushStatement();} sub:subSelectExpr {leaveNode(#sub);}
 	;
 
+subSelectExpr
+	:	#(SUBSELECT_EXPR selectionListElement subSelectFilterExpr (viewExpr)* (IDENT)? (whereClause)?)
+	;
+	
+subSelectFilterExpr
+	:	#(v:STREAM_EXPR eventFilterExpr (viewListExpr)? (IDENT)? { leaveNode(#v); } )
+	;
+	
 caseExpr
 	: #(CASE (valueExpr)*)
 	| #(CASE2 (valueExpr)*)

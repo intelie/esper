@@ -56,7 +56,7 @@ public class TimerWithinGuardFactory implements GuardFactory, MetaDefItem
         }
     }
 
-    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId)
+    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId, Object guardState)
     {
         return new TimerWithinGuard(milliseconds, context, quitable);
     }

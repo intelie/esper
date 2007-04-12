@@ -24,7 +24,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
 
         // Create a lock for the statement
         ManagedLock statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
-        EPStatementHandle epStatementHandle = new EPStatementHandle(statementResourceLock, expression);
+        EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression);
 
         MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineServices.getEngineImportService());
 
