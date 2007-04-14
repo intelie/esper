@@ -72,6 +72,7 @@ tokens
 	SQL="sql";
 	PREVIOUS="prev";
 	PRIOR="prior";
+	EXISTS="exists";
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -143,6 +144,8 @@ tokens
 	IN_RANGE;
 	NOT_IN_RANGE;
 	SUBSELECT_EXPR;
+	EXISTS_SUBSELECT_EXPR;
+	NOT_EXISTS_SUBSELECT_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -442,14 +445,33 @@ unaryExpression
 	| eventPropertyOrLibFunction
 	| builtinFunc
 	| arrayExpression
-	| LPAREN! subSelectExpression RPAREN!
+	| subSelectExpression
+	| existsSubSelectExpression
 	;
 	
 subSelectExpression 
-	:	SELECT! selectionListElement
+	:	subQueryExpr
+		{ #subSelectExpression = #([SUBSELECT_EXPR,"subSelectExpression"], #subSelectExpression); }	
+	;
+
+existsSubSelectExpression 
+	:	(n:NOT)? EXISTS! subQueryExpr
+		{ 
+			if (n != null) {
+				#existsSubSelectExpression = #([EXISTS_SUBSELECT_EXPR,"existsSubSelectExpression"], #existsSubSelectExpression); 
+			}
+			else {
+				#existsSubSelectExpression = #([NOT_EXISTS_SUBSELECT_EXPR,"existsSubSelectExpression"], #existsSubSelectExpression); 
+			}
+		}
+	;
+
+subQueryExpr 
+	:	LPAREN! 
+		SELECT! selectionListElement
 	    FROM! subSelectFilterExpr
 	    (WHERE! whereClause)?
-		{ #subSelectExpression = #([SUBSELECT_EXPR,"subSelectExpression"], #subSelectExpression); }	
+	    RPAREN!
 	;
 	
 subSelectFilterExpr

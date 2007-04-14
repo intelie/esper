@@ -16,10 +16,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import net.esper.collection.Pair;
-import net.esper.eql.expression.ExprAggregateNode;
-import net.esper.eql.expression.ExprNode;
-import net.esper.eql.expression.ExprNodeIdentifierVisitor;
-import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.expression.*;
 import net.esper.eql.spec.InsertIntoDesc;
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.eql.spec.SelectClauseSpec;
@@ -125,12 +122,28 @@ public class ResultSetProcessorFactory
         // Validate group-by expressions, if any (could be empty list for no group-by)
         for (int i = 0; i < groupByNodes.size(); i++)
         {
+            // Ensure there is no subselects
+            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+            groupByNodes.get(i).accept(visitor);
+            if (visitor.getSubselects().size() > 0)
+            {
+                throw new ExprValidationException("Subselects not allowed within group-by");
+            }
+
             groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate));
         }
 
         // Validate having clause, if present
         if (optionalHavingNode != null)
         {
+            // Ensure there is no subselects
+            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+            optionalHavingNode.accept(visitor);
+            if (visitor.getSubselects().size() > 0)
+            {
+                throw new ExprValidationException("Subselects not allowed within having-clause");
+            }
+
             optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
         }
 
@@ -138,7 +151,16 @@ public class ResultSetProcessorFactory
         for (int i = 0; i < orderByList.size(); i++)
         {
         	ExprNode orderByNode = orderByList.get(i).getFirst();
-        	Boolean isDescending = orderByList.get(i).getSecond();
+
+            // Ensure there is no subselects
+            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+            orderByNode.accept(visitor);
+            if (visitor.getSubselects().size() > 0)
+            {
+                throw new ExprValidationException("Subselects not allowed within order-by clause");
+            }
+
+            Boolean isDescending = orderByList.get(i).getSecond();
         	Pair<ExprNode, Boolean> validatedPair = new Pair<ExprNode, Boolean>(orderByNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate), isDescending);
         	orderByList.set(i, validatedPair);
         }

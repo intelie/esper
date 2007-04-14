@@ -91,7 +91,7 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
 
             if (viewEnum == null)
             {
-                String message = "View name '" + spec.getObjectName() + "' is not a known view name";
+                String message = "View name '" + spec.getObjectNamespace() + ":" + spec.getObjectName() + "' is not a known view name";
                 throw new ViewProcessingException(message);
             }
 

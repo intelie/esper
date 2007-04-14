@@ -70,7 +70,7 @@ public class TestViewPlugin extends TestCase
     public void testInvalid()
     {
         tryInvalid("select * from A.mynamespace:xxx()",
-                "Error starting view: View name 'xxx' is not a known view name [select * from A.mynamespace:xxx()]");
+                "Error starting view: View name 'mynamespace:xxx' is not a known view name [select * from A.mynamespace:xxx()]");
         tryInvalid("select * from A.mynamespace:invalid()", "Error starting view: Error casting view factory instance to net.esper.view.ViewFactory interface for view 'invalid' [select * from A.mynamespace:invalid()]");
     }
 

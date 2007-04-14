@@ -4,11 +4,10 @@ import net.esper.client.EPStatementException;
 import net.esper.collection.Pair;
 import net.esper.eql.core.*;
 import net.esper.eql.db.PollingViewableFactory;
-import net.esper.eql.expression.ExprAggregateNode;
-import net.esper.eql.expression.ExprEqualsNode;
-import net.esper.eql.expression.ExprNode;
-import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.expression.*;
 import net.esper.eql.join.*;
+import net.esper.eql.join.plan.QueryGraph;
+import net.esper.eql.join.plan.FilterExprAnalyzer;
 import net.esper.eql.spec.*;
 import net.esper.eql.view.FilterExprView;
 import net.esper.eql.view.IStreamRStreamSelectorView;
@@ -18,14 +17,13 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.pattern.*;
 import net.esper.util.StopCallback;
+import net.esper.util.JavaClassHelper;
 import net.esper.view.*;
 import net.esper.view.internal.BufferView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Starts and provides the stop method for EQL statements.
@@ -136,14 +134,94 @@ public class EPStatementStartMethod
             streamEventTypes[i] = unmaterializedViewChain[i].getEventType();
         }
 
-        // create stop method
+        // List of statement streams
+        final List<StreamSpecCompiled> statementStreamSpecs = new ArrayList<StreamSpecCompiled>();
+        statementStreamSpecs.addAll(statementSpec.getStreamSpecs());
+
+        // Add subselects to statement streams
+        int subselectStreamNumber = 1024;
+        for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
+        {
+            subselectStreamNumber++;
+            subselect.setStreamId(subselectStreamNumber);
+            StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
+            
+            // register filter, create stream, create subviews, add to stop list
+            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+
+            // A child view is required to limit the stream
+            if (filterStreamSpec.getViewSpecs().size() == 0)
+            {
+                throw new ExprValidationException("Subqueries require one or more views to limit the stream, consider declaring a length or time window");
+            }
+
+            // First get event type
+            Viewable viewable = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
+                    services.getFilterService(), statementContext.getEpStatementHandle(), false);
+            ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), statementContext);
+            statementStreamSpecs.add(filterStreamSpec);
+
+            // Validate select expression
+            String subexpressionStreamName = "$subselect_" + subselectStreamNumber;
+            EventType eventType = viewFactoryChain.getEventType();
+
+            SelectClauseSpec selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
+            if (selectClauseSpec.isUsingWildcard())
+            {
+                throw new ExprValidationException("Invalid use of wildcard in subquery");
+            }
+
+            // no aggregation functions allowed
+            ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
+            List<ExprAggregateNode> selectAggregateExprNodes = new LinkedList<ExprAggregateNode>();
+            ExprAggregateNode.getAggregatesBottomUp(selectExpression, selectAggregateExprNodes);
+            if (selectAggregateExprNodes.size() > 0)
+            {
+                throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
+            }
+            ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain});
+
+            // Streams event types are the original stream types with the stream zero the subselect
+            LinkedHashMap<String, EventType> namesAndTypes = new LinkedHashMap<String, EventType>();
+            namesAndTypes.put(subexpressionStreamName, eventType);
+            for (int i = 0; i < streamEventTypes.length; i++)
+            {
+                namesAndTypes.put(streamNames[i], streamEventTypes[i]);
+            }
+            StreamTypeService typeService = new StreamTypeServiceImpl(namesAndTypes, true, true);
+
+            // Validate expression, expression indicates needs
+            selectExpression = selectExpression.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
+            subselect.setSelectClause(selectExpression);
+            subselect.setSelectAsName(selectClauseSpec.getSelectList().get(0).getOptionalAsName());
+
+            // Finally create views
+            Viewable subselectView = services.getViewService().createViews(viewable, viewFactoryChain.getViewFactoryChain(), statementContext);
+            subselect.setSubselectView(subselectView);
+
+            // filter expression
+            ExprNode filterExpr = statementSpec.getFilterRootNode();
+            if (filterExpr != null)
+            {
+                filterExpr = filterExpr.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
+                if (JavaClassHelper.getBoxedType(filterExpr.getType()) != Boolean.class)
+                {
+                    throw new ExprValidationException("Subselect filter expression must return a boolean value");
+                }
+                QueryGraph queryGraph = new QueryGraph(streamNames.length + 1);
+                FilterExprAnalyzer.analyze(filterExpr, queryGraph);
+                subselect.setFilterExpr(filterExpr);
+            }
+        }
+
+        // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
         {
             public void stop()
             {
                 statementContext.getStatementStopService().fireStatementStopped();
 
-                for (StreamSpecCompiled streamSpec : statementSpec.getStreamSpecs())
+                for (StreamSpecCompiled streamSpec : statementStreamSpecs)
                 {
                     if (streamSpec instanceof FilterStreamSpecCompiled)
                     {

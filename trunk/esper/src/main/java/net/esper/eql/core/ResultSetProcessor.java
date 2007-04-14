@@ -8,7 +8,7 @@ import net.esper.collection.MultiKey;
 import java.util.Set;
 
 /**
- * Processor for result sets coming from 2 sources. First, out of a simple view (on join).
+ * Processor for result sets coming from 2 sources. First, out of a simple view (no join).
  * And second, out of a join of event streams. The processor must apply the select-clause, grou-by-clause and having-clauses
  * as supplied. It must state what the event type of the result rows is.
  */

@@ -3,10 +3,9 @@ package net.esper.core;
 import net.esper.client.*;
 import net.esper.collection.Pair;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.StatementSpecCompiled;
-import net.esper.eql.spec.StatementSpecRaw;
-import net.esper.eql.spec.StreamSpecCompiled;
-import net.esper.eql.spec.StreamSpecRaw;
+import net.esper.eql.expression.ExprNodeSubselectVisitor;
+import net.esper.eql.expression.ExprSubselectNode;
+import net.esper.eql.spec.*;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
 import net.esper.view.ViewProcessingException;
@@ -502,6 +501,24 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eqlStatement);
         }
 
+        // Look for expressions with sub-selects in select expression list and filter expression
+        // Recursively compile the statement within the statement.
+        ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+        for (SelectExprElementRawSpec raw : spec.getSelectClauseSpec().getSelectList())
+        {
+            raw.getSelectExpression().accept(visitor);
+        }
+        if (spec.getFilterRootNode() != null)
+        {
+            spec.getFilterRootNode().accept(visitor);
+        }
+        for (ExprSubselectNode subselect : visitor.getSubselects())
+        {
+            StatementSpecRaw raw = subselect.getStatementSpecRaw();
+            StatementSpecCompiled compiled = compile(raw, eqlStatement, statementContext);
+            subselect.setStatementSpecCompiled(compiled);
+        }
+
         return new StatementSpecCompiled(
                 spec.getInsertIntoDesc(),
                 spec.getSelectStreamSelectorEnum(),
@@ -512,6 +529,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getGroupByExpressions(),
                 spec.getHavingExprRootNode(),
                 spec.getOutputLimitSpec(),
-                spec.getOrderByList());
+                spec.getOrderByList(),
+                visitor.getSubselects()
+                );
     }    
 }

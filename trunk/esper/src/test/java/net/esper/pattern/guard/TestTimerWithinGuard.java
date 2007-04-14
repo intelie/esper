@@ -1,25 +1,25 @@
 package net.esper.pattern.guard;
 
 import junit.framework.TestCase;
+import net.esper.core.StatementContext;
 import net.esper.pattern.PatternContext;
+import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceImpl;
-import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.guard.SupportQuitable;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.view.SupportStatementContextFactory;
-import net.esper.core.StatementContext;
 
 public class TestTimerWithinGuard extends TestCase
 {
     private TimerWithinGuard guard;
-    private SchedulingServiceImpl scheduleService;
+    private SchedulingService scheduleService;
     private SupportQuitable quitable;
 
     public void setUp()
     {
-        scheduleService = new SchedulingServiceImpl();
-        StatementContext stmtContext = SupportStatementContextFactory.makeContext();
+        StatementContext stmtContext = SupportStatementContextFactory.makeContext(new SchedulingServiceImpl());
         PatternContext context = new PatternContext(stmtContext, 1, null);
+        scheduleService = stmtContext.getSchedulingService();
 
         quitable = new SupportQuitable();
 

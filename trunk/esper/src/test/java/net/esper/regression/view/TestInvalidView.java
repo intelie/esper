@@ -42,7 +42,7 @@ public class TestInvalidView extends TestCase
 
         // invalid view
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".dummy:dummy(10)");
-        assertEquals("Error starting view: View name 'dummy' is not a known view name [select * from net.esper.support.bean.SupportBean_N.dummy:dummy(10)]", exceptionText);
+        assertEquals("Error starting view: View name 'dummy:dummy' is not a known view name [select * from net.esper.support.bean.SupportBean_N.dummy:dummy(10)]", exceptionText);
 
         // invalid view parameter
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length('s')");

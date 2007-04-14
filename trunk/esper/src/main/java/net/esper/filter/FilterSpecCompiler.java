@@ -11,6 +11,7 @@ import net.esper.collection.Pair;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.expression.*;
+import net.esper.eql.spec.SelectExprElementRawSpec;
 import net.esper.event.EventType;
 import net.esper.type.RelationalOpEnum;
 import net.esper.util.JavaClassHelper;
@@ -94,6 +95,14 @@ public final class FilterSpecCompiler
         List<ExprNode> validatedNodes = new ArrayList<ExprNode>();
         for (ExprNode node : exprNodes)
         {
+            // Ensure there is no subselects
+            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+            node.accept(visitor);
+            if (visitor.getSubselects().size() > 0)
+            {
+                throw new ExprValidationException("Subselects not allowed within filters");
+            }
+
             ExprNode validated = node.getValidatedSubtree(streamTypeService, methodResolutionService, null);
             validatedNodes.add(validated);
 

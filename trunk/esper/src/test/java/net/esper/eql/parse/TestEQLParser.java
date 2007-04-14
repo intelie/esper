@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select 1 from " + className + "(intPrimitive < 5 and intPrimitive > 4)";
+        String expression = "select 1 from " + className + " where exists (select * from S0)";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -403,6 +403,12 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from x where id = -1 * (select a from B)");
         assertIsValid("select * from x where id = (5-(select a from B))");
         assertIsValid("select * from X where (select a from B where X.f = B.a) or (select a from B where X.f = B.c)");
+        assertIsValid("select * from X where exists (select * from B where X.f = B.a)");
+        assertIsValid("select * from X where exists (select * from B)");
+        assertIsValid("select * from X where not exists (select * from B where X.f = B.a)");
+        assertIsValid("select * from X where not exists (select * from B)");
+        assertIsValid("select exists (select * from B where X.f = B.a) from A");
+        assertIsValid("select B or exists (select * from B) from A");
     }
 
     public void testBitWiseCases() throws Exception

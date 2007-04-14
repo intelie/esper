@@ -53,9 +53,8 @@ public class JoinSetFilter implements JoinSetProcessor
             MultiKey<EventBean> key = it.next();
             EventBean[] eventArr = key.getArray();
 
-            boolean matched = (Boolean) filterExprNode.evaluate(eventArr, isNewData);
-
-            if (!matched)
+            Boolean matched = (Boolean) filterExprNode.evaluate(eventArr, isNewData);
+            if ((matched == null) || (!matched))
             {
                 it.remove();
             }

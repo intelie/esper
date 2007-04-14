@@ -725,7 +725,7 @@ public class TestEQLTreeWalker extends TestCase
         ExprSubselectNode exprNode = (ExprSubselectNode) element.getSelectExpression();
 
         // check select expressions
-        StatementSpecRaw spec = exprNode.getStatementSpec();
+        StatementSpecRaw spec = exprNode.getStatementSpecRaw();
         assertEquals(1, spec.getSelectClauseSpec().getSelectList().size());
 
         // check filter

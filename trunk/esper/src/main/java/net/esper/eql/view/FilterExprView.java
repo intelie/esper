@@ -71,8 +71,8 @@ public class FilterExprView extends ViewSupport
         for (int i = 0; i < events.length; i++)
         {
             evalEventArr[0] = events[i];
-            boolean pass = (Boolean) exprEvaluator.evaluate(evalEventArr, isNewData);
-            if (pass)
+            Boolean pass = (Boolean) exprEvaluator.evaluate(evalEventArr, isNewData);
+            if ((pass != null) && (pass))
             {
                 passResult[i] = true;
                 passCount++;

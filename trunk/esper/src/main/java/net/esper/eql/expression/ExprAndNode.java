@@ -39,6 +39,10 @@ public class ExprAndNode extends ExprNode
         for (ExprNode child : this.getChildNodes())
         {
             Boolean evaluated = (Boolean) child.evaluate(eventsPerStream, isNewData);
+            if (evaluated == null)
+            {
+                return null;
+            }
             if (!evaluated)
             {
                 return false;

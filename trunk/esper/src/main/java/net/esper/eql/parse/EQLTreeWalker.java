@@ -35,7 +35,9 @@ import java.util.*;
 public class EQLTreeWalker extends EQLBaseWalker
 {
     // private holding areas for accumulated info
-    private final Map<AST, ExprNode> astExprNodeMap = new HashMap<AST, ExprNode>();
+    private Map<AST, ExprNode> astExprNodeMap = new HashMap<AST, ExprNode>();
+    private final Stack<Map<AST, ExprNode>> astExprNodeMapStack;
+
     private final Map<AST, EvalNode> astPatternNodeMap = new HashMap<AST, EvalNode>();
 
     private FilterSpecRaw filterSpec;
@@ -49,7 +51,7 @@ public class EQLTreeWalker extends EQLBaseWalker
     private final Stack<StatementSpecRaw> statementSpecStack;
 
     private final EngineImportService engineImportService;
-    private final PatternObjectResolutionService patternObjectResolutionService; 
+    private final PatternObjectResolutionService patternObjectResolutionService;
 
     /**
      * Ctor.
@@ -63,15 +65,19 @@ public class EQLTreeWalker extends EQLBaseWalker
         this.patternObjectResolutionService = patternObjectResolutionService;
         statementSpec = new StatementSpecRaw();
         statementSpecStack = new Stack<StatementSpecRaw>();
+        astExprNodeMapStack = new Stack<Map<AST, ExprNode>>();
     }
 
-    protected void pushStatement() throws SemanticException {
+    protected void pushStmtContext() throws SemanticException {
         if (log.isDebugEnabled())
         {
-            log.debug(".pushStatement");
+            log.debug(".pushStmtContext");
         }
         statementSpecStack.push(statementSpec);
+        astExprNodeMapStack.push(astExprNodeMap);
+
         statementSpec = new StatementSpecRaw();
+        astExprNodeMap = new HashMap<AST, ExprNode>();
     }
 
     /**
@@ -274,6 +280,10 @@ public class EQLTreeWalker extends EQLBaseWalker
             case SUBSELECT_EXPR:
                 leaveSubselect(node);
                 break;
+            case EXISTS_SUBSELECT_EXPR:
+            case NOT_EXISTS_SUBSELECT_EXPR:
+                leaveExistsSubselect(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -349,12 +359,30 @@ public class EQLTreeWalker extends EQLBaseWalker
     private void leaveSubselect(AST node)
     {
         log.debug(".leaveSubselect");
+       
+        StatementSpecRaw currentSpec = popStacks();
+        ExprSubselectNode subselectNode = new ExprSubselectNode(currentSpec);
+        astExprNodeMap.put(node, subselectNode);
+    }
+
+    private void leaveExistsSubselect(AST node)
+    {
+        log.debug(".leaveExistsSubselect");
+
+        StatementSpecRaw currentSpec = popStacks();
+        ExprSubselectNode subselectNode = new ExprSubselectNode(currentSpec);
+        astExprNodeMap.put(node, subselectNode);
+    }
+
+    private StatementSpecRaw popStacks()
+    {
+        log.debug(".popStacks");
 
         StatementSpecRaw currentSpec = statementSpec;
         statementSpec = statementSpecStack.pop();
-
-        ExprSubselectNode arrayNode = new ExprSubselectNode(currentSpec);
-        astExprNodeMap.put(node, arrayNode);
+        astExprNodeMap = astExprNodeMapStack.pop();
+        
+        return currentSpec;
     }
 
     /**
@@ -402,6 +430,7 @@ public class EQLTreeWalker extends EQLBaseWalker
     private void leaveSelectionElement(AST node) throws ASTWalkException
     {
         log.debug(".leaveSelectionElement");
+        
         if ((astExprNodeMap.size() > 1) || ((astExprNodeMap.isEmpty())))
         {
             throw new ASTWalkException("Unexpected AST tree contains zero or more then 1 child element for root");

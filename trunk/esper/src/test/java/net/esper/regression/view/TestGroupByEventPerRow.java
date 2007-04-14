@@ -61,6 +61,47 @@ public class TestGroupByEventPerRow extends TestCase
         runAssertion();
     }
 
+    public void testInsertInto()
+    {
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        String eventType = SupportMarketDataBean.class.getName();
+        String stmt = " select symbol as symbol, avg(price) as average, sum(volume) as sumation from " + eventType + ".win:length(3000)";
+        EPStatement statement = epService.getEPAdministrator().createEQL(stmt);
+        statement.addListener(listenerOne);
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 10D, 20000L, null));
+        EventBean eventBean = listenerOne.getLastNewData()[0];
+        assertEquals("IBM", eventBean.get("symbol"));
+        assertEquals(10d, eventBean.get("average"));
+        assertEquals(20000L, eventBean.get("sumation"));
+
+        // create insert into statements
+        stmt =  "insert into StockAverages select symbol as symbol, avg(price) as average, sum(volume) as sumation " +
+                    "from " + eventType + ".win:length(3000)";
+        statement = epService.getEPAdministrator().createEQL(stmt);
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        statement.addListener(listenerTwo);
+
+        stmt = " select * from StockAverages";
+        statement = epService.getEPAdministrator().createEQL(stmt);
+        SupportUpdateListener listenerThree = new SupportUpdateListener();
+        statement.addListener(listenerThree);
+
+        // send event
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 20D, 40000L, null));
+        eventBean = listenerOne.getLastNewData()[0];
+        assertEquals("IBM", eventBean.get("symbol"));
+        assertEquals(15d, eventBean.get("average"));
+        assertEquals(60000L, eventBean.get("sumation"));
+
+        assertEquals(1, listenerThree.getNewDataList().size());
+        assertEquals(1, listenerThree.getLastNewData().length);
+        eventBean = listenerThree.getLastNewData()[0];
+        assertEquals("IBM", eventBean.get("symbol"));
+        assertEquals(20d, eventBean.get("average"));
+        assertEquals(40000L, eventBean.get("sumation"));
+    }
+
     private void runAssertion()
     {
         // assert select result type

@@ -93,7 +93,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             LinkedHashMap<String, EventType> filterTypes = new LinkedHashMap<String, EventType>();
             filterTypes.put(selfStreamName, eventType);
             filterTypes.putAll(taggedEventTypes);
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true);
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
 
             List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
             FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService);
