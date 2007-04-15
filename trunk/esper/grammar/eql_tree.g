@@ -161,13 +161,25 @@ valueExpr
 	|	li:likeExpr { leaveNode(#li); }
 	|	r:regExpExpr { leaveNode(#r); }
 	|	arr:arrayExpr { leaveNode(#arr); }
-	| 	{pushStmtContext();} sub:subSelectExpr {leaveNode(#sub);}
+	|	subin:subSelectInExpr {leaveNode(#subin);}
+	| 	subrow:subSelectRowExpr 
+	| 	subexists:subSelectExistsExpr
 	;
 
-subSelectExpr
-	:	#(SUBSELECT_EXPR subQueryExpr)
-	|	#(EXISTS_SUBSELECT_EXPR subQueryExpr)
-	|	#(NOT_EXISTS_SUBSELECT_EXPR subQueryExpr)
+subSelectRowExpr
+	:	{pushStmtContext();} #(SUBSELECT_EXPR subQueryExpr) {leaveNode(#subSelectRowExpr);}
+	;
+
+subSelectExistsExpr
+	:	{pushStmtContext();} #(EXISTS_SUBSELECT_EXPR subQueryExpr) {leaveNode(#subSelectExistsExpr);}
+	;
+	
+subSelectInExpr
+	: 	#(IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr)
+	;
+
+subSelectInQueryExpr
+	:	{pushStmtContext();} #(IN_SUBSELECT_QUERY_EXPR subQueryExpr) {leaveNode(#subSelectInQueryExpr);}
 	;
 	
 subQueryExpr 

@@ -278,11 +278,16 @@ public class EQLTreeWalker extends EQLBaseWalker
                 leaveArray(node);
                 break;
             case SUBSELECT_EXPR:
-                leaveSubselect(node);
+                leaveSubselectRow(node);
                 break;
             case EXISTS_SUBSELECT_EXPR:
-            case NOT_EXISTS_SUBSELECT_EXPR:
-                leaveExistsSubselect(node);
+                leaveSubselectExists(node);
+                break;
+            case IN_SUBSELECT_EXPR:
+                leaveSubselectIn(node);
+                break;
+            case IN_SUBSELECT_QUERY_EXPR:
+                leaveSubselectQueryIn(node);
                 break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
@@ -356,21 +361,41 @@ public class EQLTreeWalker extends EQLBaseWalker
         astExprNodeMap.put(node, arrayNode);
     }
 
-    private void leaveSubselect(AST node)
+    private void leaveSubselectRow(AST node)
     {
-        log.debug(".leaveSubselect");
+        log.debug(".leaveSubselectRow");
        
         StatementSpecRaw currentSpec = popStacks();
-        ExprSubselectNode subselectNode = new ExprSubselectNode(currentSpec);
+        ExprSubselectRowNode subselectNode = new ExprSubselectRowNode(currentSpec);
         astExprNodeMap.put(node, subselectNode);
     }
 
-    private void leaveExistsSubselect(AST node)
+    private void leaveSubselectExists(AST node)
     {
-        log.debug(".leaveExistsSubselect");
+        log.debug(".leaveSubselectExists");
 
         StatementSpecRaw currentSpec = popStacks();
-        ExprSubselectNode subselectNode = new ExprSubselectNode(currentSpec);
+        ExprSubselectNode subselectNode = new ExprSubselectExistsNode(currentSpec);
+        astExprNodeMap.put(node, subselectNode);
+    }
+
+    private void leaveSubselectIn(AST node)
+    {
+        log.debug(".leaveSubselectIn");
+
+        AST nodeEvalExpr = node.getFirstChild();
+        AST nodeSubquery = nodeEvalExpr.getNextSibling();
+
+        ExprNode subqueryNode = astExprNodeMap.remove(nodeSubquery);
+        astExprNodeMap.put(node, subqueryNode);
+    }
+
+    private void leaveSubselectQueryIn(AST node)
+    {
+        log.debug(".leaveSubselectQueryIn");
+
+        StatementSpecRaw currentSpec = popStacks();
+        ExprSubselectNode subselectNode = new ExprSubselectInNode(currentSpec);
         astExprNodeMap.put(node, subselectNode);
     }
 
@@ -381,7 +406,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         StatementSpecRaw currentSpec = statementSpec;
         statementSpec = statementSpecStack.pop();
         astExprNodeMap = astExprNodeMapStack.pop();
-        
+
         return currentSpec;
     }
 
@@ -430,7 +455,7 @@ public class EQLTreeWalker extends EQLBaseWalker
     private void leaveSelectionElement(AST node) throws ASTWalkException
     {
         log.debug(".leaveSelectionElement");
-        
+
         if ((astExprNodeMap.size() > 1) || ((astExprNodeMap.isEmpty())))
         {
             throw new ASTWalkException("Unexpected AST tree contains zero or more then 1 child element for root");

@@ -162,24 +162,30 @@ public class EPStatementStartMethod
             statementStreamSpecs.add(filterStreamSpec);
 
             // Validate select expression
-            String subexpressionStreamName = "$subselect_" + subselectStreamNumber;
+            String subexpressionStreamName = filterStreamSpec.getOptionalStreamName();
+            if (subexpressionStreamName == null)
+            {
+                subexpressionStreamName = "$subselect_" + subselectStreamNumber;
+            }
             EventType eventType = viewFactoryChain.getEventType();
 
             SelectClauseSpec selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
-            if (selectClauseSpec.isUsingWildcard())
+            if ((!subselect.isAllowWildcardSelect()) && (selectClauseSpec.isUsingWildcard()))
             {
                 throw new ExprValidationException("Invalid use of wildcard in subquery");
             }
 
             // no aggregation functions allowed
-            ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
-            List<ExprAggregateNode> selectAggregateExprNodes = new LinkedList<ExprAggregateNode>();
-            ExprAggregateNode.getAggregatesBottomUp(selectExpression, selectAggregateExprNodes);
-            if (selectAggregateExprNodes.size() > 0)
+            if (selectClauseSpec.getSelectList().size() > 0)
             {
-                throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
+                ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
+                List<ExprAggregateNode> selectAggregateExprNodes = new LinkedList<ExprAggregateNode>();
+                ExprAggregateNode.getAggregatesBottomUp(selectExpression, selectAggregateExprNodes);
+                if (selectAggregateExprNodes.size() > 0)
+                {
+                    throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
+                }
             }
-            ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain});
 
             // Streams event types are the original stream types with the stream zero the subselect
             LinkedHashMap<String, EventType> namesAndTypes = new LinkedHashMap<String, EventType>();
@@ -189,11 +195,16 @@ public class EPStatementStartMethod
                 namesAndTypes.put(streamNames[i], streamEventTypes[i]);
             }
             StreamTypeService typeService = new StreamTypeServiceImpl(namesAndTypes, true, true);
+            ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain});
 
             // Validate expression, expression indicates needs
-            selectExpression = selectExpression.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
-            subselect.setSelectClause(selectExpression);
-            subselect.setSelectAsName(selectClauseSpec.getSelectList().get(0).getOptionalAsName());
+            if (selectClauseSpec.getSelectList().size() > 0)
+            {
+                ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
+                selectExpression = selectExpression.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
+                subselect.setSelectClause(selectExpression);
+                subselect.setSelectAsName(selectClauseSpec.getSelectList().get(0).getOptionalAsName());
+            }
 
             // Finally create views
             Viewable subselectView = services.getViewService().createViews(viewable, viewFactoryChain.getViewFactoryChain(), statementContext);

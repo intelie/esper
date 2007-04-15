@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select 1 from " + className + " where exists (select * from S0)";
+        String expression = "select b in (select * from A) from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -159,6 +159,9 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select (select a from ) from x");
         assertIsInvalid("select (select from X) from x");
         assertIsInvalid("select * from x where (select q from pattern [A->B])");
+        assertIsInvalid("select c from A where q*9 in in (select g*5 from C.win:length(100)) and r=6");
+        assertIsInvalid("select c from A in (select g*5 from C.win:length(100)) and r=6");
+        assertIsInvalid("select c from A where a in (select g*5 from C.win:length(100)) 9");
     }
 
     public void testValidCases() throws Exception
@@ -409,6 +412,10 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from X where not exists (select * from B)");
         assertIsValid("select exists (select * from B where X.f = B.a) from A");
         assertIsValid("select B or exists (select * from B) from A");
+        assertIsValid("select c in (select * from C) from A");
+        assertIsValid("select c from A where b in (select * from C)");
+        assertIsValid("select c from A where b not in (select b from C)");
+        assertIsValid("select c from A where q*9 not in (select g*5 from C.win:length(100)) and r=6");
     }
 
     public void testBitWiseCases() throws Exception

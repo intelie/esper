@@ -145,7 +145,8 @@ tokens
 	NOT_IN_RANGE;
 	SUBSELECT_EXPR;
 	EXISTS_SUBSELECT_EXPR;
-	NOT_EXISTS_SUBSELECT_EXPR;
+	IN_SUBSELECT_EXPR;
+	IN_SUBSELECT_QUERY_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -256,7 +257,7 @@ selectionList
 
 selectionListElement
 	:   STAR 
-		{ #selectionListElement = #[WILDCARD_SELECT]; }
+		{ #selectionListElement = #[WILDCARD_SELECT, "wildcard-select"]; }
 	|	expression (AS! IDENT)?
 		{ #selectionListElement = #([SELECTION_ELEMENT_EXPR,"selectionListElement"], #selectionListElement); }
 	;
@@ -383,15 +384,15 @@ evalRelationalExpression
 			(
 				// Represent the optional NOT prefix using the token type by
 				// testing 'n' and setting the token type accordingly.
-				(i:IN_SET^ 				
-					(LPAREN | LBRACK) expression	// brackets are for inclusive/exclusive
+				(i:IN_SET^
+					  (LPAREN | LBRACK) expression	// brackets are for inclusive/exclusive
 						(
 							( col:COLON! (expression) )		// range
 							|
 							( (COMMA! expression)* )		// list of values
 						)
-					(RPAREN | RBRACK)	
-					{
+					  (RPAREN | RBRACK)	
+					  {
 						if (col == null)
 						{
 							#i.setType( (n == null) ? IN_SET : NOT_IN_SET);
@@ -402,8 +403,10 @@ evalRelationalExpression
 							#i.setType( (n == null) ? IN_RANGE : NOT_IN_RANGE);
 							#i.setText( (n == null) ? "in range" : "not in range");
 						}
-					}
-				)
+					  }
+					)
+				| IN_SET! s:inSubSelectQuery
+					{	#evalRelationalExpression = #([IN_SUBSELECT_EXPR,"inSubselectExpr"], #evalRelationalExpression); }
 				| (b:BETWEEN^ {
 						#b.setType( (n == null) ? BETWEEN : NOT_BETWEEN);
 						#b.setText( (n == null) ? "between" : "not between");
@@ -421,6 +424,11 @@ evalRelationalExpression
 					concatenationExpr)
 			)	
 		)
+	;
+	
+inSubSelectQuery
+	: subQueryExpr
+		{ #inSubSelectQuery = #([IN_SUBSELECT_QUERY_EXPR,"inSubSelectQuery"], #inSubSelectQuery); }
 	;
 			
 concatenationExpr
@@ -455,15 +463,8 @@ subSelectExpression
 	;
 
 existsSubSelectExpression 
-	:	(n:NOT)? EXISTS! subQueryExpr
-		{ 
-			if (n != null) {
-				#existsSubSelectExpression = #([EXISTS_SUBSELECT_EXPR,"existsSubSelectExpression"], #existsSubSelectExpression); 
-			}
-			else {
-				#existsSubSelectExpression = #([NOT_EXISTS_SUBSELECT_EXPR,"existsSubSelectExpression"], #existsSubSelectExpression); 
-			}
-		}
+	:	EXISTS! subQueryExpr
+		{ #existsSubSelectExpression = #([EXISTS_SUBSELECT_EXPR,"existsSubSelectExpression"], #existsSubSelectExpression); }
 	;
 
 subQueryExpr 

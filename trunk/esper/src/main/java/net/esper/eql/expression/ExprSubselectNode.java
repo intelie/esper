@@ -1,36 +1,39 @@
 package net.esper.eql.expression;
 
-import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.MethodResolutionService;
-import net.esper.eql.core.ViewResourceDelegate;
-import net.esper.eql.spec.StatementSpecRaw;
-import net.esper.eql.spec.StatementSpecCompiled;
-import net.esper.eql.join.table.UnindexedEventTable;
-import net.esper.event.EventBean;
-import net.esper.view.Viewable;
-import net.esper.view.internal.BufferView;
-import net.esper.view.internal.BufferObserver;
 import net.esper.collection.FlushedEventBuffer;
-
-import java.util.Set;
-
+import net.esper.eql.core.MethodResolutionService;
+import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.join.table.UnindexedEventTable;
+import net.esper.eql.spec.StatementSpecCompiled;
+import net.esper.eql.spec.StatementSpecRaw;
+import net.esper.view.Viewable;
+import net.esper.view.internal.BufferObserver;
+import net.esper.view.internal.BufferView;
+import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Set;
 
 /**
  * Represents a subselect in an expression tree.
  */
-public class ExprSubselectNode extends ExprNode implements BufferObserver
+public abstract class ExprSubselectNode extends ExprNode implements BufferObserver
 {
     private static final Log log = LogFactory.getLog(ExprSubselectNode.class);
     
+    protected ExprNode selectClause;
+    protected ExprNode filterExpr;
+
     private StatementSpecRaw statementSpecRaw;
     private StatementSpecCompiled statementSpecCompiled;
-    private ExprNode selectClause;
     private String selectAsName;
     private Integer streamId;
     private UnindexedEventTable unindexedEventTable;
-    private ExprNode filterExpr;
+
+    public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents);
+    public abstract boolean isAllowWildcardSelect();
 
     /**
      * Ctor.
@@ -68,8 +71,10 @@ public class ExprSubselectNode extends ExprNode implements BufferObserver
         unindexedEventTable = new UnindexedEventTable(streamId);
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
+        Set<EventBean> matchingEvents = unindexedEventTable.getEventSet();
+        return evaluate(eventsPerStream, isNewData, matchingEvents);
     }
 
     public StatementSpecRaw getStatementSpecRaw()
@@ -87,63 +92,6 @@ public class ExprSubselectNode extends ExprNode implements BufferObserver
         this.filterExpr = filterExpr;
     }
 
-    public Class getType() throws ExprValidationException
-    {
-        return selectClause.getType();
-    }
-
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
-    {
-        Set<EventBean> matchingEvents = unindexedEventTable.getEventSet();
-        if (matchingEvents.size() == 0)
-        {
-            return null;
-        }
-        if ((filterExpr == null) && (matchingEvents.size() > 1))
-        {
-            log.warn("Subselect returned more then one row in subselect '" + toExpressionString() + "', returning null result");
-            return null;
-        }
-
-        // Evaluate filter
-        EventBean subSelectResult = null;
-        EventBean[] events = new EventBean[eventsPerStream.length + 1];
-        System.arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
-
-        if (filterExpr != null)
-        {
-            for (EventBean subselectEvent : matchingEvents)
-            {
-                // Prepare filter expression event list
-                events[0] = subselectEvent;
-
-                Boolean pass = (Boolean) filterExpr.evaluate(events, true);
-                if ((pass != null) && (pass))
-                {
-                    if (subSelectResult != null)
-                    {
-                        log.warn("Subselect returned more then one row in subselect '" + toExpressionString() + "', returning null result");
-                        return null;
-                    }
-                    subSelectResult = subselectEvent;
-                }
-            }
-
-            if (subSelectResult == null)
-            {
-                return null;
-            }
-        }
-        else
-        {
-            subSelectResult = matchingEvents.iterator().next();
-        }
-
-        events[0] = subSelectResult; 
-        Object result = selectClause.evaluate(events, true);
-        return result;
-    }
-
     public String toExpressionString()
     {
         if (selectAsName != null)
@@ -155,12 +103,7 @@ public class ExprSubselectNode extends ExprNode implements BufferObserver
 
     public boolean equalsNode(ExprNode node)
     {
-        if (!(node instanceof ExprSubselectNode))
-        {
-            return false;
-        }
-
-        return true;
+        return false;   // 2 subselects are never equivalent
     }
 
     public void newData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer)
