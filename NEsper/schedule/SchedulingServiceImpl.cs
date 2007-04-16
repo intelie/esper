@@ -188,6 +188,6 @@ namespace net.esper.schedule
             callbackSetMap[callback] = callbackSet;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(SchedulingServiceImpl));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -628,6 +628,6 @@ namespace net.esper.regression.view
             prices.Add(11d);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestOrderByAggregation));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

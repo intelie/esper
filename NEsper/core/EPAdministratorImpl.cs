@@ -162,7 +162,7 @@ namespace net.esper.core
             return new EPEQLStatementImpl(eqlStatement, services.DispatchService, startMethod);
         }
 
-        private static Log log = LogFactory.GetLog(typeof(EPAdministratorImpl));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Initializes the <see cref="EPAdministratorImpl"/> class.

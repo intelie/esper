@@ -108,6 +108,6 @@ namespace net.esper.pattern
             return "EvalObserverStateNode eventObserver=" + eventObserver;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EvalObserverStateNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -231,6 +231,6 @@ namespace net.esper.filter
         {
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestFilterServiceImpl));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

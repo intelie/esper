@@ -93,6 +93,6 @@ namespace net.esper.eql.db
             stmt.Connection.Close();
         }
 
-        private static Log log = LogFactory.GetLog(typeof(TestDatabaseDMConnFactory));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

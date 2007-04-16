@@ -37,7 +37,7 @@ namespace net.esper.client
     /// </summary>
     public class Configuration
     {
-        private static Log log = LogFactory.GetLog(typeof(Configuration));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary> Default name of the configuration file.</summary>
         internal const String ESPER_DEFAULT_CONFIG = "esper.cfg.xml";

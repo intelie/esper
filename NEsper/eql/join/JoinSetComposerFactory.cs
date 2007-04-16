@@ -167,6 +167,6 @@ namespace net.esper.eql.join
 			return table;
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(JoinSetComposerFactory));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

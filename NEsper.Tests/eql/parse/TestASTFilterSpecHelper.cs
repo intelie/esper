@@ -188,6 +188,6 @@ namespace net.esper.eql.parse
             return filterNode;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestASTFilterSpecHelper));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

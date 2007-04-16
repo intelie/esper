@@ -227,7 +227,7 @@ namespace net.esper.eql.generated
         public const int NUMERIC_PARAM_FREQUENCE = 200;
 
 
-        private static Log log = LogFactory.GetLog(typeof(EQLBaseWalker));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // For pattern processing within EQL and for create pattern
         protected virtual void setIsPatternWalk(Boolean isPatternWalk) { }

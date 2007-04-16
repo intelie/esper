@@ -46,6 +46,6 @@ namespace net.esper.pattern
 			return "EvalNotNode children=" + this.ChildNodes.Count;
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(EvalNotNode));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

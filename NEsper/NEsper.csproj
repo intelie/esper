@@ -72,6 +72,7 @@
     <Compile Include="compat\ArrayHelper.cs" />
     <Compile Include="compat\C5CollectionWrapper.cs" />
     <Compile Include="compat\ReadOnlyList.cs" />
+    <Compile Include="compat\TimerException.cs" />
     <Compile Include="compat\WriterLock.cs" />
     <Compile Include="compat\DateTimeHelper.cs" />
     <Compile Include="compat\EDataDictionary.cs" />

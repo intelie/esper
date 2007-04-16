@@ -25,7 +25,7 @@ namespace net.esper.compat
                         // use the system timer factory unless explicitly instructed
                         // to do otherwise.
 
-                        defaultTimerFactory = new HighResolutionTimerFactory();
+                        defaultTimerFactory = new SystemTimerFactory();
                     }
 
                     return defaultTimerFactory;

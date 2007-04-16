@@ -181,6 +181,6 @@ namespace net.esper.regression.pattern
             epService.EPAdministrator.CreatePattern(eqlInvalidPattern);
         }
 
-        private static Log log = LogFactory.GetLog(typeof(TestInvalidPattern));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

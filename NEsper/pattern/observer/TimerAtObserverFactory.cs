@@ -82,6 +82,6 @@ namespace net.esper.pattern.observer
 			return new TimerAtObserver(spec, context, beginState, observerEventEvaluator);
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(TimerAtObserverFactory));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

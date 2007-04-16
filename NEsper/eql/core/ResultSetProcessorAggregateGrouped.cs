@@ -23,7 +23,7 @@ namespace net.esper.eql.core
 
     public class ResultSetProcessorAggregateGrouped : ResultSetProcessor
     {
-        private static readonly Log log = LogFactory.GetLog(typeof(ResultSetProcessorAggregateGrouped));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly SelectExprProcessor selectExprProcessor;
         private readonly OrderByProcessor orderByProcessor;

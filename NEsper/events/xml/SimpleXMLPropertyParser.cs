@@ -107,6 +107,6 @@ namespace net.esper.events.xml
 			return parser.getAST();
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(SimpleXMLPropertyParser));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

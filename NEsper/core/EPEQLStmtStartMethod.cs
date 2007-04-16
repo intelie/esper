@@ -364,6 +364,6 @@ namespace net.esper.core
             return finalView;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EPEQLStmtStartMethod));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

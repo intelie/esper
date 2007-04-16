@@ -132,6 +132,6 @@ namespace net.esper.eql.join.assemble
             return result;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestAssemblyStrategyTreeBuilder));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

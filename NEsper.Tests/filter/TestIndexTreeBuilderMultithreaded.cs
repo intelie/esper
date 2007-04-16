@@ -210,6 +210,6 @@ namespace net.esper.filter
             return SupportEventBeanFactory.createObject(bean);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestIndexTreeBuilderMultithreaded));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

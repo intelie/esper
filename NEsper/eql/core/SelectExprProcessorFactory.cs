@@ -79,6 +79,6 @@ namespace net.esper.eql.core
 			}
 		}
 
-		private static readonly Log log = LogFactory.GetLog( typeof( SelectExprProcessorFactory ) );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

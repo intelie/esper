@@ -366,6 +366,6 @@ namespace net.esper.view.ext
             return new MultiKey<Object>(result);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(SortWindowView));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

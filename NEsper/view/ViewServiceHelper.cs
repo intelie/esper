@@ -255,6 +255,6 @@ namespace net.esper.view
 			return new Pair<Viewable, IList<View>>( currentParent, matchedViewList );
 		}
 
-		private static readonly Log log = LogFactory.GetLog( typeof( ViewServiceHelper ) );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

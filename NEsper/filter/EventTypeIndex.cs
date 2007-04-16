@@ -124,6 +124,6 @@ namespace net.esper.filter
             rootNode.MatchEvent(eventBean, matches);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EventTypeIndex));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

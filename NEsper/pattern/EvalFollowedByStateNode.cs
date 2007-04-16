@@ -178,6 +178,6 @@ namespace net.esper.pattern
 			return "EvalFollowedByStateNode nodes=" + nodes.Count;
 		}
 
-		private static readonly Log log = LogFactory.GetLog( typeof( EvalFollowedByStateNode ) );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

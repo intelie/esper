@@ -349,6 +349,6 @@ namespace net.esper.events
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(BeanEventType));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

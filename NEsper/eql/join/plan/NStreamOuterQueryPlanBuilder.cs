@@ -396,6 +396,6 @@ namespace net.esper.eql.join.plan
 			return writer.ToString();
 		}
 
-		private static Log log = LogFactory.GetLog( typeof( NStreamOuterQueryPlanBuilder ) );
+		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

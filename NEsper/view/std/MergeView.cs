@@ -235,6 +235,6 @@ namespace net.esper.view.std
             return this.GetType().FullName + " groupFieldName=" + CollectionHelper.Render(groupFieldNames);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(MergeView));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -105,6 +105,6 @@ namespace net.esper.dispatch
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(DispatchServiceImpl));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

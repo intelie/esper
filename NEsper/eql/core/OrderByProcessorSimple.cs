@@ -21,7 +21,7 @@ namespace net.esper.eql.core
 
     public class OrderByProcessorSimple : OrderByProcessor
     {
-        private static readonly Log log = LogFactory.GetLog(typeof(OrderByProcessorSimple));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IList<Pair<ExprNode, Boolean>> orderByList;
         private readonly IList<ExprNode> groupByNodes;

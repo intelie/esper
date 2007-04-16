@@ -147,6 +147,6 @@ namespace net.esper.support.view
             get { return (childViews.Count > 0); }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(SupportStreamImpl));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

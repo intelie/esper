@@ -63,6 +63,6 @@ namespace net.esper.pattern
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EvalNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

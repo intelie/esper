@@ -95,6 +95,6 @@ namespace net.esper.events.property
             Assert.AreEqual("", getter.GetValue(bean));
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestPropertyHelper));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

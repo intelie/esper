@@ -264,6 +264,6 @@ namespace net.esper.pattern
             return "EvalAndStateNode nodes=" + activeChildNodes.Count;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EvalAndStateNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

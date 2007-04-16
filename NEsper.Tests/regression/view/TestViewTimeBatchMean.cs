@@ -13,7 +13,6 @@ using NUnit.Framework;
 
 namespace net.esper.regression.view
 {
-
     [TestFixture]
     public class TestViewTimeBatchMean
     {

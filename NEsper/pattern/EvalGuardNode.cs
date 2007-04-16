@@ -55,6 +55,6 @@ namespace net.esper.pattern
 			return ("EvalGuardNode guardFactory=" + guardFactory + "  children=" + this.ChildNodes.Count);
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(EvalGuardNode));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

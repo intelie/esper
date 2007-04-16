@@ -60,6 +60,6 @@ namespace net.esper.events.property
 			return ((MappedProperty) property).Key;
 		}
 
-		private static Log log = LogFactory.GetLog(typeof(TestPropertyParser));
+		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

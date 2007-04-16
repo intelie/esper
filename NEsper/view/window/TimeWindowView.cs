@@ -273,6 +273,6 @@ namespace net.esper.view.window
 			return this.GetType().FullName + " millisecondsBeforeExpiry=" + millisecondsBeforeExpiry;
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(TimeWindowView));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

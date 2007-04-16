@@ -395,6 +395,6 @@ namespace net.esper.client
 			}
 		}
 
-        private static Log log = LogFactory.GetLog(typeof(ConfigurationParser));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

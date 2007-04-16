@@ -365,6 +365,6 @@ namespace net.esper.events.property
         }
         
 
-        private static readonly Log log = LogFactory.GetLog(typeof(PropertyHelper));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

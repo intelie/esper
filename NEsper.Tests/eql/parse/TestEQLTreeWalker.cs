@@ -835,6 +835,6 @@ namespace net.esper.eql.parse
 			return filterExprNode.Evaluate( null );
 		}
 
-		private static readonly Log log = LogFactory.GetLog( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

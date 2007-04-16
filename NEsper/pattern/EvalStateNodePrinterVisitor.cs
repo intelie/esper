@@ -44,6 +44,6 @@ namespace net.esper.pattern
 			return buffer.ToString();
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(EvalStateNodePrinterVisitor));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

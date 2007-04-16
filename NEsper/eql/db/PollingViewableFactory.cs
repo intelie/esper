@@ -216,6 +216,6 @@ namespace net.esper.eql.db
             return eventPropertyParams.ToArray();
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(PollingViewableFactory));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

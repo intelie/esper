@@ -182,6 +182,6 @@ namespace net.esper.pattern
             context.FilterService.Remove(this);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EvalFilterStateNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

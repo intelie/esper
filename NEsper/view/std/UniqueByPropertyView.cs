@@ -227,6 +227,6 @@ namespace net.esper.view.std
             return this.GetType().FullName + " uniqueFieldName=" + uniqueFieldName;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(UniqueByPropertyView));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

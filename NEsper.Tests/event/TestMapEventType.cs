@@ -176,6 +176,6 @@ namespace net.esper.events
             Assert.AreEqual(eventType,new MapEventType(mapTwo, eventAdapterService));
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestMapEventType));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

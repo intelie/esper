@@ -177,6 +177,6 @@ namespace net.esper.core
             }
         }
 
-        private static Log log = LogFactory.GetLog(typeof(EPEQLStatementImpl));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

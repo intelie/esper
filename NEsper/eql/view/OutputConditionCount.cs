@@ -118,6 +118,6 @@ namespace net.esper.eql.view
 			return this.GetType().FullName + " eventRate=" + eventRate;
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(OutputConditionCount));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

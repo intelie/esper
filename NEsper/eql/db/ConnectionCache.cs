@@ -114,7 +114,7 @@ namespace net.esper.eql.db
             return new Pair<DbConnection, DbCommand>(connection, preparedStatement);
         }
 
-        private static Log log = LogFactory.GetLog(typeof(ConnectionCache));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

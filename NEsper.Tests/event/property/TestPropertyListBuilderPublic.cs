@@ -117,6 +117,6 @@ namespace net.esper.events.property
             ArrayAssertionUtil.assertEqualsAnyOrder( expected, descList ) ;
         }
 
-        private static Log log = LogFactory.GetLog(typeof(TestPropertyListBuilderPublic));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

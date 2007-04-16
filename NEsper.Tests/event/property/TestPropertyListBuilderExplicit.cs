@@ -105,6 +105,6 @@ namespace net.esper.events.property
             }
         }
 
-        private static Log log = LogFactory.GetLog(typeof(TestPropertyListBuilderExplicit));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

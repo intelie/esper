@@ -88,6 +88,6 @@ namespace net.esper.support.view
             lastOldData = null;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(SupportBaseView));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

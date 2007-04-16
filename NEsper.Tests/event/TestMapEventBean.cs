@@ -136,6 +136,6 @@ namespace net.esper.events
             Assert.AreEqual((10).GetHashCode() ^ "anInt".GetHashCode(), eventBean.GetHashCode());
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestMapEventBean));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

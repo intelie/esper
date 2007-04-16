@@ -77,6 +77,6 @@ namespace net.esper.regression.pattern
             }
         }
 
-        private static Log log = LogFactory.GetLog(typeof(TestPatternStartLoop));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

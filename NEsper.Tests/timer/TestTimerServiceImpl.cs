@@ -21,13 +21,14 @@ namespace net.esper.timer
         {
             callback = new SupportTimerCallback();
             service = new MyTimerServiceImpl();
-            service.Callback = callback;
+            service.Callback = callback.TimerCallback;
         }
 
         [Test]
         public virtual void testClocking()
         {
             int RESOLUTION = TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC;
+            int tempCount;
 
             // Wait .55 sec
             Assert.IsTrue(callback.GetAndResetCount() == 0);
@@ -40,15 +41,15 @@ namespace net.esper.timer
             sleep(RESOLUTION);
             Assert.IsTrue(callback.GetAndResetCount() == 0);
 
-
             // Loop for some clock cycles
             service.StartInternalClock();
             sleep(RESOLUTION / 10);
-            Assert.IsTrue(callback.GetAndResetCount() == 1);
+            tempCount = callback.GetAndResetCount();
+            Assert.IsTrue(tempCount == 1);
             sleep(TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC * 20);
-            int count = callback.GetAndResetCount();
-            log.Debug(".testClocking count=" + count);
-            Assert.IsTrue(count >= 19);
+            tempCount = callback.GetAndResetCount();
+            log.Debug(".testClocking count=" + tempCount);
+            Assert.IsTrue(tempCount >= 19);
 
             // Stop and check again
             service.StopInternalClock(true);

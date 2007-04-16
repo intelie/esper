@@ -342,6 +342,6 @@ namespace net.esper.schedule
             }
         }
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(ScheduleComputeHelper));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

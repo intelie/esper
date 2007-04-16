@@ -111,6 +111,6 @@ namespace net.esper.view
 			return view;
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(ViewFactory));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

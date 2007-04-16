@@ -120,6 +120,6 @@ namespace net.esper.support.filter
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(IndexTreeBuilderRunnable));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

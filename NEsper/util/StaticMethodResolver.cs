@@ -20,7 +20,7 @@ namespace net.esper.util
     
     public class StaticMethodResolver
     {
-        private static readonly Log log = LogFactory.GetLog(typeof(StaticMethodResolver));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Attempts to find the static method described by the parameters, 

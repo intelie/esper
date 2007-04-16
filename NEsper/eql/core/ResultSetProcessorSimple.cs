@@ -22,7 +22,7 @@ namespace net.esper.eql.core
     
     public class ResultSetProcessorSimple : ResultSetProcessor
     {
-        private static readonly Log log = LogFactory.GetLog(typeof(ResultSetProcessorSimple));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly SelectExprProcessor selectExprProcessor;
         private readonly bool isOutputLimiting;

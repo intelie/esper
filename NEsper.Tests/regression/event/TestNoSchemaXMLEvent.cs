@@ -106,6 +106,6 @@ namespace net.esper.regression.events
 			epService.EPRuntime.SendEvent(simpleDoc);
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(TestNoSchemaXMLEvent));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

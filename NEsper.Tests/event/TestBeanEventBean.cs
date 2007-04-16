@@ -94,7 +94,7 @@ namespace net.esper.events
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestBeanEventBean));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public class MyBeanEventBean : BeanEventBean
         {

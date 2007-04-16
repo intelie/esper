@@ -396,6 +396,6 @@ namespace net.esper.view.window
             return solution;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TimeBatchView));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

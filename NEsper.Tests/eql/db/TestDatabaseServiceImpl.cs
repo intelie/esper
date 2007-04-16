@@ -101,6 +101,6 @@ namespace net.esper.eql.db
 			}
 		}
 
-		private static Log log = LogFactory.GetLog( typeof( TestDatabaseServiceImpl ) );
+		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

@@ -232,6 +232,6 @@ namespace net.esper.indicator.pretty
             return result;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(CubeTabularDataRenderer));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

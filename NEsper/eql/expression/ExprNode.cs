@@ -257,6 +257,6 @@ namespace net.esper.eql.expression
 
         public abstract void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService);
 
-        private static readonly Log log = LogFactory.GetLog(typeof(ExprNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

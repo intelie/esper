@@ -121,6 +121,7 @@
     <copy todir="${project.libdir}">
 	      <fileset basedir="${project.basedir}/NEsper/bin/${project.build.config}">
 	        <include name="*.dll" />
+	        <include name="*.pdb" />
 	      </fileset>
 	  </copy>
 
@@ -130,6 +131,21 @@
 	      </fileset>
 	  </copy>
   </target>
+
+  <target name="PostBuildSolution">
+    <copy todir="${project.libdir}">
+      <fileset basedir="${project.basedir}/NEsper/bin/${project.build.config}">
+        <include name="*.dll" />
+        <include name="*.pdb" />
+      </fileset>
+    </copy>
+
+    <copy todir="${project.libdir}">
+      <fileset basedir="${project.basedir}/NEsper.Tests/bin/${project.build.config}">
+        <include name="*.dll" />
+      </fileset>
+    </copy>
+  </target>
   
  	<!-- Test                                    -->
 	<!--                                         -->
@@ -138,15 +154,15 @@
   <!-- run.                                    -->
 
   <target name="Test">
-    <if test="${not directory::exists(${project.basedir}/NEsper.Tests/bin/${project.build.config}/regression)}">
-      <mkdir dir="${project.basedir}/NEsper.Tests/bin/${project.build.config}/regression"/>
-      <copy todir="${project.basedir}/NEsper.Tests/bin/${project.build.config}/regression">
-        <fileset basedir="${project.basedir}/etc/regression">
-          <include name="**/*" />
-        </fileset>
-      </copy>
-    </if>
+	<mkdir dir="${project.basedir}/NEsper.Tests/bin/${project.build.config}/regression"/>
+	<copy todir="${project.basedir}/NEsper.Tests/bin/${project.build.config}/regression">
+		<fileset basedir="${project.basedir}/etc/regression">
+			<include name="**/*" />
+		</fileset>
+	</copy>
     
+	<echo message="Starting nunit" />
+	
     <nunit2 failonerror="false">
       <formatter type="Xml" outputdir="${project.builddir}/" extension=".xml" usefile="true" />
       <test assemblyname="${project.basedir}/NEsper.Tests/bin/${project.build.config}/NEsper.Tests.dll"
@@ -160,7 +176,7 @@
     <echo message="Generating NUnit Report" />
     <nunit2report todir="${project.builddir}/">
       <fileset>
-        <includes name="${project.builddir}/NEsper.Tests.dll-results.xml" />
+        <include name="${project.builddir}/NEsper.Tests.dll-results.xml" />
       </fileset>
     </nunit2report>
   </target>

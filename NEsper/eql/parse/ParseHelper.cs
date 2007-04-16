@@ -89,6 +89,6 @@ namespace net.esper.eql.parse
             return ast;
         }
 
-        private static Log log = LogFactory.GetLog(typeof(ParseHelper));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -36,7 +36,7 @@ namespace net.esper.pattern
             isEvaluatedTrue = true;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EvalEveryStateSpawnEvaluator));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 
     /// <summary> Contains the state collected by an "every" operator. The state includes handles to any sub-listeners
@@ -233,6 +233,6 @@ namespace net.esper.pattern
             return "EvalEveryStateNode spawnedChildren=" + spawnedNodes.Count;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EvalEveryStateNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

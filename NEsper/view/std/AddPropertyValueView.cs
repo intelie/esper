@@ -288,6 +288,6 @@ namespace net.esper.view.std
                 " propertyValue=" + CollectionHelper.Render(propertyValues);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(AddPropertyValueView));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

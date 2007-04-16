@@ -90,6 +90,6 @@ namespace net.esper.pattern
 			return list;
 		}
 
-		private static readonly Log log = LogFactory.GetLog( typeof( TestEvalAndStateNode ) );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

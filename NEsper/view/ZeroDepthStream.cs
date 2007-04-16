@@ -127,7 +127,7 @@ namespace net.esper.view
             get { return (children.Count > 0); }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(ZeroDepthStream));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         #region IEnumerable Members
 

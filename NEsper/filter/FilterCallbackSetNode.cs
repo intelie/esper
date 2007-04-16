@@ -203,6 +203,6 @@ namespace net.esper.filter
             return callbackSet.Remove(filterCallback);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(FilterCallbackSetNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

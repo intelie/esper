@@ -156,6 +156,6 @@ namespace net.esper.collection
             }
         }
 
-        private static Log log = LogFactory.GetLog(typeof(TestSortedRefCountedSet));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

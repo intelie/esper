@@ -347,6 +347,6 @@ namespace net.esper.view.std
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(GroupByView));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -430,6 +430,6 @@ namespace net.esper.view.stat
 			return eventBean;
 		}
 
-		private static Log log = LogFactory.GetLog( typeof( MultiDimStatsView ) );
+		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

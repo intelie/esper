@@ -89,7 +89,7 @@ namespace net.esper.core
 
             // Configure services to use the new runtime
             services.InternalEventRouter = runtime;
-            services.TimerService.Callback = runtime;
+            services.TimerService.Callback = runtime.TimerCallback;
 
             // New admin
             EPAdministratorImpl admin = new EPAdministratorImpl(services);

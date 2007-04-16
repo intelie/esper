@@ -823,6 +823,6 @@ namespace net.esper.regression.view
             epService.EPRuntime.SendEvent(new SupportBeanString("DOG"));
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestOrderBySimple));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

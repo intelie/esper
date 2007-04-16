@@ -163,6 +163,6 @@ namespace net.esper.pattern
             return "EvalRootStateNode topStateNode=" + topStateNode;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EvalRootStateNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

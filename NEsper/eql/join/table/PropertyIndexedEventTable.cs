@@ -155,6 +155,6 @@ namespace net.esper.eql.join.table
                 " propertyNames=" + CollectionHelper.Render(propertyNames);
         }
 
-        private static Log log = LogFactory.GetLog(typeof(PropertyIndexedEventTable));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

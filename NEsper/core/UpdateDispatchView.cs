@@ -134,6 +134,6 @@ namespace net.esper.core
             lastOldEvents.Clear();
         }
 
-        private static Log log = LogFactory.GetLog(typeof(UpdateDispatchView));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

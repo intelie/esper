@@ -273,6 +273,6 @@ namespace net.esper.filter
 
         private static DoubleComparer sm_doubleComparer = new DoubleComparer();
 
-        private static readonly Log log = LogFactory.GetLog(typeof(FilterParamIndexCompare));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

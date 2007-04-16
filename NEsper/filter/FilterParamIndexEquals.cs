@@ -140,6 +140,6 @@ namespace net.esper.filter
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(FilterParamIndexEquals));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

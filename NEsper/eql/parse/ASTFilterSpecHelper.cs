@@ -296,6 +296,6 @@ namespace net.esper.eql.parse
                 "' is not allowed";
 		}
 		
-		private static Log log = LogFactory.GetLog(typeof(ASTFilterSpecHelper));
+		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

@@ -156,6 +156,6 @@ namespace net.esper.eql.expression
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(ExprBitWiseNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

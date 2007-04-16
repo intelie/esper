@@ -77,6 +77,6 @@ namespace net.esper.events
             return getter;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestReflectionPropMethodGetter));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -179,6 +179,6 @@ namespace net.esper.regression.events
             }
         }
 
-        private static Log log = LogFactory.GetLog(typeof(TestMapEvent));
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

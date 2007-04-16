@@ -213,6 +213,6 @@ namespace net.esper.regression.view
             SendEvent("CAT", 6);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestOrderByAliases));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

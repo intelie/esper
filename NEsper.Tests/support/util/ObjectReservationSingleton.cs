@@ -69,6 +69,6 @@ namespace net.esper.support.util
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(ObjectReservationSingleton));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

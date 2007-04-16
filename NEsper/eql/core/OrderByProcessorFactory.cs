@@ -19,7 +19,7 @@ namespace net.esper.eql.core
 
     public class OrderByProcessorFactory
     {
-        private static readonly Log log = LogFactory.GetLog(typeof(OrderByProcessorFactory));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>Returns processor for order-by clauses.</summary>
         /// <param name="selectionList">is a list of select expressions</param>

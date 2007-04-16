@@ -30,7 +30,7 @@ namespace net.esper.eql.view
         private ISet<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
         private ISet<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
 
-        private static readonly Log log = LogFactory.GetLog(typeof(OutputProcessView));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>Ctor.</summary>
         /// <param name="resultSetProcessor">is processing the result set for publishing it out</param>

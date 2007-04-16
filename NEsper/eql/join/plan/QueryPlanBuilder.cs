@@ -96,6 +96,6 @@ namespace net.esper.eql.join.plan
             return NStreamOuterQueryPlanBuilder.Build(queryGraph, outerJoinDescList, streamNames);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(QueryPlanBuilder));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -190,6 +190,6 @@ namespace net.esper.pattern
             activeChildNode = null;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EvalGuardStateNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

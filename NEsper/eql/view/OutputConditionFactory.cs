@@ -13,7 +13,7 @@ namespace net.esper.eql.view
 	
     public sealed class OutputConditionFactory
 	{
-		private static readonly Log log = LogFactory.GetLog(typeof(OutputConditionFactory));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
 		/// <summary> Creates an output condition instance.</summary>
 		/// <param name="outputLimitSpec">specifies what kind of condition to create

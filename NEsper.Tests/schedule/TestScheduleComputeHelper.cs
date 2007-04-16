@@ -300,6 +300,6 @@ namespace net.esper.schedule
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestScheduleComputeHelper));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

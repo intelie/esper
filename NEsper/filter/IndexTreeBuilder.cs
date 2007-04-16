@@ -463,6 +463,6 @@ namespace net.esper.filter
             return buffer.ToString();
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(IndexTreeBuilder));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

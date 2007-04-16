@@ -58,6 +58,6 @@ namespace net.esper.support.schedule
             return new ScheduleBucket(0);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(SupportSchedulingServiceImpl));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

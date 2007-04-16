@@ -22,7 +22,6 @@ namespace net.esper.core
     public class EPRuntimeImpl 
         : EPRuntime
         , InternalEventRouter
-        , TimerCallback
     {
         /// <summary>
         /// Number of events received over the lifetime of the event stream processing runtime.
@@ -343,6 +342,6 @@ namespace net.esper.core
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EPRuntimeImpl));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

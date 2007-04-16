@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 
+using Log = org.apache.commons.logging.Log;
+using LogFactory = org.apache.commons.logging.LogFactory;
+
 namespace net.esper.compat
 {
     /// <summary>
@@ -89,6 +92,15 @@ namespace net.esper.compat
             m_data = Marshal.GetIUnknownForObject( this ) ;
             m_timer = null;
 
+            if (log.IsDebugEnabled)
+            {
+                log.Debug( String.Format(
+                    ".Constructor - Creating timer: dueTime={0}, period={1}, data={2}",
+                    m_dueTime,
+                    m_period,
+                    m_data ) ) ;
+            }
+
             Start();
         }
 
@@ -153,6 +165,17 @@ namespace net.esper.compat
                     m_delegate,
                     m_data,
                     TIME_PERIODIC | TIME_KILL_SYNCHRONOUS);
+
+                if (log.IsErrorEnabled)
+                {
+                    log.Error(String.Format(".Start - Timer#{0}", m_timer));
+                }
+
+                if (m_timer.Value == 0)
+                {
+                    throw new TimerException("Unable to allocate multimedia timer");
+                }
+
                 m_timerTable[m_timer.Value] = m_timer.Value;
                 m_timerCallback(m_state);
             }
@@ -164,6 +187,17 @@ namespace net.esper.compat
                     m_delegate,
                     m_data,
                     TIME_PERIODIC | TIME_KILL_SYNCHRONOUS);
+
+                if (log.IsErrorEnabled)
+                {
+                    log.Error(String.Format(".Start - Timer#{0}", m_timer));
+                }
+                
+                if (m_timer.Value == 0)
+                {
+                    throw new TimerException("Unable to allocate multimedia timer");
+                }
+
                 m_timerTable[m_timer.Value] = m_timer.Value;
             }
         }
@@ -174,8 +208,11 @@ namespace net.esper.compat
         
         public void Dispose()
         {
+            log.Debug( ".Dispose" ) ;
+
             if (m_timer.HasValue)
             {
+                log.Debug(".Dispose - Timer#" + m_timer.Value) ;
                 NativeMethods.timeKillEvent(m_timer.Value);
                 m_timerTable.Remove(m_timer.Value);
                 m_timer = null;
@@ -212,6 +249,8 @@ namespace net.esper.compat
         {
             if (sender == m_appDomain)
             {
+                log.Debug(".OnAppDomainUnload - Called; unloading timers");
+
                 // Current AppDomain is about to unload.  It is vital that any
                 // multimedia timers that were tied to this domain be killed
                 // immediately so that they do not attempt to make invocations
@@ -220,6 +259,7 @@ namespace net.esper.compat
                 foreach (uint timerId in m_timerTable.Keys)
                 {
                     NativeMethods.timeKillEvent(timerId);
+                    log.Debug(".OnAppDomainUnload - KillEvent #" + timerId) ;
                 }
                 
                 m_timerTable.Clear() ;
@@ -229,5 +269,7 @@ namespace net.esper.compat
                 Thread.Sleep(100);
             }
         }
+
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

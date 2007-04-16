@@ -426,6 +426,6 @@ namespace net.esper.support.util
 			Assert.AreEqual( numMatches, expected.Length );
 		}
 
-		private static readonly Log log = LogFactory.GetLog( typeof( ArrayAssertionUtil ) );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

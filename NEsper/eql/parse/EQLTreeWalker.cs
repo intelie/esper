@@ -1167,6 +1167,6 @@ namespace net.esper.eql.parse
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(EQLTreeWalker));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

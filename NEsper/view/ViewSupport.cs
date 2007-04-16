@@ -352,7 +352,7 @@ namespace net.esper.view
             return true;
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(ViewSupport));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         #region View Members
         

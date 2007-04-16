@@ -76,6 +76,6 @@ namespace net.esper.regression.view
 			epService.EPRuntime.SendEvent( bean );
 		}
 
-		private static readonly Log log = LogFactory.GetLog( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

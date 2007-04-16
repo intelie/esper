@@ -104,6 +104,6 @@ namespace net.esper.type
             }
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(TestLongValue));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

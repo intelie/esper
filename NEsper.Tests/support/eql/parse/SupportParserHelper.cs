@@ -75,6 +75,6 @@ namespace net.esper.support.eql.parse
 			return parser.getAST();
 		}
 
-		private static readonly Log log = LogFactory.GetLog( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

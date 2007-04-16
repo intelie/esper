@@ -296,6 +296,6 @@ namespace net.esper.events.xml
 			}
 		}
 
-		private static Log log = LogFactory.GetLog( typeof( SchemaXMLPropertyParser ) );
+		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

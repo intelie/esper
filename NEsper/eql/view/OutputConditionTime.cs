@@ -160,6 +160,6 @@ namespace net.esper.eql.view
 			return solution;
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(OutputConditionTime));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

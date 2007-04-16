@@ -177,6 +177,6 @@ namespace net.esper.core
 
         #endregion
 
-		private static readonly Log log = LogFactory.GetLog( typeof( EPPatternStatementImpl ) );
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

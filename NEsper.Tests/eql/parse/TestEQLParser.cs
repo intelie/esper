@@ -416,6 +416,6 @@ namespace net.esper.eql.parse
             return SupportParserHelper.parseEQL(expression);
         }
 
-        internal static Log log = LogFactory.GetLog(typeof(TestEQLParser));
+        internal static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -7,9 +7,9 @@ using org.apache.commons.logging;
 
 namespace net.esper.support.timer
 {
-	public class SupportTimerCallback : net.esper.timer.TimerCallback
+	public sealed class SupportTimerCallback
 	{
-		virtual public int Count
+		public int Count
 		{
 			get
             {
@@ -17,20 +17,24 @@ namespace net.esper.support.timer
 			}
 		}
 
-		virtual public int GetAndResetCount()
+		public int GetAndResetCount()
 		{
             int count = (int) Interlocked.Exchange(ref numInvoked, 0);
             return count;
 		}
 
         private long numInvoked;
-		
-		public virtual void TimerCallback()
+
+		public void TimerCallback()
 		{
             int current = (int) Interlocked.Increment(ref numInvoked);
-            log.Debug(".timerCallback numInvoked=" + current + " thread=" + Thread.CurrentThread);
+
+            if (log.IsDebugEnabled)
+            {
+                log.Debug(".timerCallback numInvoked=" + current + " thread=" + Thread.CurrentThread);
+            }
 		}
 		
-		private static readonly Log log = LogFactory.GetLog(typeof(SupportTimerCallback));
+		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

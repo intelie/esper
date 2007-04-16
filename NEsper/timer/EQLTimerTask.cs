@@ -9,7 +9,7 @@ namespace net.esper.timer
 
     sealed class EQLTimerTask
     {
-        private readonly TimerCallback callback;
+        private readonly TimerCallback timerCallback;
         private bool isCancelled;
 
         public bool Cancelled
@@ -19,14 +19,14 @@ namespace net.esper.timer
 
         public EQLTimerTask(TimerCallback callback)
         {
-            this.callback = callback;
+            this.timerCallback = callback;
         }
 
         public void Run( object sender, ElapsedEventArgs e)
         {
             if (!isCancelled)
             {
-                callback.TimerCallback();
+                timerCallback();
             }
         }
     }

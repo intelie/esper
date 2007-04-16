@@ -343,6 +343,6 @@ namespace net.esper.eql.expression
             return Object.Equals(left, right);
         }
 
-        private static readonly Log log = LogFactory.GetLog(typeof(ExprCaseNode));
+        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }
