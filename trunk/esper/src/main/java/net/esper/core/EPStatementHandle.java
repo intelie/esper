@@ -18,6 +18,7 @@ public class EPStatementHandle implements MetaDefItem
 
     /**
      * Ctor.
+     * @param statementId is the statement id uniquely indentifying the handle
      * @param statementLock is the statement resource lock
      * @param expressionText is the expression
      */

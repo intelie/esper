@@ -19,10 +19,14 @@ import java.util.Set;
 public class ExprSubselectInNode extends ExprSubselectNode
 {
     private static final Log log = LogFactory.getLog(ExprSubselectInNode.class);
+    private boolean isNotIn;
     private boolean mustCoerce;
     private Class coercionType;
 
-    public ExprSubselectInNode(StatementSpecRaw statementSpec)
+    /**
+     * Ctor.
+     * @param statementSpec is the subquery statement spec from the parser, unvalidated
+     */    public ExprSubselectInNode(StatementSpecRaw statementSpec)
     {
         super(statementSpec);
     }
@@ -35,6 +39,15 @@ public class ExprSubselectInNode extends ExprSubselectNode
     public Class getType() throws ExprValidationException
     {
         return Boolean.class;
+    }
+
+    /**
+     * Indicate that this is a not-in subquery.
+     * @param notIn is true for not-in, or false for regular 'in'
+     */
+    public void setNotIn(boolean notIn)
+    {
+        isNotIn = notIn;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
@@ -87,9 +100,13 @@ public class ExprSubselectInNode extends ExprSubselectNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)
     {
+        if (matchingEvents == null)
+        {
+            return isNotIn;
+        }
         if (matchingEvents.size() == 0)
         {
-            return false;
+            return isNotIn;
         }
 
         // Filter according to the filter expression
@@ -119,7 +136,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
         }
         if (matchedFilteredEvents.size() == 0)
         {
-            return false;
+            return isNotIn;
         }
 
         // Evaluate the child expression
@@ -135,22 +152,20 @@ public class ExprSubselectInNode extends ExprSubselectNode
             {
                 if (rightResult == null)
                 {
-                    return true;
+                    return !isNotIn;
                 }
+                continue;
             }
             if (rightResult == null)
             {
-                if (leftResult == null)
-                {
-                    return true;
-                }
+                continue;
             }
 
             if (!mustCoerce)
             {
                 if (leftResult.equals(rightResult))
                 {
-                    return true;
+                    return !isNotIn;
                 }
             }
             else
@@ -159,11 +174,11 @@ public class ExprSubselectInNode extends ExprSubselectNode
                 Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
                 if (left.equals(right))
                 {
-                    return true;
+                    return !isNotIn;
                 }
             }
         }
 
-        return false;
+        return isNotIn;
     }
 }

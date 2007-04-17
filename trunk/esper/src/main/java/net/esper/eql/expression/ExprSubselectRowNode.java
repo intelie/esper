@@ -17,6 +17,10 @@ public class ExprSubselectRowNode extends ExprSubselectNode
 {
     private static final Log log = LogFactory.getLog(ExprSubselectRowNode.class);
 
+    /**
+     * Ctor.
+     * @param statementSpec is the subquery statement spec from the parser, unvalidated
+     */
     public ExprSubselectRowNode(StatementSpecRaw statementSpec)
     {
         super(statementSpec);
@@ -38,6 +42,10 @@ public class ExprSubselectRowNode extends ExprSubselectNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)
     {
+        if (matchingEvents == null)
+        {
+            return null;
+        }
         if (matchingEvents.size() == 0)
         {
             return null;

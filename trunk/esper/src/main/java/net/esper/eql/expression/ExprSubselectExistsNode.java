@@ -11,12 +11,16 @@ import net.esper.event.EventBean;
 import java.util.Set;
 
 /**
- * Represents a exists subselect in an expression tree.
+ * Represents an exists-subselect in an expression tree.
  */
 public class ExprSubselectExistsNode extends ExprSubselectNode
 {
     private static final Log log = LogFactory.getLog(ExprSubselectExistsNode.class);
 
+    /**
+     * Ctor.
+     * @param statementSpec is the subquery statement spec from the parser, unvalidated
+     */
     public ExprSubselectExistsNode(StatementSpecRaw statementSpec)
     {
         super(statementSpec);
@@ -38,6 +42,10 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)
     {
+        if (matchingEvents == null)
+        {
+            return false;
+        }
         if (matchingEvents.size() == 0)
         {
             return false;

@@ -28,6 +28,7 @@ public interface GuardFactory
      * @param context - services for use by guard
      * @param quitable - to use for indicating the guard has quit
      * @param stateNodeId - a node id for the state object
+     * @param guardState - state node for guard
      * @return guard instance
      */
     public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId, Object guardState);

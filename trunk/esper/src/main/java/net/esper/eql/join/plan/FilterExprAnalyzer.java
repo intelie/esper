@@ -7,10 +7,8 @@
  **************************************************************************************/
 package net.esper.eql.join.plan;
 
-import net.esper.eql.expression.ExprAndNode;
-import net.esper.eql.expression.ExprEqualsNode;
-import net.esper.eql.expression.ExprIdentNode;
-import net.esper.eql.expression.ExprNode;
+import net.esper.eql.expression.*;
+import net.esper.util.JavaClassHelper;
 
 /**
  * Analyzes a filter expression and builds a query graph model.
@@ -24,8 +22,9 @@ public class FilterExprAnalyzer
      * Analyzes filter expression to build query graph model.
      * @param topNode - filter top node
      * @param queryGraph - model containing relationships between streams, to be written to
+     * @param isAllowCoercion - true to indicate that coercing filter criteria are considered, false if not
      */
-    public static void analyze(ExprNode topNode, QueryGraph queryGraph)
+    public static void analyze(ExprNode topNode, QueryGraph queryGraph, boolean isAllowCoercion)
     {
         // Analyze relationships between streams. Relationships are properties in AND and EQUALS nodes of joins.
         if (topNode instanceof ExprEqualsNode)
@@ -33,13 +32,13 @@ public class FilterExprAnalyzer
             ExprEqualsNode equalsNode = (ExprEqualsNode) topNode;
             if (!equalsNode.isNotEquals())
             {
-                analyzeEqualsNode(equalsNode, queryGraph);
+                analyzeEqualsNode(equalsNode, queryGraph, isAllowCoercion);
             }
         }
         else if (topNode instanceof ExprAndNode)
         {
             ExprAndNode andNode = (ExprAndNode) topNode;
-            analyzeAndNode(andNode, queryGraph);
+            analyzeAndNode(andNode, queryGraph, isAllowCoercion);
         }
     }
 
@@ -47,8 +46,9 @@ public class FilterExprAnalyzer
      * Analye EQUALS (=) node.
      * @param equalsNode - node to analyze
      * @param queryGraph - store relationships between stream properties
+     * @param isAllowCoercion - true to indicate that coercing filter criteria are considered, false if not
      */
-    protected static void analyzeEqualsNode(ExprEqualsNode equalsNode, QueryGraph queryGraph)
+    protected static void analyzeEqualsNode(ExprEqualsNode equalsNode, QueryGraph queryGraph, boolean isAllowCoercion)
     {
         if ( (!(equalsNode.getChildNodes().get(0) instanceof ExprIdentNode)) ||
              (!(equalsNode.getChildNodes().get(1) instanceof ExprIdentNode)) )
@@ -59,6 +59,23 @@ public class FilterExprAnalyzer
         ExprIdentNode identNodeLeft = (ExprIdentNode) equalsNode.getChildNodes().get(0);
         ExprIdentNode identNodeRight = (ExprIdentNode) equalsNode.getChildNodes().get(1);
 
+        if (!isAllowCoercion)
+        {
+            try
+            {
+                Class boxedTypeLeft = JavaClassHelper.getBoxedType(identNodeLeft.getType());
+                Class boxedTypeRight = JavaClassHelper.getBoxedType(identNodeRight.getType());
+                if (!(boxedTypeLeft.equals(boxedTypeRight)))
+                {
+                    return;
+                }
+            }
+            catch (ExprValidationException e)
+            {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
+
         queryGraph.add(identNodeLeft.getStreamId(), identNodeLeft.getResolvedPropertyName(),
                 identNodeRight.getStreamId(), identNodeRight.getResolvedPropertyName());
     }
@@ -67,8 +84,9 @@ public class FilterExprAnalyzer
      * Analyze the AND-node.
      * @param andNode - node to analyze
      * @param queryGraph - to store relationships between stream properties
+     * @param isAllowCoercion - true to indicate that coercing filter criteria are considered, false if not
      */
-    protected static void analyzeAndNode(ExprAndNode andNode, QueryGraph queryGraph)
+    protected static void analyzeAndNode(ExprAndNode andNode, QueryGraph queryGraph, boolean isAllowCoercion)
     {
         for (ExprNode childNode : andNode.getChildNodes())
         {
@@ -77,7 +95,7 @@ public class FilterExprAnalyzer
                 ExprEqualsNode equalsNode = (ExprEqualsNode) childNode;
                 if (!equalsNode.isNotEquals())
                 {
-                    analyzeEqualsNode(equalsNode, queryGraph);
+                    analyzeEqualsNode(equalsNode, queryGraph, isAllowCoercion);
                 }
             }
         }

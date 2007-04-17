@@ -10,11 +10,18 @@ public class ExprNodeSubselectVisitor implements ExprNodeVisitor
 {
     private final List<ExprSubselectNode> subselects;
 
+    /**
+     * Ctor.
+     */
     public ExprNodeSubselectVisitor()
     {
         subselects = new LinkedList<ExprSubselectNode>();
     }
 
+    /**
+     * Returns a list of subquery expression nodes.
+     * @return subquery nodes
+     */
     public List<ExprSubselectNode> getSubselects() {
         return subselects;
     }

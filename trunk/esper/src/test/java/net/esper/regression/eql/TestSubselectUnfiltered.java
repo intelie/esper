@@ -29,6 +29,49 @@ public class TestSubselectUnfiltered extends TestCase {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
+    public void testSelfSubselect()
+    {
+        String stmtTextOne = "insert into MyCount select count(*) as cnt from S0";
+        epService.getEPAdministrator().createEQL(stmtTextOne);
+
+        String stmtTextTwo = "select (select cnt from MyCount.std:lastevent()) as value from S0";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtTextTwo);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
+        assertEquals(null, listener.assertOneGetNewAndReset().get("value"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        assertEquals(1L, listener.assertOneGetNewAndReset().get("value"));
+    }
+
+    public void testStartStopStatement()
+    {
+        String stmtText = "select id from S0 where (select true from S1.win:length(1000))";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(10));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        assertEquals(2, listener.assertOneGetNewAndReset().get("id"));
+
+        stmt.stop();
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        assertFalse(listener.isInvoked());
+
+        stmt.start();
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(10));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(3));
+        assertEquals(3, listener.assertOneGetNewAndReset().get("id"));
+    }
+
     public void testWhereClauseReturningTrue()
     {
         String stmtText = "select id from S0 where (select true from S1.win:length(1000))";
@@ -132,6 +175,9 @@ public class TestSubselectUnfiltered extends TestCase {
 
         tryInvalid("select (select sum(id) from S1.std:lastevent()) as idS1 from S0",
                    "Error starting view: Aggregation functions are not supported within subqueries, consider using insert-into instead [select (select sum(id) from S1.std:lastevent()) as idS1 from S0]");
+
+        tryInvalid("select (select id from S1.std:lastevent() where sum(id) = 5) as idS1 from S0",
+                   "Error starting view: Aggregation functions are not supported within subqueries, consider using insert-into instead [select (select id from S1.std:lastevent() where sum(id) = 5) as idS1 from S0]");
 
         tryInvalid("select * from S0(id=5 and (select id from S1))",
                    "Subselects not allowed within filters [select * from S0(id=5 and (select id from S1))]");

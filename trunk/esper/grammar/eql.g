@@ -146,6 +146,7 @@ tokens
 	SUBSELECT_EXPR;
 	EXISTS_SUBSELECT_EXPR;
 	IN_SUBSELECT_EXPR;
+	NOT_IN_SUBSELECT_EXPR;
 	IN_SUBSELECT_QUERY_EXPR;
 	
    	INT_TYPE;
@@ -406,7 +407,9 @@ evalRelationalExpression
 					  }
 					)
 				| IN_SET! s:inSubSelectQuery
-					{	#evalRelationalExpression = #([IN_SUBSELECT_EXPR,"inSubselectExpr"], #evalRelationalExpression); }
+					{	if (n == null) #evalRelationalExpression = #([IN_SUBSELECT_EXPR,"inSubselectExpr"], #evalRelationalExpression); 
+					    else #evalRelationalExpression = #([NOT_IN_SUBSELECT_EXPR,"notInSubselectExpr"], #evalRelationalExpression); 
+					}
 				| (b:BETWEEN^ {
 						#b.setType( (n == null) ? BETWEEN : NOT_BETWEEN);
 						#b.setText( (n == null) ? "between" : "not between");

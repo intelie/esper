@@ -31,6 +31,7 @@ public interface ObserverFactory
      * @param beginState - start state for observer
      * @param observerEventEvaluator - receiver for events observed
      * @param stateNodeId - optional id for the associated pattern state node
+     * @param observerState - state node for observer
      * @return observer instance
      */
     public EventObserver makeObserver(PatternContext context,

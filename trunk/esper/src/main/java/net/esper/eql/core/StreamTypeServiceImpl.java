@@ -42,6 +42,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param namesAndTypes is the ordered list of stream names and event types available (stream zero to N)
      * @param isStreamZeroUnambigous indicates whether when a property is found in stream zero and another stream an exception should be
      * thrown or the stream zero should be assumed
+     * @param requireStreamNames is true to indicate that stream names are required for any non-zero streams (for subqueries)
      */
     public StreamTypeServiceImpl (LinkedHashMap<String, EventType> namesAndTypes, boolean isStreamZeroUnambigous, boolean requireStreamNames)
     {

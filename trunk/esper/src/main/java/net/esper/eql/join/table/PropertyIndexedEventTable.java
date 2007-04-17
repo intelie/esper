@@ -29,8 +29,16 @@ public class PropertyIndexedEventTable implements EventTable
 {
     private final int streamNum;
     private final String[] propertyNames;
-    private final EventPropertyGetter[] propertyGetters;
-    private final Map<MultiKeyUntyped, Set<EventBean>> propertyIndex;
+
+    /**
+     * Getters for properties.
+     */
+    protected final EventPropertyGetter[] propertyGetters;
+
+    /**
+     * Index table.
+     */
+    protected final Map<MultiKeyUntyped, Set<EventBean>> propertyIndex;
 
     /**
      * Ctor.
@@ -51,6 +59,16 @@ public class PropertyIndexedEventTable implements EventTable
         }
 
         propertyIndex = new HashMap<MultiKeyUntyped, Set<EventBean>>();
+    }
+
+    /**
+     * Determine multikey for index access.
+     * @param event to get properties from for key
+     * @return multi key
+     */
+    protected MultiKeyUntyped getMultiKey(EventBean event)
+    {
+        return EventBeanUtility.getMultiKey(event, propertyGetters);
     }
 
     /**
@@ -102,7 +120,7 @@ public class PropertyIndexedEventTable implements EventTable
 
     private void add(EventBean event)
     {
-        MultiKeyUntyped key = EventBeanUtility.getMultiKey(event, propertyGetters);
+        MultiKeyUntyped key = getMultiKey(event);
 
         Set<EventBean> events = propertyIndex.get(key);
         if (events == null)
@@ -121,7 +139,7 @@ public class PropertyIndexedEventTable implements EventTable
 
     private void remove(EventBean event)
     {
-        MultiKeyUntyped key = EventBeanUtility.getMultiKey(event, propertyGetters);
+        MultiKeyUntyped key = getMultiKey(event);
 
         Set<EventBean> events = propertyIndex.get(key);
         if (events == null)

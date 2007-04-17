@@ -42,6 +42,7 @@ public class StatementSpecCompiled
      * @param havingExprRootNode having expression
      * @param outputLimitSpec output limit
      * @param orderByList order by
+     * @param subSelectExpressions list of subqueries
      */
     public StatementSpecCompiled(InsertIntoDesc insertIntoDesc, SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum, SelectClauseSpec selectClauseSpec, List<StreamSpecCompiled> streamSpecs, List<OuterJoinDesc> outerJoinDescList, ExprNode filterExprRootNode, List<ExprNode> groupByExpressions, ExprNode havingExprRootNode, OutputLimitSpec outputLimitSpec, List<Pair<ExprNode, Boolean>> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions)
@@ -157,6 +158,10 @@ public class StatementSpecCompiled
         filterExprRootNode = optionalFilterNode;
     }
 
+    /**
+     * Returns the list of subquery expression nodes.
+     * @return subquery nodes
+     */
     public List<ExprSubselectNode> getSubSelectExpressions()
     {
         return subSelectExpressions;

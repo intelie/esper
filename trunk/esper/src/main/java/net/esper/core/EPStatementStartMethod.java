@@ -2,10 +2,15 @@ package net.esper.core;
 
 import net.esper.client.EPStatementException;
 import net.esper.collection.Pair;
+import net.esper.collection.FlushedEventBuffer;
 import net.esper.eql.core.*;
 import net.esper.eql.db.PollingViewableFactory;
 import net.esper.eql.expression.*;
 import net.esper.eql.join.*;
+import net.esper.eql.join.table.PropertyIndexedEventTable;
+import net.esper.eql.join.table.UnindexedEventTable;
+import net.esper.eql.join.table.EventTable;
+import net.esper.eql.join.table.PropertyIndexedEventTableCoercing;
 import net.esper.eql.join.plan.QueryGraph;
 import net.esper.eql.join.plan.FilterExprAnalyzer;
 import net.esper.eql.spec.*;
@@ -13,6 +18,7 @@ import net.esper.eql.view.FilterExprView;
 import net.esper.eql.view.IStreamRStreamSelectorView;
 import net.esper.eql.view.InternalRouteView;
 import net.esper.eql.view.OutputProcessView;
+import net.esper.eql.subquery.*;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.pattern.*;
@@ -20,6 +26,7 @@ import net.esper.util.StopCallback;
 import net.esper.util.JavaClassHelper;
 import net.esper.view.*;
 import net.esper.view.internal.BufferView;
+import net.esper.view.internal.BufferObserver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -63,12 +70,15 @@ public class EPStatementStartMethod
         String[] streamNames = determineStreamNames(statementSpec.getStreamSpecs());
         final boolean isJoin = statementSpec.getStreamSpecs().size() > 1;
 
+        // First we create streams for subselects, if there are any
+        SubSelectStreamCollection subSelectStreamDesc = createSubSelectStreams(isJoin);
+
         int numStreams = streamNames.length;
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
-        Viewable[] eventStreamParentViewable = new Viewable[numStreams];
-        ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
 
         // Create streams and views
+        Viewable[] eventStreamParentViewable = new Viewable[numStreams];
+        ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
@@ -134,96 +144,16 @@ public class EPStatementStartMethod
             streamEventTypes[i] = unmaterializedViewChain[i].getEventType();
         }
 
+        // Materialize sub-select views
+        startSubSelect(subSelectStreamDesc, streamNames, streamEventTypes);
+
         // List of statement streams
         final List<StreamSpecCompiled> statementStreamSpecs = new ArrayList<StreamSpecCompiled>();
         statementStreamSpecs.addAll(statementSpec.getStreamSpecs());
 
-        // Add subselects to statement streams
-        int subselectStreamNumber = 1024;
-        for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
-        {
-            subselectStreamNumber++;
-            subselect.setStreamId(subselectStreamNumber);
-            StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
-            
-            // register filter, create stream, create subviews, add to stop list
-            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
-
-            // A child view is required to limit the stream
-            if (filterStreamSpec.getViewSpecs().size() == 0)
-            {
-                throw new ExprValidationException("Subqueries require one or more views to limit the stream, consider declaring a length or time window");
-            }
-
-            // First get event type
-            Viewable viewable = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
-                    services.getFilterService(), statementContext.getEpStatementHandle(), false);
-            ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), statementContext);
-            statementStreamSpecs.add(filterStreamSpec);
-
-            // Validate select expression
-            String subexpressionStreamName = filterStreamSpec.getOptionalStreamName();
-            if (subexpressionStreamName == null)
-            {
-                subexpressionStreamName = "$subselect_" + subselectStreamNumber;
-            }
-            EventType eventType = viewFactoryChain.getEventType();
-
-            SelectClauseSpec selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
-            if ((!subselect.isAllowWildcardSelect()) && (selectClauseSpec.isUsingWildcard()))
-            {
-                throw new ExprValidationException("Invalid use of wildcard in subquery");
-            }
-
-            // no aggregation functions allowed
-            if (selectClauseSpec.getSelectList().size() > 0)
-            {
-                ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
-                List<ExprAggregateNode> selectAggregateExprNodes = new LinkedList<ExprAggregateNode>();
-                ExprAggregateNode.getAggregatesBottomUp(selectExpression, selectAggregateExprNodes);
-                if (selectAggregateExprNodes.size() > 0)
-                {
-                    throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
-                }
-            }
-
-            // Streams event types are the original stream types with the stream zero the subselect
-            LinkedHashMap<String, EventType> namesAndTypes = new LinkedHashMap<String, EventType>();
-            namesAndTypes.put(subexpressionStreamName, eventType);
-            for (int i = 0; i < streamEventTypes.length; i++)
-            {
-                namesAndTypes.put(streamNames[i], streamEventTypes[i]);
-            }
-            StreamTypeService typeService = new StreamTypeServiceImpl(namesAndTypes, true, true);
-            ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain});
-
-            // Validate expression, expression indicates needs
-            if (selectClauseSpec.getSelectList().size() > 0)
-            {
-                ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
-                selectExpression = selectExpression.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
-                subselect.setSelectClause(selectExpression);
-                subselect.setSelectAsName(selectClauseSpec.getSelectList().get(0).getOptionalAsName());
-            }
-
-            // Finally create views
-            Viewable subselectView = services.getViewService().createViews(viewable, viewFactoryChain.getViewFactoryChain(), statementContext);
-            subselect.setSubselectView(subselectView);
-
-            // filter expression
-            ExprNode filterExpr = statementSpec.getFilterRootNode();
-            if (filterExpr != null)
-            {
-                filterExpr = filterExpr.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
-                if (JavaClassHelper.getBoxedType(filterExpr.getType()) != Boolean.class)
-                {
-                    throw new ExprValidationException("Subselect filter expression must return a boolean value");
-                }
-                QueryGraph queryGraph = new QueryGraph(streamNames.length + 1);
-                FilterExprAnalyzer.analyze(filterExpr, queryGraph);
-                subselect.setFilterExpr(filterExpr);
-            }
-        }
+        // Construct type information per stream
+        StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames);
+        ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain);
 
         // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
@@ -244,12 +174,13 @@ public class EPStatementStartMethod
                 {
                     stopCallback.stop();
                 }
+                for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
+                {
+                    FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) subselect.getStatementSpecCompiled().getStreamSpecs().get(0);
+                    services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin);
+                }
             }
         };
-
-        // Construct type information per stream
-        StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames);
-        ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain);
 
         // Validate views that require validation, specifically streams that don't have
         // sub-views such as DB SQL joins
@@ -287,7 +218,7 @@ public class EPStatementStartMethod
         }
 
         // For just 1 event stream without joins, handle the one-table process separatly.
-        Viewable finalView = null;
+        Viewable finalView;
         if (streamNames.length == 1)
         {
             finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, statementContext);
@@ -317,7 +248,6 @@ public class EPStatementStartMethod
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
     }
 
-    @SuppressWarnings({"ObjectAllocationInLoop"})
     private Viewable handleJoin(String[] streamNames,
                                 EventType[] streamTypes,
                                 Viewable[] streamViews,
@@ -370,7 +300,6 @@ public class EPStatementStartMethod
         return streamNames;
     }
 
-    @SuppressWarnings({"StringContatenationInLoop"})
     private void validateNodes(StreamTypeService typeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
     {
         if (statementSpec.getFilterRootNode() != null)
@@ -479,6 +408,222 @@ public class EPStatementStartMethod
         }
 
         return finalView;
+    }
+
+    private SubSelectStreamCollection createSubSelectStreams(boolean isJoin)
+            throws ExprValidationException, ViewProcessingException
+    {
+        SubSelectStreamCollection subSelectStreamDesc = new SubSelectStreamCollection();
+        int subselectStreamNumber = 1024;
+
+        // Process all subselect expression nodes
+        for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
+        {
+            StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
+            SelectClauseSpec selectClauseSpec = statementSpec.getSelectClauseSpec();
+            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+
+            // Validate select clause wildcard use
+            if ((!subselect.isAllowWildcardSelect()) && (selectClauseSpec.isUsingWildcard()))
+            {
+                throw new ExprValidationException("Invalid use of wildcard in subquery");
+            }
+
+            // no aggregation functions allowed in select
+            if (selectClauseSpec.getSelectList().size() > 0)
+            {
+                ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
+                List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
+                ExprAggregateNode.getAggregatesBottomUp(selectExpression, aggExprNodes);
+                if (aggExprNodes.size() > 0)
+                {
+                    throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
+                }
+            }
+
+            // no aggregation functions allowed in filter
+            if (statementSpec.getFilterRootNode() != null)
+            {
+                List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
+                ExprAggregateNode.getAggregatesBottomUp(statementSpec.getFilterRootNode(), aggExprNodes);
+                if (aggExprNodes.size() > 0)
+                {
+                    throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
+                }
+            }
+
+            // A child view is required to limit the stream
+            if (filterStreamSpec.getViewSpecs().size() == 0)
+            {
+                throw new ExprValidationException("Subqueries require one or more views to limit the stream, consider declaring a length or time window");
+            }
+
+            subselectStreamNumber++;
+
+            // Register filter, create view factories
+            Viewable viewable = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
+                    services.getFilterService(), statementContext.getEpStatementHandle(), isJoin);
+            ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), statementContext);
+
+            // Add subquery to list, for later starts
+            subSelectStreamDesc.add(subselect, subselectStreamNumber, viewable, viewFactoryChain);
+        }
+
+        return subSelectStreamDesc;
+    }
+
+    private void startSubSelect(SubSelectStreamCollection subSelectStreamDesc, String[] outerStreamNames, EventType outerEventTypes[])
+            throws ExprValidationException
+    {
+        for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
+        {
+            StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
+            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+            ViewFactoryChain viewFactoryChain = subSelectStreamDesc.getViewFactoryChain(subselect);
+            EventType eventType = viewFactoryChain.getEventType();
+
+            // determine a stream name unless one was supplied
+            String subexpressionStreamName = filterStreamSpec.getOptionalStreamName();
+            int subselectStreamNumber = subSelectStreamDesc.getStreamNumber(subselect);
+            if (subexpressionStreamName == null)
+            {
+                subexpressionStreamName = "$subselect_" + subselectStreamNumber;
+            }
+
+            // Streams event types are the original stream types with the stream zero the subselect stream
+            LinkedHashMap<String, EventType> namesAndTypes = new LinkedHashMap<String, EventType>();
+            namesAndTypes.put(subexpressionStreamName, eventType);
+            for (int i = 0; i < outerEventTypes.length; i++)
+            {
+                namesAndTypes.put(outerStreamNames[i], outerEventTypes[i]);
+            }
+            StreamTypeService subselectTypeService = new StreamTypeServiceImpl(namesAndTypes, true, true);
+            ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain});
+
+            // Validate select expression
+            SelectClauseSpec selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
+            if (selectClauseSpec.getSelectList().size() > 0)
+            {
+                ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
+                selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
+                subselect.setSelectClause(selectExpression);
+                subselect.setSelectAsName(selectClauseSpec.getSelectList().get(0).getOptionalAsName());
+            }
+
+            // Validate filter expression, if there is one
+            ExprNode filterExpr = statementSpec.getFilterRootNode();
+            if (filterExpr != null)
+            {
+                filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
+                if (JavaClassHelper.getBoxedType(filterExpr.getType()) != Boolean.class)
+                {
+                    throw new ExprValidationException("Subselect filter expression must return a boolean value");
+                }
+                subselect.setFilterExpr(filterExpr);
+            }
+
+            // Finally create views
+            Viewable viewableRoot = subSelectStreamDesc.getRootViewable(subselect);
+            Viewable subselectView = services.getViewService().createViews(viewableRoot, viewFactoryChain.getViewFactoryChain(), statementContext);
+
+            // Determine indexing of the filter expression
+            Pair<EventTable, SubqueryTableLookupStrategy> indexPair = determineSubqueryIndex(filterExpr, eventType,
+                    outerEventTypes, subselectTypeService);
+            subselect.setStrategy(indexPair.getSecond());
+            final EventTable eventIndex = indexPair.getFirst();
+
+            // hook up subselect viewable and event table
+            BufferView bufferView = new BufferView(subselectStreamNumber);
+            bufferView.setObserver(new BufferObserver() {
+                public void newData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer)
+                {
+                    eventIndex.remove(oldEventBuffer.getAndFlush());
+                    eventIndex.add(newEventBuffer.getAndFlush());
+                }
+
+            });
+            subselectView.addView(bufferView);
+        }
+    }
+
+    private Pair<EventTable, SubqueryTableLookupStrategy> determineSubqueryIndex(ExprNode filterExpr,
+                                                                                 EventType viewableEventType,
+                                                                                 EventType[] outerEventTypes,
+                                                                                 StreamTypeService subselectTypeService)
+            throws ExprValidationException
+    {
+        // No filter expression means full table scan
+        if (filterExpr == null)
+        {
+            UnindexedEventTable table = new UnindexedEventTable(0);
+            FullTableScanLookupStrategy strategy = new FullTableScanLookupStrategy(table);
+            return new Pair<EventTable, SubqueryTableLookupStrategy>(table, strategy);
+        }
+
+        // analyze query graph
+        QueryGraph queryGraph = new QueryGraph(outerEventTypes.length + 1);
+        FilterExprAnalyzer.analyze(filterExpr, queryGraph, true);
+
+        // Build a list of streams and indexes
+        Map<String, SubqueryJoinedPropDesc> joinProps = new LinkedHashMap<String, SubqueryJoinedPropDesc>();
+        boolean mustCoerce = false;
+        for (int stream = 0; stream <  outerEventTypes.length; stream++)
+        {
+            int lookupStream = stream + 1;
+            String[] keyPropertiesJoin = queryGraph.getKeyProperties(lookupStream, 0);
+            String[] indexPropertiesJoin = queryGraph.getIndexProperties(lookupStream, 0);
+            if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
+            {
+                continue;
+            }
+            if (keyPropertiesJoin.length != indexPropertiesJoin.length)
+            {
+                throw new IllegalStateException("Invalid query key and index property collection for stream " + stream);
+            }
+
+            for (int i = 0; i < keyPropertiesJoin.length; i++)
+            {
+                Class keyPropType = JavaClassHelper.getBoxedType(subselectTypeService.getEventTypes()[lookupStream].getPropertyType(keyPropertiesJoin[i]));
+                Class indexedPropType = JavaClassHelper.getBoxedType(subselectTypeService.getEventTypes()[0].getPropertyType(indexPropertiesJoin[i]));
+                Class coercionType = indexedPropType;
+                if (keyPropType != indexedPropType)
+                {
+                    coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, keyPropType);
+                    mustCoerce = true;
+                }
+
+                SubqueryJoinedPropDesc desc = new SubqueryJoinedPropDesc(indexPropertiesJoin[i],
+                        coercionType, keyPropertiesJoin[i], stream);
+                joinProps.put(indexPropertiesJoin[i], desc);
+            }
+        }
+
+        if (joinProps.size() != 0)
+        {
+            String indexedProps[] = joinProps.keySet().toArray(new String[0]);
+            int[] keyStreamNums = SubqueryJoinedPropDesc.getKeyStreamNums(joinProps.values());
+            String[] keyProps = SubqueryJoinedPropDesc.getKeyProperties(joinProps.values());
+
+            if (!mustCoerce)
+            {
+                PropertyIndexedEventTable table = new PropertyIndexedEventTable(0, viewableEventType, indexedProps);
+                SubqueryTableLookupStrategy strategy = new IndexedTableLookupStrategy( outerEventTypes,
+                        keyStreamNums, keyProps, table);
+                return new Pair<EventTable, SubqueryTableLookupStrategy>(table, strategy);
+            }
+            else
+            {
+                Class coercionTypes[] = SubqueryJoinedPropDesc.getCoercionTypes(joinProps.values());
+                PropertyIndexedEventTableCoercing table = new PropertyIndexedEventTableCoercing(0, viewableEventType, indexedProps, coercionTypes);
+                SubqueryTableLookupStrategy strategy = new IndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
+                return new Pair<EventTable, SubqueryTableLookupStrategy>(table, strategy);
+            }
+        }
+        else
+        {
+            UnindexedEventTable table = new UnindexedEventTable(0);
+            return new Pair<EventTable, SubqueryTableLookupStrategy>(table, new FullTableScanLookupStrategy(table));
+        }
     }
 
     private static final Log log = LogFactory.getLog(EPStatementStartMethod.class);

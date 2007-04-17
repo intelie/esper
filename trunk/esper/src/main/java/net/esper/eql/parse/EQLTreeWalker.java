@@ -284,6 +284,7 @@ public class EQLTreeWalker extends EQLBaseWalker
                 leaveSubselectExists(node);
                 break;
             case IN_SUBSELECT_EXPR:
+            case NOT_IN_SUBSELECT_EXPR:
                 leaveSubselectIn(node);
                 break;
             case IN_SUBSELECT_QUERY_EXPR:
@@ -386,7 +387,15 @@ public class EQLTreeWalker extends EQLBaseWalker
         AST nodeEvalExpr = node.getFirstChild();
         AST nodeSubquery = nodeEvalExpr.getNextSibling();
 
-        ExprNode subqueryNode = astExprNodeMap.remove(nodeSubquery);
+        boolean isNot = false;
+        if (node.getType() == NOT_IN_SUBSELECT_EXPR)
+        {
+            isNot = true;
+        }
+        
+        ExprSubselectInNode subqueryNode = (ExprSubselectInNode) astExprNodeMap.remove(nodeSubquery);
+        subqueryNode.setNotIn(isNot);
+
         astExprNodeMap.put(node, subqueryNode);
     }
 

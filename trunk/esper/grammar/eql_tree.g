@@ -176,6 +176,7 @@ subSelectExistsExpr
 	
 subSelectInExpr
 	: 	#(IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr)
+	| 	#(NOT_IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr)
 	;
 
 subSelectInQueryExpr
