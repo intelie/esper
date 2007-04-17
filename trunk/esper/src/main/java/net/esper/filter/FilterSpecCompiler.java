@@ -11,15 +11,13 @@ import net.esper.collection.Pair;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.expression.*;
-import net.esper.eql.spec.SelectExprElementRawSpec;
 import net.esper.event.EventType;
 import net.esper.type.RelationalOpEnum;
 import net.esper.util.JavaClassHelper;
-
-import java.util.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * Helper to compile (validate and optimize) filter expressions as used in pattern and filter-based streams.

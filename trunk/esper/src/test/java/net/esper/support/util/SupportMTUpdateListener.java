@@ -1,13 +1,11 @@
 package net.esper.support.util;
 
+import junit.framework.Assert;
 import net.esper.client.UpdateListener;
 import net.esper.event.EventBean;
-import net.esper.util.ThreadLogUtil;
 
-import java.util.List;
 import java.util.LinkedList;
-
-import junit.framework.Assert;
+import java.util.List;
 
 public class SupportMTUpdateListener implements UpdateListener
 {
