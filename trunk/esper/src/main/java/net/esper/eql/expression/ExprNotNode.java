@@ -38,6 +38,11 @@ public class ExprNotNode extends ExprNode
         return Boolean.class;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         Boolean evaluated = (Boolean) this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);

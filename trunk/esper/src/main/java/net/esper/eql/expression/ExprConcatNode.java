@@ -51,6 +51,11 @@ public class ExprConcatNode extends ExprNode
         return String.class;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         buffer.delete(0, buffer.length());

@@ -55,6 +55,15 @@ public abstract class ExprSubselectNode extends ExprNode
         this.statementSpecRaw = statementSpec;
     }
 
+    public boolean isConstantResult()
+    {
+        if (selectClause != null)
+        {
+            return selectClause.isConstantResult();
+        }
+        return false;
+    }
+
     /**
      * Supplies a compiled statement spec.
      * @param statementSpecCompiled compiled validated filters

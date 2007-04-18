@@ -107,8 +107,6 @@ public class TestOutputLimitNoGroupBy extends TestCase
 	    return updateListener;
 	}
     
-   
-
 	public void testAggregateAllJoinAll()
 	{
 	    String viewExpr = "select longBoxed, sum(longBoxed) as result " +

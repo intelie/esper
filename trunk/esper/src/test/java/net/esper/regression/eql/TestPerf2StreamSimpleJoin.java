@@ -1,14 +1,14 @@
 package net.esper.regression.eql;
 
+import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
-import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
-import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import junit.framework.TestCase;
 
 public class TestPerf2StreamSimpleJoin extends TestCase
 {

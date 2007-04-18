@@ -33,11 +33,11 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
         {
             throw new ExprValidationException("Prior node must have 2 child nodes");
         }
-        if (!(this.getChildNodes().get(0) instanceof ExprConstantNode))
+        if (!(this.getChildNodes().get(0).isConstantResult()))
         {
             throw new ExprValidationException("Prior function requires an integer index parameter");
         }
-        ExprConstantNode constantNode = (ExprConstantNode) this.getChildNodes().get(0);
+        ExprNode constantNode = this.getChildNodes().get(0);
         if (constantNode.getType() != Integer.class)
         {
             throw new ExprValidationException("Prior function requires an integer index parameter");
@@ -65,6 +65,11 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
     public Class getType()
     {
         return resultType;
+    }
+
+    public boolean isConstantResult()
+    {
+        return false;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)

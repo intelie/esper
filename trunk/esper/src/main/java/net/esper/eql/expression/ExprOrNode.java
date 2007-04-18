@@ -42,6 +42,11 @@ public class ExprOrNode extends ExprNode
         return Boolean.class;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         // At least one child must evaluate to true

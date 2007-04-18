@@ -7,7 +7,7 @@ import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 
 /**
- * Represents And-condition.
+ * Represents an And-condition.
  */
 public class ExprAndNode extends ExprNode
 {
@@ -27,6 +27,11 @@ public class ExprAndNode extends ExprNode
         {
             throw new ExprValidationException("The AND operator requires at least 2 child expressions");
         }
+    }
+
+    public boolean isConstantResult()
+    {
+        return false;
     }
 
     public Class getType()

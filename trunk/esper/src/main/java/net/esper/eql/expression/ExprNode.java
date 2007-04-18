@@ -29,6 +29,8 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
      */
     public abstract String toExpressionString();
 
+    public abstract boolean isConstantResult();
+    
     /**
      * Return true if a expression node semantically equals the current node, or false if not.
      * <p>Concrete implementations should compare the type and any additional information

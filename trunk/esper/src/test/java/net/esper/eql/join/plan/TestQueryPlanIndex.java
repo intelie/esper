@@ -15,14 +15,14 @@ public class TestQueryPlanIndex extends TestCase
             new String[0],
         };
 
-        indexSpec = new QueryPlanIndex(indexes);
+        indexSpec = new QueryPlanIndex(indexes, new Class[indexes.length][]);
     }
 
     public void testInvalidUse()
     {
         try
         {
-            new QueryPlanIndex(null);
+            new QueryPlanIndex(null, null);
             fail();
         }
         catch (IllegalArgumentException ex)
@@ -42,7 +42,7 @@ public class TestQueryPlanIndex extends TestCase
 
     public void testAddIndex()
     {
-        int indexNum = indexSpec.addIndex(new String[] {"a", "b"});
+        int indexNum = indexSpec.addIndex(new String[] {"a", "b"}, null);
         assertEquals(3, indexNum);
         assertEquals(3, indexSpec.getIndexNum(new String[] { "a", "b"}));
     }

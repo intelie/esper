@@ -56,7 +56,7 @@ public class ExprLikeNode extends ExprNode
         {
             throw new ExprValidationException("The 'like' operator requires a String-type pattern expression");
         }
-        if (this.getChildNodes().get(1) instanceof ExprConstantNode)
+        if (getChildNodes().get(1).isConstantResult())
         {
             isConstantPattern = true;
         }
@@ -75,6 +75,11 @@ public class ExprLikeNode extends ExprNode
     public Class getType()
     {
         return Boolean.class;
+    }
+
+    public boolean isConstantResult()
+    {
+        return false;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)

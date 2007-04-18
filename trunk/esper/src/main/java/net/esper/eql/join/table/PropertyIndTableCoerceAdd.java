@@ -16,9 +16,9 @@ import org.apache.commons.logging.LogFactory;
  * Takes a list of property names as parameter. Doesn't care which event type the events have as long as the properties
  * exist. If the same event is added twice, the class throws an exception on add.
  */
-public class PropertyIndexedEventTableCoercing extends PropertyIndexedEventTable
+public class PropertyIndTableCoerceAdd extends PropertyIndexedEventTable
 {
-    private static Log log = LogFactory.getLog(PropertyIndexedEventTableCoercing.class);
+    private static Log log = LogFactory.getLog(PropertyIndTableCoerceAdd.class);
     private final Class[] coercionTypes;
 
     /**
@@ -28,7 +28,7 @@ public class PropertyIndexedEventTableCoercing extends PropertyIndexedEventTable
      * @param propertyNames are the property names to get property values
      * @param coercionType are the classes to coerce indexed values to
      */
-    public PropertyIndexedEventTableCoercing(int streamNum, EventType eventType, String[] propertyNames, Class[] coercionType)
+    public PropertyIndTableCoerceAdd(int streamNum, EventType eventType, String[] propertyNames, Class[] coercionType)
     {
         super(streamNum, eventType, propertyNames);
         this.coercionTypes = coercionType;

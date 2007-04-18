@@ -73,6 +73,11 @@ public abstract class ExprAggregateNode extends ExprNode
         isDistinct = distinct;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         this.aggregationMethod = validateAggregationChild(streamTypeService, methodResolutionService);

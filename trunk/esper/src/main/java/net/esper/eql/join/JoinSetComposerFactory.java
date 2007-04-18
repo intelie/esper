@@ -20,6 +20,7 @@ import net.esper.eql.join.plan.QueryPlanNode;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.table.PropertyIndexedEventTable;
 import net.esper.eql.join.table.UnindexedEventTable;
+import net.esper.eql.join.table.PropertyIndTableCoerceAll;
 import net.esper.event.EventType;
 import net.esper.view.Viewable;
 import net.esper.view.HistoricalEventViewable;
@@ -127,7 +128,7 @@ public class JoinSetComposerFactory
         }
         else
         {
-            QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes.length, outerJoinDescList, optionalFilterNode, streamNames);
+            QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, optionalFilterNode, streamNames);
 
             // Build indexes
             QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
@@ -135,10 +136,11 @@ public class JoinSetComposerFactory
             for (int streamNo = 0; streamNo < indexSpecs.length; streamNo++)
             {
                 String[][] indexProps = indexSpecs[streamNo].getIndexProps();
+                Class[][] coercionTypes = indexSpecs[streamNo].getCoercionTypesPerIndex();
                 indexes[streamNo] = new EventTable[indexProps.length];
                 for (int indexNo = 0; indexNo < indexProps.length; indexNo++)
                 {
-                    indexes[streamNo][indexNo] = buildIndex(streamNo, indexProps[indexNo], streamTypes[streamNo]);
+                    indexes[streamNo][indexNo] = buildIndex(streamNo, indexProps[indexNo], coercionTypes[indexNo], streamTypes[streamNo]);
                 }
             }
 
@@ -170,7 +172,7 @@ public class JoinSetComposerFactory
      * @param eventType - type of event to expect
      * @return table build
      */
-    protected static EventTable buildIndex(int indexedStreamNum, String[] indexProps, EventType eventType)
+    protected static EventTable buildIndex(int indexedStreamNum, String[] indexProps, Class[] optCoercionTypes, EventType eventType)
     {
         EventTable table = null;
         if (indexProps.length == 0)
@@ -179,7 +181,15 @@ public class JoinSetComposerFactory
         }
         else
         {
-            table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps);
+            if (optCoercionTypes == null)
+            {
+                table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps);
+            }
+            else
+            {
+                table = new PropertyIndTableCoerceAll(indexedStreamNum, eventType, indexProps, optCoercionTypes);
+            }
+
         }
         return table;
     }

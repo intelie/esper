@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import net.esper.collection.NumberSetPermutationEnumeration;
 import net.esper.event.EventType;
+import net.esper.util.JavaClassHelper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,7 +102,7 @@ public class NStreamQueryPlanBuilder
      * @param queryGraph - navigation info between streams
      * @return query plan
      */
-    protected static QueryPlan build(QueryGraph queryGraph)
+    protected static QueryPlan build(QueryGraph queryGraph, EventType[] typesPerStream)
     {
         log.debug(".build queryGraph=" + queryGraph);
 
@@ -116,7 +117,7 @@ public class NStreamQueryPlanBuilder
             int[] bestChain = bestChainResult.getChain();
             log.debug(".build For stream " + streamNo + " bestChain=" + Arrays.toString(bestChain));
 
-            planNodeSpecs[streamNo] = createStreamPlan(streamNo, bestChain, queryGraph, indexSpecs);
+            planNodeSpecs[streamNo] = createStreamPlan(streamNo, bestChain, queryGraph, indexSpecs, typesPerStream);
             log.debug(".build spec=" + planNodeSpecs[streamNo]);
         }
 
@@ -133,7 +134,7 @@ public class NStreamQueryPlanBuilder
      * @return NestedIterationNode with lookups attached underneath
      */
     protected static QueryPlanNode createStreamPlan(int lookupStream, int[] bestChain, QueryGraph queryGraph,
-                                                        QueryPlanIndex[] indexSpecsPerStream)
+                                                        QueryPlanIndex[] indexSpecsPerStream, EventType[] typesPerStream)
     {
         NestedIterationNode nestedIterNode = new NestedIterationNode(bestChain);
         int currentLookupStream = lookupStream;
@@ -143,7 +144,7 @@ public class NStreamQueryPlanBuilder
         {
             int indexedStream = bestChain[i];
 
-            TableLookupPlan tableLookupPlan = createLookupPlan(queryGraph, currentLookupStream, indexedStream, indexSpecsPerStream[indexedStream]);
+            TableLookupPlan tableLookupPlan = createLookupPlan(queryGraph, currentLookupStream, indexedStream, indexSpecsPerStream[indexedStream], typesPerStream);
             TableLookupNode tableLookupNode = new TableLookupNode(tableLookupPlan);
             nestedIterNode.addChildNode(tableLookupNode);
 
@@ -164,13 +165,13 @@ public class NStreamQueryPlanBuilder
      * @return plan for performing a lookup in a given table using one of the indexes supplied
      */
     protected static TableLookupPlan createLookupPlan(QueryGraph queryGraph, int currentLookupStream, int indexedStream,
-                                               QueryPlanIndex indexSpecs)
+                                               QueryPlanIndex indexSpecs, EventType[] typesPerStream)
     {
         String[] indexedStreamIndexProps = queryGraph.getIndexProperties(currentLookupStream, indexedStream);
         int indexNum = -1;
 
         // We use an index if there are index properties for the 2 streams
-        TableLookupPlan tableLookupPlan = null;
+        TableLookupPlan tableLookupPlan;
 
         if (indexedStreamIndexProps != null)
         {
@@ -180,6 +181,22 @@ public class NStreamQueryPlanBuilder
             // Constructed keyed lookup strategy
             String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
             tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
+
+            // Determine coercion required
+            Class[] coercionTypes = TwoStreamQueryPlanBuilder.getCoercionTypes(typesPerStream, currentLookupStream, indexedStream, keyGenFields, indexedStreamIndexProps);
+            if (coercionTypes != null)
+            {
+                // check if there already are coercion types for this index
+                Class[] existCoercionTypes = indexSpecs.getCoercionTypes(indexedStreamIndexProps);
+                if (existCoercionTypes != null)
+                {
+                    for (int i = 0; i < existCoercionTypes.length; i++)
+                    {
+                        coercionTypes[i] = JavaClassHelper.getCompareToCoercionType(existCoercionTypes[i], coercionTypes[i]);
+                    }
+                }
+                indexSpecs.setCoercionTypes(indexedStreamIndexProps, coercionTypes);
+            }
         }
         else
         {
@@ -189,7 +206,7 @@ public class NStreamQueryPlanBuilder
             // If no such full set index exists yet, add to specs
             if (indexNum == -1)
             {
-                indexNum = indexSpecs.addIndex(new String[0]);
+                indexNum = indexSpecs.addIndex(new String[0], null);
             }
 
             tableLookupPlan = new FullTableScanLookupPlan(currentLookupStream, indexedStream, indexNum);
@@ -281,7 +298,7 @@ public class NStreamQueryPlanBuilder
         // Build indexes without key properties
         for (int i = 0; i < indexSpecs.length; i++)
         {
-            indexSpecs[i] = new QueryPlanIndex(null);
+            indexSpecs[i] = new QueryPlanIndex(null, null);
         }
 
         // Handle N-stream queries
@@ -328,6 +345,39 @@ public class NStreamQueryPlanBuilder
         }
 
         return nestingOrder;
+    }
+
+    private static Class[] getCoercionTypes(EventType[] typesPerStream,
+                                         int lookupStream,
+                                         int indexedStream,
+                                         String[] keyProps,
+                                         String[] indexProps)
+    {
+        // Determine if any coercion is required
+        if (indexProps.length != keyProps.length)
+        {
+            throw new IllegalStateException("Mismatch in the number of key and index properties");
+        }
+
+        Class[] coercionTypes = new Class[indexProps.length];
+        boolean mustCoerce = false;
+        for (int i = 0; i < keyProps.length; i++)
+        {
+            Class keyPropType = JavaClassHelper.getBoxedType(typesPerStream[lookupStream].getPropertyType(keyProps[i]));
+            Class indexedPropType = JavaClassHelper.getBoxedType(typesPerStream[indexedStream].getPropertyType(indexProps[i]));
+            Class coercionType = indexedPropType;
+            if (keyPropType != indexedPropType)
+            {
+                coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, keyPropType);
+                mustCoerce = true;
+            }
+            coercionTypes[i] = coercionType;
+        }
+        if (!mustCoerce)
+        {
+            return null;
+        }
+        return coercionTypes;
     }
 
     /**

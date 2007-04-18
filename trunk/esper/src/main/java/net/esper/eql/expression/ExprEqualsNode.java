@@ -89,6 +89,11 @@ public class ExprEqualsNode extends ExprNode
         }
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public Class getType()
     {
         return Boolean.class;

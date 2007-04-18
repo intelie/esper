@@ -122,6 +122,11 @@ public class ExprInNode extends ExprNode
         return matched;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }        
+
     public boolean equalsNode(ExprNode node_)
     {
         if (!(node_ instanceof ExprInNode))

@@ -14,6 +14,7 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportTemperatureBean;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.eql.SupportStaticMethodLib;
 import net.esper.support.util.SupportUpdateListener;
 
@@ -232,6 +233,80 @@ public class TestStaticFunctions extends TestCase
 
         epService.getEPRuntime().sendEvent(new SupportTemperatureBean("a"));
         assertEquals("|POLYGON ((100 100, \", 100 100, 400 400))||a", listener.assertOneGetNewAndReset().get("val"));
+    }
+
+    public void testPassthru()
+    {
+        Configuration configuration = new Configuration();
+        configuration.addImport(SupportStaticMethodLib.class.getName());
+        configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        String text = "select " +
+                "SupportStaticMethodLib.passthru(id) as val" +
+                " from " + SupportBean_S0.class.getName();
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
+        assertEquals(1L, listener.assertOneGetNewAndReset().get("val"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        assertEquals(2L, listener.assertOneGetNewAndReset().get("val"));
+    }
+
+    public void testPerfConstantParameters()
+    {
+        Configuration configuration = new Configuration();
+        configuration.addImport(SupportStaticMethodLib.class.getName());
+        configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        String text = "select " +
+                "SupportStaticMethodLib.sleep(100) as val" +
+                " from Temperature as temp";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++)
+        {
+            epService.getEPRuntime().sendEvent(new SupportTemperatureBean("a"));
+        }
+        long endTime = System.currentTimeMillis();
+        long delta = endTime - startTime;
+
+        assertTrue("Failed perf test, delta=" + delta, delta < 1000);
+    }
+
+    public void testPerfConstantParametersNested()
+    {
+        Configuration configuration = new Configuration();
+        configuration.addImport(SupportStaticMethodLib.class.getName());
+        configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        String text = "select " +
+                "SupportStaticMethodLib.sleep(SupportStaticMethodLib.passthru(100)) as val" +
+                " from Temperature as temp";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++)
+        {
+            epService.getEPRuntime().sendEvent(new SupportTemperatureBean("a"));
+        }
+        long endTime = System.currentTimeMillis();
+        long delta = endTime - startTime;
+
+        assertTrue("Failed perf test, delta=" + delta, delta < 1000);
     }
 
     private Object createStatementAndGet(String propertyName)

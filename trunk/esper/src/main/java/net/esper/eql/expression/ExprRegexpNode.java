@@ -51,7 +51,7 @@ public class ExprRegexpNode extends ExprNode
         {
             throw new ExprValidationException("The regexp operator requires a String-type pattern expression");
         }
-        if (this.getChildNodes().get(1) instanceof ExprConstantNode)
+        if (this.getChildNodes().get(1).isConstantResult())
         {
             isConstantPattern = true;
         }
@@ -68,6 +68,11 @@ public class ExprRegexpNode extends ExprNode
     public Class getType()
     {
         return Boolean.class;
+    }
+
+    public boolean isConstantResult()
+    {
+        return false;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)

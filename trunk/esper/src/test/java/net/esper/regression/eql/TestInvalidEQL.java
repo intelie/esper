@@ -1,46 +1,40 @@
 package net.esper.regression.eql;
 
 import junit.framework.TestCase;
-import net.esper.client.EPException;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatementException;
+import net.esper.client.*;
 import net.esper.eql.parse.EPStatementSyntaxException;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_N;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class TestInvalidEQL extends TestCase
 {
     private EPServiceProvider epService;
+    private SupportUpdateListener listener;
 
     public void setUp()
     {
         epService = EPServiceProviderManager.getDefaultProvider();
+        listener = new SupportUpdateListener();
     }
 
     public void testSyntaxException()
     {
-        final String EVENT = SupportBean_N.class.getName();
-
         String exceptionText = getSyntaxExceptionEQL("select * from *");
         assertEquals("unexpected token: * near line 1, column 15 [select * from *]", exceptionText);
     }
 
     public void testLongTypeConstant()
     {
-        try
-        {
-            String stmt = "select * from " + SupportBean.class.getName() + " where longPrimitive = 2512570244 and intPrimitive > 3";
-            epService.getEPAdministrator().createEQL(stmt);
-            fail();
-        }
-        catch (EPStatementException ex)
-        {
-            assertEquals("", ex.toString());
-        }
+        String stmtText = "select 2512570244 as value from " + SupportBean.class.getName();
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        assertEquals(2512570244L, listener.assertOneGetNewAndReset().get("value"));
     }
 
     public void testDifferentJoins()

@@ -67,6 +67,11 @@ public class ExprCoalesceNode extends ExprNode
         }
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }    
+
     public Class getType() throws ExprValidationException
     {
         return resultType;

@@ -82,6 +82,11 @@ public class ExprCaseNode extends ExprNode
         }
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public Class getType()
     {
         return resultType;

@@ -67,6 +67,63 @@ public class TestGroupByMaxMin extends TestCase
         runAssertion();
     }
 
+    public void testMinNoGroupHaving()
+    {
+        String stmtText = "select symbol from " + SupportMarketDataBean.class.getName() + ".win:time(5 sec) " +
+                          "having volume > min(volume) * 1.3";
+
+        selectTestView = epService.getEPAdministrator().createEQL(stmtText);
+        selectTestView.addListener(testListener);
+
+        sendEvent("DELL", 100L);
+        sendEvent("DELL", 105L);
+        sendEvent("DELL", 100L);
+        assertFalse(testListener.isInvoked());
+
+        sendEvent("DELL", 131L);
+        assertEquals("DELL", testListener.assertOneGetNewAndReset().get("symbol"));
+
+        sendEvent("DELL", 132L);
+        assertEquals("DELL", testListener.assertOneGetNewAndReset().get("symbol"));
+
+        sendEvent("DELL", 129L);
+        assertFalse(testListener.isInvoked());
+    }
+
+    public void testMinNoGroupSelectHaving()
+    {
+        String stmtText = "select symbol, min(volume) as mymin from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
+                          "having volume > min(volume) * 1.3";
+
+        selectTestView = epService.getEPAdministrator().createEQL(stmtText);
+        selectTestView.addListener(testListener);
+
+        sendEvent("DELL", 100L);
+        sendEvent("DELL", 105L);
+        sendEvent("DELL", 100L);
+        assertFalse(testListener.isInvoked());
+
+        sendEvent("DELL", 131L);
+        EventBean event = testListener.assertOneGetNewAndReset();
+        assertEquals("DELL", event.get("symbol"));
+        assertEquals(100L, event.get("mymin"));
+
+        sendEvent("DELL", 132L);
+        event = testListener.assertOneGetNewAndReset();
+        assertEquals("DELL", event.get("symbol"));
+        assertEquals(100L, event.get("mymin"));
+
+        sendEvent("DELL", 129L);
+        sendEvent("DELL", 125L);
+        sendEvent("DELL", 125L);
+        assertFalse(testListener.isInvoked());
+
+        sendEvent("DELL", 170L);
+        event = testListener.assertOneGetNewAndReset();
+        assertEquals("DELL", event.get("symbol"));
+        assertEquals(125L, event.get("mymin"));
+    }
+
     private void runAssertion()
     {
         // assert select result type

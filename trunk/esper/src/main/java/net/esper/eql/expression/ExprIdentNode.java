@@ -102,6 +102,11 @@ public class ExprIdentNode extends ExprNode
         return propertyType;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     /**
      * Returns stream id supplying the property value.
      * @return stream number

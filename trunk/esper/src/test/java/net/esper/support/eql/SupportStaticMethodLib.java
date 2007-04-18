@@ -27,6 +27,23 @@ public class SupportStaticMethodLib
         return string + "|" + value;
     }
 
+    public static long passthru(long value)
+    {
+        return value;
+    }
+
+    public static void sleep(long msec)
+    {
+        try
+        {
+            Thread.sleep(msec);
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException("Interrupted during sleep", e);
+        }
+    }
+
     public static String delimitPipe(String string)
     {
         return "|" + string + "|";

@@ -7,17 +7,18 @@
  **************************************************************************************/
 package net.esper.eql.join.plan;
 
-import java.util.*;
-import java.io.StringWriter;
-import java.io.PrintWriter;
-
-import net.esper.eql.spec.OuterJoinDesc;
-import net.esper.eql.join.assemble.BaseAssemblyNode;
 import net.esper.eql.join.assemble.AssemblyStrategyTreeBuilder;
+import net.esper.eql.join.assemble.BaseAssemblyNode;
+import net.esper.eql.spec.OuterJoinDesc;
+import net.esper.event.EventType;
 import net.esper.type.OuterJoinType;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
+
 /**
  * Builds a query plan for 3 or more streams in a outer join.
  */
@@ -32,7 +33,8 @@ public class NStreamOuterQueryPlanBuilder
      */
     protected static QueryPlan build(QueryGraph queryGraph,
                                      List<OuterJoinDesc> outerJoinDescList,
-                                     String[] streamNames)
+                                     String[] streamNames,
+                                     EventType[] typesPerStream)
     {
         log.debug(".build queryGraph=" + queryGraph);
 
@@ -50,7 +52,7 @@ public class NStreamOuterQueryPlanBuilder
         // For each stream determine the query plan
         for (int streamNo = 0; streamNo < numStreams; streamNo++)
         {
-            QueryPlanNode queryPlanNode = build(numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, indexSpecs);
+            QueryPlanNode queryPlanNode = build(numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, indexSpecs, typesPerStream);
 
             if (log.isDebugEnabled())
             {
@@ -72,7 +74,8 @@ public class NStreamOuterQueryPlanBuilder
                                        String[] streamNames,
                                        QueryGraph queryGraph,
                                        OuterInnerDirectionalGraph outerInnerGraph,
-                                       QueryPlanIndex[] indexSpecs)
+                                       QueryPlanIndex[] indexSpecs,
+                                       EventType[] typesPerStream)
     {
         // For each stream build an array of substreams, considering required streams (inner joins) first
         // The order is relevant therefore preserving order via a LinkedHashMap.
@@ -89,7 +92,7 @@ public class NStreamOuterQueryPlanBuilder
 
         // build list of instructions for lookup
         List<LookupInstructionPlan> lookupInstructions = buildLookupInstructions(substreamsPerStream, requiredPerStream,
-                streamNames, queryGraph, indexSpecs);
+                streamNames, queryGraph, indexSpecs, typesPerStream);
 
         // build strategy tree for putting the result back together
         BaseAssemblyNode assemblyTopNode = AssemblyStrategyTreeBuilder.build(streamNo, substreamsPerStream, requiredPerStream);
@@ -106,7 +109,8 @@ public class NStreamOuterQueryPlanBuilder
             boolean[] requiredPerStream,
             String[] streamNames,
             QueryGraph queryGraph,
-            QueryPlanIndex[] indexSpecs)
+            QueryPlanIndex[] indexSpecs,
+            EventType[] typesPerStream)
     {
         List<LookupInstructionPlan> result = new LinkedList<LookupInstructionPlan>();
 
@@ -125,7 +129,7 @@ public class NStreamOuterQueryPlanBuilder
             for (int i = 0; i < substreams.length; i++)
             {
                 int toStream = substreams[i];
-                TableLookupPlan tableLookupPlan = NStreamQueryPlanBuilder.createLookupPlan(queryGraph, fromStream, toStream, indexSpecs[toStream]);
+                TableLookupPlan tableLookupPlan = NStreamQueryPlanBuilder.createLookupPlan(queryGraph, fromStream, toStream, indexSpecs[toStream], typesPerStream);
                 plans[i] = tableLookupPlan;
             }
 

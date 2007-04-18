@@ -65,6 +65,11 @@ public class ExprMinMaxRowNode extends ExprNode
         return resultType;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         Number valueChildOne = (Number) this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);

@@ -41,6 +41,11 @@ public class ExprBetweenNode extends ExprNode
         isNotBetween = notBetween;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     /**
      * Returns true if the low endpoint is included, false if not
      * @return indicator if endppoint is included

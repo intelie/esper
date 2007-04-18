@@ -10,6 +10,7 @@ package net.esper.eql.join.plan;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.spec.OuterJoinDesc;
 import net.esper.type.OuterJoinType;
+import net.esper.event.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,19 +23,19 @@ public class QueryPlanBuilder
 {
     /**
      * Build query plan using the filter.
-     * @param numStreams - number of streams
      * @param outerJoinDescList - list of outer join criteria, or null if there are no outer joins
      * @param optionalFilterNode - filter tree
      * @param streamNames - names of streams
      * @return query plan
      */
-    public static QueryPlan getPlan(int numStreams,
+    public static QueryPlan getPlan(EventType[] typesPerStream,
                                     List<OuterJoinDesc> outerJoinDescList,
                                     ExprNode optionalFilterNode,
                                     String[] streamNames)
     {
         String methodName = ".getPlan ";
 
+        int numStreams = typesPerStream.length;
         if (numStreams < 2)
         {
             throw new IllegalArgumentException("Number of join stream types is less then 2");
@@ -59,7 +60,7 @@ public class QueryPlanBuilder
             {
                 // Analyze relationships between streams using the optional filter expression.
                 // Relationships are properties in AND and EQUALS nodes of joins.
-                FilterExprAnalyzer.analyze(optionalFilterNode, queryGraph, false);
+                FilterExprAnalyzer.analyze(optionalFilterNode, queryGraph);
                 log.debug(methodName + "After filter expression queryGraph=\n" + queryGraph);
 
                 // Add navigation entries based on key and index property equivalency (a=b, b=c follows a=c)
@@ -76,7 +77,7 @@ public class QueryPlanBuilder
                 outerJoinType = outerJoinDescList.get(0).getOuterJoinType();
             }
 
-            QueryPlan queryPlan = TwoStreamQueryPlanBuilder.build(queryGraph, outerJoinType);
+            QueryPlan queryPlan = TwoStreamQueryPlanBuilder.build(typesPerStream, queryGraph, outerJoinType);
 
             if (log.isInfoEnabled())
             {
@@ -87,7 +88,7 @@ public class QueryPlanBuilder
 
         if (outerJoinDescList.isEmpty())
         {
-            QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph);
+            QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream);
 
             if (log.isInfoEnabled())
             {
@@ -97,7 +98,7 @@ public class QueryPlanBuilder
             return queryPlan;
         }
 
-        return NStreamOuterQueryPlanBuilder.build(queryGraph, outerJoinDescList, streamNames);
+        return NStreamOuterQueryPlanBuilder.build(queryGraph, outerJoinDescList, streamNames, typesPerStream);
     }
 
     private static final Log log = LogFactory.getLog(QueryPlanBuilder.class);

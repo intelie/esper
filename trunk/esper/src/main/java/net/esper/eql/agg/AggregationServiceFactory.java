@@ -1,49 +1,67 @@
 package net.esper.eql.agg;
 
+import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.expression.ExprAggregateNode;
 import net.esper.eql.expression.ExprEvaluator;
 import net.esper.eql.expression.ExprNode;
-import net.esper.eql.agg.AggregationMethod;
-import net.esper.eql.core.MethodResolutionService;
 import net.esper.event.EventBean;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Factory for aggregation service instances.
+ * <p>
+ * Consolidates aggregation nodes such that result futures point to a single instance and
+ * no re-evaluation of the same result occurs.
  */
 public class AggregationServiceFactory
 {
     /**
      * Returns an instance to handle the aggregation required by the aggregation expression nodes, depending on
      * whether there are any group-by nodes.
-     * @param aggregateExprNodes - aggregation nodes extracted out of the select expression
+     * @param selectAggregateExprNodes - aggregation nodes extracted out of the select expression
+     * @param havingAggregateExprNodes - aggregation nodes extracted out of the select expression
+     * @param orderByAggregateExprNodes - aggregation nodes extracted out of the select expression
      * @param hasGroupByClause - indicator on whethere there is group-by required, or group-all
-     * @param optionalHavingNode - having node if having-clause was specified, or null if no having-clause given
-     * @param sortByNodes - the nodes for the sort-by clause
      * @param methodResolutionService - is required to resolve aggregation methods
      * @return instance for aggregation handling
      */
-    public static AggregationService getService(List<ExprAggregateNode> aggregateExprNodes,
+    public static AggregationService getService(List<ExprAggregateNode> selectAggregateExprNodes,
+                                                List<ExprAggregateNode> havingAggregateExprNodes,
+                                                List<ExprAggregateNode> orderByAggregateExprNodes,
                                                 boolean hasGroupByClause,
-                                                ExprNode optionalHavingNode,
-                                                List<ExprNode> sortByNodes,
                                                 MethodResolutionService methodResolutionService)
     {
         // No aggregates used, we do not need this service
-        if (aggregateExprNodes.isEmpty())
+        if ((selectAggregateExprNodes.isEmpty()) && (havingAggregateExprNodes.isEmpty()))
         {
         	return new AggregationServiceNull();
         }
 
+        // Compile a map of aggregation nodes and equivalent-to aggregation nodes.
+        // Equivalent-to functions are for example "select sum(a*b), 5*sum(a*b)".
+        // Reducing the total number of aggregation functions.
+        Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList = new LinkedHashMap<ExprAggregateNode, List<ExprAggregateNode>>();
+        for (ExprAggregateNode selectAggNode : selectAggregateExprNodes)
+        {
+            addEquivalent(selectAggNode, equivalencyList);
+        }
+        for (ExprAggregateNode havingAggNode : havingAggregateExprNodes)
+        {
+            addEquivalent(havingAggNode, equivalencyList);
+        }
+        for (ExprAggregateNode orderByAggNode : orderByAggregateExprNodes)
+        {
+            addEquivalent(orderByAggNode, equivalencyList);
+        }
+
         // Construct a list of evaluation node for the aggregation function.
         // For example "sum(2 * 3)" would make the sum an evaluation node.
-        AggregationMethod aggregators[] = new AggregationMethod[aggregateExprNodes.size()];
-        ExprEvaluator[] evaluators = new ExprEvaluator[aggregateExprNodes.size()];
+        AggregationMethod aggregators[] = new AggregationMethod[equivalencyList.size()];
+        ExprEvaluator[] evaluators = new ExprEvaluator[equivalencyList.size()];
 
         int index = 0;
-        for (ExprAggregateNode aggregateNode : aggregateExprNodes)
+        for (ExprAggregateNode aggregateNode : equivalencyList.keySet())
         {
             if (aggregateNode.getChildNodes().size() > 1)
             {
@@ -70,7 +88,7 @@ public class AggregationServiceFactory
             index++;
         }
 
-        AggregationService service = null;
+        AggregationService service;
         if (hasGroupByClause)
         {
             // If there is a group-by clause, then we need to keep aggregators as prototypes
@@ -82,43 +100,21 @@ public class AggregationServiceFactory
             service = new AggregationServiceGroupAllImpl(evaluators, aggregators);
         }
 
-        // Inspect having clause for aggregation
-        List<ExprAggregateNode> aggregateNodesHaving = new LinkedList<ExprAggregateNode>();
-        if (optionalHavingNode != null)
-        {
-            ExprAggregateNode.getAggregatesBottomUp(optionalHavingNode, aggregateNodesHaving);
-        }
-
-        // Inspect sort-by clause for aggregation
-        List<ExprAggregateNode> aggregateNodesSortBy = new LinkedList<ExprAggregateNode>();
-        for(ExprNode node : sortByNodes)
-        {
-        	ExprAggregateNode.getAggregatesBottomUp(node, aggregateNodesSortBy);
-        }
-
         // Hand a service reference to the aggregation nodes themselves.
         // Thus on expression evaluation time each aggregate node calls back to find out what the
         // group's state is (and thus does not evaluate by asking its child node for its result).
         int column = 0;
-        for (ExprAggregateNode aggregateNode : aggregateExprNodes)
+        for (ExprAggregateNode aggregateNode : equivalencyList.keySet())
         {
             aggregateNode.setAggregationResultFuture(service, column);
 
-            // Check any same aggregation nodes in the having clause
-            for (ExprAggregateNode havingNode : aggregateNodesHaving)
+            // hand to all equivalent-to 
+            List<ExprAggregateNode> equivalentAggregators = equivalencyList.get(aggregateNode);
+            if (equivalentAggregators != null)
             {
-                if (ExprNode.deepEquals(havingNode, aggregateNode))
+                for (ExprAggregateNode equivalentAggNode : equivalentAggregators)
                 {
-                    havingNode.setAggregationResultFuture(service, column);
-                }
-            }
-
-            // Check any same aggregation nodes in the sort-by clause
-            for (ExprAggregateNode sortByNode : aggregateNodesSortBy)
-            {
-                if (ExprNode.deepEquals(sortByNode, aggregateNode))
-                {
-                    sortByNode.setAggregationResultFuture(service, column);
+                    equivalentAggNode.setAggregationResultFuture(service, column);
                 }
             }
 
@@ -127,4 +123,31 @@ public class AggregationServiceFactory
 
         return service;
     }
+
+    private static void addEquivalent(ExprAggregateNode aggNodeToAdd, Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList)
+    {
+        // Check any same aggregation nodes among all aggregation clauses
+        boolean foundEquivalent = false;
+        for (ExprAggregateNode aggNode : equivalencyList.keySet())
+        {
+            if (ExprNode.deepEquals(aggNode, aggNodeToAdd))
+            {
+                List<ExprAggregateNode> equivalentAggregators = equivalencyList.get(aggNode);
+                if (equivalentAggregators == null)
+                {
+                    equivalentAggregators = new ArrayList<ExprAggregateNode>();
+                }
+                equivalentAggregators.add(aggNodeToAdd);
+                equivalencyList.put(aggNode, equivalentAggregators);
+                foundEquivalent = true;
+                break;
+            }
+        }
+
+        if (!foundEquivalent)
+        {
+            equivalencyList.put(aggNodeToAdd, null);
+        }        
+    }
+
 }

@@ -25,6 +25,11 @@ public class SupportBoolExprNode extends ExprNode
         return Boolean.class;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         return evaluateResult;

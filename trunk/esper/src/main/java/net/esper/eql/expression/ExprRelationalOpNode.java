@@ -31,6 +31,11 @@ public class ExprRelationalOpNode extends ExprNode
         this.relationalOpEnum = relationalOpEnum;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+    
     /**
      * Returns the type of relational op used.
      * @return enum with relational op type

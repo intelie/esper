@@ -76,7 +76,7 @@ public class QueryPlanIndexBuilder
                 indexProps = new String[1][0];
                 indexProps[0] = new String[0];
             }
-            indexSpecs[streamIndexed] = new QueryPlanIndex(indexProps);
+            indexSpecs[streamIndexed] = new QueryPlanIndex(indexProps, new Class[indexProps.length][]);
         }
 
         return indexSpecs;

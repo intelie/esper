@@ -100,10 +100,6 @@ public class TestInvalidView extends TestCase
         exceptionText = getStatementExceptionView("select 2 * 's' from " + EVENT_ALLTYPES + ".win:length(1) group by intPrimitive having xxx > 5");
         assertEquals("Error starting view: Implicit conversion from datatype 'String' to numeric is not allowed [select 2 * 's' from net.esper.support.bean.SupportBean.win:length(1) group by intPrimitive having xxx > 5]", exceptionText);
 
-        // invalid having clause - not the same aggregate as used in select
-        exceptionText = getStatementExceptionView("select sum(intPrimitive) from " + EVENT_ALLTYPES + ".win:length(1) group by intBoxed having sum(doubleBoxed) > 5");
-        assertEquals("Error starting view: Aggregate functions in the HAVING clause must match aggregate functions in the select clause [select sum(intPrimitive) from net.esper.support.bean.SupportBean.win:length(1) group by intBoxed having sum(doubleBoxed) > 5]", exceptionText);
-
         // invalid having clause - not a symbol in the group-by (non-aggregate)
         exceptionText = getStatementExceptionView("select sum(intPrimitive) from " + EVENT_ALLTYPES + ".win:length(1) group by intBoxed having doubleBoxed > 5");
         assertEquals("Error starting view: Non-aggregated property 'doubleBoxed' in the HAVING clause must occur in the group-by clause [select sum(intPrimitive) from net.esper.support.bean.SupportBean.win:length(1) group by intBoxed having doubleBoxed > 5]", exceptionText);

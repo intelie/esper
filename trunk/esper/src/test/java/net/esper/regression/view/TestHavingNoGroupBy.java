@@ -58,6 +58,16 @@ public class TestHavingNoGroupBy extends TestCase
         runAssertion();
     }
 
+    public void testSumHavingNoAggregatedProp()
+    {
+        String viewExpr = "select symbol, price, avg(price) as avgPrice " +
+                          "from " + SupportMarketDataBean.class.getName() + ".win:length(5) as two " +
+                          "having volume < avg(price)";
+
+        selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
+        selectTestView.addListener(testListener);
+    }
+
     public void testNoAggregationJoinHaving()
     {
         runNoAggregationJoin("having");

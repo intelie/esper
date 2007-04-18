@@ -45,6 +45,11 @@ public class SupportExprNode extends ExprNode
         validateCountSnapshot = validateCount;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+
     public Class getType()
     {
         return type;

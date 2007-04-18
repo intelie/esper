@@ -85,7 +85,7 @@ public class ExprArrayNode extends ExprNode
         int index = 0;
         for (ExprNode child : this.getChildNodes())
         {
-            if (!(child instanceof ExprConstantNode))
+            if (!child.isConstantResult())
             {
                 results = null;  // not using a constant result
                 break;
@@ -114,6 +114,11 @@ public class ExprArrayNode extends ExprNode
                 }
             }
         }
+    }
+
+    public boolean isConstantResult()
+    {
+        return constantResult != null;
     }
 
     public Class getType() throws ExprValidationException

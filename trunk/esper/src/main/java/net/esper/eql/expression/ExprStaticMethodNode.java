@@ -28,8 +28,11 @@ public class ExprStaticMethodNode extends ExprNode
 	private final String methodName;
 	private Class[] paramTypes;
 	private FastMethod staticMethod;
+    private boolean isConstantParameters;
+    private boolean isCachedResult;
+    private Object cachedResult;
 
-	/**
+    /**
 	 * Ctor.
 	 * @param className - the declaring class for the method that this node will invoke
 	 * @param methodName - the name of the method that this node will invoke
@@ -49,7 +52,12 @@ public class ExprStaticMethodNode extends ExprNode
 		this.methodName = methodName;
 	}
 
-	/**
+    public boolean isConstantResult()
+    {
+        return isConstantParameters;
+    }
+
+    /**
      * Returns the static method.
 	 * @return the static method that this node invokes
 	 */
@@ -126,12 +134,19 @@ public class ExprStaticMethodNode extends ExprNode
 		List<ExprNode> childNodes = this.getChildNodes();
 		paramTypes = new Class[childNodes.size()];
 		int count = 0;
-		for(ExprNode childNode : childNodes)
+        
+        boolean allConstants = true;
+        for(ExprNode childNode : childNodes)
 		{
 			paramTypes[count++] = childNode.getType();
-		}
+            if (!(childNode.isConstantResult()))
+            {
+                allConstants = false;
+            }
+        }
+        isConstantParameters = allConstants;
 
-		// Try to resolve the method
+        // Try to resolve the method
 		try
 		{
 			Method method = methodResolutionService.resolveMethod(className, methodName, paramTypes);
@@ -155,7 +170,11 @@ public class ExprStaticMethodNode extends ExprNode
 
 	public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
 	{
-		List<ExprNode> childNodes = this.getChildNodes();
+        if ((isConstantParameters) && (isCachedResult))
+        {
+            return cachedResult;
+        }
+        List<ExprNode> childNodes = this.getChildNodes();
 
 		Object[] args = new Object[childNodes.size()];
 		int count = 0;
@@ -169,7 +188,13 @@ public class ExprStaticMethodNode extends ExprNode
 		Object obj = null;
 		try
 		{
-			return staticMethod.invoke(obj, args);
+            Object result = staticMethod.invoke(obj, args);
+            if (isConstantParameters)
+            {
+                cachedResult = result;
+                isCachedResult = true;
+            }
+            return result;
 		}
 		catch (InvocationTargetException e)
 		{

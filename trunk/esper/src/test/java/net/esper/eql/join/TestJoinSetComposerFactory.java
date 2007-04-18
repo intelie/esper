@@ -34,15 +34,15 @@ public class TestJoinSetComposerFactory extends TestCase
 
     public void testBuildIndex()
     {
-        EventTable table = JoinSetComposerFactory.buildIndex(0, new String[] {"intPrimitive", "boolBoxed"}, streamTypes[0]);
+        EventTable table = JoinSetComposerFactory.buildIndex(0, new String[] {"intPrimitive", "boolBoxed"}, null, streamTypes[0]);
         assertTrue(table instanceof PropertyIndexedEventTable);
 
-        table = JoinSetComposerFactory.buildIndex(0, new String[0], streamTypes[0]);
+        table = JoinSetComposerFactory.buildIndex(0, new String[0], null, streamTypes[0]);
         assertTrue(table instanceof UnindexedEventTable);
 
         try
         {
-            JoinSetComposerFactory.buildIndex(0, null, streamTypes[0]);
+            JoinSetComposerFactory.buildIndex(0, null, null, streamTypes[0]);
             fail();
         }
         catch (NullPointerException ex)

@@ -25,8 +25,8 @@ public class ASTConstantHelper implements EqlEvalTokenTypes
     {
         switch(node.getType())
         {
-            case NUM_INT:       return IntValue.parseString(node.getText());
-            case INT_TYPE:      return IntValue.parseString(node.getText());
+            case NUM_INT:       return parseIntLong(node.getText());
+            case INT_TYPE:      return parseIntLong(node.getText());
             case LONG_TYPE:     return LongValue.parseString(node.getText());
             case BOOL_TYPE:     return BoolValue.parseString(node.getText());
             case FLOAT_TYPE:    return FloatValue.parseString(node.getText());
@@ -36,5 +36,26 @@ public class ASTConstantHelper implements EqlEvalTokenTypes
             default:
                 throw new IllegalArgumentException("Unexpected constant of non-primitve type " + node.getType() + " encountered");
         }
+    }
+
+    private static Object parseIntLong(String arg)
+    {
+        // try to parse as an int first, else try to parse as a long
+        try
+        {
+            return IntValue.parseString(arg);
+        }
+        catch (NumberFormatException ex)
+        {
+            try
+            {
+                return LongValue.parseString(arg);
+            }
+            catch (Exception e)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

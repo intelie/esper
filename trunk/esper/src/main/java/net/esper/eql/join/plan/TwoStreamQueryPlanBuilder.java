@@ -7,7 +7,9 @@
  **************************************************************************************/
 package net.esper.eql.join.plan;
 
+import net.esper.event.EventType;
 import net.esper.type.OuterJoinType;
+import net.esper.util.JavaClassHelper;
 
 /**
  * Builds a query plan for the simple 2-stream scenario.
@@ -20,7 +22,7 @@ public class TwoStreamQueryPlanBuilder
      * @param optionalOuterJoinType - outer join type, null if not an outer join
      * @return query plan
      */
-    public static QueryPlan build(QueryGraph queryGraph, OuterJoinType optionalOuterJoinType)
+    public static QueryPlan build(EventType[] typesPerStream, QueryGraph queryGraph, OuterJoinType optionalOuterJoinType)
     {
         QueryPlanIndex[] indexSpecs = new QueryPlanIndex[2];
         QueryPlanNode[] execNodeSpecs = new QueryPlanNode[2];
@@ -32,15 +34,19 @@ public class TwoStreamQueryPlanBuilder
         {
             String[][] unkeyedIndexProps = new String[][] {new String[0]};
 
-            indexSpecs[0] = new QueryPlanIndex(unkeyedIndexProps);
-            indexSpecs[1] = new QueryPlanIndex(unkeyedIndexProps);
+            indexSpecs[0] = new QueryPlanIndex(unkeyedIndexProps, new Class[][] {null});
+            indexSpecs[1] = new QueryPlanIndex(unkeyedIndexProps, new Class[][] {null});
             lookupPlans[0] = new FullTableScanLookupPlan(0, 1, 0);
             lookupPlans[1] = new FullTableScanLookupPlan(1, 0, 0);
         }
         else
         {
-            indexSpecs[0] = new QueryPlanIndex(new String[][] {queryGraph.getIndexProperties(1, 0)});
-            indexSpecs[1] = new QueryPlanIndex(new String[][] {queryGraph.getIndexProperties(0, 1)});
+            String[] keyProps = queryGraph.getKeyProperties(0, 1);
+            String[] indexProps = queryGraph.getIndexProperties(0, 1);
+            Class[] coercionTypes = getCoercionTypes(typesPerStream, 0, 1, keyProps, indexProps);
+
+            indexSpecs[0] = new QueryPlanIndex(new String[][] {queryGraph.getIndexProperties(1, 0)}, new Class[][] {coercionTypes});
+            indexSpecs[1] = new QueryPlanIndex(new String[][] {queryGraph.getIndexProperties(0, 1)}, new Class[][] {coercionTypes});
             lookupPlans[0] = new IndexedTableLookupPlan(0, 1, 0, queryGraph.getKeyProperties(0, 1));
             lookupPlans[1] = new IndexedTableLookupPlan(1, 0, 0, queryGraph.getKeyProperties(1, 0));
         }
@@ -63,5 +69,38 @@ public class TwoStreamQueryPlanBuilder
         }
 
         return new QueryPlan(indexSpecs, execNodeSpecs);
+    }
+
+    protected static Class[] getCoercionTypes(EventType[] typesPerStream,
+                                            int lookupStream,
+                                            int indexedStream,
+                                            String[] keyProps,
+                                            String[] indexProps)
+    {
+        // Determine if any coercion is required
+        if (indexProps.length != keyProps.length)
+        {
+            throw new IllegalStateException("Mismatch in the number of key and index properties");
+        }
+
+        Class[] coercionTypes = new Class[indexProps.length];
+        boolean mustCoerce = false;
+        for (int i = 0; i < keyProps.length; i++)
+        {
+            Class keyPropType = JavaClassHelper.getBoxedType(typesPerStream[lookupStream].getPropertyType(keyProps[i]));
+            Class indexedPropType = JavaClassHelper.getBoxedType(typesPerStream[indexedStream].getPropertyType(indexProps[i]));
+            Class coercionType = indexedPropType;
+            if (keyPropType != indexedPropType)
+            {
+                coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, indexedPropType);
+                mustCoerce = true;
+            }
+            coercionTypes[i] = coercionType;
+        }
+        if (!mustCoerce)
+        {
+            return null;
+        }
+        return coercionTypes;
     }
 }

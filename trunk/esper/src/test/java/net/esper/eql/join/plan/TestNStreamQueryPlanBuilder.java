@@ -1,20 +1,29 @@
 package net.esper.eql.join.plan;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Arrays;
-
 import junit.framework.TestCase;
-
+import net.esper.event.EventType;
+import net.esper.support.bean.*;
+import net.esper.support.event.SupportEventAdapterService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Arrays;
+
 public class TestNStreamQueryPlanBuilder extends TestCase
 {
+    private EventType[] typesPerStream;
     private QueryGraph queryGraph;
 
     public void setUp()
     {
+        typesPerStream = new EventType[] {
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S2.class.getName(), SupportBean_S2.class),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S3.class.getName(), SupportBean_S3.class),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S4.class.getName(), SupportBean_S4.class)
+        };
+
         queryGraph = new QueryGraph(5);
         queryGraph.add(0, "p00", 1, "p10");
         queryGraph.add(0, "p01", 2, "p20");
@@ -25,7 +34,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
 
     public void testBuild()
     {
-        QueryPlan plan = NStreamQueryPlanBuilder.build(queryGraph);
+        QueryPlan plan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream);
 
         log.debug(".testBuild plan=" + plan);
     }
@@ -38,7 +47,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
             log.debug(".testCreateStreamPlan index " + i + " = " + indexes[i]);
         }
 
-        QueryPlanNode plan = NStreamQueryPlanBuilder.createStreamPlan(0, new int[] {2, 4, 3, 1}, queryGraph,indexes);
+        QueryPlanNode plan = NStreamQueryPlanBuilder.createStreamPlan(0, new int[] {2, 4, 3, 1}, queryGraph,indexes, typesPerStream);
 
         log.debug(".testCreateStreamPlan plan=" + plan);
 

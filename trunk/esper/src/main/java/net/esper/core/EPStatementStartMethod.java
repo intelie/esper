@@ -10,7 +10,7 @@ import net.esper.eql.join.*;
 import net.esper.eql.join.table.PropertyIndexedEventTable;
 import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.eql.join.table.EventTable;
-import net.esper.eql.join.table.PropertyIndexedEventTableCoercing;
+import net.esper.eql.join.table.PropertyIndTableCoerceAdd;
 import net.esper.eql.join.plan.QueryGraph;
 import net.esper.eql.join.plan.FilterExprAnalyzer;
 import net.esper.eql.spec.*;
@@ -562,7 +562,7 @@ public class EPStatementStartMethod
 
         // analyze query graph
         QueryGraph queryGraph = new QueryGraph(outerEventTypes.length + 1);
-        FilterExprAnalyzer.analyze(filterExpr, queryGraph, true);
+        FilterExprAnalyzer.analyze(filterExpr, queryGraph);
 
         // Build a list of streams and indexes
         Map<String, SubqueryJoinedPropDesc> joinProps = new LinkedHashMap<String, SubqueryJoinedPropDesc>();
@@ -614,7 +614,7 @@ public class EPStatementStartMethod
             else
             {
                 Class coercionTypes[] = SubqueryJoinedPropDesc.getCoercionTypes(joinProps.values());
-                PropertyIndexedEventTableCoercing table = new PropertyIndexedEventTableCoercing(0, viewableEventType, indexedProps, coercionTypes);
+                PropertyIndTableCoerceAdd table = new PropertyIndTableCoerceAdd(0, viewableEventType, indexedProps, coercionTypes);
                 SubqueryTableLookupStrategy strategy = new IndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
                 return new Pair<EventTable, SubqueryTableLookupStrategy>(table, strategy);
             }

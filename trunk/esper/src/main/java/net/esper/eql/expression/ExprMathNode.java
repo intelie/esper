@@ -71,6 +71,11 @@ public class ExprMathNode extends ExprNode
         return resultType;
     }
 
+    public boolean isConstantResult()
+    {
+        return false;
+    }
+    
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         Object valueChildOne = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);

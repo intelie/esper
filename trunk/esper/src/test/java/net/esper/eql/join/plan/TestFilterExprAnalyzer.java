@@ -5,8 +5,6 @@ import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.eql.expression.ExprEqualsNode;
 import net.esper.eql.expression.ExprAndNode;
-import net.esper.eql.join.plan.FilterExprAnalyzer;
-import net.esper.eql.join.plan.QueryGraph;
 
 public class TestFilterExprAnalyzer extends TestCase
 {
@@ -16,7 +14,7 @@ public class TestFilterExprAnalyzer extends TestCase
         equalsNode.dumpDebug("node...");
 
         QueryGraph graph = new QueryGraph(2);
-        FilterExprAnalyzer.analyzeEqualsNode(equalsNode, graph, false);
+        FilterExprAnalyzer.analyzeEqualsNode(equalsNode, graph);
 
         assertTrue(graph.isNavigable(0, 1));
         ArrayAssertionUtil.assertEqualsExactOrder(graph.getKeyProperties(0, 1), new String[] {"intPrimitive"});
@@ -31,7 +29,7 @@ public class TestFilterExprAnalyzer extends TestCase
         andNode.dumpDebug("node...");
 
         QueryGraph graph = new QueryGraph(2);
-        FilterExprAnalyzer.analyzeAndNode(andNode, graph, false);
+        FilterExprAnalyzer.analyzeAndNode(andNode, graph);
 
         assertTrue(graph.isNavigable(0, 1));
         ArrayAssertionUtil.assertEqualsExactOrder(graph.getKeyProperties(0, 1), new String[] {"intPrimitive","string"});
