@@ -68,6 +68,11 @@ public class EQLTreeWalker extends EQLBaseWalker
         astExprNodeMapStack = new Stack<Map<AST, ExprNode>>();
     }
 
+    /**
+     * Pushes a statement into the stack, creating a new empty statement to fill in.
+     * The leave node method for subquery statements pops from the stack.
+     * @throws SemanticException is a standard parser exception
+     */
     protected void pushStmtContext() throws SemanticException {
         if (log.isDebugEnabled())
         {
@@ -105,7 +110,7 @@ public class EQLTreeWalker extends EQLBaseWalker
     /**
      * Leave AST node and process it's type and child nodes.
      * @param node is the node to complete
-     * @throws ASTWalkException
+     * @throws ASTWalkException if the node tree walk operation failed
      */
     protected void leaveNode(AST node) throws ASTWalkException
     {
@@ -421,7 +426,7 @@ public class EQLTreeWalker extends EQLBaseWalker
 
     /**
      * End processing of the AST tree for stand-alone pattern expressions.
-     * @throws ASTWalkException
+     * @throws ASTWalkException is the walk failed
      */
     protected void endPattern() throws ASTWalkException
     {
@@ -443,7 +448,7 @@ public class EQLTreeWalker extends EQLBaseWalker
 
     /**
      * End processing of the AST tree, check that expression nodes found their homes.
-     * @throws ASTWalkException
+     * @throws ASTWalkException is the walk failed
      */
     protected void end() throws ASTWalkException
     {

@@ -20,6 +20,7 @@ public class TwoStreamQueryPlanBuilder
      * Build query plan.
      * @param queryGraph - navigability info
      * @param optionalOuterJoinType - outer join type, null if not an outer join
+     * @param typesPerStream - event types for each stream
      * @return query plan
      */
     public static QueryPlan build(EventType[] typesPerStream, QueryGraph queryGraph, OuterJoinType optionalOuterJoinType)
@@ -71,6 +72,16 @@ public class TwoStreamQueryPlanBuilder
         return new QueryPlan(indexSpecs, execNodeSpecs);
     }
 
+    /**
+     * Returns null if no coercion is required, or an array of classes for use in coercing the
+     * lookup keys and index keys into a common type.
+     * @param typesPerStream is the event types for each stream
+     * @param lookupStream is the stream looked up from
+     * @param indexedStream is the indexed stream
+     * @param keyProps is the properties to use to look up
+     * @param indexProps is the properties to index on
+     * @return coercion types, or null if none required
+     */
     protected static Class[] getCoercionTypes(EventType[] typesPerStream,
                                             int lookupStream,
                                             int indexedStream,

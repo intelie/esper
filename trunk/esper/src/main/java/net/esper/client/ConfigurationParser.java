@@ -89,6 +89,7 @@ class ConfigurationParser {
         handleDatabaseRefs(configuration, root);
         handlePlugInView(configuration, root);
         handlePlugInAggregation(configuration, root);
+        handlePlugInPatternObjects(configuration, root);
         handleAdapterLoaders(configuration, root);
     }
 
@@ -339,6 +340,27 @@ class ConfigurationParser {
             String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
             String functionClassName = nodes.item(i).getAttributes().getNamedItem("function-class").getTextContent();
             configuration.addPlugInAggregationFunction(name, functionClassName);
+        }
+    }
+
+    private static void handlePlugInPatternObjects(Configuration configuration, Element parentElement)
+    {
+        NodeList nodes = parentElement.getElementsByTagName("plugin-pattern-guard");
+        for (int i = 0; i < nodes.getLength(); i++)
+        {
+            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
+            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
+            configuration.addPlugInPatternGuard(namespace, name, factoryClassName);
+        }
+
+        nodes = parentElement.getElementsByTagName("plugin-pattern-observer");
+        for (int i = 0; i < nodes.getLength(); i++)
+        {
+            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
+            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
+            configuration.addPlugInPatternObserver(namespace, name, factoryClassName);
         }
     }
 

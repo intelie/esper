@@ -1114,6 +1114,108 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 
     </sect1>
 
+    <sect1 id="eql-subqueries">
+        <title>Subqueries</title>
+
+		<para>
+			A subquery is a <literal>select</literal> within another statement. Esper supports subqueries in the select-clause and in the where-clause of EQL statements. Subqueries provide an alternative way to perform operations that would otherwise require complex joins. Subqueries can also make statements more readable then complex joins. 
+	    </para>
+
+		<para>
+			Esper supports both simple subqueries as well as correlated subqueries. In a simple subquery, the inner query is not correlated to the outer query. Here is an example simple subquery within a select-clause:
+	    </para>
+			
+		<programlisting><![CDATA[select assetId, (select zone from ZoneClosed.std:lastevent) as lastClosed from RFIDEvent]]></programlisting>
+
+		<para>
+			If the inner query is dependent on the outer query, we will have a correlated subquery. An example of a correlated subquery is shown below. Notice the where-clause in the inner query, where the condition involves a stream from the outer query:
+	    </para>
+
+		<programlisting><![CDATA[select * from RfidEvent as RFID where 'Dock 1' = 
+  (select name from Zones.std:unique('zoneId') where zoneId = RFID.zoneId)]]></programlisting>
+		
+		<para>
+			The example above shows a subquery in the where-clause. The statement selects RFID events in which the zone name matches a string constant based on zone id. The statement uses the view <literal>std:unique</literal> to guarantee that only the last event per zone id is held from processing by the subquery.
+		</para>
+
+		<para>
+			The next example is a correlated subquery within a select-clause. In this statement the select-clause retrieves the zone name by means of a subquery against the Zones set of events correlated by zone id:
+		</para>
+
+		<programlisting><![CDATA[select zoneId, (select name from Zones.std:unique('zoneId') 
+  where zoneId = RFID.zoneId) as name from RFIDEvent]]></programlisting>
+
+		<para>
+			Note that when a simple or correlated subquery returns multiple rows, the engine returns a <literal>NULL</literal> value as the subquery result. To limit the number of events returned by a subquery consider using one of the views <literal>std:lastevent</literal>, <literal>std:unique</literal> and <literal>std:groupby</literal>.
+		</para>
+
+		<para>
+			The following restrictions apply to subqueries:
+		</para>
+
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Wildcard selection criteria can only be used in subqueries using the <literal>exists</literal> keyword
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The subquery stream definition must define a data window or other view to limit subquery results, reducing the number of events held for subquery execution
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Aggregation functions cannot be used in subqueries. Instead, the insert-into clause can be used to provide aggregation results for use in subqueries
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Subqueries can only consist of a select-clause, a from-clause and a where-clause. The group-by and having-clauses, as well as joins, outer-joins and output rate limiting are not permitted within subqueries.
+				</para>
+			</listitem>
+		</orderedlist>
+
+		<sect2 id="eql-subqueries-exists">
+			<title>The '<literal>exists</literal>' keyword</title>
+
+			<para>
+				The <literal>exists</literal> condition is considered "to be met" if the subquery returns at least one row. The <literal>not exists</literal> condition is considered true if the subquery returns no rows.
+			</para>
+			
+			<para>
+				Let's take a look at a simple example. The following is an EQL statement that uses the <literal>exists</literal> condition:
+			</para>
+
+			<programlisting><![CDATA[select assetId from RFIDEvent as RFID 
+  where exists (select * from Asset.std:unique(assetId) where assetId = RFID.assetId)]]></programlisting>
+
+			<para>
+				This select statement will return all RFID events where there is at least one event in Assets unique by asset id with the same asset id.
+			</para>
+		</sect2>
+
+		<sect2 id="eql-subqueries-in">
+			<title>The '<literal>in</literal>' keyword</title>
+			
+			<para>
+				The <literal>in</literal> subquery condition is true if the value of an expression matches one or more of the values returned by the subquery. Consequently, the <literal>not in</literal> condition is true if the value of an expression matches none of the values returned by the subquery.
+			</para>
+			
+			<para>
+				The next statement demonstrates the use of the <literal>in</literal> subquery condition: 
+			</para>
+
+			<programlisting><![CDATA[select assetId from RFIDEvent as RFID 
+  where zone in (select zone from ZoneUpdate.win:time(10 min) where status = 'closed' )]]></programlisting>
+
+			<para>
+				The above statement demonstrated the <literal>in</literal> subquery to select RFID events for which the zone status is in a closed state. 
+			</para>
+		</sect2>
+
+    </sect1>
+
 	<sect1 id="histdata_overview" revision="1">
 		<title>Joining Relational Data via SQL</title>
 		

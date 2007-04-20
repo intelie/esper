@@ -26,6 +26,7 @@ public class QueryPlanBuilder
      * @param outerJoinDescList - list of outer join criteria, or null if there are no outer joins
      * @param optionalFilterNode - filter tree
      * @param streamNames - names of streams
+     * @param typesPerStream - event types for each stream
      * @return query plan
      */
     public static QueryPlan getPlan(EventType[] typesPerStream,

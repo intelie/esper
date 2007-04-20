@@ -29,6 +29,7 @@ public class NStreamOuterQueryPlanBuilder
      * @param queryGraph - navigation info between streams
      * @param streamNames - stream names or aliases
      * @param outerJoinDescList - descriptors for all outer joins
+     * @param typesPerStream - event types for each stream
      * @return query plan
      */
     protected static QueryPlan build(QueryGraph queryGraph,

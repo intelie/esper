@@ -19,7 +19,7 @@ mvn javadoc:javadoc
 	<name>Esper</name>
 	<artifactId>esper</artifactId>
 	<groupId>esper</groupId>
-	<version>1.7.0</version>
+	<version>1.8.0</version>
 	<packaging>jar</packaging>
 	<description>Esper CEP engine for Java</description>
 	<inceptionYear>2005</inceptionYear>

@@ -36,8 +36,10 @@ Features
 
 		* Tailored SQL-like query language using <insert into>, <select>, <from>, <where>, <group-by>, <having> and <order-by> clauses
 
-		* Inner-joins and outer joins (left, right, full) of an unlimited number of windows
+		* Inner-joins and outer joins (left, right, full) of an unlimited number of streams or windows
 
+		* Subqueries including <exists> and <in>
+		
 		* Output rate limiting and stabilizing
 		
 		[]
@@ -89,7 +91,8 @@ Features
     	
     * Supports multiple independent Esper engines per JavaVM
     		  
-    * Pluggable architecture for event pattern and event stream analysis via user-defined functions and plug-in views
+    * Pluggable architecture for event pattern and event stream analysis via user-defined functions, plug-in views, plug-in aggregation functions, plug-in 
+      pattern guards and plug-in pattern event observers
 	  
 	[]		
 

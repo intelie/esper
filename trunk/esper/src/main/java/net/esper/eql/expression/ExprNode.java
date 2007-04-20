@@ -29,6 +29,12 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
      */
     public abstract String toExpressionString();
 
+    /**
+     * Returns true if the expression node's evaluation value doesn't depend on any events data,
+     * as must be determined at validation time, which is bottom-up and therefore
+     * reliably allows each node to determine constant value.
+     * @return true for constant evaluation value, false for non-constant evaluation value
+     */
     public abstract boolean isConstantResult();
     
     /**

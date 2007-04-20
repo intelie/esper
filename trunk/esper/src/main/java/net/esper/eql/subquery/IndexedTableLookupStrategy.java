@@ -30,6 +30,13 @@ public class IndexedTableLookupStrategy implements SubqueryTableLookupStrategy
      */
     protected final EventPropertyGetter[] propertyGetters;
 
+    /**
+     * Ctor.
+     * @param eventTypes is the event types per stream
+     * @param streamNumbers is the stream number per stream
+     * @param properties is the key properties
+     * @param index is the table carrying the data to lookup into
+     */
     public IndexedTableLookupStrategy(EventType[] eventTypes, int[] streamNumbers, String[] properties, PropertyIndexedEventTable index)
     {
         this.streamNumbers = streamNumbers;

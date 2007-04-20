@@ -35,7 +35,7 @@
 			</listitem>
 			<listitem>
 				<para>
-					Guards are where-conditions that filter out events and cause termination of the pattern finder. Examples are <literal>timer:within</literal>.
+					Guards are where-conditions that control the lifecycle of sub-expressions. Examples are <literal>timer:within</literal>.
 				</para>
 			</listitem>
 			<listitem>
@@ -575,6 +575,37 @@ RfidEvent(zone=1 and category=10)]]></programlisting>
     <sect1 id="pattern-guards">
         <title>Pattern Guards</title>        
 
+		<para>
+			Guards are where-conditions that control the lifecycle of sub-expressions. Custom guard functions can also be used. The section <xref linkend="extension"/> outlines guard plug-in development in greater detail.
+		</para>
+
+        <para>
+			Take as an example the following pattern expression:  
+        </para>
+		<programlisting><![CDATA[MyEvent where timer.within(10 sec)]]></programlisting>
+
+        <para>
+			In this pattern the <literal>timer:within</literal> guard controls the sub-expression that is looking for MyEvent events. The guard terminates the sub-expression looking for MyEvent events after 10 seconds after start of the pattern. Thus the pattern alerts only once when the first MyEvent event arrives within 10 seconds after start of the pattern.
+        </para>
+
+        <para>
+			The <literal>every</literal> keyword requires additional discussion since it also controls sub-expression lifecycle. Let's add the <literal>every</literal> keyword to the example pattern:
+        </para>
+		<programlisting><![CDATA[every MyEvent where timer.within(10 sec)]]></programlisting>
+
+        <para>
+			The difference to the pattern without <literal>every</literal> is that each MyEvent event that arrives now starts a new sub-expression, including a new guard, looking for a further MyEvent event. The result is that, when a MyEvent arrives within 10 seconds after pattern start, the pattern execution will look for the next MyEvent event to arrive within 10 seconds after the previous one.
+        </para>
+
+        <para>
+			By placing parentheses around the <literal>every</literal> keyword and its sub-expression, we can have the <literal>every</literal> under the control of the guard:
+        </para>
+		<programlisting><![CDATA[(every MyEvent) where timer.within(10 sec)]]></programlisting>
+
+        <para>
+			In the pattern above, the guard terminates the sub-expression looking for all MyEvent events after 10 seconds after start of the pattern. This pattern alerts for all MyEvent events arriving within 10 seconds after pattern start, and then stops.
+        </para>
+
         <sect2 id="pattern-timer-within" >
            <title>timer:within</title>
            
@@ -623,6 +654,10 @@ timer:within(125)</programlisting>
     <sect1 id="pattern-observers">
         <title>Pattern Observers</title>
 
+		<para>
+			Observers observe time-based events for which the thread-of-control originates by the engine timer thread. Custom observers can also be developed that observe timer events or other engine-external events. The section <xref linkend="extension"/> outlines observer plug-in development in greater detail.
+		</para>
+		
         <sect2 id="pattern-timer-interval" >
            <title>timer:interval</title>
                

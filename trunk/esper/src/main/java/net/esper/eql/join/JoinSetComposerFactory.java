@@ -169,6 +169,7 @@ public class JoinSetComposerFactory
      * Build an index/table instance using the event properties for the event type.
      * @param indexedStreamNum - number of stream indexed
      * @param indexProps - properties to index
+     * @param optCoercionTypes - optional array of coercion types, or null if no coercion is required
      * @param eventType - type of event to expect
      * @return table build
      */

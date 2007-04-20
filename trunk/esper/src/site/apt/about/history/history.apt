@@ -12,6 +12,29 @@ Change History
 	[]
 
 
+Version 1.8.0 Update
+
+	Released April 22, 2007
+		
+* API changes
+
+    * None
+    
+* Major changes
+
+    * Support for subqueries including the exists and subquery-in syntax (ESPER-22 support for subqueries)
+    
+    * Support for plug-in user-defined aggregation methods, and plug-in pattern observer and pattern guard objects (ESPER-40) 
+
+* Minor changes	
+    
+    * Fixed issue ESPER-93 "Improve error handling parsing too large Integer numbers and remove L suffix requirement for Long"
+    
+    * Fixed issue ESPER-94 "Performance degradation for certain statement between 1.4 and 1.5 of 25%"
+    
+    * Fixed issue ESPER-96 "Cache result of user-defined functions when parameter set is constants"
+
+
 Version 1.7.0 Update
 
 	Released March 18, 2007

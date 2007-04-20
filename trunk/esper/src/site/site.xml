@@ -10,7 +10,7 @@
 	</bannerRight>
 	<body>
 		<links/>
-		<menu name="Esper 1.7.0">
+		<menu name="Esper 1.8.0">
 			<item name="About Esper" href="/index.html" collapse="false">
 				<item name="News" href="/about/news/news.html"/>
 				<item name="Change History" href="/about/history/history.html"/>

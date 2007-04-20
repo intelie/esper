@@ -378,6 +378,8 @@ configuration.addEventTypeAlias("MyMapEvent", properties);]]></programlisting>
 			<programlisting><![CDATA[Configuration configuration = new Configuration();
 ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
 desc.setRootElementName("myevent");
+desc.addXPathProperty("name1", "/element/@attribute", XPathConstants.STRING);
+desc.addXPathProperty("name2", "/element/subelement", XPathConstants.NUMBER);
 configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 
 			<para>

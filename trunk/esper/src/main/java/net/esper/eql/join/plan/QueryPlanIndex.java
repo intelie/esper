@@ -21,6 +21,7 @@ public class QueryPlanIndex
      * Ctor.
      * @param indexProps - array of property names with the first dimension suplying the number of
      * distinct indexes. The second dimension can be empty and indicates a full table scan.
+     * @param optCoercionTypes - array of coercion types for each index, or null entry for no coercion required
      */
     public QueryPlanIndex(String[][] indexProps, Class[][] optCoercionTypes)
     {
@@ -70,6 +71,7 @@ public class QueryPlanIndex
     /**
      * Add an index specification element.
      * @param indexProperties - list of property names to index
+     * @param coercionTypes - list of coercion types if required, or null if no coercion required
      * @return number indicating position of index that was added
      */
     public int addIndex(String[] indexProperties, Class[] coercionTypes)
@@ -88,6 +90,11 @@ public class QueryPlanIndex
         return numElements;
     }
 
+    /**
+     * Returns a list of coercion types for a given index.
+     * @param indexProperties is the index field names
+     * @return coercion types, or null if no coercion is required
+     */
     public Class[] getCoercionTypes(String[] indexProperties)
     {
         for (int i = 0; i < indexProps.length; i++)
@@ -100,6 +107,11 @@ public class QueryPlanIndex
         throw new IllegalArgumentException("Index properties not found");
     }
 
+    /**
+     * Sets the coercion types for a given index.
+     * @param indexProperties is the index property names
+     * @param coercionTypes is the coercion types
+     */
     public void setCoercionTypes(String[] indexProperties, Class[] coercionTypes)
     {
         boolean found = false;

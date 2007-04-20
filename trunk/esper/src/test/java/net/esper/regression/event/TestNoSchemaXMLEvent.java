@@ -12,6 +12,7 @@ import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.namespace.QName;
 import java.io.StringReader;
 
 public class TestNoSchemaXMLEvent extends TestCase
@@ -71,6 +72,61 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertData("EventB");
     }
 
+    public void testNestedXML() throws Exception
+    {
+        Configuration configuration = new Configuration();
+        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootElementName("a");
+        xmlDOMEventTypeDesc.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
+        configuration.addEventTypeAlias("AEvent", xmlDOMEventTypeDesc);
+
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        String stmt = "select b.c as type, element1, result1 from AEvent";
+        EPStatement joinView = epService.getEPAdministrator().createEQL(stmt);
+        joinView.addListener(updateListener);
+
+        sendXMLEvent("<a><b><c></c></b></a>");
+        EventBean event = updateListener.assertOneGetNewAndReset();
+        assertEquals("", event.get("type"));
+        assertEquals("", event.get("element1"));
+
+        sendXMLEvent("<a><b></b></a>");
+        event = updateListener.assertOneGetNewAndReset();
+        assertEquals("", event.get("type"));
+        assertEquals("", event.get("element1"));
+
+        sendXMLEvent("<a><b><c>text</c></b></a>");
+        event = updateListener.assertOneGetNewAndReset();
+        assertEquals("text", event.get("type"));
+        assertEquals("text", event.get("element1"));
+    }
+
+    public void testEventXML() throws Exception
+    {
+        Configuration configuration = new Configuration();
+        ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+        desc.addXPathProperty("event.type", "/event/@type", XPathConstants.STRING);
+        desc.addXPathProperty("event.uid", "/event/@uid", XPathConstants.STRING);
+        desc.setRootElementName("event");
+        configuration.addEventTypeAlias("MyEvent", desc);
+
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        String stmt = "select event.type as type, event.uid as uid from MyEvent";
+        EPStatement joinView = epService.getEPAdministrator().createEQL(stmt);
+        joinView.addListener(updateListener);
+
+        sendXMLEvent("<event type=\"a-f-G\" uid=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"></event>");
+        EventBean event = updateListener.assertOneGetNewAndReset();
+        assertEquals("a-f-G", event.get("type"));
+        assertEquals("terminal.55", event.get("uid"));
+    }
+    
     private void assertData(String element1)
     {
         assertNotNull(updateListener.getLastNewData());
@@ -96,6 +152,17 @@ public class TestNoSchemaXMLEvent extends TestCase
         String xml = XML.replaceAll("VAL1", value);
         log.debug(".sendEvent value=" + value);
 
+        StringReader reader = new StringReader(xml);
+        InputSource source = new InputSource(reader);
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);
+
+        epService.getEPRuntime().sendEvent(simpleDoc);
+    }
+
+    private void sendXMLEvent(String xml) throws Exception
+    {
         StringReader reader = new StringReader(xml);
         InputSource source = new InputSource(reader);
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();

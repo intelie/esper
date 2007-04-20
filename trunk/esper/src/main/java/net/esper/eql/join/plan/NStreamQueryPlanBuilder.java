@@ -100,6 +100,7 @@ public class NStreamQueryPlanBuilder
     /**
      * Build a query plan based on the stream property relationships indicated in queryGraph.
      * @param queryGraph - navigation info between streams
+     * @param typesPerStream - event types for each stream
      * @return query plan
      */
     protected static QueryPlan build(QueryGraph queryGraph, EventType[] typesPerStream)
@@ -131,6 +132,7 @@ public class NStreamQueryPlanBuilder
      * @param bestChain - the chain that the lookup follows to make best use of indexes
      * @param queryGraph - the repository for key properties to indexes
      * @param indexSpecsPerStream - specifications of indexes
+     * @param typesPerStream - event types for each stream
      * @return NestedIterationNode with lookups attached underneath
      */
     protected static QueryPlanNode createStreamPlan(int lookupStream, int[] bestChain, QueryGraph queryGraph,
@@ -162,6 +164,7 @@ public class NStreamQueryPlanBuilder
      * @param currentLookupStream - stream to use key values from
      * @param indexedStream - stream to look up in
      * @param indexSpecs - index specification defining indexes to be created for stream
+     * @param typesPerStream - event types for each stream
      * @return plan for performing a lookup in a given table using one of the indexes supplied
      */
     protected static TableLookupPlan createLookupPlan(QueryGraph queryGraph, int currentLookupStream, int indexedStream,
