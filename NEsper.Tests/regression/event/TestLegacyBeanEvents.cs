@@ -27,6 +27,13 @@ namespace net.esper.regression.events
             legacyBean = new SupportLegacyBean("leg", new String[] { "a", "b" }, mappedProperty, "nest");
         }
 
+        [TearDown]
+        public virtual void tearDown()
+        {
+            epService = null;
+            legacyBean = null;
+        }
+
         [Test]
         public virtual void testPublicAccessors()
         {

@@ -24,6 +24,13 @@ namespace net.esper.timer
             service.Callback = callback.TimerCallback;
         }
 
+        [TearDown]
+        public virtual void tearDown()
+        {
+            callback = null;
+            service = null;
+        }
+
         [Test]
         public virtual void testClocking()
         {
