@@ -89,5 +89,24 @@ namespace net.esper.client
                 return runtime;
             }
         }
+
+        /// <summary>
+        /// Clears references to the provider.
+        /// </summary>
+        /// <param name="uri"></param>
+
+        public static void PurgeProvider( String uri )
+        {
+            lock (runtimes)
+            {
+                if (String.IsNullOrEmpty(uri))
+                {
+                    defaultServiceProvider = null;
+                    return ;
+                }
+
+                runtimes.Remove(uri);
+            }
+        }
     }
 }

@@ -358,6 +358,15 @@ namespace net.esper.eql.expression
         public class LongSum : Aggregator
         {
             /// <summary>
+            /// Constructs a new long sum aggregator
+            /// </summary>
+
+            public LongSum()
+            {
+                ;
+            }
+
+            /// <summary>
             /// Returns the current value held.
             /// </summary>
             /// <value></value>
