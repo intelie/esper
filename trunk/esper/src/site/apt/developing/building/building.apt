@@ -1,0 +1,38 @@
+Building Esper
+~~~~~~~~~~~~~~
+
+  You do not need to build Esper to run the examples. Please follow the instructions in the readme file in the "examples/etc" folder
+  to run the examples.
+
+  In Esper, all module builds are managed by Apache Maven 2.0 or above. The Esper engine itself can be build and unit tested
+  via the below commands. The instructions below have last been tried using Maven 2.0.4. Maven can be
+  downloaded from {{http://maven.apache.org/}}.
+             
+  Once you unpack Esper then open a command window and change directory into the Esper top directory where the Maven project model file "pom.xml" 
+  is located. The file is in the directory "esper/esper".
+  
+  If you have a filewall, you will need to change the proxy entry in Maven's setting.xml under your Maven installation directory. 
+  Sometimes Maven appears to have problems downloading repository library files, in that case please give the build a second try.
+  
+ 
+  The commands to compile Esper, run all tests and install a jar file into Maven's repository is:
+  
+----------------------------------------
+cd esper/esper
+mvn install
+----------------------------------------	
+
+  Similarly, the Esper IO library for input output adapters also build by the same commands:
+  
+----------------------------------------
+cd esper/esperio
+mvn install
+----------------------------------------	
+
+  Esper examples are a separate Maven project. The example codebase are contains JUnit tests. All examples can be build and run via these commands:
+  
+----------------------------------------
+cd esper/examples
+mvn test
+----------------------------------------	
+
