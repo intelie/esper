@@ -52,13 +52,13 @@
 
     <call target="Clean"/>
     <call target="BuildSolution"/>
-    
+    <call target="Test" />
     <record name="${project.builddir}/BuildLog.txt" action="Close"/>
   </target>
 
   <target name="Debug">
     <!-- Change configuration to release -->
-    <property name="project.build.config" value="Release" />
+    <property name="project.build.config" value="Debug" />
     <!-- Create the build directory -->
     <mkdir dir="${project.builddir}" />
     <!-- Begin logging activity -->
@@ -66,6 +66,7 @@
 
     <call target="Clean"/>
     <call target="BuildSolution"/>
+    <call target="Test" />
 
     <record name="${project.builddir}/BuildLog.txt" action="Close"/>
   </target>
