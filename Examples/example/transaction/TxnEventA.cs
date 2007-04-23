@@ -12,9 +12,9 @@ namespace net.esper.example.transaction
             this.customerId = customerId;
         }
 
-        public String getCustomerId()
+        public String CustomerId
         {
-            return customerId;
+            get { return customerId; }
         }
 
         public override String ToString()

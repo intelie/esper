@@ -29,10 +29,10 @@ namespace net.esper.example.transaction
             String stmt = "select * from " +
                             "TxnEventA.win:time(30 min) A " +
                               "full outer join " +
-                            "TxnEventC.win:time(1 hour) C on A.transactionId = C.transactionId " +
+                            "TxnEventC.win:time(1 hour) C on A.TransactionId = C.TransactionId " +
                               "full outer join " +
-                            "TxnEventB.win:time(30 min) B on B.transactionId = C.transactionId " +
-                          "where C.transactionId is null";
+                            "TxnEventB.win:time(30 min) B on B.TransactionId = C.TransactionId " +
+                          "where C.TransactionId is null";
 
             statement = admin.CreateEQL(stmt);
         }
