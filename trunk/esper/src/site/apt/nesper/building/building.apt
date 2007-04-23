@@ -1,17 +1,9 @@
 Building NEsper
 ~~~~~~~~~~~~~~
 
-  You do not need to build NEsper to run the examples. Please follow the instructions in the readme file in the "examples/etc" folder
-  to run the examples.
-
-  Presently, NEsper can be built with NAnt, MSBuild, or any IDE that can process Visual Studio 2005 Solution Files.
+  Presently, NEsper can be built with NAnt, MSBuild, or any IDE that can process Visual Studio 2005 Solution Files. NAnt can be downloaded 
+  from http://nant.sourceforge.net.
   The NEsper engine can be built and unit tested via the below commands.
-             
-  Once you unpack Esper then open a command window and change directory into the Esper top directory where the Maven project model file "pom.xml" 
-  is located. The file is in the directory "esper/esper".
-  
-  If you have a filewall, you will need to change the proxy entry in Maven's setting.xml under your Maven installation directory. 
-  Sometimes Maven appears to have problems downloading repository library files, in that case please give the build a second try.
   
   Building NEsper with NAnt
 
@@ -19,7 +11,7 @@ Building NEsper
 cd Nesper
 nant
 ----------------------------------------	
-  
+    
   Building NEsper with MSBuild
 
 ----------------------------------------
@@ -27,8 +19,16 @@ cd Nesper/Nesper
 MSBuild Nesper.sln
 ----------------------------------------	
 
-  NEsper tests are a contained in the Visual Studio Solution and are automatically built when
-  the solution is built with MSBuild, Visual Studio, or SharpDevelop.
- 
-  NEsper examples are a contained in the Visual Studio Solution and are automatically built when
-  the solution is built with MSBuild, Visual Studio, or SharpDevelop.
+  NEsper tests are contained in the Visual Studio Solution and are automatically built when
+  the solution is built with MSBuild, Visual Studio, or SharpDevelop. The tests run whenever you do a build using NAnt as above.
+  
+  You don't need to build NEsper to check the examples. The examples can be viewed by opening the Examples\Examples.sln file in 
+  Visual Studio or you can directly build the Examples using the following NAnt command
+
+Building NEsper Examples with NAnt
+
+----------------------------------------
+nant Examples
+----------------------------------------
+
+  The binaries for each example project can be found under bin\Debug folder.
