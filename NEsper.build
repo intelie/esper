@@ -360,9 +360,9 @@
         <exclude name="NEsper\obj\**" />
         <exclude name="NEsper\bin\**" />
         
-        <include name="NEsper.Test\**" />
-        <exclude name="NEsper.Test\obj\**" />
-        <exclude name="NEsper.Test\bin\**" />
+        <include name="NEsper.Tests\**" />
+        <exclude name="NEsper.Tests\obj\**" />
+        <exclude name="NEsper.Tests\bin\**" />
 
         <include name="Examples\**" />
         <exclude name="Examples\**\obj\**" />
