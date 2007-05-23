@@ -79,12 +79,15 @@ public class OrderByProcessorFactory {
 		validateOrderByAggregates(selectAggNodes, orderAggNodes);
 		
 		// Create the type of the order-by event
-		Map<String, Class> propertyNamesAndTypes = new HashMap<String, Class>();
+        // TODO: needed or not
+        /*
+        Map<String, Class> propertyNamesAndTypes = new HashMap<String, Class>();
 		for(ExprNode orderByNode : orderByNodes)
 		{
 			propertyNamesAndTypes.put(orderByNode.toExpressionString(), orderByNode.getType());
 		}
-		EventType orderType = eventAdapterService.createAnonymousMapType(propertyNamesAndTypes);
+		eventAdapterService.createAnonymousMapType(propertyNamesAndTypes);
+		*/
 		
         // Tell the order-by processor whether to compute group-by
         // keys if they are not present

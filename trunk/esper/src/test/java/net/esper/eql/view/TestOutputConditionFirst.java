@@ -1,7 +1,7 @@
 package net.esper.eql.view;
 
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
+import net.esper.eql.spec.OutputLimitType;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.core.StatementContext;
@@ -33,7 +33,7 @@ public class TestOutputConditionFirst extends TestCase
 	
 	public void testUpdateTime()
 	{
-		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(TEST_INTERVAL_MSEC/1000d, DisplayLimit.FIRST);
+		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(TEST_INTERVAL_MSEC/1000d, OutputLimitType.FIRST);
 		SupportSchedulingServiceImpl schedulingServiceStub = new SupportSchedulingServiceImpl();
 		StatementContext statementContext = SupportStatementContextFactory.makeContext(schedulingServiceStub);
 		
@@ -43,7 +43,7 @@ public class TestOutputConditionFirst extends TestCase
         schedulingServiceStub.setTime(startTime);
         
     	// 2 new, 3 old
-        condition.updateOutputCondition(2, 3);
+        condition.updateOutputCondition(true, 2, 3);
         // update time
         schedulingServiceStub.setTime(startTime + TEST_INTERVAL_MSEC);
         // check callback scheduled, pretend callback
@@ -52,9 +52,9 @@ public class TestOutputConditionFirst extends TestCase
         ((EPStatementHandleCallback) schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC)).getScheduleCallback().scheduledTrigger(null);
         
         // 2 new, 3 old
-        condition.updateOutputCondition(2, 3);
+        condition.updateOutputCondition(true, 2, 3);
     	// 2 new, 3 old
-        condition.updateOutputCondition(2, 3);
+        condition.updateOutputCondition(true, 2, 3);
         // update time
         schedulingServiceStub.setTime(startTime + 2*TEST_INTERVAL_MSEC);
         // check callback scheduled, pretend callback
@@ -64,7 +64,7 @@ public class TestOutputConditionFirst extends TestCase
 
         
     	// 0 new, 0 old
-        condition.updateOutputCondition(0, 0);
+        condition.updateOutputCondition(true, 0, 0);
         // update time
         schedulingServiceStub.setTime(startTime + 3*TEST_INTERVAL_MSEC);
         // check update
@@ -76,37 +76,37 @@ public class TestOutputConditionFirst extends TestCase
 	public void testUpdateCount()
 	{
 		// 'output first every 3 events'
-		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3, DisplayLimit.FIRST);
+		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3, OutputLimitType.FIRST);
 		StatementContext statementContext = null;
 		
 		OutputCondition condition = OutputConditionFactory.createCondition(outputConditionSpec, statementContext, callback);
 
 		// Send first event of the batch, callback should be made
-		condition.updateOutputCondition(1, 0);
+		condition.updateOutputCondition(true, 1, 0);
 		Boolean doOutput = true;
 		Boolean forceUpdate = false;
 		assertCallbackAndReset(doOutput, forceUpdate);
 		
 		// Send more events in the same batch
-		condition.updateOutputCondition(1, 1);
+		condition.updateOutputCondition(true, 1, 1);
 		assertFalse(witnessedCallback);
 		
 		// Send enough events to end the batch
-		condition.updateOutputCondition(1, 0);
+		condition.updateOutputCondition(true, 1, 0);
 		doOutput = false;
 		assertCallbackAndReset(doOutput, forceUpdate);
 		
 		// Start the next batch
-		condition.updateOutputCondition(1, 1);
+		condition.updateOutputCondition(true, 1, 1);
 		doOutput = true;
 		assertCallbackAndReset(doOutput, forceUpdate);
 		
 		// More events in the same batch, not enough to end
-		condition.updateOutputCondition(1, 1);
+		condition.updateOutputCondition(true, 1, 1);
 		assertFalse(witnessedCallback);
 		
 		// Send enough events to end the batch
-		condition.updateOutputCondition(1, 0);
+		condition.updateOutputCondition(true, 1, 0);
 		doOutput = false;
 		assertCallbackAndReset(doOutput, forceUpdate);
 	}

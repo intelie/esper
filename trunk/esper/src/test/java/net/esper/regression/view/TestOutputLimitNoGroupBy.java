@@ -24,35 +24,36 @@ public class TestOutputLimitNoGroupBy extends TestCase
     public void testSimpleNoJoinAll()
 	{
 	    String viewExpr = "select longBoxed " +
-	    "from " + SupportBean.class.getName() + ".win:length(3) " +
-	    "output all every 2 events";
+                "from " + SupportBean.class.getName() + ".win:length(3) " +
+                "output all every 2 events";
 	    
 	    runAssertAll(createStmtAndListenerNoJoin(viewExpr));
 	    
 	    viewExpr = "select longBoxed " +
-	    "from " + SupportBean.class.getName() + ".win:length(3) " +
-	    "output every 2 events";
+                    "from " + SupportBean.class.getName() + ".win:length(3) " +
+                    "output every 2 events";
 	    
 	    runAssertAll(createStmtAndListenerNoJoin(viewExpr));
 	    
 	    viewExpr = "select * " +
-	    "from " + SupportBean.class.getName() + ".win:length(3) " +
-	    "output every 2 events";
+                   "from " + SupportBean.class.getName() + ".win:length(3) " +
+                   "output every 2 events";
 	    
 	    runAssertAll(createStmtAndListenerNoJoin(viewExpr));
 	}
+
 	public void testAggregateAllNoJoinAll()
 	{
 	    String viewExpr = "select longBoxed, sum(longBoxed) as result " +
-	    "from " + SupportBean.class.getName() + ".win:length(3) " +
-	    "having sum(longBoxed) > 0 " + 
-	    "output all every 2 events";
+                        "from " + SupportBean.class.getName() + ".win:length(3) " +
+                        "having sum(longBoxed) > 0 " +
+                        "output all every 2 events";
 	    
 	    runAssertAllSum(createStmtAndListenerNoJoin(viewExpr));
 	    
 	    viewExpr = "select longBoxed, sum(longBoxed) as result " +
-	    "from " + SupportBean.class.getName() + ".win:length(3) " +
-	    "output every 2 events";
+                    "from " + SupportBean.class.getName() + ".win:length(3) " +
+                    "output every 2 events";
 	    
 	    runAssertAllSum(createStmtAndListenerNoJoin(viewExpr));
 	}
@@ -60,15 +61,15 @@ public class TestOutputLimitNoGroupBy extends TestCase
 	public void testAggregateAllNoJoinLast()
 	{
 	    String viewExpr = "select longBoxed, sum(longBoxed) as result " +
-	    "from " + SupportBean.class.getName() + ".win:length(3) " +
-	    "having sum(longBoxed) > 0 " +
-	    "output last every 2 events";
+                            "from " + SupportBean.class.getName() + ".win:length(3) " +
+                            "having sum(longBoxed) > 0 " +
+                            "output last every 2 events";
 	    
 	    runAssertLastSum(createStmtAndListenerNoJoin(viewExpr));  
 	    
 	    viewExpr = "select longBoxed, sum(longBoxed) as result " +
-	    "from " + SupportBean.class.getName() + ".win:length(3) " +
-	    "output last every 2 events";
+                    "from " + SupportBean.class.getName() + ".win:length(3) " +
+                    "output last every 2 events";
 	    
 	    runAssertLastSum(createStmtAndListenerNoJoin(viewExpr));   
 	}
@@ -76,14 +77,14 @@ public class TestOutputLimitNoGroupBy extends TestCase
 	public void testSimpleNoJoinLast()
     {
         String viewExpr = "select longBoxed " +
-        "from " + SupportBean.class.getName() + ".win:length(3) " +
-        "output last every 2 events";
+                            "from " + SupportBean.class.getName() + ".win:length(3) " +
+                            "output last every 2 events";
 
         runAssertLast(createStmtAndListenerNoJoin(viewExpr));
         
         viewExpr = "select * " +
-        "from " + SupportBean.class.getName() + ".win:length(3) " +
-        "output last every 2 events";
+                    "from " + SupportBean.class.getName() + ".win:length(3) " +
+                    "output last every 2 events";
 
         runAssertLast(createStmtAndListenerNoJoin(viewExpr));
     }
@@ -91,9 +92,9 @@ public class TestOutputLimitNoGroupBy extends TestCase
     public void testSimpleJoinAll()
 	{
 	    String viewExpr = "select longBoxed  " +
-	    "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
-	    SupportBean.class.getName() + ".win:length(3) as two " +
-	    "output all every 2 events";
+                            "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
+                            SupportBean.class.getName() + ".win:length(3) as two " +
+                            "output all every 2 events";
 	    
 		runAssertAll(createStmtAndListenerJoin(viewExpr));
 	}
@@ -110,17 +111,17 @@ public class TestOutputLimitNoGroupBy extends TestCase
 	public void testAggregateAllJoinAll()
 	{
 	    String viewExpr = "select longBoxed, sum(longBoxed) as result " +
-	    "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
-	    SupportBean.class.getName() + ".win:length(3) as two " +
-	    "having sum(longBoxed) > 0 " +
-	    "output all every 2 events";
+                        "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
+                        SupportBean.class.getName() + ".win:length(3) as two " +
+                        "having sum(longBoxed) > 0 " +
+                        "output all every 2 events";
 	    
 	    runAssertAllSum(createStmtAndListenerJoin(viewExpr));
 	    
 	    viewExpr = "select longBoxed, sum(longBoxed) as result " +
-	    "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
-	    SupportBean.class.getName() + ".win:length(3) as two " +
-	    "output every 2 events";
+                    "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
+                    SupportBean.class.getName() + ".win:length(3) as two " +
+                    "output every 2 events";
 	    
 	    runAssertAllSum(createStmtAndListenerJoin(viewExpr));
 	}
@@ -128,17 +129,17 @@ public class TestOutputLimitNoGroupBy extends TestCase
 	public void testAggregateAllJoinLast()
     {
         String viewExpr = "select longBoxed, sum(longBoxed) as result " +
-        "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
-        SupportBean.class.getName() + ".win:length(3) as two " +
-        "having sum(longBoxed) > 0 " +
-        "output last every 2 events";
+                        "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
+                        SupportBean.class.getName() + ".win:length(3) as two " +
+                        "having sum(longBoxed) > 0 " +
+                        "output last every 2 events";
         
         runAssertLastSum(createStmtAndListenerJoin(viewExpr));
         
         viewExpr = "select longBoxed, sum(longBoxed) as result " +
-        "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
-        SupportBean.class.getName() + ".win:length(3) as two " +
-        "output last every 2 events";
+                    "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
+                    SupportBean.class.getName() + ".win:length(3) as two " +
+                    "output last every 2 events";
         
         runAssertLastSum(createStmtAndListenerJoin(viewExpr));
     }

@@ -1,24 +1,19 @@
 package net.esper.eql.core;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import junit.framework.TestCase;
 import net.esper.collection.MultiKey;
-import net.esper.collection.Pair;
-import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.core.OrderByProcessor;
-import net.esper.eql.core.ResultSetProcessorSimple;
-import net.esper.eql.core.SelectExprEvalProcessor;
-import net.esper.eql.core.SelectExprProcessor;
+import net.esper.eql.spec.OutputLimitType;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.SupportSelectExprFactory;
 import net.esper.support.eql.SupportStreamTypeSvc1Stream;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.event.SupportEventBeanFactory;
+
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class TestResultSetProcessorSimple extends TestCase
 {
@@ -34,18 +29,19 @@ public class TestResultSetProcessorSimple extends TestCase
         selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService());
         orderByProcessor = null;
 
-		outputLimitSpecAll = new OutputLimitSpec(1, DisplayLimit.ALL);
+		outputLimitSpecAll = new OutputLimitSpec(1, OutputLimitType.ALL);
 		assertFalse(outputLimitSpecAll.isDisplayLastOnly());
-		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, false);
+		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, OutputLimitType.ALL);
 
-		outputLimitSpecLast = new OutputLimitSpec(1, DisplayLimit.LAST);
+		outputLimitSpecLast = new OutputLimitSpec(1, OutputLimitType.LAST);
 		assertTrue(outputLimitSpecLast.isDisplayLastOnly());
-		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, true);
+		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, OutputLimitType.ALL);
     }
 
     public void testUpdateAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true));
+        ResultSetSelect resultSelect = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false);
+        assertNull(resultSelect.getEvents());
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -55,9 +51,9 @@ public class TestResultSetProcessorSimple extends TestCase
 	    EventBean testEvent4 = makeEvent(21, 3, 4);
 	    EventBean[] oldData = new EventBean[] {testEvent3, testEvent4};
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorAll.processViewResult(newData, oldData);
-        EventBean[] newEvents = result.getFirst();
-        EventBean[] oldEvents = result.getSecond();
+        ResultSetProcessorResult result = outputProcessorAll.processViewResult(newData, oldData);
+        EventBean[] newEvents = result.getNewOut();
+        EventBean[] oldEvents = result.getOldOut();
 
         assertEquals(2, newEvents.length);
         assertEquals(10d, newEvents[0].get("resultOne"));
@@ -76,7 +72,8 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void testProcessAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true));
+        ResultSetSelect resultSelect = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), true);
+        assertNull(resultSelect.getEvents());
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -88,9 +85,9 @@ public class TestResultSetProcessorSimple extends TestCase
         Set<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
 	    oldEventSet.add(new MultiKey<EventBean>(new EventBean[] {testEvent4}));
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorAll.processJoinResult(newEventSet, oldEventSet);
-        EventBean[] newEvents = result.getFirst();
-        EventBean[] oldEvents = result.getSecond();
+        ResultSetProcessorResult result = outputProcessorAll.processJoinResult(newEventSet, oldEventSet);
+        EventBean[] newEvents = result.getNewOut();
+        EventBean[] oldEvents = result.getOldOut();
 
         assertEquals(2, newEvents.length);
         assertEquals(10d, newEvents[0].get("resultOne"));
@@ -125,7 +122,8 @@ public class TestResultSetProcessorSimple extends TestCase
 
 	public void testProcessLast() throws Exception
 	{
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true));
+        ResultSetSelect resultSelect = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), true);
+        assertNull(resultSelect.getEvents());
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -137,9 +135,9 @@ public class TestResultSetProcessorSimple extends TestCase
         Set<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
 	    oldEventSet.add(new MultiKey<EventBean>(new EventBean[] {testEvent4}));
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorLast.processJoinResult(newEventSet, oldEventSet);
-        EventBean[] newEvents = result.getFirst();
-        EventBean[] oldEvents = result.getSecond();
+        ResultSetProcessorResult result = outputProcessorLast.processJoinResult(newEventSet, oldEventSet);
+        EventBean[] newEvents = result.getNewOut();
+        EventBean[] oldEvents = result.getOldOut();
 
         assertEquals(1, newEvents.length);
 	    assertEquals(11d, newEvents[0].get("resultOne"));
@@ -152,26 +150,27 @@ public class TestResultSetProcessorSimple extends TestCase
 
 	public void testUpdateLast() throws Exception
 	{
-	       assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true));
+        ResultSetSelect resultSelect = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, true);
+        assertNull(resultSelect.getEvents());
 
-	        EventBean testEvent1 = makeEvent(10, 5, 6);
-		    EventBean testEvent2 = makeEvent(11, 6, 7);
-	        EventBean[] newData = new EventBean[] {testEvent1, testEvent2};
+        EventBean testEvent1 = makeEvent(10, 5, 6);
+        EventBean testEvent2 = makeEvent(11, 6, 7);
+        EventBean[] newData = new EventBean[] {testEvent1, testEvent2};
 
-	        EventBean testEvent3 = makeEvent(20, 1, 2);
-		    EventBean testEvent4 = makeEvent(21, 3, 4);
-		    EventBean[] oldData = new EventBean[] {testEvent3, testEvent4};
+        EventBean testEvent3 = makeEvent(20, 1, 2);
+        EventBean testEvent4 = makeEvent(21, 3, 4);
+        EventBean[] oldData = new EventBean[] {testEvent3, testEvent4};
 
-	        Pair<EventBean[], EventBean[]> result = outputProcessorLast.processViewResult(newData, oldData);
-	        EventBean[] newEvents = result.getFirst();
-	        EventBean[] oldEvents = result.getSecond();
+        ResultSetProcessorResult result = outputProcessorLast.processViewResult(newData, oldData);
+        EventBean[] newEvents = result.getNewOut();
+        EventBean[] oldEvents = result.getOldOut();
 
-	        assertEquals(1, newEvents.length);
-		    assertEquals(11d, newEvents[0].get("resultOne"));
-		    assertEquals(42, newEvents[0].get("resultTwo"));
+        assertEquals(1, newEvents.length);
+        assertEquals(11d, newEvents[0].get("resultOne"));
+        assertEquals(42, newEvents[0].get("resultTwo"));
 
-	        assertEquals(1, oldEvents.length);
-		    assertEquals(21d, oldEvents[0].get("resultOne"));
-		    assertEquals(12, oldEvents[0].get("resultTwo"));
+        assertEquals(1, oldEvents.length);
+        assertEquals(21d, oldEvents[0].get("resultOne"));
+        assertEquals(12, oldEvents[0].get("resultTwo"));
 	}
 }

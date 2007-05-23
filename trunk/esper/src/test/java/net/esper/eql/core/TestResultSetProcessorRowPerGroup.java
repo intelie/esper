@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import net.esper.collection.Pair;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.SupportAggregationService;
@@ -33,7 +32,7 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
         groupKeyNodes.add(SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0"));
         groupKeyNodes.add(SupportExprNodeFactory.makeIdentNode("intBoxed", "s0"));
 
-        processor = new ResultSetProcessorRowPerGroup(selectProcessor, null, supportAggregationService, groupKeyNodes, null, false, false);
+        processor = new ResultSetProcessorRowPerGroup(selectProcessor, null, supportAggregationService, groupKeyNodes, null);
     }
 
     public void testProcess()
@@ -41,13 +40,13 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
         EventBean[] newData = new EventBean[] {makeEvent(1, 2), makeEvent(3, 4)};
         EventBean[] oldData = new EventBean[] {makeEvent(1, 2), makeEvent(1, 10)};
 
-        Pair<EventBean[], EventBean[]> result = processor.processViewResult(newData, oldData);
+        ResultSetProcessorResult result = processor.processViewResult(newData, oldData);
 
         assertEquals(2, supportAggregationService.getEnterList().size());
         assertEquals(2, supportAggregationService.getLeaveList().size());
 
-        assertEquals(3, result.getFirst().length);
-        assertEquals(3, result.getSecond().length);
+        assertEquals(3, result.getNewOut().length);
+        assertEquals(3, result.getOldOut().length);
     }
 
     private EventBean makeEvent(int intPrimitive, int intBoxed)

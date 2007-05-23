@@ -71,7 +71,7 @@ public final class OutputConditionCount implements OutputCondition
         return eventRate;
     }
 
-    public final void updateOutputCondition(int newDataCount, int oldDataCount)
+    public final void updateOutputCondition(boolean hasNewdata, int newDataCount, int oldDataCount)
     {
         this.newEventsCount += newDataCount;
         this.oldEventsCount += oldDataCount;

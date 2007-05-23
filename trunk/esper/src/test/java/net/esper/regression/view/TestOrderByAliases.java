@@ -38,9 +38,9 @@ public class TestOrderByAliases extends TestCase {
 	public void testAliasesSimple()
 	{
 		String statementString = "select symbol as mySymbol from " +
-		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by mySymbol";    	
+                                SupportMarketDataBean.class.getName() + ".win:length(5) " +
+                                "output every 6 events "  +
+                                "order by mySymbol";
 		createAndSend(statementString);
 		orderValuesBySymbol();
 		assertValues(symbols, "mySymbol");
@@ -48,9 +48,9 @@ public class TestOrderByAliases extends TestCase {
 		clearValues();
 		
 		statementString = "select symbol as mySymbol, price as myPrice from " +
-		SupportMarketDataBean.class.getName() + ".win:length(5) " +
-		"output every 6 events "  + 
-		"order by myPrice";   
+                        SupportMarketDataBean.class.getName() + ".win:length(5) " +
+                        "output every 6 events "  +
+                        "order by myPrice";
 		createAndSend(statementString);
 		orderValuesByPrice();
 		assertValues(symbols, "mySymbol");
@@ -59,9 +59,9 @@ public class TestOrderByAliases extends TestCase {
 		clearValues();	
 		
 		statementString = "select symbol, price as myPrice from " +
-	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by (myPrice * 6) + 5, price";    	
+                        SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                        "output every 6 events "  +
+                        "order by (myPrice * 6) + 5, price";
 	 	createAndSend(statementString);
 	 	orderValuesByPrice();
 	 	assertValues(symbols, "symbol");
@@ -69,9 +69,9 @@ public class TestOrderByAliases extends TestCase {
 	 	clearValues();
 	 	
 		statementString = "select symbol, 1+volume*23 as myVol from " +
-	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  + 
-	 	"order by (price * 6) + 5, price, myVol";    	
+                        SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                        "output every 6 events "  +
+                        "order by (price * 6) + 5, price, myVol";
 	 	createAndSend(statementString);
 	 	orderValuesByPrice();
 	 	assertValues(symbols, "symbol");
@@ -82,10 +82,10 @@ public class TestOrderByAliases extends TestCase {
 	public void testAliasesAggregation()
 	{
 		String statementString = "select symbol, volume, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(20) " +
-		"group by symbol " + 
-		"output every 6 events " + 
-		"order by sum(price)"; 
+                        SupportMarketDataBean.class.getName() + ".win:length(20) " +
+                        "group by symbol " +
+                        "output every 6 events " +
+                        "order by sum(price)";
 		createAndSendAggregate(statementString);
 		orderValuesBySumPriceEvent();
 		assertValues(prices, "sum(price)");
@@ -118,7 +118,7 @@ public class TestOrderByAliases extends TestCase {
     	for(int i = 0; i < events.length; i++)
     	{
     		log.debug(".assertValues events["+i+"]=="+events[i].get(valueName));
-    		assertEquals(values.get(i), events[i].get(valueName));
+    		assertEquals("Error at event " + i, values.get(i), events[i].get(valueName));
     	}
     }
 
@@ -141,7 +141,6 @@ public class TestOrderByAliases extends TestCase {
     	sendEvent("CAT", 5);
 	}
     
-
 	private void orderValuesByPrice()
     {
     	symbols.add(0, "KGB");
@@ -173,16 +172,16 @@ public class TestOrderByAliases extends TestCase {
     private void orderValuesBySumPriceEvent()
 	{
 		symbols.add(0, "CMU");
-		symbols.add(1, "CMU");
-		symbols.add(2, "IBM");
-		symbols.add(3, "IBM");
-		symbols.add(4, "CAT");
+		symbols.add(1, "IBM");
+		symbols.add(2, "CMU");
+		symbols.add(3, "CAT");
+		symbols.add(4, "IBM");
 		symbols.add(5, "CAT");
-		prices.add(0, 3d);
+		prices.add(0, 1d);
 		prices.add(1, 3d);
-		prices.add(2, 7d);
-		prices.add(3, 7d);
-		prices.add(4, 11d);
+		prices.add(2, 3d);
+		prices.add(3, 5d);
+		prices.add(4, 7d);
 		prices.add(5, 11d);
 		volumes.add(0, 0l);
 		volumes.add(1, 0l);

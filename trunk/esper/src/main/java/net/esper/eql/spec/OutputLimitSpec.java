@@ -13,28 +13,8 @@ package net.esper.eql.spec;
  */
 public class OutputLimitSpec
 {
-    /**
-     * Enum controlling the type of output limiting.
-     */
-    public enum DisplayLimit {
-
-        /**
-         * Output first event.
-         */
-        FIRST,
-
-        /**
-         * Output last event.
-         */
-        LAST,
-
-        /**
-         * Output all events.
-         */
-        ALL };
-
 	private final boolean isEventLimit;
-	private final DisplayLimit displayLimit;
+	private final OutputLimitType outputLimitType;
 
 	private final int eventRate;
 	private final double timeRate;
@@ -45,12 +25,12 @@ public class OutputLimitSpec
 	 * @param eventRate - the number of events to batch.
 	 * @param displayLimit - indicates whether to output only the first, only the last, or all events
 	 */
-	public OutputLimitSpec(int eventRate, DisplayLimit displayLimit)
+	public OutputLimitSpec(int eventRate, OutputLimitType displayLimit)
 	{
 		this.isEventLimit = true;
 		this.eventRate = eventRate;
 		this.timeRate = -1.0;
-		this.displayLimit = displayLimit;
+		this.outputLimitType = displayLimit;
 	}
 
 	/**
@@ -59,12 +39,12 @@ public class OutputLimitSpec
 	 * @param timeRate - the number of seconds to batch for.
 	 * @param displayLimit - indicates whether to output only the first, only the last, or all events
 	 */
-	public OutputLimitSpec(double timeRate, DisplayLimit displayLimit)
+	public OutputLimitSpec(double timeRate, OutputLimitType displayLimit)
 	{
 		this.isEventLimit = false;
 		this.timeRate = timeRate;
 		this.eventRate = -1;
-		this.displayLimit = displayLimit;
+		this.outputLimitType = displayLimit;
 	}
 
     /**
@@ -100,7 +80,7 @@ public class OutputLimitSpec
      */
 	public boolean isDisplayLastOnly()
 	{
-		return displayLimit == DisplayLimit.LAST;
+		return outputLimitType == OutputLimitType.LAST;
 	}
 
     /**
@@ -109,7 +89,11 @@ public class OutputLimitSpec
      */
 	public boolean isDisplayFirstOnly()
 	{
-		return displayLimit == DisplayLimit.FIRST;
+		return outputLimitType == OutputLimitType.FIRST;
 	}
 
+    public OutputLimitType getOutputLimitType()
+    {
+        return outputLimitType;
+    }
 }

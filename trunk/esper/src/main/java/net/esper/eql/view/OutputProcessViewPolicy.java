@@ -1,18 +1,17 @@
 package net.esper.eql.view;
 
 import net.esper.collection.MultiKey;
-import net.esper.collection.Pair;
+import net.esper.collection.MultiKeyUntyped;
 import net.esper.collection.TransformEventMethod;
 import net.esper.core.StatementContext;
+import net.esper.eql.core.OrderBySorter;
 import net.esper.eql.core.ResultSetProcessor;
+import net.esper.eql.core.ResultSetProcessorResult;
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,14 +22,9 @@ import java.util.Set;
  */
 public class OutputProcessViewPolicy extends OutputProcessView
 {
-    private final boolean outputLastOnly;
+    private static final Log log = LogFactory.getLog(OutputProcessViewPolicy.class);
+    
     private final OutputCondition outputCondition;
-    private List<EventBean> newEventsList = new LinkedList<EventBean>();
-	private List<EventBean> oldEventsList = new LinkedList<EventBean>();
-	private Set<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
-	private Set<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
-
-	private static final Log log = LogFactory.getLog(OutputProcessViewPolicy.class);
 
     /**
      * Ctor.
@@ -40,11 +34,12 @@ public class OutputProcessViewPolicy extends OutputProcessView
      * @param statementContext is the services the output condition may depend on
      */
     public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor,
-    					  int streamCount,
-    					  OutputLimitSpec outputLimitSpec,
-    					  StatementContext statementContext)
+                                   OrderBySorter orderBySorter,
+                                   int streamCount,
+                                   OutputLimitSpec outputLimitSpec,
+                                   StatementContext statementContext)
     {
-        super(resultSetProcessor);
+        super(resultSetProcessor, orderBySorter);
         log.debug(".ctor");
 
     	if(streamCount < 1)
@@ -54,7 +49,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);
     	this.outputCondition = OutputConditionFactory.createCondition(outputLimitSpec, statementContext, outputCallback);
-        this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.isDisplayLastOnly());
     }
 
     /**
@@ -71,27 +65,20 @@ public class OutputProcessViewPolicy extends OutputProcessView
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
-        // add the incoming events to the event batches
+        boolean hasNewData = resultSetProcessor.addViewResult(newData, oldData);
+
         int newDataLength = 0;
         int oldDataLength = 0;
         if(newData != null)
         {
         	newDataLength = newData.length;
-        	for(EventBean event : newData)
-        	{
-        		newEventsList.add(event);
-        	}
         }
         if(oldData != null)
         {
         	oldDataLength = oldData.length;
-        	for(EventBean event : oldData)
-        	{
-        		oldEventsList.add(event);
-        	}
         }
 
-        outputCondition.updateOutputCondition(newDataLength, oldDataLength);
+        outputCondition.updateOutputCondition(hasNewData, newDataLength, oldDataLength);
     }
 
     /**
@@ -108,17 +95,9 @@ public class OutputProcessViewPolicy extends OutputProcessView
                     "  oldData.length==" + ((oldEvents == null) ? 0 : oldEvents.size()));
         }
 
-		// add the incoming events to the event batches
-		for(MultiKey<EventBean> event : newEvents)
-		{
-			newEventsSet.add(event);
-		}
-		for(MultiKey<EventBean> event : oldEvents)
-		{
-			oldEventsSet.add(event);
-		}
+        boolean hasNewData = resultSetProcessor.addJoinResult(newEvents, oldEvents);
 
-		outputCondition.updateOutputCondition(newEvents.size(), oldEvents.size());
+		outputCondition.updateOutputCondition(hasNewData, newEvents.size(), oldEvents.size());
     }
 
 	/**
@@ -132,29 +111,30 @@ public class OutputProcessViewPolicy extends OutputProcessView
 	{
 		log.debug(".continueOutputProcessingView");
 
-		// Get the arrays of new and old events, or null if none
-		EventBean[] newEvents = !newEventsList.isEmpty() ? newEventsList.toArray(new EventBean[0]) : null;
-		EventBean[] oldEvents = !oldEventsList.isEmpty() ? oldEventsList.toArray(new EventBean[0]) : null;
+        ResultSetProcessorResult result = resultSetProcessor.generateResult();
 
-		if(resultSetProcessor != null)
-		{
-			// Process the events and get the result
-			Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents);
-			newEvents = newOldEvents != null ? newOldEvents.getFirst() : null;
-			oldEvents = newOldEvents != null ? newOldEvents.getSecond() : null;
-		}
-		else if(outputLastOnly)
-		{
-			// Keep only the last event, if there is one
-			newEvents = newEvents != null ? new EventBean[] { newEvents[newEvents.length - 1] } : newEvents;
-			oldEvents = oldEvents != null ? new EventBean[] { oldEvents[oldEvents.length - 1] } : oldEvents;
-		}
+        EventBean[] newEvents = null;
+        EventBean[] oldEvents = null;
 
-		if(doOutput)
+        if (result != null)
+        {
+            newEvents = result.getNewOut();
+            oldEvents = result.getOldOut();
+        }
+        
+        // ordering
+        if (orderBySorter != null)
+        {
+            MultiKeyUntyped[] newOrderKeys = result.getNewOrderKey();
+            MultiKeyUntyped[] oldOrderKeys = result.getOldOrderKey();
+            newEvents = orderBySorter.sort(newEvents, newOrderKeys);
+            oldEvents = orderBySorter.sort(oldEvents, oldOrderKeys);
+        }
+
+        if(doOutput)
 		{
 			output(forceUpdate, newEvents, oldEvents);
 		}
-		resetEventBatches();
 	}
 
 	private void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents)
@@ -169,14 +149,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		}
 	}
 
-	private void resetEventBatches()
-	{
-		newEventsList.clear();
-		oldEventsList.clear();
-		newEventsSet.clear();
-		oldEventsSet.clear();
-	}
-
 	/**
 	 * Called once the output condition has been met.
 	 * Invokes the result set processor.
@@ -186,24 +158,8 @@ public class OutputProcessViewPolicy extends OutputProcessView
 	 */
 	protected void continueOutputProcessingJoin(boolean doOutput, boolean forceUpdate)
 	{
-		log.debug(".continueOutputProcessingJoin");
-
-		EventBean[] newEvents = null;
-		EventBean[] oldEvents = null;
-
-		Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet);
-		if (newOldEvents != null)
-		{
-			newEvents = newOldEvents.getFirst();
-			oldEvents = newOldEvents.getSecond();
-		}
-
-		if(doOutput)
-		{
-			output(forceUpdate, newEvents, oldEvents);
-		}
-		resetEventBatches();
-	}
+        this.continueOutputProcessingView(doOutput, forceUpdate);
+    }
 
     private OutputCallback getCallbackToLocal(int streamCount)
     {
@@ -251,8 +207,8 @@ public class OutputProcessViewPolicy extends OutputProcessView
         public EventBean transform(EventBean event)
         {
             newData[0] = event;
-            Pair<EventBean[], EventBean[]> pair = resultSetProcessor.processViewResult(newData, null);
-            return pair.getFirst()[0];
+            ResultSetProcessorResult pair = resultSetProcessor.processViewResult(newData, null);
+            return pair.getNewOut()[0];
         }
     }
 }

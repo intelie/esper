@@ -1,8 +1,10 @@
 package net.esper.eql.view;
 
 import net.esper.collection.MultiKey;
-import net.esper.collection.Pair;
+import net.esper.collection.MultiKeyUntyped;
 import net.esper.eql.core.ResultSetProcessor;
+import net.esper.eql.core.OrderBySorter;
+import net.esper.eql.core.ResultSetProcessorResult;
 import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,9 +23,10 @@ public class OutputProcessViewDirect extends OutputProcessView
      * Ctor.
      * @param resultSetProcessor is processing the result set for publishing it out
      */
-    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor)
+    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor,
+                                   OrderBySorter orderBySorter)
     {
-        super(resultSetProcessor);
+        super(resultSetProcessor, orderBySorter);
 
         log.debug(".ctor");
         if (resultSetProcessor == null)
@@ -46,10 +49,23 @@ public class OutputProcessViewDirect extends OutputProcessView
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData);
+        ResultSetProcessorResult result = resultSetProcessor.processViewResult(newData, oldData);
 
-        EventBean[] newEventArr = newOldEvents != null ? newOldEvents.getFirst() : null;
-        EventBean[] oldEventArr = newOldEvents != null ? newOldEvents.getSecond() : null;
+        if (result == null)
+        {
+            return;
+        }
+
+        EventBean[] newEventArr = result.getNewOut();
+        EventBean[] oldEventArr = result.getOldOut();
+
+        if (orderBySorter != null)
+        {
+            MultiKeyUntyped[] newOrderKeys = result.getNewOrderKey();
+            MultiKeyUntyped[] oldOrderKeys = result.getOldOrderKey();
+            newEventArr = orderBySorter.sort(newEventArr, newOrderKeys);
+            oldEventArr = orderBySorter.sort(oldEventArr, oldOrderKeys);
+        }
 
         if(newEventArr != null || oldEventArr != null)
         {
@@ -73,14 +89,23 @@ public class OutputProcessViewDirect extends OutputProcessView
 
         log.debug(".continueOutputProcessingJoin");
 
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents);
+        ResultSetProcessorResult result = resultSetProcessor.processJoinResult(newEvents, oldEvents);
 
-        if (newOldEvents == null)
+        if (result == null)
         {
             return;
         }
-        EventBean[] newEventArr = newOldEvents.getFirst();
-        EventBean[] oldEventArr = newOldEvents.getSecond();
+
+        EventBean[] newEventArr = result.getNewOut();
+        EventBean[] oldEventArr = result.getOldOut();
+
+        if (orderBySorter != null)
+        {
+            MultiKeyUntyped[] newOrderKeys = result.getNewOrderKey();
+            MultiKeyUntyped[] oldOrderKeys = result.getOldOrderKey();
+            newEventArr = orderBySorter.sort(newEventArr, newOrderKeys);
+            oldEventArr = orderBySorter.sort(oldEventArr, oldOrderKeys);
+        }
 
         if (newEventArr != null || oldEventArr != null)
         {

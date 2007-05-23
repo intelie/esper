@@ -36,7 +36,7 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 
 	private final Comparator<MultiKeyUntyped> comparator;
 
-	/**
+    /**
 	 * Ctor.
 	 * 
 	 * @param orderByList -
@@ -61,6 +61,48 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 		this.aggregationService = aggregationService;
 
         this.comparator = new MultiKeyComparator(getIsDescendingValues());
+    }
+
+    public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData)
+    {
+        Object[] values = new Object[orderByList.size()];
+        int count = 0;
+        for (Pair<ExprNode, Boolean> sortPair : orderByList)
+        {
+            ExprNode sortNode = sortPair.getFirst();
+            values[count++] = sortNode.evaluate(eventsPerStream, isNewData);
+        }
+
+        return new MultiKeyUntyped(values);
+    }
+
+    public MultiKeyUntyped[] getSortKeys(EventBean[] generatingEvents, boolean isNewData)
+    {
+        if (generatingEvents == null)
+        {
+            return null;
+        }
+        
+        MultiKeyUntyped[] sortProperties = new MultiKeyUntyped[generatingEvents.length];
+
+        int count = 0;
+        EventBean[] evalEventsPerStream = new EventBean[1];
+        for (EventBean event : generatingEvents)
+        {
+            Object[] values = new Object[orderByList.size()];
+            int countTwo = 0;
+            evalEventsPerStream[0] = event;
+            for (Pair<ExprNode, Boolean> sortPair : orderByList)
+            {
+                ExprNode sortNode = sortPair.getFirst();
+                values[countTwo++] = sortNode.evaluate(evalEventsPerStream, isNewData);
+            }
+
+            sortProperties[count] = new MultiKeyUntyped(values);
+            count++;
+        }
+        
+        return sortProperties;
     }
 
 	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData)

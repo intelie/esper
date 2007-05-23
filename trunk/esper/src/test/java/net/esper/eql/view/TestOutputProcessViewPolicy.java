@@ -22,8 +22,8 @@ public class TestOutputProcessViewPolicy extends TestCase
     public void setUp() throws Exception
     {
         resultSetProcessor = new SupportResultSetProcessor();
-        outputProcessViewUpdate = new OutputProcessViewPolicy(resultSetProcessor, 1, null, null);
-        outputProcessViewProcess = new OutputProcessViewPolicy(resultSetProcessor, 2, null, null);        
+        outputProcessViewUpdate = new OutputProcessViewPolicy(resultSetProcessor, null, 1, null, null);
+        outputProcessViewProcess = new OutputProcessViewPolicy(resultSetProcessor, null, 2, null, null);        
         
         childViewNoJoin = new SupportSchemaNeutralView();
         outputProcessViewUpdate.addView(childViewNoJoin);

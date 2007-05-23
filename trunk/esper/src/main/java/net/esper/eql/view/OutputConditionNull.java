@@ -30,7 +30,7 @@ public class OutputConditionNull implements OutputCondition {
 		this.outputCallback = outputCallback;
 	}
 
-	public void updateOutputCondition(int newEventsCount, int oldEventsCount) {
+	public void updateOutputCondition(boolean hasNewData, int newEventsCount, int oldEventsCount) {
 		outputCallback.continueOutputProcessing(DO_OUTPUT, FORCE_UPDATE);
 	}
 

@@ -17,11 +17,7 @@ import java.util.Set;
 
 import net.esper.collection.Pair;
 import net.esper.eql.expression.*;
-import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.SelectClauseSpec;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
-import net.esper.eql.spec.SelectExprElementRawSpec;
+import net.esper.eql.spec.*;
 import net.esper.eql.agg.AggregationServiceFactory;
 import net.esper.eql.agg.AggregationService;
 import net.esper.event.EventAdapterService;
@@ -232,8 +228,11 @@ public class ResultSetProcessorFactory
         }
 
         // Determine if any output rate limiting must be performed early while processing results
-        boolean isOutputLimiting = outputLimitSpec != null;
-        boolean isOutputLimitLastOnly = outputLimitSpec != null ? outputLimitSpec.isDisplayLastOnly() : false;
+        OutputLimitType outputLimitType = null;
+        if (outputLimitSpec != null)
+        {
+            outputLimitType = outputLimitSpec.getOutputLimitType();
+        }
 
         // (1)
         // There is no group-by clause and no aggregate functions with event properties in the select clause and having clause (simplest case)
@@ -244,8 +243,17 @@ public class ResultSetProcessorFactory
             // events in the desired format, therefore there is no output processor. There are no order-by expressions.
             if (selectExprProcessor == null && orderByNodes.isEmpty() && optionalHavingNode == null)
             {
-                log.debug(".getProcessor Using no result processor");
-                return null;
+                if ((outputLimitType == null) && (orderByList.isEmpty()))
+                {
+                    log.debug(".getProcessor Using no result processor");
+                    return null;
+                }
+                else
+                {
+                    log.debug(".getProcessor Using wildcard result processor");
+                    // Joins and wildcard do get an select expression processor
+                    return new ResultSetProcessorSimple(null, orderByProcessor, outputLimitType);
+                }
             }
 
             // (1b)
@@ -253,7 +261,7 @@ public class ResultSetProcessorFactory
             // directly generating one row, and no need to update aggregate state since there is no aggregate function.
             // There might be some order-by expressions.
             log.debug(".getProcessor Using ResultSetProcessorSimple");
-            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, outputLimitType);
         }
 
         // (2)
@@ -261,7 +269,7 @@ public class ResultSetProcessorFactory
         if ((namedSelectionList.isEmpty()) && (propertiesAggregatedHaving.isEmpty()))
         {
             log.debug(".getProcessor Using ResultSetProcessorSimple");
-            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, outputLimitType);
         }
 
         boolean hasAggregation = (!selectAggregateExprNodes.isEmpty()) || (!propertiesAggregatedHaving.isEmpty());
@@ -280,7 +288,7 @@ public class ResultSetProcessorFactory
             // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
             // or having clause and not all event properties are aggregated (some properties are not under aggregation functions).
             log.debug(".getProcessor Using ResultSetProcessorAggregateAll");
-            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, outputLimitType);
         }
 
         // Handle group-by cases
@@ -331,14 +339,14 @@ public class ResultSetProcessorFactory
         if (allInGroupBy && allInSelect)
         {
             log.debug(".getProcessor Using ResultSetProcessorRowPerGroup");
-            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode);
         }
 
         // (6)
         // There is a group-by clause, and one or more event properties in the select clause that are not under an aggregation
         // function are not listed in the group-by clause (output one row per event, not one row per group)
         log.debug(".getProcessor Using ResultSetProcessorAggregateGrouped");
-        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, outputLimitType);
     }
 
     private static void validateHaving(List<ExprAggregateNode> selectAggregateExprNodes,

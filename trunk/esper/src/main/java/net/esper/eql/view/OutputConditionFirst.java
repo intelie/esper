@@ -8,8 +8,14 @@
 package net.esper.eql.view;
 
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
+import net.esper.eql.spec.OutputLimitType;
 import net.esper.core.StatementContext;
+
+/**
+ * TODO: test output first
+ * TODO: test wildcard and output rate limiting
+ * TODO: test force update
+ */
 
 /**
  * An output condition that is satisfied at the first event
@@ -40,27 +46,27 @@ public class OutputConditionFirst implements OutputCondition
 		this.witnessedFirst = false;
 	}
 
-	public void updateOutputCondition(int newEventsCount, int oldEventsCount)
+	public void updateOutputCondition(boolean hasNewData, int newEventsCount, int oldEventsCount)
 	{
-		if(!witnessedFirst)
+		if ((!witnessedFirst) && (hasNewData))
 		{
 			witnessedFirst = true;
 			boolean doOutput = true;
 			boolean forceUpdate = false;
 			outputCallback.continueOutputProcessing(doOutput, forceUpdate);
 		}
-		innerCondition.updateOutputCondition(newEventsCount, oldEventsCount);
+		innerCondition.updateOutputCondition(true, newEventsCount, oldEventsCount);
 	}
 
 	private static OutputLimitSpec createInnerSpec(OutputLimitSpec outputLimitSpec)
 	{
 		if(outputLimitSpec.isEventLimit())
 		{
-			return new OutputLimitSpec(outputLimitSpec.getEventRate(), DisplayLimit.ALL);
+			return new OutputLimitSpec(outputLimitSpec.getEventRate(), OutputLimitType.ALL);
 		}
 		else
 		{
-			return new OutputLimitSpec(outputLimitSpec.getTimeRate(), DisplayLimit.ALL);
+			return new OutputLimitSpec(outputLimitSpec.getTimeRate(), OutputLimitType.ALL);
 		}
 	}
 

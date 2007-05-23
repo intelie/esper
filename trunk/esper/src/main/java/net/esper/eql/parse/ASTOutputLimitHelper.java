@@ -8,7 +8,7 @@
 package net.esper.eql.parse;
 
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
+import net.esper.eql.spec.OutputLimitType;
 import net.esper.eql.generated.EqlTokenTypes;
 import antlr.collections.AST;
 
@@ -26,15 +26,15 @@ import antlr.collections.AST;
 	 {
 		 AST child = node.getFirstChild();
 
-		 DisplayLimit displayLimit = DisplayLimit.ALL;
+		 OutputLimitType displayLimit = OutputLimitType.ALL;
 		 if(child.getType() == FIRST)
 		 {
-			 displayLimit = DisplayLimit.FIRST;
+			 displayLimit = OutputLimitType.FIRST;
 			 child = child.getNextSibling();
 		 }
 		 else if(child.getType() == LAST)
 		 {
-			 displayLimit = DisplayLimit.LAST;
+			 displayLimit = OutputLimitType.LAST;
 			 child = child.getNextSibling();
 		 }
 		 else if(child.getType() == ALL)

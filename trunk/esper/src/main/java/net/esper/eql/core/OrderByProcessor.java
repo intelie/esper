@@ -16,7 +16,10 @@ import net.esper.event.EventBean;
  */
 public interface OrderByProcessor {
 
-	/**
+    public MultiKeyUntyped[] getSortKeys(EventBean[] generatingEvents, boolean isNewData);
+    public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean newData);
+
+    /**
 	 * Sort the output events. If the order-by processor needs group-by
 	 * keys to evaluate the expressions in the order-by clause, these will
 	 * be computed from the generating events.
@@ -38,4 +41,5 @@ public interface OrderByProcessor {
 	 * @return an array containing the output events in sorted order
 	 */
 	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData);
-}	
+
+}

@@ -3,6 +3,8 @@ package net.esper.eql.view;
 import net.esper.view.ViewSupport;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.eql.core.ResultSetProcessor;
+import net.esper.eql.core.OrderByProcessor;
+import net.esper.eql.core.OrderBySorter;
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -33,15 +35,16 @@ public class OutputProcessViewFactory
      * @return output processing view
      */
     public static OutputProcessView makeView(ResultSetProcessor resultSetProcessor,
-    					  int streamCount,
+                                             OrderBySorter orderBySorter,
+                          int streamCount,
     					  OutputLimitSpec outputLimitSpec,
     					  StatementContext statementContext)
     {
         // Do we need to enforce an output policy?
         if (outputLimitSpec != null)
         {
-            return new OutputProcessViewPolicy(resultSetProcessor, streamCount, outputLimitSpec, statementContext);
+            return new OutputProcessViewPolicy(resultSetProcessor, orderBySorter, streamCount, outputLimitSpec, statementContext);
         }
-        return new OutputProcessViewDirect(resultSetProcessor);
+        return new OutputProcessViewDirect(resultSetProcessor, orderBySorter);
     }
 }

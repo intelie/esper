@@ -9,10 +9,8 @@ package net.esper.eql.core;
 
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
-import net.esper.collection.Pair;
 import net.esper.collection.MultiKey;
 import net.esper.eql.agg.AggregationService;
-import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.expression.ExprNode;
 
 import java.util.Set;
@@ -51,12 +49,12 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public ResultSetProcessorResult processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
-        EventBean[] selectOldEvents = null;
-        EventBean[] selectNewEvents = null;
+        ResultSetProcessorResult result = new ResultSetProcessorResult();
 
-        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
+        EventBean[] selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
+        result.setOldOut(selectOldEvents);
 
         if (!oldEvents.isEmpty())
         {
@@ -76,21 +74,22 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
             }
         }
 
-        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        EventBean[] selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        result.setNewOut(selectNewEvents);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
         {
             return null;
         }
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return result;
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+    public ResultSetProcessorResult processViewResult(EventBean[] newData, EventBean[] oldData)
     {
-        EventBean[] selectOldEvents = null;
-        EventBean[] selectNewEvents = null;
+        ResultSetProcessorResult result = new ResultSetProcessorResult();
 
-        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
+        EventBean[] selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
+        result.setOldOut(selectOldEvents);
 
         EventBean[] buffer = new EventBean[1];
         if (oldData != null)
@@ -114,14 +113,15 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         }
 
         // generate new events using select expressions
-        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        EventBean[] selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        result.setNewOut(selectNewEvents);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
         {
             return null;
         }
 
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return result;
     }
 
     private static EventBean[] getSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode, boolean isNewData)
@@ -140,5 +140,62 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
         // The result is always a single row
         return new EventBean[] {event};
+    }
+
+    public boolean addViewResult(EventBean[] newData, EventBean[] oldData)
+    {
+        EventBean[] buffer = new EventBean[1];
+        if (oldData != null)
+        {
+            // apply old data to aggregates
+            for (int i = 0; i < oldData.length; i++)
+            {
+                buffer[0] = oldData[i];
+                aggregationService.applyLeave(buffer, null);
+            }
+        }
+
+        if (newData != null)
+        {
+            // apply new data to aggregates
+            for (int i = 0; i < newData.length; i++)
+            {
+                buffer[0] = newData[i];
+                aggregationService.applyEnter(buffer, null);
+            }
+        }
+        return true;
+    }
+
+    public boolean addJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    {
+        // TODO: optionalHavingNode != null
+        if (!oldEvents.isEmpty())
+        {
+            // apply old data to aggregates
+            for (MultiKey<EventBean> events : oldEvents)
+            {
+                aggregationService.applyLeave(events.getArray(), null);
+            }
+        }
+
+        if (!newEvents.isEmpty())
+        {
+            // apply new data to aggregates
+            for (MultiKey<EventBean> events : newEvents)
+            {
+                aggregationService.applyEnter(events.getArray(), null);
+            }
+        }
+        return true;
+    }
+
+    public ResultSetProcessorResult generateResult()
+    {
+        // TODO: old data
+        ResultSetProcessorResult result = new ResultSetProcessorResult();
+        EventBean[] selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        result.setNewOut(selectNewEvents);
+        return result;
     }
 }

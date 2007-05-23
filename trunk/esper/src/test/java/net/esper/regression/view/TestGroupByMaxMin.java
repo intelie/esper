@@ -31,7 +31,7 @@ public class TestGroupByMaxMin extends TestCase
         epService.initialize();
     }
 
-    // TODO
+    // TODO: optimize performance for this case
     // A. OutputProcessViewPolicy must collect events posted by views in the same order they arrive
     // B. OutputProcessViewPolicy must replay events  replay 
     public void testMinMaxTimeWindow()
@@ -48,7 +48,7 @@ public class TestGroupByMaxMin extends TestCase
         selectTestView.addListener(testListener);
 
         long timer = 0;
-        for (int i = 0; i < 10000000; i++)
+        for (int i = 0; i < 1000; i++)
         {
             long volume = i % 10;
             SupportMarketDataBean event = new SupportMarketDataBean("SYM", -1, volume, "");

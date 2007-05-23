@@ -56,7 +56,7 @@ public class TestOrderByAggregation extends TestCase {
     	for(int i = 0; i < events.length; i++)
     	{
     		log.debug(".assertValues events["+i+"]=="+events[i].get(valueName));
-    		assertEquals(values.get(i), events[i].get(valueName));
+    		assertEquals("error at event " + i, values.get(i), events[i].get(valueName));
     	}
     }
     
@@ -67,13 +67,12 @@ public class TestOrderByAggregation extends TestCase {
     	symbols.clear();
     }
     
-    
     public void testAggregateAll()
 	{
 		String statementString = "select symbol, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"output every 6 events " + 
-		"order by symbol"; 
+                            SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                            "output every 6 events " +
+                            "order by symbol";
 		createAndSendAggregate(statementString);
 		orderValuesBySymbolAggregateAll();
 		assertValues(symbols, "symbol");
@@ -97,10 +96,10 @@ public class TestOrderByAggregation extends TestCase {
 		epService.initialize();
 		
 		statementString = "select symbol, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"having sum(price) > 0 " + 
-		"output every 6 events " + 
-		"order by symbol"; 
+                        SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                        "having sum(price) > 0 " +
+                        "output every 6 events " +
+                        "order by symbol";
 		createAndSendAggregate(statementString);
 		orderValuesBySymbolAggregateAll();
 		assertValues(symbols, "symbol");
@@ -111,9 +110,9 @@ public class TestOrderByAggregation extends TestCase {
 		epService.initialize();
 		
 		statementString = "select symbol, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"output every 6 events "  + 
-		"order by symbol, sum(price)"; 
+                        SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                        "output every 6 events "  +
+                        "order by symbol, sum(price)";
 		createAndSendAggregate(statementString);
 		orderValuesBySymbolAggregateAll();
 		assertValues(symbols, "symbol");
@@ -123,15 +122,15 @@ public class TestOrderByAggregation extends TestCase {
 		
 		epService.initialize();
 		
-		statementString = "select symbol, 21+sum(price)*0 from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"output every 6 events "  + 
-		"order by symbol, 2*sum(price)+1"; 
+		statementString = "select symbol, sum(price) as sumprice from " +
+                        SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                        "output every 6 events "  +
+                        "order by symbol, 2*sum(price)+1";
 		createAndSendAggregate(statementString);
 		orderValuesBySymbolAggregateAll();
 		assertValues(symbols, "symbol");
-		assertValues(prices, "(21+(sum(price)*0))");
-		assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(21+(sum(price)*0))"}));
+		assertValues(prices, "sumprice");
+		assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sumprice"}));
 		clearValues();
 	}
 
@@ -139,29 +138,31 @@ public class TestOrderByAggregation extends TestCase {
     {
     	String statementString = "select symbol, sum(price) from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events " + 
-    	"order by symbol"; 
+                        SupportBeanString.class.getName() + ".win:length(100) as two " +
+                        "where one.symbol = two.string " +
+                        "output every 6 events " +
+                        "order by symbol";
     	createAndSendAggregate(statementString);
     	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
+    	orderValuesBySymbolAggregateAllJoin();
     	assertValues(symbols, "symbol");
     	assertValues(prices, "sum(price)");
     	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
     	clearValues();
-    	
-    	epService.initialize();
+
+        // TODO: should new events be applied one-by-one and the new-event generation occur right after one was applied?
+        
+        epService.initialize();
     	
     	statementString = "select symbol, max(sum(price)) from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events " + 
-    	"order by symbol"; 
+                        SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+                        SupportBeanString.class.getName() + ".win:length(100) as two " +
+                        "where one.symbol = two.string " +
+                        "output every 6 events " +
+                        "order by symbol";
     	createAndSendAggregate(statementString);
     	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
+    	orderValuesBySymbolAggregateAllJoin();
     	assertValues(symbols, "symbol");
     	assertValues(prices, "max(sum(price))");
     	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "max(sum(price))"}));
@@ -170,15 +171,15 @@ public class TestOrderByAggregation extends TestCase {
     	epService.initialize();
     	
     	statementString = "select symbol, sum(price) from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"having sum(price) > 0 " + 
-    	"output every 6 events " + 
-    	"order by symbol"; 
+                        SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+                        SupportBeanString.class.getName() + ".win:length(100) as two " +
+                        "where one.symbol = two.string " +
+                        "having sum(price) > 0 " +
+                        "output every 6 events " +
+                        "order by symbol";
     	createAndSendAggregate(statementString);
     	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
+    	orderValuesBySymbolAggregateAllJoin();
     	assertValues(symbols, "symbol");
     	assertValues(prices, "sum(price)");
     	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
@@ -187,14 +188,14 @@ public class TestOrderByAggregation extends TestCase {
     	epService.initialize();
     	
     	statementString = "select symbol, sum(price) from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by symbol, sum(price)"; 
+                        SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+                        SupportBeanString.class.getName() + ".win:length(100) as two " +
+                        "where one.symbol = two.string " +
+                        "output every 6 events "  +
+                        "order by symbol, sum(price)";
     	createAndSendAggregate(statementString);
     	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
+    	orderValuesBySymbolAggregateAllJoin();
     	assertValues(symbols, "symbol");
     	assertValues(prices, "sum(price)");
     	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
@@ -203,14 +204,14 @@ public class TestOrderByAggregation extends TestCase {
     	epService.initialize();
     	
     	statementString = "select symbol, 21+sum(price)*0 from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " + 
-    	"output every 6 events "  + 
-    	"order by symbol, 2*sum(price)+1"; 
+                    SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+                    SupportBeanString.class.getName() + ".win:length(100) as two " +
+                    "where one.symbol = two.string " +
+                    "output every 6 events "  +
+                    "order by symbol, 2*sum(price)+1";
     	createAndSendAggregate(statementString);
     	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
+    	orderValuesBySymbolAggregateAllJoin();
     	assertValues(symbols, "symbol");
     	assertValues(prices, "(21+(sum(price)*0))");
     	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(21+(sum(price)*0))"}));
@@ -684,19 +685,41 @@ public class TestOrderByAggregation extends TestCase {
     	sendEvent("DOG", 1);		
 	}
 
+    private void orderValuesBySymbolAggregateAllJoin() {
+        symbols.add("CAT");
+        symbols.add("CAT");
+        symbols.add("CMU");
+        symbols.add("CMU");
+        symbols.add("IBM");
+        symbols.add("IBM");
+        prices.add(11d);
+        prices.add(11d);
+        prices.add(21d);
+        prices.add(21d);
+        prices.add(14d);
+        prices.add(14d);
+        volumes.add(0l);
+        volumes.add(0l);
+        volumes.add(0l);
+        volumes.add(0l);
+        volumes.add(0l);
+        volumes.add(0l);
+        volumes.add(0l);
+    }
+
 	private void orderValuesBySymbolAggregateAll() {
-    	symbols.add("CAT");
+        symbols.add("CAT");
     	symbols.add("CAT");
     	symbols.add("CMU");
     	symbols.add("CMU");
     	symbols.add("IBM");
     	symbols.add("IBM");
+    	prices.add(15d);
     	prices.add(21d);
-    	prices.add(21d);
-    	prices.add(21d);
-    	prices.add(21d);
-    	prices.add(21d);
-    	prices.add(21d);
+    	prices.add(8d);
+    	prices.add(10d);
+    	prices.add(3d);
+    	prices.add(7d);
     	volumes.add(0l);
     	volumes.add(0l);
     	volumes.add(0l);
@@ -705,8 +728,6 @@ public class TestOrderByAggregation extends TestCase {
     	volumes.add(0l);
     	volumes.add(0l);
 	}
-
-
 
 	private void createAndSendAggregate(String statementString) {
 		testListener = new SupportUpdateListener();
@@ -728,8 +749,6 @@ public class TestOrderByAggregation extends TestCase {
 	    prices = new LinkedList<Double>();
 	    volumes = new LinkedList<Long>();
 	}
-
-
 
 	private void orderValuesBySumPriceGroup()
 	{

@@ -72,7 +72,7 @@ public final class OutputConditionTime implements OutputCondition
         return msecIntervalSize;
     }
 
-    public final void updateOutputCondition(int newEventsCount, int oldEventsCount)
+    public final void updateOutputCondition(boolean hasNewData, int newEventsCount, int oldEventsCount)
     {
         if (log.isDebugEnabled())
         {

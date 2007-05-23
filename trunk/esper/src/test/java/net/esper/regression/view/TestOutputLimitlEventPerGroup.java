@@ -151,8 +151,7 @@ public class TestOutputLimitlEventPerGroup extends TestCase
 	    assertFalse(testListener.isInvoked());
 
 	    sendEvent(SYMBOL_DELL, 20);
-	    assertEvent(SYMBOL_DELL,
-	            null, null,
+	    assertEventNew(SYMBOL_DELL,
 	            30d, 15d);
 	    testListener.reset();
 
@@ -196,21 +195,18 @@ public class TestOutputLimitlEventPerGroup extends TestCase
         assertFalse(testListener.isInvoked());
 
         sendEvent(SYMBOL_DELL, 10);
-        assertEvents(SYMBOL_IBM,
-        		null, null,
+        assertEventsNew(SYMBOL_IBM,
         		70d, 70d,
         		SYMBOL_DELL,
-                null, null,
                 10d, 10d);
 	    testListener.reset();
 
         sendEvent(SYMBOL_DELL, 20);
         assertFalse(testListener.isInvoked());
 
-
         sendEvent(SYMBOL_DELL, 100);
         assertEvents(SYMBOL_IBM,
-        		null, null,
+        		70d, 70d,
         		70d, 70d,
         		SYMBOL_DELL,
                 10d, 10d,
@@ -234,6 +230,51 @@ public class TestOutputLimitlEventPerGroup extends TestCase
         assertEquals(symbol, newData[0].get("symbol"));
         assertEquals(newSum, newData[0].get("mySum"));
         assertEquals("newData myAvg wrong", newAvg, newData[0].get("myAvg"));
+
+        testListener.reset();
+        assertFalse(testListener.isInvoked());
+    }
+
+    private void assertEventNew(String symbol,
+                             Double newSum, Double newAvg)
+    {
+        EventBean[] oldData = testListener.getLastOldData();
+        EventBean[] newData = testListener.getLastNewData();
+
+        assertNull(oldData);
+        assertEquals(1, newData.length);
+
+        assertEquals(symbol, newData[0].get("symbol"));
+        assertEquals(newSum, newData[0].get("mySum"));
+        assertEquals("newData myAvg wrong", newAvg, newData[0].get("myAvg"));
+
+        testListener.reset();
+        assertFalse(testListener.isInvoked());
+    }
+
+    private void assertEventsNew(String symbolOne,
+                              double newSumOne, double newAvgOne,
+                              String symbolTwo,
+                              double newSumTwo, double newAvgTwo)
+    {
+        EventBean[] oldData = testListener.getLastOldData();
+        EventBean[] newData = testListener.getLastNewData();
+
+        assertNull(oldData);
+        assertEquals(2, newData.length);
+
+        int indexOne = 0;
+        int indexTwo = 1;
+        if (newData[0].get("symbol").equals(symbolTwo))
+        {
+            indexTwo = 0;
+            indexOne = 1;
+        }
+        assertEquals(newSumOne, newData[indexOne].get("mySum"));
+        assertEquals(newSumTwo, newData[indexTwo].get("mySum"));
+
+        assertEquals(newAvgOne, newData[indexOne].get("myAvg"));
+        assertEquals(newAvgTwo, newData[indexTwo].get("myAvg"));
 
         testListener.reset();
         assertFalse(testListener.isInvoked());

@@ -7,14 +7,16 @@
  **************************************************************************************/
 package net.esper.eql.core;
 
-import net.esper.event.EventType;
-import net.esper.event.EventBean;
-import net.esper.collection.Pair;
 import net.esper.collection.MultiKey;
-import net.esper.eql.expression.ExprNode;
+import net.esper.collection.MultiKeyUntyped;
 import net.esper.eql.agg.AggregationService;
+import net.esper.eql.expression.ExprNode;
+import net.esper.eql.spec.OutputLimitType;
+import net.esper.event.EventBean;
+import net.esper.event.EventType;
 
 import java.util.Set;
+import java.util.LinkedList;
 
 /**
  * Result set processor for the case: aggregation functions used in the select clause, and no group-by,
@@ -30,8 +32,9 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
     private final OrderByProcessor orderByProcessor;
     private final AggregationService aggregationService;
     private final ExprNode optionalHavingNode;
-    private final boolean isOutputLimiting;
-    private final boolean isOutputLimitLastOnly;
+    private final OutputLimitType outputLimitType;
+
+    private LinkedList<ResultSetProcessorResult> outputLimitBatch = new LinkedList<ResultSetProcessorResult>();
 
     /**
      * Ctor.
@@ -39,22 +42,18 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
      * @param orderByProcessor - for sorting the outgoing events according to the order-by clause
      * @param aggregationService - handles aggregation
      * @param optionalHavingNode - having clause expression node
-     * @param isOutputLimiting - true to indicate that we limit output
-     * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      */
     public ResultSetProcessorAggregateAll(SelectExprProcessor selectExprProcessor,
                                           OrderByProcessor orderByProcessor,
                                           AggregationService aggregationService,
                                           ExprNode optionalHavingNode,
-                                          boolean isOutputLimiting,
-                                          boolean isOutputLimitLastOnly)
+                                          OutputLimitType outputLimitType)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
         this.aggregationService = aggregationService;
         this.optionalHavingNode = optionalHavingNode;
-        this.isOutputLimiting = isOutputLimiting;
-        this.isOutputLimitLastOnly = isOutputLimitLastOnly;
+        this.outputLimitType = outputLimitType;
     }
 
     public EventType getResultEventType()
@@ -62,106 +61,285 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public ResultSetProcessorResult processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
-        EventBean[] selectOldEvents = null;
-        EventBean[] selectNewEvents = null;
+        ResultSetProcessorResult result = new ResultSetProcessorResult();
 
-        if (optionalHavingNode == null)
+        if (oldEvents != null)
         {
-            selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly, false);
-        }
-        else
-        {
-            selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false);
-        }
-
-        if (!oldEvents.isEmpty())
-        {
-            // apply old data to aggregates
-            for (MultiKey<EventBean> events : oldEvents)
+            EventBean[] resultOld = new EventBean[oldEvents.size()];
+            MultiKeyUntyped orderKeys[] = null;
+            if (orderByProcessor != null)
             {
-                aggregationService.applyLeave(events.getArray(), null);
+                orderKeys = new MultiKeyUntyped[oldEvents.size()];
+            }
+
+            int count = 0;
+            for (MultiKey<EventBean> oldEventRow : oldEvents)
+            {
+                Boolean pass = true;
+                if (optionalHavingNode != null)
+                {
+                    pass = (Boolean) optionalHavingNode.evaluate(oldEventRow.getArray(), false);
+                }
+
+                if (pass)
+                {
+                    EventBean event = selectExprProcessor.process(oldEventRow.getArray(), false);
+                    if (orderByProcessor != null)
+                    {
+                        MultiKeyUntyped orderKey = orderByProcessor.getSortKey(oldEventRow.getArray(), false);
+                        orderKeys[count] = orderKey;
+                    }
+                    resultOld[count] = event;
+                    count++;
+                }
+                aggregationService.applyLeave(oldEventRow.getArray(), null);
+            }
+
+            // resize if required
+            if (count > 0)
+            {
+                if (count != resultOld.length)
+                {
+                    EventBean[] resultOldResized = new EventBean[count];
+                    System.arraycopy(resultOld, 0, resultOldResized, 0, count);
+                    resultOld = resultOldResized;
+                    if (orderByProcessor != null)
+                    {
+                        MultiKeyUntyped[] orderKeysResized = new MultiKeyUntyped[count];
+                        System.arraycopy(orderKeys, 0, orderKeysResized, 0, count);
+                        orderKeys = orderKeysResized;
+                    }
+                }
+                result.setOldOut(resultOld);
+                result.setOldOrderKey(orderKeys);
             }
         }
 
-        if (!newEvents.isEmpty())
+        if (newEvents != null)
         {
-            // apply new data to aggregates
-            for (MultiKey<EventBean> events : newEvents)
+            EventBean[] resultNew = new EventBean[newEvents.size()];
+            MultiKeyUntyped orderKeys[] = null;
+            if (orderByProcessor != null)
             {
-                aggregationService.applyEnter(events.getArray(), null);
+                orderKeys = new MultiKeyUntyped[newEvents.size()];
+            }
+
+            int count = 0;
+            for (MultiKey<EventBean> newEventRow : newEvents)
+            {
+                aggregationService.applyEnter(newEventRow.getArray(), null);
+
+                Boolean pass = true;
+                if (optionalHavingNode != null)
+                {
+                    pass = (Boolean) optionalHavingNode.evaluate(newEventRow.getArray(), true);
+                }
+
+                if (pass)
+                {
+                    EventBean event = selectExprProcessor.process(newEventRow.getArray(), true);
+                    if (orderByProcessor != null)
+                    {
+                        MultiKeyUntyped orderKey = orderByProcessor.getSortKey(newEventRow.getArray(), true);
+                        orderKeys[count] = orderKey;
+                    }
+                    resultNew[count] = event;
+                    count++;
+                }
+            }
+
+            // resize if required
+            if (count > 0)
+            {
+                if (count != resultNew.length)
+                {
+                    EventBean[] resultOldResized = new EventBean[count];
+                    System.arraycopy(resultNew, 0, resultOldResized, 0, count);
+                    resultNew = resultOldResized;
+                    if (orderByProcessor != null)
+                    {
+                        MultiKeyUntyped[] orderKeysResized = new MultiKeyUntyped[count];
+                        System.arraycopy(orderKeys, 0, orderKeysResized, 0, count);
+                        orderKeys = orderKeysResized;
+                    }
+                }
+                result.setNewOut(resultNew);
+                result.setNewOrderKey(orderKeys);
             }
         }
 
-        if (optionalHavingNode == null)
-        {
-            selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly, true);
-        }
-        else
-        {
-            selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true);
-        }
-
-        if ((selectNewEvents == null) && (selectOldEvents == null))
-        {
-            return null;
-        }
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return result;
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+    public ResultSetProcessorResult processViewResult(EventBean[] newData, EventBean[] oldData)
     {
-        EventBean[] selectOldEvents = null;
-        EventBean[] selectNewEvents = null;
-
-        // generate old events using select expressions
-        if (optionalHavingNode == null)
-        {
-            selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly, false);
-        }
-        // generate old events using having then select
-        else
-        {
-            selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false);
-        }
-
+        ResultSetProcessorResult result = new ResultSetProcessorResult();
         EventBean[] eventsPerStream = new EventBean[1];
+
         if (oldData != null)
         {
-            // apply old data to aggregates
-            for (int i = 0; i < oldData.length; i++)
+            EventBean[] resultOld = new EventBean[oldData.length];
+            MultiKeyUntyped orderKeys[] = null;
+            if (orderByProcessor != null)
             {
-                eventsPerStream[0] = oldData[i];
+                orderKeys = new MultiKeyUntyped[oldData.length];
+            }
+
+            int count = 0;
+            for (EventBean anOldData : oldData)
+            {
+                eventsPerStream[0] = anOldData;
+
+                Boolean pass = true;
+                if (optionalHavingNode != null)
+                {
+                    pass = (Boolean) optionalHavingNode.evaluate(eventsPerStream, false);
+                }
+
+                if (pass)
+                {
+                    EventBean event = selectExprProcessor.process(eventsPerStream, false);
+                    if (orderByProcessor != null)
+                    {
+                        MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, false);
+                        orderKeys[count] = orderKey;
+                    }
+                    resultOld[count] = event;
+                    count++;
+                }
                 aggregationService.applyLeave(eventsPerStream, null);
+            }
+
+            // resize if required
+            if (count > 0)
+            {
+                if (count != resultOld.length)
+                {
+                    EventBean[] resultOldResized = new EventBean[count];
+                    System.arraycopy(resultOld, 0, resultOldResized, 0, count);
+                    resultOld = resultOldResized;
+                    if (orderByProcessor != null)
+                    {
+                        MultiKeyUntyped[] orderKeysResized = new MultiKeyUntyped[count];
+                        System.arraycopy(orderKeys, 0, orderKeysResized, 0, count);
+                        orderKeys = orderKeysResized;
+                    }
+                }
+                result.setOldOut(resultOld);
+                result.setOldOrderKey(orderKeys);
             }
         }
 
         if (newData != null)
         {
-            // apply new data to aggregates
-            for (int i = 0; i < newData.length; i++)
+            EventBean[] resultNew = new EventBean[newData.length];
+            MultiKeyUntyped orderKeys[] = null;
+            if (orderByProcessor != null)
             {
-                eventsPerStream[0] = newData[i];
+                orderKeys = new MultiKeyUntyped[newData.length];
+            }
+
+            int count = 0;
+            for (EventBean aNewData : newData)
+            {
+                eventsPerStream[0] = aNewData;
+
                 aggregationService.applyEnter(eventsPerStream, null);
+
+                Boolean pass = true;
+                if (optionalHavingNode != null)
+                {
+                    pass = (Boolean) optionalHavingNode.evaluate(eventsPerStream, true);
+                }
+
+                if (pass)
+                {
+                    EventBean event = selectExprProcessor.process(eventsPerStream, true);
+                    if (orderByProcessor != null)
+                    {
+                        MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true);
+                        orderKeys[count] = orderKey;
+                    }
+                    resultNew[count] = event;
+                    count++;
+                }
+            }
+
+            // resize if required
+            if (count > 0)
+            {
+                if (count != resultNew.length)
+                {
+                    EventBean[] resultOldResized = new EventBean[count];
+                    System.arraycopy(resultNew, 0, resultOldResized, 0, count);
+                    resultNew = resultOldResized;
+                    if (orderByProcessor != null)
+                    {
+                        MultiKeyUntyped[] orderKeysResized = new MultiKeyUntyped[count];
+                        System.arraycopy(orderKeys, 0, orderKeysResized, 0, count);
+                        orderKeys = orderKeysResized;
+                    }
+                }
+                result.setNewOut(resultNew);
+                result.setNewOrderKey(orderKeys);
             }
         }
 
-        // generate new events using select expressions
-        if (optionalHavingNode == null)
+        return result;
+    }
+
+    public boolean addViewResult(EventBean[] newData, EventBean[] oldData)
+    {
+        ResultSetProcessorResult result = processViewResult(newData, oldData);
+        if (outputLimitType == OutputLimitType.ALL)
         {
-            selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly, true);
+            outputLimitBatch.add(result);
+            return result.getNewOut() != null;
+        }
+        else if (outputLimitType == OutputLimitType.LAST)
+        {
+            outputLimitBatch.add(result);
+            if (outputLimitBatch.size() > 1)
+            {
+                outputLimitBatch.removeFirst();
+            }
+            return result.getNewOut() != null;
         }
         else
         {
-            selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true);
+            throw new UnsupportedOperationException("Adding results for output limit first not supported");
         }
+    }
 
-        if ((selectNewEvents == null) && (selectOldEvents == null))
+    public boolean addJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    {
+        ResultSetProcessorResult result = processJoinResult(newEvents, oldEvents);
+        if (outputLimitType == OutputLimitType.ALL)
         {
-            return null;
+            outputLimitBatch.add(result);
+            return result.getNewOut() != null;
         }
+        else if (outputLimitType == OutputLimitType.LAST)
+        {
+            outputLimitBatch.add(result);
+            if (outputLimitBatch.size() > 1)
+            {
+                outputLimitBatch.removeFirst();
+            }
+            return result.getNewOut() != null;
+        }
+        else
+        {
+            throw new UnsupportedOperationException("Adding results for output limit first not supported");
+        }
+    }
 
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+    public ResultSetProcessorResult generateResult()
+    {
+        ResultSetProcessorResult result = ResultSetProcessorSimple.flatten(outputLimitBatch, orderByProcessor);
+        outputLimitBatch.clear();
+        return result;
     }
 }

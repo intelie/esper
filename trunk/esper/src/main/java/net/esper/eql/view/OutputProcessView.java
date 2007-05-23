@@ -9,6 +9,8 @@ package net.esper.eql.view;
 
 import net.esper.collection.TransformEventIterator;
 import net.esper.eql.core.ResultSetProcessor;
+import net.esper.eql.core.OrderByProcessor;
+import net.esper.eql.core.OrderBySorter;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -28,14 +30,17 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
      * Processes the parent views result set generating events for pushing out to child view.
      */
     protected final ResultSetProcessor resultSetProcessor;
+    protected final OrderBySorter orderBySorter;
 
     /**
      * Ctor.
      * @param resultSetProcessor processes the results posted by parent view or joins
      */
-    protected OutputProcessView(ResultSetProcessor resultSetProcessor)
+    protected OutputProcessView(ResultSetProcessor resultSetProcessor,
+                                OrderBySorter orderBySorter)
     {
         this.resultSetProcessor = resultSetProcessor;
+        this.orderBySorter = orderBySorter;
     }
 
     public EventType getEventType()

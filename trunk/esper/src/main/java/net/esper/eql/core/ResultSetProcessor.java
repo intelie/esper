@@ -2,7 +2,6 @@ package net.esper.eql.core;
 
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.collection.Pair;
 import net.esper.collection.MultiKey;
 
 import java.util.Set;
@@ -26,9 +25,8 @@ public interface ResultSetProcessor
      * old events as specified.
      * @param newData - new events posted by view
      * @param oldData - old events posted by view
-     * @return pair of new events and old events
      */
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData);
+    public ResultSetProcessorResult processViewResult(EventBean[] newData, EventBean[] oldData);
 
     /**
      * For use by joins posting their result, process the event rows that are entered and removed (new and old events).
@@ -38,5 +36,9 @@ public interface ResultSetProcessor
      * @param oldEvents - old events posted by join
      * @return pair of new events and old events 
      */
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents);
+    public ResultSetProcessorResult processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents);
+
+    public boolean addViewResult(EventBean[] newData, EventBean[] oldData);
+    public boolean addJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents);
+    public ResultSetProcessorResult generateResult();
 }

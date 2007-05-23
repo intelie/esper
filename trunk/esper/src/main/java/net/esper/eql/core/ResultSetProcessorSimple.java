@@ -1,15 +1,18 @@
 package net.esper.eql.core;
 
-import java.util.*;
-
+import net.esper.collection.MultiKey;
+import net.esper.collection.MultiKeyUntyped;
+import net.esper.eql.expression.ExprNode;
+import net.esper.eql.spec.OutputLimitType;
+import net.esper.event.EventBean;
+import net.esper.event.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import net.esper.collection.MultiKey;
-import net.esper.collection.Pair;
-import net.esper.event.EventBean;
-import net.esper.event.EventType;
-import net.esper.eql.expression.ExprNode;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Result set processor for the simplest case: no aggregation functions used in the select clause, and no group-by.
@@ -20,99 +23,87 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
 {
     private static final Log log = LogFactory.getLog(ResultSetProcessorSimple.class);
 
-    private final SelectExprProcessor selectExprProcessor;
-    private final boolean isOutputLimiting;
-    private final boolean isOutputLimitLastOnly;
+    private final SelectExprProcessor optionalSelectExprProcessor;
     private final OrderByProcessor orderByProcessor;
-    private final ExprNode optionalHavingExpr;
+    private final OutputLimitType outputLimitType;
 
+    private LinkedList<ResultSetProcessorResult> outputLimitBatch = new LinkedList<ResultSetProcessorResult>();
+
+    // TODO: try a simple processor with having, with and without wildcard
+    
     /**
      * Ctor.
-     * @param selectExprProcessor - for processing the select expression and generting the final output rows
+     * @param optionalSelectExprProcessor - for processing the select expression and generting the final output rows
      * @param orderByProcessor - for sorting the outgoing events according to the order-by clause
-     * @param optionalHavingNode - having clause expression node
-     * @param isOutputLimiting - true to indicate we are output limiting and must keep producing
-     * a row per group even if groups didn't change
-     * @param isOutputLimitLastOnly - true if output limiting and interested in last event only
      */
-    public ResultSetProcessorSimple(SelectExprProcessor selectExprProcessor,
+    public ResultSetProcessorSimple(SelectExprProcessor optionalSelectExprProcessor,
                                     OrderByProcessor orderByProcessor,
-                                    ExprNode optionalHavingNode,
-                                    boolean isOutputLimiting,
-                                    boolean isOutputLimitLastOnly)
+                                    OutputLimitType outputLimitType)
     {
-        this.selectExprProcessor = selectExprProcessor;
+        this.optionalSelectExprProcessor = optionalSelectExprProcessor;
         this.orderByProcessor = orderByProcessor;
-        this.optionalHavingExpr = optionalHavingNode;
-        this.isOutputLimiting = isOutputLimiting;
-        this.isOutputLimitLastOnly = isOutputLimitLastOnly;
+        this.outputLimitType = outputLimitType;
     }
 
     public EventType getResultEventType()
     {
         // the type depends on whether we are post-processing a selection result, or not
-        if (selectExprProcessor != null)
+        if (optionalSelectExprProcessor != null)
         {
-            return selectExprProcessor.getResultEventType();
+            return optionalSelectExprProcessor.getResultEventType();
         }
         return null;
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public ResultSetProcessorResult processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
-        EventBean[] selectOldEvents = null;
-        EventBean[] selectNewEvents = null;
+        ResultSetSelect resultOld = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, oldEvents, false);
+        ResultSetSelect resultNew = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, newEvents, true);
 
-        if (optionalHavingExpr == null)
-        {
-            selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly, false);
-            selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly, true);
-        }
-        else
-        {
-            selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly, false);
-            selectNewEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly, true);
-        }
+        ResultSetProcessorResult result = new ResultSetProcessorResult();
+        result.setNewOut(resultNew.getEvents());
+        result.setOldOut(resultOld.getEvents());
+        result.setNewOrderKey(resultNew.getOrderKeys());
+        result.setOldOrderKey(resultOld.getOrderKeys());
 
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return result;
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+    public ResultSetProcessorResult processViewResult(EventBean[] newData, EventBean[] oldData)
     {
-        EventBean[] selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly, false);
-        EventBean[] selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly, true);
+        ResultSetSelect resultOld = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, oldData, false);
+        ResultSetSelect resultNew = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, newData, true);
 
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        ResultSetProcessorResult result = new ResultSetProcessorResult();
+        result.setNewOut(resultNew.getEvents());
+        result.setOldOut(resultOld.getEvents());
+        result.setNewOrderKey(resultNew.getOrderKeys());
+        result.setOldOrderKey(resultOld.getOrderKeys());
+
+        return result;
     }
 
     /**
      * Applies the select-clause to the given events returning the selected events. The number of events stays the
      * same, i.e. this method does not filter it just transforms the result set.
-     * @param exprProcessor - processes each input event and returns output event
+     * @param optExprProcessor - processes each input event and returns output event
      * @param orderByProcessor - orders the outgoing events according to the order-by clause
      * @param events - input events
-     * @param isOutputLimiting - true to indicate that we limit output
-     * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData)
+    protected static ResultSetSelect getSelectEventsNoHaving(SelectExprProcessor optExprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isNewData)
     {
-        if (isOutputLimiting)
-        {
-            events = applyOutputLimit(events, isOutputLimitLastOnly);
-        }
-
         if (events == null)
         {
-            return null;
+            return new ResultSetSelect();
         }
 
         EventBean[] result = new EventBean[events.length];
-        EventBean[][] eventGenerators = null;
+        MultiKeyUntyped[] orderKeys = null;
         if(orderByProcessor != null)
         {
-            eventGenerators = new EventBean[events.length][];
+            orderKeys = new MultiKeyUntyped[events.length];
         }
 
         EventBean[] eventsPerStream = new EventBean[1];
@@ -121,121 +112,74 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
             eventsPerStream[0] = events[i];
 
             // Wildcard select case
-            if(exprProcessor == null)
+            if(optExprProcessor == null)
             {
                 result[i] = events[i];
             }
             else
             {
-                result[i] = exprProcessor.process(eventsPerStream, isNewData);
+                result[i] = optExprProcessor.process(eventsPerStream, isNewData);
             }
 
-            if(orderByProcessor != null)
+            if (orderByProcessor != null)
             {
-                  eventGenerators[i] = new EventBean[] {events[i]};
+                orderKeys[i] = orderByProcessor.getSortKey(eventsPerStream, isNewData);
             }
         }
 
-        if(orderByProcessor != null)
-        {
-            return orderByProcessor.sort(result, eventGenerators, isNewData);
-        }
-        else
-        {
-            return result;
-        }
-    }
-
-    /**
-     * Applies the last/all event output limit clause.
-     * @param events to output
-     * @param isOutputLimitLastOnly - flag to indicate output all versus output last
-     * @return events to output
-     */
-    protected static EventBean[] applyOutputLimit(EventBean[] events, boolean isOutputLimitLastOnly)
-    {
-        if(isOutputLimitLastOnly && events != null && events.length > 0)
-        {
-            return new EventBean[] {events[events.length - 1]};
-        }
-        else
-        {
-            return events;
-        }
-    }
-
-    /**
-     * Applies the last/all event output limit clause.
-     * @param eventSet to output
-     * @param isOutputLimitLastOnly - flag to indicate output all versus output last
-     * @return events to output
-     */
-    protected static Set<MultiKey<EventBean>> applyOutputLimit(Set<MultiKey<EventBean>> eventSet, boolean isOutputLimitLastOnly)
-    {
-        if(isOutputLimitLastOnly && eventSet != null && !eventSet.isEmpty())
-        {
-            Object[] events = eventSet.toArray();
-            Set<MultiKey<EventBean>> resultSet = new LinkedHashSet<MultiKey<EventBean>>();
-            resultSet.add((MultiKey<EventBean>)events[events.length - 1]);
-            return resultSet;
-        }
-        else
-        {
-            return eventSet;
-        }
+        ResultSetSelect resultSetSelect = new ResultSetSelect();
+        resultSetSelect.setEvents(result);
+        resultSetSelect.setOrderKeys(orderKeys);
+        return resultSetSelect;
     }
 
     /**
      * Applies the select-clause to the given events returning the selected events. The number of events stays the
      * same, i.e. this method does not filter it just transforms the result set.
-     * @param exprProcessor - processes each input event and returns output event
+     * @param optExprProcessor - processes each input event and returns output event
      * @param orderByProcessor - for sorting output events according to the order-by clause
      * @param events - input events
-     * @param isOutputLimiting - true to indicate that we limit output
-     * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData)
+    protected static ResultSetSelect getSelectEventsNoHaving(SelectExprProcessor optExprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isNewData)
     {
-        if (isOutputLimiting)
-        {
-            events = applyOutputLimit(events, isOutputLimitLastOnly);
-        }
-
         int length = events.size();
         if (length == 0)
         {
-            return null;
+            return new ResultSetSelect();
         }
 
         EventBean[] result = new EventBean[length];
-        EventBean[][] eventGenerators = null;
+        MultiKeyUntyped[] orderKeys = null;
         if(orderByProcessor != null)
         {
-            eventGenerators = new EventBean[length][];
+            orderKeys = new MultiKeyUntyped[length];
         }
 
         int count = 0;
         for (MultiKey<EventBean> key : events)
         {
             EventBean[] eventsPerStream = key.getArray();
-            result[count] = exprProcessor.process(eventsPerStream, isNewData);
+            if (optExprProcessor != null)
+            {
+                result[count] = optExprProcessor.process(eventsPerStream, isNewData);
+            }
+            else
+            {
+                result[count] = eventsPerStream[0];
+            }
             if(orderByProcessor != null)
             {
-                eventGenerators[count] = eventsPerStream;
+                orderKeys[count] = orderByProcessor.getSortKey(eventsPerStream, isNewData);
             }
             count++;
         }
 
-        if(orderByProcessor != null)
-        {
-            return orderByProcessor.sort(result, eventGenerators, isNewData);
-        }
-        else
-        {
-            return result;
-        }
+        ResultSetSelect resultSetSelect = new ResultSetSelect();
+        resultSetSelect.setEvents(result);
+        resultSetSelect.setOrderKeys(orderKeys);
+        return resultSetSelect;
     }
 
     /**
@@ -243,32 +187,25 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * same, i.e. this method does not filter it just transforms the result set.
      * <p>
      * Also applies a having clause.
-     * @param exprProcessor - processes each input event and returns output event
+     * @param optExprProcessor - processes each input event and returns output event
      * @param orderByProcessor - for sorting output events according to the order-by clause
      * @param events - input events
      * @param optionalHavingNode - supplies the having-clause expression
-     * @param isOutputLimiting - true to indicate that we limit output
-     * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData)
+    protected static ResultSetSelect getSelectEventsHaving(SelectExprProcessor optExprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData)
     {
-        if (isOutputLimiting)
-        {
-            events = ResultSetProcessorSimple.applyOutputLimit(events, isOutputLimitLastOnly);
-        }
-
         if (events == null)
         {
-            return null;
+            return new ResultSetSelect();
         }
 
-        LinkedList<EventBean> result = new LinkedList<EventBean>();
-        List<EventBean[]> eventGenerators = null;
+        List<EventBean> result = new ArrayList<EventBean>();
+        List<MultiKeyUntyped> orderKeys = null;
         if(orderByProcessor != null)
         {
-            eventGenerators = new ArrayList<EventBean[]>();
+            orderKeys = new ArrayList<MultiKeyUntyped>();
         }
 
         EventBean[] eventsPerStream = new EventBean[1];
@@ -282,27 +219,34 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
                 continue;
             }
 
-            result.add(exprProcessor.process(eventsPerStream, isNewData));
-            if(orderByProcessor != null)
+            if (optExprProcessor != null)
             {
-                eventGenerators.add(new EventBean[] { events[i] });
-            }
-        }
-
-        if (!result.isEmpty())
-        {
-            if(orderByProcessor != null)
-            {
-                return orderByProcessor.sort(result.toArray(new EventBean[0]), eventGenerators.toArray(new EventBean[0][]), isNewData);
+                result.add(optExprProcessor.process(eventsPerStream, isNewData));
             }
             else
             {
-                return result.toArray(new EventBean[0]);
+                result.add(eventsPerStream[0]);
             }
+            if(orderByProcessor != null)
+            {
+                orderKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData));
+            }
+        }
+
+        ResultSetSelect resultSetSelect = new ResultSetSelect();
+        if (!result.isEmpty())
+        {
+            resultSetSelect.setEvents(result.toArray(new EventBean[0]));
+
+            if (orderByProcessor != null)
+            {
+                resultSetSelect.setOrderKeys(orderKeys.toArray(new MultiKeyUntyped[0]));
+            }
+            return resultSetSelect;
         }
         else
         {
-            return null;
+            return resultSetSelect;
         }
     }
 
@@ -311,27 +255,20 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * same, i.e. this method does not filter it just transforms the result set.
      * <p>
      * Also applies a having clause.
-     * @param exprProcessor - processes each input event and returns output event
+     * @param optExprProcessor - processes each input event and returns output event
      * @param orderByProcessor - for sorting output events according to the order-by clause
      * @param events - input events
      * @param optionalHavingNode - supplies the having-clause expression
-     * @param isOutputLimiting - true to indicate that we limit output
-     * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData)
+    protected static ResultSetSelect getSelectEventsHaving(SelectExprProcessor optExprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData)
     {
-        if (isOutputLimiting)
-        {
-            events = ResultSetProcessorSimple.applyOutputLimit(events, isOutputLimitLastOnly);
-        }
-
         LinkedList<EventBean> result = new LinkedList<EventBean>();
-        List<EventBean[]> eventGenerators = null;
+        List<MultiKeyUntyped> orderKeys = null;
         if(orderByProcessor != null)
         {
-            eventGenerators = new ArrayList<EventBean[]>();
+            orderKeys = new ArrayList<MultiKeyUntyped>();
         }
 
         for (MultiKey<EventBean> key : events)
@@ -344,28 +281,179 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
                 continue;
             }
 
-            EventBean resultEvent = exprProcessor.process(eventsPerStream, isNewData);
-            result.add(resultEvent);
-            if(orderByProcessor != null)
+            if (optExprProcessor != null)
             {
-                eventGenerators.add(eventsPerStream);
-            }
-        }
-
-        if (!result.isEmpty())
-        {
-            if(orderByProcessor != null)
-            {
-                return orderByProcessor.sort(result.toArray(new EventBean[0]), eventGenerators.toArray(new EventBean[0][]), isNewData);
+                EventBean resultEvent = optExprProcessor.process(eventsPerStream, isNewData);
+                result.add(resultEvent);
             }
             else
             {
-                return result.toArray(new EventBean[0]);
+                result.add(eventsPerStream[0]);
+            }
+            if(orderByProcessor != null)
+            {
+                orderKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData));
+            }
+        }
+
+        ResultSetSelect resultSetSelect = new ResultSetSelect();
+        if (!result.isEmpty())
+        {
+            resultSetSelect.setEvents(result.toArray(new EventBean[0]));
+            if (orderByProcessor != null)
+            {
+                resultSetSelect.setOrderKeys(orderKeys.toArray(new MultiKeyUntyped[0]));
+            }
+            return resultSetSelect;
+        }
+        else
+        {
+            return resultSetSelect;
+        }
+    }
+
+    public boolean addViewResult(EventBean[] newData, EventBean[] oldData)
+    {
+        ResultSetProcessorResult result = processViewResult(newData, oldData);
+        if (outputLimitType == OutputLimitType.ALL)
+        {
+            outputLimitBatch.add(result);
+        }
+        else if (outputLimitType == OutputLimitType.LAST)
+        {
+            outputLimitBatch.add(result);
+            if (outputLimitBatch.size() > 1)
+            {
+                outputLimitBatch.removeFirst();
             }
         }
         else
         {
+            throw new UnsupportedOperationException("Adding results for output limit first not supported");
+        }
+        return true;
+    }
+
+    public boolean addJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    {
+        ResultSetProcessorResult result = processJoinResult(newEvents, oldEvents);
+
+        if (outputLimitType == OutputLimitType.ALL)
+        {
+            outputLimitBatch.add(result);
+        }
+        else if (outputLimitType == OutputLimitType.LAST)
+        {
+            outputLimitBatch.add(result);
+            if (outputLimitBatch.size() > 1)
+            {
+                outputLimitBatch.removeFirst();
+            }
+        }
+        else
+        {
+            throw new UnsupportedOperationException("Adding results for output limit first not supported");
+        }
+        return true;
+    }
+
+    public ResultSetProcessorResult generateResult()
+    {
+        ResultSetProcessorResult result = ResultSetProcessorSimple.flatten(outputLimitBatch, orderByProcessor);
+        outputLimitBatch.clear();
+        return result;
+    }
+
+    protected static ResultSetProcessorResult flatten(List<ResultSetProcessorResult> resultVector, OrderByProcessor orderByProcessor)
+    {
+        if (resultVector.isEmpty())
+        {
             return null;
         }
-    }
+
+        if (resultVector.size() == 1)
+        {
+            return resultVector.get(0);
+        }
+
+        int totalNewEvents = 0;
+        int totalOldEvents = 0;
+        for (ResultSetProcessorResult entry : resultVector)
+        {
+            EventBean[] oldEvents = entry.getOldOut();
+            if (oldEvents != null)
+            {
+                totalOldEvents += oldEvents.length;
+            }
+            EventBean[] newEvents = entry.getNewOut();
+            if (newEvents != null)
+            {
+                totalNewEvents += newEvents.length;
+            }
+        }
+
+        if ((totalNewEvents == 0) && (totalOldEvents == 0))
+        {
+            return null;
+        }
+
+        EventBean[] newEventsOut = null;
+        EventBean[] oldEventsOut = null;
+        if (totalNewEvents > 0)
+        {
+            newEventsOut = new EventBean[totalNewEvents];
+        }
+        if (totalOldEvents > 0)
+        {
+            oldEventsOut = new EventBean[totalOldEvents];
+        }
+
+        MultiKeyUntyped[] newOrderKeys = null;
+        MultiKeyUntyped[] oldOrderKeys = null;
+        if (orderByProcessor != null)
+        {
+            if (totalNewEvents > 0)
+            {
+                newOrderKeys = new MultiKeyUntyped[totalNewEvents];
+            }
+            if (totalOldEvents > 0)
+            {
+                oldOrderKeys = new MultiKeyUntyped[totalOldEvents];
+            }
+        }
+
+        int destPosNew = 0;
+        int destPosOld = 0;
+        for (ResultSetProcessorResult entry : resultVector)
+        {
+            EventBean[] oldEvents = entry.getOldOut();
+            if (oldEvents != null)
+            {
+                System.arraycopy(oldEvents, 0, oldEventsOut, destPosOld, oldEvents.length);
+                if (orderByProcessor != null)
+                {
+                    System.arraycopy(entry.getOldOrderKey(), 0, oldOrderKeys, destPosOld, oldEvents.length);
+                }
+                destPosOld += oldEvents.length;
+            }
+
+            EventBean[] newEvents = entry.getNewOut();
+            if (newEvents != null)
+            {
+                System.arraycopy(newEvents, 0, newEventsOut, destPosNew, newEvents.length);
+                if (orderByProcessor != null)
+                {
+                    System.arraycopy(entry.getNewOrderKey(), 0, newOrderKeys, destPosNew, newEvents.length);
+                }
+                destPosNew += newEvents.length;
+            }
+        }
+
+        ResultSetProcessorResult sum = new ResultSetProcessorResult();
+        sum.setNewOut(newEventsOut);
+        sum.setOldOut(oldEventsOut);
+        sum.setNewOrderKey(newOrderKeys);
+        sum.setOldOrderKey(oldOrderKeys);
+        return sum;
+    }    
 }

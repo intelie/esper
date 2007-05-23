@@ -204,6 +204,8 @@ public class EPStatementStartMethod
                 statementContext.getMethodResolutionService(),
                 viewResourceDelegate);
 
+        // TODO: test wildcard select and order-by
+
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
 
@@ -214,15 +216,22 @@ public class EPStatementStartMethod
             streamViews[i] = services.getViewService().createViews(eventStreamParentViewable[i], unmaterializedViewChain[i].getViewFactoryChain(), statementContext);
         }
 
+
+        OrderBySorter orderBySorter = null;
+        if ((statementSpec.getOrderByList() != null) && (statementSpec.getOrderByList().size() > 0))
+        {
+            orderBySorter = new OrderBySorter(statementSpec.getOrderByList());
+        }
+
         // For just 1 event stream without joins, handle the one-table process separatly.
         Viewable finalView;
         if (streamNames.length == 1)
         {
-            finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, statementContext);
+            finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, orderBySorter, statementContext);
         }
         else
         {
-            finalView = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext.getEpStatementHandle());
+            finalView = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, orderBySorter, statementSpec.getSelectStreamSelectorEnum(), statementContext.getEpStatementHandle());
         }
 
         // Hook up internal event route for insert-into if required
@@ -249,6 +258,7 @@ public class EPStatementStartMethod
                                 EventType[] streamTypes,
                                 Viewable[] streamViews,
                                 ResultSetProcessor optionalResultSetProcessor,
+                                OrderBySorter optionalOrderBySorter,
                                 SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                 EPStatementHandle epStatementHandle)
             throws ExprValidationException
@@ -256,7 +266,7 @@ public class EPStatementStartMethod
         // Handle joins
         JoinSetComposer composer = JoinSetComposerFactory.makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
         JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
-        OutputProcessView indicatorView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
+        OutputProcessView indicatorView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, optionalOrderBySorter, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
 
         // Create strategy for join execution
         JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
@@ -384,6 +394,7 @@ public class EPStatementStartMethod
 
     private Viewable handleSimpleSelect(Viewable view,
                                         ResultSetProcessor optionalResultSetProcessor,
+                                        OrderBySorter orderBySorter,
                                         StatementContext statementContext)
     {
         Viewable finalView = view;
@@ -399,7 +410,7 @@ public class EPStatementStartMethod
         // Add select expression view if there is any
        if (optionalResultSetProcessor != null || statementSpec.getOutputLimitSpec() != null)
         {
-            OutputProcessView selectView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
+            OutputProcessView selectView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, orderBySorter, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
             finalView.addView(selectView);
             finalView = selectView;
         }

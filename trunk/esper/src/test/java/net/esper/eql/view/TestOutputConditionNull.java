@@ -29,13 +29,13 @@ public class TestOutputConditionNull extends TestCase
     public void testUpdateCondition()
     {
     	// the callback should be made regardles of the update
-    	condition.updateOutputCondition(1,1);
+    	condition.updateOutputCondition(true, 1,1);
     	assertTrue(listener.getAndClearIsInvoked());
-    	condition.updateOutputCondition(1,0);
+    	condition.updateOutputCondition(true, 1,0);
     	assertTrue(listener.getAndClearIsInvoked());
-    	condition.updateOutputCondition(0,1);
+    	condition.updateOutputCondition(true, 0,1);
     	assertTrue(listener.getAndClearIsInvoked());
-    	condition.updateOutputCondition(0,0);
+    	condition.updateOutputCondition(true, 0,0);
     	assertTrue(listener.getAndClearIsInvoked());
     }
     
