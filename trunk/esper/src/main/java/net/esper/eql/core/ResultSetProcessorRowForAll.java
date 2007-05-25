@@ -169,7 +169,6 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public boolean addJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
-        // TODO: optionalHavingNode != null
         if (!oldEvents.isEmpty())
         {
             // apply old data to aggregates
@@ -192,7 +191,6 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public ResultSetProcessorResult generateResult()
     {
-        // TODO: old data
         ResultSetProcessorResult result = new ResultSetProcessorResult();
         EventBean[] selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
         result.setNewOut(selectNewEvents);

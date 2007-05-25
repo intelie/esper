@@ -9,9 +9,6 @@ import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class TestOutputLimitlEventPerGroup extends TestCase
 {
     private static String SYMBOL_DELL = "DELL";
@@ -27,6 +24,34 @@ public class TestOutputLimitlEventPerGroup extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
     }
+
+    public void testWithGroupBy()
+    {
+    	String eventName = SupportMarketDataBean.class.getName();
+    	String statementString = "select symbol, sum(price) from " + eventName + ".win:length(5) " +
+                                 "group by symbol output every 5 events";
+    	EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+    	SupportUpdateListener updateListener = new SupportUpdateListener();
+    	statement.addListener(updateListener);
+
+    	// send some events and check that only the most recent
+    	// ones are kept
+    	sendMarketEvent("IBM", 1D);
+    	sendMarketEvent("IBM", 2D);
+    	sendMarketEvent("HP", 1D);
+    	sendMarketEvent("IBM", 3D);
+    	sendMarketEvent("MAC", 1D);
+
+    	assertTrue(updateListener.getAndClearIsInvoked());
+    	EventBean[] newData = updateListener.getLastNewData();
+    	assertEquals(3, newData.length);
+    	assertSingleInstance(newData, "IBM");
+    	assertSingleInstance(newData, "HP");
+    	assertSingleInstance(newData, "MAC");
+    	EventBean[] oldData = updateListener.getLastOldData();
+        assertNull(oldData);
+    }
+
 
     public void testNoJoinLast()
 	{
@@ -47,11 +72,11 @@ public class TestOutputLimitlEventPerGroup extends TestCase
     public void testNoOutputClauseView()
     {
     	String viewExpr = "select symbol," +
-    	"sum(price) as mySum," +
-    	"avg(price) as myAvg " +
-    	"from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
-    	"where symbol='DELL' or symbol='IBM' or symbol='GE' " +
-    	"group by symbol";
+                        "sum(price) as mySum," +
+                        "avg(price) as myAvg " +
+                        "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
+                        "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                        "group by symbol";
 
     	selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
     	selectTestView.addListener(testListener);
@@ -62,13 +87,13 @@ public class TestOutputLimitlEventPerGroup extends TestCase
     public void testNoOutputClauseJoin()
     {
     	String viewExpr = "select symbol," +
-    	"sum(price) as mySum," +
-    	"avg(price) as myAvg " +
-    	"from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
-    	SupportMarketDataBean.class.getName() + ".win:length(3) as two " +
-    	"where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-    	"       and one.string = two.symbol " +
-    	"group by symbol";
+                        "sum(price) as mySum," +
+                        "avg(price) as myAvg " +
+                        "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
+                        SupportMarketDataBean.class.getName() + ".win:length(3) as two " +
+                        "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
+                        "       and one.string = two.symbol " +
+                        "group by symbol";
 
     	selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
     	selectTestView.addListener(testListener);
@@ -195,8 +220,7 @@ public class TestOutputLimitlEventPerGroup extends TestCase
         assertFalse(testListener.isInvoked());
 
         sendEvent(SYMBOL_DELL, 10);
-        assertEventsNew(SYMBOL_IBM,
-        		70d, 70d,
+        assertEventsNew(70d, 70d,
         		SYMBOL_DELL,
                 10d, 10d);
 	    testListener.reset();
@@ -205,8 +229,7 @@ public class TestOutputLimitlEventPerGroup extends TestCase
         assertFalse(testListener.isInvoked());
 
         sendEvent(SYMBOL_DELL, 100);
-        assertEvents(SYMBOL_IBM,
-        		70d, 70d,
+        assertEvents(70d, 70d,
         		70d, 70d,
         		SYMBOL_DELL,
                 10d, 10d,
@@ -252,8 +275,7 @@ public class TestOutputLimitlEventPerGroup extends TestCase
         assertFalse(testListener.isInvoked());
     }
 
-    private void assertEventsNew(String symbolOne,
-                              double newSumOne, double newAvgOne,
+    private void assertEventsNew(double newSumOne, double newAvgOne,
                               String symbolTwo,
                               double newSumTwo, double newAvgTwo)
     {
@@ -280,8 +302,7 @@ public class TestOutputLimitlEventPerGroup extends TestCase
         assertFalse(testListener.isInvoked());
     }
 
-    private void assertEvents(String symbolOne,
-                              Double oldSumOne, Double oldAvgOne,
+    private void assertEvents(Double oldSumOne, Double oldAvgOne,
                               double newSumOne, double newAvgOne,
                               String symbolTwo,
                               Double oldSumTwo, Double oldAvgTwo,
@@ -319,4 +340,23 @@ public class TestOutputLimitlEventPerGroup extends TestCase
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
 	    epService.getEPRuntime().sendEvent(bean);
 	}
+
+    private void sendMarketEvent(String symbol, double price)
+	{
+	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
+	    epService.getEPRuntime().sendEvent(bean);
+	}
+
+    private void assertSingleInstance(EventBean[] data, String symbol)
+    {
+        int instanceCount = 0;
+        for(EventBean event : data)
+        {
+            if(event.get("symbol").equals(symbol))
+            {
+                instanceCount++;
+            }
+        }
+        assertEquals(1, instanceCount);
+    }    
 }

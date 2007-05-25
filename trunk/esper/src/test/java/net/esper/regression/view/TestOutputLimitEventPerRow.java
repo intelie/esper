@@ -178,7 +178,8 @@ public class TestOutputLimitEventPerRow extends TestCase
     	assertFalse(testListener.getAndClearIsInvoked());
 
     	sendEvent(SYMBOL_DELL, 40000, 45);
-    	assertTwoEvents(SYMBOL_DELL, 20000, 51+52,
+    	assertThreeEvents(SYMBOL_IBM, 10000, 20,
+    					  SYMBOL_DELL, 20000, 51+52,
     					  SYMBOL_DELL, 40000, 51+52+45);
     }
 
@@ -193,17 +194,16 @@ public class TestOutputLimitEventPerRow extends TestCase
         assertFalse(testListener.getAndClearIsInvoked());
 
         sendEvent(SYMBOL_DELL, 20000, 52);
-        EventBean received = testListener.assertOneGetNewAndReset();
-        assertTrue(matchesEvent(received, SYMBOL_DELL, 20000, 103));
+        assertTwoEvents(SYMBOL_DELL, 10000, 51,
+        				SYMBOL_DELL, 20000, 103);
 
         sendEvent(SYMBOL_DELL, 30000, 70);
         assertFalse(testListener.getAndClearIsInvoked());
 
         sendEvent(SYMBOL_IBM, 10000, 20);
-        received = testListener.assertOneGetNewAndReset();
-        assertTrue(matchesEvent(received, SYMBOL_IBM, 10000, 20));
-        // TODO: document behavior for grouping where not all properties are in the group
-  }
+        assertTwoEvents(SYMBOL_DELL, 30000, 173,
+        				SYMBOL_IBM, 10000, 20);
+    }
 
     private void assertTwoEvents(String symbol1, long volume1, double sum1,
     							 String symbol2, long volume2, double sum2)
@@ -275,16 +275,17 @@ public class TestOutputLimitEventPerRow extends TestCase
     		}
     	}
 
-        testListener.reset();
-        assertFalse(testListener.isInvoked());
+
+    		testListener.reset();
+    		assertFalse(testListener.isInvoked());
     }
 
     private boolean matchesEvent(EventBean event, String symbol, long volume, double sum)
     {
     	return
-            symbol.equals(event.get("symbol")) &&
-            new Long(volume).equals(event.get("volume")) &&
-            new Double(sum).equals(event.get("mySum"));
+        symbol.equals(event.get("symbol")) &&
+        new Long(volume).equals(event.get("volume")) &&
+        new Double(sum).equals(event.get("mySum"));
     }
 
     private void sendEvent(String symbol, long volume, double price)
@@ -292,6 +293,4 @@ public class TestOutputLimitEventPerRow extends TestCase
         SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, volume, null);
         epService.getEPRuntime().sendEvent(bean);
     }
-
-    private static final Log log = LogFactory.getLog(TestOutputLimitEventPerRow.class);
 }

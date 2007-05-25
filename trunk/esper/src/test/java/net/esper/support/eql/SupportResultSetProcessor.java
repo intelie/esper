@@ -12,6 +12,8 @@ import java.util.Set;
 
 public class SupportResultSetProcessor implements ResultSetProcessor
 {
+    private ResultSetProcessorResult cachedResult;
+
     public EventType getResultEventType()
     {
         return SupportEventTypeFactory.createBeanType(SupportBean.class);
@@ -29,18 +31,18 @@ public class SupportResultSetProcessor implements ResultSetProcessor
 
     public boolean addViewResult(EventBean[] newData, EventBean[] oldData)
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        cachedResult = new ResultSetProcessorResult(newData, oldData);
         return true;
     }
 
     public boolean addJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        cachedResult = new ResultSetProcessorResult(newEvents.iterator().next().getArray(), oldEvents.iterator().next().getArray());
         return true;
     }
 
     public ResultSetProcessorResult generateResult()
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return cachedResult;
     }    
 }

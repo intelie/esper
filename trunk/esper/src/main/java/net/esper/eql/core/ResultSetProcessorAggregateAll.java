@@ -296,7 +296,6 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         if (outputLimitType == OutputLimitType.ALL)
         {
             outputLimitBatch.add(result);
-            return result.getNewOut() != null;
         }
         else if (outputLimitType == OutputLimitType.LAST)
         {
@@ -305,12 +304,12 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             {
                 outputLimitBatch.removeFirst();
             }
-            return result.getNewOut() != null;
         }
         else
         {
-            throw new UnsupportedOperationException("Adding results for output limit first not supported");
+            outputLimitBatch.add(result);
         }
+        return result.getNewOut() != null;
     }
 
     public boolean addJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
@@ -319,7 +318,6 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         if (outputLimitType == OutputLimitType.ALL)
         {
             outputLimitBatch.add(result);
-            return result.getNewOut() != null;
         }
         else if (outputLimitType == OutputLimitType.LAST)
         {
@@ -328,12 +326,12 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             {
                 outputLimitBatch.removeFirst();
             }
-            return result.getNewOut() != null;
         }
         else
         {
-            throw new UnsupportedOperationException("Adding results for output limit first not supported");
+            outputLimitBatch.add(result);
         }
+        return result.getNewOut() != null;
     }
 
     public ResultSetProcessorResult generateResult()

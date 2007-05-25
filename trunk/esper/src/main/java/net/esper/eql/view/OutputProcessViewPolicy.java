@@ -120,17 +120,17 @@ public class OutputProcessViewPolicy extends OutputProcessView
         {
             newEvents = result.getNewOut();
             oldEvents = result.getOldOut();
+
+            // ordering
+            if (orderBySorter != null)
+            {
+                MultiKeyUntyped[] newOrderKeys = result.getNewOrderKey();
+                MultiKeyUntyped[] oldOrderKeys = result.getOldOrderKey();
+                newEvents = orderBySorter.sort(newEvents, newOrderKeys);
+                oldEvents = orderBySorter.sort(oldEvents, oldOrderKeys);
+            }
         }
         
-        // ordering
-        if (orderBySorter != null)
-        {
-            MultiKeyUntyped[] newOrderKeys = result.getNewOrderKey();
-            MultiKeyUntyped[] oldOrderKeys = result.getOldOrderKey();
-            newEvents = orderBySorter.sort(newEvents, newOrderKeys);
-            oldEvents = orderBySorter.sort(oldEvents, oldOrderKeys);
-        }
-
         if(doOutput)
 		{
 			output(forceUpdate, newEvents, oldEvents);

@@ -252,7 +252,7 @@ public class ResultSetProcessorFactory
                 {
                     log.debug(".getProcessor Using wildcard result processor");
                     // Joins and wildcard do get an select expression processor
-                    return new ResultSetProcessorSimple(null, orderByProcessor, outputLimitType);
+                    return new ResultSetProcessorSimple(null, orderByProcessor, outputLimitType, optionalHavingNode);
                 }
             }
 
@@ -261,7 +261,7 @@ public class ResultSetProcessorFactory
             // directly generating one row, and no need to update aggregate state since there is no aggregate function.
             // There might be some order-by expressions.
             log.debug(".getProcessor Using ResultSetProcessorSimple");
-            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, outputLimitType);
+            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, outputLimitType, optionalHavingNode);
         }
 
         // (2)
@@ -269,7 +269,7 @@ public class ResultSetProcessorFactory
         if ((namedSelectionList.isEmpty()) && (propertiesAggregatedHaving.isEmpty()))
         {
             log.debug(".getProcessor Using ResultSetProcessorSimple");
-            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, outputLimitType);
+            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, outputLimitType, optionalHavingNode);
         }
 
         boolean hasAggregation = (!selectAggregateExprNodes.isEmpty()) || (!propertiesAggregatedHaving.isEmpty());
@@ -339,7 +339,7 @@ public class ResultSetProcessorFactory
         if (allInGroupBy && allInSelect)
         {
             log.debug(".getProcessor Using ResultSetProcessorRowPerGroup");
-            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode);
+            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, outputLimitType);
         }
 
         // (6)

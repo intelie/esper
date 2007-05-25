@@ -1,15 +1,17 @@
 package net.esper.eql.core;
 
-import net.esper.event.EventBean;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.collection.Pair;
 import net.esper.eql.expression.ExprNode;
+import net.esper.event.EventBean;
 import net.esper.util.MultiKeyComparator;
-
-import java.util.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeMap;
 
 public class OrderBySorter
 {
@@ -76,47 +78,4 @@ public class OrderBySorter
         }
         return result;
     }
-
-    /*
-    TODO: this is the old sort
-    public EventBean[] sort(EventBean[] outgoingEvents, MultiKeyUntyped[] orderKeys)
-    {
-        log.debug(".sort");
-        if (outgoingEvents == null || outgoingEvents.length < 2)
-        {
-            return outgoingEvents;
-        }
-
-        // Map the sort values to the corresponding outgoing events
-        Map<MultiKeyUntyped, List<EventBean>> sortToOutgoing = new HashMap<MultiKeyUntyped, List<EventBean>>();
-        int count = 0;
-        for (MultiKeyUntyped sortValues : orderKeys)
-        {
-            List<EventBean> list = sortToOutgoing.get(sortValues);
-            if (list == null)
-            {
-                list = new ArrayList<EventBean>();
-                sortToOutgoing.put(sortValues, list);
-            }
-            list.add(outgoingEvents[count++]);
-        }
-
-        // Sort the sort values
-        Arrays.sort(orderKeys, comparator);
-
-        // Sort the outgoing events in the same order
-        EventBean[] result = new EventBean[outgoingEvents.length];
-        int countTwo = 0;
-        for (MultiKeyUntyped sortValues : orderKeys)
-        {
-            Collection<EventBean> output = sortToOutgoing.get(sortValues);
-            for(EventBean event : output)
-            {
-                result[countTwo++] = event;
-            }
-        }
-
-        return result;
-    }
-     */
 }

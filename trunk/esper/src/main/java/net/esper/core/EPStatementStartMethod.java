@@ -204,8 +204,6 @@ public class EPStatementStartMethod
                 statementContext.getMethodResolutionService(),
                 viewResourceDelegate);
 
-        // TODO: test wildcard select and order-by
-
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
 

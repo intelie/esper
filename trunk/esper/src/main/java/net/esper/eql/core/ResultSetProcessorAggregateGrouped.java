@@ -17,9 +17,7 @@ import net.esper.event.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.List;
-import java.util.Set;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Result-set processor for the aggregate-grouped case:
@@ -42,6 +40,12 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
     private final ExprNode optionalHavingNode;
     private final OutputLimitType outputLimitType;
 
+    // For output ALL we need to keep a reference to all 'generator' events for each of the groups and their order key
+    // We do that by keeping a simple batch count that refers to the current batch
+    private Map<MultiKeyUntyped, HistoricalGroupEntry> groupOutputEvents;
+    private long currentBatch;
+
+    // For output LAST we need to simply keep the posted results
     private LinkedList<ResultSetProcessorResult> outputLimitBatch = new LinkedList<ResultSetProcessorResult>();
 
     /**
@@ -66,6 +70,12 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         this.groupKeyNodes = groupKeyNodes;
         this.optionalHavingNode = optionalHavingNode;
         this.outputLimitType = outputLimitType;
+
+        // Must produce at least one result per group
+        if (outputLimitType == OutputLimitType.ALL)
+        {
+            groupOutputEvents = new HashMap<MultiKeyUntyped, HistoricalGroupEntry>();
+        }
     }
 
     public EventType getResultEventType()
@@ -102,14 +112,20 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 if (pass)
                 {
                     EventBean event = selectExprProcessor.process(oldEventRow.getArray(), false);
+                    MultiKeyUntyped orderKey = null;
                     if (orderByProcessor != null)
                     {
-                        MultiKeyUntyped orderKey = orderByProcessor.getSortKey(oldEventRow.getArray(), false);
+                        orderKey = orderByProcessor.getSortKey(oldEventRow.getArray(), false);
                         orderKeys[count] = orderKey;
                     }
                     resultOld[count] = event;
                     groupKeys[count] = groupKey;
                     count++;
+
+                    if (groupOutputEvents != null)
+                    {
+                        groupOutputEvents.put(groupKey, new HistoricalGroupEntry(event, orderKey, currentBatch));
+                    }
                 }
                 aggregationService.applyLeave(oldEventRow.getArray(), groupKey);
             }
@@ -165,14 +181,20 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 if (pass)
                 {
                     EventBean event = selectExprProcessor.process(newEventRow.getArray(), true);
+                    MultiKeyUntyped orderKey = null;
                     if (orderByProcessor != null)
                     {
-                        MultiKeyUntyped orderKey = orderByProcessor.getSortKey(newEventRow.getArray(), true);
+                        orderKey = orderByProcessor.getSortKey(newEventRow.getArray(), true);
                         orderKeys[count] = orderKey;
                     }
                     resultNew[count] = event;
                     groupKeys[count] = groupKey;
                     count++;
+
+                    if (groupOutputEvents != null)
+                    {
+                        groupOutputEvents.put(groupKey, new HistoricalGroupEntry(event, orderKey, currentBatch));
+                    }
                 }
             }
 
@@ -236,14 +258,20 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 if (pass)
                 {
                     EventBean event = selectExprProcessor.process(eventsPerStream, false);
+                    MultiKeyUntyped orderKey = null;
                     if (orderByProcessor != null)
                     {
-                        MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, false);
+                        orderKey = orderByProcessor.getSortKey(eventsPerStream, false);
                         orderKeys[count] = orderKey;
                     }
                     resultOld[count] = event;
                     groupKeys[count] = groupKey;
                     count++;
+
+                    if (groupOutputEvents != null)
+                    {
+                        groupOutputEvents.put(groupKey, new HistoricalGroupEntry(event, orderKey, currentBatch));
+                    }
                 }
                 aggregationService.applyLeave(eventsPerStream, groupKey);
             }
@@ -301,14 +329,20 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 if (pass)
                 {
                     EventBean event = selectExprProcessor.process(eventsPerStream, true);
+                    MultiKeyUntyped orderKey = null;
                     if (orderByProcessor != null)
                     {
-                        MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true);
+                        orderKey = orderByProcessor.getSortKey(eventsPerStream, true);
                         orderKeys[count] = orderKey;
                     }
                     resultNew[count] = event;
                     groupKeys[count] = groupKey;
                     count++;
+
+                    if (groupOutputEvents != null)
+                    {
+                        groupOutputEvents.put(groupKey, new HistoricalGroupEntry(event, orderKey, currentBatch));
+                    }
                 }
             }
 
@@ -356,53 +390,124 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 
     public boolean addViewResult(EventBean[] newData, EventBean[] oldData)
     {
+        // add to the regular batch of results
         ResultSetProcessorResult result = processViewResult(newData, oldData);
-        if (outputLimitType == OutputLimitType.ALL)
-        {
-            outputLimitBatch.add(result);
-        }
-        else if (outputLimitType == OutputLimitType.LAST)
-        {
-            outputLimitBatch.add(result);
-            if (outputLimitBatch.size() > 1)
-            {
-                outputLimitBatch.removeFirst();
-            }
-        }
-        else
-        {
-            throw new UnsupportedOperationException("Adding results for output limit first not supported");
-        }
-        return true;
+        outputLimitBatch.add(result);
+        return result.getNewOut() != null;
     }
 
     public boolean addJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
+        // add to the regular batch of results
         ResultSetProcessorResult result = processJoinResult(newEvents, oldEvents);
-
-        if (outputLimitType == OutputLimitType.ALL)
-        {
-            outputLimitBatch.add(result);
-        }
-        else if (outputLimitType == OutputLimitType.LAST)
-        {
-            outputLimitBatch.add(result);
-            if (outputLimitBatch.size() > 1)
-            {
-                outputLimitBatch.removeFirst();
-            }
-        }
-        else
-        {
-            throw new UnsupportedOperationException("Adding results for output limit first not supported");
-        }
-        return true;
+        outputLimitBatch.add(result);
+        return result.getNewOut() != null;
     }
 
     public ResultSetProcessorResult generateResult()
     {
         ResultSetProcessorResult result = ResultSetProcessorSimple.flatten(outputLimitBatch, orderByProcessor);
         outputLimitBatch.clear();
+
+        // For the output-all keys we need to generate a current event for each group
+        // and don't want to list the same group twice if its already in the current batch
+        if (outputLimitType == OutputLimitType.ALL)
+        {
+            List<EventBean> groupEvents = new ArrayList<EventBean>();
+            List<MultiKeyUntyped> orderKeys = new ArrayList<MultiKeyUntyped>();
+            for (HistoricalGroupEntry entry : groupOutputEvents.values())
+            {
+                if (entry.getLastUpdateBatch() != currentBatch)
+                {
+                    groupEvents.add(entry.getOutput());
+                    if (orderByProcessor != null)
+                    {
+                        orderKeys.add(entry.getOrderKey());
+                    }
+                }
+            }
+
+            if (groupEvents.size() != 0)
+            {
+                addResult(result, groupEvents, orderKeys);
+            }
+
+            currentBatch++;
+        }
         return result;
-    }    
+    }
+
+    private void addResult(ResultSetProcessorResult result, List<EventBean> groupEvents, List<MultiKeyUntyped> orderKeys)
+    {
+        int numEvents = 0;
+        if (result.getNewOut() != null)
+        {
+            numEvents = result.getNewOut().length;
+        }
+        numEvents += groupEvents.size();
+
+        if (numEvents == 0)
+        {
+            return;
+        }
+
+        EventBean[] totalEvents = new EventBean[numEvents];
+        MultiKeyUntyped[] totalOrderKeys = null;
+        if (orderByProcessor != null)
+        {
+            totalOrderKeys = new MultiKeyUntyped[numEvents];
+        }
+
+        int offset = 0;
+        if (result.getNewOut() != null)
+        {
+            System.arraycopy(result.getNewOut(), 0, totalEvents, 0, result.getNewOut().length);
+            if (orderByProcessor != null)
+            {
+                System.arraycopy(result.getNewOrderKey(), 0, totalOrderKeys, 0, result.getNewOut().length);
+            }
+            offset += result.getNewOut().length;
+        }
+
+        int count = 0;
+        for (int i = 0; i < groupEvents.size(); i++)
+        {
+            totalEvents[offset] = groupEvents.get(i);
+            if (orderByProcessor != null)
+            {
+                totalOrderKeys[offset] = orderKeys.get(i);
+            }
+        }
+        result.setNewOut(totalEvents);
+        result.setNewOrderKey(totalOrderKeys);
+    }
+
+    private static class HistoricalGroupEntry
+    {
+        private EventBean output;
+        private MultiKeyUntyped orderKey;
+        private long lastUpdateBatch;
+
+        public HistoricalGroupEntry(EventBean output, MultiKeyUntyped orderKey, long lastUpdateBatch)
+        {
+            this.output = output;
+            this.orderKey = orderKey;
+            this.lastUpdateBatch = lastUpdateBatch;
+        }
+
+        public EventBean getOutput()
+        {
+            return output;
+        }
+
+        public MultiKeyUntyped getOrderKey()
+        {
+            return orderKey;
+        }
+
+        public long getLastUpdateBatch()
+        {
+            return lastUpdateBatch;
+        }
+    }
 }

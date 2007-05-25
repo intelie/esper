@@ -31,11 +31,11 @@ public class TestResultSetProcessorSimple extends TestCase
 
 		outputLimitSpecAll = new OutputLimitSpec(1, OutputLimitType.ALL);
 		assertFalse(outputLimitSpecAll.isDisplayLastOnly());
-		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, OutputLimitType.ALL);
+		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, OutputLimitType.ALL, null);
 
 		outputLimitSpecLast = new OutputLimitSpec(1, OutputLimitType.LAST);
 		assertTrue(outputLimitSpecLast.isDisplayLastOnly());
-		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, OutputLimitType.ALL);
+		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, OutputLimitType.ALL, null);
     }
 
     public void testUpdateAll() throws Exception
@@ -119,58 +119,4 @@ public class TestResultSetProcessorSimple extends TestCase
         bean.setIntPrimitive(intPrimitive);
         return SupportEventBeanFactory.createObject(bean);
     }
-
-	public void testProcessLast() throws Exception
-	{
-        ResultSetSelect resultSelect = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), true);
-        assertNull(resultSelect.getEvents());
-
-        EventBean testEvent1 = makeEvent(10, 5, 6);
-	    EventBean testEvent2 = makeEvent(11, 6, 7);
-        Set<MultiKey<EventBean>> newEventSet = makeEventSet(testEvent1);
-	    newEventSet.add(new MultiKey<EventBean>(new EventBean[] { testEvent2}));
-
-        EventBean testEvent3 = makeEvent(20, 1, 2);
-	    EventBean testEvent4 = makeEvent(21, 3, 4);
-        Set<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
-	    oldEventSet.add(new MultiKey<EventBean>(new EventBean[] {testEvent4}));
-
-        ResultSetProcessorResult result = outputProcessorLast.processJoinResult(newEventSet, oldEventSet);
-        EventBean[] newEvents = result.getNewOut();
-        EventBean[] oldEvents = result.getOldOut();
-
-        assertEquals(1, newEvents.length);
-	    assertEquals(11d, newEvents[0].get("resultOne"));
-	    assertEquals(42, newEvents[0].get("resultTwo"));
-
-        assertEquals(1, oldEvents.length);
-	    assertEquals(21d, oldEvents[0].get("resultOne"));
-	    assertEquals(12, oldEvents[0].get("resultTwo"));
-	}
-
-	public void testUpdateLast() throws Exception
-	{
-        ResultSetSelect resultSelect = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, true);
-        assertNull(resultSelect.getEvents());
-
-        EventBean testEvent1 = makeEvent(10, 5, 6);
-        EventBean testEvent2 = makeEvent(11, 6, 7);
-        EventBean[] newData = new EventBean[] {testEvent1, testEvent2};
-
-        EventBean testEvent3 = makeEvent(20, 1, 2);
-        EventBean testEvent4 = makeEvent(21, 3, 4);
-        EventBean[] oldData = new EventBean[] {testEvent3, testEvent4};
-
-        ResultSetProcessorResult result = outputProcessorLast.processViewResult(newData, oldData);
-        EventBean[] newEvents = result.getNewOut();
-        EventBean[] oldEvents = result.getOldOut();
-
-        assertEquals(1, newEvents.length);
-        assertEquals(11d, newEvents[0].get("resultOne"));
-        assertEquals(42, newEvents[0].get("resultTwo"));
-
-        assertEquals(1, oldEvents.length);
-        assertEquals(21d, oldEvents[0].get("resultOne"));
-        assertEquals(12, oldEvents[0].get("resultTwo"));
-	}
 }

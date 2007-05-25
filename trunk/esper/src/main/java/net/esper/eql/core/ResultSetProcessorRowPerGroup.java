@@ -11,6 +11,7 @@ import net.esper.collection.MultiKey;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.eql.agg.AggregationService;
 import net.esper.eql.expression.ExprNode;
+import net.esper.eql.spec.OutputLimitType;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 
@@ -36,6 +37,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     private Map<MultiKeyUntyped, EventBean> lastNewViewData;
     private Map<MultiKeyUntyped, EventBean[]> lastNewJoinData;
     private EventBean[] lastBatchOldData;
+    private MultiKeyUntyped[] lastBatchOrderKeys;
+    private OutputLimitType outputLimitType;
 
     /**
      * Ctor.
@@ -50,13 +53,15 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                                          OrderByProcessor orderByProcessor,
                                          AggregationService aggregationService,
                                          List<ExprNode> groupKeyNodes,
-                                         ExprNode optionalHavingNode)
+                                         ExprNode optionalHavingNode,
+                                         OutputLimitType outputLimitType)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
         this.aggregationService = aggregationService;
         this.groupKeyNodes = groupKeyNodes;
         this.optionalHavingExpr = optionalHavingNode;
+        this.outputLimitType = outputLimitType;
     }
 
     public EventType getResultEventType()
@@ -165,6 +170,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         
         EventBean[] eventsPerStream = new EventBean[1];
         EventBean[] events = new EventBean[keysAndEvents.size()];
+        MultiKeyUntyped[] orderKeys = null;
+        if (orderByProcessor != null)
+        {
+            orderKeys = new MultiKeyUntyped[keysAndEvents.size()];
+        }
 
         int count = 0;
         for (Map.Entry<MultiKeyUntyped, EventBean> entry : keysAndEvents.entrySet())
@@ -185,6 +195,10 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             }
 
             events[count] = selectExprProcessor.process(eventsPerStream, isNewData);
+            if (orderByProcessor != null)
+            {
+                orderKeys[count] = orderByProcessor.getSortKey(eventsPerStream, isNewData);
+            }
 
             count++;
         }
@@ -199,9 +213,17 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             EventBean[] out = new EventBean[count];
             System.arraycopy(events, 0, out, 0, count);
             events = out;
+
+            if (orderByProcessor != null)
+            {
+                MultiKeyUntyped[] orderKeysResized = new MultiKeyUntyped[count];
+                System.arraycopy(orderKeys, 0, orderKeysResized, 0, count);
+                orderKeys = orderKeysResized;
+            }
         }
 
         result.setEvents(events);
+        result.setOrderKeys(orderKeys);
         return result;
     }
 
@@ -210,10 +232,10 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         ResultSetSelect result = new ResultSetSelect();        
         EventBean[] events = new EventBean[keysAndEvents.size()];
 
-        List<MultiKeyUntyped> orderKeys = null;
-        if (orderByProcessor == null)
+        MultiKeyUntyped[] orderKeys = null;
+        if (orderByProcessor != null)
         {
-            orderKeys = new ArrayList<MultiKeyUntyped>();
+            orderKeys = new MultiKeyUntyped[keysAndEvents.size()];
         }
 
         int count = 0;
@@ -235,7 +257,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             events[count] = selectExprProcessor.process(eventsPerStream, isNewData);
             if (orderByProcessor != null)
             {
-                orderKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData));
+                orderKeys[count] = orderByProcessor.getSortKey(eventsPerStream, isNewData);
             }
 
             count++;
@@ -251,13 +273,17 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             EventBean[] out = new EventBean[count];
             System.arraycopy(events, 0, out, 0, count);
             events = out;
+
+            if (orderByProcessor != null)
+            {
+                MultiKeyUntyped[] orderKeysResized = new MultiKeyUntyped[count];
+                System.arraycopy(orderKeys, 0, orderKeysResized, 0, count);
+                orderKeys = orderKeysResized;                
+            }
         }
 
         result.setEvents(events);
-        if (orderByProcessor != null)
-        {
-            result.setOrderKeys(orderKeys.toArray(new MultiKeyUntyped[0]));
-        }
+        result.setOrderKeys(orderKeys);
         return result;
     }
 
@@ -404,12 +430,28 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         }
         else
         {
-            return null;
+            return result;
         }
         
         result.setNewOut(resultSetSelect.getEvents());
         result.setOldOut(lastBatchOldData);
+        result.setNewOrderKey(resultSetSelect.getOrderKeys());
+        result.setOldOrderKey(lastBatchOrderKeys);
+
         lastBatchOldData = resultSetSelect.getEvents();
+        lastBatchOrderKeys = resultSetSelect.getOrderKeys();
+
+        if (outputLimitType == OutputLimitType.LAST)
+        {
+            if (lastNewViewData != null)
+            {
+                lastNewViewData.clear();
+            }
+            if (lastNewJoinData != null)
+            {
+                lastNewJoinData.clear();
+            }
+        }
         return result;
     }
 }

@@ -75,10 +75,10 @@ public class TestStatementPerformance extends TestCase
     public void testPerformance() throws Exception
     {
         // Number of seconds the total test runs
-        int numSeconds = 60;
+        int numSeconds = 5;     // performance test: 60
 
         // Number of asset groups
-        int numAssetGroups = 1000;
+        int numAssetGroups = 100; // performance test: 1000
 
         // Number of threads
         int numThreads = 2;

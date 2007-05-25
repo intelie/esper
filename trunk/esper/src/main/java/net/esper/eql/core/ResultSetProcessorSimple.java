@@ -26,10 +26,9 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
     private final SelectExprProcessor optionalSelectExprProcessor;
     private final OrderByProcessor orderByProcessor;
     private final OutputLimitType outputLimitType;
+    private final ExprNode optionalHavingExpr;
 
     private LinkedList<ResultSetProcessorResult> outputLimitBatch = new LinkedList<ResultSetProcessorResult>();
-
-    // TODO: try a simple processor with having, with and without wildcard
     
     /**
      * Ctor.
@@ -38,11 +37,13 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      */
     public ResultSetProcessorSimple(SelectExprProcessor optionalSelectExprProcessor,
                                     OrderByProcessor orderByProcessor,
-                                    OutputLimitType outputLimitType)
+                                    OutputLimitType outputLimitType,
+                                    ExprNode optionalHavingExpr)
     {
         this.optionalSelectExprProcessor = optionalSelectExprProcessor;
         this.orderByProcessor = orderByProcessor;
         this.outputLimitType = outputLimitType;
+        this.optionalHavingExpr = optionalHavingExpr;
     }
 
     public EventType getResultEventType()
@@ -57,8 +58,19 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
 
     public ResultSetProcessorResult processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
-        ResultSetSelect resultOld = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, oldEvents, false);
-        ResultSetSelect resultNew = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, newEvents, true);
+        ResultSetSelect resultOld;
+        ResultSetSelect resultNew;
+
+        if (optionalHavingExpr == null)
+        {
+            resultOld = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, oldEvents, false);
+            resultNew = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, newEvents, true);
+        }
+        else
+        {
+            resultOld = getSelectEventsHaving(optionalSelectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, false);
+            resultNew = getSelectEventsHaving(optionalSelectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, true);
+        }
 
         ResultSetProcessorResult result = new ResultSetProcessorResult();
         result.setNewOut(resultNew.getEvents());
@@ -71,8 +83,19 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
 
     public ResultSetProcessorResult processViewResult(EventBean[] newData, EventBean[] oldData)
     {
-        ResultSetSelect resultOld = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, oldData, false);
-        ResultSetSelect resultNew = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, newData, true);
+        ResultSetSelect resultOld;
+        ResultSetSelect resultNew;
+
+        if (optionalHavingExpr == null)
+        {
+            resultOld = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, oldData, false);
+            resultNew = getSelectEventsNoHaving(optionalSelectExprProcessor, orderByProcessor, newData, true);
+        }
+        else
+        {
+            resultOld = getSelectEventsHaving(optionalSelectExprProcessor, orderByProcessor, oldData, optionalHavingExpr, false);
+            resultNew = getSelectEventsHaving(optionalSelectExprProcessor, orderByProcessor, newData, optionalHavingExpr, true);
+        }
 
         ResultSetProcessorResult result = new ResultSetProcessorResult();
         result.setNewOut(resultNew.getEvents());

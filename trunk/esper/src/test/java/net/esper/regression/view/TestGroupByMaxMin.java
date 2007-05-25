@@ -31,9 +31,6 @@ public class TestGroupByMaxMin extends TestCase
         epService.initialize();
     }
 
-    // TODO: optimize performance for this case
-    // A. OutputProcessViewPolicy must collect events posted by views in the same order they arrive
-    // B. OutputProcessViewPolicy must replay events  replay 
     public void testMinMaxTimeWindow()
     {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));

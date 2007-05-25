@@ -12,12 +12,6 @@ import net.esper.eql.spec.OutputLimitType;
 import net.esper.core.StatementContext;
 
 /**
- * TODO: test output first
- * TODO: test wildcard and output rate limiting
- * TODO: test force update
- */
-
-/**
  * An output condition that is satisfied at the first event
  * of either a time-based or count-based batch.
  */
