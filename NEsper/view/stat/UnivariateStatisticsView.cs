@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using net.esper.compat;
 using net.esper.collection;
+using net.esper.core;
 using net.esper.events;
 using net.esper.view;
 
@@ -12,35 +13,10 @@ namespace net.esper.view.stat
     /// for sample and for population and variance.
     /// </summary>
 
-    public sealed class UnivariateStatisticsView : ViewSupport, ContextAwareView
+    public sealed class UnivariateStatisticsView 
+		: ViewSupport
+		, Cloneable
     {
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-        public ViewServiceContext ViewServiceContext
-        {
-            get
-            {
-                return viewServiceContext;
-            }
-
-            set
-            {
-                this.viewServiceContext = value;
-
-                EDictionary<String, Type> eventTypeMap = new EHashDictionary<String, Type>();
-                eventTypeMap[ViewFieldEnum.UNIVARIATE_STATISTICS__COUNT.Name] = typeof(long);
-                eventTypeMap[ViewFieldEnum.UNIVARIATE_STATISTICS__SUM.Name] = typeof(double);
-                eventTypeMap[ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.Name] = typeof(double);
-                eventTypeMap[ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.Name] = typeof(double);
-                eventTypeMap[ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.Name] = typeof(double);
-                eventTypeMap[ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.Name] = typeof(double);
-                eventType = value.EventAdapterService.CreateAnonymousMapType(eventTypeMap);
-            }
-
-        }
-
         /// <summary>
         /// Gets or sets field name of the field to report statistics on.
         /// </summary>
@@ -49,39 +25,32 @@ namespace net.esper.view.stat
         /// </returns>
         public String FieldName
         {
-            get
-            {
-                return fieldName;
-            }
-
-            set
-            {
-                this.fieldName = value;
-            }
+            get { return fieldName; }
         }
 
-        private ViewServiceContext viewServiceContext;
-        private EventType eventType;
-        private String fieldName;
+        private readonly StatementContext statementContext;
+        private readonly EventType eventType;
+        private readonly String fieldName;
         private EventPropertyGetter fieldGetter;
         private readonly BaseStatisticsBean baseStatisticsBean = new BaseStatisticsBean();
         
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UnivariateStatisticsView"/> class.
-        /// </summary>
-        public UnivariateStatisticsView()
-        {
-        }
+	   /**
+	     * Constructor requires the name of the field to use in the parent view to compute the statistics.
+	     * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view to
+	     * compute the statistics on.
+	     * @param statementContext contains required view services
+	     */
+	    public UnivariateStatisticsView(StatementContext statementContext, String fieldName)
+	    {
+	        this.statementContext = statementContext;
+	        this.fieldName = fieldName;
+	        eventType = CreateEventType(statementContext);
+	    }
 
-        /// <summary> Constructor requires the name of the field to use in the parent view to compute the statistics.</summary>
-        /// <param name="fieldName">is the name of the field within the parent view to use to get numeric data points for this view to
-        /// compute the statistics on.
-        /// </param>
-
-        public UnivariateStatisticsView(String fieldName)
-        {
-            this.fieldName = fieldName;
-        }
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return new UnivariateStatisticsView(statementContext, fieldName);
+	    }
 
         /// <summary>
         /// Gets or sets the View's parent Viewable.
@@ -101,18 +70,6 @@ namespace net.esper.view.stat
                     fieldGetter = parent.EventType.GetGetter(fieldName);
                 }
             }
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            return PropertyCheckHelper.CheckNumeric(parentView.EventType, fieldName);
         }
 
         /// <summary>
@@ -138,11 +95,11 @@ namespace net.esper.view.stat
         /// <param name="oldData">is the old data that has been removed from the parent view</param>
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            // If we have child views, keep a reference to the old values, so we can fire them as old data event.
+            // If we have child views, keep a reference to the old values, so we can fireStatementStopped them as old data event.
             EventBean oldDataMap = null;
             if (this.HasViews)
             {
-                oldDataMap = populateMap(baseStatisticsBean, viewServiceContext.EventAdapterService, eventType);
+                oldDataMap = populateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
             }
 
             // add data points to the bean
@@ -165,10 +122,10 @@ namespace net.esper.view.stat
                 }
             }
 
-            // If there are child view, fire update method
+            // If there are child view, fireStatementStopped update method
             if (this.HasViews)
             {
-                EventBean newDataMap = populateMap(baseStatisticsBean, viewServiceContext.EventAdapterService, eventType);
+                EventBean newDataMap = populateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
                 UpdateChildren(new EventBean[] { newDataMap }, new EventBean[] { oldDataMap });
             }
         }
@@ -195,7 +152,7 @@ namespace net.esper.view.stat
         
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return new SingleEventIterator(populateMap(baseStatisticsBean, viewServiceContext.EventAdapterService, eventType));
+            yield return populateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
         }
 
         /// <summary>
@@ -210,7 +167,7 @@ namespace net.esper.view.stat
             return this.GetType().FullName + " fieldName=" + fieldName;
         }
 
-        private static EventBean populateMap(
+        private static EventBean PopulateMap(
         	BaseStatisticsBean baseStatisticsBean,
         	EventAdapterService eventAdapterService,
         	EventType eventType)
@@ -224,5 +181,23 @@ namespace net.esper.view.stat
             result[ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.Name]  = baseStatisticsBean.XAverage;
             return eventAdapterService.CreateMapFromValues(result, eventType);
         }
+		
+		
+	    /**
+	     * Creates the event type for this view.
+	     * @param statementContext is the event adapter service
+	     * @return event type of view
+	     */
+	    protected static EventType CreateEventType(StatementContext statementContext)
+	    {
+	        EDictionary<String, Type> eventTypeMap = new EHashDictionary<String, Type>();
+	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__COUNT.Name, typeof(long));
+	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__SUM.Name, typeof(double));
+	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.Name, typeof(double));
+	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.Name, typeof(double));
+	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.Name, typeof(double));
+	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.Name, typeof(double));
+	        return statementContext.EventAdapterService.CreateAnonymousMapType(eventTypeMap);
+	    } 
     }
 }

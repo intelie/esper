@@ -6,13 +6,25 @@ using org.apache.commons.logging;
 
 namespace net.esper.pattern
 {
-	/// <summary> This class represents an observer expression in the evaluation tree representing an pattern expression.</summary>
-	public sealed class EvalObserverNode:EvalNode
+	/// <summary>
+	/// This class represents an observer expression in the evaluation tree
+	/// representing an pattern expression.
+	/// </summary>
+	public sealed class EvalObserverNode : EvalNode
 	{
 		private ObserverFactory observerFactory;
+
+		/// <summary>
+		/// Gets the factory to use to get an observer instance
+		/// </summary>
+		
+		public ObserverFactory ObserverFactory
+		{
+			get { return observerFactory ; }
+		}
 		
 		/// <summary> Constructor.</summary>
-		/// <param name="observerFactory">is the factory to use for the observer instance
+		/// <param name="observerFactory">is the factory to use to get an observer instance
 		/// </param>
 		public EvalObserverNode(ObserverFactory observerFactory)
 		{
@@ -29,7 +41,10 @@ namespace net.esper.pattern
         /// <returns>
         /// state node containing the truth value state for the operator
         /// </returns>
-		public override EvalStateNode NewState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context)
+		public override EvalStateNode NewState(Evaluator parentNode,
+											   MatchedEventMap beginState,
+											   PatternContext context,
+											   Object stateNodeId)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -41,7 +56,7 @@ namespace net.esper.pattern
 				throw new SystemException("Expected number of child nodes incorrect, expected no child nodes, found " + ChildNodes.Count);
 			}
 			
-			return new EvalObserverStateNode(parentNode, observerFactory, beginState, context);
+			return context.PatternStateFactory.MakeObserverNode(parentNode, this, beginState, stateNodeId);
 		}
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Text;
 
 using net.esper.compat;
 using net.esper.eql.core;
+using net.esper.eql.agg;
 using net.esper.events;
 using net.esper.util;
 

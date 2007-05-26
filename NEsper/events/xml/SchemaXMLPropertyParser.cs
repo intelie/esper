@@ -35,7 +35,7 @@ namespace net.esper.events.xml
 		{
             switch (name.Name)
             {
-                case "boolean":
+                case "bool":
                     return typeof(bool);
                 case "int":
                     return typeof(double);

@@ -11,7 +11,7 @@ namespace net.esper.events
     /// this class need to obtain the underlying object.
     /// </summary>
 
-    public class BeanEventBean : EventBean
+    public class BeanEventBean : EventBeanSPI
     {
         /// <summary>
         /// Get the underlying data object to this event wrapper.
@@ -35,19 +35,31 @@ namespace net.esper.events
             get { return eventType; }
         }
 
+		/// <summary>
+		/// Gets the event bean id
+		/// </summary>
+		
+		virtual public Object EventBeanId
+		{
+			get { return _eventId ; }
+		}
+		
         private EventType eventType;
         private Object _event;
+		private Object _eventId;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="_event">is the event object</param>
         /// <param name="eventType">is the schema information for the event object.</param>
-
-        protected internal BeanEventBean(Object _event, EventType eventType)
+		/// <param name="eventId">an optional event id for the event.</param>
+		
+        protected internal BeanEventBean(Object _event, EventType eventType, Object eventId)
         {
             this.eventType = eventType;
             this._event = _event;
+			this._eventId = eventId;
         }
 
         /// <summary>
@@ -70,7 +82,7 @@ namespace net.esper.events
             {
                 return false;
             }
-            if (o._event != _event)
+            if (Object.Equals(o._event, _event))
             {
                 return false;
             }

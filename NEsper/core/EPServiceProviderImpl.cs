@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading;
@@ -17,11 +18,50 @@ namespace net.esper.core
     /// Service provider encapsulates the engine's services for runtime and administration interfaces.
     /// </summary>
 
-    public class EPServiceProviderImpl : EPServiceProvider
+    public class EPServiceProviderImpl : EPServiceProviderSPI
     {
         private volatile EPServiceEngine engine;
-        private readonly ConfigurationSnapshot configSnapshot;
+        private ConfigurationSnapshot configSnapshot;
+		private string engineURI;
 
+		/// <summary>
+		/// Gets the engine URI
+		/// </summary>
+		
+		virtual public string EngineURI
+		{
+			get { return engineURI; }
+		}
+		
+		/// <summary>
+		/// Sets the configuration
+		/// </summary>
+		
+		virtual public Configuration Configuration
+		{
+			set { configSnapshot = new ConfigurationSnapshot( value ) ; }
+		}
+		
+		public EventAdapterService EventAdapterService
+	    {
+	        get { return engine.Services.EventAdapterService; }
+	    }
+
+	    public SchedulingService SchedulingService
+	    {
+	        get { return engine.Services.SchedulingService; }
+	    }
+
+	    public FilterService FilterService
+	    {
+	        get { return engine.Services.FilterService; }
+	    }
+
+	    public Context EnvContext
+	    {
+	        get { return engine.Services.EngineEnvContext; }
+	    }
+		
         /// <summary>
         /// Returns a class instance of EPRuntime.
         /// </summary>
@@ -45,13 +85,14 @@ namespace net.esper.core
         }
 
         /// <summary> Constructor - initializes services.</summary>
-        /// <param name="configuration">is the engine configuration
-        /// </param>
+        /// <param name="configuration">is the engine configuration</param>
+		/// <param name="engineURI">is the engine URI or null if this is the default provider
         /// <throws>  ConfigurationException is thrown to indicate a configuraton error </throws>
 
-        public EPServiceProviderImpl(Configuration configuration)
+        public EPServiceProviderImpl(Configuration configuration, String engineURI)
         {
-            configSnapshot = new ConfigurationSnapshot(configuration);
+			this.engineURI = engineURI;
+            this.configSnapshot = new ConfigurationSnapshot(configuration);
             Initialize();
         }
 
@@ -73,16 +114,52 @@ namespace net.esper.core
                 {
                     // No logic required here
                 }
+				
+				engine.Services.Destroy();
             }
 
-            // Make services that depend on snapshot config entries
-            SchedulingService schedulingService = SchedulingServiceProvider.NewService();
-            EventAdapterService eventAdapterService = MakeEventAdapterService(configSnapshot);
-            AutoImportService autoImportService = MakeAutoImportService(configSnapshot);
-            DatabaseConfigService databaseConfigService = MakeDatabaseRefService(configSnapshot, schedulingService);
+	        // Make EP services context factory
+	        String epServicesContextFactoryClassName = configSnapshot.EPServicesContextFactoryClassName;
+	        EPServicesContextFactory epServicesContextFactory;
+	        if (epServicesContextFactoryClassName == null)
+	        {
+	            // Check system properties
+	            epServicesContextFactoryClassName = System.getProperty("ESPER_EPSERVICE_CONTEXT_FACTORY_CLASS");
+	        }
+	        if (epServicesContextFactoryClassName == null)
+	        {
+	            epServicesContextFactory = new EPServicesContextFactoryDefault();
+	        }
+	        else
+	        {
+	            Type type;
+	            try
+	            {
+	                type = Type.GetType(epServicesContextFactoryClassName);
+	            }
+	            catch (TypeLoadException e)
+	            {
+	                throw new ConfigurationException("Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
+	            }
 
-            // New services context
-            EPServicesContext services = new EPServicesContext(schedulingService, eventAdapterService, autoImportService, databaseConfigService);
+	            Object obj;
+	            try
+	            {
+	                obj = Activator.CreateType(type);
+	            }
+	            catch (InstantiationException e)
+	            {
+	                throw new ConfigurationException("Type '" + type + "' cannot be instantiated");
+	            }
+	            catch (IllegalAccessException e)
+	            {
+	                throw new ConfigurationException("Illegal access instantiating type '" + type);
+	            }
+
+	            epServicesContextFactory = (EPServicesContextFactory) obj;
+	        }
+
+	        EPServicesContext services = epServicesContextFactory.CreateServicesContext(engineURI, configSnapshot);
 
             // New runtime
             EPRuntimeImpl runtime = new EPRuntimeImpl(services);
@@ -92,7 +169,8 @@ namespace net.esper.core
             services.TimerService.Callback = runtime.TimerCallback;
 
             // New admin
-            EPAdministratorImpl admin = new EPAdministratorImpl(services);
+			ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.EventAdapterService, services.EngineImportService);
+			EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps);
 
             // Start clocking
             services.TimerService.StartInternalClock();
@@ -111,254 +189,59 @@ namespace net.esper.core
             engine = new EPServiceEngine(services, runtime, admin);
         }
 
-        private static EDictionary<String, Type> createPropertyTypes(EDictionary<String,String> properties)
-        {
-            EDictionary<String, Type> propertyTypes = new EHashDictionary<String, Type>();
-            foreach (string property in properties.Keys)
-            {
-            	String typeName = properties[property];
-                Type type = null;
+		/**
+		 * Loads and initializes adapter loaders.
+		 * @param configuration is the engine configs
+		 * @param services is the engine instance services
+		 */
+	    private void LoadAdapters(ConfigurationSnapshot configuration, EPServicesContext services)
+	    {
+	        List<ConfigurationAdapterLoader> adapterLoaders = configuration.AdapterLoaders;
+	        if ((adapterLoaders == null) || (adapterLoaders.Count == 0))
+	        {
+	            return;
+	        }
+	        foreach (ConfigurationAdapterLoader config in adapterLoaders)
+	        {
+	            String typeName = config.TypeName;
+	            Type adapterLoaderClass;
+	            try
+	            {
+	                adapterLoaderClass = Type.GetType(typeName);
+	            }
+	            catch (ClassNotFoundException ex)
+	            {
+	                throw new ConfigurationException("Failed to load adapter loader class '" + typeName + "'", ex);
+	            }
 
-                switch (typeName.ToLowerInvariant())
-                {
-                    case "string":
-                        type = typeof(string);
-                        break;
-                    case "char":
-                        type = typeof(char);
-                        break;
-                    case "bool":
-                    case "boolean":
-                        type = typeof(bool);
-                        break;
-                    case "sbyte":
-                        type = typeof(sbyte);
-                        break;
-                    case "short":
-                        type = typeof(short);
-                        break;
-                    case "int":   
-                        type = typeof(int);
-                        break;
-                    case "long":
-                        type = typeof(long);
-                        break;
-                    case "double":
-                        type = typeof(double);
-                        break;
-                    case "float":
-                        type = typeof(float);
-                        break;
-                    default:
-                        try
-                        {
-                            type = TypeHelper.ResolveType(typeName);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new EventAdapterException("Unable to load type '" + typeName + "'", ex);
-                        }
-                        break;
-                }
+	            Object adapterLoaderObj = null;
+	            try
+	            {
+	                adapterLoaderObj = Activator.CreateType(adapterLoaderClass);
+	            }
+	            catch (InstantiationException ex)
+	            {
+	                throw new ConfigurationException("Failed to instantiate adapter loader class '" + typeName + "' via default constructor", ex);
+	            }
+	            catch (IllegalAccessException ex)
+	            {
+	                throw new ConfigurationException("Illegal access to instantiate adapter loader class '" + typeName + "' via default constructor", ex);
+	            }
 
-                propertyTypes[property] = type;
-            }
+	            AdapterLoader adapterLoader = (AdapterLoader) adapterLoaderObj;
+	            adapterLoader.Init(config.LoaderName, config.ConfigProperties, this);
 
-            return propertyTypes;
-        }
-
-        private static EventAdapterService MakeEventAdapterService(ConfigurationSnapshot configSnapshot)
-        {
-            // Extract legacy event type definitions for each event type alias, if supplied.
-            //
-            // We supply this information as setup information to the event adapter service
-            // to allow discovery of superclasses and interfaces during event type construction for bean events,
-            // such that superclasses and interfaces can use the legacy type definitions.
-
-            EDictionary<String, ConfigurationEventTypeLegacy> classLegacyInfo = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
-            foreach (KeyValuePair<String, String> entry in configSnapshot.TypeAliases)
-            {
-                String aliasName = entry.Key;
-                String className = entry.Value;
-                ConfigurationEventTypeLegacy legacyDef = configSnapshot.LegacyAliases.Fetch(aliasName);
-                if ( legacyDef != null )
-                {
-                    classLegacyInfo[className] = legacyDef;
-                }
-            }
-
-            EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl(classLegacyInfo);
-
-            // Add from the configuration the event class aliases
-            EDictionary<String, String> typeAliases = configSnapshot.TypeAliases;
-            foreach (KeyValuePair<String, String> entry in typeAliases)
-            {
-                // Add type alias
-                try
-                {
-                    String aliasName = entry.Key;
-                    eventAdapterService.AddBeanType(aliasName, entry.Value);
-                }
-                catch (EventAdapterException ex)
-                {
-                    throw new ConfigurationException("Error configuring engine: " + ex.Message, ex);
-                }
-            }
-
-            // Add from the configuration the XML DOM aliases and type def
-            EDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = configSnapshot.XmlDOMAliases;
-            foreach (KeyValuePair<String, ConfigurationEventTypeXMLDOM> entry in xmlDOMAliases)
-            {
-                // Add class alias
-                try
-                {
-                    eventAdapterService.AddXMLDOMType(entry.Key, entry.Value);
-                }
-                catch (EventAdapterException ex)
-                {
-                    throw new ConfigurationException("Error configuring engine: " + ex.Message, ex);
-                }
-            }
-
-            // Add map event types
-            EDictionary<String, EDictionary<string,string>> mapAliases = configSnapshot.MapAliases;
-            foreach (KeyValuePair<String, EDictionary<string,string>> entry in mapAliases)
-            {
-                try
-                {
-                    EDictionary<String, Type> propertyTypes = createPropertyTypes(entry.Value);
-                    eventAdapterService.AddMapType(entry.Key, propertyTypes);
-                }
-                catch (EventAdapterException ex)
-                {
-                    throw new ConfigurationException("Error configuring engine: " + ex.Message, ex);
-                }
-            }
-
-            return eventAdapterService;
-        }
-
-        private static AutoImportService MakeAutoImportService(ConfigurationSnapshot configSnapshot)
-        {
-            AutoImportService autoImportService = null;
-
-            // Add auto-imports
-            try
-            {
-                autoImportService = new AutoImportServiceImpl(configSnapshot.AutoImports);
-            }
-            catch (ArgumentException ex)
-            {
-                throw new ConfigurationException("Error configuring engine: " + ex.Message, ex);
-            }
-
-            return autoImportService;
-        }
-
-        private static DatabaseConfigService MakeDatabaseRefService(ConfigurationSnapshot configSnapshot, SchedulingService schedulingService)
-        {
-            DatabaseConfigService databaseConfigService = null;
-
-            // Add auto-imports
-            try
-            {
-                ScheduleBucket allStatementsBucket = schedulingService.AllocateBucket();
-                databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.DatabaseRefs, schedulingService, allStatementsBucket);
-            }
-            catch (ArgumentException ex)
-            {
-                throw new ConfigurationException("Error configuring engine: " + ex.Message, ex);
-            }
-
-            return databaseConfigService;
-        }
-
-        /// <summary> Snapshot of Configuration is held for re-initializing engine state
-        /// from prior configuration values that may have been muted.
-        /// </summary>
-
-        public sealed class ConfigurationSnapshot
-        {
-            /// <summary> Returns list of automatic import packages and classes.</summary>
-            /// <returns> automatic imports, or zero-length array if none
-            /// </returns>
-
-            public String[] AutoImports
-            {
-                get { return autoImports; }
-            }
-
-            private EDictionary<String, String> typeAliases = new EHashDictionary<String, String>();
-            private EDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = new EHashDictionary<String, ConfigurationEventTypeXMLDOM>();
-            private EDictionary<String, ConfigurationEventTypeLegacy> legacyAliases = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
-            private String[] autoImports;
-            private EDictionary<String, EDictionary<String,String>> mapAliases = new EHashDictionary<String, EDictionary<String,String>>();
-            private EDictionary<String, ConfigurationDBRef> databaseRefs = new EHashDictionary<String, ConfigurationDBRef>();
-
-            /// <summary>
-            /// Ctor.
-            /// 
-            /// Copies information out of configuration performing a deep copy
-            /// to preserve configs.
-            /// </summary>
-            /// <param name="configuration">is the client configuration holder
-            /// </param>
-
-            public ConfigurationSnapshot(Configuration configuration)
-            {
-            	typeAliases.PutAll( configuration.EventTypeAliases);
-                xmlDOMAliases.PutAll(configuration.EventTypesXMLDOM);
-                autoImports = CollectionHelper.ToArray<string>( configuration.Imports ) ;
-                mapAliases.PutAll(configuration.EventTypesMapEvents);
-                legacyAliases.PutAll(configuration.EventTypesLegacy);
-                databaseRefs.PutAll(configuration.DatabaseReferences);
-            }
-
-            /// <summary> Returns event type alias to type name mapping.</summary>
-            /// <returns> map of alias to class name
-            /// </returns>
-
-            public EDictionary<String, String> TypeAliases
-            {
-                get { return typeAliases; }
-            }
-
-            /// <summary> Returns map of event alias and XML DOM configs.</summary>
-            /// <returns> event alias to XML DOM config mapping
-            /// </returns>
-
-            public EDictionary<String, ConfigurationEventTypeXMLDOM> XmlDOMAliases
-            {
-                get { return xmlDOMAliases; }
-            }
-
-            /// <summary> Returns a map of event type alias to Map-event type properties.</summary>
-            /// <returns> alias to event properties mapping for Map event types
-            /// </returns>
-
-            public EDictionary<String, EDictionary<String,String>> MapAliases
-            {
-                get { return mapAliases; }
-            }
-
-            /// <summary> Returns the map of event type alias to legacy event type configuration.</summary>
-            /// <returns> map with alias as the key and legacy type config as the value
-            /// </returns>
-
-            public EDictionary<String, ConfigurationEventTypeLegacy> LegacyAliases
-            {
-                get { return legacyAliases; }
-            }
-
-            /// <summary> Returns a map of database name to database configuration.</summary>
-            /// <returns> database configs
-            /// </returns>
-
-            public EDictionary<String, ConfigurationDBRef> DatabaseRefs
-            {
-                get { return databaseRefs; }
-            }
-        }
+	            // register adapter loader in JNDI context tree
+	            try
+	            {
+	                services.EngineEnvContext.Bind("adapter-loader/" + config.LoaderName, adapterLoader);
+	            }
+	            catch (NamingException e)
+	            {
+	                throw new EPException("Failed to use context to bind adapter loader", e);
+	            }
+	        }
+		}
 
         private class EPServiceEngine
         {

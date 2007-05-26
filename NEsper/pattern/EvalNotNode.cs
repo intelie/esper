@@ -8,7 +8,7 @@ namespace net.esper.pattern
     /// This class represents an 'not' operator in the evaluation tree representing any event expressions.
     /// </summary>
 	
-    public sealed class EvalNotNode:EvalNode
+    public sealed class EvalNotNode : EvalNode
 	{
         /// <summary>
         /// Create the evaluation state node containing the truth value state for each operator in an
@@ -20,7 +20,10 @@ namespace net.esper.pattern
         /// <returns>
         /// state node containing the truth value state for the operator
         /// </returns>
-		public override EvalStateNode NewState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context)
+		public override EvalStateNode NewState(Evaluator parentNode,
+											   MatchedEventMap beginState,
+											   PatternContext context,
+											   Object stateNodeId)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -32,7 +35,7 @@ namespace net.esper.pattern
 				throw new SystemException("Expected number of child nodes incorrect, expected 1 child node, found " + ChildNodes.Count);
 			}
 			
-			return new EvalNotStateNode(parentNode, this.ChildNodes[0], beginState, context);
+			return context.PatternStateFactory.MakeNotNode(parentNode, this, beginState, stateNodeId);
 		}
 
         /// <summary>

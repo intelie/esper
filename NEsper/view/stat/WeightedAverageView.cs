@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using net.esper.compat;
 using net.esper.collection;
+using net.esper.core;
 using net.esper.events;
 using net.esper.view;
 
@@ -16,25 +17,10 @@ namespace net.esper.view.stat
     ///     Example: weighted_avg("price", "volume")
     /// </c>
     /// </summary>
-    public sealed class WeightedAverageView : ViewSupport, ContextAwareView
+    public sealed class WeightedAverageView
+		: ViewSupport
+		, CloneableView
     {
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-        public ViewServiceContext ViewServiceContext
-        {
-            get { return viewServiceContext; }
-            set
-            {
-                this.viewServiceContext = value;
-
-                EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
-                schemaMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = typeof(double);
-                eventType = value.EventAdapterService.CreateAnonymousMapType(schemaMap);
-            }
-        }
-
         /// <summary>
         /// Gets or sets the name of the field supplying the X values.
         /// </summary>
@@ -44,7 +30,6 @@ namespace net.esper.view.stat
         public String FieldNameX
         {
             get { return fieldNameX; }
-            set { this.fieldNameX = value; }
         }
 
         /// <summary>
@@ -57,13 +42,12 @@ namespace net.esper.view.stat
         public String FieldNameWeight
         {
             get { return fieldNameWeight; }
-            set { this.fieldNameWeight = value; }
         }
 
-        private EventType eventType;
-        private ViewServiceContext viewServiceContext;
-        private String fieldNameX;
-        private String fieldNameWeight;
+        private readonly EventType eventType;
+        private readonly StatementContext statementContext;
+        private readonly String fieldNameX;
+        private readonly String fieldNameWeight;
         private EventPropertyGetter fieldXGetter;
         private EventPropertyGetter fieldWeightGetter;
 
@@ -71,27 +55,26 @@ namespace net.esper.view.stat
         private double sumW = Double.NaN;
         private double currentValue = Double.NaN;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WeightedAverageView"/> class.
-        /// </summary>
-        public WeightedAverageView()
-        {
-        }
+	   /**
+	     * Constructor requires the name of the field to use in the parent view to compute the weighted average on,
+	     * as well as the name of the field in the parent view to get the weight from.
+	     * @param fieldNameX is the name of the field within the parent view to use to get numeric data points for this view to
+	     * compute the average for.
+	     * @param fieldNameWeight is the field name for the weight to apply to each data point
+	     * @param statementContext contains required view services
+	     */
+	    public WeightedAverageView(StatementContext statementContext, String fieldNameX, String fieldNameWeight)
+	    {
+	        this.fieldNameX = fieldNameX;
+	        this.fieldNameWeight = fieldNameWeight;
+	        this.statementContext = statementContext;
+	        eventType = CreateEventType(statementContext);
+	    }
 
-        /// <summary> Constructor requires the name of the field to use in the parent view to compute the weighted average on,
-        /// as well as the name of the field in the parent view to get the weight from.
-        /// </summary>
-        /// <param name="fieldNameX">is the name of the field within the parent view to use to get numeric data points for this view to
-        /// compute the average for.
-        /// </param>
-        /// <param name="fieldNameWeight">is the field name for the weight to apply to each data point
-        /// </param>
-
-        public WeightedAverageView(String fieldNameX, String fieldNameWeight)
-        {
-            this.fieldNameX = fieldNameX;
-            this.fieldNameWeight = fieldNameWeight;
-        }
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight);
+	    }
 
         /// <summary>
         /// Gets or sets the View's parent Viewable.
@@ -111,18 +94,6 @@ namespace net.esper.view.stat
                     fieldWeightGetter = parent.EventType.GetGetter(fieldNameWeight);
                 }
             }
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            return PropertyCheckHelper.CheckNumeric(parentView.EventType, fieldNameX, fieldNameWeight);
         }
 
         /// <summary>
@@ -193,16 +164,16 @@ namespace net.esper.view.stat
                 currentValue = Double.NaN;
             }
 
-            // If there are child view, fire update method
+            // If there are child view, fireStatementStopped update method
             if (this.HasViews)
             {
                 EDataDictionary newDataMap = new EDataDictionary();
                 newDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = currentValue;
-                EventBean newDataEvent = viewServiceContext.EventAdapterService.CreateMapFromValues(newDataMap, eventType);
+                EventBean newDataEvent = statementContext.EventAdapterService.CreateMapFromValues(newDataMap, eventType);
 
                 EDataDictionary oldDataMap = new EDataDictionary();
                 oldDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = oldValue;
-                EventBean oldDataEvent = viewServiceContext.EventAdapterService.CreateMapFromValues(oldDataMap, eventType);
+                EventBean oldDataEvent = statementContext.EventAdapterService.CreateMapFromValues(oldDataMap, eventType);
 
                 UpdateChildren(new EventBean[] { newDataEvent }, new EventBean[] { oldDataEvent });
             }
@@ -231,7 +202,7 @@ namespace net.esper.view.stat
         {
         	EDataDictionary newDataMap = new EDataDictionary();
         	newDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = currentValue ;
-            return new SingleEventIterator(viewServiceContext.EventAdapterService.CreateMapFromValues(newDataMap, eventType));
+            yield return new statementContext.EventAdapterService.CreateMapFromValues(newDataMap, eventType);
         }
 
         /// <summary>

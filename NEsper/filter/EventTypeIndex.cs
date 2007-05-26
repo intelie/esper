@@ -12,7 +12,7 @@ namespace net.esper.filter
 {
     /// <summary>
     /// Mapping of event type to a tree-like structure
-    /// containing filter parameter constants in indexes <seealso cref="FilterParamIndex" /> and filter callbacks in <seealso cref="FilterCallbackSetNode"/>.
+    /// containing filter parameter constants in indexes <seealso cref="FilterParamIndexBase" /> and filter callbacks in <seealso cref="FilterHandleSetNode"/>.
     /// <para>
     /// This class evaluates events for the purpose of filtering by (1) looking up the event's <seealso cref="EventType" />
     /// and (2) asking the subtree for this event type to evaluate the event.
@@ -24,16 +24,25 @@ namespace net.esper.filter
     
     public class EventTypeIndex : EventEvaluator
     {
-        private IDictionary<EventType, FilterCallbackSetNode> eventTypes;
+        private IDictionary<EventType, FilterHandleSetNode> eventTypes;
         private ReaderWriterLock eventTypesRWLock;
 
-        /// <summary>
+	    /**
+	     * Returns the current size of the known event types.
+	     * @return collection size
+	     */
+	    protected int Count
+	    {
+	        get { return eventTypes.Count ; }
+	    }
+
+		/// <summary>
         /// Constructor
         /// </summary>
 
         public EventTypeIndex()
         {
-            eventTypes = new Dictionary<EventType, FilterCallbackSetNode>();
+            eventTypes = new Dictionary<EventType, FilterHandleSetNode>();
             eventTypesRWLock = new ReaderWriterLock();
         }
         
@@ -44,32 +53,37 @@ namespace net.esper.filter
         /// <param name="eventType">the event type to be added to the index</param>
         /// <param name="rootNode">the root node of the subtree for filter constant indizes and callbacks</param>
         
-        public void Add(EventType eventType, FilterCallbackSetNode rootNode)
+        public void Add(EventType eventType, FilterHandleSetNode rootNode)
         {
-            eventTypesRWLock.AcquireWriterLock( LockConstants.WriterTimeout );
-            if (eventTypes.ContainsKey(eventType))
+            using (WriterLock writeLock = new WriterLock(eventTypesRWLock))
             {
-                eventTypesRWLock.ReleaseWriterLock();
-                throw new IllegalStateException("Event type already in index, add not performed, type=" + eventType);
+                if (eventTypes.ContainsKey(eventType))
+                {
+                    throw new IllegalStateException("Event type already in index, add not performed, type=" + eventType);
+                }
+                eventTypes[eventType] = rootNode;
             }
-            eventTypes[eventType] = rootNode;
-            eventTypesRWLock.ReleaseWriterLock();
         }
 
         /// <summary>Returns the root node for the given event type, or null if this event type has not been seen before.</summary>
         /// <param name="eventType">is an event type</param>
         /// <returns>the subtree's root node</returns>
 
-        public FilterCallbackSetNode this[EventType eventType]
+        public FilterHandleSetNode this[EventType eventType]
         {
         	get
         	{
-	            eventTypesRWLock.AcquireReaderLock( LockConstants.ReaderTimeout );
-	            FilterCallbackSetNode result = null ;
-	            eventTypes.TryGetValue( eventType, out result ) ;
-	            eventTypesRWLock.ReleaseReaderLock();
-	
-	            return result;
+                try
+                {
+                    eventTypesRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
+                    FilterHandleSetNode result = null;
+                    eventTypes.TryGetValue(eventType, out result);
+                    return result;
+                }
+                finally
+                {
+                    eventTypesRWLock.ReleaseReaderLock();
+                }
         	}
         }
 
@@ -78,7 +92,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="ev">The ev.</param>
         /// <param name="matches">The matches.</param>
-        public void MatchEvent(EventBean ev, IList<FilterCallback> matches)
+        public void MatchEvent(EventBean ev, ICollection<FilterHandle> matches)
         {
             if (log.IsDebugEnabled)
             {
@@ -102,12 +116,19 @@ namespace net.esper.filter
             }
         }
 
-        private void MatchType(EventType eventType, EventBean eventBean, IList<FilterCallback> matches)
+        private void MatchType(EventType eventType, EventBean eventBean, IList<FilterHandle> matches)
         {
-            eventTypesRWLock.AcquireReaderLock( LockConstants.ReaderTimeout );
-            FilterCallbackSetNode rootNode = null ;
-            eventTypes.TryGetValue(eventType, out rootNode) ;
-            eventTypesRWLock.ReleaseReaderLock();
+            FilterHandleSetNode rootNode = null ;
+            
+            try
+            {
+                eventTypesRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
+                eventTypes.TryGetValue(eventType, out rootNode);
+            }
+            finally
+            {
+                eventTypesRWLock.ReleaseReaderLock();
+            }
 
             // If the top class node is null, no filters have yet been registered for this event type.
             // In this case, log a message and done.

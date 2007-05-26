@@ -30,7 +30,7 @@ namespace net.esper.collection
 
         /// <summary>Adds event to the end of the event queue.</summary>
         /// <param name="ev">event to add</param>
-        public void Add(Object ev)
+        public static void Add(Object ev)
         {
             ELinkedList<Object> queue = LocalThreadQueue;
             queue.Push(ev);
@@ -39,7 +39,7 @@ namespace net.esper.collection
         /// <summary>Adds event to the front of the queue.</summary>
         /// <param name="ev">event to add</param>
 
-        public void AddFront(Object ev)
+        public static void AddFront(Object ev)
         {
             ELinkedList<Object> queue = LocalThreadQueue;
             queue.Insert(0, ev);
@@ -51,7 +51,7 @@ namespace net.esper.collection
         /// </summary>
         /// <returns>next event to GetSelectListEvents</returns>
 
-        public Object Next()
+        public static Object Next()
         {
             ELinkedList<Object> queue = LocalThreadQueue;
             

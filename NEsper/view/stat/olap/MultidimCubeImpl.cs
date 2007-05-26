@@ -160,13 +160,13 @@ namespace net.esper.view.stat.olap
 			}
 
 			// If members already existed, disallow setting members
-			if ( memberKeys.Count != 0 )
+			if ( memberKeys.Count == 0 )
 			{
 				throw new ArgumentException( "Cannot add dimension members - dimension members already existed, merge not supported" );
 			}
 
 			// If ordinals (cells) already existed, disallow setting members
-			if ( ordinals.Count != 0 )
+			if ( ordinals.Count == 0 )
 			{
 				throw new ArgumentException( "Cannot add dimension members - cells already existed, merge not supported" );
 			}

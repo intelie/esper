@@ -36,26 +36,33 @@ namespace net.esper.events
             get { return propertyNames; }
         }
 
+		private readonly String typeName;
         private readonly String[] propertyNames; // Cache an array of property names so not to construct one frequently
         private readonly EDictionary<String, Type> types; // Mapping of property name and type
         private EDictionary<String, EventPropertyGetter> propertyGetters; // Mapping of property name and getters
         private int hashCode;
         private EventAdapterService eventAdapterService;
 
-        /// <summary> Constructor takes a map of property names and types.</summary>
-        /// <param name="propertyTypes">is pairs of property name and type
-        /// </param>
-        /// <param name="eventAdapterService">is 
-        /// </param>
+		/**
+		 * Constructor takes a type name, map of property names and types.
+		 * @param typeName is the event type name used to distinquish map types that have the same property types,
+		 * empty string for anonymous maps, or for insert-into statements generating map events
+		 * the stream name
+		 * @param propertyTypes is pairs of property name and type
+		 * @param eventAdapterService is required for access to objects properties within map values
+		 */
 
-        public MapEventType(IDictionary<String, Type> propertyTypes, EventAdapterService eventAdapterService)
+        public MapEventType(String typeName,
+							IDictionary<String, Type> propertyTypes,
+							EventAdapterService eventAdapterService)
         {
+			this.typeName = typeName;
             this.eventAdapterService = eventAdapterService;
             // copy the property names and types
             this.types = new EHashDictionary<String, Type>() ;
             this.types.PutAll( propertyTypes ) ;
 
-            hashCode = 0;
+            hashCode = typeName.GetHashCode();
             propertyNames = new String[types.Count];
             propertyGetters = new EHashDictionary<String, EventPropertyGetter>();
 
@@ -116,6 +123,53 @@ namespace net.esper.events
 			}
         }
         
+		public Object GetValue(String propertyName, IDictionary<String, Object> values)
+	    {
+	        // if a known type, return value
+	        if (types.Fetch(propertyName) != null)
+	        {
+				Object temp = null ;
+				values.TryGetValue(propertyName, out value);
+				return temp ;
+	        }
+
+	        // see if this is a nested property
+	        int index = propertyName.IndexOf('.');
+	        if (index == -1)
+	        {
+	            return null;
+	        }
+
+
+	        // Take apart the nested property into a map key and a nested value class property name
+	        String propertyMap = propertyName.Substring(0, index);
+	        String propertyNested = propertyName.Substring(index + 1, propertyName.Length());
+
+	        Type result = types.Fetch(propertyMap);
+	        if (result == null)
+	        {
+	            return null;
+	        }
+
+	        // ask the nested class to resolve the property
+	        EventType nestedType = eventAdapterService.AddBeanType(result.Name, result);
+	        EventPropertyGetter nestedGetter = nestedType.GetGetter(propertyNested);
+	        if (nestedGetter == null)
+	        {
+	            return null;
+	        }
+
+	        // Wrap object
+	        Object value = null ;
+			values.TryGetValue( propertyMap, out value );
+	        if (value == null)
+	        {
+	            return null;
+	        }
+	        EventBean _event = this.eventAdapterService.adapterForBean(value);
+	        return nestedGetter.get(_event);
+	    }
+		
         /// <summary>
         /// Gets the type of property associated with the property name.
         /// </summary>
@@ -266,6 +320,14 @@ namespace net.esper.events
         public virtual bool IsProperty(String propertyName)
         {
             Type propertyType = GetPropertyType(propertyName);
+			if ( propertyType == null )
+			{
+			    // Could be a native null type, such as "insert into A select null as field..."
+	            if (types.ContainsKey(propertyName))
+	            {
+	                return true;
+	            }
+			}
             return propertyType != null;
         }
 
@@ -300,7 +362,9 @@ namespace net.esper.events
         /// </returns>
         public override String ToString()
         {
-            return "MapEventType " + "propertyNames=" + CollectionHelper.Render(propertyNames);
+            return "MapEventType " +
+				"typeName=" + typeName +
+				"propertyNames=" + CollectionHelper.Render(propertyNames);
         }
 
         /// <summary>
@@ -329,19 +393,31 @@ namespace net.esper.events
             {
                 return false;
             }
+		
+			// Should have the same type name
+		    if (!other.typeName.equals(this.typeName))
+	        {
+	            return false;
+	        }
 
             // Compare property by property
             foreach (KeyValuePair<String, Type> entry in types)
             {
                 Type otherClass = other.types.Fetch(entry.Key, null);
-                if (otherClass == null)
-                {
-                    return false;
-                }
-                if (!otherClass.Equals(entry.Value))
-                {
-                    return false;
-                }
+				Type thisClass = entry.Value;
+	            if (((otherClass == null) && (thisClass != null)) ||
+	                 (otherClass != null) && (thisClass == null))
+	            {
+	                return false;
+	            }
+	            if (otherClass == null)
+	            {
+	                continue;
+	            }
+	            if (!otherClass.equals(thisClass))
+	            {
+	                return false;
+	            }
             }
 
             return true;

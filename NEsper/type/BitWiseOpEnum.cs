@@ -62,7 +62,7 @@ namespace net.esper.type
 			computers.Add( new MultiKey<Object>( new Object[] { typeof( bool? ),  BXOR } ), BXorBoolean );
 		}
 
-        /// <summary>Returns number or boolean computation for the target coercion type.</summary>
+        /// <summary>Returns number or bool computation for the target coercion type.</summary>
         /// <param name="coercedType">target type</param>
         /// <returns>number cruncher</returns>
 
@@ -74,7 +74,7 @@ namespace net.esper.type
 				 ( coercedType != typeof( long? ) ) &&
 				 ( coercedType != typeof( bool? ) ) )
 			{
-				throw new ArgumentException( "Expected base numeric or boolean type for computation result but got type " + coercedType );
+				throw new ArgumentException( "Expected base numeric or bool type for computation result but got type " + coercedType );
 			}
 
 			MultiKey<Object> key = new MultiKey<Object>( new Object[] { coercedType, this } );

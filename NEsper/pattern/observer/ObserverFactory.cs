@@ -1,21 +1,34 @@
 using System;
-using PatternContext = net.esper.pattern.PatternContext;
-using MatchedEventMap = net.esper.pattern.MatchedEventMap;
+using System.Collections.Generic;
+
+using net.esper.pattern;
+using net.esper.pattern.guard;
+
 namespace net.esper.pattern.observer
 {
-	
 	/// <summary> Interface for factories for making observer instances.</summary>
 	public interface ObserverFactory
 	{
-		/// <summary> Make an observer instance.</summary>
-		/// <param name="context">services that may be required by observer implementation
-		/// </param>
-		/// <param name="beginState">Start state for observer
-		/// </param>
-		/// <param name="observerEventEvaluator">receiver for events observed
-		/// </param>
-		/// <returns> observer instance
-		/// </returns>
-		EventObserver MakeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator);
+	    /**
+	     * Sets the observer object parameters.
+	     * @param observerParameters is a list of parameters
+	     * @throws ObserverParameterException thrown to indicate a parameter problem
+	     */
+	    List<Object> ObserverParameters { set ; }
+	
+	    /**
+	     * Make an observer instance.
+	     * @param context - services that may be required by observer implementation
+	     * @param beginState - start state for observer
+	     * @param observerEventEvaluator - receiver for events observed
+	     * @param stateNodeId - optional id for the associated pattern state node
+	     * @param observerState - state node for observer
+	     * @return observer instance
+	     */
+		EventObserver MakeObserver(PatternContext context,
+								   MatchedEventMap beginState,
+								   ObserverEventEvaluator observerEventEvaluator,
+                                   Object stateNodeId,
+                                   Object observerState);
 	}
 }

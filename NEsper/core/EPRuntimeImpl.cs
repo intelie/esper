@@ -45,8 +45,59 @@ namespace net.esper.core
             get { return services.EmitService.NumEventsEmitted; }
         }
 
+		[ThreadStatic]
+		private ArrayBackedCollection<FilterHandle> matchesArrayThreadLocal;
+		private ArrayBackedCollection<FilterHandle> MatchesArray
+		{
+			get
+			{
+				if ( matchesArrayThreadLocal == null )
+				{
+					return new ArrayBackedCollection<FilterHandle>(100);
+				}
+			}
+		}
+
+		[ThreadStatic]
+		private EDictionary<EPStatementHandle, Object>> matchesPerStmtThreadLocal;
+		private EDictionary<EPStatementHandle, Object>> MatchesPerStmt
+		{
+			get
+			{
+				if ( matchesPerStmtThreadLocal == null )
+				{
+					matchesPerStmtThreadLocal = new EHashDictionary<EPStatementHandle, Object>(10000);
+				}
+			}
+        }
+
+		[ThreadStatic]
+		private ArrayBackedCollection<ScheduleHandle> scheduleArrayThreadLocal;
+		private ArrayBackedCollection<ScheduleHandle> ScheduleArray;
+		{
+			get
+			{
+				if ( scheduleArrayThreadLocal == null )
+				{
+					scheduleArrayThreadLocal = return new ArrayBackedCollection<ScheduleHandle>(100);
+				}
+			}
+        }
+
+		[ThreadStatic]
+		private EDictionary<EPStatementHandle, Object> schedulePerStmtThreadLocal;
+		private EDictionary<EPStatementHandle, Object> SchedulePerStmt
+		{
+			get
+			{
+				if ( schedulePerStmtThreadLocal == null )
+				{
+					schedulePerStmtThreadLocal = new EHashDictionary<EPStatementHandle, Object>(10000);
+				}
+			}
+        }
+		
         private EPServicesContext services;
-        private ReaderWriterLock timerRWLock;
         private ThreadWorkQueue threadWorkQueue;
 
         /// <summary> Constructor.</summary>
@@ -55,8 +106,7 @@ namespace net.esper.core
         public EPRuntimeImpl(EPServicesContext services)
         {
             this.services = services;
-            timerRWLock = new ReaderWriterLock();
-            threadWorkQueue = new ThreadWorkQueue();
+            this.threadWorkQueue = new ThreadWorkQueue();
         }
 
         /// <summary>
@@ -230,18 +280,13 @@ namespace net.esper.core
                 eventBean = services.EventAdapterService.AdapterForBean(_event);
             }
 
-            // All events are processed by the filter service
-            try
-            {
-            	timerRWLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
-
-                services.FilterService.Evaluate(eventBean);
-
-                // Dispatch internal work items and results
-                Dispatch();
-
-                // Work off the event queue if any events accumulated in there via a Route()
-                ProcessThreadWorkQueue();
+			ReaderWriterLock lockObj = services.EventProcessingRWLock;
+			
+	        // Acquire main processing lock which locks out statement management
+	        lockObj.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
+	        try
+	        {
+	            ProcessMatches(eventBean);
             }
             catch (SystemException ex)
             {
@@ -249,8 +294,14 @@ namespace net.esper.core
             }
             finally
             {
-                timerRWLock.ReleaseReaderLock();
+                lockObj.ReleaseReaderLock();
             }
+			
+		    // Dispatch results to listeners
+	        Dispatch();
+
+	        // Work off the event queue if any events accumulated in there via a route()
+	        ProcessThreadWorkQueue();
         }
 
         /// <summary>
@@ -278,37 +329,155 @@ namespace net.esper.core
             }
 
             // Evaluation of all time events is protected from regular event stream processing
-            timerRWLock.AcquireWriterLock(LockConstants.WriterTimeout);
+			if (log.IsDebugEnabled)
+			{
+				log.Debug(".ProcessTimeEvent Setting time and evaluating schedules");
+			}
 
-            try
-            {
-                if (log.IsDebugEnabled)
-                {
-                    log.Debug(".processTimeEvent Setting time and evaluating schedules");
-                }
+			CurrentTimeEvent current = (CurrentTimeEvent)_event;
+			long currentTime = current.TimeInMillis;
+			services.SchedulingService.Time = currentTime;
 
-                CurrentTimeEvent current = (CurrentTimeEvent)_event;
-                long currentTime = current.TimeInMillis;
-                services.SchedulingService.Time = currentTime;
+			ProcessSchedule();
 
-                services.SchedulingService.Evaluate();
+			// Let listeners know of results
+			Dispatch();
 
-                // Let listeners know of results
-                Dispatch();
-
-                // Work off the event queue if any events accumulated in there via a Route()
-                ProcessThreadWorkQueue();
-            }
-            catch (SystemException ex)
-            {
-                throw new EPException(ex);
-            }
-            finally
-            {
-                timerRWLock.ReleaseWriterLock();
-            }
+			// Work off the event queue if any events accumulated in there via a Route()
+			ProcessThreadWorkQueue();
         }
 
+	    private void ProcessSchedule()
+	    {
+	        ArrayBackedCollection<ScheduleHandle> handles = ScheduleArray;
+
+	        // Evaluation of schedules is protected by an optional scheduling service lock and then the engine lock
+	        // We want to stay in this order for allowing the engine lock as a second-order lock to the
+	        // services own lock, if it has one.
+	        services.SchedulingService.EvaluateLock();
+	        services.EventProcessingRWLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
+	        try
+	        {
+	            services.SchedulingService.Evaluate(handles);
+	        }
+	        finally
+	        {
+	            services.EventProcessingRWLock.ReleaseReaderLock();
+	            services.SchedulingService.EvaluateUnLock();
+	        }
+
+	        services.EventProcessingRWLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
+	        try
+	        {
+	            processScheduleHandles(handles);
+	        }
+	        finally
+	        {
+				services.EventProcessingRWLock.ReleaseReaderLock();
+	        }
+	    }
+
+	    private void ProcessScheduleHandles(ArrayBackedCollection<ScheduleHandle> handles)
+	    {
+	        if (ThreadLogUtil.ENABLED_TRACE)
+	        {
+	            ThreadLogUtil.trace("Found schedules for", handles.size());
+	        }
+
+	        if (handles.Count == 0)
+	        {
+	            return;
+	        }
+
+	        // handle 1 result separatly for performance reasons
+	        if (handles.Count == 1)
+	        {
+	            Object[] handleArray = handles.Array;
+	            EPStatementHandleCallback handle = (EPStatementHandleCallback) handleArray[0];
+	            ManagedLock statementLock = handle.EpStatementHandle.StatementLock;
+	            statementLock.AcquireLock(services.StatementLockFactory);
+	            try
+	            {
+	                handle.ScheduleCallback.ScheduledTrigger(services.ExtensionServicesContext);
+	                handle.EpStatementHandle.InternalDispatch();
+	            }
+	            finally
+	            {
+	                handle.EpStatementHandle.StatementLock.ReleaseLock(services.StatementLockFactory);
+	            }
+	            handles.Clear();
+	            return;
+	        }
+
+	        Object[] matchArray = handles.Array;
+	        int entryCount = handles.Count;
+
+	        // sort multiple matches for the event into statements
+	        EDictionary<EPStatementHandle, Object> stmtCallbacks = SchedulePerStmt;
+	        stmtCallbacks.Clear();
+	        for (int i = 0; i < entryCount; i++)    // need to use the size of the collection
+	        {
+	            EPStatementHandleCallback handleCallback = (EPStatementHandleCallback) matchArray[i];
+	            EPStatementHandle handle = handleCallback.EpStatementHandle;
+	            ScheduleHandleCallback callback = handleCallback.ScheduleCallback;
+
+	            Object entry = stmtCallbacks.Fetch(handle);
+
+	            // This statement has not been encountered before
+	            if (entry == null)
+	            {
+	                stmtCallbacks[handle] = callback;
+	                continue;
+	            }
+
+	            // This statement has been encountered once before
+	            if (entry is ScheduleHandleCallback)
+	            {
+	                ScheduleHandleCallback existingCallback = (ScheduleHandleCallback) entry;
+	                LinkedList<ScheduleHandleCallback> entries = new LinkedList<ScheduleHandleCallback>();
+	                entries.Add(existingCallback);
+	                entries.Add(callback);
+	                stmtCallbacks[handle] = entries;
+	                continue;
+	            }
+
+	            // This statement has been encountered more then once before
+	            LinkedList<ScheduleHandleCallback> entries = (LinkedList<ScheduleHandleCallback>) entry;
+	            entries.Add(callback);
+	        }
+	        handles.Clear();
+
+	        foreach (EPStatementHandle handle in stmtCallbacks.Keys)
+	        {
+	            Object callbackObject = stmtCallbacks.Fetch(handle);
+
+	            handle.StatementLock.AcquireLock(services.StatementLockFactory);
+	            try
+	            {
+	                if (callbackObject is LinkedList)
+	                {
+	                    LinkedList<ScheduleHandleCallback> callbackList = (LinkedList<ScheduleHandleCallback>) callbackObject;
+	                    foreach (ScheduleHandleCallback callback in callbackList)
+	                    {
+	                        callback.ScheduledTrigger(services.ExtensionServicesContext);
+	                    }
+	                }
+	                else
+	                {
+	                    ScheduleHandleCallback callback = (ScheduleHandleCallback) callbackObject;
+	                    callback.ScheduledTrigger(services.ExtensionServicesContext);
+	                }
+
+	                // internal join processing, if applicable
+	                handle.InternalDispatch();
+	            }
+	            finally
+	            {
+	                handle.StatementLock.ReleaseLock(services.StatementLockFactory);
+	            }
+	        }
+	    }
+	
         private void ProcessThreadWorkQueue()
         {
             Object _event;
@@ -324,11 +493,98 @@ namespace net.esper.core
                     eventBean = services.EventAdapterService.AdapterForBean(_event);
                 }
 
-                services.FilterService.Evaluate(eventBean);
+                services.EventProcessingRWLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
+	            try
+	            {
+	                ProcessMatches(eventBean);
+	            }
+	            finally
+	            {
+	                services.EventProcessingRWLock.ReleaseReaderLock();
+	            }
 
                 Dispatch();
             }
         }
+		
+	    private void processMatches(EventBean _event)
+	    {
+	        // get matching filters
+	        ArrayBackedCollection<FilterHandle> matches = MatchesArray;
+	        services.FilterService.Evaluate(_event, matches);
+
+	        if (ThreadLogUtil.ENABLED_TRACE)
+	        {
+	            ThreadLogUtil.trace("Found matches for underlying ", matches.Count, _event.Underlying);
+	        }
+
+	        if (matches.Count == 0)
+	        {
+	            return;
+	        }
+
+	        EDictionary<EPStatementHandle, Object> stmtCallbacks = MatchesPerStmt;
+	        Object[] matchArray = matches.Array;
+	        int entryCount = matches.Count;
+
+	        for (int i = 0; i < entryCount; i++)
+	        {
+	            EPStatementHandleCallback handleCallback = (EPStatementHandleCallback) matchArray[i];
+	            EPStatementHandle handle = handleCallback.EpStatementHandle;
+
+	            // Self-joins require that the internal dispatch happens after all streams are evaluated
+	            if (handle.IsCanSelfJoin)
+	            {
+	                List<FilterHandleCallback> callbacks = (List<FilterHandleCallback>) stmtCallbacks.Fetch(handle);
+	                if (callbacks == null)
+	                {
+	                    callbacks = new List<FilterHandleCallback>();
+	                    stmtCallbacks[handle] = callbacks;
+	                }
+	                callbacks.Add(handleCallback.FilterCallback);
+	                continue;
+	            }
+
+	            handle.StatementLock.AcquireLock(services.StatementLockFactory);
+	            try
+	            {
+	                handleCallback.FilterCallback.MatchFound(_event);
+	                
+	                // internal join processing, if applicable
+	                handle.InternalDispatch();
+	            }
+	            finally
+	            {
+	                handleCallback.EpStatementHandle.StatementLock.ReleaseLock(services.StatementLockFactory);
+	            }
+	        }
+	        matches.Clear();
+	        if (stmtCallbacks.Count == 0)
+	        {
+	            return;
+	        }
+
+	        foreach (EPStatementHandle handle in stmtCallbacks.Keys)
+	        {
+	            handle.StatementLock.AcquireLock(services.StatementLockFactory);
+	            try
+	            {
+	                List<FilterHandleCallback> callbackList = (List<FilterHandleCallback>) stmtCallbacks.Fetch(handle);
+	                foreach (FilterHandleCallback callback in callbackList)
+	                {
+	                    callback.MatchFound(_event);
+	                }
+
+	                // internal join processing, if applicable
+	                handle.InternalDispatch();
+	            }
+	            finally
+	            {
+	                handle.StatementLock.ReleaseLock(services.StatementLockFactory);
+	            }
+	        }
+	        stmtCallbacks.Clear();
+	    }
 
         private void Dispatch()
         {

@@ -54,7 +54,7 @@ namespace net.esper.eql.core
         /// </param>
         /// <param name="groupByNodes">represents the expressions to group-by events based on event properties, or empty if no group-by was specified
         /// </param>
-        /// <param name="optionalHavingNode">represents the having-clause boolean filter criteria
+        /// <param name="optionalHavingNode">represents the having-clause bool filter criteria
         /// </param>
         /// <param name="outputLimitSpec">indicates whether to output all or only the last event
         /// </param>

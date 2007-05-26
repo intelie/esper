@@ -5,6 +5,7 @@ using net.esper.compat;
 using net.esper.eql.parse;
 using net.esper.pattern;
 using net.esper.schedule;
+using net.esper.util;
 
 using org.apache.commons.logging;
 
@@ -14,41 +15,41 @@ namespace net.esper.pattern.observer
     /// Factory for 'crontab' observers that indicate truth when a time point was reached.
     /// </summary>
 	
-    public class TimerAtObserverFactory : ObserverFactory
+    public class TimerAtObserverFactory 
+		: ObserverFactory
+		, MetaDefItem
 	{
-		private ScheduleSpec spec = null;
-		
-		/// <summary> Ctor.
-		/// The crontab observer requires a schedule specification that is extracted from arguments.
-		/// </summary>
-		/// <param name="args">schedule specification
-		/// </param>
-		public TimerAtObserverFactory(Object[] args)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug(".TimerAtObserverFactory " + CollectionHelper.Render(args));
-			}
-			
-			if ((args.Length < 5) || (args.Length > 6))
-			{
-				throw new ArgumentException("Invalid number of parameters for timer:at");
-			}
+	    /**
+	     * The specification of the crontab schedule.
+	     */
+	    protected ScheduleSpec spec = null;
 
-            EDictionary<ScheduleUnit, ETreeSet<Int32>> unitMap = new EHashDictionary<ScheduleUnit, ETreeSet<Int32>>();
-			unitMap[ScheduleUnit.MINUTES] = computeValues(args[0],ScheduleUnit.MINUTES);
-			unitMap[ScheduleUnit.HOURS] = computeValues(args[1], ScheduleUnit.HOURS);
-			unitMap[ScheduleUnit.DAYS_OF_WEEK] = computeValues(args[2], ScheduleUnit.DAYS_OF_WEEK);
-			unitMap[ScheduleUnit.DAYS_OF_MONTH] = computeValues(args[3], ScheduleUnit.DAYS_OF_MONTH);
-			unitMap[ScheduleUnit.MONTHS] = computeValues(args[4], ScheduleUnit.MONTHS);
-			if (args.Length > 5)
-			{
-				unitMap[ScheduleUnit.SECONDS] = computeValues(args[5], ScheduleUnit.SECONDS);
-			}
+	    public List<Object> ObserverParameters
+	    {
+	        if (log.IsDebugEnabled)
+	        {
+	            log.Debug(".setObserverParameters " + value);
+	        }
+
+	        if ((value.Count < 5) || (value.Count > 6))
+	        {
+	            throw new ObserverParameterException("Invalid number of parameters for timer:at");
+	        }
+
+	        EnumMap<ScheduleUnit, SortedSet<Int32>> unitMap = new EnumMap<ScheduleUnit, SortedSet<Int32>>(typeof(ScheduleUnit));
+	        unitMap[ScheduleUnit.MINUTES] = ComputeValues(value[0], ScheduleUnit.MINUTES);
+	        unitMap[ScheduleUnit.HOURS] = ComputeValues(value[1], ScheduleUnit.HOURS);
+	        unitMap[ScheduleUnit.DAYS_OF_WEEK] = ComputeValues(value[2], ScheduleUnit.DAYS_OF_WEEK);
+	        unitMap[ScheduleUnit.DAYS_OF_MONTH] = ComputeValues(value[3], ScheduleUnit.DAYS_OF_MONTH);
+	        unitMap[ScheduleUnit.MONTHS] = ComputeValues(value[4], ScheduleUnit.MONTHS);
+	        if (observerParameters.Count > 5)
+	        {
+	            unitMap[ScheduleUnit.SECONDS] = ComputeValues(value[5], ScheduleUnit.SECONDS);
+	        }
 			spec = new ScheduleSpec(unitMap);
 		}
 
-        private ETreeSet<Int32> computeValues(Object unitParameter, ScheduleUnit unit)
+        private static ETreeSet<Int32> ComputeValues(Object unitParameter, ScheduleUnit unit)
         {
             if (unitParameter is Int32)
             {
@@ -77,7 +78,11 @@ namespace net.esper.pattern.observer
         /// <param name="beginState">Start state for observer</param>
         /// <param name="observerEventEvaluator">receiver for events observed</param>
         /// <returns>observer instance</returns>
-		public virtual EventObserver MakeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
+		public virtual EventObserver MakeObserver(PatternContext context,
+												  MatchedEventMap beginState,
+												  ObserverEventEvaluator observerEventEvaluator,
+												  Object stateNodeId,
+												  Object observerState)
 		{
 			return new TimerAtObserver(spec, context, beginState, observerEventEvaluator);
 		}

@@ -49,7 +49,7 @@ namespace net.esper.events.property
 
                 if (i < (getterChain.Length - 1))
                 {
-                    eventBean = beanEventAdapter.AdapterForBean(_value);
+                    eventBean = beanEventAdapter.AdapterForBean(_value, null);
                 }
             }
 

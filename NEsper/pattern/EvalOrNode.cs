@@ -9,7 +9,7 @@ namespace net.esper.pattern
     /// This class represents an 'or' operator in the evaluation tree representing any event expressions.
     /// </summary>
 	
-    public sealed class EvalOrNode:EvalNode
+    public sealed class EvalOrNode : EvalNode
 	{
         /// <summary>
         /// Create the evaluation state node containing the truth value state for each operator in an
@@ -21,7 +21,10 @@ namespace net.esper.pattern
         /// <returns>
         /// state node containing the truth value state for the operator
         /// </returns>
-		public override EvalStateNode NewState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context)
+		public override EvalStateNode NewState( Evaluator parentNode,
+												MatchedEventMap beginState,
+												PatternContext context,
+												Object stateNodeId )
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -33,7 +36,7 @@ namespace net.esper.pattern
 				throw new SystemException("Expected number of child nodes incorrect, expected >=2 child node, found " + ChildNodes.Count);
 			}
 			
-			return new EvalOrStateNode(parentNode, this.ChildNodes, beginState, context);
+			return context.PatternStateFactory.MakeOrState(parentNode, this, beginState, context, stateNodeId);
 		}
 
         /// <summary>

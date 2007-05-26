@@ -28,7 +28,14 @@ namespace net.esper.compat
         /// </summary>
         public void Dispose()
         {
-            this.m_lockObj.ReleaseReaderLock();
+            lock (this)
+            {
+                if (this.m_lockObj != null)
+                {
+                    this.m_lockObj.ReleaseReaderLock();
+                    this.m_lockObj = null;
+                }
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ namespace net.esper.client
         private Boolean readOnly;
         private IsolationLevel? transactionIsolation;
 
-        /// <summary> Returns a boolean indicating auto-commit, or null if not set and default accepted.</summary>
+        /// <summary> Returns a bool indicating auto-commit, or null if not set and default accepted.</summary>
         /// <returns> true for auto-commit on, false for auto-commit off, or null to accept the default
         /// </returns>
         /// <summary> Indicates whether to set any new connections for this database to auto-commit.</summary>
@@ -37,7 +37,7 @@ namespace net.esper.client
             set { this.catalog = value; }
         }
 
-        /// <summary> Returns a boolean indicating read-only, or null if not set and default accepted.</summary>
+        /// <summary> Returns a bool indicating read-only, or null if not set and default accepted.</summary>
         /// <returns> true for read-only on, false for read-only off, or null to accept the default
         /// </returns>
         /// <summary> Indicates whether to set any new connections for this database to read-only.</summary>

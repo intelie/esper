@@ -1,5 +1,7 @@
 using System;
+using System.Text;
 
+using net.esper.core;
 using net.esper.events;
 using net.esper.filter;
 
@@ -11,14 +13,16 @@ namespace net.esper.pattern
     /// This class contains the state of a single filter expression in the evaluation state tree.
     /// </summary>
 
-    public sealed class EvalFilterStateNode : EvalStateNode, FilterCallback
+    public sealed class EvalFilterStateNode
+		: EvalStateNode
+		, FilterHandleCallback
     {
-        private readonly FilterSpec filterSpec;
-        private readonly String eventAsName;
-        private readonly MatchedEventMap beginState;
-        private readonly PatternContext context;
+		private readonly EvalFilterNode evalFilterNode;
+	    private readonly MatchedEventMap beginState;
+	    private readonly PatternContext context;
 
-        private bool isStarted;
+	    private bool isStarted;
+	    private EPStatementHandleCallback handle;
 
         /// <summary> Constructor.</summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value
@@ -33,15 +37,14 @@ namespace net.esper.pattern
         /// </param>
 
         public EvalFilterStateNode(Evaluator parentNode, FilterSpec filterSpec, String eventAsName, MatchedEventMap beginState, PatternContext context)
-            : base(parentNode)
+            : base(evalFilterNode, parentNode, null)
         {
             if (log.IsDebugEnabled)
             {
                 log.Debug(".constructor");
             }
 
-            this.filterSpec = filterSpec;
-            this.eventAsName = eventAsName;
+			this.evalFilterNode = evalFilterNode;
             this.beginState = beginState;
             this.context = context;
         }
@@ -76,7 +79,7 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".guardQuit Stop filter expression");
+                log.Debug(".Quit Stop filter expression");
             }
 
             isStarted = false;
@@ -109,10 +112,10 @@ namespace net.esper.pattern
             MatchedEventMap passUp = beginState.ShallowCopy();
 
             // Add event itself to the match event structure if a tag was provided
-            if (eventAsName != null)
-            {
-                passUp.Add(eventAsName, _event);
-            }
+	        if (evalFilterNode.EventAsName != null)
+	        {
+	            passUp.Add(evalFilterNode.EventAsName, _event);
+	        }
 
             // Explanation for the type cast...
             // Each state node Stops listening if it resolves to true, and all nodes newState
@@ -165,21 +168,27 @@ namespace net.esper.pattern
         /// </returns>
         public override String ToString()
         {
-            System.Text.StringBuilder buffer = new System.Text.StringBuilder();
-            buffer.Append("EvalFilterStateNode spec=" + this.filterSpec);
-            buffer.Append(" tag=" + this.filterSpec);
-            return buffer.ToString();
+	        StringBuilder buffer = new StringBuilder();
+	        buffer.Append("EvalFilterStateNode");
+	        buffer.Append(" tag=");
+	        buffer.Append(evalFilterNode.FilterSpec);
+	        buffer.Append(" spec=");
+	        buffer.Append(evalFilterNode.FilterSpec);
+	        return buffer.ToString();
         }
 
         private void StartFiltering()
         {
-            FilterValueSet filterValues = filterSpec.GetValueSet(beginState);
-            context.FilterService.Add(filterValues, this);
+	        handle = new EPStatementHandleCallback(context.EpStatementHandle, this);
+	        FilterValueSet filterValues = evalFilterNode.FilterSpec.GetValueSet(beginState);
+	        context.FilterService.Add(filterValues, handle);
         }
 
         private void StopFiltering()
         {
-            context.FilterService.Remove(this);
+            context.FilterService.Remove(handle);
+			handle = null;
+			isStarted = false;
         }
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

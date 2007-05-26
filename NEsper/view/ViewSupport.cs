@@ -153,72 +153,6 @@ namespace net.esper.view
         }
 
         /// <summary>
-        /// Copies the view by copying the bean properties of the view but does not
-        /// copy the views children,does not copy or set the property for the parent view.
-        /// </summary>
-        /// <param name="view">to be copied</param>
-        /// <returns>
-        /// copy of the view, populated via object property getter and setter methods
-        /// </returns>
-
-        public static View ShallowCopyView(View view)
-        {
-            View copied = null;
-
-            try
-            {
-                Type viewType = view.GetType() ;
-
-                // Create a dictionary that contains all of the properties
-                // known to the view type.  We will need the dictionary to
-                // be indexed by name so that we can remove properties that
-                // we should not be copying.
-                Dictionary<String, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
-                foreach (PropertyInfo propertyInfo in viewType.GetProperties())
-                {
-                    switch (propertyInfo.Name)
-                    {
-                        case "Views":
-                        case "Parent":
-                            // Case statement represents specific properties we with to
-                            // ignore.
-                            break;
-                        default:
-                            // We are performing a shallow copy so it only makes sense
-                            // to look at properties that we can read and write.  The
-                            // read occurs on the source, the write on the target.
-
-                            if (propertyInfo.CanRead && propertyInfo.CanWrite)
-                            {
-                                properties[propertyInfo.Name] = propertyInfo;
-                            }
-                            break;
-                    }
-                }
-
-                // Remove properties that would and could not be copied
-                //properties.Remove("Views");
-                //properties.Remove("Parent");
-
-                copied = (View) Activator.CreateInstance( viewType ) ;
-
-                // Perform a shallow-copy of properties
-                foreach (PropertyInfo propertyInfo in properties.Values )
-                {
-                    Object value = propertyInfo.GetValue( view, null ) ;
-                    propertyInfo.SetValue(copied, value, null);
-                }
-            }
-            catch (Exception e)
-            {
-            	log.Fatal(".ShallowCopyView Failed to copy view " + view.GetType().Name);
-				throw e;
-            }
-
-            return copied;
-        }
-
-        /// <summary>
         /// Convenience method for logging the parameters passed to the update method.
         /// Only logs if debug is enabled.
         /// </summary>
@@ -299,7 +233,7 @@ namespace net.esper.view
         {
             Stack<View> stack = new Stack<View>();
 
-            Boolean found = false;
+            bool found ;
 
             foreach (View view in parentView.GetViews())
             {

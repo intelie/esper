@@ -13,7 +13,7 @@ namespace net.esper.filter
 
     public class IndexTreePath
     {
-        private readonly ELinkedList<Pair<FilterParamIndex, Object>> indizes;
+		private readonly ELinkedList<Pair<FilterParamIndexBase, Object>> indizes;
 
         /// <summary>
         /// Constructor.
@@ -21,7 +21,7 @@ namespace net.esper.filter
 
         public IndexTreePath()
         {
-            indizes = new ELinkedList<Pair<FilterParamIndex, Object>>();
+            indizes = new ELinkedList<Pair<FilterParamIndexBase, Object>>();
         }
 
         /// <summary> Add an index to end of the list representing a path through indexes.</summary>
@@ -30,16 +30,16 @@ namespace net.esper.filter
         /// <param name="filteredForValue">is the value the index filters
         /// </param>
 
-        public void Add(FilterParamIndex index, Object filteredForValue)
+        public void Add(FilterParamIndexBase index, Object filteredForValue)
         {
-            indizes.Add(new Pair<FilterParamIndex, Object>(index, filteredForValue));
+            indizes.Add(new Pair<FilterParamIndexBase, Object>(index, filteredForValue));
         }
 
         /// <summary> Remove and return first index.</summary>
         /// <returns> first index
         /// </returns>
 
-        public Pair<FilterParamIndex, Object> RemoveFirst()
+        public Pair<FilterParamIndexBase, Object> RemoveFirst()
         {
             if (indizes.Count > 0)
             {

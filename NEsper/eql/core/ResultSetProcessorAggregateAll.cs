@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using net.esper.collection;
 using net.esper.compat;
+using net.esper.eql.agg;
 using net.esper.eql.expression;
 using net.esper.events;
 

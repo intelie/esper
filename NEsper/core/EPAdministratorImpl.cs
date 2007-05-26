@@ -58,26 +58,53 @@ namespace net.esper.core
         private static WalkRuleSelector patternWalkRule;
         private static WalkRuleSelector eqlWalkRule;
 
-        private EPServicesContext services;
+		private readonly EPServicesContext services;
+		private readonly ConfigurationOperations configurationOperations;
 
         /// <summary> Constructor - takes the services context as argument.</summary>
-        /// <param name="services">references to services
-        /// </param>
-        public EPAdministratorImpl(EPServicesContext services)
-        {
-            this.services = services;
-        }
+        /// <param name="services">references to services</param>
+		/// <param name="configurationOperations">runtime configuration operations</param>
+		
+	    public EPAdministratorImpl(EPServicesContext services, ConfigurationOperations configurationOperations)
+	    {
+	        this.services = services;
+	        this.configurationOperations = configurationOperations;
+	    }
+
+	    public EPStatement CreatePattern(String onExpression)
+	    {
+	        return CreatePatternStmt(onExpression, null);
+	    }
+
+	    public EPStatement CreateEQL(String eqlStatement)
+	    {
+	        return CreateEQLStmt(eqlStatement, null);
+	    }
+
+	    public EPStatement CreatePattern(String expression, String statementName)
+	    {
+	        if (statementName == null)
+	        {
+	            throw new ArgumentException("Invalid parameter, statement name cannot be null");
+	        }
+	        return CreatePatternStmt(expression, statementName);
+	    }
+
+	    public EPStatement CreateEQL(String eqlStatement, String statementName)
+	    {
+	        return CreateEQLStmt(eqlStatement, statementName);
+	    }
 
         /// <summary>
         /// Creates the pattern.
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns></returns>
-        public virtual EPStatement CreatePattern(String expression)
+        public virtual EPStatement CreatePatternStmt(String expression)
         {
             // Parse and walk
             AST ast = ParseHelper.parse(expression, patternParseRule);
-            EQLTreeWalker walker = new EQLTreeWalker(services.EventAdapterService);
+			EQLTreeWalker walker = new EQLTreeWalker(services.EngineImportService, services.PatternObjectResolutionService);
 
             try
             {
@@ -105,20 +132,13 @@ namespace net.esper.core
             }
 
             // Get pattern specification
-            PatternStreamSpec patternStreamSpec = (PatternStreamSpec)walker.StatementSpec.StreamSpecs[0];
+			PatternStreamSpecRaw patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
 
-            // Create Start method
-            EvalRootNode rootNode = new EvalRootNode();
-            rootNode.AddChildNode(patternStreamSpec.EvalNode);
-            EPPatternStmtStartMethod startMethod = new EPPatternStmtStartMethod(services, rootNode);
+			// Create statement spec
+			StatementSpecRaw statementSpec = new StatementSpecRaw();
+			statementSpec.StreamSpecs.Add(patternStreamSpec);
 
-            // Generate event type
-            EDictionary<String, EventType> eventTypes = patternStreamSpec.TaggedEventTypes;
-            EventType eventType = services.EventAdapterService.CreateAnonymousMapTypeUnd(eventTypes);
-
-            EPPatternStatementImpl patternStatement = new EPPatternStatementImpl(expression, eventType, services.DispatchService, services.EventAdapterService, startMethod);
-
-            return patternStatement;
+			return services.StatementLifecycleSvc.CreateAndStart(statementSpec, expression, true, statementName);
         }
 
         /// <summary>
@@ -129,10 +149,15 @@ namespace net.esper.core
         /// EPStatement to poll data from or to add listeners to
         /// </returns>
         /// <throws>  EPException when the expression was not valid </throws>
-        public virtual EPStatement CreateEQL(String eqlStatement)
+        public virtual EPStatement CreateEQLStmt(String eqlStatement)
         {
+			if (log.IsDebugEnabled)
+			{
+				log.Debug(".CreateEQLStmt statementName=" + statementName + " eqlStatement=" + eqlStatement);
+			}
+
             AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
-            EQLTreeWalker walker = new EQLTreeWalker(services.EventAdapterService);
+			EQLTreeWalker walker = new EQLTreeWalker(services.EngineImportService, services.PatternObjectResolutionService);
 
             try
             {
@@ -140,12 +165,12 @@ namespace net.esper.core
             }
             catch (ASTWalkException ex)
             {
-                log.Debug(".CreateEQL Error validating expression", ex);
+                log.Error(".CreateEQLStmt Error validating expression", ex);
                 throw new EPStatementException(ex.Message, eqlStatement);
             }
             catch (SystemException ex)
             {
-                log.Debug(".CreateEQL Error validating expression", ex);
+                log.Error(".CreateEQLStmt Error validating expression", ex);
                 throw new EPStatementException(ex.Message, eqlStatement);
             }
 
@@ -154,14 +179,45 @@ namespace net.esper.core
                 DebugFacility.DumpAST(walker.getAST());
             }
 
+	        // Specifies the statement
+	        StatementSpecRaw statementSpec = walker.StatementSpec;
 
-            // Create Start method
-            StatementSpec statementSpec = walker.StatementSpec;
-            EPEQLStmtStartMethod startMethod = new EPEQLStmtStartMethod(statementSpec, eqlStatement, services);
+	        EPStatement statement = services.StatementLifecycleSvc.CreateAndStart(statementSpec, eqlStatement, false, statementName);
 
-            return new EPEQLStatementImpl(eqlStatement, services.DispatchService, startMethod);
+	        log.Debug(".CreateEQLStmt Statement created and started");
+	        return statement;
         }
 
+	    public EPStatement GetStatement(String name)
+	    {
+	        return services.StatementLifecycleSvc.GetStatementByName(name);
+	    }
+
+	    public String[] StatementNames
+	    {
+	        get { return services.StatementLifecycleSvc.StatementNames; }
+	    }
+
+	    public void StartAllStatements()
+	    {
+	        services.StatementLifecycleSvc.StartAllStatements();
+	    }
+
+	    public void StopAllStatements()
+	    {
+	        services.StatementLifecycleSvc.StopAllStatements();
+	    }
+
+	    public void DestroyAllStatements()
+	    {
+	        services.StatementLifecycleSvc.DestroyAllStatements();
+	    }
+
+	    public ConfigurationOperations Configuration
+	    {
+	        get { return configurationOperations; }
+	    }
+		
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>

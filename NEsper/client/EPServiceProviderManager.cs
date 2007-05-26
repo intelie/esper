@@ -19,8 +19,8 @@ namespace net.esper.client
 
     public sealed class EPServiceProviderManager
     {
-        private static IDictionary<String, EPServiceProvider> runtimes = new Dictionary<String, EPServiceProvider>();
-        private static EPServiceProvider defaultServiceProvider;
+        private static IDictionary<String, EPServiceProviderImpl> runtimes = new Dictionary<String, EPServiceProvider>();
+        private static EPServiceProviderImpl defaultServiceProvider;
 
         /// <summary> Returns the default EPServiceProvider.</summary>
         /// <returns> default instance of the service.
@@ -72,6 +72,7 @@ namespace net.esper.client
                     if (defaultServiceProvider == null)
                     {
                         defaultServiceProvider = new EPServiceProviderImpl(configuration);
+						defaultServiceProvider.Configuration = configuration;
                     }
 
                     return defaultServiceProvider;
@@ -79,11 +80,13 @@ namespace net.esper.client
 
                 if (runtimes.ContainsKey(uri))
                 {
-                    return runtimes[uri];
+					EPServiceProviderImpl provider = runtimes[uri];
+					provider.Configuration =  configuration;
+					return provider;					
                 }
 
                 // New runtime
-                EPServiceProvider runtime = new EPServiceProviderImpl(configuration);
+                EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration);
                 runtimes[uri] = runtime;
 
                 return runtime;

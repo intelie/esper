@@ -29,58 +29,40 @@ namespace net.esper.filter
             this.resultEventProperty = resultEventProperty;
         }
 
-        /// <summary>
-        /// Check the type against the map of event tag and type.
-        /// </summary>
-        /// <param name="taggedEventTypes">map of event tags and types</param>
-        public void CheckType(EDictionary<String, EventType> taggedEventTypes)
-        {
-            EventType type = taggedEventTypes.Fetch(resultEventAsName, null);
-            if (type == null)
-            {
-                throw new IllegalStateException("Matching event type named " +
-                        "'" + resultEventAsName + "' not found in event result set");
-            }
+	   public double GetFilterValue(MatchedEventMap matchedEvents)
+	    {
+	        EventBean _event = matchedEvents.getMatchingEvent(resultEventAsName);
+	        if (_event == null)
+	        {
+	            throw new IllegalStateException("Matching event named " +
+	                    '\'' + resultEventAsName + "' not found in event result set");
+	        }
 
-            Type propertyClass = type.GetPropertyType(resultEventProperty);
-            if (propertyClass == null)
-            {
-                throw new IllegalStateException("Property " + resultEventProperty + " of event type " +
-                        "'" + resultEventAsName + "' not found");
-            }
-            if (!TypeHelper.IsNumeric(propertyClass))
-            {
-                throw new IllegalStateException("Property " + resultEventProperty + " of event type " +
-                        "'" + resultEventAsName + "' is not numeric");
-            }
-        }
+	        Object value = _event.Get(resultEventProperty);
+	        if (value == null)
+	        {
+	            return null;
+	        }
+	        return Convert.ToDouble(value);
+	    }
 
-        /// <summary>
-        /// Returns the filter value representing the endpoint.
-        /// </summary>
-        /// <param name="matchedEvents">is the prior results</param>
-        /// <returns>filter value</returns>
-        public double GetFilterValue(MatchedEventMap matchedEvents)
-        {
-            EventBean ev = matchedEvents.GetMatchingEvent(resultEventAsName);
-            if (ev == null)
-            {
-                throw new IllegalStateException("Matching event named " +
-                        "'" + resultEventAsName + "' not found in event result set");
-            }
+	    /**
+	     * Returns the tag name or stream name to use for the event property.
+	     * @return tag name
+	     */
+	    public String ResultEventAsName
+	    {
+	        get { return resultEventAsName; }
+	    }
 
-            Object value = ev[resultEventProperty];
-            if (value == null)
-            {
-                throw new IllegalStateException(
-                    "Event property named " +
-                    "'" + resultEventAsName +
-                    "." + resultEventProperty +
-                    "' returned null value");
-            }
-
-            return Convert.ToDouble(value);
-        }
+	    /**
+	     * Returns the name of the event property.
+	     * @return event property name
+	     */
+	    public String ResultEventProperty
+	    {
+	        get { return resultEventProperty; }
+	    }
 
         /// <summary>
         /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.

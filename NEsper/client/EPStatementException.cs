@@ -7,6 +7,7 @@
 // ************************************************************************************
 
 using System;
+using System.Text
 
 namespace net.esper.client
 {
@@ -39,12 +40,15 @@ namespace net.esper.client
         {
             get
             {
-                String msg = base.Message;
+                StringBuilder msg = new StringBuilder(base.Message);
                 if (expression != null)
                 {
-                    msg += (" [" + expression + ']');
+					msg.Append( " [" ) ;
+					msg.Append( expression ) ;
+					msg.Append( ']' ) ;
                 }
-                return msg;
+				
+                return msg.ToString();
             }
         }
 

@@ -14,11 +14,12 @@ namespace net.esper.events
     /// Implementation of the EventType interface for handling JavaBean-type classes.
     /// </summary>
 
-    public class BeanEventType : EventType
+    public class BeanEventType : EventTypeSPI
     {
         private readonly Type type;
         private readonly BeanEventAdapter beanEventAdapter;
         private readonly ConfigurationEventTypeLegacy optionalLegacyDef;
+		private readonly String eventTypeId;
 
         private String[] propertyNames;
         private EDictionary<String, Type> simplePropertyTypes;
@@ -33,17 +34,29 @@ namespace net.esper.events
         /// <param name="type">the type of an object</param>
         /// <param name="beanEventAdapter">the cache and factory for event bean types and event wrappers</param>
         /// <param name="optionalLegacyDef">optional configuration supplying legacy event type information</param>
+		/// <param name="eventTypeId">the event type id</param>
 
         public BeanEventType(Type type,
-                              BeanEventAdapter beanEventAdapter,
-                              ConfigurationEventTypeLegacy optionalLegacyDef)
+                             BeanEventAdapter beanEventAdapter,
+                             ConfigurationEventTypeLegacy optionalLegacyDef,
+							 String eventTypeId)
         {
             this.type = type;
             this.beanEventAdapter = beanEventAdapter;
             this.optionalLegacyDef = optionalLegacyDef;
+			this.eventTypeId = eventTypeId;
 
             Initialize();
         }
+		
+		/// <summary>
+		/// Gets the event type id
+		/// </summary>
+		
+		public String EventTypeId
+		{
+			get { return eventTypeId; }
+		}
 
         /// <summary>
         /// Gets the type of the property.

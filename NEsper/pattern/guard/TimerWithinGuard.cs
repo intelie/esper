@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.core;
 using net.esper.pattern;
 using net.esper.schedule;
 
 namespace net.esper.pattern.guard
 {
-
     /// <summary> Guard implementation that keeps a timer instance and quits when the timer expired,
     /// letting all <seealso cref="MatchedEventMap"/> instances pass until then.
     /// </summary>
 
-    public class TimerWithinGuard : Guard, ScheduleCallback
+    public class TimerWithinGuard
+		: Guard
+		, ScheduleHandleCallback
     {
         private readonly long msec;
         private readonly PatternContext context;
@@ -19,6 +21,7 @@ namespace net.esper.pattern.guard
         private readonly ScheduleSlot scheduleSlot;
 
         private bool isTimerActive;
+		private EPStatementHandleCallback scheduleHandle;
 
         /// <summary> Ctor.</summary>
         /// <param name="msec">number of millisecond to guard expiration
@@ -45,8 +48,9 @@ namespace net.esper.pattern.guard
                 throw new SystemException("Timer already active");
             }
 
-            // Start the Stopwatch timer
-            context.SchedulingService.Add(msec, this, scheduleSlot);
+            // Start the stopwatch timer
+	        scheduleHandle = new EPStatementHandleCallback(context.EpStatementHandle, this);
+	        context.SchedulingService.Add(msec, scheduleHandle, scheduleSlot);
             isTimerActive = true;
         }
 
@@ -57,7 +61,8 @@ namespace net.esper.pattern.guard
         {
             if (isTimerActive)
             {
-                context.SchedulingService.Remove(this, scheduleSlot);
+                context.SchedulingService.Remove(scheduleHandle, scheduleSlot);
+				scheduleHandle = null;
                 isTimerActive = false;
             }
         }
@@ -76,7 +81,7 @@ namespace net.esper.pattern.guard
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public void ScheduledTrigger()
+        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
         {
             // Timer callback is automatically removed when triggering
             isTimerActive = false;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using net.esper.client;
 using net.esper.collection;
 using net.esper.compat;
+using net.esper.core;
 using net.esper.events;
 using net.esper.view;
 
@@ -11,15 +12,14 @@ using org.apache.commons.logging;
 
 namespace net.esper.view.std
 {
-
     /// <summary> The group view splits the data in a stream to multiple subviews, based on a key index.
     /// The key is one or more fields in the stream. Any view that follows the GROUP view will be executed
     /// separately on each subview, one per unique key.
-    /// 
+    ///
     /// The view takes a single parameter which is the field name returning the key value to group.
-    /// 
+    ///
     /// This view can, for example, be used to calculate the average price per symbol for a list of symbols.
-    /// 
+    ///
     /// The view treats its child views and their child views as prototypes. It dynamically instantiates copies
     /// of each child view and their child views, and the child view's child views as so on. When there are
     /// no more child views or the special merge view is encountered, it ends. The view installs a special merge
@@ -27,49 +27,33 @@ namespace net.esper.view.std
     /// using the group-by field name.
     /// </summary>
 
-    public sealed class GroupByView : ViewSupport, ContextAwareView
+    public sealed class GroupByView
+		: ViewSupport
+		, CloneableView
     {
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-        public ViewServiceContext ViewServiceContext
-        {
-            get { return viewServiceContext; }
-            set { this.viewServiceContext = value; }
-        }
-
-        private String[] groupFieldNames;
-        private EventPropertyGetter[] groupFieldGetters;
-        private ViewServiceContext viewServiceContext;
+	    private readonly String[] groupFieldNames;
+	    private readonly StatementContext statementContext;
+	    private EventPropertyGetter[] groupFieldGetters;
 
         private readonly EDictionary<MultiKey<Object>, IList<View>> subViewsPerKey = new EHashDictionary<MultiKey<Object>, IList<View>>();
 
         private EDictionary<IList<View>, Pair<IList<EventBean>, IList<EventBean>>> groupedEvents = new EHashDictionary<IList<View>, Pair<IList<EventBean>, IList<EventBean>>>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GroupByView"/> class.
-        /// </summary>
-        public GroupByView()
-        {
-        }
+		/// <summary>Constructor.</summary>
+		/// <param name="groupFieldNames">
+		/// is the fields from which to pull the values to group by
+		/// </param>
+		/// <param name="statementContext">contains required view services</param>
+	    public GroupByView(StatementContext statementContext, String[] groupFieldNames)
+	    {
+	        this.statementContext = statementContext;
+	        this.groupFieldNames = groupFieldNames;
+	    }
 
-        /// <summary> Constructor.</summary>
-        /// <param name="groupFieldName">is the field from which to pull the value to group by
-        /// </param>
-        public GroupByView(String groupFieldName)
-        {
-            this.groupFieldNames = new String[] { groupFieldName };
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="groupFieldNames">is the fields from which to pull the values to group by
-        /// </param>
-
-        public GroupByView(String[] groupFieldNames)
-        {
-            this.groupFieldNames = groupFieldNames;
-        }
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return new GroupByView(statementContext, groupFieldNames);
+	    }
 
         /// <summary>
         /// Gets or sets the View's parent Viewable.
@@ -105,28 +89,6 @@ namespace net.esper.view.std
         public String[] GroupFieldNames
         {
             get { return groupFieldNames; }
-            set { groupFieldNames = value; }
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            // Attaches to just about anything as long as all the fields exists
-            for (int i = 0; i < groupFieldNames.Length; i++)
-            {
-                String message = PropertyCheckHelper.Exists(parentView.EventType, groupFieldNames[i]);
-                if (message != null)
-                {
-                    return message;
-                }
-            }
-            return null;
         }
 
         /// <summary>
@@ -214,11 +176,11 @@ namespace net.esper.view.std
 
             // Get child views that belong to this group-by value combination
             IList<View> subViews = subViewsPerKey.Fetch(groupByValuesKey);
-            
+
             // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
             if ( subViews == null )
             {
-                subViews = MakeSubViews(this, groupByValuesKey.Array, viewServiceContext);
+                subViews = MakeSubViews(this, groupByValuesKey.Array, statementContext);
                 subViewsPerKey[groupByValuesKey] = subViews;
             }
 
@@ -273,13 +235,13 @@ namespace net.esper.view.std
         /// </param>
         /// <param name="groupByValues">is the key values to group-by
         /// </param>
-        /// <param name="viewServiceContext">is the view services that sub-views may need
+        /// <param name="statementContext">is the view services that sub-views may need
         /// </param>
         /// <returns> a list of views that are copies of the original list, with copied children, with
         /// data merge views added to the copied child leaf views.
         /// </returns>
-        
-        public static IList<View> MakeSubViews(GroupByView groupView, Object[] groupByValues, ViewServiceContext viewServiceContext)
+
+        public static IList<View> MakeSubViews(GroupByView groupView, Object[] groupByValues, StatementContext statementContext)
         {
             if (!groupView.HasViews)
             {
@@ -300,19 +262,26 @@ namespace net.esper.view.std
                     throw new EPException(message);
                 }
 
-                // Shallow copy child node
-                View copyChildView = ViewSupport.ShallowCopyView(originalChildView);
+
+				CloneableView cloneableView = originalChildView as CloneableView;
+				if ( cloneableView == null )
+				{
+					throw new EPException("Unexpected error copying subview " + originalChildView.getClass().getName());
+				}
+
+				// Copy child node
+				View copyChildView = cloneableView.cloneView(statementContext);
                 copyChildView.Parent = groupView;
                 subViewList.Add(copyChildView);
 
                 // Make the sub views for child copying from the original to the child
-                CopySubViews(groupView.GroupFieldNames, groupByValues, originalChildView, copyChildView, viewServiceContext);
+                CopySubViews(groupView.GroupFieldNames, groupByValues, originalChildView, copyChildView, statementContext);
             }
 
             return subViewList;
         }
 
-        private static void CopySubViews(String[] groupFieldNames, Object[] groupByValues, View originalView, View copyView, ViewServiceContext viewServiceContext)
+        private static void CopySubViews(String[] groupFieldNames, Object[] groupByValues, View originalView, View copyView, StatementContext statementContext)
         {
             foreach (View subView in originalView.GetViews())
             {
@@ -323,8 +292,7 @@ namespace net.esper.view.std
                     if (ArrayHelper.AreEqual(mergeView.GroupFieldNames, groupFieldNames))
                     {
                         // We found our merge view - install a new data merge view on top of it
-                        AddPropertyValueView mergeDataView = new AddPropertyValueView(groupFieldNames, groupByValues);
-                        mergeDataView.ViewServiceContext = viewServiceContext;
+						AddPropertyValueView mergeDataView = new AddPropertyValueView(statementContext, groupFieldNames, groupByValues, mergeView.EventType);
 
                         // Add to the copied parent subview the view merge data view
                         copyView.AddView(mergeDataView);
@@ -339,11 +307,17 @@ namespace net.esper.view.std
                     }
                 }
 
-                View copiedChild = ViewSupport.ShallowCopyView(subView);
+	            CloneableView cloneableView = subView as CloneableView;
+				if (cloneableView == null)
+	            {
+	                throw new EPException("Unexpected error copying subview");
+	            }
+
+	            View copiedChild = cloneableView.cloneView(statementContext);
                 copyView.AddView(copiedChild);
 
                 // Make the sub views for child
-                CopySubViews(groupFieldNames, groupByValues, subView, copiedChild, viewServiceContext);
+                CopySubViews(groupFieldNames, groupByValues, subView, copiedChild, statementContext);
             }
         }
 

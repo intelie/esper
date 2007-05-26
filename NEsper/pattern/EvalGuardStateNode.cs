@@ -12,36 +12,39 @@ namespace net.esper.pattern
 	/// have one child node.
 	/// </summary>
 
-    public sealed class EvalGuardStateNode : EvalStateNode, Evaluator, Quitable
+    public sealed class EvalGuardStateNode 
+		: EvalStateNode
+		, Evaluator
+		, Quitable
     {
         private EvalStateNode activeChildNode;
         private readonly Guard guard;
 
-        /// <summary> Constructor.</summary>
-        /// <param name="parentNode">is the parent evaluator to call to indicate truth value
-        /// </param>
-        /// <param name="guardFactory">is the factory to use for the guard node
-        /// </param>
-        /// <param name="singleWithinChildNode">is the single child node of the within node
-        /// </param>
-        /// <param name="beginState">contains the events that make up prior matches
-        /// </param>
-        /// <param name="context">contains handles to services required
-        /// </param>
+	    /**
+	     * Constructor.
+	     * @param parentNode is the parent evaluator to call to indicate truth value
+	     * @param beginState contains the events that make up prior matches
+	     * @param context contains handles to services required
+	     * @param evalGuardNode is the factory node associated to the state
+	     * @param stateObjectId is the state object's id value
+	     */
+	    public EvalGuardStateNode(Evaluator parentNode,
+	                              EvalGuardNode evalGuardNode,
+								  MatchedEventMap beginState,
+								  PatternContext context,
+								  Object stateObjectId)
+	        : base(evalGuardNode, parentNode, null)
+	    {
+	        if (log.IsDebugEnabled)
+	        {
+	            log.Debug(".constructor");
+	        }
 
-        public EvalGuardStateNode(Evaluator parentNode, GuardFactory guardFactory, EvalNode singleWithinChildNode, MatchedEventMap beginState, PatternContext context)
-            : base(parentNode)
-        {
-            if (log.IsDebugEnabled)
-            {
-                log.Debug(".constructor");
-            }
+	        guard = evalGuardNode.GuardFactory.MakeGuard(context, this, stateObjectId, null);
 
-            guard = guardFactory.MakeGuard(context, this);
-
-            this.activeChildNode = singleWithinChildNode.NewState(this, beginState, context);
-        }
-
+	        this.activeChildNode = evalGuardNode.ChildNodes[0].NewState(this, beginState, context, null);
+	    }
+		
         /// <summary>
         /// Starts the event expression or an instance of it.
         /// Child classes are expected to initialize and Start any event listeners
@@ -79,6 +82,8 @@ namespace net.esper.pattern
                 log.Debug(".evaluateTrue fromNode=" + fromNode.GetHashCode());
             }
 
+	        boolean haveQuitted = activeChildNode == null;
+
             // If one of the children quits, remove the child
             if (isQuitted)
             {
@@ -88,11 +93,14 @@ namespace net.esper.pattern
                 guard.StopGuard();
             }
 
-            bool guardPass = guard.Inspect(matchEvent);
-            if (guardPass)
-            {
-                this.ParentEvaluator.EvaluateTrue(matchEvent, this, isQuitted);
-            }
+	        if (!(haveQuitted))
+	        {
+	            bool guardPass = guard.Inspect(matchEvent);
+	            if (guardPass)
+	            {
+	                this.ParentEvaluator.EvaluateTrue(matchEvent, this, isQuitted);
+	            }
+	        }
         }
 
         /// <summary>
@@ -115,7 +123,7 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".guardQuit Stopping all children");
+                log.Debug(".Quit Stopping all children");
             }
 
             if (activeChildNode != null)
@@ -177,7 +185,7 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".guardQuit Guard has quit, Stopping child node, activeChildNode=" + activeChildNode);
+                log.Debug(".quit Guard has quit, Stopping child node, activeChildNode=" + activeChildNode);
             }
 
             // It is possible that the child node has already been quit such as when the parent wait time was shorter.

@@ -14,7 +14,7 @@ namespace net.esper.filter
     /// Index for filter parameter constants to match using the equals (=) operator.
 	/// The implementation is based on a regular HashMap.
 	/// </summary>
-    public sealed class FilterParamIndexNotEquals : FilterParamIndex
+    public sealed class FilterParamIndexNotEquals : FilterParamIndexPropBase
     {
         private readonly EDictionary<Object, EventEvaluator> constantsMap;
         private readonly ReaderWriterLock constantsMapRWLock;
@@ -102,7 +102,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
         /// <param name="matches">The matches.</param>
-        public override void MatchEvent(EventBean eventBean, IList<FilterCallback> matches)
+        public override void MatchEvent(EventBean eventBean, ICollection<FilterCallback> matches)
         {
             Object attributeValue = this.Getter.GetValue(eventBean);
 
@@ -111,32 +111,54 @@ namespace net.esper.filter
                 FilterParamIndexNotEquals.log.Debug(".match (" + Thread.CurrentThread.ManagedThreadId + ") attributeValue=" + attributeValue);
             }
 
-            if (attributeValue == null)
+            try
             {
-                return;
+                // Look up in hashtable
+                constantsMapRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
+
+		        for (Object key in constantsMap.Keys)
+		        {
+		            if (key == null)
+		            {
+		                if (attributeValue != null)
+		                {
+		                    EventEvaluator evaluator = constantsMap.Fetch(key);
+		                    evaluator.MatchEvent(eventBean, matches);
+		                }
+		            }
+		            else
+		            {
+		                if (attributeValue != null)
+		                {
+		                    if (!key.Equals(attributeValue))
+		                    {
+		                        EventEvaluator evaluator = constantsMap.Fetch(key);
+		                        evaluator.MatchEvent(eventBean, matches);
+		                    }
+		                }
+		                else
+		                {
+		                    // no this should not match: "val != null" doesn't match if val is 'a'
+		                }
+		            }
+		        }
             }
-
-            // Look up in hashtable
-            constantsMapRWLock.AcquireReaderLock( LockConstants.ReaderTimeout );
-
-            foreach (KeyValuePair<Object, EventEvaluator> entry in constantsMap)
+            finally
             {
-                if (!entry.Key.Equals(attributeValue))
-                {
-                    EventEvaluator evaluator = entry.Value;
-                    evaluator.MatchEvent(eventBean, matches);
-                }
+                constantsMapRWLock.ReleaseReaderLock();
             }
-            constantsMapRWLock.ReleaseReaderLock();
         }
 
         private void CheckType(Object filterConstant)
         {
-            Type filterConstantType = TypeHelper.GetBoxedType(filterConstant.GetType());            
-            if (this.PropertyBoxedType != filterConstantType)
-            {
-                throw new ArgumentException("Invalid type of filter constant of " + filterConstantType.FullName + " for property " + this.PropertyName);
-            }
+	        if (filterConstant != null)
+	        {
+	            if (this.PropertyBoxedType != filterConstant.GetType())
+	            {
+	                throw new IllegalArgumentException("Invalid type of filter constant of " +
+	                        filterConstant.GetType().FullName + " for property " + this.PropertyName);
+	            }
+	        }
         }
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

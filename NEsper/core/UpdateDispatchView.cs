@@ -18,12 +18,46 @@ namespace net.esper.core
 
     public class UpdateDispatchView : ViewSupport, Dispatchable
     {
-        private readonly ISet<UpdateListener> updateListeners;
+        private ISet<UpdateListener> updateListeners;
         private readonly DispatchService dispatchService;
-        private bool isDispatchWaiting;
+		private EventBean lastIterableEvent;
+		
+		[ThreadStatic]
+        private bool? isDispatchWaiting;
+		private bool IsDispatchWaiting
+		{
+			get { return isDispatchWaiting ?? false ; }
+		}
 
-        private List<EventBean[]> lastNewEvents = new List<EventBean[]>();
-        private List<EventBean[]> lastOldEvents = new List<EventBean[]>();
+		[ThreadStatic]
+        private List<EventBean[]> lastNewEvents_ ;
+		private List<EventBean[]> LastNewEvents
+		{
+			get
+			{
+				if ( lastNewEvents_ == null )
+				{
+					lastNewEvents_ = new List<EventBean[]>() ;
+				}
+				
+				return lastNewEvents_;
+			}
+		}
+		
+		[ThreadStatic]
+        private List<EventBean[]> lastOldEvents_ ;
+		private List<EventBean[]> LastOldEvents
+		{
+			get
+			{
+				if ( lastOldEvents_ == null )
+				{
+					lastOldEvents_ = new List<EventBean[]>() ;
+				}
+				
+				return lastOldEvents_;
+			}
+		}
 
         /// <summary> Ctor.</summary>
         /// <param name="updateListeners">listeners to update
@@ -35,18 +69,6 @@ namespace net.esper.core
         {
             this.updateListeners = updateListeners;
             this.dispatchService = dispatchService;
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentViewable)
-        {
-            return null;
         }
 
         /// <summary>

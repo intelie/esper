@@ -15,7 +15,7 @@ namespace net.esper.filter
 	/// parameter values of type DoubleRange.
 	/// </summary>
 
-	public sealed class FilterParamIndexRange : FilterParamIndex
+	public sealed class FilterParamIndexRange : FilterParamIndexPropBase
 	{
 		private readonly ETreeDictionary<DoubleRange, EventEvaluator> ranges;
 		private readonly ReaderWriterLock rangesRWLock;
@@ -66,6 +66,11 @@ namespace net.esper.filter
                     throw new ArgumentException("Supplied expressionValue must be of type DoubleRange");
                 }
 
+		        if ((range.Max == null) || (range.Min == null))
+		        {
+		            return;     // endpoints null - we don't enter
+		        }
+		
                 if (Math.Abs(range.Max - range.Min) > largestRangeValueDouble)
                 {
                     largestRangeValueDouble = Math.Abs(range.Max - range.Min);
@@ -125,7 +130,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
         /// <param name="matches">The matches.</param>
-		public override void MatchEvent( EventBean eventBean, IList<FilterCallback> matches )
+		public override void MatchEvent( EventBean eventBean, ICollection<FilterCallback> matches )
 		{
 			Object objAttributeValue = this.Getter.GetValue( eventBean );
 
@@ -149,7 +154,7 @@ namespace net.esper.filter
 			ETreeDictionary<DoubleRange, EventEvaluator> subMap = ranges.Range( rangeStart, rangeEnd );
 
 			// For not including either endpoint
-			// A bit awkward to duplicate the loop code, however better than checking the boolean many times over
+			// A bit awkward to duplicate the loop code, however better than checking the bool many times over
 			// This may be a bit of an early performance optimization - the optimizer after all may do this better
 			if ( this.FilterOperator == FilterOperator.RANGE_OPEN )
 			// include neither endpoint

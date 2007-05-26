@@ -20,7 +20,16 @@ namespace net.esper.compat
         public WriterLock(ReaderWriterLock lockObj)
         {
             this.m_lockObj = lockObj;
-            this.m_lockObj.AcquireWriterLock(LockConstants.ReaderTimeout);
+            this.m_lockObj.AcquireWriterLock(LockConstants.WriterTimeout);
+        }
+
+        /// <summary>
+        /// Releases unmanaged resources and performs other cleanup operations before the
+        /// <see cref="WriterLock"/> is reclaimed by garbage collection.
+        /// </summary>
+        ~WriterLock()
+        {
+            Dispose();
         }
 
         /// <summary>
@@ -28,7 +37,14 @@ namespace net.esper.compat
         /// </summary>
         public void Dispose()
         {
-            this.m_lockObj.ReleaseWriterLock();
+            lock (this)
+            {
+                if (this.m_lockObj != null)
+                {
+                    this.m_lockObj.ReleaseWriterLock();
+                    this.m_lockObj = null;
+                }
+            }
         }
     }
 }

@@ -22,22 +22,22 @@ namespace net.esper.util
     {
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        /// <summary>
-        /// Attempts to find the static method described by the parameters, 
-        /// or a method of the same name that will accept the same type of
-        /// parameters.
-        /// </summary>
-
-        public static MethodInfo ResolveMethod(
-            String className,
-            String methodName,
-            Type[] paramTypes,
-            AutoImportService autoImportService )
-        {
-            log.Debug(String.Format(".resolve method className=={0}, methodName=={1}", className, methodName));
-
-            // Get the declaring class
-            Type declaringClass = autoImportService.ResolveClass(className);
+		/**
+		 * Attempts to find the static method described by the parameters, 
+		 * or a method of the same name that will accept the same type of
+		 * parameters.
+	      * @param declaringClass - the class to search for the method
+		 * @param methodName - the name of the method
+		 * @param paramTypes - the parameter types for the method
+		 * @return - the Method object for this method
+		 * @throws NoSuchMethodException if the method could not be found
+		 */
+		public static MethodInfo resolveMethod(Type declaringClass, String methodName, Type[] paramTypes)
+		{
+	        if (log.IsDebugEnabled)
+	        {
+	            log.Debug(".resolve method className=" + declaringClass.getSimpleName() + ", methodName=" + methodName);
+	        }
 
             // Get the method with the specified signature
             MethodInfo[] methods = declaringClass.GetMethods() ;
@@ -99,7 +99,7 @@ namespace net.esper.util
 			}
 
             StringBuilder message = new StringBuilder();
-            message.AppendFormat( "Unknown method {0}.{1}", className, methodName ) ;
+            message.AppendFormat( "Unknown method {0}.{1}", declaringClass.FullName, methodName ) ;
             message.Append( '(' ) ;
 
             if ((paramTypes != null) && (paramTypes.Length != 0))

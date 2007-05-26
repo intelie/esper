@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using net.esper.compat;
 using net.esper.events;
 using net.esper.pattern;
+using net.esper.util;
 
 namespace net.esper.filter
 {
     /// <summary>
-    /// This class represents one filter parameter in an <seealso cref="FilterSpec"/> filter specification.
+    /// This class represents one filter parameter in an <seealso cref="FilterSpecCompiled"/> filter specification.
     /// <para>Each filerting parameter has an attribute name and operator type.</para>
     /// </summary>
 
-    public abstract class FilterSpecParam
+    public abstract class FilterSpecParam : MetaDefItem
     {
         /// <summary> Returns the property name for the filter parameter.</summary>
         /// <returns> property name
@@ -38,13 +39,6 @@ namespace net.esper.filter
             this.propertyName = propertyName;
             this.filterOperator = filterOperator;
         }
-
-        /// <summary> Return the filter parameter constant's class.</summary>
-        /// <param name="optionalTaggedEventTypes">is the event types per event as-name (tag)
-        /// </param>
-        /// <returns> filter parameter value class
-        /// </returns>
-        public abstract Type GetFilterValueClass(EDictionary<String, EventType> optionalTaggedEventTypes);
 
         /// <summary> Return the filter parameter constant to filter for.</summary>
         /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters

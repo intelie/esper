@@ -18,14 +18,17 @@ namespace net.esper.pattern
         /// <summary> Constructor.</summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value
         /// </param>
-        /// <param name="notNodeChildNode">is the single child node of the not-node
+        /// <param name="evalNotNode">the factory node associated to the state
         /// </param>
         /// <param name="beginState">contains the events that make up prior matches
         /// </param>
         /// <param name="context">contains handles to services required
         /// </param>
-        public EvalNotStateNode(Evaluator parentNode, EvalNode notNodeChildNode, MatchedEventMap beginState, PatternContext context)
-            : base(parentNode)
+        public EvalNotStateNode(Evaluator parentNode,
+								EvalNotNode evalNotNode,
+								MatchedEventMap beginState, 
+								PatternContext context)
+            : base(evalNotNode, parentNode, null)
         {
 
             if (log.IsDebugEnabled)
@@ -34,7 +37,7 @@ namespace net.esper.pattern
             }
 
             this.beginState = beginState.ShallowCopy();
-            this.childNode = notNodeChildNode.NewState(this, beginState, context);
+            this.childNode = evalNotNode.ChildNodes[0].NewState(this, beginState, context, null);
         }
 
         /// <summary>
@@ -93,7 +96,7 @@ namespace net.esper.pattern
             }
             else
             {
-                // If the subexpression did not guardQuit, we stay in the "true" state
+                // If the subexpression did not quit, we stay in the "true" state
             }
         }
 
@@ -105,7 +108,7 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".guardQuit Quitting not-node single child, childNode=" + childNode);
+                log.Debug(".Quit Quitting not-node single child, childNode=" + childNode);
             }
 
             if (childNode != null)

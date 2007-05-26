@@ -73,98 +73,102 @@ namespace net.esper.schedule
 		
 		private static DateTime Compute(ScheduleSpec spec, long afterTimeInMillis)
 		{
-			DateTime after = DateTimeHelper.TimeFromMillis( afterTimeInMillis ) ;
-			
-			ScheduleCalendar result = new ScheduleCalendar();
-			result.Milliseconds = after.Millisecond;
+			while( true )
+			{
+				DateTime after = DateTimeHelper.TimeFromMillis( afterTimeInMillis ) ;
+				
+				ScheduleCalendar result = new ScheduleCalendar();
+				result.Milliseconds = after.Millisecond;
 
-            ETreeSet<Int32> minutesSet = spec.UnitValues.Fetch(ScheduleUnit.MINUTES);
-            ETreeSet<Int32> hoursSet = spec.UnitValues.Fetch(ScheduleUnit.HOURS);
-            ETreeSet<Int32> monthsSet = spec.UnitValues.Fetch(ScheduleUnit.MONTHS);
-            ETreeSet<Int32> secondsSet = null;
-            
-			bool isSecondsSpecified = false;
-			
-			if (spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS))
-			{
-				isSecondsSpecified = true;
-				secondsSet = spec.UnitValues.Fetch(ScheduleUnit.SECONDS) ;
-			}
-			
-			if (isSecondsSpecified)
-			{
-                result.Second = NextValue(secondsSet, after.Second);
-				if (result.Second == -1)
+	            ETreeSet<Int32> minutesSet = spec.UnitValues.Fetch(ScheduleUnit.MINUTES);
+	            ETreeSet<Int32> hoursSet = spec.UnitValues.Fetch(ScheduleUnit.HOURS);
+	            ETreeSet<Int32> monthsSet = spec.UnitValues.Fetch(ScheduleUnit.MONTHS);
+	            ETreeSet<Int32> secondsSet = null;
+	            
+				bool isSecondsSpecified = false;
+				
+				if (spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS))
 				{
-                    result.Second = NextValue(secondsSet, 0);
-					after = after.AddMinutes(1) ;
+					isSecondsSpecified = true;
+					secondsSet = spec.UnitValues.Fetch(ScheduleUnit.SECONDS) ;
 				}
-			}
-
-            result.Minute = NextValue(minutesSet, after.Minute);
-			if (result.Minute != after.Minute)
-			{
-                result.Second = NextValue(secondsSet, 0);
-			}
-			if (result.Minute == - 1)
-			{
-                result.Minute = NextValue(minutesSet, 0);
-				after = after.AddHours( 1 ) ;
-			}
-
-            result.Hour = NextValue(hoursSet, after.Hour);
-			if (result.Hour != after.Hour)
-			{
-                result.Second = NextValue(secondsSet, 0);
-                result.Minute = NextValue(minutesSet, 0);
-			}
-			if (result.Hour == -1)
-			{
-                result.Hour = NextValue(hoursSet, 0);
-				after = after.AddDays(1) ;
-			}
-			
-			// This call may change second, minute and/or hour parameters
-			// They may be reset to minimum values if the day rolled
-			result.DayOfMonth = DetermineDayOfMonth(spec, ref after, result);
-			
-			bool dayMatchRealDate = false;
-			while (!dayMatchRealDate)
-			{
-				if (CheckDayValidInMonth( result.DayOfMonth, after.Month, after.Year ))
+				
+				if (isSecondsSpecified)
 				{
-					dayMatchRealDate = true;
+	                result.Second = NextValue(secondsSet, after.Second);
+					if (result.Second == -1)
+					{
+	                    result.Second = NextValue(secondsSet, 0);
+						after = after.AddMinutes(1) ;
+					}
 				}
-				else
-				{
-					after = after.AddMonths(1) ;
-				}
-			}
 
-            int currentMonth = after.Month ;
-            result.Month = NextValue(monthsSet, currentMonth);
-			if (result.Month != currentMonth)
-			{
-                result.Second = NextValue(secondsSet, 0);
-                result.Minute = NextValue(minutesSet, 0);
-				result.Hour = NextValue(hoursSet, 0);
+	            result.Minute = NextValue(minutesSet, after.Minute);
+				if (result.Minute != after.Minute)
+				{
+	                result.Second = NextValue(secondsSet, 0);
+				}
+				if (result.Minute == - 1)
+				{
+	                result.Minute = NextValue(minutesSet, 0);
+					after = after.AddHours( 1 ) ;
+				}
+
+	            result.Hour = NextValue(hoursSet, after.Hour);
+				if (result.Hour != after.Hour)
+				{
+	                result.Second = NextValue(secondsSet, 0);
+	                result.Minute = NextValue(minutesSet, 0);
+				}
+				if (result.Hour == -1)
+				{
+	                result.Hour = NextValue(hoursSet, 0);
+					after = after.AddDays(1) ;
+				}
+				
+				// This call may change second, minute and/or hour parameters
+				// They may be reset to minimum values if the day rolled
 				result.DayOfMonth = DetermineDayOfMonth(spec, ref after, result);
+				
+				bool dayMatchRealDate = false;
+				while (!dayMatchRealDate)
+				{
+					if (CheckDayValidInMonth( result.DayOfMonth, after.Month, after.Year ))
+					{
+						dayMatchRealDate = true;
+					}
+					else
+					{
+						after = after.AddMonths(1) ;
+					}
+				}
+
+	            int currentMonth = after.Month ;
+	            result.Month = NextValue(monthsSet, currentMonth);
+				if (result.Month != currentMonth)
+				{
+	                result.Second = NextValue(secondsSet, 0);
+	                result.Minute = NextValue(minutesSet, 0);
+					result.Hour = NextValue(hoursSet, 0);
+					result.DayOfMonth = DetermineDayOfMonth(spec, ref after, result);
+				}
+				if (result.Month == -1)
+				{
+	                result.Month = NextValue(monthsSet, 0);
+					after = after.AddYears(1) ;
+				}
+				
+				// Perform a last valid date check, if failing, try to compute a new date based on this altered after date
+				int year = after.Year;
+	            if (!CheckDayValidInMonth(result.DayOfMonth, result.Month, year))
+				{
+					afterTimeInMillis = after.getTimeInMillis();
+					continue;
+				}
+				
+				DateTime resultDate = GetTime(result, after.Year);
+				return resultDate;
 			}
-			if (result.Month == -1)
-			{
-                result.Month = NextValue(monthsSet, 0);
-				after = after.AddYears(1) ;
-			}
-			
-			// Perform a last valid date check, if failing, try to compute a new date based on this altered after date
-			int year = after.Year;
-            if (!CheckDayValidInMonth(result.DayOfMonth, result.Month, year))
-			{
-				return Compute( spec, DateTimeHelper.TimeInMillis( after ) );
-			}
-			
-			DateTime resultDate = GetTime(result, after.Year);
-			return resultDate;
 		}
 
 		/// <summary>

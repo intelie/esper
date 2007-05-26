@@ -41,21 +41,13 @@ namespace net.esper.view
                 log.Debug(".insert Received event, updating child views, event=" + ev);
             }
 
-            int size = children.Count;
-
-            EventBean[] events = new EventBean[] { ev };
-
-            if (size == 1)
-            {
-                children.First.Update(events, null);
-            }
-            else
-            {
-                foreach (View child in children)
-                {
-                    child.Update(events, null);
-                }
-            }
+			// Get a new array created rather then re-use the old one since some client listeners
+			// to this view may keep reference to the new data
+			EventBean[] row = new EventBean[]{event};
+			foreach (View childView in children)
+			{
+				childView.Update(row, null);
+			}
         }
 
         /// <summary>

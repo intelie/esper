@@ -10,7 +10,7 @@ namespace net.esper.util
 	/// number of values.
 	/// </summary>
 
-    public sealed class MultiKeyComparator<T> : IComparer<MultiKey<T>>
+    public sealed class MultiKeyComparator : IComparer<MultiKeyUntyped>
 	{
 		private readonly Boolean[] isDescendingValues;
 		
@@ -31,7 +31,7 @@ namespace net.esper.util
         /// <param name="firstValues">The first values.</param>
         /// <param name="secondValues">The second values.</param>
         /// <returns></returns>
-		public int Compare(MultiKey<T> firstValues, MultiKey<T> secondValues)
+		public int Compare(MultiKeyUntyped firstValues, MultiKeyUntyped secondValues)
 		{
 			if (firstValues.Count != isDescendingValues.Length || secondValues.Count != isDescendingValues.Length)
 			{
@@ -65,38 +65,38 @@ namespace net.esper.util
 		private static int CompareValues(Object valueOne, Object valueTwo, bool isDescending)
 		{
 			if (isDescending)
-			{
-				Object temp = valueOne;
-				valueOne = valueTwo;
-				valueTwo = temp;
-			}
-			
-			if (valueOne == null || valueTwo == null)
-			{
-				// A null value is considered equal to another null
-				// value and smaller than any nonnull value
-				if (valueOne == null && valueTwo == null)
-				{
-					return 0;
-				}
-				if (valueOne == null)
-				{
-					return - 1;
-				}
-				return 1;
-			}
-			
-			IComparable comparable1;
-			if (valueOne is IComparable)
-			{
-				comparable1 = (IComparable) valueOne;
-			}
-			else
-			{
-				throw new System.InvalidCastException("Cannot sort objects of type " + valueOne.GetType());
-			}
-			
-			return comparable1.CompareTo(valueTwo);
+	        {
+	            Object temp = valueOne;
+	            valueOne = valueTwo;
+	            valueTwo = temp;
+	        }
+
+	        if (valueOne == null || valueTwo == null)
+	        {
+	            // A null value is considered equal to another null
+	            // value and smaller than any nonnull value
+	            if (valueOne == null && valueTwo == null)
+	            {
+	                return 0;
+	            }
+	            if (valueOne == null)
+	            {
+	                return -1;
+	            }
+	            return 1;
+	        }
+
+	        IComparable comparable1;
+	        if (valueOne is IComparable)
+	        {
+	            comparable1 = (IComparable) valueOne;
+	        }
+	        else
+	        {
+	            throw new InvalidCastException("Cannot sort objects of type " + valueOne.getClass());
+	        }
+
+	        return comparable1.CompareTo(valueTwo);
 		}
     }
 }

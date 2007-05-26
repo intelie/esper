@@ -15,7 +15,7 @@ namespace net.esper.filter
     /// The implementation is based on a regular HashMap.
     /// </summary>
 
-    public sealed class FilterParamIndexEquals : FilterParamIndex
+    public sealed class FilterParamIndexEquals : FilterParamIndexPropBase
     {
         private readonly EDictionary<Object, EventEvaluator> constantsMap;
         private readonly ReaderWriterLock constantsMapRWLock;
@@ -104,7 +104,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
         /// <param name="matches">The matches.</param>
-        public override void MatchEvent(EventBean eventBean, IList<FilterCallback> matches)
+        public override void MatchEvent(EventBean eventBean, ICollection<FilterCallback> matches)
         {
             Object attributeValue = this.Getter.GetValue(eventBean);
 
@@ -113,15 +113,18 @@ namespace net.esper.filter
                 log.Debug(".match (" + Thread.CurrentThread.ManagedThreadId + ") attributeValue=" + attributeValue);
             }
 
-            if (attributeValue == null)
-            {
-                return;
-            }
+            EventEvaluator evaluator = null;
 
             // Look up in hashtable
-            constantsMapRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
-            EventEvaluator evaluator = constantsMap.Fetch(attributeValue, null);
-            constantsMapRWLock.ReleaseReaderLock();
+            try
+            {
+                constantsMapRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
+                evaluator = constantsMap.Fetch(attributeValue, null);
+            }
+            finally
+            {
+                constantsMapRWLock.ReleaseReaderLock();
+            }
 
             // No listener found for the value, return
             if (evaluator == null)
@@ -134,10 +137,13 @@ namespace net.esper.filter
 
         private void CheckType(Object filterConstant)
         {
-            if (this.PropertyBoxedType != TypeHelper.GetBoxedType(filterConstant.GetType()))
-            {
-                throw new ArgumentException("Invalid type of filter constant of " + filterConstant.GetType().FullName + " for property " + this.PropertyName);
-            }
+	        if (filterConstant != null)
+			{
+	            if (this.PropertyBoxedType != TypeHelper.GetBoxedType(filterConstant.GetType()))
+	            {
+	                throw new ArgumentException("Invalid type of filter constant of " + filterConstant.GetType().FullName + " for property " + this.PropertyName);
+	            }
+			}
         }
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

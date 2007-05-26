@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using net.esper.client;
 using net.esper.compat;
+using net.esper.util;
 
 namespace net.esper.events
 {
@@ -15,35 +17,43 @@ namespace net.esper.events
 
 	public class BeanEventAdapter
 	{
-		private readonly EDictionary<Type, BeanEventType> typesPerJavaBean;
-		private readonly EDictionary<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
+		private readonly EDictionary<Type, BeanEventType> typesPerBean;
+		private EDictionary<String, ConfigurationEventTypeLegacy> typeToLegacyConfigs;
+		private readonly ReaderWriterLock typesPerBeanLock ;
 
 		/// <summary> Ctor.</summary>
-		/// <param name="classToLegacyConfigs">us a map of event type alias to legacy event type config
-		/// </param>
 		
-		public BeanEventAdapter( IDictionary<String, ConfigurationEventTypeLegacy> classToLegacyConfigs )
+		public BeanEventAdapter()
 		{
-			typesPerJavaBean = new EHashDictionary<Type, BeanEventType>();
-
-			this.classToLegacyConfigs = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
-			if ( classToLegacyConfigs != null )
-			{
-				this.classToLegacyConfigs.PutAll( classToLegacyConfigs );
-			}
+			typesPerBean = new EHashDictionary<Type, BeanEventType>();
+			typesPerBeanLock = new ReaderWriterLock();
+			typeToLegacyConfigs = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
 		}
 
 		/// <summary>
+		/// Sets the additional mappings for legacy types.
+		/// </summary>
+		
+		public EDictionary<String, ConfigurationEventTypeLegacy> TypeToLegacyConfigs
+		{
+			set
+			{
+				typeToLegacyConfigs.PutAll( value ) ;
+			}
+		}
+		
+		/// <summary>
 		/// Returns an adapter for the given object.
 		/// </summary>
-		/// <param name="_event">The ev.</param>
+		/// <param name="_event">The event.</param>
+		/// <param name="eventId">The optional event id.</param>
 		/// <returns>EventBean wrapping object</returns>
 
-		public virtual EventBean AdapterForBean(Object _event)
+		public virtual EventBean AdapterForBean(Object _event, Object eventId)
 		{
 			Type eventClass = _event.GetType();
 			EventType eventType = CreateOrGetBeanType(eventClass);
-			return new BeanEventBean(_event, eventType);
+			return new BeanEventBean(_event, eventType, eventId);
 		}
 
 		/// <summary>
@@ -62,18 +72,37 @@ namespace net.esper.events
 			}
 			
 			// Check if its already there
-			BeanEventType eventType = typesPerJavaBean.Fetch(type, null);
-			if (eventType != null)
+			typesPerBeanLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
+			
+			try
 			{
-				return eventType;
+				BeanEventType eventType = typesPerBean.Fetch(type, null);
+				if (eventType != null)
+				{
+					return eventType;
+				}
+			}
+			finally
+			{
+				typesPerBeanLock.ReleaseReaderLock() ;
 			}
 			
 			// Check if we have a legacy type definition for this class
-			ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.Fetch( type.FullName, null ) ;
-			eventType = new BeanEventType(type, this, legacyDef);
-			typesPerJavaBean[type] = eventType;
-			
-			return eventType;
+			using( WriterLock writerLock = new WriterLock( typesPerBeanLock ) )
+			{
+	            eventType = typesPerBean.Fetch(type);
+	            if (eventType != null)
+	            {
+	                return eventType;
+	            }
+
+	            // Check if we have a legacy type definition for this class
+	            ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(type.FullName);
+
+	            String eventTypeId = "TYPE_" + type.FullName;
+	            eventType = new BeanEventType(type, this, legacyDef, eventTypeId);
+	            typesPerBean.put(type, eventType);
+	        }
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace net.esper.pattern
     /// This class represents an 'every' operator in the evaluation tree representing an event expression.
     /// </summary>
 	
-    public sealed class EvalEveryNode:EvalNode
+    public sealed class EvalEveryNode : EvalNode
 	{
         /// <summary>
         /// Create the evaluation state node containing the truth value state for each operator in an
@@ -20,7 +20,10 @@ namespace net.esper.pattern
         /// <returns>
         /// state node containing the truth value state for the operator
         /// </returns>
-		public override EvalStateNode NewState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context)
+		public override EvalStateNode NewState(Evaluator parentNode,
+											   MatchedEventMap beginState,
+											   PatternContext context,
+											   Object stateNodeId)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -32,7 +35,7 @@ namespace net.esper.pattern
 				throw new SystemException("Expected number of child nodes incorrect, expected 1 node, found " + ChildNodes.Count);
 			}
 			
-			return new EvalEveryStateNode(parentNode, ChildNodes[0], beginState, context);
+			return context.PatternStateFactory.MakeEveryStateNode(parentNode, this, beginState, context, stateNodeId);
 		}
 
         /// <summary>

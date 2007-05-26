@@ -2,16 +2,18 @@ using System;
 using net.esper.pattern;
 namespace net.esper.pattern.observer
 {
-	
-	/// <summary> For use by <seealso cref="EventObserver"/> instances to place an event for processing/evaluation.</summary>
+	/// <summary>
+	/// For use by <seealso cref="EventObserver"/> instances to place an
+	/// event for processing/evaluation.
+	/// </summary>
 	public interface ObserverEventEvaluator
 	{
 		/// <summary> Indicate an event for evaluation (sub-expression the observer represents has turned true).</summary>
 		/// <param name="matchEvent">is the matched events so far
 		/// </param>
-		void  ObserverEvaluateTrue(MatchedEventMap matchEvent);
+		void ObserverEvaluateTrue(MatchedEventMap matchEvent);
 		
 		/// <summary> Indicate that the observer turned permanently false.</summary>
-		void  ObserverEvaluateFalse();
+		void ObserverEvaluateFalse();
 	}
 }

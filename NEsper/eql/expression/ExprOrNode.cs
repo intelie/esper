@@ -34,13 +34,13 @@ namespace net.esper.eql.expression
         /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
         {
-            // Sub-nodes must be returning boolean
+            // Sub-nodes must be returning bool
             foreach (ExprNode child in this.ChildNodes)
             {
                 Type childType = child.ReturnType;
                 if (!TypeHelper.IsBoolean(childType))
                 {
-                    throw new ExprValidationException("Incorrect use of OR clause, sub-expressions do not return boolean");
+                    throw new ExprValidationException("Incorrect use of OR clause, sub-expressions do not return bool");
                 }
             }
 
@@ -55,7 +55,7 @@ namespace net.esper.eql.expression
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
         /// <returns>
-        /// evaluation result, a boolean value for OR/AND-type evalution nodes.
+        /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
         public override Object Evaluate(EventBean[] eventsPerStream)
         {

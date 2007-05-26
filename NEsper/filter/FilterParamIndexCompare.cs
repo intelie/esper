@@ -17,7 +17,7 @@ namespace net.esper.filter
     /// for fast range checking, since the assumption is that frequently values fall within a range.
     /// </summary>
 
-    public sealed class FilterParamIndexCompare : FilterParamIndex
+    public sealed class FilterParamIndexCompare : FilterParamIndexPropBase
     {
         private readonly ETreeDictionary<Object, EventEvaluator> constantsMap;
         private readonly ReaderWriterLock constantsMapRWLock;
@@ -142,13 +142,13 @@ namespace net.esper.filter
                 return constantsMapRWLock;
             }
         }
-
+		
         /// <summary>
         /// Matches the event.
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
         /// <param name="matches">The matches.</param>
-        public override void MatchEvent(EventBean eventBean, IList<FilterCallback> matches)
+        public override void MatchEvent(EventBean eventBean, ICollection<FilterCallback> matches)
         {
             Object propertyValue = this.Getter.GetValue(eventBean);
 
@@ -189,53 +189,58 @@ namespace net.esper.filter
                 return;
             }
 
-            // Look up in table
-            constantsMapRWLock.AcquireReaderLock( LockConstants.ReaderTimeout );
-
-            // Get the head or tail end of the map depending on comparison type
-            IDictionary<Object, EventEvaluator> subMap;
-
-            if ((filterOperator == FilterOperator.GREATER) ||
-                (filterOperator == FilterOperator.GREATER_OR_EQUAL))
+            try
             {
-                // At the head of the map are those with a lower numeric constants
-                subMap = constantsMap.Head(propertyValueDouble);
-            }
-            else
-            {
-                subMap = constantsMap.Tail(propertyValueDouble);
-            }
+                // Look up in table
+                constantsMapRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
 
-            // All entries in the subMap are elgibile, with an exception
-            EventEvaluator exactEquals = null;
-            if (filterOperator == FilterOperator.LESS)
-            {
-                exactEquals = constantsMap.Fetch(propertyValueDouble);
-            }
+                // Get the head or tail end of the map depending on comparison type
+                IDictionary<Object, EventEvaluator> subMap;
 
-            foreach (EventEvaluator matcher in subMap.Values)
-            {
-                // For the LESS comparison type we ignore the exactly equal case
-                // The subMap is sorted ascending, thus the exactly equals case is the first
-                if (exactEquals != null)
+                if ((filterOperator == FilterOperator.GREATER) ||
+                    (filterOperator == FilterOperator.GREATER_OR_EQUAL))
                 {
-                    exactEquals = null;
-                    continue;
+                    // At the head of the map are those with a lower numeric constants
+                    subMap = constantsMap.Head(propertyValueDouble);
+                }
+                else
+                {
+                    subMap = constantsMap.Tail(propertyValueDouble);
                 }
 
-                matcher.MatchEvent(eventBean, matches);
-            }
-
-            if (filterOperator == FilterOperator.GREATER_OR_EQUAL)
-            {
-                EventEvaluator matcher = constantsMap.Fetch(propertyValueDouble);
-                if (matcher != null)
+                // All entries in the subMap are elgibile, with an exception
+                EventEvaluator exactEquals = null;
+                if (filterOperator == FilterOperator.LESS)
                 {
+                    exactEquals = constantsMap.Fetch(propertyValueDouble);
+                }
+
+                foreach (EventEvaluator matcher in subMap.Values)
+                {
+                    // For the LESS comparison type we ignore the exactly equal case
+                    // The subMap is sorted ascending, thus the exactly equals case is the first
+                    if (exactEquals != null)
+                    {
+                        exactEquals = null;
+                        continue;
+                    }
+
                     matcher.MatchEvent(eventBean, matches);
                 }
-            }
 
-            constantsMapRWLock.ReleaseReaderLock();
+                if (filterOperator == FilterOperator.GREATER_OR_EQUAL)
+                {
+                    EventEvaluator matcher = constantsMap.Fetch(propertyValueDouble);
+                    if (matcher != null)
+                    {
+                        matcher.MatchEvent(eventBean, matches);
+                    }
+                }
+            }
+            finally
+            {
+                constantsMapRWLock.ReleaseReaderLock();
+            }
         }
 
         private void UpdateBounds()

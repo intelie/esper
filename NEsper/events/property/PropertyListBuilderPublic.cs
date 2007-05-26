@@ -41,13 +41,13 @@ namespace net.esper.events.property
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             PropertyListBuilderExplicit.getExplicitProperties(result, type, legacyConfig);
-            addPublicFields(result, type);
-            addPublicMethods(result, type);
-            addPublicProperties(result, type);
+            AddPublicFields(result, type);
+            AddPublicMethods(result, type);
+            AddPublicProperties(result, type);
             return result;
         }
 
-        private void addPublicMethods(IList<EventPropertyDescriptor> result, Type type)
+        public static void AddPublicMethods(IList<EventPropertyDescriptor> result, Type type)
         {
             MethodInfo[] methods = type.GetMethods();
             foreach (MethodInfo method in methods)
@@ -79,7 +79,7 @@ namespace net.esper.events.property
             PropertyHelper.RemoveClrProperties(result);
         }
 
-        private void addPublicFields(IList<EventPropertyDescriptor> result, Type type)
+        public static void AddPublicFields(IList<EventPropertyDescriptor> result, Type type)
         {
             FieldInfo[] fields = type.GetFields();
             foreach (FieldInfo field in fields)
@@ -89,7 +89,7 @@ namespace net.esper.events.property
             }
         }
 
-        private void addPublicProperties(IList<EventPropertyDescriptor> result, Type type)
+        public static  void AddPublicProperties(IList<EventPropertyDescriptor> result, Type type)
         {
         	foreach( PropertyDescriptor property in TypeDescriptor.GetProperties( type ) )
             {

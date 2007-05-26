@@ -13,70 +13,131 @@ namespace net.esper.pattern
 	
 	public sealed class PatternContext
 	{
-		private readonly FilterService filterService;
-		private readonly SchedulingService schedulingService;
-		private readonly ScheduleBucket scheduleBucket;
-		private readonly EventAdapterService eventAdapterService;
+	    private readonly int streamNumber;
+	    private readonly StatementContext statementContext;
+	    private readonly PatternStateFactory patternStateFactory;
 
-		/// <summary> Returns service to use for filter evaluation.</summary>
-		/// <returns> filter evaluation service implemetation
-		/// </returns>
-		public FilterService FilterService
-		{
-			get
-			{
-				return filterService;
-			}
-			
-		}
-		/// <summary> Returns service to use for schedule evaluation.</summary>
-		/// <returns> schedule evaluation service implemetation
-		/// </returns>
-		public SchedulingService SchedulingService
-		{
-			get
-			{
-				return schedulingService;
-			}
-			
-		}
-		/// <summary> Returns the schedule bucket for ordering schedule callbacks within this pattern.</summary>
-		/// <returns> schedule bucket
-		/// </returns>
-		public ScheduleBucket ScheduleBucket
-		{
-			get
-			{
-				return scheduleBucket;
-			}
-			
-		}
-		/// <summary> Returns teh service providing event adaptering or wrapping.</summary>
-		/// <returns> event adapter service
-		/// </returns>
-		public EventAdapterService EventAdapterService
-		{
-			get
-			{
-				return eventAdapterService;
-			}
-		}
-		
-		/// <summary> Constructor.</summary>
-		/// <param name="filterService">implementation for filtering service
-		/// </param>
-		/// <param name="scheduleBucket">schedule buckets for use by scheduling service for ordering scheduling callbacks for pattern statements 
-		/// </param>
-		/// <param name="schedulingService">implementation for schedule evaluation
-		/// </param>
-		/// <param name="eventAdapterService">service for event adapters or wrappers
-		/// </param>
-		public PatternContext(FilterService filterService, SchedulingService schedulingService, ScheduleBucket scheduleBucket, EventAdapterService eventAdapterService)
-		{
-			this.filterService = filterService;
-			this.schedulingService = schedulingService;
-			this.scheduleBucket = scheduleBucket;
-			this.eventAdapterService = eventAdapterService;
-		}
+	    /**
+	     * Constructor.
+	     * @param patternStateFactory is the state node factory for the pattern
+	     * @param statementContext is the statement context
+	     * @param streamNumber is the stream number
+	     */
+	    public PatternContext(StatementContext statementContext,
+	                          int streamNumber,
+	                          PatternStateFactory patternStateFactory)
+	    {
+	        this.streamNumber = streamNumber;
+	        this.statementContext = statementContext;
+	        this.patternStateFactory = patternStateFactory;
+	    }
+
+	    /**
+	     * Gets the service to use for filter evaluation.
+	     * @return filter evaluation service implemetation
+	     */
+	    public FilterService FilterService
+	    {
+	        get { return statementContext.FilterService; }
+	    }
+
+	    /**
+	     * Gets the service to use for schedule evaluation.
+	     * @return schedule evaluation service implemetation
+	     */
+	    public SchedulingService SchedulingService
+	    {
+	        get { return statementContext.getSchedulingService; }
+	    }
+
+	    /**
+	     * Gets the schedule bucket for ordering schedule callbacks within this pattern.
+	     * @return schedule bucket
+	     */
+	    public ScheduleBucket ScheduleBucket
+	    {
+	        get { return statementContext.ScheduleBucket; }
+	    }
+
+	    /**
+	     * Gets the service providing event adaptering or wrapping.
+	     * @return event adapter service
+	     */
+	    public EventAdapterService EventAdapterService
+	    {
+	        get { return statementContext.EventAdapterService; }
+	    }
+
+	    /**
+	     * Gets the statement's resource handle for locking.
+	     * @return handle of statement
+	     */
+	    public EPStatementHandle EpStatementHandle
+	    {
+	        get { return statementContext.EpStatementHandle; }
+	    }
+
+	    /**
+	     * Gets the pattern state node factory to use.
+	     * @return factory for pattern state
+	     */
+	    public PatternStateFactory PatternStateFactory
+	    {
+	        get { return patternStateFactory; }
+	    }
+
+	    /**
+	     * Gets the statement id.
+	     * @return statement id
+	     */
+	    public String StatementId
+	    {
+	        get { return statementContext.StatementId; }
+	    }
+
+	    /**
+	     * Gets the statement name.
+	     * @return statement name
+	     */
+	    public String StatementName
+	    {
+	        get { return statementContext.StatementName; }
+	    }
+
+	    /**
+	     * Gets the stream number.
+	     * @return stream number
+	     */
+	    public int StreamNumber
+	    {
+	        get { return streamNumber; }
+	    }
+
+	    /**
+	     * Gets the engine URI.
+	     * @return engine URI
+	     */
+	    public String EngineURI
+	    {
+	        get { return statementContext.EngineURI; }
+	    }
+
+	    /**
+	     * Gets the engine instance id.
+	     * @return engine instance id
+	     */
+	    public String EngineInstanceId
+	    {
+	        get { return statementContext.EngineInstanceId; }
+	    }
+
+	    /**
+	     * Gets extension services context.
+	     * @return extension services
+	     */
+	    public ExtensionServicesContext ExtensionServicesContext
+	    {
+	        get { return statementContext.ExtensionServicesContext; }
+	    }
 	}
 }

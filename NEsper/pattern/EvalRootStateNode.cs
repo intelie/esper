@@ -8,7 +8,10 @@ namespace net.esper.pattern
     /// It hold the handle to a further state node with subnodes making up a whole evaluation state tree.
     /// </summary>
 
-    public sealed class EvalRootStateNode : EvalStateNode, Evaluator //, PatternStopCallback
+    public sealed class EvalRootStateNode
+		: EvalStateNode
+		, EvalRootState
+		, Evaluator
     {
         /// <summary>
         /// Gets or sets the callback to use to indicate matching events.
@@ -32,7 +35,7 @@ namespace net.esper.pattern
         /// <param name="context">contains handles to services required
         /// </param>
         public EvalRootStateNode(EvalNode rootSingleChildNode, MatchedEventMap beginState, PatternContext context)
-            : base(null)
+            : base(rootSingleChildNode, null, null)
         {
 
             if (log.IsDebugEnabled)
@@ -40,7 +43,7 @@ namespace net.esper.pattern
                 log.Debug(".constructor");
             }
 
-            topStateNode = rootSingleChildNode.NewState(this, beginState, context);
+            topStateNode = rootSingleChildNode.NewState(this, beginState, context, null);
 
             if (log.IsDebugEnabled)
             {

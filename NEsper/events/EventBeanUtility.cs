@@ -30,17 +30,16 @@ namespace net.esper.events
             }
 
             int totalElements = 0;
-            for (int i = 0; i < eventVector.Count; i++)
+			foreach( EventBean[] array in eventVector )
             {
-                totalElements += eventVector[i].Length;
+                totalElements += array.Length;
             }
 
             EventBean[] result = new EventBean[totalElements];
             int destPos = 0;
-            for (int i = 0; i < eventVector.Count; i++)
+			foreach( EventBean[] array in eventVector )
             {
-                EventBean[] src = eventVector[i];
-                Array.Copy(src, 0, result, destPos, src.Length);
+                Array.Copy(src, 0, result, destPos, array.Length);
                 destPos += eventVector[i].Length;
             }
 
@@ -48,8 +47,8 @@ namespace net.esper.events
         }
 
         /// <summary>Append arrays.</summary>
-        /// <param name="source">array</param>
-        /// <param name="append">array</param>
+        /// <param name="source">list of source events</param>
+        /// <param name="append">list of events to append</param>
         /// <returns>appended array</returns>
 
         public static EventBean[] Append(EventBean[] source, EventBean[] append)
@@ -61,7 +60,7 @@ namespace net.esper.events
         }
 
         /// <summary>Convert list of events to array, returning null for empty or null lists.</summary>
-        /// <param name="eventList"></param>
+        /// <param name="eventList">a list of events to convert</param>
         /// <returns>array of events</returns>
 
         public static EventBean[] ToArray(IList<EventBean> eventList)

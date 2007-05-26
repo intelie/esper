@@ -11,7 +11,7 @@ namespace net.esper.pattern.observer
         /// <summary>
         /// Observer for letting pass/waiting an interval amount of time.
         /// </summary>
-        public static readonly ObserverEnum TIMER_INTERVAL = new ObserverEnum("timer", "interval", typeof(TimerObserverFactory));
+        public static readonly ObserverEnum TIMER_INTERVAL = new ObserverEnum("timer", "interval", typeof(TimerIntervalObserverFactory));
 
         /// <summary>
         /// Observer for 'at' (crontab) observation of timer events.

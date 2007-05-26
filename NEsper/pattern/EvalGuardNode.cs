@@ -11,8 +11,17 @@ namespace net.esper.pattern
 	{
 		private GuardFactory guardFactory;
 		
+		/// <summary>
+		/// Gets the guard factory.
+		/// </summary>
+		
+	    public GuardFactory GuardFactory
+	    {
+	        get { return guardFactory; }
+	    }
+	
 		/// <summary> Constructor.</summary>
-		/// <param name="guardFactory">factory for guard node
+		/// <param name="guardFactory">factory for guard construction
 		/// </param>
 		public EvalGuardNode(GuardFactory guardFactory)
 		{
@@ -29,7 +38,10 @@ namespace net.esper.pattern
         /// <returns>
         /// state node containing the truth value state for the operator
         /// </returns>
-		public override EvalStateNode NewState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context)
+		public override EvalStateNode NewState(Evaluator parentNode,
+											   MatchedEventMap beginState,
+											   PatternContext context,
+											   Object stateNodeId)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -41,7 +53,7 @@ namespace net.esper.pattern
 				throw new SystemException("Expected number of child nodes incorrect, expected 1 child node, found " + ChildNodes.Count);
 			}
 			
-			return new EvalGuardStateNode(parentNode, guardFactory, ChildNodes[0], beginState, context);
+			return context.PatternStateFactory.MakeGuardState(parentNode, this, beginState, context, stateNodeId);
 		}
 
         /// <summary>

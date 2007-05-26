@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.core;
 using net.esper.events;
 
 namespace net.esper.view.stat
@@ -10,26 +11,27 @@ namespace net.esper.view.stat
 	/// This class accepts most of its behaviour from its parent, <seealso cref="net.esper.view.stat.BaseBivariateStatisticsView"/>. It adds
 	/// the usage of the regression bean and the appropriate schema.
 	/// </summary>
-	public sealed class RegressionLinestView : BaseBivariateStatisticsView
+	public sealed class RegressionLinestView
+		: BaseBivariateStatisticsView
+		, CloneableView
 	{
 		private EventType eventType;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RegressionLinestView"/> class.
-        /// </summary>
-		public RegressionLinestView()
-		{
-			statisticsBean = new RegressionBean();
-		}
-		
-		/// <summary> Constructor.</summary>
-		/// <param name="xFieldName">is the field name of the field providing X data points
-		/// </param>
-		/// <param name="yFieldName">is the field name of the field providing X data points
-		/// </param>
-		public RegressionLinestView(String xFieldName, String yFieldName):base(new RegressionBean(), xFieldName, yFieldName)
-		{
-		}
+	   /**
+	     * Constructor.
+	     * @param xFieldName is the field name of the field providing X data points
+	     * @param yFieldName is the field name of the field providing X data points
+	     * @param statementContext contains required view services
+	     */
+	    public RegressionLinestView(StatementContext statementContext, String xFieldName, String yFieldName)
+	        : base(statementContext, new RegressionBean(), xFieldName, yFieldName)
+	    {
+	    }
+
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return new RegressionLinestView(statementContext, this.FieldNameX, this.FieldNameY);
+	    }
 
         /// <summary>
         /// Provides metadata information about the type of object the event collection contains.
@@ -44,7 +46,7 @@ namespace net.esper.view.stat
             {
                 if (eventType == null)
                 {
-                    eventType = viewServiceContext.EventAdapterService.AddBeanType(typeof(RegressionBean).FullName, typeof(RegressionBean));
+                    eventType = CreateEventType(statementContext);
                 }
                 return eventType;
             }
@@ -61,5 +63,15 @@ namespace net.esper.view.stat
 		{
 			return this.GetType().FullName + " fieldX=" + this.FieldNameX + " fieldY=" + this.FieldNameY;
 		}
+		
+		/**
+	     * Creates the event type for this view.
+	     * @param statementContext is the event adapter service
+	     * @return event type of view
+	     */
+	    protected static EventType CreateEventType(StatementContext statementContext)
+	    {
+	        return statementContext.EventAdapterService.AddBeanType(typeof(RegressionBean).FullName, typeof(RegressionBean));
+	    }
 	}
 }

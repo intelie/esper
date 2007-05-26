@@ -14,7 +14,7 @@ namespace net.esper.util
     {
         /// <summary>
         /// Returns the boxed class for the given class, or the class itself if already boxed or not a primitive type.
-        /// For primitive unboxed types returns the boxed types, e.g. returns java.lang.Integer for passing int.class.
+        /// For primitive unboxed types returns the boxed types, e.g. returns java.lang.Integer for passing typeof(int).
         /// For any other class, returns the class passed.
         /// </summary>
         /// <param name="type">is the type to return the boxed type for</param>
@@ -71,6 +71,66 @@ namespace net.esper.util
             }
             return type;
         }
+		
+	    /**
+	     * Returns the un-boxed class for the given class, or the class itself if already un-boxed or not a primitive type.
+	     * For primitive boxed types returns the unboxed primitive type, e.g. returns typeof(int) for passing typeof(Integer).
+	     * For any other class, returns the class passed.
+	     * @param type is the class to return the unboxed (or primitive) class for
+	     * @return primitive variant of the same class
+	     */
+	    public static Type GetPrimitiveType(Type type)
+	    {
+	        if (type == typeof(bool?))
+	        {
+	            return typeof(bool);
+	        }
+	        if (type == typeof(char?))
+	        {
+	            return typeof(char);
+	        }
+	        if (type == typeof(double?))
+	        {
+	            return typeof(double);
+	        }
+	        if (type == typeof(float?))
+	        {
+	            return typeof(float);
+	        }
+	        if (type == typeof(sbyte?))
+	        {
+	            return typeof(sbyte);
+	        }
+	        if (type == typeof(byte?))
+	        {
+	            return typeof(byte);
+	        }
+	        if (type == typeof(short?))
+	        {
+	            return typeof(short);
+	        }
+	        if (type == typeof(ushort?))
+	        {
+	            return typeof(ushort);
+	        }
+	        if (type == typeof(int?))
+	        {
+	            return typeof(int);
+	        }
+	        if (type == typeof(uint?))
+	        {
+	            return typeof(uint);
+	        }
+	        if (type == typeof(long?))
+	        {
+	            return typeof(long);
+	        }
+	        if (type == typeof(ulong?))
+	        {
+	            return typeof(ulong);
+	        }
+	        return type;
+	    }
 
         /// <summary>
         /// Returns for the class name given the class name of the boxed (wrapped) type if
@@ -133,11 +193,11 @@ namespace net.esper.util
         }
 
         /// <summary>
-        /// Determines whether the specified type is boolean.
+        /// Determines whether the specified type is bool.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified type is boolean; otherwise, <c>false</c>.
+        /// 	<c>true</c> if the specified type is bool; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsBoolean(Type type)
         {
@@ -195,27 +255,28 @@ namespace net.esper.util
         /// Coerce the given number to the given type. Allows coerce to lower resultion number.
         /// Doesn't coerce to primitive types.
         /// <param name="numToCoerce">numToCoerce is the number to coerce to the given type</param>
-        /// <param name="resultType">the result type to return</param>
+        /// <param name="resultBoxedType">the result type to return</param>
+		/// <returns>the numToCoerce as a value in the given result type</returns>
         /// </summary>
 
-        public static Object CoerceNumber(Object numToCoerce, Type resultType)
+        public static Object CoerceBoxed(Object numToCoerce, Type resultBoxedType)
         {
-            if (TypeHelper.GetBoxedType(numToCoerce.GetType()) == resultType)
+            if (GetBoxedType(numToCoerce.GetType()) == resultBoxedType)
             {
                 return numToCoerce;
             }
 
-            if (resultType == typeof(double?))
+            if (resultBoxedType == typeof(double?))
             {
                 double? value = Convert.ToDouble(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(ulong?))
+            if (resultBoxedType == typeof(ulong?))
             {
                 ulong? value = Convert.ToUInt64(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(long?))
+            if (resultBoxedType == typeof(long?))
             {
                 long? value = Convert.ToInt64(numToCoerce);
                 return value;
@@ -225,7 +286,7 @@ namespace net.esper.util
                 float? value = Convert.ToSingle(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(uint?))
+            if (resultBoxedType == typeof(uint?))
             {
                 uint? value = Convert.ToUInt32(numToCoerce);
                 return value;
@@ -235,36 +296,36 @@ namespace net.esper.util
                 int? value = Convert.ToInt32(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(ushort?))
+            if (resultBoxedType == typeof(ushort?))
             {
                 ushort? value = Convert.ToUInt16(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(short?))
+            if (resultBoxedType == typeof(short?))
             {
                 short? value = Convert.ToInt16(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(byte?))
+            if (resultBoxedType == typeof(byte?))
             {
                 byte? value = Convert.ToByte(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(sbyte?))
+            if (resultBoxedType == typeof(sbyte?))
             {
                 sbyte? value = Convert.ToSByte(numToCoerce);
                 return value;
             }
 
-            throw new ArgumentException("Cannot coerce to number subtype " + resultType.Name);
+            throw new ArgumentException("Cannot coerce to number subtype " + resultBoxedType.FullName);
         }
 
         /// <summary>
         /// Returns the coercion type for the 2 numeric types for use in arithmatic.
         /// Note: byte and short types always result in integer.
         /// </summary>
-        /// <param name="typeOne">The type one.</param>
-        /// <param name="typeTwo">The type two.</param>
+        /// <param name="typeOne">The first type.</param>
+        /// <param name="typeTwo">The second type.</param>
         /// <returns>coerced type</returns>
         /// <throws>  CoercionException if types don't allow coercion </throws>
 
@@ -324,30 +385,30 @@ namespace net.esper.util
         /// <summary>
         /// Returns true if the supplied type is a floating point number.
         /// </summary>
-        /// <param name="clazz">to check</param>
+        /// <param name="type">to check</param>
         /// <returns>
         /// true if primitive or boxed float or double
         /// </returns>
-        public static bool IsFloatingPointClass(Type clazz)
+        public static bool IsFloatingPointClass(Type type)
         {
             return
-                (clazz == typeof(float?)) ||
-                (clazz == typeof(float)) ||
-                (clazz == typeof(double?)) ||
-                (clazz == typeof(double))
+                (type == typeof(float?)) ||
+                (type == typeof(float)) ||
+                (type == typeof(double?)) ||
+                (type == typeof(double))
             ;
         }
 
         /// <summary>
         /// Returns for 2 classes to be compared via relational operator the Class type of
-        /// common comparison. The output is always Long.class, double.class, String.class or bool.class
+        /// common comparison. The output is always typeof(long?), typeof(double), typeof(String) or typeof(bool)
         /// depending on whether the passed types are numeric and floating-point.
         /// Accepts primitive as well as boxed types.
         /// </summary>
-        /// <param name="typeOne">The type one.</param>
-        /// <param name="typeTwo">The type two.</param>
+        /// <param name="typeOne">The first type.</param>
+        /// <param name="typeTwo">The second type.</param>
         /// <returns>
-        /// One of Long.class, double.class or String.class
+        /// One of typeof(long?), typeof(double) or typeof(String)
         /// </returns>
         /// <throws>  ArgumentException if the types cannot be compared </throws>
 
@@ -381,6 +442,79 @@ namespace net.esper.util
             return typeof(long?);
         }
 
+		/**
+	     * Determines if a number can be coerced upwards to another number class without loss.
+	     * <p>
+	     * Clients must pass in two classes that are numeric types.
+	     * <p>
+	     * Any number class can be coerced to double, while only double cannot be coerced to float.
+	     * Any non-floating point number can be coerced to long.
+	     * Integer can be coerced to Byte and Short even though loss is possible, for convenience.
+	     * @param numberClassToBeCoerced the number class to be coerced
+	     * @param numberClassToCoerceTo the number class to coerce to
+	     * @return true if numbers can be coerced without loss, false if not
+	     */
+	    public static bool CanCoerce(Type numberClassToBeCoerced, Type numberClassToCoerceTo)
+	    {
+	        Type boxedFrom = GetBoxedType(numberClassToBeCoerced);
+	        Type boxedTo = GetBoxedType(numberClassToCoerceTo);
+
+	        if (!IsNumeric(numberClassToBeCoerced))
+	        {
+	            throw new IllegalArgumentException("Type '" + numberClassToBeCoerced + "' is not a numeric type'");
+	        }
+
+	        if (boxedTo == typeof(float?))
+	        {
+	            return ((boxedFrom == typeof(byte?)) ||
+						(boxedFrom == typeof(sbyte?)) ||
+	                    (boxedFrom == typeof(short?)) ||
+	                    (boxedFrom == typeof(ushort?)) ||
+	                    (boxedFrom == typeof(int?)) ||
+	                    (boxedFrom == typeof(uint?)) ||
+	                    (boxedFrom == typeof(long?)) ||
+	                    (boxedFrom == typeof(ulong?)) ||
+	                    (boxedFrom == typeof(float?)));
+	        }
+	        else if (boxedTo == typeof(double?))
+	        {
+	            return ((boxedFrom == typeof(byte?)) ||
+	                    (boxedFrom == typeof(sbyte?)) ||
+	                    (boxedFrom == typeof(short?)) ||
+	                    (boxedFrom == typeof(ushort?)) ||
+	                    (boxedFrom == typeof(int?)) ||
+	                    (boxedFrom == typeof(uint?)) ||
+	                    (boxedFrom == typeof(long?)) ||
+	                    (boxedFrom == typeof(ulong?)) ||
+	                    (boxedFrom == typeof(float?)) ||
+	                    (boxedFrom == typeof(double?)));
+	        }
+	        else if (boxedTo == typeof(Long))
+	        {
+	            return ((boxedFrom == typeof(byte?)) ||
+	                    (boxedFrom == typeof(sbyte?)) ||
+	                    (boxedFrom == typeof(short?)) ||
+	                    (boxedFrom == typeof(ushort?)) ||
+	                    (boxedFrom == typeof(int?)) ||
+	                    (boxedFrom == typeof(uint?)) ||
+	                    (boxedFrom == typeof(long?)));
+	        }
+	        else if ((boxedTo == typeof(int?)) ||
+	                 (boxedTo == typeof(short?)) ||
+	                 (boxedTo == typeof(ushort?)) ||
+	                 (boxedTo == typeof(sbyte?)))
+	        {
+	            return ((boxedFrom == typeof(byte?)) ||
+	                    (boxedFrom == typeof(sbyte?)) ||
+	                    (boxedFrom == typeof(short?)) ||
+	                    (boxedFrom == typeof(ushort?)) ||
+	                    (boxedFrom == typeof(int?)));
+	        }
+	        else
+	        {
+	            throw new IllegalArgumentException("Type '" + numberClassToCoerceTo + "' is not a numeric type'");
+	        }
+	    }
         /// <summary>
         /// Returns true if the class passed in is a built-in data type (primitive or wrapper)
         /// including String.

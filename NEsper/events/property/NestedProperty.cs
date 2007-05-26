@@ -6,7 +6,6 @@ using net.esper.events;
 
 namespace net.esper.events.property
 {
-	
 	/// <summary> This class represents a nested property, each nesting level made up of a property instance that
 	/// can be of type indexed, mapped or simple itself.
 	/// <para>

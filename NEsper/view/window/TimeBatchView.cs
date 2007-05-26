@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 
 using net.esper.client;
+using net.esper.collection;
 using net.esper.compat;
-using net.esper.eql.parse;
+using net.esper.core;
 using net.esper.events;
 using net.esper.schedule;
 using net.esper.view;
@@ -17,7 +18,7 @@ namespace net.esper.view.window
     /// The view works similar to a time_window but in not continuous.
     /// The view releases the batched events after the interval as new data to child views. The prior batch if
     /// not empty is released as old data to child view. The view doesn't release intervals with no old or new data.
-    /// It also does not GetSelectListEvents old data published by a parent view.
+	/// It also does not collect old data published by a parent view.
     /// <para>
     /// For example, we want to calculate the average of IBM stock every hour, for the last hour.
     /// The view accepts 2 parameter combinations.
@@ -29,8 +30,26 @@ namespace net.esper.view.window
     /// In that case also, no next callback is scheduled with the scheduling service until the next event arrives.
     /// </para>
     /// </summary>
-    public sealed class TimeBatchView : ViewSupport, ContextAwareView
+    public sealed class TimeBatchView
+		: ViewSupport
+		, CloneableView
+		, DataWindowView
     {
+        private const String dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS";
+
+		private readonly TimeBatchViewFactory timeBatchViewFactory;
+		private readonly StatementContext statementContext;
+		private readonly long msecIntervalSize;
+		private readonly long? initialReferencePoint;
+		private readonly ViewUpdatedCollection viewUpdatedCollection;
+		private readonly ScheduleSlot scheduleSlot;
+
+        // Current running parameters
+        private long? currentReferencePoint;
+        private ELinkedList<EventBean> lastBatch = null;
+        private ELinkedList<EventBean> currentBatch = new ELinkedList<EventBean>();
+        private bool isCallbackScheduled;
+
         /// <summary>
         /// Gets or sets the interval size in milliseconds.
         /// </summary>
@@ -55,125 +74,7 @@ namespace net.esper.view.window
             set { this.initialReferencePoint = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-        public ViewServiceContext ViewServiceContext
-        {
-            get { return viewServiceContext; }
-            set
-            {
-                this.viewServiceContext = value;
-                this.scheduleSlot = value.ScheduleBucket.AllocateSlot();
-            }
-        }
-
-        private const String dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS";
-
-        // View parameters
-        private long msecIntervalSize;
-        private long? initialReferencePoint;
-
-        // Current running parameters
-        private long? currentReferencePoint;
-        private ViewServiceContext viewServiceContext;
-        private ELinkedList<EventBean> lastBatch = null;
-        private ELinkedList<EventBean> currentBatch = new ELinkedList<EventBean>();
-        private bool isCallbackScheduled;
-        private ScheduleSlot scheduleSlot;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TimeBatchView"/> class.
-        /// </summary>
-        public TimeBatchView()
-        {
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="secIntervalSize">is the number of seconds to batch events for.
-        /// </param>
-        public TimeBatchView(int secIntervalSize)
-        {
-            if (secIntervalSize < 1)
-            {
-                throw new ArgumentException("Time batch view requires a millisecond interval size of at least 100 msec");
-            }
-            this.msecIntervalSize = 1000 * secIntervalSize;
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="secIntervalSize">is the number of milliseconds to batch events for
-        /// </param>
-        /// <param name="referencePoint">is the reference point onto which to base intervals.
-        /// </param>
-
-        public TimeBatchView(int secIntervalSize, long? referencePoint)
-            : this(secIntervalSize)
-        {
-            this.initialReferencePoint = referencePoint;
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="secIntervalSize">is the number of seconds to batch events for.
-        /// </param>
-
-        public TimeBatchView(double secIntervalSize)
-        {
-            if (secIntervalSize < 0.1)
-            {
-                throw new ArgumentException("Time batch view requires a millisecond interval size of at least 100 msec");
-            }
-
-            this.msecIntervalSize = (long)System.Math.Round(1000 * secIntervalSize);
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="timeTimePeriod">is the number of seconds to batch events for.
-        /// </param>
-
-        public TimeBatchView(TimePeriodParameter timeTimePeriod)
-            : this(timeTimePeriod.NumSeconds)
-        {
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="secIntervalSize">is the number of seconds to batch events for
-        /// </param>
-        /// <param name="referencePoint">is the reference point onto which to base intervals.
-        /// </param>
-
-        public TimeBatchView(double secIntervalSize, long? referencePoint)
-            : this(secIntervalSize)
-        {
-            this.initialReferencePoint = referencePoint;
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="timeTimePeriod">is the number of seconds to batch events for
-        /// </param>
-        /// <param name="referencePoint">is the reference point onto which to base intervals.
-        /// </param>
-
-        public TimeBatchView(TimePeriodParameter timeTimePeriod, long? referencePoint)
-            : this(timeTimePeriod.NumSeconds, referencePoint)
-        {
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            // Attaches to any parent view
-            return null;
-        }
-
-        /// <summary>
+		/// <summary>
         /// Provides metadata information about the type of object the event collection contains.
         /// </summary>
         /// <value></value>
@@ -185,6 +86,40 @@ namespace net.esper.view.window
             get { return parent.EventType; }
             set { }
         }
+
+	    /// <summary>Constructor.</summary>
+	    /// <param name="msecIntervalSize">
+	    /// is the number of milliseconds to batch events for
+	    /// </param>
+	    /// <param name="referencePoint">
+	    /// is the reference point onto which to base intervals, or null if
+	    /// there is no such reference point supplied
+	    /// </param>
+	    /// <param name="viewUpdatedCollection">
+	    /// is a collection that the view must update when receiving events
+	    /// </param>
+	    /// <param name="timeBatchViewFactory">fr copying this view in a group-by</param>
+	    /// <param name="statementContext">is required view services</param>
+	    public TimeBatchView(TimeBatchViewFactory timeBatchViewFactory,
+	                         StatementContext statementContext,
+	                         long msecIntervalSize,
+	                         long? referencePoint,
+	                         ViewUpdatedCollection viewUpdatedCollection)
+	    {
+	        this.statementContext = statementContext;
+	        this.timeBatchViewFactory = timeBatchViewFactory;
+	        this.msecIntervalSize = msecIntervalSize;
+	        this.initialReferencePoint = referencePoint;
+	        this.viewUpdatedCollection = viewUpdatedCollection;
+
+	        this.scheduleSlot = statementContext.ScheduleBucket.AllocateSlot();
+	    }
+
+	    public override View CloneView(StatementContext statementContext)
+	    {
+	        return timeBatchViewFactory.MakeView(statementContext);
+	    }
+
 
         /// <summary>
         /// Notify that data has been added or removed from the Viewable parent.
@@ -214,7 +149,7 @@ namespace net.esper.view.window
                 log.Debug(".update Received update, " + "  newData.Length==" + ((newData == null) ? 0 : newData.Length) + "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
             }
 
-            if (viewServiceContext == null)
+            if (statementContext == null)
             {
                 String message = "View context has not been supplied, cannot schedule callback";
                 log.Fatal(".update " + message);
@@ -228,14 +163,14 @@ namespace net.esper.view.window
             }
 
             // If we have an empty window about to be filled for the first time, schedule a callback
-            if (currentBatch.Count == 0)
+            if (currentBatch.IsEmpty)
             {
                 if (currentReferencePoint == null)
                 {
                     currentReferencePoint = initialReferencePoint;
                     if (currentReferencePoint == null)
                     {
-                        currentReferencePoint = viewServiceContext.SchedulingService.Time;
+                        currentReferencePoint = statementContext.SchedulingService.Time;
                     }
                 }
 
@@ -256,11 +191,11 @@ namespace net.esper.view.window
             // We do not update child views, since we batch the events.
         }
 
-        /// <summary> 
+        /// <summary>
         /// This method updates child views and clears the batch of events.
         /// We schedule a new callback at this time if there were events in the batch.
         /// </summary>
-        
+
         public void SendBatch()
         {
             isCallbackScheduled = false;
@@ -269,26 +204,30 @@ namespace net.esper.view.window
             {
                 log.Debug(
                     ".SendBatch Update child views, " +
-                    "  time=" + viewServiceContext.SchedulingService.Time.ToString(dateFormat));
+                    "  time=" + statementContext.SchedulingService.Time.ToString(dateFormat));
             }
 
-            // If there are child views and the batch was filled, fire update method
+            // If there are child views and the batch was filled, fireStatementStopped update method
             if (this.HasViews)
             {
                 // Convert to object arrays
                 EventBean[] newData = null;
                 EventBean[] oldData = null;
-                if (currentBatch.Count > 0)
+                if (!currentBatch.IsEmpty)
                 {
 					newData = currentBatch.ToArray();
                 }
-                if ((lastBatch != null) && (lastBatch.Count > 0))
+                if ((lastBatch != null) && (!lastBatch.IsEmpty))
                 {
 					oldData = lastBatch.ToArray();
                 }
 
                 // Post new data (current batch) and old data (prior batch)
-                if ((newData != null) || (oldData != null))
+                if (viewUpdatedCollection != null)
+				{
+					viewUpdatedCollection.Update(newData, oldData);
+				}
+				if ((newData != null) || (oldData != null))
                 {
                     UpdateChildren(newData, oldData);
                 }
@@ -305,7 +244,7 @@ namespace net.esper.view.window
 
             // Only if there have been any events in this or the last interval do we schedule a callback,
             // such as to not waste resources when no events arrive.
-            if ((currentBatch.Count > 0) || ((lastBatch != null) && (lastBatch.Count > 0)))
+            if ((!currentBatch.IsEmpty) || ((lastBatch != null) && (!lastBatch.IsEmpty)))
             {
                 ScheduleCallback();
                 isCallbackScheduled = true;
@@ -314,6 +253,23 @@ namespace net.esper.view.window
             lastBatch = currentBatch;
             currentBatch = new ELinkedList<EventBean>();
         }
+
+		/// <summary>Returns true if the window is empty, or false if not empty.</summary>
+		/// <returns>true if empty</returns>
+	    public bool IsEmpty
+	    {
+			get
+			{
+				if (lastBatch != null)
+		        {
+		            if (!lastBatch.IsEmpty)
+		            {
+		                return false;
+		            }
+		        }
+				return currentBatch.IsEmpty;
+			}
+	    }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -342,21 +298,22 @@ namespace net.esper.view.window
 
         private void ScheduleCallback()
         {
-            long current = viewServiceContext.SchedulingService.Time;
+            long current = statmentContext.SchedulingService.Time;
             long afterMSec = ComputeWaitMSec(current, this.currentReferencePoint.Value, this.msecIntervalSize);
 
             if (log.IsDebugEnabled)
             {
-                log.Debug(".scheduleCallback Scheduled new callback for " + 
+                log.Debug(".scheduleCallback Scheduled new callback for " +
                     " afterMsec=" + afterMSec +
-                    " now=" + current + 
+                    " now=" + current +
                     " currentReferencePoint=" + currentReferencePoint +
-                    " initialReferencePoint=" + initialReferencePoint + 
+                    " initialReferencePoint=" + initialReferencePoint +
                     " msecIntervalSize=" + msecIntervalSize);
             }
 
-            ScheduleCallback callback = new ScheduleCallbackImpl(SendBatch);
-            viewServiceContext.SchedulingService.Add(afterMSec, callback, scheduleSlot);
+            ScheduleHandleCallback callback = new ScheduleHandleCallback(SendBatch);
+			EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.EpStatementHandle, callback);
+			statementContext.SchedulingService.Add(afterMSec, handle, scheduleSlot);
         }
 
         /// <summary> Given a current time and a reference time and an interval size, compute the amount of

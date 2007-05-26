@@ -15,7 +15,7 @@ namespace net.esper.eql.expression
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
         /// <returns>
-        /// evaluation result, a boolean value for OR/AND-type evalution nodes.
+        /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
 		public object Evaluate(EventBean[] eventsPerStream)
 		{

@@ -1,5 +1,7 @@
 using System;
-using EventType = net.esper.events.EventType;
+
+using net.esper.core;
+using net.esper.events;
 
 namespace net.esper.view.stat
 {	
@@ -9,26 +11,27 @@ namespace net.esper.view.stat
 	/// This class accepts most of its behaviour from its parent, <seealso cref="net.esper.view.stat.BaseBivariateStatisticsView"/>. It adds
 	/// the usage of the correlation bean and the appropriate schema.
 	/// </summary>
-	public sealed class CorrelationView:BaseBivariateStatisticsView
+	public sealed class CorrelationView
+		: BaseBivariateStatisticsView
+		, CloneableView
 	{
 		private EventType eventType;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CorrelationView"/> class.
-        /// </summary>
-		public CorrelationView()
-		{
-			statisticsBean = new CorrelationBean();
-		}
-		
-		/// <summary> Constructor.</summary>
-		/// <param name="xFieldName">is the field name of the field providing X data points
-		/// </param>
-		/// <param name="yFieldName">is the field name of the field providing X data points
-		/// </param>
-		public CorrelationView(String xFieldName, String yFieldName):base(new CorrelationBean(), xFieldName, yFieldName)
-		{
-		}
+	    /**
+	     * Constructor.
+	     * @param xFieldName is the field name of the field providing X data points
+	     * @param yFieldName is the field name of the field providing X data points
+	     * @param statementContext contains required view services
+	     */
+	    public CorrelationView(StatementContext statementContext, String xFieldName, String yFieldName)
+	        : base(statementContext, new CorrelationBean(), xFieldName, yFieldName)
+	    {
+	    }
+
+	    public View cloneView(StatementContext statementContext)
+	    {
+	        return new CorrelationView(statementContext, this.FieldNameX, this.FieldNameY);
+	    }
 
         /// <summary>
         /// Provides metadata information about the type of object the event collection contains.
@@ -43,7 +46,7 @@ namespace net.esper.view.stat
             {
                 if (eventType == null)
                 {
-                    eventType = viewServiceContext.EventAdapterService.AddBeanType(typeof(CorrelationBean).FullName, typeof(CorrelationBean));
+                    eventType = CreateEventType(statementContext);
                 }
                 return eventType;
             }
@@ -60,5 +63,15 @@ namespace net.esper.view.stat
 		{
 			return this.GetType().FullName + " fieldX=" + this.FieldNameX + " fieldY=" + this.FieldNameY;
 		}
+		
+	    /**
+	     * Creates the event type for this view.
+	     * @param statementContext is the event adapter service
+	     * @return event type of view
+	     */
+	    protected static EventType CreateEventType(StatementContext statementContext)
+	    {
+	        return statementContext.EventAdapterService.AddBeanType(typeof(CorrelationBean).FullName, typeof(CorrelationBean));
+	    }
 	}
 }

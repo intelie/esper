@@ -18,7 +18,7 @@ namespace net.esper.type
         /// </returns>
         PrimitiveValueType Type { get; }
 
-        /// <summary> Set a boolean value.</summary>
+        /// <summary> Set a bool value.</summary>
         bool _Boolean { set; }
 
         /// <summary> Set a byte value.</summary>

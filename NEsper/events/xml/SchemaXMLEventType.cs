@@ -36,7 +36,7 @@ namespace net.esper.events.xml
 		/// <param name="configurationEventTypeXMLDOM">configuration for type</param>
         
 		public SchemaXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
-            : base(configurationEventTypeXMLDOM.RootElementName)
+            : base(configurationEventTypeXMLDOM)
         {
             propertyGetterCache = new EHashDictionary<String, TypedEventPropertyGetter>();
 

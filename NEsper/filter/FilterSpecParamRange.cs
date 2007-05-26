@@ -8,7 +8,7 @@ using net.esper.pattern;
 namespace net.esper.filter
 {
 	/// <summary>
-	/// This class represents a range filter parameter in an <seealso cref="FilterSpec"/> filter specification.
+	/// This class represents a range filter parameter in an {@link FilterSpecCompiled} filter specification.
 	/// </summary>
 	
 	public sealed class FilterSpecParamRange : FilterSpecParam
@@ -32,35 +32,37 @@ namespace net.esper.filter
 			this.min = min;
 			this.max = max;
 			
-			if (! FilterOperatorHelper.IsRangeOperator( filterOperator ) )
+			if ((! FilterOperatorHelper.IsRangeOperator( filterOperator )) &&
+			    (! FilterOperatorHelper.IsInvertedRange( filterOperator )))
 			{
 				throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " + "range filter parameter");
 			}
 		}
 
-        /// <summary>
-        /// Gets the filter value class.
-        /// </summary>
-        /// <param name="taggedEventTypes">The tagged event types.</param>
-        /// <returns></returns>
-		public override Type GetFilterValueClass( EDictionary<String, EventType> taggedEventTypes )
-		{
-			min.CheckType( taggedEventTypes );
-			max.CheckType( taggedEventTypes );
-			return typeof( DoubleRange );
-		}
+	    public Object GetFilterValue(MatchedEventMap matchedEvents)
+	    {
+	        double begin = min.GetFilterValue(matchedEvents);
+	        double end = max.GetFilterValue(matchedEvents);
+	        return new DoubleRange(begin, end);
+	    }
 
-        /// <summary>
-        /// Return the filter parameter constant to filter for.
-        /// </summary>
-        /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters</param>
-        /// <returns>filter parameter constant's value</returns>
-		public override Object GetFilterValue(MatchedEventMap matchedEvents)
-		{
-			double begin = min.GetFilterValue(matchedEvents);
-			double end = max.GetFilterValue(matchedEvents);
-			return new DoubleRange(begin, end);
-		}
+	    /**
+	     * Returns the lower endpoint.
+	     * @return lower endpoint
+	     */
+	    public FilterSpecParamRangeValue Min
+	    {
+	        get { return min; }
+	    }
+
+	    /**
+	     * Returns the upper endpoint.
+	     * @return upper endpoint
+	     */
+	    public FilterSpecParamRangeValue Max
+	    {
+	        get { return max; }
+	    }
 
         /// <summary>
         /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.

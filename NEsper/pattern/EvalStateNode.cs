@@ -9,31 +9,44 @@ namespace net.esper.pattern
 	public abstract class EvalStateNode
 	{
 		/// <summary> Gets or sets the parent evaluator.</summary>
-		virtual internal Evaluator ParentEvaluator
+		public virtual Evaluator ParentEvaluator
 		{
-			get
-			{
-				return parentEvaluator;
-			}
-			
-			set
-			{
-				this.parentEvaluator = value;
-			}
-			
+			get { return parentEvaluator; }			
+			set { this.parentEvaluator = value; }			
 		}
+
+	    /**
+	     * Gets the state nodes object id.
+	     * @return object id
+	     */
+		public virtual Object StateObjectId
+		{
+			get { return stateObjectId; }
+		}
+		
+		/// <summary>
+		/// Gets the factory node for the state node.
+		/// </summary>
+		
+		public virtual EvalNode FactoryNode
+		{
+			get { return factoryNode; }
+		}
+		
+		private readonly EvalNode factoryNode;
 		private Evaluator parentEvaluator;
+		private readonly Object stateObjectId;
 		
 		/// <summary> Starts the event expression or an instance of it.
 		/// Child classes are expected to initialize and Start any event listeners
 		/// or schedule any time-based callbacks as needed.
 		/// </summary>
-		public abstract void  Start();
+		public abstract void Start();
 		
 		/// <summary> Stops the event expression or an instance of it. Child classes are expected to free resources
 		/// and Stop any event listeners or remove any time-based callbacks.
 		/// </summary>
-		public abstract void  Quit();
+		public abstract void Quit();
 		
 		/// <summary> Accept a visitor. Child classes are expected to invoke the visit method on the visitor instance
 		/// passed in.
@@ -58,9 +71,11 @@ namespace net.esper.pattern
 		/// <summary> Constructor.</summary>
 		/// <param name="parentNode">is the evaluator for this node on which to indicate a change in truth value
 		/// </param>
-		internal EvalStateNode(Evaluator parentNode)
-		{
-			this.parentEvaluator = parentNode;
-		}
+	    public EvalStateNode(EvalNode factoryNode, Evaluator parentNode, Object stateObjectId)
+	    {
+	        this.factoryNode = factoryNode;
+	        this.parentEvaluator = parentNode;
+	        this.stateObjectId = stateObjectId;
+	    }
 	}
 }

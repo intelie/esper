@@ -3,13 +3,11 @@ using System;
 namespace net.esper.schedule
 {
 	/// <summary>
-	/// This exception is thrown to indicate a problem with scheduling, such
-	/// as trying to add a scheduling callback that already existed or trying
-	///  to remove one that didn't exist.
+	/// This exception is thrown to indicate a problem with scheduling.
 	/// </summary>
 	
 	[Serializable]
-	public sealed class ScheduleServiceException:SystemException
+	public sealed class ScheduleServiceException : SystemException
 	{
 		/// <summary> Constructor.</summary>
 		/// <param name="message">is the error message

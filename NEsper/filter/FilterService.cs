@@ -1,11 +1,12 @@
 using System;
+
 using EventBean = net.esper.events.EventBean;
+
 namespace net.esper.filter
 {
-	
 	/// <summary> Interface for filtering events by event type and event property values. Allows adding and removing filters.
 	/// <para>
-	/// Filters are defined by a <seealso cref="FilterSpec"/> and are associated with a <seealso cref="FilterCallback"/>
+	/// Filters are defined by a <seealso cref="FilterSpecCompiled"/> and are associated with a <seealso cref="FilterCallback"/>
 	/// callback. Implementations may decide if the same filter callback can be registered twice for different
     /// or some filter specifications.
     /// </para>
@@ -20,13 +21,15 @@ namespace net.esper.filter
 		/// </returns>
 		long NumEventsEvaluated
 		{
-			get;
-			
+			get;			
 		}
-		/// <summary> Finds matching filters to the event passed in and invokes their associated callback method.</summary>
-		/// <param name="_event">is the event to be matched against filters
-		/// </param>
-		void  Evaluate(EventBean _event);
+
+		/**
+		 * Finds matching filters to the event passed in and invokes their associated callback method.
+		 * @param _event is the event to be matched against filters
+		 * @param matches is a collection that is populated via add method with any handles for matching filters
+		 */
+		void Evaluate(EventBean _event, ICollection<FilterHandle> matches);
 		
 		/// <summary> Add a filter for events as defined by the filter specification, and register a
 		/// callback to be invoked upon evaluation of an event that matches the filter spec.
@@ -36,11 +39,11 @@ namespace net.esper.filter
 		/// </param>
 		/// <param name="callback">is the callback to be invoked when the filter matches an event
 		/// </param>
-		void  Add(FilterValueSet filterValueSet, FilterCallback callback);
+		void  Add(FilterValueSet filterValueSet, FilterHandle callback);
 		
 		/// <summary> Remove a filter callback.</summary>
 		/// <param name="callback">is the callback to be removed
 		/// </param>
-		void  Remove(FilterCallback callback);
+		void  Remove(FilterHandle callback);
 	}
 }

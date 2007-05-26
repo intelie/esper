@@ -1,8 +1,9 @@
 using System;
-using EventBean = net.esper.events.EventBean;
+
+using net.esper.events;
+
 namespace net.esper.view
 {
-	
 	/// <summary> The View interface provides a way for a stream, data provider, or another view,
 	/// to notify an object of additions and deletions to its data set.
 	/// Views are themselves Viewable by other Views, and can implement their own set of cached data internally.
@@ -55,15 +56,6 @@ namespace net.esper.view
             set;
         }
 
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-		String AttachesTo(Viewable parentViewable);
-		
 		/// <summary>
         /// Notify that data has been added or removed from the Viewable parent.
 		/// The last object in the newData array of objects would be the newest object added to the parent view.

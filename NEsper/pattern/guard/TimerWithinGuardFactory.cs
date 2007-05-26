@@ -2,6 +2,7 @@ using System;
 
 using net.esper.pattern;
 using net.esper.eql.parse;
+using net.esper.util;
 
 namespace net.esper.pattern.guard
 {
@@ -9,49 +10,56 @@ namespace net.esper.pattern.guard
 	/// Factory for <seealso cref="TimerWithinGuard"/> instances.
 	/// </summary>
 	
-	public class TimerWithinGuardFactory : GuardFactory
+	public class TimerWithinGuardFactory
+		: GuardFactory
+		, MetaDefItem
 	{
 		private readonly long milliseconds;
 		
-		/// <summary> Creates a timer guard.</summary>
-		/// <param name="seconds">number of seconds before guard expiration
-		/// </param>
-		public TimerWithinGuardFactory(int seconds):this((long) seconds)
+		public IList<Object> GuardParameters
 		{
-		}
-		
-		/// <summary> Creates a timer guard.</summary>
-		/// <param name="seconds">number of seconds before guard expiration
-		/// </param>
-		public TimerWithinGuardFactory(double seconds)
-		{
-			this.milliseconds = (long) System.Math.Round(seconds * 1000d);
-		}
-		
-		/// <summary> Creates a timer guard.</summary>
-		/// <param name="seconds">number of seconds before guard expiration
-		/// </param>
-		public TimerWithinGuardFactory(long seconds)
-		{
-			this.milliseconds = seconds * 1000;
-		}
-		
-		/// <summary> Creates a timer guard.</summary>
-		/// <param name="timePeriodParameter">number of milliseconds before guard expiration
-		/// </param>
-		public TimerWithinGuardFactory(TimePeriodParameter timePeriodParameter)
-		{
-			double milliseconds = timePeriodParameter.NumSeconds * 1000d;
-			this.milliseconds = (long) System.Math.Round(milliseconds);
-		}
+			set
+			{
+		        String errorMessage = "Timer-within guard requires a single numeric or time period parameter";
+		        if (guardParameters.Count != 1)
+		        {
+		            throw new GuardParameterException(errorMessage);
+		        }
 
+		        Object parameter = guardParameters[0];
+		        if (parameter is TimePeriodParameter)
+		        {
+		            TimePeriodParameter param = (TimePeriodParameter) parameter;
+		            milliseconds = Math.Round(1000d * param.NumSeconds);
+		        }
+		        else if (! TypeHelper.IsNumeric(parameter))
+		        {
+		            throw new GuardParameterException(errorMessage);
+		        }
+		        else
+		        {
+		            if (TypeHelper.IsFloatingPointNumber(parameter))
+		            {
+		                milliseconds = Math.Round(1000d * Convert.ToDouble(parameter)) ;
+		            }
+		            else
+		            {
+		                milliseconds = 1000 * Convert.ToLong(parameter) ;
+		            }
+		        }
+			}
+		}
+		
         /// <summary>
         /// Constructs a guard instance.
         /// </summary>
         /// <param name="context">services for use by guard</param>
         /// <param name="quitable">to use for indicating the guard has quit</param>
         /// <returns>guard instance</returns>
-		public virtual Guard MakeGuard(PatternContext context, Quitable quitable)
+		public virtual Guard MakeGuard(PatternContext context,
+									   Quitable quitable,
+									   Object stateNodeId,
+									   Object guardState)
 		{
 			return new TimerWithinGuard(milliseconds, context, quitable);
 		}

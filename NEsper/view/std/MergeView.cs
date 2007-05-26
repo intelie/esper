@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using net.esper.compat;
 using net.esper.collection;
+using net.esper.core;
 using net.esper.events;
 using net.esper.view;
 
@@ -20,7 +21,9 @@ namespace net.esper.view.std
     /// back into the data.
     /// </summary>
 
-    public sealed class MergeView : ViewSupport, ParentAwareView, ContextAwareView
+    public sealed class MergeView
+		: ViewSupport
+		, CloneableView
     {
         /// <summary>
         /// Gets or sets the field name that contains the values to group by.
@@ -30,69 +33,32 @@ namespace net.esper.view.std
         public String[] GroupFieldNames
         {
             get { return groupFieldNames; }
-            set { this.groupFieldNames = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-        public ViewServiceContext ViewServiceContext
-        {
-            get { return viewServiceContext; }
-            set { this.viewServiceContext = value; }
-        }
+	    private readonly ELinkedList<View> parentViews = new ELinkedList<View>();
+		private readonly String[] groupFieldNames;
+		private readonly EventType eventType;
+		private readonly StatementContext statementContext;
 
-        /// <summary>
-        /// Returns types of fields used in the group-by.
-        /// </summary>
-        /// <value>The group field types.</value>
+	   /// <summary>Constructor.</summary>
+	   /// <param name="groupFieldNames">
+	   /// is the fields from which to pull the value to group by
+	   /// </param>
+	   /// <param name="resultEventType">
+	   /// is passed by the factory as the factory adds the merged fields to an event type
+	   /// </param>
+	   /// <param name="statementContext">contains required view services</param>
+	    public MergeView(StatementContext statementContext, String groupFieldNames[], EventType resultEventType)
+	    {
+	        this.groupFieldNames = groupFieldNames;
+	        this.eventType = resultEventType;
+	        this.statementContext = statementContext;
+	    }
 
-        public Type[] GroupFieldTypes
-        {
-            get { return groupFieldTypes; }
-        }
-
-        /// <summary>
-        /// Sets types of fields used in the group-by.
-        /// </summary>
-        /// <value>The type of the group field.</value>
-
-        public Type[] GroupFieldType
-        {
-            set { this.groupFieldTypes = value; }
-        }
-
-        private readonly ELinkedList<View> parentViews = new ELinkedList<View>();
-        private String[] groupFieldNames;
-        private Type[] groupFieldTypes;
-        private EventType eventType;
-        private ViewServiceContext viewServiceContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MergeView"/> class.
-        /// </summary>
-        public MergeView()
-        {
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="groupFieldName">is the field from which to pull the value to group by
-        /// </param>
-
-        public MergeView(String groupFieldName)
-        {
-            this.groupFieldNames = new String[] { groupFieldName };
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="groupFieldNames">is the fields from which to pull the value to group by
-        /// </param>
-
-        public MergeView(String[] groupFieldNames)
-        {
-            this.groupFieldNames = groupFieldNames;
-        }
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return new MergeView(statementContext, groupFieldNames, eventType);
+	    }
 
         /// <summary> Add a parent data merge view.</summary>
         /// <param name="parentView">is the parent data merge view to add
@@ -104,56 +70,6 @@ namespace net.esper.view.std
         }
 
         /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            // Attaches to just about anything
-            return null;
-        }
-
-        /// <summary>
-        /// Sets a flag indicating that the view must couple to parent views.
-        /// </summary>
-        /// <value></value>
-        public IList<View> ParentAware
-        {
-            set
-            {
-                // Find the group by view matching the merge view
-                View groupByView = null;
-                foreach (View parentView in value)
-                {
-                    if (!(parentView is GroupByView))
-                    {
-                        continue;
-                    }
-                    GroupByView candidateGroupByView = (GroupByView)parentView;
-                    if (ArrayHelper.AreEqual(candidateGroupByView.GroupFieldNames, this.GroupFieldNames))
-                    {
-                        groupByView = candidateGroupByView;
-                    }
-                }
-
-                if (groupByView == null)
-                {
-                    throw new SystemException("Group by view for this merge view could not be found among parent views");
-                }
-
-                groupFieldTypes = new Type[groupFieldNames.Length];
-                for (int i = 0; i < groupFieldTypes.Length; i++)
-                {
-                    groupFieldTypes[i] = groupByView.EventType.GetPropertyType(groupFieldNames[i]);
-                }
-                eventType = viewServiceContext.EventAdapterService.CreateAddToEventType(this.Parent.EventType, groupFieldNames, groupFieldTypes);
-            }
-        }
-
-        /// <summary>
         /// Provides metadata information about the type of object the event collection contains.
         /// </summary>
         /// <value></value>
@@ -162,15 +78,7 @@ namespace net.esper.view.std
         /// </returns>
         public override EventType EventType
         {
-            get
-            {
-                // The schema is the parent view's schema plus the added field
-                return eventType;
-            }
-            set
-            {
-                this.eventType = value;
-            }
+            get { return eventType ; }
         }
 
         /// <summary>

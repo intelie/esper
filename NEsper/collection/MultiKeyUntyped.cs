@@ -1,6 +1,7 @@
 using System;
 
 using net.esper.compat;
+using net.esper.util;
 
 namespace net.esper.collection
 {
@@ -8,7 +9,7 @@ namespace net.esper.collection
 	/// The class allows a Map that uses MultiKeyUntyped entries for key values to use multiple objects as keys.
 	/// It calculates the hashCode from the key objects on construction and caches the hashCode.
 	/// </summary>
-	public sealed class MultiKeyUntyped
+	public sealed class MultiKeyUntyped : MetaDefItem
 	{
 		/// <summary> Returns keys.</summary>
 		/// <returns> keys object array

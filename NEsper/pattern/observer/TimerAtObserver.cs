@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.core;
 using net.esper.pattern;
 using net.esper.schedule;
 
@@ -11,7 +12,9 @@ namespace net.esper.pattern.observer
     /// Observer implementation for indicating that a certain time arrived, similar to "crontab".
     /// </summary>
 
-    public class TimerAtObserver : EventObserver, ScheduleCallback
+    public class TimerAtObserver 
+		: EventObserver
+		, ScheduleHandleCallback
     {
         private readonly ScheduleSpec scheduleSpec;
         private readonly PatternContext context;
@@ -20,6 +23,7 @@ namespace net.esper.pattern.observer
         private readonly ObserverEventEvaluator observerEventEvaluator;
 
         private bool isTimerActive = false;
+		private EPStatementHandleCallback scheduleHandle;
 
         /// <summary> Ctor.</summary>
         /// <param name="scheduleSpec">specification containing the crontab schedule
@@ -42,7 +46,7 @@ namespace net.esper.pattern.observer
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public void ScheduledTrigger()
+        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
         {
             if (log.IsDebugEnabled)
             {
@@ -68,7 +72,8 @@ namespace net.esper.pattern.observer
                 throw new SystemException("Timer already active");
             }
 
-            context.SchedulingService.Add(scheduleSpec, this, scheduleSlot);
+	        scheduleHandle = new EPStatementHandleCallback(context.EpStatementHandle, this);
+	        context.SchedulingService.Add(scheduleSpec, scheduleHandle, scheduleSlot);
             isTimerActive = true;
         }
 
@@ -84,8 +89,9 @@ namespace net.esper.pattern.observer
 
             if (isTimerActive)
             {
-                context.SchedulingService.Remove(this, scheduleSlot);
-                isTimerActive = false;
+	            context.SchedulingService.Remove(scheduleHandle, scheduleSlot);
+	            isTimerActive = false;
+	            scheduleHandle = null;
             }
         }
 

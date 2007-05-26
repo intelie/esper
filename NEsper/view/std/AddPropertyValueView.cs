@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
+using net.esper.core;
 using net.esper.compat;
 using net.esper.events;
 using net.esper.view;
@@ -15,38 +16,39 @@ namespace net.esper.view.std
     /// This view simply adds a property to the events posted to it. This is useful for the group-merge views.
     /// </summary>
 
-    public sealed class AddPropertyValueView : ViewSupport, ContextAwareView
+    public sealed class AddPropertyValueView
+		: ViewSupport
+		, CloneableView
     {
-        private ViewServiceContext viewServiceContext;
-        private String[] propertyNames;
-        private Object[] propertyValues;
-        private EventType eventType;
-        private bool mustAddProperty;
+	    private readonly StatementContext statementContext;
+	    private readonly String[] propertyNames;
+	    private readonly Object[] propertyValues;
+	    private readonly EventType eventType;
+	    private bool mustAddProperty;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddPropertyValueView"/> class.
-        /// </summary>
-        public AddPropertyValueView()
-        {
-        }
+	    /// <summary>Constructor.</summary>
+	    /// <param name="fieldNames">
+	    /// is the name of the field that is added to any events received by this view.
+	    /// </param>
+	    /// <param name="mergeValues">
+	    /// is the values of the field that is added to any events received by this view.
+	    /// </param>
+	    /// <param name="mergedResultEventType">
+	    /// is the event type that the merge view reports to it's child views
+	    /// </param>
+	    /// <param name="statementContext">contains required view services</param>
+	    public AddPropertyValueView(StatementContext statementContext, String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
+	    {
+	        this.propertyNames = fieldNames;
+	        this.propertyValues = mergeValues;
+	        this.eventType = mergedResultEventType;
+	        this.statementContext = statementContext;
+	    }
 
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-        /// <returns> context instance</returns>
-        public ViewServiceContext ViewServiceContext
-        {
-            get
-            {
-                return viewServiceContext;
-            }
-
-            set
-            {
-                this.viewServiceContext = value;
-            }
-        }
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return new AddPropertyValueView(statementContext, propertyNames, propertyValues, eventType);
+	    }
 
         /// <summary>
         /// Sets the View's parent Viewable.
@@ -67,58 +69,17 @@ namespace net.esper.view.std
 
                 base.Parent = value;
 
-                if (parent == null)
-                {
-                    return;
-                }
-
-                // If the parent event type contains the merge fields, we use the same event type
-                if (parent.EventType.IsProperty(propertyNames[0]))
-                {
-                    mustAddProperty = false;
-                    eventType = parent.EventType;
-                }
-                // If the parent event type does not contain the event type (generates a map or such like the statistics views)
-                // then we need to add in the merge field as an event property thus changing event types.
-                else
-                {
-                    mustAddProperty = true;
-                    Type[] propertyValueTypes = new Type[propertyValues.Length];
-                    for (int i = 0; i < propertyValueTypes.Length; i++)
-                    {
-                        propertyValueTypes[i] = propertyValues[i].GetType();
-                    }
-                    eventType = viewServiceContext.EventAdapterService.CreateAddToEventType(
-                            parent.EventType, propertyNames, propertyValueTypes);
-                }
+		        if (parent.getEventType() != eventType)
+		        {
+		            mustAddProperty = true;
+		        }
+		        else
+		        {
+		            mustAddProperty = false;
+		        }
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AddPropertyValueView"/> class.
-        /// </summary>
-        /// <param name="fieldNames">is the name of the field that is added to any events received by this view.</param>
-        /// <param name="mergeValues">is the values of the field that is added to any events received by this view.</param>
-
-        public AddPropertyValueView(String[] fieldNames, Object[] mergeValues)
-        {
-            this.propertyNames = fieldNames;
-            this.propertyValues = mergeValues;
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentViewable)
-        {
-            // Attaches to all views
-            return null;
-        }
-        
         /// <summary>
         /// Gets or sets the field name for which to set the
         /// merge value for.
@@ -127,17 +88,15 @@ namespace net.esper.view.std
         public String[] PropertyNames
         {
         	get { return propertyNames; }
-        	set { propertyNames = value ; }
         }
 
         /// <summary>
         /// Gets or sets the value to set for the field
         /// </summary>
-        
+
         public Object[] PropertyValues
         {
         	get { return propertyValues; }
-        	set { propertyValues = value ; }
         }
 
         /// <summary>
@@ -179,7 +138,7 @@ namespace net.esper.view.std
                 int index = 0;
                 foreach (EventBean newEvent in newData)
                 {
-                    EventBean ev = AddProperty(newEvent, propertyNames, propertyValues, eventType, viewServiceContext.EventAdapterService);
+                    EventBean ev = AddProperty(newEvent, propertyNames, propertyValues, eventType, statementContext.EventAdapterService);
                     newEvents[index++] = ev;
                 }
             }
@@ -191,7 +150,7 @@ namespace net.esper.view.std
                 int index = 0;
                 foreach (EventBean oldEvent in oldData)
                 {
-                    EventBean ev = AddProperty(oldEvent, propertyNames, propertyValues, eventType, viewServiceContext.EventAdapterService);
+                    EventBean ev = AddProperty(oldEvent, propertyNames, propertyValues, eventType, statementContext.EventAdapterService);
                     oldEvents[index++] = ev;
                 }
             }
@@ -231,7 +190,7 @@ namespace net.esper.view.std
                         this.PropertyNames,
                         this.PropertyValues,
                         this.eventType,
-                        this.viewServiceContext.EventAdapterService);
+                        this.statementContext.EventAdapterService);
                     yield return ev;
                 }
                 else

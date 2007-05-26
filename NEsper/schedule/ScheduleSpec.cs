@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using net.esper.compat;
+using net.esper.util;
 
 namespace net.esper.schedule
 {
@@ -11,17 +12,17 @@ namespace net.esper.schedule
 	/// There is always an element in the specification for each unit minutes, hours, day of month, month, and day of week.
 	/// There is optionally an element in the specification for the unit seconds.
 	/// </summary>
-	public sealed class ScheduleSpec
+	public sealed class ScheduleSpec : MetaDefItem
 	{
 		// Per unit hold the set of valid integer values, or null if wildcarded.
 		// The seconds unit is optional.
-		private readonly EDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues;
+		private readonly EnumDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues;
 
 		/// <summary> Constructor - validates that all mandatory schedule.</summary>
 		/// <param name="unitValues">are the values for each minute, hour, day, month etc.
 		/// </param>
 		/// <throws>  ArgumentException - if validation of value set per unit fails </throws>
-		public ScheduleSpec( EDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues )
+		public ScheduleSpec( EnumDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues )
 		{
 			Validate( unitValues );
 
@@ -37,7 +38,7 @@ namespace net.esper.schedule
 
 		public ScheduleSpec()
 		{
-			unitValues = new EHashDictionary<ScheduleUnit, ETreeSet<Int32>>();
+			unitValues = new EnumDictionary<ScheduleUnit, ETreeSet<Int32>>();
 			unitValues[ScheduleUnit.MINUTES] = null;
 			unitValues[ScheduleUnit.HOURS] = null;
 			unitValues[ScheduleUnit.DAYS_OF_MONTH] = null;
@@ -49,7 +50,7 @@ namespace net.esper.schedule
 		/// <returns> map of 5 or 6 entries each with a set of integers
 		/// </returns>
 
-		public EDictionary<ScheduleUnit, ETreeSet<Int32>> UnitValues
+		public EnumDictionary<ScheduleUnit, ETreeSet<Int32>> UnitValues
 		{
 			get { return unitValues; }
 		}

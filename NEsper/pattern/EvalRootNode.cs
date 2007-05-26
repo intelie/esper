@@ -12,7 +12,9 @@ namespace net.esper.pattern
 	/// It hold the handle to the EPStatement implementation for notifying when matches are found.
 	/// </summary>
 
-	public sealed class EvalRootNode : EvalNode, PatternStarter
+	public sealed class EvalRootNode
+		: EvalNode
+		, PatternStarter
 	{
         /// <summary>
         /// Starts the specified callback.
@@ -22,10 +24,11 @@ namespace net.esper.pattern
         /// <returns></returns>
 		public StopCallback Start(PatternMatchCallback callback, PatternContext context)
 		{
-			MatchedEventMap beginState = new MatchedEventMap();
-			EvalRootStateNode rootState = (EvalRootStateNode) NewState(null, beginState, context);
+			MatchedEventMap beginState = new MatchedEventMapImpl();
+			EvalStateNode rootStateNode = NewState(null, beginState, context, null);
+			EvalRootState rootState = (EvalRootState) rootStateNode;
 			rootState.Callback = callback;
-			rootState.Start();
+			rootStateNode.Start();
 			return rootState.Stop;
 		}
 
@@ -39,7 +42,11 @@ namespace net.esper.pattern
         /// <returns>
         /// state node containing the truth value state for the operator
         /// </returns>
-		public override EvalStateNode NewState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context)
+		public override EvalStateNode NewState(
+			Evaluator parentNode,
+			MatchedEventMap beginState, 
+			PatternContext context,
+			Object stateNodeId)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -51,7 +58,7 @@ namespace net.esper.pattern
 				throw new SystemException("Expected number of child nodes incorrect, expected 1 child node, found " + ChildNodes.Count);
 			}
 			
-			return new EvalRootStateNode(this.ChildNodes[0], beginState, context);
+			return context.PatternStateFactory.MakeRootNode(this.ChildNodes[0], beginState);
 		}
 
         /// <summary>

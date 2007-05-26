@@ -11,7 +11,7 @@ namespace net.esper.view.window
 {
     /// <summary> View for a moving window extending the specified amount of time into the past, driven entirely by external timing
     /// supplied within long-type timestamp values in a field of the event beans that the view receives.
-    /// 
+    ///
     /// The view is completely driven by timestamp values that are supplied by the events it receives,
     /// and does not use the system time.
     /// It requires a field name as parameter for a field that returns ascending long-type timestamp values.
@@ -19,7 +19,7 @@ namespace net.esper.view.window
     /// Events are expected to provide long-type timestamp values in natural order. The view does
     /// itself not use the current system time for keeping track of the time window, but just the
     /// timestamp values supplied by the events sent in.
-    /// 
+    ///
     /// The arrival of new events with a newer timestamp then past events causes the window to be re-evaluated and the oldest
     /// events pushed out of the window. Ie. Assume event X1 with timestamp T1 is in the window.
     /// When event Xn with timestamp Tn arrives, and the window time length in milliseconds is t, then if
@@ -27,7 +27,10 @@ namespace net.esper.view.window
     /// events are sent in in their natural order and the timestamp values are ascending.
     /// </summary>
 
-    public sealed class ExternallyTimedWindowView : ViewSupport, DataWindowView
+    public sealed class ExternallyTimedWindowView
+		: ViewSupport
+		, DataWindowView
+		, CloneableView
     {
         /// <summary>
         /// Gets or sets the field name to get timestamp values from.
@@ -48,65 +51,47 @@ namespace net.esper.view.window
         public long MillisecondsBeforeExpiry
         {
             get { return millisecondsBeforeExpiry; }
-            set { this.millisecondsBeforeExpiry = value; }
         }
 
-        private String timestampFieldName;
-        private long millisecondsBeforeExpiry;
-        private EventPropertyGetter timestampFieldGetter;
+	    private readonly ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory;
+	    private readonly String timestampFieldName;
+	    private readonly long millisecondsBeforeExpiry;
+	    private EventPropertyGetter timestampFieldGetter;
 
-        private readonly TimeWindow timeWindow = new TimeWindow();
+	    private readonly TimeWindow timeWindow = new TimeWindow();
+	    private ViewUpdatedCollection viewUpdatedCollection;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExternallyTimedWindowView"/> class.
-        /// </summary>
-        public ExternallyTimedWindowView()
-        {
-        }
+	    /// <summary>Constructor.</summary>
+	    /// <param name="timestampFieldName">
+	    /// is the field name containing a long timestamp value
+	    /// that should be in ascending order for the natural order of events and is intended to reflect
+	    /// System.currentTimeInMillis but does not necessarily have to.
+	    /// </param>
+	    /// <param name="msecBeforeExpiry">
+	    /// is the number of milliseconds before events gets pushed
+	    /// out of the window as oldData in the update method. The view compares
+	    /// each events timestamp against the newest event timestamp and those with a delta
+	    /// greater then secondsBeforeExpiry are pushed out of the window.
+	    /// </param>
+	    /// <param name="viewUpdatedCollection">
+	    /// is a collection that the view must update when receiving events
+	    /// </param>
+	    /// <param name="externallyTimedWindowViewFactory">
+	    /// for copying this view in a group-by
+	    /// </param>
+	    public ExternallyTimedWindowView(ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory,
+	                                     String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
+	    {
+	        this.externallyTimedWindowViewFactory = externallyTimedWindowViewFactory;
+	        this.timestampFieldName = timestampFieldName;
+	        this.millisecondsBeforeExpiry = msecBeforeExpiry;
+	        this.viewUpdatedCollection = viewUpdatedCollection;
+	    }
 
-        /// <summary> Constructor.</summary>
-        /// <param name="timestampFieldName">is the field name containing a long timestamp value
-        /// </param>
-        /// <param name="secondsBeforeExpiry">is the number of seconds
-        /// </param>
-
-        public ExternallyTimedWindowView(String timestampFieldName, long secondsBeforeExpiry)
-            : this(timestampFieldName, (double)secondsBeforeExpiry)
-        {
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="timestampFieldName">is the field name containing a long timestamp value
-        /// that should be in ascending order for the natural order of events and is intended to reflect
-        /// System.currentTimeInMillis but does not necessarily have to.
-        /// </param>
-        /// <param name="secondsBeforeExpiry">is the number of seconds before events gets pushed
-        /// out of the window as oldData in the update method. The view compares
-        /// each events timestamp against the newest event timestamp and those with a delta
-        /// greater then secondsBeforeExpiry are pushed out of the window.
-        /// </param>
-
-        public ExternallyTimedWindowView(String timestampFieldName, double secondsBeforeExpiry)
-        {
-            this.timestampFieldName = timestampFieldName;
-            this.millisecondsBeforeExpiry = (long)System.Math.Round(secondsBeforeExpiry * 1000d);
-
-            if (millisecondsBeforeExpiry <= 0)
-            {
-                throw new ArgumentException("Externally timed window does not allow a zero or negative parameter for the millisecond window length");
-            }
-        }
-
-        /// <summary> Constructor - implemented via (String, long) constructor.</summary>
-        /// <param name="timestampFieldName">is the field name containing a long timestamp value
-        /// </param>
-        /// <param name="timePeriodParameter">is the number of milliseconds before events gets pushed
-        /// </param>
-
-        public ExternallyTimedWindowView(String timestampFieldName, TimePeriodParameter timePeriodParameter)
-            : this(timestampFieldName, timePeriodParameter.NumSeconds)
-        {
-        }
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return externallyTimedWindowViewFactory.MakeView(statementContext);
+	    }
 
         /// <summary>
         /// Gets or sets the View's parent viewable.
@@ -125,18 +110,6 @@ namespace net.esper.view.window
                     timestampFieldGetter = parent.EventType.GetGetter(timestampFieldName);
                 }
             }
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            return PropertyCheckHelper.CheckLong(parentView.EventType, timestampFieldName);
         }
 
         /// <summary>
@@ -194,23 +167,27 @@ namespace net.esper.view.window
 
             // Remove from the window any events that have an older timestamp then the last event's timestamp
             List<EventBean> expired = null;
-            if (timestamp != -1)
-            {
-                expired = timeWindow.ExpireEvents(timestamp - millisecondsBeforeExpiry);
-            }
+	        if (timestamp != -1)
+	        {
+	            expired = timeWindow.ExpireEvents(timestamp - millisecondsBeforeExpiry + 1);
+	        }
 
-            // If there are child views, fire update method
-            if (this.HasViews)
-            {
-                if ((expired != null) && (expired.Count > 0))
-                {
-                	UpdateChildren(newData, expired.ToArray()) ;
-                }
-                else
-                {
-                    UpdateChildren(newData, null);
-                }
-            }
+	        EventBean[] oldDataUpdate = null;
+	        if ((expired != null) && (!expired.IsEmpty))
+	        {
+	            oldDataUpdate = expired.ToArray();
+	        }
+
+	        if (viewUpdatedCollection != null)
+	        {
+	            viewUpdatedCollection.Update(newData, oldDataUpdate);
+	        }
+
+	        // If there are child views, fireStatementStopped update method
+	        if (this.HasViews)
+	        {
+	            UpdateChildren(newData, oldDataUpdate);
+	        }
         }
 
         /// <summary>
@@ -233,14 +210,23 @@ namespace net.esper.view.window
         public override String ToString()
         {
             return
-            	this.GetType().FullName + 
+            	this.GetType().FullName +
             	" timestampFieldName=" + timestampFieldName +
             	" millisecondsBeforeExpiry=" + millisecondsBeforeExpiry;
         }
 
-        private long getLongValue(EventBean obj)
+        private long GetLongValue(EventBean obj)
         {
         	return Convert.ToInt64( timestampFieldGetter.GetValue( obj ) ) ;
         }
-    }
+
+	   /// <summary>
+	   /// Returns true to indicate the window is empty, or false if the view is not empty.
+	   /// </summary>
+	   /// <returns>true if empty</returns>
+	    public bool IsEmpty
+	    {
+	        get { return timeWindow.IsEmpty; }
+	    }
+	}
 }

@@ -213,6 +213,28 @@ namespace net.esper.client
                         break;
                 }
             }
+			
+		    public override bool Equals(Object otherObj)
+		    {
+		        ConfigurationEventTypeXMLDOM other = otherObj as ConfigurationEventTypeXMLDOM;
+				if ( other == null )
+				{
+					return false ;
+				}
+				
+		        if (!(other.rootElementName.Equals(rootElementName)))
+		        {
+		            return false;
+		        }
+
+		        if (((other.rootElementNamespace == null) && (rootElementNamespace != null)) ||
+		            ((other.rootElementNamespace != null) && (rootElementNamespace == null)))
+		        {
+		            return false;
+		        }
+	            return rootElementNamespace == other.rootElementNamespace;
+		    }
+			
         }
     }
 }

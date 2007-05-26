@@ -7,7 +7,6 @@ using net.esper.events;
 
 namespace net.esper.filter
 {
-
     /// <summary> Implementation of the filter service interface.
     /// Does not allow the same filter callback to be added more then once.
     /// </summary>
@@ -45,7 +44,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="filterValueSet">The filter value set.</param>
         /// <param name="filterCallback">The filter callback.</param>
-        public void Add(FilterValueSet filterValueSet, FilterCallback filterCallback)
+        public void Add(FilterValueSet filterValueSet, FilterHandle filterCallback)
         {
             indexBuilder.Add(filterValueSet, filterCallback);
         }
@@ -54,7 +53,7 @@ namespace net.esper.filter
         /// Removes the specified filter callback.
         /// </summary>
         /// <param name="filterCallback">The filter callback.</param>
-        public void Remove(FilterCallback filterCallback)
+        public void Remove(FilterHandle filterCallback)
         {
             indexBuilder.Remove(filterCallback);
         }
@@ -63,23 +62,12 @@ namespace net.esper.filter
         /// Evaluates the specified event bean.
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
-        public void Evaluate(EventBean eventBean)
+        public void Evaluate(EventBean eventBean, ICollection<FilterHandle> matches)
         {
             Interlocked.Increment(ref numEventsEvaluated);
 
             // Finds all matching filters and return their callbacks
-            IList<FilterCallback> matches = new List<FilterCallback>();
             eventTypeIndex.MatchEvent(eventBean, matches);
-
-            if (matches.Count == 0)
-            {
-                return;
-            }
-
-            foreach (FilterCallback actionable in matches)
-            {
-                actionable.MatchFound(eventBean);
-            }
         }
     }
 }

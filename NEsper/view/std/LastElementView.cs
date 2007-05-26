@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.core;
 using net.esper.collection;
 using net.esper.events;
 using net.esper.view;
@@ -27,28 +28,17 @@ namespace net.esper.view.std
     /// new data from index zero to N-1, where N is the index of the last element in new data
     /// </summary>
 
-    public class LastElementView : ViewSupport
+    public class LastElementView
+		: ViewSupport
+		, CloneableView
     {
         /// <summary> The last new element posted from a parent view.</summary>
         internal EventBean lastEvent;
 
-        /// <summary> Constructor.</summary>
-        public LastElementView()
-        {
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            // Attaches to just about anything
-            return null;
-        }
+	    public View CloneView(StatementContext context)
+	    {
+	        return new LastElementView();
+	    }
 
         /// <summary>
         /// Provides metadata information about the type of object the event collection contains.
@@ -110,10 +100,10 @@ namespace net.esper.view.std
                 lastEvent = newData[newData.Length - 1];
             }
 
-            // If there are child views, fire update method
+            // If there are child views, fireStatementStopped update method
             if (this.HasViews)
             {
-                if (oldDataToPost.Count > 0)
+                if (!oldDataToPost.IsEmpty)
                 {
                 	UpdateChildren(newData, oldDataToPost.ToArray());
                 }
@@ -132,7 +122,7 @@ namespace net.esper.view.std
         /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return new SingleEventIterator(lastEvent);
+            yield return lastEvent;
         }
 
         /// <summary>

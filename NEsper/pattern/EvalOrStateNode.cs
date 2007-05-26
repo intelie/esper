@@ -12,40 +12,39 @@ namespace net.esper.pattern
     /// This class represents the state of a "or" operator in the evaluation state tree.
     /// </summary>
 
-    public sealed class EvalOrStateNode : EvalStateNode, Evaluator
+    public sealed class EvalOrStateNode 
+		: EvalStateNode
+		, Evaluator
     {
-        private readonly ELinkedList<EvalNode> orNodeChildNodes;
         private readonly IList<EvalStateNode> childNodes;
 
         /// <summary> Constructor.</summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value
         /// </param>
-        /// <param name="orNodeChildNodes">are the child nodes of the or-node
+        /// <param name="evalOrdNode">the factory node associated to the state
         /// </param>
         /// <param name="beginState">contains the events that make up prior matches
         /// </param>
         /// <param name="context">contains handles to services required
         /// </param>
-        public EvalOrStateNode(Evaluator parentNode,
-        ELinkedList<EvalNode> orNodeChildNodes,
-        MatchedEventMap beginState,
-        PatternContext context)
-            :
-                        base(parentNode)
+        public EvalOrStateNode( Evaluator parentNode,
+								EvalOrNode evalOrNode,
+								MatchedEventMap beginState,
+								PatternContext context)
+			: base(evalOrNode, parentNode, null)
         {
             if (log.IsDebugEnabled)
             {
                 log.Debug(".constructor");
             }
 
-            this.orNodeChildNodes = orNodeChildNodes;
             this.childNodes = new List<EvalStateNode>();
 
             // In an "or" expression we need to create states for all child expressions/listeners,
             // since all are going to be Started
-            foreach (EvalNode node in orNodeChildNodes)
+            foreach (EvalNode node in FactoryNode.ChildNodes)
             {
-                EvalStateNode childState = node.NewState(this, beginState, context);
+                EvalStateNode childState = node.NewState(this, beginState, context, null);
                 childNodes.Add(childState);
             }
         }
@@ -59,7 +58,7 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".Start Starting or-expression all children, size=" + orNodeChildNodes.Count);
+                log.Debug(".Start Starting or-expression all children, size=" + FactoryNode.ChildNodes.Count);
             }
 
             if (childNodes.Count != orNodeChildNodes.Count)
@@ -87,7 +86,7 @@ namespace net.esper.pattern
                 log.Debug(".evaluateTrue fromNode=" + fromNode.GetHashCode());
             }
 
-            // If one of the children quits, the whole or expression turns true and all subexpressions must guardQuit
+            // If one of the children quits, the whole or expression turns true and all subexpressions must quit
             if (isQuitted)
             {
                 childNodes.Remove(fromNode);
@@ -117,7 +116,7 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".guardQuit Stopping all children");
+                log.Debug(".quit Stopping all children");
             }
 
             foreach (EvalStateNode child in childNodes)

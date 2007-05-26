@@ -25,8 +25,8 @@ namespace net.esper.view.internals
         private readonly int streamId;
 
         private BufferObserver observer;
-        private EventBuffer newDataBuffer = new EventBuffer();
-        private EventBuffer oldDataBuffer = new EventBuffer();
+        private FlushedEventBuffer newDataBuffer = new FlushedEventBuffer();
+        private FlushedEventBuffer oldDataBuffer = new flushedEventBuffer();
 
         /// <summary> Ctor.</summary>
         /// <param name="streamId">number of the stream for which the view buffers the generated events.
@@ -59,19 +59,6 @@ namespace net.esper.view.internals
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return parent.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentViewable)
-        {
-            // This view attaches to any parent view
-            return null;
         }
 
         /// <summary>

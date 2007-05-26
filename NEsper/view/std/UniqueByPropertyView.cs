@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.core;
 using net.esper.compat;
 using net.esper.events;
 using net.esper.view;
@@ -25,7 +26,9 @@ namespace net.esper.view.std
     /// as the type plays the role of a key in a map storing unique values.
     /// </summary>
 
-    public sealed class UniqueByPropertyView : ViewSupport
+    public sealed class UniqueByPropertyView
+		: ViewSupport
+		, CloneableView
     {
         /// <summary>
         /// Gets or sets the name of the field supplying the unique value to keep the most recent record for.
@@ -35,21 +38,12 @@ namespace net.esper.view.std
         public String UniqueFieldName
         {
             get { return uniqueFieldName; }
-            set { this.uniqueFieldName = value; }
         }
 
-        private String uniqueFieldName;
+        private readonly String uniqueFieldName;
         private EventPropertyGetter uniqueFieldGetter;
 
         private readonly EDictionary<Object, EventBean> mostRecentEvents ;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UniqueByPropertyView"/> class.
-        /// </summary>
-        public UniqueByPropertyView()
-        {
-            this.mostRecentEvents = new LinkedDictionary<Object, EventBean>();
-        }
 
         /// <summary> Constructor.</summary>
         /// <param name="uniqueFieldName">is the field from which to pull the unique value
@@ -60,6 +54,11 @@ namespace net.esper.view.std
             this.mostRecentEvents = new LinkedDictionary<Object, EventBean>();
             this.uniqueFieldName = uniqueFieldName;
         }
+		
+		public View CloneView(StatementContext statementContext)
+		{
+			return new UniqueByPropertyView(uniqueFieldName);
+		}
 
         /// <summary>
         /// Gets or sets the View's parent Viewable.
@@ -77,19 +76,6 @@ namespace net.esper.view.std
                     uniqueFieldGetter = value.EventType.GetGetter(uniqueFieldName);
                 }
             }
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            // Attaches to just about anything as long as the field exists
-            return PropertyCheckHelper.Exists(parentView.EventType, uniqueFieldName);
         }
 
         /// <summary>
@@ -191,10 +177,10 @@ namespace net.esper.view.std
             }
 
 
-            // If there are child views, fire update method
+            // If there are child views, fireStatementStopped update method
             if (this.HasViews)
             {
-                if (postOldData.Count == 0)
+                if (postOldData.IsEmpty)
                 {
                     UpdateChildren(newData, null);
                 }

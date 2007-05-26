@@ -13,37 +13,36 @@ namespace net.esper.pattern
 
 	public sealed class EvalFollowedByStateNode : EvalStateNode, Evaluator
 	{
-		private readonly ELinkedList<EvalNode> childNodes;
 		private readonly Dictionary<EvalStateNode, Int32> nodes;
 		private readonly PatternContext context;
 
-		/// <summary> Constructor.</summary>
-		/// <param name="parentNode">is the parent evaluator to call to indicate truth value
-		/// </param>
-		/// <param name="childNodes">are the child nodes of the followed by node
-		/// </param>
-		/// <param name="beginState">contains the events that make up prior matches
-		/// </param>
-		/// <param name="context">contains handles to services required
-		/// </param>
+	    /**
+	     * Constructor.
+	     * @param parentNode is the parent evaluator to call to indicate truth value
+	     * @param beginState contains the events that make up prior matches
+	     * @param context contains handles to services required
+	     * @param evalFollowedByNode is the factory node associated to the state
+	     */
+	    public EvalFollowedByStateNode(Evaluator parentNode,
+	                                         EvalFollowedByNode evalFollowedByNode,
+	                                         MatchedEventMap beginState,
+	                                         PatternContext context)
+	    {
+	        super(evalFollowedByNode, parentNode, null);
 
-		public EvalFollowedByStateNode( Evaluator parentNode, ELinkedList<EvalNode> childNodes, MatchedEventMap beginState, PatternContext context )
-			: base( parentNode )
-		{
-			if ( log.IsDebugEnabled )
-			{
-				log.Debug( ".constructor" );
-			}
+	        if (log.IsDebugEnabled)
+	        {
+	            log.Debug(".constructor");
+	        }
 
-			this.nodes = new Dictionary<EvalStateNode, Int32>();
-			this.childNodes = childNodes;
-			this.context = context;
+	        this.nodes = new Dictionary<EvalStateNode, Int32>();
+	        this.context = context;
 
-			EvalNode child = childNodes[ 0 ];
-			EvalStateNode childState = child.NewState( this, beginState, context );
-			nodes[childState] = 0;
-		}
-
+	        EvalNode child = evalFollowedByNode.ChildNodes[0];
+	        EvalStateNode childState = child.NewState(this, beginState, context, null);
+	        nodes[childState] = 0;
+	    }
+		
         /// <summary>
         /// Starts the event expression or an instance of it.
         /// Child classes are expected to initialize and Start any event listeners
@@ -89,7 +88,7 @@ namespace net.esper.pattern
 			}
 
 			// If the match came from the very last filter, need to escalate
-			int numChildNodes = childNodes.Count;
+			int numChildNodes = FactoryNode.ChildNodes.Count;
 			if ( index == ( numChildNodes - 1 ) )
 			{
 				bool isFollowedByQuitted = false;
@@ -103,8 +102,8 @@ namespace net.esper.pattern
 			// Else Start a new listener for the next-in-line filter
 			else
 			{
-				EvalNode child = childNodes[ index + 1 ];
-				EvalStateNode childState = child.NewState( this, matchEvent, context );
+				EvalNode child = FactoryNode.ChildNodes[ index + 1 ];
+				EvalStateNode childState = child.NewState( this, matchEvent, context, null );
 				nodes[childState] = index + 1;
 				childState.Start();
 			}
@@ -116,7 +115,9 @@ namespace net.esper.pattern
         /// <param name="fromNode">is the node that indicates the change</param>
 		public void EvaluateFalse( EvalStateNode fromNode )
 		{
-			log.Debug( ".evaluateFalse" );
+	        log.Debug(".EvaluateFalse Child node has indicated permanently false");
+	        fromNode.Quit();
+	        nodes.Remove(fromNode);
 		}
 
         /// <summary>

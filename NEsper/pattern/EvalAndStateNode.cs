@@ -9,12 +9,13 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 namespace net.esper.pattern
 {
     /// <summary>
-    /// This class represents the state of a "and" operator in the evaluation state tree.
+	/// This class represents the state of an "and" operator in the evaluation state tree.
     /// </summary>
 
-    public sealed class EvalAndStateNode : EvalStateNode, Evaluator
+    public sealed class EvalAndStateNode 
+		: EvalStateNode
+		, Evaluator
     {
-        private readonly ELinkedList<EvalNode> childNodes;
         private readonly IList<EvalStateNode> activeChildNodes;
         private EDictionary<EvalStateNode, IList<MatchedEventMap>> eventsPerChild;
 
@@ -22,15 +23,15 @@ namespace net.esper.pattern
         /// Initializes a new instance of the <see cref="EvalAndStateNode"/> class.
         /// </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
-        /// <param name="childNodes">is the and-nodes child nodes</param>
+        /// <param name="evalAndNode">is the factory node associated to the state</param>
         /// <param name="beginState">contains the events that make up prior matches</param>
         /// <param name="context">contains handles to services required</param>
 
         public EvalAndStateNode(Evaluator parentNode,
-                                      ELinkedList<EvalNode> childNodes,
-                                      MatchedEventMap beginState,
-                                      PatternContext context)
-            : base(parentNode)
+                                EvalAndNode evalAndNode,
+								MatchedEventMap beginState,
+								PatternContext context)
+            : base(evalAndNode, parentNode, null)
         {
             if (log.IsDebugEnabled)
             {
@@ -42,9 +43,9 @@ namespace net.esper.pattern
             this.eventsPerChild = new EHashDictionary<EvalStateNode, IList<MatchedEventMap>>();
 
             // In an "and" expression we need to create a state for all child listeners
-            foreach (EvalNode node in childNodes)
+            foreach (EvalNode node in evalAndNode.ChildNodes)
             {
-                EvalStateNode childState = node.NewState(this, beginState, context);
+                EvalStateNode childState = node.NewState(this, beginState, context, null);
                 activeChildNodes.Add(childState);
             }
         }
@@ -58,12 +59,12 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".Start Starting and-expression all children, size=" + childNodes.Count);
+                log.Debug(".Start Starting and-expression all children, size=" + FactoryNode.ChildNodes.Count);
             }
 
             if (activeChildNodes.Count < 2)
             {
-                throw new IllegalStateException("EVERY state node is inactive");
+                throw new IllegalStateException("AND state node is inactive");
             }
 
             // Start all child nodes
@@ -102,7 +103,7 @@ namespace net.esper.pattern
             eventList.Add(matchEvent);
 
             // If all nodes have events received, the AND expression turns true
-            if (eventsPerChild.Count < childNodes.Count)
+            if (eventsPerChild.Count < FactoryNode.ChildNodes.Count)
             {
                 return;
             }
@@ -111,7 +112,7 @@ namespace net.esper.pattern
             IList<MatchedEventMap> result = GenerateMatchEvents(matchEvent, fromNode, eventsPerChild);
 
             // Check if this is quitting
-            Boolean quitted = (activeChildNodes.Count == 0);
+            bool quitted = (activeChildNodes.Count == 0);
             if (quitted)
             {
                 Quit();
@@ -211,7 +212,7 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".guardQuit Stopping all children");
+                log.Debug(".Quit Stopping all children");
             }
 
             foreach (EvalStateNode child in activeChildNodes)

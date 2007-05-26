@@ -11,7 +11,7 @@ namespace net.esper.filter
         /// <returns> low endpoint
         /// </returns>
 
-        public double Min
+        public double? Min
         {
             get { return min; }
         }
@@ -20,13 +20,13 @@ namespace net.esper.filter
         /// <returns> high endpoint
         /// </returns>
 
-        public double Max
+        public double? Max
         {
             get { return max; }
         }
 
-        private double min;
-        private double max;
+        private double? min;
+        private double? max;
         private int hashCode;
 
         /// <summary> Constructor - takes range endpoints.</summary>
@@ -34,18 +34,29 @@ namespace net.esper.filter
         /// </param>
         /// <param name="max">is the high endpoint
         /// </param>
-        public DoubleRange(double min, double max)
+        public DoubleRange(double? min, double? max)
         {
             this.min = min;
             this.max = max;
 
-            if (min > max)
-            {
-                this.max = min;
-                this.min = max;
-            }
+	        if ((min != null) && (max != null))
+	        {
+	            if (min > max)
+	            {
+	                this.max = min;
+	                this.min = max;
+	            }
+	        }
 
-            hashCode = ((Double)min).GetHashCode() ^ ((Double)max).GetHashCode();
+	        hashCode = 7;
+	        if (min != null)
+	        {
+	            hashCode = hashCode ^ min.GetHashCode();
+	        }
+	        if (max != null)
+	        {
+	            hashCode = hashCode ^ max.GetHashCode();
+	        }
         }
 
         /// <summary>

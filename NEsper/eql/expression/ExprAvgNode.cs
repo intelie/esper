@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.eql.agg;
 using net.esper.eql.core;
 
 namespace net.esper.eql.expression

@@ -15,7 +15,7 @@ namespace net.esper.filter
 
     public class EventTypeIndexBuilder
     {
-        private readonly EDictionary<FilterCallback, Pair<EventType, IndexTreePath>> callbacks;
+        private readonly EDictionary<FilterHandle, Pair<EventType, IndexTreePath>> callbacks;
         private readonly Object callbacksLock;
         private readonly EventTypeIndex eventTypeIndex;
 
@@ -26,7 +26,7 @@ namespace net.esper.filter
         public EventTypeIndexBuilder(EventTypeIndex eventTypeIndex)
         {
             this.eventTypeIndex = eventTypeIndex;
-            this.callbacks = new EHashDictionary<FilterCallback, Pair<EventType, IndexTreePath>>();
+            this.callbacks = new EHashDictionary<FilterHandle, Pair<EventType, IndexTreePath>>();
             this.callbacksLock = new Object();
         }
 
@@ -37,12 +37,12 @@ namespace net.esper.filter
         /// </param>
         /// <param name="filterCallback">is the callback
         /// </param>
-        public void Add(FilterValueSet filterValueSet, FilterCallback filterCallback)
+        public void Add(FilterValueSet filterValueSet, FilterHandle filterCallback)
         {
             EventType eventType = filterValueSet.EventType;
 
             // Check if a filter tree exists for this event type
-            FilterCallbackSetNode rootNode = eventTypeIndex[eventType];
+            FilterHandleSetNode rootNode = eventTypeIndex[eventType];
 
             // Make sure we have a root node
             if (rootNode == null)
@@ -51,7 +51,7 @@ namespace net.esper.filter
                 rootNode = eventTypeIndex[eventType];
                 if (rootNode == null)
                 {
-                    rootNode = new FilterCallbackSetNode();
+                    rootNode = new FilterHandleSetNode();
                     eventTypeIndex.Add(eventType, rootNode);
                 }
                 Monitor.Exit( callbacksLock );
@@ -78,7 +78,7 @@ namespace net.esper.filter
         /// <summary> Remove a filter callback from the given index node.</summary>
         /// <param name="filterCallback">is the callback to remove
         /// </param>
-        public void Remove(FilterCallback filterCallback)
+        public void Remove(FilterHandle filterCallback)
         {
             Monitor.Enter( callbacksLock );
             Pair<EventType, IndexTreePath> pair = callbacks.Fetch( filterCallback, null ) ;
@@ -89,7 +89,7 @@ namespace net.esper.filter
                 throw new ArgumentException("Filter callback to be removed not found");
             }
 
-            FilterCallbackSetNode rootNode = eventTypeIndex[pair.First];
+            FilterHandleSetNode rootNode = eventTypeIndex[pair.First];
 
             // Now remove from tree
             IndexTreeBuilder treeBuilder = new IndexTreeBuilder();

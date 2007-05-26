@@ -17,7 +17,7 @@ namespace net.esper.events.xml
 		/// <summary>
 		/// Returns the XPathConstants type for a given Xerces type definition.
 		/// </summary>
-		/// <param name="definition">The definition.</param>
+		/// <param name="definition">the schema element definition.</param>
 		/// <returns>XPathConstants type</returns>
 		
 		public static XmlQualifiedName SimpleTypeToQName(XmlSchemaSimpleType definition)

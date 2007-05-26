@@ -24,23 +24,17 @@ namespace net.esper.filter
             this.doubleValue = doubleValue;
         }
 
-        /// <summary>
-        /// Check the type against the map of event tag and type.
-        /// </summary>
-        /// <param name="taggedEventTypes">map of event tags and types</param>
-        public void CheckType(EDictionary<String, EventType> taggedEventTypes)
-        {
-            return;
-        }
+	    public double GetFilterValue(MatchedEventMap matchedEvents)
+	    {
+	        return doubleValue;
+	    }
 
         /// <summary>
-        /// Returns the filter value representing the endpoint.
-        /// </summary>
-        /// <param name="matchedEvents">is the prior results</param>
-        /// <returns>filter value</returns>
-        public double GetFilterValue(MatchedEventMap matchedEvents)
+        /// Returns the constant value.
+		/// </summary>
+        public double DoubleValue
         {
-            return doubleValue;
+            get { return doubleValue; }
         }
 
         /// <summary>

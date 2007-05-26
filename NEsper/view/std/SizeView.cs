@@ -15,49 +15,21 @@ namespace net.esper.view.std
     /// to the base statistics COUNT column.
     /// </summary>
 
-    public sealed class SizeView : ViewSupport, ContextAwareView
+    public sealed class SizeView
+		: ViewSupport
+		, CloneableView
     {
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-        public ViewServiceContext ViewServiceContext
-        {
-            get { return viewServiceContext; }
-            set
-            {
-                this.viewServiceContext = value;
-
-                EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
-                schemaMap[ViewFieldEnum.SIZE_VIEW__SIZE.Name] =  typeof(long);
-                eventType = value.EventAdapterService.CreateAnonymousMapType(schemaMap);
-            }
-        }
-
-        private ViewServiceContext viewServiceContext;
+        private StatementContext statementContext;
         private EventType eventType;
         private long size = 0;
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-
-        public SizeView()
-        {
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            // Attaches to just about anything
-            return null;
-        }
+	    /// <summary>Ctor.</summary>
+	    /// <param name="statementContext">is services</param>
+	    public SizeView(StatementContext statementContext)
+	    {
+	        this.statementContext = statementContext;
+	        this.eventType = createEventType(statementContext);
+	    }
 
         /// <summary>
         /// Provides metadata information about the type of object the event collection contains.
@@ -104,7 +76,7 @@ namespace net.esper.view.std
                 size -= oldData.Length;
             }
 
-            // If there are child views, fire update method
+            // If there are child views, fireStatementStopped update method
             if ((this.HasViews) && (priorSize != size))
             {
                 EDataDictionary postNewData = new EDataDictionary();
@@ -112,7 +84,7 @@ namespace net.esper.view.std
 
                 EDataDictionary postOldData = new EDataDictionary();
                 postOldData[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = priorSize;
-                UpdateChildren(new EventBean[] { viewServiceContext.EventAdapterService.CreateMapFromValues(postNewData, eventType) }, new EventBean[] { viewServiceContext.EventAdapterService.CreateMapFromValues(postOldData, eventType) });
+                UpdateChildren(new EventBean[] { statementContext.EventAdapterService.CreateMapFromValues(postNewData, eventType) }, new EventBean[] { statementContext.EventAdapterService.CreateMapFromValues(postOldData, eventType) });
             }
         }
 
@@ -126,7 +98,7 @@ namespace net.esper.view.std
         {
             EDataDictionary current = new EDataDictionary();
             current[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = size;
-            return new SingleEventIterator(viewServiceContext.EventAdapterService.CreateMapFromValues(current, eventType));
+            yield return new statementContext.EventAdapterService.CreateMapFromValues(current, eventType);
         }
 
         /// <summary>
@@ -139,5 +111,15 @@ namespace net.esper.view.std
         {
             return this.GetType().FullName;
         }
+
+		/// <summary>Creates the event type for this view</summary>
+		/// <param name="statementContext">is the event adapter service</param>
+		/// <returns>event type for view</returns>
+	    protected static EventType CreateEventType(StatementContext statementContext)
+	    {
+	        EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
+	        schemaMap.put(ViewFieldEnum.SIZE_VIEW__SIZE.Name, typeof(long));
+	        return statementContext.EventAdapterService.CreateAnonymousMapType(schemaMap);
+	    }
     }
 }

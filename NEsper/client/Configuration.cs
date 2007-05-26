@@ -35,7 +35,7 @@ namespace net.esper.client
     /// <tt>esper-configuration-1.0.xsd</tt>.
     /// </para>
     /// </summary>
-    public class Configuration
+    public class Configuration : ConfigurationOperations
     {
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -72,15 +72,47 @@ namespace net.esper.client
         /// <summary> True until the user calls addAutoImport().</summary>
         private bool isUsingDefaultImports = true;
 
+		/// <summary>Optional classname to use for constructing services context.</summary>
+		protected String epServicesContextFactoryClassName;
+
+		/// <summary>List of configured plug-in views.</summary>
+		protected List<ConfigurationPlugInView> plugInViews;
+
+		/// <summary>List of configured plug-in pattern objects.</summary>
+		protected List<ConfigurationPlugInPatternObject> plugInPatternObjects;
+
+		/// <summary>List of configured plug-in aggregation functions.</summary>
+		protected IList<ConfigurationPlugInAggregationFunction> plugInAggregationFunctions;
+
+		/// <summary>List of adapter loaders.</summary>
+		protected IList<ConfigurationAdapterLoader> adapterLoaders;
+		
         /// <summary> Constructs an empty configuration. The auto import values
-        /// are set by default to java.lang, java.math, java.text and
-        /// java.util.
+        /// are set to System, System.Collections and System.Text
         /// </summary>
 
         public Configuration()
         {
             Reset();
         }
+		
+	    /// <summary>
+		/// Gets or sets the service context factory type name
+		/// </summary>
+
+	    public String EPServicesContextFactoryClassName
+	    {
+	        get { return epServicesContextFactoryClassName; }
+			set { epServicesContextFactoryClassName = value ; }
+	    }
+
+	    public void AddPlugInAggregationFunction(String functionName, String aggregationClassName)
+	    {
+	        ConfigurationPlugInAggregationFunction entry = new ConfigurationPlugInAggregationFunction();
+	        entry.FunctionClassName = aggregationClassName;
+	        entry.Name = functionName;
+	        plugInAggregationFunctions.Add(entry);
+	    }
 
         /// <summary> Add an alias for an event type represented by Java-bean plain-old Java object events.</summary>
         /// <param name="eventTypeAlias">is the alias for the event type
@@ -212,6 +244,96 @@ namespace net.esper.client
         {
             get { return databaseReferences; }
         }
+		
+		/// <summary>Returns a list of configured plug-in views.</summary>
+		/// <returns>list of plug-in view configs</returns>
+
+	    public IList<ConfigurationPlugInView> PlugInViews
+	    {
+	        get { return plugInViews; }
+	    }
+
+		/// <summary>Returns a list of configured adapter loaders.</summary>
+		/// <returns>adapter loaders</returns>
+
+	    public IList<ConfigurationAdapterLoader> AdapterLoaders
+	    {
+	        get { return adapterLoaders; }
+		}
+
+		/// <summary>Returns a list of configured plug-in aggregation functions.</summary>
+		/// <returns>list of configured aggregations</returns>
+
+	    public IList<ConfigurationPlugInAggregationFunction> PlugInAggregationFunctions
+	    {
+	        get { return plugInAggregationFunctions; }
+	    }
+
+		/// <summary>Returns a list of configured plug-ins for pattern observers and guards.</summary>
+		/// <returns>list of pattern plug-ins</returns>
+
+	    public IList<ConfigurationPlugInPatternObject> PlugInPatternObjects
+	    {
+	        get { return plugInPatternObjects; }
+	    }
+
+		/// <summary>Add an input/output adapter loader.</summary>
+		/// <param name="loaderName">is the name of the loader</param>
+		/// <param name="className">is the fully-qualified classname of the loader class</param>
+		/// <param name="configuration">is loader cofiguration entries</param>
+
+	    public void AddAdapterLoader(String loaderName, String className, Properties configuration)
+	    {
+	        ConfigurationAdapterLoader adapterLoader = new ConfigurationAdapterLoader();
+	        adapterLoader.LoaderName = loaderName;
+	        adapterLoader.ClassName = className;
+	        adapterLoader.ConfigProperties = configuration ;
+	        adapterLoaders.Add(adapterLoader);
+	    }
+
+		/// <summary>Add a view for plug-in.</summary>
+		/// <param name="_namespace">is the namespace the view should be available under</param>
+		/// <param name="name">is the name of the view</param>
+		/// <param name="viewFactoryClass">is the view factory class to use</param>
+
+	    public void AddPlugInView(String _namespace, String name, String viewFactoryClass)
+	    {
+	        ConfigurationPlugInView configurationPlugInView = new ConfigurationPlugInView();
+	        configurationPlugInView.Namespace = _namespace ;
+	        configurationPlugInView.Name = name;
+	        configurationPlugInView.FactoryClassName = viewFactoryClass;
+	        plugInViews.Add(configurationPlugInView);
+	    }
+
+		/// <summary>Add a pattern event observer for plug-in.</summary>
+		/// <param name="_namespace">is the namespace the observer should be available under</param>
+		/// <param name="name">is the name of the observer</param>
+		/// <param name="observerFactoryClass">is the observer factory class to use</param>
+
+	    public void AddPlugInPatternObserver(String _namespace, String name, String observerFactoryClass)
+	    {
+	        ConfigurationPlugInPatternObject entry = new ConfigurationPlugInPatternObject();
+	        entry.Namespace = _namespace;
+	        entry.Name = name;
+	        entry.FactoryClassName = observerFactoryClass;
+	        entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectType.OBSERVER;
+	        plugInPatternObjects.Add(entry);
+	    }
+
+		/// <summary>Add a pattern guard for plug-in.</summary>
+		/// <param name="namespace">is the namespace the guard should be available under</param>
+		/// <param name="name">is the name of the guard</param>
+		/// <param name="guardFactoryClass">is the guard factory class to use</param>
+
+	    public void AddPlugInPatternGuard(String _namespace, String name, String guardFactoryClass)
+	    {
+	        ConfigurationPlugInPatternObject entry = new ConfigurationPlugInPatternObject();
+	        entry.Namespace = _namespace;
+	        entry.Name = name;
+	        entry.FactoryClassName = guardFactoryClass;
+	        entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectType.GUARD;
+	        plugInPatternObjects.Add(entry);
+	    }
 
         /// <summary> Use the configuration specified in an application
         /// resource named <tt>esper.cfg.xml</tt>.
@@ -259,7 +381,7 @@ namespace net.esper.client
         /// <returns> input stream for resource
         /// </returns>
         /// <throws>  EPException thrown to indicate error reading configuration </throws>
-        internal virtual Stream GetConfigurationInputStream(String resource)
+        internal static Stream GetConfigurationInputStream(String resource)
         {
             log.Debug("Configuration resource: " + resource);
             return GetResourceAsStream(resource);
@@ -381,6 +503,10 @@ namespace net.esper.client
             imports = new List<String>();
             AddDefaultImports();
             isUsingDefaultImports = true;
+	        plugInViews = new List<ConfigurationPlugInView>();
+	        adapterLoaders = new List<ConfigurationAdapterLoader>();
+	        plugInAggregationFunctions = new List<ConfigurationPlugInAggregationFunction>();
+	        plugInPatternObjects = new List<ConfigurationPlugInPatternObject>();
         }
 
         /// <summary>

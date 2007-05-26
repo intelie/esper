@@ -35,7 +35,7 @@ namespace net.esper.events.xml
 			AST ast = Parse(propertyName);
 			
 			StringBuilder xPathBuf = new StringBuilder();
-			xPathBuf.Append("/");
+			xPathBuf.Append('/');
 			xPathBuf.Append(rootElementName);
 			
 			if (ast.getNumberOfChildren() == 1)

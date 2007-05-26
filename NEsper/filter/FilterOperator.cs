@@ -35,7 +35,21 @@ namespace net.esper.filter
         RANGE_HALF_OPEN,
         /// <summary> Range includes high endpoint but not low endpoint, i.e. (a,b]</summary>
         RANGE_HALF_CLOSED
-    };
+	    /// <summary> Inverted-Range contains neither endpoint, i.e. (a,b)</summary>
+	    NOT_RANGE_OPEN,
+	    /// <summary> Inverted-Range contains low and high endpoint, i.e. [a,b]</summary>
+	    NOT_RANGE_CLOSED,
+	    /// <summary> Inverted-Range includes low endpoint but not high endpoint, i.e. [a,b)</summary>
+	    NOT_RANGE_HALF_OPEN,
+	    /// <summary> Inverted-Range includes high endpoint but not low endpoint, i.e. (a,b]</summary>
+	    NOT_RANGE_HALF_CLOSED,
+	    /// <summary> List of values using the 'in' operator</summary>
+	    IN_LIST_OF_VALUES,
+	    /// <summary> Not-in list of values using the 'not in' operator</summary>
+	    NOT_IN_LIST_OF_VALUES,
+	    /// <summary> Boolean expression filter operator</summary>
+	    BOOLEAN_EXPRESSION
+   };
 
     /// <summary>
     /// Contains static methods useful for help with FilterOperators.
@@ -50,7 +64,7 @@ namespace net.esper.filter
         private const String GREATER_OP = ">";
         private const String GREATER_EQUAL_OP = ">=";
 
-        /// <summary> Returns true for range operator, false if not a range operator.</summary>
+        /// <summary> Returns true for all range operators, false if not a range operator.</summary>
         /// <returns> true for ranges, false for anyting else
         /// </returns>
         public static bool IsRangeOperator( FilterOperator op )
@@ -64,6 +78,22 @@ namespace net.esper.filter
             }
             return false;
         }
+		
+	    /**
+	     * Returns true for inverted range operators, false if not an inverted range operator.
+	     * @return true for inverted ranges, false for anyting else
+	     */
+	    public static bool IsInvertedRangeOperator( FilterOperator op )
+	    {
+	        if ((op == FilterOperator.NOT_RANGE_CLOSED) ||
+	            (op == FilterOperator.NOT_RANGE_OPEN) ||
+	            (op == FilterOperator.NOT_RANGE_HALF_OPEN) ||
+	            (op == FilterOperator.NOT_RANGE_HALF_CLOSED))
+	        {
+	            return true;
+	        }
+	        return false;
+	    }
 
         /// <summary> Returns true for relational comparison operators which excludes the = equals operator, else returns false.</summary>
         /// <returns> true for lesser or greater -type operators, false for anyting else
@@ -81,7 +111,7 @@ namespace net.esper.filter
         }
 
         /// <summary> Parse the comparison operator returning null if not a valid operator.</summary>
-        /// <param name="op">
+        /// <param name="op">is the lesser then or other compare op
         /// </param>
         /// <returns> FilterOperator or null if not valid
         /// </returns>
@@ -121,22 +151,47 @@ namespace net.esper.filter
         /// </returns>
         public static FilterOperator ParseRangeOperator(bool isInclusiveFirst, bool isInclusiveLast)
         {
-            if (isInclusiveFirst && isInclusiveLast)
-            {
-                return FilterOperator.RANGE_CLOSED;
-            }
-            
-            if (isInclusiveFirst && !isInclusiveLast)
-            {
-                return FilterOperator.RANGE_HALF_OPEN;
-            }
-            
-            if (isInclusiveLast)
-            {
-                return FilterOperator.RANGE_HALF_CLOSED;
-            }
-            
-            return FilterOperator.RANGE_OPEN;
+			if (isInclusiveFirst && isInclusiveLast)
+			{
+				if (isNot)
+				{
+					return FilterOperator.NOT_RANGE_CLOSED;
+				}
+				else
+				{
+					return FilterOperator.RANGE_CLOSED;
+				}
+			}
+			if (isInclusiveFirst && !isInclusiveLast)
+			{
+				if (isNot)
+				{
+					return FilterOperator.NOT_RANGE_HALF_OPEN;
+				}
+				else
+				{
+					return FilterOperator.RANGE_HALF_OPEN;
+				}
+			}
+			if (isInclusiveLast)
+			{
+				if (isNot)
+				{
+					return FilterOperator.NOT_RANGE_HALF_CLOSED;
+				}
+				else
+				{
+					return FilterOperator.RANGE_HALF_CLOSED;
+				}
+			}
+			if (isNot)
+			{
+				return FilterOperator.NOT_RANGE_OPEN;
+			}
+			else
+			{
+				return FilterOperator.RANGE_OPEN;
+			}
         }
     }
 }

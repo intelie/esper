@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.core;
 using net.esper.pattern;
 using net.esper.schedule;
 
@@ -10,7 +11,9 @@ namespace net.esper.pattern.observer
     /// true (raising an event).
     /// </summary>
 
-    public class TimerIntervalObserver : EventObserver, ScheduleCallback
+    public class TimerIntervalObserver 
+		: EventObserver
+		, ScheduleHandleCallback
     {
         private readonly long msec;
         private readonly PatternContext context;
@@ -19,6 +22,7 @@ namespace net.esper.pattern.observer
         private readonly ScheduleSlot scheduleSlot;
 
         private bool isTimerActive = false;
+		private EPStatementHandleCallback scheduleHandle;
 
         /// <summary> Ctor.</summary>
         /// <param name="msec">number of milliseconds
@@ -41,7 +45,7 @@ namespace net.esper.pattern.observer
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public void ScheduledTrigger()
+        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
         {
             observerEventEvaluator.ObserverEvaluateTrue(beginState);
             isTimerActive = false;
@@ -63,7 +67,8 @@ namespace net.esper.pattern.observer
             }
             else
             {
-                context.SchedulingService.Add(msec, this, scheduleSlot);
+	            scheduleHandle = new EPStatementHandleCallback(context.EpStatementHandle, this);
+	            context.SchedulingService.Add(msec, scheduleHandle, scheduleSlot);
                 isTimerActive = true;
             }
         }
@@ -75,8 +80,9 @@ namespace net.esper.pattern.observer
         {
             if (isTimerActive)
             {
-                context.SchedulingService.Remove(this, scheduleSlot);
+                context.SchedulingService.Remove(scheduleHandle, scheduleSlot);
                 isTimerActive = false;
+				scheduleHandle = null;
             }
         }
     }

@@ -160,7 +160,13 @@ namespace net.esper.collection
         
         public IEnumerator<EventBean> GetEnumerator()
         {
-            return new TimeWindowIterator(window);
+			foreach( Pair<Int64, List<EventBean>> pair in window )
+			{
+				foreach( EventBean eventBean in pair.Value )
+				{
+					yield return eventBean ;
+				}
+			}
         }
 
         #region IEnumerable Members

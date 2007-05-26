@@ -13,28 +13,15 @@ namespace net.esper.pattern
 	/// matching event objects into this collection.
 	/// </summary>
 
-	public sealed class MatchedEventMap
+	public interface MatchedEventMap
 	{
-		private EDictionary<String, EventBean> events = new EHashDictionary<String, EventBean>();
-		
-		/// <summary>
-		/// Constructor creates an empty collection of events.
-		/// </summary>
-		
-		public MatchedEventMap()
-		{
-		}
-
 		/// <summary>
 		/// Add an event to the collection identified by the given tag.
 		/// </summary>
 		/// <param name="tag">is an identifier to retrieve the event from</param>
 		/// <param name="eventBean">is the event object to be added</param>
 		
-		public void Add(String tag, EventBean eventBean)
-		{
-			events.Put(tag, eventBean);
-		}
+		void Add(String tag, EventBean eventBean);
 		
 		/// <summary> Returns a Hashtable containing the events where the key is the event tag string and the value is the event
 		/// instance.
@@ -42,10 +29,7 @@ namespace net.esper.pattern
 		/// <returns> Hashtable containing event instances
 		/// </returns>
 
-		public EDictionary<String, EventBean> GetMatchingEvents()
-		{
-			return events;
-		}
+		EDictionary<String, EventBean> GetMatchingEvents();
 		
 		/// <summary> Returns a single event instance given the tag identifier, or null if the tag could not be located.</summary>
 		/// <param name="tag">is the identifier to look for
@@ -53,99 +37,13 @@ namespace net.esper.pattern
 		/// <returns> event instances for the tag
 		/// </returns>
 		
-		public EventBean GetMatchingEvent(String tag)
-		{
-			return events.Fetch(tag);
-		}
-
-        /// <summary>
-        /// Returns true if this object is equal to the other object.
-        /// </summary>
-        /// <param name="otherObject">The other object.</param>
-        /// <returns></returns>
-		public override bool Equals(Object otherObject)
-		{
-			if (otherObject == this)
-			{
-				return true;
-			}
-			
-			if (otherObject == null)
-			{
-				return false;
-			}
-			
-			if (GetType() != otherObject.GetType())
-			{
-				return false;
-			}
-			
-			MatchedEventMap other = (MatchedEventMap) otherObject;
-			
-			if (events.Count != other.events.Count)
-			{
-				return false;
-			}
-			
-			// Compare entry by entry
-
-			foreach( KeyValuePair<String, EventBean> entry in events )
-			{
-				String tag = entry.Key;
-				EventBean eventBean = entry.Value;
-				
-				if (other.GetMatchingEvent(tag) != eventBean)
-				{
-					return false;
-				}
-			}
-			
-			return true;
-		}
-
-        /// <summary>
-        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
-        /// </returns>
-		public override String ToString()
-		{
-			StringBuilder buffer = new StringBuilder();
-			int count = 0;
-
-			foreach ( KeyValuePair<String, EventBean> entry in events )
-			{
-				buffer.Append(" (" + (count++) + ") ");
-				buffer.Append("tag=" + entry.Key);
-				buffer.Append("  event=" + entry.Value);
-			}
-			
-			return buffer.ToString();
-		}
-
-        /// <summary>
-        /// Serves as a hash function for a particular type.
-        /// </summary>
-        /// <returns>
-        /// A hash code for the current <see cref="T:System.Object"></see>.
-        /// </returns>
-		public override int GetHashCode()
-		{
-			return events.GetHashCode();
-		}
+		EventBean GetMatchingEvent(String tag);
 		
 		/// <summary> Make a shallow copy of this collection.</summary>
 		/// <returns> shallow copy
 		/// </returns>
 
-        public MatchedEventMap ShallowCopy()
-		{
-			MatchedEventMap copy = new MatchedEventMap();
-			copy.events = new EHashDictionary<String, EventBean>() ;
-            copy.events.PutAll( events );
-			return copy;
-		}
+        MatchedEventMap ShallowCopy();
 		
 		/// <summary> Merge the state of an other match event structure into this one by adding all entries
 		/// within the MatchedEventMap to this match event.
@@ -153,12 +51,6 @@ namespace net.esper.pattern
 		/// <param name="other">is the other instance to merge in.
 		/// </param>
 		
-		public void Merge(MatchedEventMap other)
-		{
-			foreach ( KeyValuePair<String, EventBean> entry in other.events )
-			{
-				events.Put( entry.Key, entry.Value ) ;
-			}
-		}
+		void Merge(MatchedEventMap other);
 	}
 }

@@ -9,7 +9,7 @@ namespace net.esper.type
     public abstract class PrimitiveValueBase : PrimitiveValue
     {
         /// <summary>
-        /// Set a boolean value.
+        /// Set a bool value.
         /// </summary>
         /// <value></value>
         virtual public bool _Boolean

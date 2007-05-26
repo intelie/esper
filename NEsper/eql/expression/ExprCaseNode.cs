@@ -96,7 +96,7 @@ namespace net.esper.eql.expression
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
         /// <returns>
-        /// evaluation result, a boolean value for OR/AND-type evalution nodes.
+        /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
         public override Object Evaluate(EventBean[] eventsPerStream)
         {
@@ -179,7 +179,7 @@ namespace net.esper.eql.expression
                 ExprNode thenExpr = children[i * 2 + 1];
                 if (!TypeHelper.IsBoolean(whenExpr.ReturnType))
                 {
-                    throw new ExprValidationException("Case node 'when' expressions must return a boolean value");
+                    throw new ExprValidationException("Case node 'when' expressions must return a bool value");
                 }
                 whenThenNodeList.Add(new UniformPair<ExprNode>(whenExpr, thenExpr));
             }

@@ -5,6 +5,7 @@ using net.esper.collection;
 using net.esper.compat;
 using net.esper.events;
 using net.esper.eql;
+using net.esper.eql.agg;
 using net.esper.eql.spec;
 using net.esper.eql.expression;
 

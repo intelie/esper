@@ -9,7 +9,7 @@ namespace net.esper.filter
 {
     /// <summary>
     /// This class represents a filter parameter containing a reference to another event's property
-    /// in the event pattern result, for use to describe a filter parameter in a <seealso cref="FilterSpec"/> filter specification.
+    /// in the event pattern result, for use to describe a filter parameter in a <seealso cref="FilterSpecCompiled"/> filter specification.
     /// </summary>
 
     public sealed class FilterSpecParamEventProp : FilterSpecParam
@@ -31,9 +31,29 @@ namespace net.esper.filter
         {
             get { return resultEventProperty; }
         }
+		
+	    /**
+	     * Returns true if numeric coercion is required, or false if not
+	     * @return true to coerce at runtime
+	     */
+	    public bool IsMustCoerce
+	    {
+	        get { return isMustCoerce; }
+	    }
+
+	    /**
+	     * Returns the numeric coercion type.
+	     * @return type to coerce to
+	     */
+	    public Type CoercionType
+	    {
+	        get { return coercionType; }
+	    }
 
         private readonly String resultEventAsName;
         private readonly String resultEventProperty;
+		private readonly bool isMustCoerce;
+		private readonly Type coercionType;
 
         /// <summary> Constructor.</summary>
         /// <param name="propertyName">is the event property name
@@ -46,31 +66,23 @@ namespace net.esper.filter
         /// </param>
         /// <throws>  ArgumentException if an operator was supplied that does not take a single constant value </throws>
 
-        public FilterSpecParamEventProp(String propertyName, FilterOperator filterOperator, String resultEventAsName, String resultEventProperty)
+        public FilterSpecParamEventProp(String propertyName,
+										FilterOperator filterOperator,
+										String resultEventAsName,
+										String resultEventProperty,
+										boolean isMustCoerce,
+										Type coercionType)
             : base(propertyName, filterOperator)
         {
             this.resultEventAsName = resultEventAsName;
             this.resultEventProperty = resultEventProperty;
+			this.isMustCoerce = isMustCoerce;
+			this.coercionType = coercionType;
 
             if (FilterOperatorHelper.IsRangeOperator( filterOperator ))
             {
                 throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " + "event property filter parameter");
             }
-        }
-
-        /// <summary>
-        /// Gets the filter value class.
-        /// </summary>
-        /// <param name="taggedEventTypes">The tagged event types.</param>
-        /// <returns></returns>
-        public override Type GetFilterValueClass(EDictionary<String, EventType> taggedEventTypes)
-        {
-            EventType type = taggedEventTypes.Fetch(resultEventAsName, null);
-            if (type == null)
-            {
-                throw new SystemException("Event named '" + "'" + resultEventAsName + "' not found in event pattern result set");
-            }
-            return type.GetPropertyType(resultEventProperty);
         }
 
         /// <summary>
@@ -87,7 +99,14 @@ namespace net.esper.filter
             }
 
             Object value = _event[resultEventProperty];
-            return value;
+			
+		    // Coerce if necessary
+	        if (isMustCoerce)
+	        {
+	            value = TypeHelper.CoerceBoxed(value, coercionType);
+	        }
+
+			return value;
         }
 
         /// <summary>
@@ -98,7 +117,9 @@ namespace net.esper.filter
         /// </returns>
         public override String ToString()
         {
-            return base.ToString() + " resultEventAsName=" + resultEventAsName + " resultEventProperty=" + resultEventProperty;
+            return base.ToString() +
+				" resultEventAsName=" + resultEventAsName +
+				" resultEventProperty=" + resultEventProperty;
         }
 
         /// <summary>

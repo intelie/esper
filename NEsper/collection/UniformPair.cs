@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.util;
+
 namespace net.esper.collection
 {
 	/// <summary> General-purpose pair of values of any type. The pair only equals another pair if
@@ -8,7 +10,7 @@ namespace net.esper.collection
 	/// and the first pair second object equals the second pair second object.
 	/// </summary>
     
-    public sealed class UniformPair<T>
+    public sealed class UniformPair<T> : MetaDefItem
 	{
         /// <summary>
         /// Gets or sets the first value within pair.

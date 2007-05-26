@@ -11,7 +11,7 @@ namespace net.esper.pattern
     /// EVERY nodes work as a factory for new state subnodes. When a child node of an EVERY
     /// node calls the evaluateTrue method on the EVERY node, the EVERY node will call newState on its child
     /// node BEFORE it calls evaluateTrue on its parent node. It keeps a reference to the new child in
-    /// its list. (BEFORE because the root node could call guardQuit on child nodes for Stopping all
+    /// its list. (BEFORE because the root node could call Quit on child nodes for stopping all
     /// listeners).
     /// </summary>
 
@@ -45,38 +45,36 @@ namespace net.esper.pattern
 
     public sealed class EvalEveryStateNode : EvalStateNode, Evaluator
     {
-        private readonly EvalNode everyChildNode;
+		private readonly EvalNode everyChildNode;
         private readonly IList<EvalStateNode> spawnedNodes;
         private readonly MatchedEventMap beginState;
         private readonly PatternContext context;
 
-        /// <summary> Constructor.</summary>
-        /// <param name="parentNode">is the parent evaluator to call to indicate truth value
-        /// </param>
-        /// <param name="everyChildNode">is single child node within the all node
-        /// </param>
-        /// <param name="beginState">contains the events that make up prior matches
-        /// </param>
-        /// <param name="context">contains handles to services required 
-        /// </param>
+	    /**
+	     * Constructor.
+	     * @param parentNode is the parent evaluator to call to indicate truth value
+	     * @param beginState contains the events that make up prior matches
+	     * @param context contains handles to services required
+	     * @param everyNode is the factory node associated to the state
+	     */
+	    public EvalEveryStateNode(Evaluator parentNode,
+	                              EvalEveryNode everyNode,
+	                              MatchedEventMap beginState,
+	                              PatternContext context)
+			: base(everyNode, parentNode, null)
+	    {
+	        if (log.IsDebugEnabled)
+	        {
+	            log.Debug(".constructor");
+	        }
 
-        public EvalEveryStateNode(Evaluator parentNode, EvalNode everyChildNode, MatchedEventMap beginState, PatternContext context)
-            : base(parentNode)
-        {
+	        this.spawnedNodes = new List<EvalStateNode>();
+	        this.beginState = beginState.ShallowCopy();
+	        this.context = context;
 
-            if (log.IsDebugEnabled)
-            {
-                log.Debug(".constructor");
-            }
-
-            this.everyChildNode = everyChildNode;
-            this.spawnedNodes = new List<EvalStateNode>();
-            this.beginState = beginState.ShallowCopy();
-            this.context = context;
-
-            EvalStateNode child = everyChildNode.NewState(this, beginState, context);
-            spawnedNodes.Add(child);
-        }
+	        EvalStateNode child = FactoryNode.ChildNodes[0].NewState(this, beginState, context, null);
+	        spawnedNodes.Add(child);
+	    }
 
         /// <summary>
         /// Starts the event expression or an instance of it.
@@ -103,7 +101,7 @@ namespace net.esper.pattern
             child.ParentEvaluator = spawnEvaluator;
             child.Start();
 
-            // If the spawned expression turned true already, just guardQuit it
+            // If the spawned expression turned true already, just quit it
             if (spawnEvaluator.EvaluatedTrue)
             {
                 child.Quit();
@@ -144,19 +142,19 @@ namespace net.esper.pattern
             // See explanation in EvalFilterStateNode for the type check
             if (fromNode is EvalFilterStateNode)
             {
-                // We do not need to newState new listeners here, since the filter state node below this node did not guardQuit
+                // We do not need to newState new listeners here, since the filter state node below this node did not quit
             }
             else
             {
                 // Spawn all nodes below this EVERY node
                 // During the Start of a child we need to use the temporary evaluator to catch any event created during a Start
                 // Such events can be raised when the "not" operator is used.
-                EvalNode child = everyChildNode;
-                EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
-                EvalStateNode spawned = child.NewState(spawnEvaluator, beginState, context);
+	            EvalNode child = FactoryNode.ChildNodes[0];
+	            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+	            EvalStateNode spawned = child.NewState(spawnEvaluator, beginState, context, null);
                 spawned.Start();
 
-                // If the whole spawned expression already turned true, guardQuit it again
+                // If the whole spawned expression already turned true, quit it again
                 if (spawnEvaluator.EvaluatedTrue)
                 {
                     spawned.Quit();
@@ -168,7 +166,7 @@ namespace net.esper.pattern
                 }
             }
 
-            // All nodes indicate to their parents that their child node did not guardQuit, therefore a false for isQuitted
+            // All nodes indicate to their parents that their child node did not quit, therefore a false for isQuitted
             this.ParentEvaluator.EvaluateTrue(matchEvent, this, false);
         }
 
@@ -180,7 +178,7 @@ namespace net.esper.pattern
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".guardQuit Quitting EVERY-node all children");
+                log.Debug(".Quit Quitting EVERY-node all children");
             }
 
             // Stop all child nodes

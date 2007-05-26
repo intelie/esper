@@ -6,32 +6,37 @@ using org.apache.commons.logging;
 
 namespace net.esper.pattern
 {
-
-
-    /// <summary> This class represents the state of an eventObserver sub-expression in the evaluation state tree.</summary>
-    public sealed class EvalObserverStateNode : EvalStateNode, ObserverEventEvaluator
+    /// <summary>
+	/// This class represents the state of an eventObserver sub-expression
+	/// in the evaluation state tree.
+	/// </summary>
+    public sealed class EvalObserverStateNode
+		: EvalStateNode
+		, ObserverEventEvaluator
     {
         private EventObserver eventObserver;
 
         /// <summary> Constructor.</summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value
         /// </param>
-        /// <param name="observerFactory">is the observer factory that makes observer instances
+        /// <param name="evalObserverNode">the factory node associated to the state
         /// </param>
         /// <param name="beginState">contains the events that make up prior matches
         /// </param>
         /// <param name="context">contains handles to services required
         /// </param>
-        public EvalObserverStateNode(Evaluator parentNode, ObserverFactory observerFactory, MatchedEventMap beginState, PatternContext context)
-            : base(parentNode)
+        public EvalObserverStateNode(Evaluator parentNode, 
+									 EvalObserverNode evalObserverNode,
+									 MatchedEventMap beginState,
+									 PatternContext context)
+            : base(evalObserverNode, parentNode, null)
         {
-
             if (log.IsDebugEnabled)
             {
                 log.Debug(".constructor");
             }
 
-            eventObserver = observerFactory.MakeObserver(context, beginState, this);
+            eventObserver = evalObserverNode.ObserverFactory.MakeObserver(context, beginState, this, null, null);
         }
 
         /// <summary>

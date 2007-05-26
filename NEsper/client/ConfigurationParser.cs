@@ -22,7 +22,7 @@ using org.apache.commons.logging;
 namespace net.esper.client
 {
     /// <summary>
-    /// Parses configurations
+    /// Parser for configuration XML.
     /// </summary>
 
     public class ConfigurationParser
@@ -80,6 +80,10 @@ namespace net.esper.client
             HandleEventTypes(configuration, root);
             HandleAutoImports(configuration, root);
             HandleDatabaseRefs(configuration, root);
+			HandlePlugInView(configuration, root);
+			HandlePlugInAggregation(configuration, root);
+			HandlePlugInPatternObjects(configuration, root);
+			HandleAdapterLoaders(configuration, root);
         }
 
         private static void HandleEventTypes(Configuration configuration, XmlElement parentElement)
@@ -300,6 +304,73 @@ namespace net.esper.client
                 }
             }
         }
+		
+	    private static void HandlePlugInView(Configuration configuration, XmlElement parentElement)
+	    {
+	        NodeList nodes = parentElement.getElementsByTagName("plugin-view");
+	        for (int i = 0; i < nodes.getLength(); i++)
+	        {
+	            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
+	            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+	            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
+	            configuration.addPlugInView(namespace, name, factoryClassName);
+	        }
+	    }
+
+	    private static void handlePlugInAggregation(Configuration configuration, XmlElement parentElement)
+	    {
+	        NodeList nodes = parentElement.getElementsByTagName("plugin-aggregation-function");
+	        for (int i = 0; i < nodes.getLength(); i++)
+	        {
+	            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+	            String functionClassName = nodes.item(i).getAttributes().getNamedItem("function-class").getTextContent();
+	            configuration.addPlugInAggregationFunction(name, functionClassName);
+	        }
+	    }
+
+	    private static void HandlePlugInPatternObjects(Configuration configuration, XmlElement parentElement)
+	    {
+	        NodeList nodes = parentElement.getElementsByTagName("plugin-pattern-guard");
+	        for (int i = 0; i < nodes.getLength(); i++)
+	        {
+	            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
+	            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+	            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
+	            configuration.addPlugInPatternGuard(namespace, name, factoryClassName);
+	        }
+
+	        nodes = parentElement.getElementsByTagName("plugin-pattern-observer");
+	        for (int i = 0; i < nodes.getLength(); i++)
+	        {
+	            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
+	            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+	            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
+	            configuration.addPlugInPatternObserver(namespace, name, factoryClassName);
+	        }
+	    }
+
+	    private static void HandleAdapterLoaders(Configuration configuration, Element parentElement)
+	    {
+	        NodeList nodes = parentElement.getElementsByTagName("adapter-loader");
+	        for (int i = 0; i < nodes.getLength(); i++)
+	        {
+	            String loaderName = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
+	            String className = nodes.item(i).getAttributes().getNamedItem("class-name").getTextContent();
+	            Properties properties = new Properties();
+	            ElementIterator nodeIterator = new ElementIterator(nodes.item(i).getChildNodes());
+	            while (nodeIterator.hasNext())
+	            {
+	                Element subElement = nodeIterator.next();
+	                if (subElement.getNodeName().equals("init-arg"))
+	                {
+	                    String name = subElement.getAttributes().getNamedItem("name").getTextContent();
+	                    String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+	                    properties.put(name, value);
+	                }
+	            }
+	            configuration.addAdapterLoader(loaderName, className, properties);
+	        }
+	    }
 
         private static NameValueCollection HandleProperties(XmlElement element, String propElementName)
         {

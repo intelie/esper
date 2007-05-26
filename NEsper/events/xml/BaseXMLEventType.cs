@@ -45,15 +45,17 @@ namespace net.esper.events.xml
 
         private readonly String rootElementName;
         private XmlNamespaceManager nsManager;
+		private readonly ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM;
 
         /// <summary> Ctor.</summary>
-        /// <param name="rootElementName">is the name of the root element
+        /// <param name="configurationEventTypeXMLDOM">the XML DOM configuration such as root element and schema names
         /// </param>
 
-        public BaseXMLEventType(String rootElementName)
+        public BaseXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
             : base(typeof(XmlNode))
         {
-            this.rootElementName = rootElementName;
+            this.rootElementName = configurationEventTypeXMLDOM.RootElementName;
+			this.configurationEventTypeXMLDOM = configurationEventTypeXMLDOM;
         }
 
         /// <summary>
@@ -114,5 +116,21 @@ namespace net.esper.events.xml
         {
             return EMPTY_STRING_ARRAY;
         }
+		
+		public override bool Equals(Object otherObj)
+		{
+	        BaseXMLEventType other =  otherObj as BaseXMLEventType;
+			if ( other == null )
+			{
+				return false ;
+			}
+		
+			return (configurationEventTypeXMLDOM.Equals(other.configurationEventTypeXMLDOM));
+		}
+		
+		public override int GetHashCode()
+		{
+			return configurationEventTypeXMLDOM.GetHashCode();
+		}
     }
 }

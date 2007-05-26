@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using net.esper.compat;
 using net.esper.events;
 using net.esper.pattern;
+using net.esper.util;
 
 namespace net.esper.filter
 {
@@ -11,18 +12,13 @@ namespace net.esper.filter
 	/// on prior results.
 	/// </summary>
     
-    public interface FilterSpecParamRangeValue
+    public interface FilterSpecParamRangeValue : MetaDefItem
     {
-        /// <summary> Check the type against the map of event tag and type.</summary>
-        /// <param name="taggedEventTypes">map of event tags and types
-        /// </param>
-        void CheckType(EDictionary<String, EventType> taggedEventTypes);
-
-        /// <summary> Returns the filter value representing the endpoint.</summary>
-        /// <param name="matchedEvents">is the prior results
-        /// </param>
-        /// <returns> filter value
-        /// </returns>
-        double GetFilterValue(MatchedEventMap matchedEvents);
+	    /**
+	     * Returns the filter value representing the endpoint.
+	     * @param matchedEvents is the prior results
+	     * @return filter value
+	     */
+	    double GetFilterValue(MatchedEventMap matchedEvents);
     }
 }

@@ -1,12 +1,16 @@
 using System;
 
+using net.esper.util;
+
 namespace net.esper.schedule
 {
 	/// <summary>
     /// This class is a slot in a <seealso cref="ScheduleBucket"/> for sorting schedule service callbacks.
     /// </summary>
 
-    public class ScheduleSlot : IComparable<ScheduleSlot>
+    public class ScheduleSlot
+		: IComparable<ScheduleSlot>
+		, MetaDefItem
 	{
 		private int bucketNum;
 		private int slotNum;

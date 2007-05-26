@@ -36,7 +36,7 @@ namespace net.esper.collection
             eventIndex[key] = listOfBeans;
         }
 
-        /// <summary> Removes a value object from the index, returning a boolean value to indicate if the value object was found.</summary>
+        /// <summary> Removes a value object from the index, returning a bool value to indicate if the value object was found.</summary>
         /// <param name="key">is the key value
         /// </param>
         /// <param name="bean">is the value object to remove

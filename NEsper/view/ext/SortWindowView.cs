@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.core;
 using net.esper.compat;
 using net.esper.collection;
 using net.esper.events;
@@ -26,120 +27,87 @@ namespace net.esper.view.ext
     /// Old values removed from a prior view are removed from the sort view.
     /// </summary>
 
-    public sealed class SortWindowView : ViewSupport, DataWindowView
+    public sealed class SortWindowView
+		: ViewSupport
+		, DataWindowView
     {
-        private String[] sortFieldNames;
-        private EventPropertyGetter[] sortFieldGetters;
-        private Boolean[] isDescendingValues;
-        private int sortWindowSize = 0;
+		private readonly SortWindowViewFactory sortWindowViewFactory;
+	    private readonly String[] sortFieldNames;
+	    private readonly Boolean[] isDescendingValues;
+	    private readonly int sortWindowSize;
+	    private readonly IStreamSortedRandomAccess optionalSortedRandomAccess;
 
-        private ETreeDictionary<MultiKey<Object>, LinkedList<EventBean>> sortedEvents;
-        private int eventCount;
+	    private EventPropertyGetter[] sortFieldGetters;
+		private ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
+	    private int eventCount;
 
         /// <summary> Gets or sets the field names supplying the values to sort by.</summary>
         /// <returns> field names to sort by
         /// </returns>
 
-        public String[] SortFieldNames
+        protected String[] SortFieldNames
         {
             get { return sortFieldNames; }
-            set { this.sortFieldNames = value; }
         }
 
         /// <summary> Gets or sets the flags indicating whether to sort in descending order on each property.</summary>
         /// <returns> the isDescending value for each sort property
         /// </returns>
 
-        public Boolean[] IsDescendingValues
+        protected Boolean[] IsDescendingValues
         {
             get { return isDescendingValues; }
-            set { this.isDescendingValues = value; }
         }
 
         /// <summary> Gets or sets the number of elements kept by the sort window.</summary>
         /// <returns> size of window
         /// </returns>
 
-        public int SortWindowSize
+        protected int SortWindowSize
         {
             get { return sortWindowSize; }
-            set { this.sortWindowSize = value; }
         }
 
-        /// <summary>
-        /// Sets the names and is descending values.
-        /// </summary>
-        /// <value>The names and is descending values.</value>
-        private Object[] NamesAndIsDescendingValues
-        {
-            set
-            {
-                if (value.Length % 2 != 0)
-                {
-                    throw new ArgumentException("Each property to sort by must have an isDescending boolean qualifier");
-                }
+	    /**
+	     * Returns the friend handling the random access, cal be null if not required.
+	     * @return random accessor to sort window contents
+	     */
+	    protected IStreamSortedRandomAccess OptionalSortedRandomAccess
+	    {
+	        get { return optionalSortedRandomAccess; }
+	    }
+	
+	    /**
+	     * Ctor.
+	     * @param sortFieldNames is the event property names to sort
+	     * @param descendingValues indicates whether to sort ascending or descending for each field
+	     * @param sortWindowSize is the window size
+	     * @param optionalSortedRandomAccess is the friend class handling the random access, if required by
+	     * expressions
+	     * @param sortWindowViewFactory for copying this view in a group-by
+	     */
+	    public SortWindowView(SortWindowViewFactory sortWindowViewFactory,
+	                          String[] sortFieldNames,
+	                          Boolean[] descendingValues,
+	                          int sortWindowSize,
+	                          IStreamSortedRandomAccess optionalSortedRandomAccess)
+	    {
+	        this.sortWindowViewFactory = sortWindowViewFactory;
+	        this.sortFieldNames = sortFieldNames;
+	        this.isDescendingValues = descendingValues;
+	        this.sortWindowSize = sortWindowSize;
+	        this.optionalSortedRandomAccess = optionalSortedRandomAccess;
 
-                int length = value.Length / 2;
-                sortFieldNames = new String[length];
-                isDescendingValues = new Boolean[length];
+            IComparer<MultiKeyUntyped> comparator = new MultiKeyComparator(isDescendingValues);
+            sortedEvents = new ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
+	    }
 
-                for (int i = 0; i < length; i++)
-                {
-                    sortFieldNames[i] = ((String)value[2 * i]);
-                    isDescendingValues[i] = (Boolean)value[2 * i + 1];
-                }
-            }
+	    public View CloneView(StatementContext statementContext)
+		{
+			return sortWindowViewFactory.MakeView(statementContext);
+		}
 
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SortWindowView"/> class.
-        /// </summary>
-        public SortWindowView()
-        {
-        }
-
-        /// <summary> Constructor.</summary>
-        /// <param name="propertiesAndDirections">an array of the form [String, Boolean, ...],
-        /// where each String represents a property name, and each Boolean indicates 
-        /// whether to sort in descending order on that property
-        /// </param>
-        /// <param name="size">is the specified number of elements to keep in the sort
-        /// </param>
-        public SortWindowView(Object[] propertiesAndDirections, int size)
-        {
-            if (propertiesAndDirections == null || propertiesAndDirections.Length < 2)
-            {
-                throw new ArgumentException("The sort view must sort on at least one property");
-            }
-
-            if ((size < 1) || (size > Int32.MaxValue))
-            {
-                throw new ArgumentException("Illegal argument for sortWindowSize of length window");
-            }
-
-            NamesAndIsDescendingValues = propertiesAndDirections;
-            this.sortWindowSize = size;
-
-            IComparer<MultiKey<Object>> comparator = new MultiKeyComparator<Object>(isDescendingValues);
-            sortedEvents = new ETreeDictionary<MultiKey<Object>, LinkedList<EventBean>>(comparator);
-        }
-
-        /// <summary> Ctor.</summary>
-        /// <param name="propertyName">the property to sort on
-        /// </param>
-        /// <param name="isDescending">true if the property should be sorted in descending order
-        /// </param>
-        /// <param name="size">the number of elements to keep in the sort
-        /// </param>
-
-        public SortWindowView(String propertyName, bool isDescending, int size)
-            : this(new Object[] { propertyName, isDescending }, size)
-        {
-        }
-
-        /// <summary>
+		/// <summary>
         /// Gets or sets the View's parent Viewable.
         /// </summary>
         /// <value></value>
@@ -161,29 +129,6 @@ namespace net.esper.view.ext
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            // Attaches to parent views where the sort fields exist and implement Comparable
-            String result = null;
-            foreach (String name in sortFieldNames)
-            {
-                result = PropertyCheckHelper.Exists(parentView.EventType, name);
-
-                if (result != null)
-                {
-                    break;
-                }
-            }
-            return result;
         }
 
         /// <summary>
@@ -239,7 +184,7 @@ namespace net.esper.view.ext
             {
                 for (int i = 0; i < oldData.Length; i++)
                 {
-                    MultiKey<Object> sortValues = GetSortValues(oldData[i]);
+                    MultiKeyUntyped sortValues = GetSortValues(oldData[i]);
                     bool result = Remove(sortValues, oldData[i]);
                     if (result)
                     {
@@ -254,7 +199,7 @@ namespace net.esper.view.ext
             {
                 for (int i = 0; i < newData.Length; i++)
                 {
-                    MultiKey<Object> sortValues = GetSortValues(newData[i]);
+                    MultiKeyUntyped sortValues = GetSortValues(newData[i]);
                     Add(sortValues, newData[i]);
                     eventCount++;
                 }
@@ -267,7 +212,7 @@ namespace net.esper.view.ext
                 for (int i = 0; i < removeCount; i++)
                 {
                     // Remove the last element of the last key - sort order is key and then natural order of arrival
-                    MultiKey<Object> lastKey = sortedEvents.LastKey;
+                    MultiKeyUntyped lastKey = sortedEvents.LastKey;
                     LinkedList<EventBean> events = sortedEvents[lastKey];
                     LinkedListNode<EventBean> lastNode = events.Last;
                     EventBean _event = lastNode.Value;
@@ -289,7 +234,12 @@ namespace net.esper.view.ext
                 }
             }
 
-            // If there are child views, fire update method
+            // If there are child views, fireStatementStopped update method
+	        if (optionalSortedRandomAccess != null)
+	        {
+	            optionalSortedRandomAccess.Refresh(sortedEvents, eventCount, sortWindowSize);
+	        }
+
             if (this.HasViews)
             {
                 EventBean[] expiredArr = null;
@@ -310,7 +260,13 @@ namespace net.esper.view.ext
         /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return new SortWindowIterator(sortedEvents);
+			foreach( KeyValuePair<MultiKeyUntyped, LinkedList<EventBean>> keyValuePair in sortedEvents )
+			{
+				foreach( EventBean eventBean in keyValuePair.Value )
+				{
+					yield return eventBean ;
+				}
+			}
         }
 
         /// <summary>
@@ -324,7 +280,7 @@ namespace net.esper.view.ext
             return this.GetType().FullName + " sortFieldName=" + sortFieldNames + " isDescending=" + isDescendingValues + " sortWindowSize=" + sortWindowSize;
         }
 
-        private void Add(MultiKey<Object> key, EventBean bean)
+        private void Add(MultiKeyUntyped key, EventBean bean)
         {
             LinkedList<EventBean> listOfBeans;
             if (sortedEvents.TryGetValue(key, out listOfBeans))
@@ -338,7 +294,7 @@ namespace net.esper.view.ext
             sortedEvents[key] = listOfBeans;
         }
 
-        private bool Remove(MultiKey<Object> key, EventBean bean)
+        private bool Remove(MultiKeyUntyped key, EventBean bean)
         {
             LinkedList<EventBean> listOfBeans;
             if (!sortedEvents.TryGetValue(key, out listOfBeans))
@@ -354,7 +310,7 @@ namespace net.esper.view.ext
             return result;
         }
 
-        private MultiKey<Object> GetSortValues(EventBean ev)
+        private MultiKeyUntyped GetSortValues(EventBean ev)
         {
             Object[] result = new Object[sortFieldGetters.Length];
             int count = 0;
@@ -363,7 +319,7 @@ namespace net.esper.view.ext
                 result[count++] = getter.GetValue(ev);
             }
 
-            return new MultiKey<Object>(result);
+            return new MultiKeyUntyped(result);
         }
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

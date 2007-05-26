@@ -11,10 +11,15 @@ namespace net.esper.view.window
     /// This view is a moving window extending the specified number of elements into the past.
     /// </summary>
 
-    public sealed class LengthWindowView : ViewSupport, DataWindowView
+    public sealed class LengthWindowView
+		: ViewSupport
+		, DataWindowView
+		, CloneableView
     {
-        private int size = 0;
-        private readonly ELinkedList<EventBean> events = new ELinkedList<EventBean>();
+		private readonly LengthWindowViewFactory lengthWindowViewFactory;
+	    private readonly int size;
+	    private readonly ViewUpdatedCollection viewUpdatedCollection;
+	    private readonly ELinkedList<EventBean> events = new ELinkedList<EventBean>();
 
         /// <summary>
         /// Gets or sets the size of the length window.
@@ -28,39 +33,46 @@ namespace net.esper.view.window
             set { this.size = value; }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LengthWindowView"/> class.
-        /// </summary>
-        public LengthWindowView()
-        {
-        }
+	    /// <summary>
+	    /// Constructor creates a moving window extending the specified number of elements into the past.
+	    /// </summary>
+	    /// <param name="size">is the specified number of elements into the past</param>
+	    /// <param name="viewUpdatedCollection">
+	    /// is a collection that the view must update when receiving events
+	    /// </param>
+	    /// <param name="lengthWindowViewFactory">for copying this view in a group-by</param>
+	    public LengthWindowView(LengthWindowViewFactory lengthWindowViewFactory, int size, ViewUpdatedCollection viewUpdatedCollection)
+	    {
+	        if (size < 1)
+	        {
+	            throw new IllegalArgumentException("Illegal argument for size of length window");
+	        }
 
-        /// <summary> Constructor creates a moving window extending the specified number of elements into the past.</summary>
-        /// <param name="size">is the specified number of elements into the past
-        /// </param>
+	        this.lengthWindowViewFactory = lengthWindowViewFactory;
+	        this.size = size;
+	        this.viewUpdatedCollection = viewUpdatedCollection;
+	    }
 
-        public LengthWindowView(int size)
-        {
-            if (size < 1)
-            {
-                throw new ArgumentException("Illegal argument for size of length window");
-            }
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return lengthWindowViewFactory.MakeView(statementContext);
+	    }
 
-            this.size = size;
-        }
+	    /// <summary>Returns true if the window is empty, or false if not empty.</summary>
+	    /// <returns>true if empty</returns>
+	    public bool IsEmpty
+	    {
+	        get { return events.IsEmpty; }
+	    }
 
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentView">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentView)
-        {
-            // Attaches to just about anything
-            return null;
-        }
+		/// <summary>
+		/// Returns the (optional) collection handling random access to window contents for prior or previous events.
+		/// </summary>
+		/// <returns>buffer for events</returns>
+	    public ViewUpdatedCollection ViewUpdatedCollection
+	    {
+	        get { return viewUpdatedCollection; }
+	    }
 
         /// <summary>
         /// Provides metadata information about the type of object the event collection contains.
@@ -126,8 +138,12 @@ namespace net.esper.view.window
                 }
             }
 
-            // If there are child views, fire update method
-            if (this.HasViews)
+	        // If there are child views, fireStatementStopped update method
+	        if (viewUpdatedCollection != null)
+	        {
+	            viewUpdatedCollection.Update(newData, oldData);
+	        }
+			if (this.HasViews)
             {
                 UpdateChildren(newData, expiredArr);
             }

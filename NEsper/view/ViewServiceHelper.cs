@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using net.esper.collection;
 using net.esper.compat;
+using net.esper.core;
+using net.esper.eql.spec;
 
 using org.apache.commons.logging;
 
@@ -64,52 +66,37 @@ namespace net.esper.view
 		}
 
 		/// <summary> Instantiate a chain of views.</summary>
-		/// <param name="existingParentViews">parent views
-		/// </param>
 		/// <param name="parentViewable">parent view to add the chain to
 		/// </param>
-		/// <param name="specifications">view specification, one for each chain element
+		/// <param name="viewFactories">the view factories to use to make each view, or reuse and existing view
 		/// </param>
 		/// <param name="context">dependent services
 		/// </param>
 		/// <returns> chain of views instantiated
 		/// </returns>
 		/// <throws>  ViewProcessingException is throw to indicate an error instantiating the chain </throws>
-		public static IList<View> InstantiateChain( IList<View> existingParentViews, Viewable parentViewable, IList<ViewSpec> specifications, ViewServiceContext context )
+		public static IList<View> InstantiateChain(
+			Viewable parentViewable,
+            IList<ViewFactory> viewFactories,
+            StatementContext context)
+
 		{
-			IList<View> newViews = new List<View>();
-			Viewable parent = parentViewable;
+	        IList<View> newViews = new List<View>();
+	        Viewable parent = parentViewable;
 
-			foreach ( ViewSpec spec in specifications )
-			{
-				// Create the new view object
-				View currentView = ViewFactory.Create( parent, spec );
-				newViews.Add( currentView );
-				parent.AddView( currentView );
+	        foreach (ViewFactory viewFactory in viewFactories)
+	        {
+	            // Create the new view object
+	            View currentView = viewFactory.MakeView(context);
 
-				// Set context
-                ContextAwareView contextAwareView = currentView as ContextAwareView;
-                if ( contextAwareView != null )
-				{
-                    contextAwareView.ViewServiceContext = context;
-				}
+	            newViews.Add(currentView);
+	            parent.AddView(currentView);
 
-				// New views get their ParentAwareView interface invoked if required
-                ParentAwareView parentAwareView = currentView as ParentAwareView;
-                if ( parentAwareView != null )
-				{
-					IList<View> parentViewList = new List<View>();
-					CollectionHelper.AddAll( parentViewList, existingParentViews );
-					CollectionHelper.AddAll( parentViewList, newViews );
-                    parentAwareView.ParentAware = parentViewList;
-					( (ParentAwareView) currentView ).ParentAware = parentViewList ;
-				}
+	            // Next parent is the new view
+	            parent = currentView;
+	        }
 
-				// Next parent is the new view
-				parent = currentView;
-			}
-
-			return newViews;
+	        return newViews;
 		}
 
 		/// <summary> Removes a view from a parent view returning the orphaned parent views in a list.</summary>
@@ -202,58 +189,93 @@ namespace net.esper.view
 		/// </summary>
 		/// <param name="rootViewable">is the top rootViewable event stream to which all views are attached as child views
 		/// </param>
-		/// <param name="specificationRepository">is a map of view and specification that enables view specification comparison
-		/// </param>
-		/// <param name="specifications">is the non-empty list of specifications describing the new chain of views to create.
-		/// This parameter is changed by this method, ie. specifications are removed if they match existing views.
+		/// <param name="viewFactories">viewFactories is the view specifications for making views
 		/// </param>
 		/// <returns> a pair of (A) the stream if no views matched, or the last child view that matched (B) the full list
 		/// of parent views
 		/// </returns>
 		public static Pair<Viewable, IList<View>> MatchExistingViews(
-            Viewable rootViewable,
-            IDictionary<View, ViewSpec> specificationRepository,
-            IList<ViewSpec> specifications )
+			Viewable rootViewable,
+            IList<ViewFactory> viewFactories)
 		{
-			Viewable currentParent = rootViewable;
-            IList<View> matchedViewList = new List<View>();
+	        Viewable currentParent = rootViewable;
+	        IList<View> matchedViewList = new List<View>();
 
-			bool foundMatch = false;
+	        bool foundMatch;
 
-			do
-			// while ((foundMatch) && (specifications.Count > 0));
-			{
-				foundMatch = false;
+	        if (viewFactories.IsEmpty)
+	        {
+	            return new Pair<Viewable, IList<View>>(rootViewable, new List<View>());
+	        }
 
-				foreach ( View childView in currentParent.GetViews() )
-				{
-                    ViewSpec spec = null;
-                    specificationRepository.TryGetValue(childView, out spec);
+	        do      // while ((foundMatch) && (specifications.size() > 0));
+	        {
+	            foundMatch = false;
 
-					// It's possible that a child view is not known to this service since the
-					// child view may not be reusable, such as a stateless filter (where-clause),
-					// output rate limiting view, or such.
-					// Continue and ignore that child view if it's view specification is not known.
-					if ( spec == null )
-					{
-						continue;
-					}
+	            foreach (View childView in currentParent.Views)
+	            {
+	                ViewFactory currentFactory = viewFactories[0];
 
-					// If the specification is found equal, remove
-					if ( spec.Equals( specifications[0] ) )
-					{
-						specifications.RemoveAt(0) ;
-						currentParent = childView;
-						foundMatch = true;
-						matchedViewList.Add( childView );
-						break;
-					}
-				}
-			}
-			while ( ( foundMatch ) && ( specifications.Count > 0 ) );
+	                if (!(currentFactory.CanReuse(childView)))
+	                {
+	                     continue;
+	                }
 
-			return new Pair<Viewable, IList<View>>( currentParent, matchedViewList );
-		}
+	                // The specifications match, check current data window size
+	                viewFactories.RemoveAt(0);
+	                currentParent = childView;
+	                foundMatch = true;
+	                matchedViewList.Add(childView);
+	                break;
+	            }
+	        }
+	        while ((foundMatch) && (viewFactories.Count != 0));
+
+	        return new Pair<Viewable, IList<View>>(currentParent, matchedViewList);
+	    }
+
+	    /// <summary>
+	    /// Given a list of view specifications obtained from by parsing this method instantiates a list of view factories.
+	    /// The view factories are not yet aware of each other after leaving this method (so not yet chained logically).
+	    /// They are simply instantiated and assigned view parameters.
+	    /// </summary>
+	    /// <param name="streamNum">the stream number</param>
+	    /// <param name="viewSpecList">the view definition</param>
+	    /// <param name="statementContext">statement service context and statement info</param>
+	    /// <returns>list of view factories</returns>
+	    /// <throws>
+	    /// ViewProcessingException if the factory cannot be creates such as for invalid view spec
+	    /// </throws>
+	    public static IList<ViewFactory> InstantiateFactories(
+			int streamNum,
+	        IList<ViewSpec> viewSpecList,
+	        StatementContext statementContext)
+	    {
+	        List<ViewFactory> factoryChain = new List<ViewFactory>();
+
+	        int viewNum = 0;
+	        foreach (ViewSpec spec in viewSpecList)
+	        {
+	            // Create the new view factory
+	            ViewFactory viewFactory = statementContext.ViewResultionService.Create(spec);
+	            factoryChain.Add(viewFactory);
+
+	            // Set view factory parameters
+	            try
+	            {
+	                ViewFactoryContext context = new ViewFactoryContext(statementContext, streamNum, viewNum, spec.ObjectNamespace, spec.ObjectName);
+	                viewFactory.SetViewParameters(context, spec.ObjectParameters);
+	            }
+	            catch (ViewParameterException e)
+	            {
+	                throw new ViewProcessingException("Error in view '" + spec.ObjectNamespace + ':' + spec.ObjectName +
+	                        "', " + e.Message);
+	            }
+	            viewNum++;
+	        }
+
+	        return factoryChain;
+	    }
 
 		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}

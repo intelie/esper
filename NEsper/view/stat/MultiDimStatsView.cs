@@ -5,6 +5,7 @@ using org.apache.commons.logging;
 
 using net.esper.compat;
 using net.esper.collection;
+using net.esper.core;
 using net.esper.events;
 using net.esper.view;
 using net.esper.view.stat.olap;
@@ -25,11 +26,12 @@ namespace net.esper.view.stat
 	/// The view post new data to child views that contains a Map with the Cube (see Cube). It does not post old data.
 	/// </summary>
 
-	public sealed class MultiDimStatsView : ViewSupport, ContextAwareView
+	public sealed class MultiDimStatsView
+		: ViewSupport
+		, CloneableView
 	{
 		private static MultidimCubeCellFactory<BaseStatisticsBean> multidimCubeCellFactory;
 
-		private ViewServiceContext viewServiceContext;
 		private EventType eventType;
 
 		internal class AnonMultidimCubeCellFactory : MultidimCubeCellFactory<BaseStatisticsBean>
@@ -50,11 +52,12 @@ namespace net.esper.view.stat
 			multidimCubeCellFactory = new AnonMultidimCubeCellFactory();
 		}
 
-		private String[] derivedMeasures;
-		private String measureField;
-		private String columnField;
-		private String rowField;
-		private String pageField;
+		private readonly StatementContext statementContext;
+		private readonly String[] derivedMeasures;
+		private readonly String measureField;
+		private readonly String columnField;
+		private readonly String rowField;
+		private readonly String pageField;
 
 		private EventPropertyGetter measureFieldGetter;
 		private EventPropertyGetter columnFieldGetter;
@@ -63,83 +66,35 @@ namespace net.esper.view.stat
 
 		private MultidimCube<BaseStatisticsBean> multidimCube;
 
-		/// <summary>
-        /// Empty constructor - views are objects.
-		/// </summary>
+		/**
+	     * Constructor.
+	     * @param derivedMeasures is an array of ViewFieldEnum names defining the measures to derive
+	     * @param measureField defines the field supplying measures
+	     * @param columnField defines the field supplying column dimension members
+	     * @param rowField defines an optional field supplying row dimension members
+	     * @param pageField defines an optional field supplying page dimension members
+	     * @param statementContext contains required view services
+	     */
+	    public MultiDimStatsView(StatementContext statementContext,
+	                             String[] derivedMeasures,
+								 String measureField,
+								 String columnField,
+								 String rowField,
+								 String pageField)
+	    {
+	        this.statementContext = statementContext;
+	        this.derivedMeasures = derivedMeasures;
+	        this.measureField = measureField;
+	        this.columnField = columnField;
+	        this.rowField = rowField;
+	        this.pageField = pageField;
+	        eventType = CreateEventType(statementContext);
+	    }
 
-		public MultiDimStatsView()
-		{
-		}
-
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-        public ViewServiceContext ViewServiceContext
-        {
-            get
-            {
-                return viewServiceContext;
-            }
-            set
-            {
-                this.viewServiceContext = value;
-
-                EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
-                schemaMap[ViewFieldEnum.MULTIDIM_OLAP__CUBE.Name] = typeof(Cube);
-                eventType = viewServiceContext.EventAdapterService.CreateAnonymousMapType(schemaMap);
-            }
-        }
-
-		/// <summary> Constructor.</summary>
-		/// <param name="derivedMeasures">is an array of ViewFieldEnum names defining the measures to derive
-		/// </param>
-		/// <param name="measureField">defines the field supplying measures
-		/// </param>
-		/// <param name="columnField">defines the field supplying column dimension members
-		/// </param>
-
-		public MultiDimStatsView( String[] derivedMeasures, String measureField, String columnField )
-			: this( derivedMeasures, measureField, columnField, null, null )
-		{
-		}
-
-		/// <summary> Constructor.</summary>
-		/// <param name="derivedMeasures">is an array of ViewFieldEnum names defining the measures to derive
-		/// </param>
-		/// <param name="measureField">defines the field supplying measures
-		/// </param>
-		/// <param name="columnField">defines the field supplying column dimension members
-		/// </param>
-		/// <param name="rowField">defines the field supplying row dimension members
-		/// </param>
-
-		public MultiDimStatsView( String[] derivedMeasures, String measureField, String columnField, String rowField )
-			: this( derivedMeasures, measureField, columnField, rowField, null )
-		{
-			
-		}
-
-		/// <summary> Constructor.</summary>
-		/// <param name="derivedMeasures">is an array of ViewFieldEnum names defining the measures to derive
-		/// </param>
-		/// <param name="measureField">defines the field supplying measures
-		/// </param>
-		/// <param name="columnField">defines the field supplying column dimension members
-		/// </param>
-		/// <param name="rowField">defines the field supplying row dimension members
-		/// </param>
-		/// <param name="pageField">defines the field supplying page dimension members
-		/// </param>
-
-		public MultiDimStatsView( String[] derivedMeasures, String measureField, String columnField, String rowField, String pageField )
-		{
-			this.derivedMeasures = derivedMeasures;
-			this.measureField = measureField;
-			this.columnField = columnField;
-			this.rowField = rowField;
-			this.pageField = pageField;
-		}
+	    public View CloneView(StatementContext statementContext)
+	    {
+	        return new MultiDimStatsView(statementContext, derivedMeasures, measureField, columnField, rowField, pageField);
+	    }
 
 		/// <summary>
         /// Gets or sets the names of measures to derive from facts.
@@ -148,7 +103,6 @@ namespace net.esper.view.stat
         public String[] DerivedMeasures
 		{
             get { return derivedMeasures; }
-            set { this.derivedMeasures = value; }
 		}
 
 		/// <summary>
@@ -158,7 +112,6 @@ namespace net.esper.view.stat
         public string MeasureField
 		{
 			get { return measureField; }
-			set { this.measureField = value; }
 		}
 
 		/// <summary>
@@ -168,7 +121,6 @@ namespace net.esper.view.stat
         public string ColumnField
 		{
             get { return columnField; }
-            set { this.columnField = value; }
 		}
 
         /// <summary>
@@ -178,7 +130,6 @@ namespace net.esper.view.stat
         public string RowField
 		{
             get { return rowField; }
-            set { this.rowField = value; }
 		}
 
 		/// <summary> Gets or sets the name of the field to extract the page values from.</summary>
@@ -188,7 +139,6 @@ namespace net.esper.view.stat
         public string PageField
 		{
             get { return pageField; }
-            set { this.pageField = value; }
 		}
 
 		/// <summary> For unit testing, returns fact cube.</summary>
@@ -197,52 +147,6 @@ namespace net.esper.view.stat
 		public MultidimCube<BaseStatisticsBean> FactCube
 		{
 			get { return multidimCube; }
-		}
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentViewable)
-		{
-            String message = PropertyCheckHelper.CheckNumeric(parentViewable.EventType, measureField);
-			if ( message != null )
-			{
-				return message;
-			}
-
-            message = PropertyCheckHelper.Exists(parentViewable.EventType, columnField);
-			if ( message != null )
-			{
-				return message;
-			}
-
-			if ( rowField != null )
-			{
-                message = PropertyCheckHelper.Exists(parentViewable.EventType, rowField);
-				if ( message != null )
-				{
-					return message;
-				}
-			}
-
-			if ( pageField != null )
-			{
-                return PropertyCheckHelper.Exists(parentViewable.EventType, pageField);
-			}
-
-			foreach ( String measureName in derivedMeasures )
-			{
-				if ( Array.BinarySearch( ViewFieldEnum.MULTIDIM_OLAP__MEASURES, measureName ) < 0 )
-				{
-					return String.Format( "Derived measure named '{0}' is not a valid measure", measureName );
-				}
-			}
-
-			return null;
 		}
 
         /// <summary>
@@ -375,7 +279,7 @@ namespace net.esper.view.stat
         /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
 		{
-			return new SingleEventIterator( populateEvent() );
+            yield return populateEvent();
 		}
 
         /// <summary>
@@ -383,7 +287,7 @@ namespace net.esper.view.stat
         /// </summary>
         /// <param name="element">The element.</param>
         /// <param name="isNewData">if set to <c>true</c> [is new data].</param>
-		private void processElement( EventBean element, Boolean isNewData )
+		private void ProcessElement( EventBean element, Boolean isNewData )
 		{
 			MultiKeyUntyped coordinates = null;
 
@@ -420,15 +324,28 @@ namespace net.esper.view.stat
 			}
 		}
 
-		private EventBean populateEvent()
+		private EventBean PopulateEvent()
 		{
 			CubeImpl cube = new CubeImpl( multidimCube, derivedMeasures );
 
 			EDataDictionary result = new EDataDictionary();
 			result[ViewFieldEnum.MULTIDIM_OLAP__CUBE.Name] = cube ;
-			EventBean eventBean = viewServiceContext.EventAdapterService.CreateMapFromValues( result, eventType );
+			EventBean eventBean = statementContext.EventAdapterService.CreateMapFromValues( result, eventType );
 			return eventBean;
 		}
+
+	    /**
+	     * Creates the event type for this view.
+	     * @param statementContext is the event adapter service
+	     * @return event type of view
+	     */
+	    protected static EventType CreateEventType(StatementContext statementContext)
+	    {
+	        EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
+	        schemaMap.Put(ViewFieldEnum.MULTIDIM_OLAP__CUBE.Name, typeof(Cube));
+	        EventType eventType = statementContext.EventAdapterService.CreateAnonymousMapType(schemaMap);
+	        return eventType;
+	    }
 
 		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}

@@ -1,18 +1,20 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.core;
 using net.esper.collection;
 using net.esper.events;
 using net.esper.view;
 
 namespace net.esper.view.stat
 {
-	
 	/// <summary> View for computing statistics that require 2 input variable arrays containing X and Y datapoints.
 	/// Subclasses compute correlation or regression values, for instance.
 	/// </summary>
 
-	public abstract class BaseBivariateStatisticsView : ViewSupport, ContextAwareView
+	public abstract class BaseBivariateStatisticsView 
+		: ViewSupport
+		, CloneableView
 	{
 		/// <summary>
 		/// This bean can be overridden by subclasses providing extra values such as correlation, regression.
@@ -29,18 +31,7 @@ namespace net.esper.view.stat
 		/// Services required by implementing classes.
 		/// </summary>
 
-		internal ViewServiceContext viewServiceContext;
-
-        /// <summary>
-        /// Gets or sets the context instances used by the view.
-        /// </summary>
-        /// <value>The view service context.</value>
-
-		virtual public ViewServiceContext ViewServiceContext
-		{
-			get { return viewServiceContext; }
-			set { this.viewServiceContext = value; }
-		}
+		internal StatementContext statementContext;
 
         /// <summary>
         /// Gets or sets the field name of the field supplying X data points.
@@ -50,7 +41,6 @@ namespace net.esper.view.stat
 		virtual public String FieldNameX
 		{
 			get { return fieldNameX; }
-			set { this.fieldNameX = value; }
 		}
 
         /// <summary>
@@ -61,30 +51,25 @@ namespace net.esper.view.stat
 		virtual public String FieldNameY
 		{
 			get { return fieldNameY; }
-			set { this.fieldNameY = value; }
 		}
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		
-	    public BaseBivariateStatisticsView()
-    	{
-    	}
-	    
-		/// <summary>
-		/// Constructor requires the name of the two fields to use in the parent view to compute the statistics.
-		/// </summary>
-		/// <param name="statisticsBean">is the base class prodiving sum of X and Y and squares for use by subclasses</param>
-		/// <param name="fieldNameX">is the name of the field within the parent view to get the X values from</param>
-		/// <param name="fieldNameY">is the name of the field within the parent view to get the Y values from</param>
-
-		public BaseBivariateStatisticsView( BaseStatisticsBean statisticsBean, String fieldNameX, String fieldNameY )
-		{
-			this.statisticsBean = statisticsBean;
-			this.fieldNameX = fieldNameX;
-			this.fieldNameY = fieldNameY;
-		}
+	    /**
+	     * Constructor requires the name of the two fields to use in the parent view to compute the statistics.
+	     * @param statisticsBean is the base class prodiving sum of X and Y and squares for use by subclasses
+	     * @param fieldNameX is the name of the field within the parent view to get the X values from
+	     * @param fieldNameY is the name of the field within the parent view to get the Y values from
+	     * @param statementContext contains required view services
+	     */
+	    public BaseBivariateStatisticsView(StatementContext statementContext,
+	                                       BaseStatisticsBean statisticsBean,
+	                                       String fieldNameX,
+	                                       String fieldNameY)
+	    {
+	        this.statementContext = statementContext;
+	        this.statisticsBean = statisticsBean;
+	        this.fieldNameX = fieldNameX;
+	        this.fieldNameY = fieldNameY;
+	    }
 
         /// <summary>
         /// Gets or sets the view's parent viewable.
@@ -102,18 +87,6 @@ namespace net.esper.view.stat
                     fieldYGetter = parent.EventType.GetGetter(fieldNameY);
                 }
             }
-		}
-
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-		public override String AttachesTo( Viewable parentViewable )
-		{
-            return PropertyCheckHelper.CheckNumeric(parentViewable.EventType, fieldNameX, fieldNameY);
 		}
 
         /// <summary>
@@ -139,7 +112,7 @@ namespace net.esper.view.stat
         /// <param name="oldData">is the old data that has been removed from the parent view</param>
 		public override void Update( EventBean[] newData, EventBean[] oldData )
 		{
-			// If we have child views, keep a reference to the old values, so we can fire them as old data event.
+			// If we have child views, keep a reference to the old values, so we can fireStatementStopped them as old data event.
 			BaseStatisticsBean oldValues = null;
 			if ( this.HasViews )
 			{
@@ -168,14 +141,14 @@ namespace net.esper.view.stat
 				}
 			}
 
-			// If there are child view, fire update method
+			// If there are child view, fireStatementStopped update method
 			if ( this.HasViews )
 			{
 				// Make a copy of the current values since if we change the values subsequently, the handed-down
 				// values should not change
 				BaseStatisticsBean newValues = (BaseStatisticsBean) statisticsBean.Clone();
-				EventBean newValuesEvent = viewServiceContext.EventAdapterService.AdapterForBean( newValues );
-				EventBean oldValuesEvent = viewServiceContext.EventAdapterService.AdapterForBean( oldValues );
+				EventBean newValuesEvent = statementContext.EventAdapterService.AdapterForBean( newValues );
+				EventBean oldValuesEvent = statementContext.EventAdapterService.AdapterForBean( oldValues );
 				UpdateChildren( new EventBean[] { newValuesEvent }, new EventBean[] { oldValuesEvent } );
 			}
 		}
@@ -188,7 +161,7 @@ namespace net.esper.view.stat
         /// </returns>
 		public override IEnumerator<EventBean> GetEnumerator()
 		{
-			return new SingleEventIterator( viewServiceContext.EventAdapterService.AdapterForBean( statisticsBean ) );
+            yield return statementContext.EventAdapterService.AdapterForBean(statisticsBean);
 		}
 	}
 }

@@ -7,7 +7,7 @@ using net.esper.compat;
 namespace net.esper.filter
 {
 	/// <summary>
-    /// Utility class for matching filter parameters to indizes. Matches are indicated by the index <seealso cref="FilterParamIndex" />
+    /// Utility class for matching filter parameters to indizes. Matches are indicated by the index <seealso cref="FilterParamIndexBase" />
 	/// and the filter parameter <seealso cref="FilterSpecParam"/> featuring the same event property name and filter operator.
 	/// </summary>
 
@@ -19,6 +19,7 @@ namespace net.esper.filter
         /// For instance, for a filter parameter of "count EQUALS 10", the index against property "count" with
         /// operator type EQUALS will be returned, if present.
         /// NOTE: The caller is expected to obtain locks, if necessary, on the collections passed in.
+		/// NOTE: Doesn't match non-property based index - thus boolean expressions don't get found and are always entered as a new index
         /// 
         /// </summary>
         /// <param name="parameters">is the list of sorted filter parameters
@@ -28,25 +29,31 @@ namespace net.esper.filter
         /// <returns> A matching pair of filter parameter and index, if any matches were found. Null if no matches were found.
         /// </returns>
 
-        public static Pair<FilterValueSetParam, FilterParamIndex> FindIndex(
+        public static Pair<FilterValueSetParam, FilterParamIndexBase> FindIndex(
         	ETreeSet<FilterValueSetParam> parameters,
-        	IList<FilterParamIndex> indizes)
+        	IList<FilterParamIndexBase> indizes)
         {
-            foreach (FilterValueSetParam parameter in parameters)
-            {
-                String property = parameter.PropertyName;
-                FilterOperator _operator = parameter.FilterOperator;
+	        foreach (FilterValueSetParam parameter in parameters)
+	        {
+	            String property = parameter.PropertyName;
+	            FilterOperator _operator = parameter.FilterOperator;
 
-                foreach (FilterParamIndex index in indizes)
-                {
-                    if ((property.Equals(index.PropertyName)) && (_operator.Equals(index.FilterOperator)))
-                    {
-                        return new Pair<FilterValueSetParam, FilterParamIndex>(parameter, index);
-                    }
-                }
-            }
+	            foreach (FilterParamIndexBase index in indizes)
+	            {
+	                // if property-based index, we prefer this in matching
+	                if (index is FilterParamIndexPropBase)
+	                {
+	                    FilterParamIndexPropBase propBasedIndex = (FilterParamIndexPropBase) index;
+	                    if ( (property.Equals(propBasedIndex.PropertyName)) &&
+	                         (_operator.Equals(propBasedIndex.FilterOperator)) )
+	                    {
+	                        return new Pair<FilterValueSetParam, FilterParamIndexBase>(parameter, index);
+	                    }
+	                }
+	            }
+			}
 
-            return null;
+			return null;
         }
 
         /// <summary> Determine among the passed in filter parameters any parameter that matches the given index on property name and
@@ -61,21 +68,38 @@ namespace net.esper.filter
         
         public static FilterValueSetParam FindParameter(ETreeSet<FilterValueSetParam> parameters, FilterParamIndex index)
         {
-            String indexProperty = index.PropertyName;
-            FilterOperator indexOperator = index.FilterOperator;
+	        if (index is FilterParamIndexPropBase)
+	        {
+	            FilterParamIndexPropBase propBasedIndex = (FilterParamIndexPropBase) index;
+	            String indexProperty = propBasedIndex.PropertyName;
+	            FilterOperator indexOperator = propBasedIndex.FilterOperator;
 
-            foreach (FilterValueSetParam parameter in parameters)
-            {
-                String paramProperty = parameter.PropertyName;
-                FilterOperator paramOperator = parameter.FilterOperator;
+	            foreach (FilterValueSetParam parameter in parameters)
+	            {
+	                String paramProperty = parameter.PropertyName;
+	                FilterOperator paramOperator = parameter.FilterOperator;
 
-                if ((paramProperty.Equals(indexProperty)) && (paramOperator.Equals(indexOperator)))
-                {
-                    return parameter;
-                }
-            }
+	                if ( (paramProperty.Equals(indexProperty)) &&
+	                     (paramOperator.Equals(indexOperator)) )
+	                {
+	                    return parameter;
+	                }
+	            }
+	        }
+	        else
+	        {
+	            foreach (FilterValueSetParam parameter in parameters)
+	            {
+	                FilterOperator paramOperator = parameter.FilterOperator;
 
-            return null;
+	                if (paramOperator.Equals(index.FilterOperator))
+	                {
+	                    return parameter;
+	                }
+	            }
+	        }
+
+	        return null;
         }
     }
 }

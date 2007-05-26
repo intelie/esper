@@ -4,7 +4,11 @@ using net.esper.events;
 
 namespace net.esper.filter
 {
-	/// <summary> Factory for <seealso cref="FilterParamIndex" /> instances based on event property name and filter operator type.</summary>
+	/// <summary>
+	/// Factory for <seealso cref="FilterParamIndex" /> instances based on
+	/// event property name and filter operator type.
+	/// </summary>
+
 	public class IndexFactory
 	{
         /// <summary>
@@ -18,12 +22,12 @@ namespace net.esper.filter
         /// <returns>
         /// the proper index based on the filter operator type
         /// </returns>
-		public static FilterParamIndex CreateIndex(
+		public static FilterParamIndexBase CreateIndex(
 			EventType eventType,
 			String propertyName,
 			FilterOperator filterOperator)
 		{
-			FilterParamIndex index;
+			FilterParamIndexBase index;
 			
 			// Handle all EQUAL comparisons
 			if (filterOperator == FilterOperator.EQUAL)
@@ -49,14 +53,36 @@ namespace net.esper.filter
 				return index;
 			}
 			
-			// Handle all RANGE comparisons
-			if (FilterOperatorHelper.IsRangeOperator( filterOperator ))
-			{
-				index = new FilterParamIndexRange(propertyName, filterOperator, eventType);
-				return index;
-			}
-			
-			throw new ArgumentException("Cannot create filter index instance for filter operator " + filterOperator);
+	        // Handle all normal and inverted RANGE comparisons
+	        if (filterOperator.IsRangeOperator)
+	        {
+	            index = new FilterParamIndexRange(propertyName, filterOperator, eventType);
+	            return index;
+	        }
+	        if (filterOperator.IsInvertedRangeOperator)
+	        {
+	            index = new FilterParamIndexNotRange(propertyName, filterOperator, eventType);
+	            return index;
+	        }
+
+	        // Handle all IN and NOT IN comparisons
+	        if (filterOperator == FilterOperator.IN_LIST_OF_VALUES)
+	        {
+	            index = new FilterParamIndexIn(propertyName, eventType);
+	            return index;
+	        }
+	        if (filterOperator == FilterOperator.NOT_IN_LIST_OF_VALUES)
+	        {
+	            index = new FilterParamIndexNotIn(propertyName, eventType);
+	            return index;
+	        }
+
+	        // Handle all boolean expression
+	        if (filterOperator == FilterOperator.BOOLEAN_EXPRESSION)
+	        {
+	            index = new FilterParamIndexBooleanExpr(eventType);
+	            return index;
+	        }
 		}
 	}
 }

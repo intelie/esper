@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.compat;
-using net.esper.events;
 using net.esper.pattern;
 
 namespace net.esper.filter
 {
 	/// <summary>
-    /// This class represents a single, constant value filter parameter in an <seealso cref="FilterSpec"/> filter specification.
+    /// This class represents a single, constant value filter parameter in an <seealso cref="FilterSpecCompiled"/> filter specification.
     /// </summary>
 	
     public sealed class FilterSpecParamConstant : FilterSpecParam
@@ -35,19 +34,14 @@ namespace net.esper.filter
 			}
 		}
 
-        /// <summary>
-        /// Gets the filter value class.
-        /// </summary>
-        /// <param name="taggedEventTypes">The tagged event types.</param>
-        /// <returns></returns>
-        public override Type GetFilterValueClass(EDictionary<String, EventType> taggedEventTypes)
-        {
-            if (filterConstant == null)
-            {
-                return null;
-            }
-            return filterConstant.GetType();
-        }
+	    /**
+	     * Returns the constant value.
+	     * @return constant value
+	     */
+	    public Object FilterConstant
+	    {
+	        get { return filterConstant; }
+	    }
 
         /// <summary>
         /// Return the filter parameter constant to filter for.

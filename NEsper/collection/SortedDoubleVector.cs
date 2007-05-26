@@ -103,7 +103,7 @@ namespace net.esper.collection
         {
             if (values.Count > 2)
             {
-                int startIndex = values.Count / 2;
+                int startIndex = values.Count >> 1 ;
                 double startValue = values[startIndex];
                 int insertAt = -1;
 
@@ -163,53 +163,56 @@ namespace net.esper.collection
 
         private int FindInsertIndex(int lowerBound, int upperBound, double val)
         {
-            if (upperBound == lowerBound)
-            {
-                double valueLowerBound = values[lowerBound];
-                if (val <= valueLowerBound)
-                {
-                    return lowerBound;
-                }
-                else
-                {
-                    return lowerBound + 1;
-                }
-            }
+			while( true )
+			{
+	            if (upperBound == lowerBound)
+	            {
+	                double valueLowerBound = values[lowerBound];
+	                if (val <= valueLowerBound)
+	                {
+	                    return lowerBound;
+	                }
+	                else
+	                {
+	                    return lowerBound + 1;
+	                }
+	            }
 
-            if (upperBound - lowerBound == 1)
-            {
-                double valueLowerBound = values[lowerBound];
-                if (val <= valueLowerBound)
-                {
-                    return lowerBound;
-                }
+	            if (upperBound - lowerBound == 1)
+	            {
+	                double valueLowerBound = values[lowerBound];
+	                if (val <= valueLowerBound)
+	                {
+	                    return lowerBound;
+	                }
 
-                double valueUpperBound = values[upperBound];
-                if (val > valueUpperBound)
-                {
-                    return upperBound + 1;
-                }
+	                double valueUpperBound = values[upperBound];
+	                if (val > valueUpperBound)
+	                {
+	                    return upperBound + 1;
+	                }
 
-                return upperBound;
-            }
+	                return upperBound;
+	            }
 
-            int nextMiddle = lowerBound + (upperBound - lowerBound) / 2;
-            double valueAtMiddle = values[nextMiddle];
+	            int nextMiddle = lowerBound + ((upperBound - lowerBound) >> 1);
+	            double valueAtMiddle = values[nextMiddle];
 
-            if (val < valueAtMiddle)
-            {
-                // find in lower half
-                return FindInsertIndex(lowerBound, nextMiddle - 1, val);
-            }
-            else if (val > valueAtMiddle)
-            {
-                // find in upper half
-                return FindInsertIndex(nextMiddle, upperBound, val);
-            }
-            else
-            {
-                return nextMiddle;
-            }
+	            if (val < valueAtMiddle)
+	            {
+	                // find in lower half
+	                upperBound = nextMiddle - 1;
+	            }
+	            else if (val > valueAtMiddle)
+	            {
+	                // find in upper half
+	                lowerBound = nextMiddle;
+	            }
+	            else
+	            {
+	                return nextMiddle;
+	            }
+			}
         }
     }
 }

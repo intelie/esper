@@ -131,7 +131,7 @@ namespace net.esper.events
 
             MapEventBean other = (MapEventBean)otherObject;
 
-            if (other.EventType != eventType)
+            if (other.eventType != eventType)
             {
                 return false;
             }

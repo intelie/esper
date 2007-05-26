@@ -3,7 +3,7 @@ using System;
 namespace net.esper.type
 {
     /// <summary>
-    /// Placeholder for a boolean value in an event expression.
+    /// Placeholder for a bool value in an event expression.
     /// </summary>
 
     public sealed class BoolValue : PrimitiveValueBase
@@ -38,7 +38,7 @@ namespace net.esper.type
         }
 
         /// <summary>
-        /// Set a boolean value.
+        /// Set a bool value.
         /// </summary>
         /// <value></value>
         override public bool _Boolean
@@ -61,23 +61,23 @@ namespace net.esper.type
         {
         }
 
-        /// <summary> Parse the boolean string.</summary>
+        /// <summary> Parse the bool string.</summary>
         /// <param name="value">is a bool value
         /// </param>
-        /// <returns> parsed boolean
+        /// <returns> parsed bool
         /// </returns>
         public static bool ParseString(String value)
         {
             bool rvalue;
             if (!Boolean.TryParse(value, out rvalue))
             {
-                throw new ArgumentException("Boolean value '" + value + "' cannot be converted to boolean");
+                throw new ArgumentException("Boolean value '" + value + "' cannot be converted to bool");
             }
 
             return rvalue;
         }
 
-        /// <summary> Parse the string array returning a boolean array.</summary>
+        /// <summary> Parse the string array returning a bool array.</summary>
         /// <param name="values">string array
         /// </param>
         /// <returns> typed array

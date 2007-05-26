@@ -20,7 +20,10 @@ namespace net.esper.pattern
         /// <returns>
         /// state node containing the truth value state for the operator
         /// </returns>
-        public override EvalStateNode NewState(Evaluator parentNode, MatchedEventMap beginState, PatternContext context)
+        public override EvalStateNode NewState(Evaluator parentNode,
+											   MatchedEventMap beginState,
+											   PatternContext context,
+											   Object stateNodeId)
         {
             if (log.IsDebugEnabled)
             {
@@ -32,7 +35,7 @@ namespace net.esper.pattern
                 throw new SystemException("Expected number of child nodes incorrect, expected >=2 nodes, found " + ChildNodes.Count);
             }
 
-            return new EvalAndStateNode(parentNode, this.ChildNodes, beginState, context);
+			return context.PatternStateFactory.MakeAndStateNode(parentNode, this, beginState, stateNodeId);
         }
 
         /// <summary>

@@ -1,7 +1,9 @@
 using System;
 using System.Reflection;
 
-using net.esper.compat;
+using net.esper.core;
+using net.esper.eql.core;
+using net.esper.events;
 
 using LogFactory = org.apache.commons.logging.LogFactory;
 using Log = org.apache.commons.logging.Log;
@@ -11,106 +13,85 @@ namespace net.esper.view
 	/// <summary>
     /// Static factory for creating view instances based on a view specification and a given parent view.
     /// </summary>
-	
-    public sealed class ViewFactory
+
+    public interface ViewFactory
 	{
-		/// <summary> Instantiates a view based on view name and parameters stored in the view spec, and attempts to
-		/// hook it up with a parent view.
-		/// </summary>
-		/// <param name="parentView">is the parent view to hook the new view into
-		/// </param>
-		/// <param name="spec">contains view name and parameters
-		/// </param>
-		/// <returns> instantiated and hooked-up view
-		/// </returns>
-		/// <throws>  ViewProcessingException if the view name is wrong, parameters don't match view constructors, or </throws>
-		/// <summary> the view refuses to hook up with its parent
-		/// </summary>
-		public static View Create(Viewable parentView, ViewSpec spec)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug(
-					".create Creating view, parentView.class=" + parentView.GetType().FullName + 
-					"  spec=" + spec.ToString());
-			}
-			
-			// Determine view class
-			ViewEnum viewEnum = ViewEnum.ForName(spec.ObjectNamespace, spec.ObjectName);
-			
-			if (viewEnum == null)
-			{
-				String message = "View name '" + spec.ObjectName + "' is not a known view name";
-				log.Fatal(".create " + message);
-				throw new ViewProcessingException(message);
-			}
-			
-			Object[] arguments = CollectionHelper.ToArray( spec.ObjectParameters ) ;
-			
-			// If the view requires parameters, the empty argument list would be a problem
-			// since all views are also objects.
-			if ((arguments.Length == 0) && (viewEnum.IsRequiresParameters))
-			{
-				String message = "No parameters have been supplied for view " + spec.ObjectName;
-				throw new ViewProcessingException(message);
-			}
-			
-			View view = null;
-			try
-			{
-                view = (View) Activator.CreateInstance( viewEnum.Clazz, arguments ) ; 
-				//view = (View) ConstructorUtils.invokeConstructor(viewEnum.Clazz, arguments);
-				
-				if (log.IsDebugEnabled)
-				{
-					log.Debug(".create Successfully instantiated view");
-				}
-			}
-			catch (MissingMethodException e)
-			{
-				String message =
-					"Error invoking constructor for view '" + spec.ObjectName +
-					"', the view parameter list is not valid for the view";
-				log.Fatal(".create " + message);
-				throw new ViewProcessingException(message, e);
-			}
-			catch (UnauthorizedAccessException e)
-			{
-				String message =
-					"Error invoking constructor for view '" + spec.ObjectName +
-					"', no invocation access";
-				log.Fatal(".create " + message);
-				throw new ViewProcessingException(message, e);
-			}
-			catch (TargetInvocationException e)
-			{
-				String message =
-					"Error invoking constructor for view '" + spec.ObjectName +
-					"', invocation threw exception: " + e.InnerException.Message;
-				log.Fatal(".create " + message);
-				throw new ViewProcessingException(message, e);
-			}
-			catch (System.Exception e)
-			{
-				String message =
-					"Error invoking constructor for view '" + spec.ObjectName +
-					"', could not instantiateChain";
-				log.Fatal(".create " + message);
-				throw new ViewProcessingException(message, e);
-			}
-			
-			// Ask view if it can indeed hook into the parent
-			String errorMessage = view.AttachesTo(parentView);
-			if (errorMessage != null)
-			{
-				String message = "Cannot attach view, the view '" + spec.ObjectName + "' is incompatible to its parent view, explanation: " + errorMessage;
-				log.Fatal(".create " + message);
-				throw new ViewProcessingException(message);
-			}
-			
-			return view;
-		}
-		
-		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	    /// <summary>Indicates user EQL query view parameters to the view factory.</summary>
+	    /// <param name="viewFactoryContext">
+	    /// supplied context information for the view factory
+	    /// </param>
+	    /// <param name="viewParameters">is the objects representing the view parameters</param>
+	    /// <throws>
+	    /// ViewParameterException if the parameters don't match view parameter needs
+	    /// </throws>
+	    void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters);
+
+	    /// <summary>
+	    /// Attaches the factory to a parent event type such that the factory can validate
+	    /// attach requirements and determine an event type for resulting views.
+	    /// </summary>
+	    /// <param name="parentEventType">
+	    /// is the parent event stream's or view factory's event type
+	    /// </param>
+	    /// <param name="statementContext">
+	    /// contains the services needed for creating a new event type
+	    /// </param>
+	    /// <param name="optionalParentFactory">
+	    /// is null when there is no parent view factory, or contains the
+	    /// parent view factory
+	    /// </param>
+	    /// <param name="parentViewFactories">
+	    /// is a list of all the parent view factories or empty list if there are none
+	    /// </param>
+	    /// <throws>
+	    /// ViewAttachException is thrown to indicate that this view factories's view would not play
+	    /// with the parent view factories view
+	    /// </throws>
+	    void Attach(EventType parentEventType,
+	                StatementContext statementContext,
+	                ViewFactory optionalParentFactory,
+					IList<ViewFactory> parentViewFactories);
+
+	    /// <summary>
+	    /// Returns true if the view factory can make views that provide a view resource with the
+	    /// given capability.
+	    /// </summary>
+	    /// <param name="viewCapability">is the view resource needed</param>
+	    /// <returns>
+	    /// true to indicate that the view can provide the resource, or false if not
+	    /// </returns>
+	    bool CanProvideCapability(ViewCapability viewCapability);
+
+	    /// <summary>
+	    /// Indicates to the view factory to provide the view resource indicated.
+	    /// </summary>
+	    /// <param name="viewCapability">is the required resource descriptor</param>
+	    /// <param name="resourceCallback">
+	    /// is the callback to use to supply the resource needed
+	    /// </param>
+	    void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback);
+
+	    /// <summary>Create a new view.</summary>
+	    /// <param name="statementContext">contains view services</param>
+	    /// <returns>new view</returns>
+	    View MakeView(StatementContext statementContext);
+
+	    /// <summary>
+	    /// Returns the event type that the view that is created by the view factory would create for events posted
+	    /// by the view.
+	    /// </summary>
+	    /// <returns>event type of view's created by the view factory</returns>
+	    EventType EventType { get ; }
+
+	    /// <summary>
+	    /// Determines if the given view could be used instead of creating a new view,
+	    /// requires the view factory to compare view type, parameters and other capabilities provided.
+	    /// </summary>
+	    /// <param name="view">is the candidate view to compare to</param>
+	    /// <returns>
+	    /// true if the given view can be reused instead of creating a new view, or false to indicate
+	    /// the view is not right for reuse
+	    /// </returns>
+	    bool CanReuse(View view);
 	}
 }
