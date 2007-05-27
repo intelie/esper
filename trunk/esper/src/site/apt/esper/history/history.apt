@@ -1,0 +1,433 @@
+Change History
+~~~~~~~~~~~~~~
+
+	This section lists the changes between Esper releases. The changes introduced in each release are split into the following categories.
+
+	* <<API changes>>: Any changes to the API that may impact existing users.
+	
+	* <<Major changes>>: Major new features.
+
+	* <<Minor changes>>: Smaller changes and bug fixes.
+	
+	[]
+
+
+Version 1.8.0 Update
+
+	Released April 22, 2007
+		
+* API changes
+
+    * None
+    
+* Major changes
+
+    * Support for subqueries including the exists and subquery-in syntax (ESPER-22 support for subqueries)
+    
+    * Support for plug-in user-defined aggregation methods, and plug-in pattern observer and pattern guard objects (ESPER-40) 
+
+* Minor changes	
+    
+    * Fixed issue ESPER-93 "Improve error handling parsing too large Integer numbers and remove L suffix requirement for Long"
+    
+    * Fixed issue ESPER-94 "Performance degradation for certain statement between 1.4 and 1.5 of 25%"
+    
+    * Fixed issue ESPER-96 "Cache result of user-defined functions when parameter set is constants"
+
+
+Version 1.7.0 Update
+
+	Released March 18, 2007
+		
+* API changes
+
+    * New statement management API (ESPER-90)
+    
+        * Note: Starting this release the engine remembers stopped statements, however a stopped statement takes very little memory. Destroy a statement to eliminate any resources held by an engine for a statement.
+    
+* Major changes
+
+    * Support for free-form filter expressions (User-defined filter functions ESPER-77, Pattern Filter - null value support ESPER-17, ESPER-91)
+    
+    * New JMS input and output adapter based on Spring JMS templates (ESPER-4, ESPER-8, ESPER-7)
+    
+    * Support for adding new event type aliases and Map and DOM event types during runtime (ESPER-87)
+    	
+    * Support for plugging-in a custom-developed view (ESPER-41)
+
+* Minor changes	
+    
+    * Allow literal keywords to be case insensitive (ESPER-89)
+    
+    * More helpful error messages when invalid syntax (ESPER-82)
+    
+    * Fixed issue ESPER-86 "selecting first element via prev and count(*)"
+
+    * Fixed issue ESPER-92 "String with parantheses not parsing in static method arg"
+
+
+Version 1.6.0 Update
+
+	Released February 17, 2007
+		
+* API changes
+
+    * None
+    
+* Major changes
+
+    * Added support for group-by and previous (ESPER-80 Prev function to consider grouped windows)
+    
+    * Added length window batch (ESPER-27 jumping/tumbling window)
+    
+    * Added support for array definition (Enhancement Request ESPER-76 Java array initialization syntax for constants)
+    	
+    * Removed dependency on Apache Common BeanUtils (commons-beanutils-1.7.0.jar)
+
+* Minor changes	
+    
+    * Documentation - Output model illustrations for time windows and event model; Extensive description of built-in views
+
+    * Fixed issue ESPER-78 "Insert-into streams not using correct event type when same-typed streams"
+
+
+Version 1.5.0 Update
+
+	Released January 11, 2007
+		
+* API changes
+
+    * None
+    
+* Major changes
+
+    * Multithread-safety for all operations provided by the administrative and runtime API. Client applications can perform multithreaded sends of events into the engine as well as create, start and stop statements during operation, while retaining full control over threading and efficiently sharing resources between statements
+    	
+* Minor changes	
+    
+    * Documentation - new chapter explaining the output model
+
+    * Fixed issue ESPER-75 "PropertyAccessException selecting individual fields from a group-by with sub-ordinate length window"
+
+
+Version 1.4.0 Update + Release of new EsperIO API
+
+	Released December 26, 2006
+		
+* API changes
+
+    * New Esper Input Adapter API for reading CSV (comma-separated value format) files 
+      and running event simulations from timestamped CSV files (ESPER-6 Input Adapter for reading CSV files)
+    
+* Major changes
+
+    * Added support for 'prior' and 'prev' (previous) operator (Enhancement request ESPER-25)
+    
+    * Added support for 'in' and 'not in' list-of-value matching in filter expressions, 
+      and for 'between' and 'not between' keywords, and 'not in' ranges (Enhancement request ESPER-66)
+      
+    * Added support for modifying events in a stream, i.e. wildcard and expressions combined in a select-clause and insert into (Enhancement request ESPER-67)
+    	
+* Minor changes	
+    
+    * Fixed issue ESPER-69 "Pull throws UnsupportedOperationException for statement not selecting wildcard"
+    
+    * Fixed issue ESPER-68 "Followed-by operator not releasing memory for dead sub-expressions"
+
+    * Various documentation enhancements and performance tuning changes
+
+
+Version 1.3.0 (update)
+
+	Released November 14, 2006
+		
+* API changes
+
+	* None  
+    
+* Major changes
+
+    * Added support for SQL queries within EQL (Enhancement request ESPER-30)
+
+    * Added support for regular expressions (regexp) and SQL 'like' (Enhancement request ESPER-65)
+	
+* Minor changes	
+
+    * None
+    
+
+Version 1.2.0 (update)
+
+	Released October 26, 2006
+		
+* API changes
+
+	* None  (Please NOTE any EQL changes as below)
+    
+* Major changes
+
+    * NOTE: The following pattern elements now take seconds (not milliseconds) as a parameter (fixes ESPER-52) : 
+               timer:within, timer:interval, win:ext_time
+
+    * Added new syntax for specifying time periods; Example: <<<timer:within(1 min 5 sec)>>> is equivalent to <<<timer:within(65)>>>
+
+    * Added support for 'in' and 'between' standard SQL keywords	
+    
+    * Added support EventType adaptors for legacy Java classes (Enhancement request ESPER-55)
+    
+    * Added support for != (not equals) in filter expressions (Enhancement request ESPER-63)
+    
+    * Added support for select-clause istream and rstream keywords (Enhancement request ESPER-54)
+	
+* Minor changes	
+
+    * Fixed issue ESPER-52 "EQL windows take seconds parameter while patterns take milliseconds parameter"
+    
+    * Fixed issue ESPER-58 "IllegalMonitorStateException logged by engine"
+    
+    * Added J2EE example (Enhancement request ESPER-64)
+    
+    * Added docs for "How does one use emit" (Enhancement request ESPER-62)
+
+
+Version 1.1.0 (update)
+
+	Released September 19, 2006
+		
+* API changes
+
+	* None
+    
+* Major changes
+
+    * Added support for pattern expressions in EQL statements (Enhancement request ESPER-53 Consuming pattern-generated events in EQL)
+	
+    * Added 'case' control flow function
+    
+    * Added 'coalesce' comparison function	
+	
+* Minor changes	
+
+    * fixed issue ESPER-56 "count(*) always returns 0"
+    
+    * fixed issue ESPER-59 "Internal Threading Bugs Found"
+    
+    * fixed issue ESPER-57 "Initialize not resetting types declared via 'insert into'"
+    
+    * fixed issue ESPER-61 "Having clause not applied in query without group-by and without aggregation functions"
+    
+    * documentation enhancements
+	
+	[]
+
+
+Version 1.0.5 (update)
+
+	Released August 22, 2006
+		
+* API changes
+
+    * Added methods to net.esper.client.Configuration and EPRuntime to configure and process XML DOM and Map events
+    
+* Major changes
+
+	* Added support for the "first" keyword in output rate limiting for outputting only the first matching event for an interval
+	
+	* Added support for XML events represented by a document object model (DOM) instances of org.w3c.dom.Node
+	
+	* Added support for Map events represented by a java.util.Map including object values
+	
+* Minor changes	
+
+	* New AutoId RFID example for XML event processing, includes simulator for running from the command line
+	
+	* New chapter on Event Representations
+	
+	[]
+
+
+Version 1.0.0 (final production)
+
+	Released July 24, 2006
+		
+* API changes
+
+    * Added method on Configuration to add auto-import
+
+* Major changes
+
+	* Added support for invoking Java library static methods, invoking user-defined static methods, and defining an auto-import list
+	
+	* Sort view ext:sort now also allowing multiple columns to sort on
+	
+	* Added NOT, modulo (%) and SQL string concatention operator (||)
+	
+* Minor changes	
+
+	* New example 'Market Feed Monitor' which showcases rate calculation and fall-off detection. With a simulator to run from a command line.
+	
+	* Build scripts now build Linux tarball; Shell scripts for compiling and running examples reworked.
+	
+	[]
+	
+
+Version 0.9.5 (Beta enhancements release)
+
+	Released July 3, 2006
+		
+* API changes
+
+    * None
+
+* Major changes
+
+	* Support for "insert into" clause allowing chains of EQL statements and merging of event streams
+	
+	* Capability added to sort output using an "order-by" clause
+	
+	* Support for bit-wise AND (&), OR (|) and XOR(^) operators
+	
+* Minor changes	
+
+	* Bug fix for allowing boolean expression in select clauses, such as "select a and b from MyEvent..."
+	
+
+Version 0.9.1 (Beta bug fix release)
+
+	Released June 10, 2006
+		
+* API changes
+
+	* None
+
+* Major changes
+
+    * None
+	
+* Minor changes	
+
+	* New EQL example 'Transaction 3-event challenge' which shows EQL in use for detecting missing events and
+computing latency totals overall and grouped. Added scripts for compiling and executing the example.
+	
+	* Bug fix in EQL for statements that contain only aggregation functions in the select clause such as 
+"select sum(volume) from StockTick". The engine was incorrectly posting an event per event posted 
+by the stream's window, rather then a single aggregate event.
+
+	* Bug fix in EQL group-statements by without output rate limiting. This problem occured using a group-by clause
+without output rate limit and resulted in multiple events posted that include prior groups for each event posted 
+by the window.
+
+
+Version 0.9.0 (Beta Release)
+
+	Released June 4, 2006
+		
+* API changes
+
+	* None
+
+* Major changes
+
+    * Support for output rate limiting based on number of events and time-based, and choice of last or all events
+
+    * Support for outer joins for an unlimited number of event streams (was limited to 2 streams)
+
+    * Renamed view "std:last" to "std:lastevent"
+	
+* Minor changes	
+	
+    * New example computing RSI (a financial indicator) using a simple pattern listener
+
+    * New reserved keywords: last, events, output, seconds, minutes
+
+
+Version 0.8.5 (Beta Release)
+
+	Released April 22, 2006
+		
+* API changes
+
+	* None
+
+* Major changes
+
+	* Group-by view has been renamed from "std:group" to "std:groupby" since group is a reserved keyword
+
+	* Support for the "group by" and "having" clauses
+
+	* Support for aggregation functions: max, min, sum, avg, count, median, stddev, avedev; including distinct and count(*)
+	
+* Minor changes	
+	
+	* The univariate statistics view "stat:uni" changed the name of derived event properties to "stddev" and "stddevpa" from formerly 
+"stdev" and "stdevpa" to stay consistent with the aggregate functions of the same name
+
+
+Version 0.8.0 (Beta Release)
+
+	Released March. 24, 2006.
+		
+* API changes
+
+	* Renamed method on Configuration for configuring event type alias
+
+* Major changes
+
+	* Support for event inheritance and interface implementation, polymorphism, superclasses
+
+	* Support for simple, mapped, indexed, nested and combinations of event properties
+
+	* Refined exception texts to better indicate problem reasons
+	
+* Minor changes
+	
+	* Documentation enhancements
+	
+	* Configuration XML file schema changes: renamed 'event' tag to 'event-type' and replaced 'name' with 'alias'
+
+
+Version 0.7.5 (Alpha Release)
+
+	Released Feb. 21, 2006.
+		
+* API changes
+
+	* Added optional Configuration parameter to EPServiceProviderManager to control engine configuration
+
+* Major changes
+
+	* EQL supports outer joins: left, right and full join on 2 streams
+	
+	* EQL supports IS NULL, = NULL, IS NOT NULL, <> and !=
+	
+	* EQL allows new built-in function MAX(a, b,...) and MIN(a, b,...)
+	
+	* Event Pattern use of results in filters, such as "every a=EventX -> every b=EventY(objectID=a.objectID)"
+	
+	* EQL and Event Pattern: Removed requirement that event names have () postfix, e.g. 'every a=X' is now equivalent to 'every a=X()'
+	
+* Minor changes
+
+	* Event Patterns - improved removal of permanently false patterns (e.g. B arrives in 'A and not B')
+	
+	* Documentation enhancements
+	
+	* Added ATM sample to show simple join
+	
+
+Version 0.7.0 (Alpha Release)
+
+	Released Jan. 16, 2006.
+		
+* API changes
+
+	* None
+
+* Major changes
+
+	* None
+
+* Minor changes
+
+	* None
+	
