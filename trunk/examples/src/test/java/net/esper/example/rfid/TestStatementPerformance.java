@@ -75,10 +75,10 @@ public class TestStatementPerformance extends TestCase
     public void testPerformance() throws Exception
     {
         // Number of seconds the total test runs
-        int numSeconds = 60;
+        int numSeconds = 5;    // usually 60
 
         // Number of asset groups
-        int numAssetGroups = 1000;
+        int numAssetGroups = 100;      // usually 1000
 
         // Number of threads
         int numThreads = 2;
@@ -87,7 +87,7 @@ public class TestStatementPerformance extends TestCase
         int ratioZoneMove= 3;
 
         // Ratio of events indicating that the asset group split between zones, i.e. only some assets in a group move to a new zone
-        int ratioZoneSplit = 1000000;
+        int ratioZoneSplit = 1000000;       // usually 1000000;
         
         tryPerf(numSeconds, numAssetGroups, numThreads, ratioZoneMove, ratioZoneSplit);
     }

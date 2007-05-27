@@ -10,8 +10,8 @@ import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -25,8 +25,10 @@ public class OutputProcessViewPolicy extends OutputProcessView
 {
     private final boolean outputLastOnly;
     private final OutputCondition outputCondition;
-    private List<EventBean> newEventsList = new LinkedList<EventBean>();
-	private List<EventBean> oldEventsList = new LinkedList<EventBean>();
+
+    // Posted events in ordered form (for applying to aggregates) and summarized per type
+    private List<EventBean> newEventsList = new ArrayList<EventBean>();
+	private List<EventBean> oldEventsList = new ArrayList<EventBean>();    
 	private Set<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
 	private Set<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
 
@@ -175,7 +177,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		oldEventsList.clear();
 		newEventsSet.clear();
 		oldEventsSet.clear();
-	}
+    }
 
 	/**
 	 * Called once the output condition has been met.

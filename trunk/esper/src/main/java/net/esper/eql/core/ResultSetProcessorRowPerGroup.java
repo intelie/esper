@@ -95,16 +95,6 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         EventBean[] selectOldEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingExpr, oldEventGroupReps, oldGenerators, false);
 
         // update aggregates
-        if (!oldEvents.isEmpty())
-        {
-            // apply old data to aggregates
-            int count = 0;
-            for (MultiKey<EventBean> eventsPerStream : oldEvents)
-            {
-                aggregationService.applyLeave(eventsPerStream.getArray(), oldDataMultiKey[count]);
-                count++;
-            }
-        }
         if (!newEvents.isEmpty())
         {
             // apply old data to aggregates
@@ -112,6 +102,16 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             for (MultiKey<EventBean> eventsPerStream : newEvents)
             {
                 aggregationService.applyEnter(eventsPerStream.getArray(), newDataMultiKey[count]);
+                count++;
+            }
+        }
+        if (!oldEvents.isEmpty())
+        {
+            // apply old data to aggregates
+            int count = 0;
+            for (MultiKey<EventBean> eventsPerStream : oldEvents)
+            {
+                aggregationService.applyLeave(eventsPerStream.getArray(), oldDataMultiKey[count]);
                 count++;
             }
         }
@@ -138,15 +138,6 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
         // update aggregates
         EventBean[] eventsPerStream = new EventBean[1];
-        if (oldData != null)
-        {
-            // apply old data to aggregates
-            for (int i = 0; i < oldData.length; i++)
-            {
-                eventsPerStream[0] = oldData[i];
-                aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[i]);
-            }
-        }
         if (newData != null)
         {
             // apply new data to aggregates
@@ -154,6 +145,15 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             {
                 eventsPerStream[0] = newData[i];
                 aggregationService.applyEnter(eventsPerStream, newDataMultiKey[i]);
+            }
+        }
+        if (oldData != null)
+        {
+            // apply old data to aggregates
+            for (int i = 0; i < oldData.length; i++)
+            {
+                eventsPerStream[0] = oldData[i];
+                aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[i]);
             }
         }
 

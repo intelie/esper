@@ -76,21 +76,21 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false);
         }
 
-        if (!oldEvents.isEmpty())
-        {
-            // apply old data to aggregates
-            for (MultiKey<EventBean> events : oldEvents)
-            {
-                aggregationService.applyLeave(events.getArray(), null);
-            }
-        }
-
         if (!newEvents.isEmpty())
         {
             // apply new data to aggregates
             for (MultiKey<EventBean> events : newEvents)
             {
                 aggregationService.applyEnter(events.getArray(), null);
+            }
+        }
+
+        if (!oldEvents.isEmpty())
+        {
+            // apply old data to aggregates
+            for (MultiKey<EventBean> events : oldEvents)
+            {
+                aggregationService.applyLeave(events.getArray(), null);
             }
         }
 
@@ -127,16 +127,6 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         }
 
         EventBean[] eventsPerStream = new EventBean[1];
-        if (oldData != null)
-        {
-            // apply old data to aggregates
-            for (int i = 0; i < oldData.length; i++)
-            {
-                eventsPerStream[0] = oldData[i];
-                aggregationService.applyLeave(eventsPerStream, null);
-            }
-        }
-
         if (newData != null)
         {
             // apply new data to aggregates
@@ -144,6 +134,15 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             {
                 eventsPerStream[0] = newData[i];
                 aggregationService.applyEnter(eventsPerStream, null);
+            }
+        }
+        if (oldData != null)
+        {
+            // apply old data to aggregates
+            for (int i = 0; i < oldData.length; i++)
+            {
+                eventsPerStream[0] = oldData[i];
+                aggregationService.applyLeave(eventsPerStream, null);
             }
         }
 

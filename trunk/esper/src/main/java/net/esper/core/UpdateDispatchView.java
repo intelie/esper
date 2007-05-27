@@ -69,7 +69,7 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
         {
             ViewSupport.dumpUpdateParams(".update for view " + this, newData, oldData);
         }
-        if (newData != null)
+        if ((newData != null) && (newData.length > 0))
         {
             lastIterableEvent = newData[0];
             lastNewEvents.get().add(newData);

@@ -7,13 +7,12 @@
  **************************************************************************************/
 package net.esper.eql.core;
 
-import net.esper.event.EventType;
-import net.esper.event.EventBean;
-import net.esper.collection.Pair;
 import net.esper.collection.MultiKey;
+import net.esper.collection.Pair;
 import net.esper.eql.agg.AggregationService;
-import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.expression.ExprNode;
+import net.esper.event.EventBean;
+import net.esper.event.EventType;
 
 import java.util.Set;
 
@@ -58,21 +57,20 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
         selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
 
-        if (!oldEvents.isEmpty())
-        {
-            // apply old data to aggregates
-            for (MultiKey<EventBean> events : oldEvents)
-            {
-                aggregationService.applyLeave(events.getArray(), null);
-            }
-        }
-
         if (!newEvents.isEmpty())
         {
             // apply new data to aggregates
             for (MultiKey<EventBean> events : newEvents)
             {
                 aggregationService.applyEnter(events.getArray(), null);
+            }
+        }
+        if (!oldEvents.isEmpty())
+        {
+            // apply old data to aggregates
+            for (MultiKey<EventBean> events : oldEvents)
+            {
+                aggregationService.applyLeave(events.getArray(), null);
             }
         }
 
@@ -92,26 +90,26 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
         selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
 
-        EventBean[] buffer = new EventBean[1];
-        if (oldData != null)
-        {
-            // apply old data to aggregates
-            for (int i = 0; i < oldData.length; i++)
-            {
-                buffer[0] = oldData[i];
-                aggregationService.applyLeave(buffer, null);
-            }
-        }
-
+        EventBean[] eventsPerStream = new EventBean[1];
         if (newData != null)
         {
             // apply new data to aggregates
             for (int i = 0; i < newData.length; i++)
             {
-                buffer[0] = newData[i];
-                aggregationService.applyEnter(buffer, null);
+                eventsPerStream[0] = newData[i];
+                aggregationService.applyEnter(eventsPerStream, null);
             }
         }
+        if (oldData != null)
+        {
+            // apply old data to aggregates
+            for (int i = 0; i < oldData.length; i++)
+            {
+                eventsPerStream[0] = oldData[i];
+                aggregationService.applyLeave(eventsPerStream, null);
+            }
+        }
+
 
         // generate new events using select expressions
         selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
