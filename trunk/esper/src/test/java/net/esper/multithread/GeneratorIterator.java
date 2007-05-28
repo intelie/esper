@@ -25,7 +25,7 @@ public class GeneratorIterator implements Iterator<Object>
     }
 
     public Object next()
-    {
+    {     
         if (numEvents >= maxNumEvents)
         {
             throw new NoSuchElementException();

@@ -22,7 +22,7 @@ public final class MatchedEventMapImpl implements MatchedEventMap
     {
     }
 
-    private MatchedEventMapImpl(Map<String, EventBean> events)
+    public MatchedEventMapImpl(Map<String, EventBean> events)
     {
         this.events = events;
     }

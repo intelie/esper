@@ -102,7 +102,7 @@ public class TestMemoryMinAllHaving extends TestCase
         log.info("Sending batch " + loop + " startTime=" + startTime + " endTime=" + endTime);
         sendTimer(startTime);
 
-        for (int i = 0; i < 100000; i++)
+        for (int i = 0; i < 1000; i++)
         {
             double price = 50 + 49 * random.nextInt(20) / 100.0;
             sendEvent(price);

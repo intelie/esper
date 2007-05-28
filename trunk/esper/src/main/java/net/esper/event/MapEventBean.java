@@ -8,7 +8,7 @@ import java.util.HashMap;
  * MapEventBean instances are equal if they have the same {@link EventType} and all property names
  * and values are reference-equal. 
  */
-class MapEventBean implements EventBean
+public class MapEventBean implements EventBean
 {
     private EventType eventType;
     private Map<String, Object> properties;
@@ -20,7 +20,7 @@ class MapEventBean implements EventBean
      * @param properties are the event property values
      * @param eventType is the type of the event, i.e. describes the map entries
      */
-    protected MapEventBean(Map<String, Object> properties, EventType eventType)
+    public MapEventBean(Map<String, Object> properties, EventType eventType)
     {
         this.properties = new HashMap<String, Object>();
         this.properties.putAll(properties);

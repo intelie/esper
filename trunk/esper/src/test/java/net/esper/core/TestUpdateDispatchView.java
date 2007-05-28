@@ -13,7 +13,7 @@ import net.esper.support.event.SupportEventBeanFactory;
 
 public class TestUpdateDispatchView extends TestCase
 {
-    private UpdateDispatchView updateDispatchView;
+    private UpdateDispatchViewBlocking updateDispatchView;
     private SupportUpdateListener listenerOne;
     private SupportUpdateListener listenerTwo;
     private DispatchService dispatchService;
@@ -28,7 +28,7 @@ public class TestUpdateDispatchView extends TestCase
         listeners.add(listenerTwo);
 
         dispatchService = new DispatchServiceImpl();
-        updateDispatchView = new UpdateDispatchView(listeners, dispatchService);
+        updateDispatchView = new UpdateDispatchViewBlocking(listeners, dispatchService);
     }
 
     public void testUpdateOnceAndDispatch()

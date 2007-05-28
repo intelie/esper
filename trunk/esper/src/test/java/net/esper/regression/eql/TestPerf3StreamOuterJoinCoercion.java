@@ -35,14 +35,14 @@ public class TestPerf3StreamOuterJoinCoercion extends TestCase
         stmt.addListener(listener);
 
         // preload
-        for (int i = 0; i < 5000; i++)
+        for (int i = 0; i < 10000; i++)
         {
             sendEvent("B", 0, i, 0);
             sendEvent("C", 0, 0, i);
         }
 
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 5000; i++)
         {
             int index = 5000 + i % 1000;
             sendEvent("A", index, 0, 0);
@@ -70,7 +70,7 @@ public class TestPerf3StreamOuterJoinCoercion extends TestCase
         stmt.addListener(listener);
 
         // preload
-        for (int i = 0; i < 5000; i++)
+        for (int i = 0; i < 10000; i++)
         {
             sendEvent("B", 0, i, 0);
             sendEvent("A", i, 0, 0);
@@ -78,7 +78,7 @@ public class TestPerf3StreamOuterJoinCoercion extends TestCase
 
         listener.reset();
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 5000; i++)
         {
             int index = 5000 + i % 1000;
             sendEvent("C", 0, 0, index);
@@ -106,7 +106,7 @@ public class TestPerf3StreamOuterJoinCoercion extends TestCase
         stmt.addListener(listener);
 
         // preload
-        for (int i = 0; i < 5000; i++)
+        for (int i = 0; i < 10000; i++)
         {
             sendEvent("A", i, 0, 0);
             sendEvent("C", 0, 0, i);
@@ -114,7 +114,7 @@ public class TestPerf3StreamOuterJoinCoercion extends TestCase
 
         listener.reset();
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 5000; i++)
         {
             int index = 5000 + i % 1000;
             sendEvent("B", 0, index, 0);

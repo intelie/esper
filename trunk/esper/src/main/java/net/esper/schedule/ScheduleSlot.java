@@ -49,4 +49,9 @@ public class ScheduleSlot implements Comparable<ScheduleSlot>, MetaDefItem
 
         return 0;
     }
+
+    public String toString()
+    {
+        return "bucket/slot=" + bucketNum + "/" + slotNum;
+    }
 }

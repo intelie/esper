@@ -220,9 +220,10 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
 
         // Dispatch results to listeners
+        // Done outside of the read-lock to prevent lockups when listeners create statements
         dispatch();
 
-        // Work off the event queue if any events accumulated in there via a route()
+        // Work off the event queue if any events accumulated in there via a route() or insert-into
         processThreadWorkQueue();
     }
 

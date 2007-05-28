@@ -13,6 +13,8 @@ import java.util.Set;
  */
 public interface StatementLifecycleSvc
 {
+    public void init();
+
     /**
      * Create and start the statement.
      * @param statementSpec is the statement definition in bean object form, raw unvalidated and unoptimized.

@@ -37,13 +37,13 @@ public class TestPerf2StreamSimpleJoinCoercion extends TestCase
         statement.addListener(listener);
 
         // preload
-        for (int i = 0; i < 5000; i++)
+        for (int i = 0; i < 10000; i++)
         {
             epService.getEPRuntime().sendEvent(makeSupportEvent("A", 0, i));
         }
 
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 5000; i++)
         {
             int index = 5000 + i % 1000;
             epService.getEPRuntime().sendEvent(makeSupportEvent("B", index, 0));
@@ -66,13 +66,13 @@ public class TestPerf2StreamSimpleJoinCoercion extends TestCase
         statement.addListener(listener);
 
         // preload
-        for (int i = 0; i < 5000; i++)
+        for (int i = 0; i < 10000; i++)
         {
             epService.getEPRuntime().sendEvent(makeSupportEvent("A", i, 0));
         }
 
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 5000; i++)
         {
             int index = 5000 + i % 1000;
             epService.getEPRuntime().sendEvent(makeSupportEvent("B", 0, index));

@@ -1,17 +1,17 @@
 package net.esper.core;
 
-import java.util.Iterator;
+import net.esper.view.ViewSupport;
+import net.esper.dispatch.Dispatchable;
+import net.esper.dispatch.DispatchService;
+import net.esper.client.UpdateListener;
+import net.esper.event.EventBean;
+import net.esper.event.EventType;
+import net.esper.event.EventBeanUtility;
+import net.esper.collection.SingleEventIterator;
+
 import java.util.Set;
 import java.util.LinkedList;
-
-import net.esper.client.UpdateListener;
-import net.esper.dispatch.DispatchService;
-import net.esper.dispatch.Dispatchable;
-import net.esper.event.EventBean;
-import net.esper.event.EventBeanUtility;
-import net.esper.event.EventType;
-import net.esper.view.ViewSupport;
-import net.esper.collection.SingleEventIterator;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
  * Convenience view for dispatching view updates received from a parent view to update listeners
  * via the dispatch service.
  */
-public class UpdateDispatchView extends ViewSupport implements Dispatchable
+public class UpdateDispatchViewNonBlocking extends ViewSupport implements Dispatchable
 {
     private Set<UpdateListener> updateListeners;
     private final DispatchService dispatchService;
@@ -48,7 +48,7 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
      * @param updateListeners - listeners to update
      * @param dispatchService - for performing the dispatch
      */
-    public UpdateDispatchView(Set<UpdateListener> updateListeners, DispatchService dispatchService)
+    public UpdateDispatchViewNonBlocking(Set<UpdateListener> updateListeners, DispatchService dispatchService)
     {
         this.updateListeners = updateListeners;
         this.dispatchService = dispatchService;
@@ -125,6 +125,5 @@ public class UpdateDispatchView extends ViewSupport implements Dispatchable
         lastIterableEvent = null;
     }
 
-    private static Log log = LogFactory.getLog(UpdateDispatchView.class);
+    private static Log log = LogFactory.getLog(UpdateDispatchViewNonBlocking.class);
 }
-

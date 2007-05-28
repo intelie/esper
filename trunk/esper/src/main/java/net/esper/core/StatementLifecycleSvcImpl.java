@@ -32,6 +32,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private final Map<String, EPStatementDesc> stmtIdToDescMap;
     private final Map<String, EPStatement> stmtNameToStmtMap;
 
+    public void init() {}
+
     /**
      * Ctor.
      * @param services is engine services

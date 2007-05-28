@@ -21,7 +21,33 @@ public class TestOutputLimitFirst extends TestCase
 		epService = EPServiceProviderManager.getProvider("TestOutputLimitFirst");
 	}
 	
-	public void testTime()
+    public void testOutputNoEvent()
+    {
+        epService.initialize();
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimeEvent(0);
+
+        String statementText = "select symbol from " + EVENT_NAME + ".std:lastevent() output every 5 seconds";
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementText);
+        updateListener = new SupportUpdateListener();
+        statement.addListener(updateListener);
+
+        sendTimeEvent(5000);
+        sendTimeEvent(5000);
+        sendTimeEvent(5000);
+        assertFalse(updateListener.isInvoked());
+
+        sendEvent(30L);
+        assertFalse(updateListener.isInvoked());
+        
+        sendTimeEvent(5000);
+        assertTrue(updateListener.getAndClearIsInvoked());
+
+        sendTimeEvent(5000);
+        assertTrue(updateListener.getAndClearIsInvoked());
+    }
+
+    public void testTime()
 	{
     	// Clear any old events
         epService.initialize();

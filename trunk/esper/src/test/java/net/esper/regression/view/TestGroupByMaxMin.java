@@ -3,6 +3,9 @@ package net.esper.regression.view;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPRuntime;
+import net.esper.client.time.TimerControlEvent;
+import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBeanString;
@@ -211,6 +214,13 @@ public class TestGroupByMaxMin extends TestCase
     {
         SupportMarketDataBean bean = new SupportMarketDataBean(symbol, 0, volume, null);
         epService.getEPRuntime().sendEvent(bean);
+    }
+
+    private void sendTimer(long timeInMSec)
+    {
+        CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
+        EPRuntime runtime = epService.getEPRuntime();
+        runtime.sendEvent(event);
     }
 
     private static final Log log = LogFactory.getLog(TestGroupByMaxMin.class);

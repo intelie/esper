@@ -11,6 +11,10 @@
       </layout>
    </appender>
 
+   <logger name="net.esper.multithread.TestMTStmtDeterministic">
+      <level value="DEBUG"/>
+   </logger>
+
    <logger name="net.esper">
       <level value="INFO"/>
    </logger>

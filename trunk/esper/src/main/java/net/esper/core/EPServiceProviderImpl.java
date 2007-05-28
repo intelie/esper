@@ -151,6 +151,9 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         services.setInternalEventRouter(runtime);
         services.getTimerService().setCallback(runtime);
 
+        // Statement lifycycle init
+        services.getStatementLifecycleSvc().init();
+
         // New admin
         ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService(), services.getEngineImportService());
         EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps);
