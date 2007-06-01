@@ -1,0 +1,79 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6B178E01-D598-4D42-BA2A-B215CC87D85E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NEsper.IO</RootNamespace>
+    <AssemblyName>NEsper.IO</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="commons-logging, Version=1.0.2606.16893, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\commons-logging.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbstractCoordinatedAdapter.cs" />
+    <Compile Include="Adapter.cs" />
+    <Compile Include="AdapterCoordinator.cs" />
+    <Compile Include="AdapterCoordinatorImpl.cs" />
+    <Compile Include="AdapterInputSource.cs" />
+    <Compile Include="AdapterSPI.cs" />
+    <Compile Include="AdapterState.cs" />
+    <Compile Include="AdapterStateManager.cs" />
+    <Compile Include="CoordinatedAdapter.cs" />
+    <Compile Include="csv\CSVInputAdapter.cs" />
+    <Compile Include="csv\CSVInputAdapterSpec.cs" />
+    <Compile Include="csv\CSVPropertyOrderHelper.cs" />
+    <Compile Include="csv\CSVReader.cs" />
+    <Compile Include="csv\CSVSource.cs" />
+    <Compile Include="IllegalStateTransitionException.cs" />
+    <Compile Include="InputAdapter.cs" />
+    <Compile Include="OutputAdapter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SendableEvent.cs" />
+    <Compile Include="SendableEventComparator.cs" />
+    <Compile Include="SendableMapEvent.cs" />
+    <Compile Include="SpringContext.cs" />
+    <Compile Include="subscription\BaseSubscription.cs" />
+    <Compile Include="subscription\Subscription.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NEsper\NEsper.csproj">
+      <Project>{8376DC7A-06AC-40F1-9338-9AC5AF788356}</Project>
+      <Name>NEsper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
