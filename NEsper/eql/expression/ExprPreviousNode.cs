@@ -20,9 +20,9 @@ namespace net.esper.eql.expression
 	/// </summary>
 	public class ExprPreviousNode : ExprNode, ViewResourceCallback
 	{
-	    private Class resultType;
+	    private Type resultType;
 	    private int streamNumber;
-	    private Integer constantIndexNumber;
+	    private int? constantIndexNumber;
 	    private bool isConstantIndex;
 
 	    private RandomAccessByIndexGetter randomAccessGetter;
@@ -46,7 +46,7 @@ namespace net.esper.eql.expression
 	            }
 
 	            Number valueNumber = (Number) value;
-	            if (JavaClassHelper.IsFloatingPointNumber(valueNumber))
+	            if (TypeHelper.IsFloatingPointNumber(valueNumber))
 	            {
 	                throw new ExprValidationException("Previous function requires an integer index parameter or expression");
 	            }
@@ -72,19 +72,19 @@ namespace net.esper.eql.expression
 	        }
 	    }
 
-	    public Class GetType()
+	    public Type ResultType
 	    {
-	        return resultType;
+	    	get { return resultType; }
 	    }
 
-	    public bool IsConstantResult()
+	    public bool IsConstantResult
 	    {
-	        return false;
+	    	get { return false; }
 	    }
 
 	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
 	    {
-	        Integer index;
+	        int index;
 
 	        // Use constant if supplied
 	        if (isConstantIndex)

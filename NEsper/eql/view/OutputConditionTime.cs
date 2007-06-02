@@ -1,7 +1,7 @@
 using System;
 
+using net.esper.core;
 using net.esper.schedule;
-using net.esper.view;
 
 using org.apache.commons.logging;
 
@@ -30,17 +30,14 @@ namespace net.esper.eql.view
 		private readonly ScheduleSlot scheduleSlot;
 		
 		private long? currentReferencePoint;
-		private ViewServiceContext context;
+		private StatementContext context;
 		private bool isCallbackScheduled;
 		
 		/// <summary> Constructor.</summary>
-		/// <param name="secIntervalSize">is the number of seconds to batch events for.
-		/// </param>
-		/// <param name="context">is the view context for time scheduling	
-		/// </param>
-		/// <param name="outputCallback">is the callback to make once the condition is satisfied
-		/// </param>
-		public OutputConditionTime(double secIntervalSize, ViewServiceContext context, OutputCallback outputCallback)
+		/// <param name="secIntervalSize">is the number of seconds to batch events for.</param>
+		/// <param name="context">is the statement context for time scheduling</param>
+		/// <param name="outputCallback">is the callback to make once the condition is satisfied</param>
+		public OutputConditionTime(double secIntervalSize, StatementContext context, OutputCallback outputCallback)
 		{
 			if (outputCallback == null)
 			{
@@ -82,7 +79,7 @@ namespace net.esper.eql.view
 			// Schedule the next callback if there is none currently scheduled
 			if (!isCallbackScheduled)
 			{
-				scheduleCallback();
+				ScheduleCallback();
 			}
 		}
 
@@ -102,14 +99,14 @@ namespace net.esper.eql.view
 		/// occurred.
 		/// </summary>
 		
-		private void HandleScheduledCallback()
+		private void HandleScheduledCallback(ExtensionServicesContext extensionServicesContext)
 		{
             isCallbackScheduled = false;
             outputCallback(OutputConditionTime.DO_OUTPUT, OutputConditionTime.FORCE_UPDATE);
-            scheduleCallback();
+            ScheduleCallback();
 		}
 		
-		private void scheduleCallback()
+		private void ScheduleCallback()
 		{
 			isCallbackScheduled = true;
 			long current = context.SchedulingService.Time;
@@ -120,9 +117,9 @@ namespace net.esper.eql.view
 				log.Debug(".scheduleCallback Scheduled new callback for " + " afterMsec=" + afterMSec + " now=" + current + " currentReferencePoint=" + currentReferencePoint + " msecIntervalSize=" + msecIntervalSize);
 			}
 
-			ScheduleCallback callback = new ScheduleCallbackImpl( HandleScheduledCallback ) ;
-
-			context.SchedulingService.Add(afterMSec, callback, scheduleSlot);
+			ScheduleHandleCallback callback = new ScheduleHandleCallbackImpl( HandleScheduledCallback ) ;
+			EPStatementHandleCallback handle = new EPStatementHandleCallback(context.EpStatementHandle, callback);
+			context.SchedulingService.Add(afterMSec, handle, scheduleSlot);
 		}
 		
 		/// <summary>
@@ -134,7 +131,7 @@ namespace net.esper.eql.view
 		/// <param name="interval">is the interval size</param>
 		/// <returns>milliseconds after current time that marks the end of the current interval</returns>
 
-		internal static long computeWaitMSec(long current, long reference, long interval)
+		internal static long ComputeWaitMSec(long current, long reference, long interval)
 		{
 			// Example:  current c=2300, reference r=1000, interval i=500, solution s=200
 			//

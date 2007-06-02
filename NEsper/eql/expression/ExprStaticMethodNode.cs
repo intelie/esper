@@ -48,6 +48,11 @@ namespace net.esper.eql.expression
             get { return paramTypes; }
         }
 
+	    public override bool IsConstantResult
+	    {
+	        get { return isConstantParameters; }
+	    } 
+		
         /// <summary>
         /// Returns the type that the node's evaluate method returns an instance of.
         /// </summary>
@@ -55,7 +60,7 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get
             {
@@ -71,6 +76,9 @@ namespace net.esper.eql.expression
         private readonly String methodName;
         private Type[] paramTypes;
         private MethodInfo staticMethod;
+	    private bool isConstantParameters;
+		private bool isCachedResult;
+		private Object cachedResult;
 
         /// <summary>
         /// Ctor.
@@ -156,27 +164,33 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             // Get the types of the childNodes
         	IList<ExprNode> childNodes = ChildNodes ;
             paramTypes = new Type[childNodes.Count];
             int count = 0;
-            foreach (ExprNode childNode in childNodes)
-            {
-                paramTypes[count++] = childNode.ReturnType;
-            }
+			
+	        bool allConstants = true;
+	        foreach(ExprNode childNode in childNodes)
+			{
+				paramTypes[count++] = childNode.ReturnType;
+	            if (!childNode.IsConstantResult)
+	            {
+	                allConstants = false;
+	            }
+	        }
+	        isConstantParameters = allConstants;
 
-            // Try to resolve the method
-            try
-            {
-                MethodInfo method = StaticMethodResolver.ResolveMethod(typeName, methodName, paramTypes, autoImportService);
-                staticMethod = method;
-            }
-            catch (System.Exception e)
-            {
-                throw new ExprValidationException(e.Message);
-            }
+	        // Try to resolve the method
+			try
+			{
+				staticMethod = methodResolutionService.ResolveMethod(typeName, methodName, paramTypes);
+			}
+			catch(Exception e)
+			{
+				throw new ExprValidationException(e.Message);
+			}
         }
 
         /// <summary>
@@ -186,15 +200,20 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
+		    if ((isConstantParameters) && (isCachedResult))
+	        {
+	            return cachedResult;
+	        }
+			
             IList<ExprNode> childNodes = this.ChildNodes;
 
             Object[] args = new Object[childNodes.Count];
             int count = 0;
             foreach (ExprNode childNode in childNodes)
             {
-                args[count++] = childNode.Evaluate(eventsPerStream);
+                args[count++] = childNode.Evaluate(eventsPerStream, isNewData);
             }
 
             // The method is static so the object it is invoked on
@@ -202,7 +221,13 @@ namespace net.esper.eql.expression
             Object obj = null;
             try
             {
-                return staticMethod.Invoke(obj, args);
+                Object result = staticMethod.Invoke(obj, args);
+				if (isConstantParameters)
+	            {
+	                cachedResult = result;
+	                isCachedResult = true;
+	            }
+	            return result;
             }
             catch (TargetInvocationException e)
             {

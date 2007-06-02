@@ -1,11 +1,14 @@
 using System;
+
+using net.esper.util;
+
 namespace net.esper.eql.parse
 {
     /// <summary>
     /// Parameter for views that accept time period information such as "5 sec 100 msec".
     /// </summary>
     
-    public class TimePeriodParameter
+    public class TimePeriodParameter : MetaDefItem
     {
         /// <summary> Returns the number of seconds.</summary>
         /// <returns> the number of seconds specified by time period string

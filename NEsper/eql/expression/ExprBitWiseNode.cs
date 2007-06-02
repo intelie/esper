@@ -23,12 +23,17 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return _resultType; }
         }
 
-        private readonly BitWiseOpEnum _bitWiseOpEnum;
+		public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
+
+		private readonly BitWiseOpEnum _bitWiseOpEnum;
         private BitWiseOpEnum.Computer _bitWiseOpEnumComputer;
         private Type _resultType;
 
@@ -44,9 +49,8 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             if (this.ChildNodes.Count != 2)
             {
@@ -93,10 +97,10 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
-            Object valueChildOne = this.ChildNodes[0].Evaluate(eventsPerStream);
-            Object valueChildTwo = this.ChildNodes[1].Evaluate(eventsPerStream);
+            Object valueChildOne = this.ChildNodes[0].Evaluate(eventsPerStream, isNewData);
+            Object valueChildTwo = this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
 
             if ((valueChildOne == null) || (valueChildTwo == null))
             {
@@ -104,7 +108,7 @@ namespace net.esper.eql.expression
             }
 
             // bitWiseOpEnumComputer is initialized by validation
-            Object result = _bitWiseOpEnumComputer( valueChildOne, valueChildTwo);
+            Object result = _bitWiseOpEnumComputer(valueChildOne, valueChildTwo);
             return result;
         }
 

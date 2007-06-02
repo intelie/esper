@@ -1,13 +1,21 @@
 using System;
 using System.Collections.Generic;
 
-using net.esper.view;
+using net.esper.eql.spec;
+using net.esper.events;
+using net.esper.eql.core;
+using net.esper.util;
 
 namespace net.esper.eql.spec
 {
-	
-	/// <summary> Specification object for historical data poll via database SQL statement.</summary>
-	public class DBStatementStreamSpec:StreamSpec
+	/// <summary>
+	/// Specification object for historical data poll via database SQL statement.
+	/// </summary>
+	public class DBStatementStreamSpec
+		: StreamSpecBase
+		, StreamSpecRaw
+		, StreamSpecCompiled
+		, MetaDefItem
 	{
 		/// <summary> Returns the database name.</summary>
 		/// <returns> name of database.
@@ -46,5 +54,11 @@ namespace net.esper.eql.spec
             this.databaseName = databaseName;
             this.sqlWithSubsParams = sqlWithSubsParams;
         }
+		
+	    public StreamSpecCompiled Compile(EventAdapterService eventAdapterService,
+	                                      MethodResolutionService methodResolutionService)
+	    {
+	        return this;
+	    }
 	}
 }

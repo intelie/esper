@@ -29,18 +29,6 @@ namespace net.esper.eql.view
         }
 
         /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentViewable)
-        {
-            return null;
-        }
-
-        /// <summary>
         /// Notify that data has been added or removed from the Viewable parent.
         /// The last object in the newData array of objects would be the newest object added to the parent view.
         /// The first object of the oldData array of objects would be the oldest object removed from the parent view.

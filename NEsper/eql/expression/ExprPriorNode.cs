@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
@@ -19,7 +20,7 @@ namespace net.esper.eql.expression
 	/// </summary>
 	public class ExprPriorNode : ExprNode, ViewResourceCallback
 	{
-	    private Class resultType;
+	    private Type resultType;
 	    private int streamNumber;
 	    private int constantIndexNumber;
 	    private RelativeAccessByEventNIndex relativeAccess;
@@ -60,14 +61,14 @@ namespace net.esper.eql.expression
 	        }
 	    }
 
-	    public Class GetType()
+	    public Type ResultType
 	    {
-	        return resultType;
+	    	get { return resultType; }
 	    }
 
-	    public bool IsConstantResult()
+	    public bool IsConstantResult
 	    {
-	        return false;
+	    	get { return false; }
 	    }
 
 	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData)

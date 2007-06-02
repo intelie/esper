@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.core;
 using net.esper.compat;
 using net.esper.collection;
 using net.esper.events;
@@ -13,7 +14,7 @@ namespace net.esper.eql.db
     /// after a given number of seconds.
     /// </summary>
 
-    public class DataCacheExpiringImpl : DataCache, ScheduleCallback
+    public class DataCacheExpiringImpl : DataCache, ScheduleHandleCallback
     {
         /// <summary> Returns the maximum age in milliseconds.</summary>
         /// <returns> millisecon max age
@@ -47,25 +48,29 @@ namespace net.esper.eql.db
         private readonly SchedulingService schedulingService;
         private readonly ScheduleSlot scheduleSlot;
         private readonly WeakDictionary<MultiKey<Object>, Item> cache;
+		private readonly EPStatementHandle epStatementHandle;
         private bool isScheduled;
 
         /// <summary> Ctor.</summary>
-        /// <param name="maxAgeSec">is the maximum age in seconds
-        /// </param>
-        /// <param name="purgeIntervalSec">is the purge interval in seconds
-        /// </param>
-        /// <param name="schedulingService">is a service for call backs at a scheduled time, for purging
-        /// </param>
-        /// <param name="scheduleSlot">slot for scheduling callbacks for this cache
-        /// </param>
+        /// <param name="maxAgeSec">is the maximum age in seconds</param>
+        /// <param name="purgeIntervalSec">is the purge interval in seconds</param>
+        /// <param name="schedulingService">is a service for call backs at a scheduled time, for purging</param>
+        /// <param name="scheduleSlot">slot for scheduling callbacks for this cache</param>
+		/// <param name="epStatementHandle">the statements-own handle for use in registering callbacks with services</param>
 
-        public DataCacheExpiringImpl(double maxAgeSec, double purgeIntervalSec, SchedulingService schedulingService, ScheduleSlot scheduleSlot)
+        public DataCacheExpiringImpl(
+			double maxAgeSec, 
+			double purgeIntervalSec, 
+			SchedulingService schedulingService, 
+			ScheduleSlot scheduleSlot,
+			EPStatementHandle epStatementHandle)
         {
             this.maxAgeMSec = (long)maxAgeSec * 1000;
             this.purgeIntervalMSec = (long)purgeIntervalSec * 1000;
             this.schedulingService = schedulingService;
             this.scheduleSlot = scheduleSlot;
             this.cache = new WeakDictionary<MultiKey<Object>, Item>();
+			this.epStatementHandle = epStatementHandle;
         }
 
         /// <summary>
@@ -115,15 +120,15 @@ namespace net.esper.eql.db
 
             if (!isScheduled)
             {
-                schedulingService.Add(purgeIntervalMSec, this, scheduleSlot);
-                isScheduled = true;
+	            EPStatementHandleCallback callback = new EPStatementHandleCallback(epStatementHandle, this);
+	            schedulingService.Add(purgeIntervalMSec, callback, scheduleSlot);
             }
         }
 
         /// <summary>
         /// Called when a scheduled callback occurs.
         /// </summary>
-        public virtual void ScheduledTrigger()
+        public virtual void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
         {
             // purge expired
             long now = schedulingService.Time;

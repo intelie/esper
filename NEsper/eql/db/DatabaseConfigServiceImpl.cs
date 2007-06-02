@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.core;
 using net.esper.client;
 using net.esper.schedule;
 
@@ -103,10 +104,11 @@ namespace net.esper.eql.db
         /// <summary>
         /// Returns a new cache implementation for this database.
         /// </summary>
-        /// <param name="databaseName">is the name of the database to return a new cache implementation for for</param>
+		/// <param name="databaseName">the name of the database to return a new cache implementation for for</param>
+		/// <param name="epStatementHandle">the statements-own handle for use in registering callbacks with services</param>
         /// <returns>cache implementation</returns>
         /// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
-		public virtual DataCache GetDataCache(String databaseName)
+		public virtual DataCache GetDataCache(String databaseName, EPStatementHandle epStatementHandle)
 		{
             ConfigurationDBRef config = null;
             if ( ! mapDatabaseRef.TryGetValue(databaseName, out config ) )
@@ -129,7 +131,7 @@ namespace net.esper.eql.db
 			if (config.DataCacheDesc is ExpiryTimeCacheDesc)
 			{
 				ExpiryTimeCacheDesc expCache = (ExpiryTimeCacheDesc) config.DataCacheDesc;
-				return new DataCacheExpiringImpl(expCache.MaxAgeSeconds, expCache.PurgeIntervalSeconds, schedulingService, scheduleBucket.AllocateSlot());
+				return new DataCacheExpiringImpl(expCache.MaxAgeSeconds, expCache.PurgeIntervalSeconds, schedulingService, scheduleBucket.AllocateSlot(), epStatementHandle);
 			}
 			
 			throw new SystemException("Cache implementation class not configured");

@@ -69,10 +69,51 @@ namespace net.esper.eql.parse
             {
                 parseRuleSelector.invokeParseRule(parser);
             }
-            catch (TokenStreamException e)
-            {
-                throw EPStatementSyntaxException.convert(e, expression);
-            }
+	        catch(MismatchedTokenException mte)
+	        {
+	            if(mte.token.getText() == null)
+	            {
+	                throw EPStatementSyntaxException.convertEndOfInput(mte, EQLStatementParser._tokenNames[mte.expecting], expression);
+	            }
+	            else
+	            {
+	                throw EPStatementSyntaxException.convert(mte, expression);
+	            }
+	        }
+	        catch (TokenStreamRecognitionException e)
+	        {
+	            if (e.recog instanceof MismatchedCharException)
+	            {
+	                MismatchedCharException mme = (MismatchedCharException) e.recog;
+	                // indicates EOF char
+	                if (mme.foundChar == 65535)
+	                {
+	                    char expected = (char) mme.expecting;
+	                    String wrapped = "'" + new String(Character.toString(expected)) + "'";
+	                    if (expected == '\'')
+	                    {
+	                        wrapped = "a singe quote \"'\"";
+	                    }
+	                    throw EPStatementSyntaxException.convertEndOfInput(mme, wrapped, expression);
+	                }
+	            }
+	            throw EPStatementSyntaxException.convert(e, expression);
+	        }
+	        catch (TokenStreamException e)
+	        {
+	            throw EPStatementSyntaxException.convert(e, expression);
+	        }
+	        catch (NoViableAltException e)
+	        {
+	            if(e.token.getText() == null)
+	            {
+	                throw EPStatementSyntaxException.convertEndOfInput(e, expression);
+	            }
+	            else
+	            {
+	                throw EPStatementSyntaxException.convert(e, expression);
+	            }
+	        }
             catch (RecognitionException e)
             {
                 throw EPStatementSyntaxException.convert(e, expression);

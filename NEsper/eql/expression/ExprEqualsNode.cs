@@ -7,7 +7,7 @@ using net.esper.util;
 
 namespace net.esper.eql.expression
 {
-    /// <summary> 
+    /// <summary>
     /// Represents an equals (=) comparator in a filter expressiun tree.
     /// </summary>
 
@@ -31,11 +31,16 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return typeof(bool?); }
         }
 
+	    public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
+	
         private readonly bool isNotEquals;
 
         private bool mustCoerce;
@@ -55,7 +60,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             // Must have 2 child nodes
             if (this.ChildNodes.Count != 2)
@@ -106,10 +111,10 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
-            Object leftResult = this.ChildNodes[0].Evaluate(eventsPerStream);
-            Object rightResult = this.ChildNodes[1].Evaluate(eventsPerStream);
+            Object leftResult = this.ChildNodes[0].Evaluate(eventsPerStream, isNewData);
+            Object rightResult = this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
 
             if (leftResult == null)
             {
@@ -126,8 +131,8 @@ namespace net.esper.eql.expression
             }
             else
             {
-                Object left = TypeHelper.CoerceNumber(leftResult, coercionType);
-                Object right = TypeHelper.CoerceNumber(rightResult, coercionType);
+                Object left = TypeHelper.CoerceBoxed(leftResult, coercionType);
+                Object right = TypeHelper.CoerceBoxed(rightResult, coercionType);
                 return left.Equals(right) ^ isNotEquals;
             }
         }

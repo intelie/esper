@@ -176,7 +176,7 @@ namespace net.esper.eql.db
         /// <returns>list of added views</returns>
         public IList<View> GetViews()
         {
-            throw new NotSupportedException("Subviews not supported");
+			return new List<View>() ;
         }
 
         /// <summary>

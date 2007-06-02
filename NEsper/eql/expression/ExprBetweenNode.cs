@@ -21,24 +21,63 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-		override public Type ReturnType
+		public override Type ReturnType
 		{
 			get { return typeof(bool?); }
 		}
 		
-		private readonly bool isNotBetween;
+	    private readonly bool isLowEndpointIncluded;
+	    private readonly bool isHighEndpointIncluded;
+ 		private readonly bool isNotBetween;
 		
 		private bool isAlwaysFalse;
 		private ExprBetweenNode.ExprBetweenComp computer;
 		
-		/// <summary> Ctor.</summary>
-		/// <param name="isNotBetween">is true to indicate this is a "not between", or false for a "between"
-		/// </param>
-		
-		public ExprBetweenNode(bool isNotBetween)
-		{
-			this.isNotBetween = isNotBetween;
-		}
+	    /**
+	     * Ctor.
+	     * @param lowEndpointIncluded is true for the regular 'between' or false for "val in (a:b)" (open range), or
+	     * false if the endpoint is not included
+	     * @param highEndpointIncluded indicates whether the high endpoint is included
+	     * @param notBetween is true for 'not between' or 'not in (a:b), or false for a regular between
+	     */
+	    public ExprBetweenNode(bool lowEndpointIncluded, bool highEndpointIncluded, bool notBetween)
+	    {
+	        isLowEndpointIncluded = lowEndpointIncluded;
+	        isHighEndpointIncluded = highEndpointIncluded;
+	        isNotBetween = notBetween;
+	    }
+
+	    public bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
+
+	    /**
+	     * Returns true if the low endpoint is included, false if not
+	     * @return indicator if endppoint is included
+	     */
+	    public bool IsLowEndpointIncluded
+	    {
+	        get { return isLowEndpointIncluded; }
+	    }
+
+	    /**
+	     * Returns true if the high endpoint is included, false if not
+	     * @return indicator if endppoint is included
+	     */
+	    public bool IsHighEndpointIncluded
+	    {
+	        get { return isHighEndpointIncluded; }
+	    }
+
+	    /**
+	     * Returns true for inverted range, or false for regular (openn/close/half-open/half-closed) ranges.
+	     * @return true for not betwene, false for between
+	     */
+	    public bool IsNotBetween
+	    {
+	        get { return isNotBetween; }
+	    }
 
         /// <summary>
         /// Validate node.
@@ -46,8 +85,8 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-		public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
-		{
+	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+	    {
 			if (this.ChildNodes.Count != 3)
 			{
 				throw new ExprValidationException("The Between operator requires exactly 3 child expressions");
@@ -99,7 +138,7 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-		public override Object Evaluate(EventBean[] eventsPerStream)
+		public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
 		{
 			if (isAlwaysFalse)
 			{
@@ -109,15 +148,15 @@ namespace net.esper.eql.expression
 			// Evaluate first child which is the base value to compare to
 			IList<ExprNode> exprNodeList = this.ChildNodes ;
 			
-			Object value = exprNodeList[0].Evaluate(eventsPerStream);
+			Object value = exprNodeList[0].Evaluate(eventsPerStream, isNewData);
 			if (value == null)
 			{
 				return false;
 			}
-			Object lower = exprNodeList[1].Evaluate(eventsPerStream);
-			Object higher = exprNodeList[2].Evaluate(eventsPerStream);
+			Object lower = exprNodeList[1].Evaluate(eventsPerStream, isNewData);
+			Object higher = exprNodeList[2].Evaluate(eventsPerStream, isNewData);
 			
-			bool result = computer.isBetween(value, lower, higher);
+			bool result = computer.IsBetween(value, lower, higher);
 			if (isNotBetween)
 			{
 				return !result;
@@ -178,33 +217,42 @@ namespace net.esper.eql.expression
             }
 		}
 		
-		private ExprBetweenNode.ExprBetweenComp makeComputer(Type compareType)
+		private ExprBetweenNode.ExprBetweenComp MakeComputer(Type compareType)
 		{
 			ExprBetweenNode.ExprBetweenComp computer = null;
 			
 			if (compareType == typeof(string))
 			{
-				computer = new ExprBetweenCompString();
+				computer = new ExprBetweenCompString(isLowEndpointIncluded, isHighEndpointIncluded);
 			}
 			else if (compareType == typeof(long))
 			{
-				computer = new ExprBetweenCompLong();
+				computer = new ExprBetweenCompLong(isLowEndpointIncluded, isHighEndpointIncluded);
 			}
 			else
 			{
-				computer = new ExprBetweenCompDouble();
+				computer = new ExprBetweenCompDouble(isLowEndpointIncluded, isHighEndpointIncluded);
 			}
 			return computer;
 		}
 		
 		private interface ExprBetweenComp
 		{
-			bool isBetween(Object value, Object lower, Object upper);
+			bool IsBetween(Object value, Object lower, Object upper);
 		}
 		
 		private class ExprBetweenCompString : ExprBetweenNode.ExprBetweenComp
 		{
-			public virtual bool isBetween(Object value, Object lower, Object upper)
+	        private bool isLowIncluded;
+	        private bool isHighIncluded;
+
+	        public ExprBetweenCompString(bool lowIncluded, bool isHighIncluded)
+	        {
+	            this.isLowIncluded = lowIncluded;
+	            this.isHighIncluded = isHighIncluded;
+	        }
+
+			public virtual bool IsBetween(Object value, Object lower, Object upper)
 			{
 				if ((value == null) || (lower == null) || ((upper == null)))
 				{
@@ -217,33 +265,54 @@ namespace net.esper.eql.expression
 				
 				if (String.CompareOrdinal(upperStr, lowerStr) < 0)
 				{
-					if (String.CompareOrdinal(valueStr, lowerStr) > 0)
-					{
-						return false;
-					}
-					if (String.CompareOrdinal(valueStr, upperStr) < 0)
-					{
-						return false;
-					}
-				}
-				else
-				{
-					if (String.CompareOrdinal(valueStr, lowerStr) < 0)
-					{
-						return false;
-					}
-					if (String.CompareOrdinal(valueStr, upperStr) > 0)
-					{
-						return false;
-					}
-				}
-				return true;
+	                String temp = upperStr;
+	                upperStr = lowerStr;
+	                lowerStr = temp;
+	            }
+
+	            if (String.CompareOrdinal(valueStr, lowerStr) < 0)
+	            {
+	                return false;
+	            }
+	            if (String.CompareOrdinal(valueStr, upperStr) > 0)
+	            {
+	                return false;
+	            }
+	            if (!(isLowIncluded))
+	            {
+	                if (valueStr.Equals(lowerStr))
+	                {
+	                    return false;
+	                }
+	            }
+	            if (!(isHighIncluded))
+	            {
+	                if (valueStr.Equals(upperStr))
+	                {
+	                    return false;
+	                }
+	            }
+	            return true;
 			}
+			
+		    public bool IsEqualsEndpoint(Object value, Object endpoint)
+	        {
+	            return value.Equals(endpoint);
+	        }
 		}
 		
 		private class ExprBetweenCompDouble : ExprBetweenNode.ExprBetweenComp
 		{
-			public virtual bool isBetween(Object value, Object lower, Object upper)
+	        private bool isLowIncluded;
+	        private bool isHighIncluded;
+
+	        public ExprBetweenCompDouble(bool lowIncluded, bool highIncluded)
+	        {
+	            isLowIncluded = lowIncluded;
+	            isHighIncluded = highIncluded;
+	        }
+
+			public virtual bool IsBetween(Object value, Object lower, Object upper)
 			{
 				if ((value == null) || (lower == null) || ((upper == null)))
 				{
@@ -254,25 +323,45 @@ namespace net.esper.eql.expression
 				double lowerD = Convert.ToDouble(lower);
 				double upperD = Convert.ToDouble(upper);
 				
-				if (lowerD > upperD)
-				{
-					if (valueD <= lowerD && valueD >= upperD)
-					{
-						return true;
-					}
-					return false;
-				}
-				if (valueD >= lowerD && valueD <= upperD)
-				{
-					return true;
-				}
-				return false;
+	            if (lowerD > upperD)
+	            {
+	                double temp = upperD;
+	                upperD = lowerD;
+	                lowerD = temp;
+	            }
+
+	            if (valueD > lowerD)
+	            {
+	                if (valueD < upperD)
+	                {
+	                    return true;
+	                }
+	                if (isHighIncluded)
+	                {
+	                    return valueD == upperD;
+	                }
+	                return false;
+	            }
+	            if ((isLowIncluded) && (valueD == lowerD))
+	            {
+	                return true;
+	            }
+	            return false;
 			}
 		}
 		
 		private class ExprBetweenCompLong : ExprBetweenNode.ExprBetweenComp
 		{
-			public virtual bool isBetween(Object value, Object lower, Object upper)
+	        private bool isLowIncluded;
+	        private bool isHighIncluded;
+
+	        public ExprBetweenCompLong(bool lowIncluded, bool highIncluded)
+	        {
+	            isLowIncluded = lowIncluded;
+	            isHighIncluded = highIncluded;
+	        }
+
+			public virtual bool IsBetween(Object value, Object lower, Object upper)
 			{
 				if ((value == null) || (lower == null) || ((upper == null)))
 				{
@@ -282,19 +371,30 @@ namespace net.esper.eql.expression
 				long lowerD = Convert.ToInt64(lower);
 				long upperD = Convert.ToInt64(upper);
 				
-				if (lowerD > upperD)
-				{
-					if (valueD <= lowerD && valueD >= upperD)
-					{
-						return true;
-					}
-					return false;
-				}
-				if (valueD >= lowerD && valueD <= upperD)
-				{
-					return true;
-				}
-				return false;
+	            if (lowerD > upperD)
+	            {
+	                long temp = upperD;
+	                upperD = lowerD;
+	                lowerD = temp;
+	            }
+
+	            if (valueD > lowerD)
+	            {
+	                if (valueD < upperD)
+	                {
+	                    return true;
+	                }
+	                if (isHighIncluded)
+	                {
+	                    return valueD == upperD;
+	                }
+	                return false;
+	            }
+	            if ((isLowIncluded) && (valueD == lowerD))
+	            {
+	                return true;
+	            }
+	            return false;
 			}
 		}
 	}

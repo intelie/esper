@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.compat;
+using net.esper.util;
 
 namespace net.esper.eql.spec
 {
@@ -9,7 +10,7 @@ namespace net.esper.eql.spec
 	/// results of statement as a stream to further statements.
 	/// </summary>
 
-	public class InsertIntoDesc
+	public class InsertIntoDesc : MetaDefItem
 	{
 		private readonly bool isStream;
 		private readonly String eventTypeAlias;

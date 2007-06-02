@@ -30,7 +30,7 @@ namespace net.esper.eql.core
 	    /// <throws>
 	    /// EngineImportException if the method cannot be resolved to a visible static method
 	    /// </throws>
-	    MethodInfo ResolveMethod(String classNameAlias, String methodName, Class[] paramTypes);
+	    MethodInfo ResolveMethod(String classNameAlias, String methodName, Type[] paramTypes);
 
 	    /// <summary>
 	    /// Returns a plug-in aggregation method for a given configured aggregation function name.
@@ -56,7 +56,7 @@ namespace net.esper.eql.core
 	    /// <summary>Makes a new sum-aggregator.</summary>
 	    /// <param name="type">is the type to be summed up, i.e. float, long etc.</param>
 	    /// <returns>aggregator</returns>
-	    AggregationMethod MakeSumAggregator(Class type);
+	    AggregationMethod MakeSumAggregator(Type type);
 
 	    /// <summary>Makes a new distinct-value-aggregator.</summary>
 	    /// <param name="aggregationMethod">is the inner aggregation method</param>

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 using net.esper.compat;
 using net.esper.collection;
-using net.esper.eql.agg;
 using net.esper.events;
 using net.esper.util;
 
 using net.esper.eql;
+using net.esper.eql.agg;
+using net.esper.eql.core;
 using net.esper.eql.expression;
 
 using Log = org.apache.commons.logging.Log;
@@ -29,7 +30,7 @@ namespace net.esper.eql.core
         private readonly Boolean needsGroupByKeys;
         private readonly AggregationService aggregationService;
 
-        private readonly IComparer<MultiKey<Object>> comparator;
+        private readonly IComparer<MultiKeyUntyped> comparator;
 
         /// <summary>Ctor.</summary>
         /// <param name="orderByList">the nodes that generate the keys to sort events on</param>
@@ -47,7 +48,7 @@ namespace net.esper.eql.core
             this.needsGroupByKeys = needsGroupByKeys;
             this.aggregationService = aggregationService;
 
-            this.comparator = new MultiKeyComparator<Object>(getIsDescendingValues());
+			this.comparator = new MultiKeyComparator(IsDescendingValues);
         }
 
         /// <summary>
@@ -55,9 +56,12 @@ namespace net.esper.eql.core
         /// </summary>
         /// <param name="outgoingEvents">The outgoing events.</param>
         /// <param name="generatingEvents">The generating events.</param>
+		/// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns></returns>
         
-        public EventBean[] Sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents)
+        public EventBean[] Sort(EventBean[] outgoingEvents,
+								EventBean[][] generatingEvents,
+								bool isNewData)
         {
             if (outgoingEvents == null || outgoingEvents.Length < 2)
             {
@@ -65,13 +69,13 @@ namespace net.esper.eql.core
             }
 
             // Get the group by keys if needed
-            MultiKey<Object>[] groupByKeys = null;
+            MultiKeyUntyped[] groupByKeys = null;
             if (needsGroupByKeys)
             {
-                groupByKeys = generateGroupKeys(generatingEvents);
+                groupByKeys = GenerateGroupKeys(generatingEvents, isNewData);
             }
 
-            return Sort(outgoingEvents, generatingEvents, groupByKeys);
+            return Sort(outgoingEvents, generatingEvents, groupByKeys, isNewData);
         }
 
         /// <summary>
@@ -80,12 +84,13 @@ namespace net.esper.eql.core
         /// <param name="outgoingEvents">The outgoing events.</param>
         /// <param name="generatingEvents">The generating events.</param>
         /// <param name="groupByKeys">The group by keys.</param>
+		/// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns></returns>
         
-        public EventBean[] Sort(
-            EventBean[] outgoingEvents,
-            EventBean[][] generatingEvents,
-            MultiKey<Object>[] groupByKeys)
+        public EventBean[] Sort(EventBean[] outgoingEvents,
+								EventBean[][] generatingEvents,
+								MultiKeyUntyped[] groupByKeys,
+								bool isNewData)
         {
             log.Debug(".sort");
             if (outgoingEvents == null || outgoingEvents.Length < 2)
@@ -94,12 +99,12 @@ namespace net.esper.eql.core
             }
 
             // Create the multikeys of sort values
-            MultiKey<Object>[] sortValuesMultiKeys = createSortProperties(generatingEvents, groupByKeys);
+            MultiKeyUntyped[] sortValuesMultiKeys = CreateSortProperties(generatingEvents, groupByKeys);
 
             // Map the sort values to the corresponding outgoing events
-            IDictionary<MultiKey<Object>, IList<EventBean>> sortToOutgoing = new Dictionary<MultiKey<Object>, IList<EventBean>>();
+            IDictionary<MultiKeyUntyped, IList<EventBean>> sortToOutgoing = new Dictionary<MultiKeyUntyped, IList<EventBean>>();
             int countOne = 0;
-            foreach (MultiKey<Object> sortValues in sortValuesMultiKeys)
+            foreach (MultiKeyUntyped sortValues in sortValuesMultiKeys)
             {
                 IList<EventBean> list = null;
                 if ( ! sortToOutgoing.TryGetValue( sortValues, out list ) )
@@ -114,12 +119,12 @@ namespace net.esper.eql.core
 			Array.Sort( sortValuesMultiKeys, comparator );
 
             // Sort the outgoing events in the same order
-            ISet<MultiKey<Object>> sortSet = new LinkedHashSet<MultiKey<Object>>() ;
+            ISet<MultiKeyUntyped> sortSet = new LinkedHashSet<MultiKeyUntyped>() ;
             sortSet.AddAll( sortValuesMultiKeys );
             
             EventBean[] result = new EventBean[outgoingEvents.Length];
             int countTwo = 0;
-            foreach (MultiKey<Object> sortValues in sortSet)
+            foreach (MultiKeyUntyped sortValues in sortSet)
             {
                 IList<EventBean> output = null ;
                 if ( sortToOutgoing.TryGetValue( sortValues, out output ) )
@@ -173,11 +178,12 @@ namespace net.esper.eql.core
             return comparable1.CompareTo( valueTwo ) ;
         }
 
-        private MultiKey<Object>[] createSortProperties(
+        private MultiKeyUntyped[] CreateSortProperties(
             EventBean[][] generatingEvents,
-            MultiKey<Object>[] groupByKeys)
+            MultiKeyUntyped[] groupByKeys,
+			bool isNewData)
         {
-            MultiKey<Object>[] sortProperties = new MultiKey<Object>[generatingEvents.Length];
+            MultiKeyUntyped[] sortProperties = new MultiKeyUntyped[generatingEvents.Length];
 
             int count = 0;
             foreach (EventBean[] eventsPerStream in generatingEvents)
@@ -193,52 +199,55 @@ namespace net.esper.eql.core
                 foreach (Pair<ExprNode, Boolean> sortPair in orderByList)
                 {
                     ExprNode sortNode = sortPair.First;
-                    values[countTwo++] = sortNode.Evaluate(eventsPerStream);
+                    values[countTwo++] = sortNode.Evaluate(eventsPerStream, isNewData);
                 }
 
-                sortProperties[count] = new MultiKey<Object>(values);
+                sortProperties[count] = new MultiKeyUntyped(values);
                 count++;
             }
 
             return sortProperties;
         }
 
-        private MultiKey<Object> generateGroupKey(EventBean[] eventsPerStream)
+        private MultiKeyUntyped GenerateGroupKey(EventBean[] eventsPerStream, bool isNewData)
         {
             Object[] keys = new Object[groupByNodes.Count];
 
             int count = 0;
             foreach (ExprNode exprNode in groupByNodes)
             {
-                keys[count] = exprNode.Evaluate(eventsPerStream);
+                keys[count] = exprNode.Evaluate(eventsPerStream, isNewData);
                 count++;
             }
 
-            return new MultiKey<Object>(keys);
+            return new MultiKeyUntyped(keys);
         }
 
-        private MultiKey<Object>[] generateGroupKeys(EventBean[][] generatingEvents)
+        private MultiKeyUntyped[] GenerateGroupKeys(EventBean[][] generatingEvents, bool isNewData)
         {
-            MultiKey<Object>[] keys = new MultiKey<Object>[generatingEvents.Length];
+            MultiKeyUntyped[] keys = new MultiKeyUntyped[generatingEvents.Length];
 
             int count = 0;
             foreach (EventBean[] eventsPerStream in generatingEvents)
             {
-                keys[count++] = generateGroupKey(eventsPerStream);
+                keys[count++] = generateGroupKey(eventsPerStream, isNewData);
             }
 
             return keys;
         }
 
-        private Boolean[] getIsDescendingValues()
+        private bool[] IsDescendingValues
         {
-            Boolean[] isDescendingValues = new Boolean[orderByList.Count];
-            int count = 0;
-            foreach (Pair<ExprNode, Boolean> pair in orderByList)
-            {
-                isDescendingValues[count++] = pair.Second;
-            }
-            return isDescendingValues;
+			get
+			{
+	            bool[] isDescendingValues = new bool[orderByList.Count];
+	            int count = 0;
+	            foreach (Pair<ExprNode, bool> pair in orderByList)
+	            {
+	                isDescendingValues[count++] = pair.Second;
+	            }
+	            return isDescendingValues;
+			}
         }
     }
 }

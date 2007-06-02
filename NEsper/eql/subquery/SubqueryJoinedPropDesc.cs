@@ -65,7 +65,7 @@ namespace net.esper.eql.subquery
         /// <summary>Returns the key stream numbers.</summary>
         /// <param name="descList">a list of descriptors</param>
         /// <returns>key stream numbers</returns>
-        public static int[] GetKeyStreamNums(Collection<SubqueryJoinedPropDesc> descList)
+        public static int[] GetKeyStreamNums(ICollection<SubqueryJoinedPropDesc> descList)
         {
             int[] streamIds = new int[descList.Size()];
             int count = 0;

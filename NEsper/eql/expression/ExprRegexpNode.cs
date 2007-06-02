@@ -24,11 +24,16 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return typeof(bool?); }
         }
 
+	    public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    } 
+	
         private readonly bool isNot;
 
         private Regex pattern;
@@ -36,7 +41,7 @@ namespace net.esper.eql.expression
         private bool isConstantPattern;
 
         /// <summary> Ctor.</summary>
-        /// <param name="not">is true if the it's a "not regexp" expression, of false for regular regexp 
+        /// <param name="not">is true if the it's a "not regexp" expression, of false for regular regexp
         /// </param>
         public ExprRegexpNode(bool not)
         {
@@ -49,7 +54,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             if (this.ChildNodes.Count != 2)
             {
@@ -63,7 +68,7 @@ namespace net.esper.eql.expression
             {
                 throw new ExprValidationException("The regexp operator requires a String-type pattern expression");
             }
-            if (this.ChildNodes[1] is ExprConstantNode)
+            if (this.ChildNodes[1].IsConstantResult)
             {
                 isConstantPattern = true;
             }
@@ -84,11 +89,11 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             if (pattern == null)
             {
-                String patternText = (String)this.ChildNodes[1].Evaluate(eventsPerStream);
+                String patternText = (String)this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
                 if (patternText == null)
                 {
                     return null;
@@ -106,7 +111,7 @@ namespace net.esper.eql.expression
             {
                 if (!isConstantPattern)
                 {
-                    String patternText = (String)this.ChildNodes[1].Evaluate(eventsPerStream);
+                    String patternText = (String)this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
                     if (patternText == null)
                     {
                         return null;
@@ -122,7 +127,7 @@ namespace net.esper.eql.expression
                 }
             }
 
-            Object evalValue = this.ChildNodes[0].Evaluate(eventsPerStream);
+            Object evalValue = this.ChildNodes[0].Evaluate(eventsPerStream, isNewData);
             if (evalValue == null)
             {
                 return null;

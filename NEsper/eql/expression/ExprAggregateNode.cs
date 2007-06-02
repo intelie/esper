@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using net.esper.compat;
-using net.esper.eql.core;
 using net.esper.eql.agg;
+using net.esper.eql.core;
 using net.esper.events;
 using net.esper.util;
 
@@ -16,10 +16,10 @@ namespace net.esper.eql.expression
     /// In terms of validation each concrete aggregation node must implement it's own validation.
     ///
     /// In terms of evaluation this base class will ask the assigned
-    /// <seealso cref="net.esper.eql.core.AggregationResultFuture"/>
+    /// <seealso cref="net.esper.eql.agg.AggregationResultFuture"/>
     /// for the current state, using a column number assigned to the node.
     ///
-    /// Concrete subclasses must supply an aggregation state prototype node <seealso cref="Aggregator"/>
+    /// Concrete subclasses must supply an aggregation state prototype node <seealso cref="AggregatorMethod"/>
     /// that reflects each group's (there may be group-by critera) current aggregation state.
     ///	</summary>
 
@@ -27,6 +27,7 @@ namespace net.esper.eql.expression
     {
         private AggregationResultFuture aggregationResultFuture;
         private int column;
+		private AggregationMethod aggregationMethod;
 
         ///	<summary>
         ///	Indicator for whether the aggregation is distinct - i.e. only unique
@@ -35,33 +36,65 @@ namespace net.esper.eql.expression
 
         protected internal bool isDistinct;
 
-        /// <summary>Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.</summary>
-        /// <returns>prototype aggregation state as a factory for aggregation states per group-by key value
-        /// </returns>
+	    /**
+	     * Returns the aggregation function name for representation in a generate expression string.
+	     * @return aggregation function name
+	     */
+	    protected abstract String AggregationFunctionName
+		{
+			get ;
+		}
 
-        virtual public Aggregator PrototypeAggregator
-        {
-            get
-            {
-                if (!isDistinct)
-                {
-                    return AggregationFunction;
-                }
-                else
-                {
-                    return new UniqueValueAggregator(AggregationFunction);
-                }
-            }
-        }
+	    /**
+	     * Gives the aggregation node a chance to validate the sub-expression types.
+	     * @param streamTypeService is the types per stream
+	     * @param methodResolutionService used for resolving method and function names
+	     * @return aggregation function use
+	     * @throws ExprValidationException when expression validation failed
+	     */
+	    protected abstract AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService);
 
-        /// <summary> Returns the aggregation function name for representation in a generate expression string.</summary>
-        /// <returns> aggregation function name
-        /// </returns>
+	    public bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
 
-        protected internal abstract String AggregationFunctionName
-        {
-            get;
-        }
+	    public void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+	    {
+	        this.aggregationMethod = ValidateAggregationChild(streamTypeService, methodResolutionService);
+	        if (isDistinct)
+	        {
+	            aggregationMethod = methodResolutionService.MakeDistinctAggregator(aggregationMethod);
+	        }
+	    }
+
+	    public virtual Type ReturnType
+	    {
+			get
+			{
+		        if (aggregationMethod == null)
+		        {
+		            throw new IllegalStateException("Aggregation method has not been set");
+		        }
+		        return aggregationMethod.ValueType;
+			}
+	    }
+
+	    /**
+	     * Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
+	     * @return prototype aggregation state as a factory for aggregation states per group-by key value
+	     */
+	    public AggregationMethod PrototypeAggregator
+	    {
+			get
+			{
+		        if (aggregationMethod == null)
+		        {
+		            throw new IllegalStateException("Aggregation method has not been set");
+		        }
+		        return aggregationMethod;
+			}
+	    }
 
         /// <summary>
         /// Returns true if the aggregation node is only aggregatig distinct values, or false if
@@ -114,7 +147,7 @@ namespace net.esper.eql.expression
         /// </summary>
         /// <param name="events">The events.</param>
         /// <returns></returns>
-        public override Object Evaluate(EventBean[] events)
+        public override Object Evaluate(EventBean[] events, bool isNewData)
         {
             return aggregationResultFuture.GetValue(column);
         }

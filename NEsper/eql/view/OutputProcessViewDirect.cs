@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.collection;
 using net.esper.eql.core;
 using net.esper.events;
@@ -65,7 +67,7 @@ namespace net.esper.eql.view
 	    /// <summary>This process (update) method is for participation in a join.</summary>
 	    /// <param name="newEvents">new events</param>
 	    /// <param name="oldEvents">old events</param>
-	    public void Process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+	    public void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
 	    {
 	        if (log.IsDebugEnabled())
 	        {

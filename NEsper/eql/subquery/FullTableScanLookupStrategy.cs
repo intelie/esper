@@ -30,7 +30,7 @@ namespace net.esper.eql.subquery
             this.eventIndex = eventIndex;
         }
 
-        public Set<EventBean> Lookup(EventBean[] eventPerStream)
+        public ISet<EventBean> Lookup(EventBean[] eventPerStream)
         {
             Set<EventBean> result = eventIndex.GetEventSet();
             if (result.IsEmpty())

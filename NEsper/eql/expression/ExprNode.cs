@@ -8,6 +8,7 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 
 using net.esper.eql.core;
 using net.esper.events;
+using net.esper.util;
 
 namespace net.esper.eql.expression
 {
@@ -15,7 +16,10 @@ namespace net.esper.eql.expression
     /// validation against stream event types and evaluation of events against filter tree.
     /// </summary>
 
-    public abstract class ExprNode : ExprValidator, ExprEvaluator
+    public abstract class ExprNode
+		: ExprValidator
+		, ExprEvaluator
+		, MetaDefItem
     {
         private readonly IList<ExprNode> childNodes;
 
@@ -35,12 +39,23 @@ namespace net.esper.eql.expression
         /// <summary> Returns the expression node rendered as a string.</summary>
         /// <returns> string rendering of expression
         /// </returns>
-        
+
         public abstract String ExpressionString
         {
             get;
         }
 
+	    /**
+	     * Returns true if the expression node's evaluation value doesn't depend on any events data,
+	     * as must be determined at validation time, which is bottom-up and therefore
+	     * reliably allows each node to determine constant value.
+	     * @return true for constant evaluation value, false for non-constant evaluation value
+	     */
+	    public abstract bool IsConstantResult
+		{
+			get;
+		}
+		
 		/// <summary> Returns list of child nodes.</summary>
 		/// <returns> list of child nodes
 		/// </returns>
@@ -49,12 +64,12 @@ namespace net.esper.eql.expression
 		{
 			get { return childNodes; }
 		}
-		
+
 		/// <summary>
         /// Return true if a expression node semantically equals the current node, or false if not.
-        /// 
+        ///
         /// Concrete implementations should compare the type and any additional information
-        /// that impact the evaluation of a node.  
+        /// that impact the evaluation of a node.
         /// </summary>
         /// <param name="node">to compare to
         /// </param>
@@ -71,38 +86,38 @@ namespace net.esper.eql.expression
             childNodes = new List<ExprNode>();
         }
 
-        /// <summary>
-        /// Validates the expression node subtree that has this
-        /// node as root. Some of the nodes of the tree, including the 
-        /// root, might be replaced in the process.
-        /// </summary>
-        /// <param name="streamTypeService">serves stream type information
-        /// </param>
-        /// <param name="autoImportService">for resolving class names in library method invocations
-        /// </param>
-        /// <throws>  ExprValidationException when the validation fails </throws>
-        /// <returns> the root node of the validated subtree, possibly 
-        /// different than the root node of the unvalidated subtree 
-        /// </returns>
-
-        public virtual ExprNode GetValidatedSubtree(StreamTypeService streamTypeService, AutoImportService autoImportService)
-        {
+	    /**
+	     * Validates the expression node subtree that has this
+	     * node as root. Some of the nodes of the tree, including the
+	     * root, might be replaced in the process.
+	     * @param streamTypeService - serves stream type information
+	     * @param methodResolutionService - for resolving class names in library method invocations
+	     * @param viewResourceDelegate - delegates for view resources to expression nodes
+	     * @throws ExprValidationException when the validation fails
+	     * @return the root node of the validated subtree, possibly
+	     *         different than the root node of the unvalidated subtree
+	     */
+		public ExprNode getValidatedSubtree(
+			StreamTypeService streamTypeService,
+			MethodResolutionService methodResolutionService,
+			ViewResourceDelegate viewResourceDelegate)
+		{
             ExprNode result = this;
 
             for (int i = 0; i < childNodes.Count; i++)
             {
-                childNodes[i] = childNodes[i].GetValidatedSubtree(streamTypeService, autoImportService);
+                childNodes[i] = childNodes[i].GetValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate);
             }
 
             try
             {
-                Validate(streamTypeService, autoImportService);
+                Validate(streamTypeService, methodResolutionService, viewResourceDelegate);
             }
             catch (ExprValidationException e)
             {
                 if (this is ExprIdentNode)
                 {
-                    result = ResolveIdentAsStaticMethod(streamTypeService, autoImportService, e);
+                    result = ResolveIdentAsStaticMethod(streamTypeService, methodResolutionService, e);
                 }
                 else
                 {
@@ -115,7 +130,7 @@ namespace net.esper.eql.expression
 
         /// <summary>
         /// Accept the visitor. The visitor will first visit the parent then visit all child nodes, then their child nodes.
-        /// 
+        ///
         /// The visitor can decide to skip child nodes by returning false in isVisit.
         /// </summary>
         /// <param name="visitor">to visit each node and each child node.
@@ -170,7 +185,7 @@ namespace net.esper.eql.expression
 
         public static bool DeepEquals(ExprNode nodeOne, ExprNode nodeTwo)
         {
-            if (nodeOne.ChildNodes.Count != nodeTwo.ChildNodes.Count)
+            if (nodeOne.childNodes.Count != nodeTwo.childNodes.Count)
             {
                 return false;
             }
@@ -178,10 +193,10 @@ namespace net.esper.eql.expression
             {
                 return false;
             }
-            for (int i = 0; i < nodeOne.ChildNodes.Count; i++)
+            for (int i = 0; i < nodeOne.childNodes.Count; i++)
             {
-                ExprNode childNodeOne = nodeOne.ChildNodes[i];
-                ExprNode childNodeTwo = nodeTwo.ChildNodes[i];
+                ExprNode childNodeOne = nodeOne.childNodes[i];
+                ExprNode childNodeTwo = nodeTwo.childNodes[i];
 
                 if (!ExprNode.DeepEquals(childNodeOne, childNodeTwo))
                 {
@@ -191,54 +206,231 @@ namespace net.esper.eql.expression
             return true;
         }
 
-        // Assumes that this is an ExprIdentNode
-        private ExprNode ResolveIdentAsStaticMethod(StreamTypeService streamTypeService, AutoImportService autoImportService, ExprValidationException propertyException)
+	    // Since static method calls such as "Class.method('a')" and mapped properties "Stream.property('key')"
+	    // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
+	    // this method tries to resolve the mapped property as a static method.
+	    // Assumes that this is an ExprIdentNode.
+	    private ExprNode ResolveIdentAsStaticMethod(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException)
         {
-            // Reconstruct the original string
-            ExprIdentNode identNode = (ExprIdentNode)this;
-            StringBuilder name = new StringBuilder(identNode.UnresolvedPropertyName);
-            if (identNode.StreamOrPropertyName != null)
-            {
-                name.Insert(0, identNode.StreamOrPropertyName + ".");
-            }
+	        // Reconstruct the original string
+	        ExprIdentNode identNode = (ExprIdentNode) this;
+	        StringBuilder mappedProperty = new StringBuilder(identNode.UnresolvedPropertyName);
+	        if(identNode.StreamOrPropertyName != null)
+	        {
+				mappedProperty.insert(0, '.');
+	            mappedProperty.Insert(0, identNode.StreamOrPropertyName);
+	        }
 
-            // Parse the string to see if it looks like a method invocation
-            // (Ident nodes can only have a single string value in parentheses)
-            String classNameRegEx = "((\\w+\\.)*\\w+)";
-            String methodNameRegEx = "(\\w+)";
-            String argsRegEx = "\\s*\\(\\s*[\'\"]\\s*(\\w+)\\s*[\'\"]\\s*\\)\\s*";
-            String methodInvocationRegEx = classNameRegEx + "\\." + methodNameRegEx + argsRegEx;
+	        // Parse the mapped property format into a class name, method and single string parameter
+	        MappedPropertyParseResult parse = ParseMappedProperty(mappedProperty.ToString());
+	        if (parse == null)
+	        {
+	            throw propertyException;
+	        }
 
-            Regex regex = new Regex(methodInvocationRegEx);
-			Match match = regex.Match( name.ToString() );
-            if ( ! match.Success )
-            {
-                // This property name doesn't look like a method invocation
-                throw propertyException;
-            }
+	        // If there is a type name, assume a static method is possible
+	        if (parse.TypeName != null)
+	        {
+	            ExprNode result = new ExprStaticMethodNode(parse.TypeName, parse.MethodName);
+	            result.AddChildNode(new ExprConstantNode(parse.ArgString));
 
-            // Create a new static method node and add the method
-            // argument as a child node
-            String className = match.Groups[1].Value;
-            String methodName = match.Groups[3].Value;
-            String argString = match.Groups[4].Value;
-            ExprNode result = new ExprStaticMethodNode(className, methodName);
-            result.AddChildNode(new ExprConstantNode(argString));
+	            // Validate
+	            try
+	            {
+	                result.Validate(streamTypeService, methodResolutionService, null);
+	            }
+	            catch(ExprValidationException e)
+	            {
+	                throw new ExprValidationException("Failed to resolve " + mappedProperty + " as either an event property or as a static method invocation");
+	            }
 
-            // Validate
-            try
-            {
-                result.Validate(streamTypeService, autoImportService);
-            }
-            catch (ExprValidationException)
-            {
-                throw new ExprValidationException(
-                    "Failed to resolve " + name +
-                    " as either an event property or as a static method invocation");
-            }
+	            return result;
+	        }
 
-            return result;
-        }
+	        // There is no class name, try an aggregation function
+	        try
+	        {
+	            AggregationSupport aggregation = methodResolutionService.ResolveAggregation(parse.MethodName);
+	            ExprNode result = new ExprPlugInAggFunctionNode(false, aggregation, parse.MethodName);
+	            result.AddChildNode(new ExprConstantNode(parse.ArgString));
+
+	            // Validate
+	            try
+	            {
+	                result.Validate(streamTypeService, methodResolutionService, null);
+	            }
+	            catch (RuntimeException e)
+	            {
+	                throw new ExprValidationException("Plug-in aggregation function '" + parse.MethodName + "' failed validation: " + e.Message);
+	            }
+
+	            return result;
+	        }
+	        catch (EngineImportUndefinedException e)
+	        {
+	            // Not an aggregation function
+	        }
+	        catch (EngineImportException e)
+	        {
+	            throw new IllegalStateException("Error resolving aggregation: " + e.getMessage(), e);
+	        }
+
+	        // absolutly cannot be resolved
+	        throw propertyException;
+	    }
+
+	    /**
+	     * Parse the mapped property into classname, method and string argument.
+	     * Mind this has been parsed already and is a valid mapped property.
+	     * @param property is the string property to be passed as a static method invocation
+	     * @return descriptor object
+	     */
+	    protected static MappedPropertyParseResult ParseMappedProperty(String property)
+	    {
+	        // get argument
+	        int indexFirstDoubleQuote = property.IndexOf("\"");
+	        int indexFirstSingleQuote = property.IndexOf("'");
+	        int startArg;
+	        if ((indexFirstSingleQuote == -1) && (indexFirstDoubleQuote == -1))
+	        {
+	            return null;
+	        }
+	        if ((indexFirstSingleQuote != -1) && (indexFirstDoubleQuote != -1))
+	        {
+	            if (indexFirstSingleQuote < indexFirstDoubleQuote)
+	            {
+	                startArg = indexFirstSingleQuote;
+	            }
+	            else
+	            {
+	                startArg = indexFirstDoubleQuote;
+	            }
+	        }
+	        else if (indexFirstSingleQuote != -1)
+	        {
+	            startArg = indexFirstSingleQuote;
+	        }
+	        else
+	        {
+	            startArg = indexFirstDoubleQuote;
+	        }
+
+	        int indexLastDoubleQuote = property.LastIndexOf("\"");
+	        int indexLastSingleQuote = property.LastIndexOf("'");
+	        int endArg;
+	        if ((indexLastSingleQuote == -1) && (indexLastDoubleQuote == -1))
+	        {
+	            return null;
+	        }
+	        if ((indexLastSingleQuote != -1) && (indexLastDoubleQuote != -1))
+	        {
+	            if (indexLastSingleQuote > indexLastDoubleQuote)
+	            {
+	                endArg = indexLastSingleQuote;
+	            }
+	            else
+	            {
+	                endArg = indexLastDoubleQuote;
+	            }
+	        }
+	        else if (indexLastSingleQuote != -1)
+	        {
+	            endArg = indexLastSingleQuote;
+	        }
+	        else
+	        {
+	            endArg = indexLastDoubleQuote;
+	        }
+	        String argument = property.Substring(startArg + 1, endArg);
+
+	        // get method
+	        String[] splitDots = property.ToString.Split("[\\.]");
+	        if (splitDots.length == 0)
+	        {
+	            return null;
+	        }
+
+	        String method = splitDots[splitDots.length - 1];
+	        int indexParan = method.IndexOf("(");
+	        if (indexParan == -1)
+	        {
+	            return null;
+	        }
+	        method = method.Substring(0, indexParan);
+	        if (method.Length == 0)
+	        {
+	            return null;
+	        }
+
+	        if (splitDots.Length == 1)
+	        {
+	            // no type name
+	            return new MappedPropertyParseResult(null, method, argument);
+	        }
+
+	        // get type
+	        StringBuilder type = new StringBuilder();
+	        for (int i = 0; i < splitDots.Length - 1; i++)
+	        {
+	            if (i > 0)
+	            {
+	                type.Append('.');
+	            }
+	            type.Append(splitDots[i]);
+	        }
+
+	        return new MappedPropertyParseResult(type.ToString(), method, argument);
+	    }
+
+	    /**
+	     * Encapsulates the parse result parsing a mapped property as a type and method name with args.
+	     */
+	    protected class MappedPropertyParseResult
+	    {
+	        private String typeName;
+	        private String methodName;
+	        private String argString;
+
+	        /**
+	         * Returns class name.
+	         * @return name of class
+	         */
+	        public String TypeName
+	        {
+	            get { return typeName; }
+	        }
+
+	        /**
+	         * Returns the method name.
+	         * @return method name
+	         */
+	        public String MethodName
+	        {
+	            get { return methodName; }
+	        }
+
+	        /**
+	         * Returns the method argument.
+	         * @return arg
+	         */
+	        public String ArgString
+	        {
+	            get { return argString; }
+	        }
+
+	        /**
+	         * Returns the parse result of the mapped property.
+	         * @param typeName is the type name, or null if there isn't one
+	         * @param methodName is the method name
+	         * @param argString is the argument
+	         */
+	        public MappedPropertyParseResult(String typeName, String methodName, String argString)
+	        {
+	            this.typeName = typeName;
+	            this.methodName = methodName;
+	            this.argString = argString;
+	        }
+		}
 
         /// <summary>
         /// Evaluate event tuple and return result.
@@ -246,7 +438,7 @@ namespace net.esper.eql.expression
         /// <param name="eventsPerStream">event tuple</param>
         /// <returns>evaluation result, a bool value for OR/AND-type evalution nodes.</returns>
 
-        public abstract Object Evaluate(EventBean[] eventsPerStream);
+        public abstract Object Evaluate(EventBean[] eventsPerStream, bool isNewData);
 
         /// <summary>
         /// Validate node.
@@ -255,7 +447,7 @@ namespace net.esper.eql.expression
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 
-        public abstract void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService);
+        public abstract void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate);
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }

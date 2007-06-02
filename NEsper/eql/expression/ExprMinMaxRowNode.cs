@@ -21,10 +21,15 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return resultType; }
         }
+
+	    public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    } 
 
         private MinMaxTypeEnum minMaxTypeEnum;
         private Type resultType;
@@ -43,7 +48,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             if (this.ChildNodes.Count < 2)
             {
@@ -77,10 +82,10 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
-            ValueType valueChildOne = (ValueType) this.ChildNodes[0].Evaluate(eventsPerStream);
-            ValueType valueChildTwo = (ValueType) this.ChildNodes[1].Evaluate(eventsPerStream);
+            ValueType valueChildOne = (ValueType) this.ChildNodes[0].Evaluate(eventsPerStream, isNewData);
+            ValueType valueChildTwo = (ValueType) this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
 
             if ((valueChildOne == null) || (valueChildTwo == null))
             {
@@ -101,7 +106,7 @@ namespace net.esper.eql.expression
 
                 for (int i = 2; i < this.ChildNodes.Count; i++)
                 {
-                    ValueType valueChild = (ValueType)this.ChildNodes[i].Evaluate(eventsPerStream);
+                    ValueType valueChild = (ValueType)this.ChildNodes[i].Evaluate(eventsPerStream, isNewData);
                     if (valueChild == null)
                     {
                         return null;
@@ -124,7 +129,7 @@ namespace net.esper.eql.expression
                 }
                 for (int i = 2; i < this.ChildNodes.Count; i++)
                 {
-                    ValueType valueChild = (ValueType)this.ChildNodes[i].Evaluate(eventsPerStream);
+                    ValueType valueChild = (ValueType)this.ChildNodes[i].Evaluate(eventsPerStream, isNewData);
                     if (valueChild == null)
                     {
                         return null;
@@ -136,7 +141,7 @@ namespace net.esper.eql.expression
                 }
             }
 
-            return TypeHelper.CoerceNumber(result, resultType);
+            return TypeHelper.CoerceBoxed(result, resultType);
         }
 
         /// <summary>

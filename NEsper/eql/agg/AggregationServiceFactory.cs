@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.expression;
 using net.esper.events;
@@ -140,7 +141,7 @@ namespace net.esper.eql.agg
 	        return service;
 	    }
 
-	    private static void AddEquivalent(ExprAggregateNode aggNodeToAdd, Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList)
+	    private static void AddEquivalent(ExprAggregateNode aggNodeToAdd, EDictionary<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList)
 	    {
 	        // Check any same aggregation nodes among all aggregation clauses
 	        bool foundEquivalent = false;

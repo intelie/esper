@@ -86,7 +86,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             Pair<PropertyResolutionDescriptor, String> propertyInfoPair = GetTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
             resolvedStreamName = propertyInfoPair.Second;
@@ -107,7 +107,7 @@ namespace net.esper.eql.expression
         {
             get
             {
-                if (propertyType == null)
+                if (resolvedPropertyName == null)
                 {
                     throw new IllegalStateException("Identifier node has not been validated");
                 }
@@ -115,8 +115,13 @@ namespace net.esper.eql.expression
             }
         }
 
+		public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
+
         /// <summary>
-        /// Gets the stream id supplying the property value 
+        /// Gets the stream id supplying the property value
         /// </summary>
 
         public int StreamId
@@ -134,7 +139,7 @@ namespace net.esper.eql.expression
         /// <summary>
         /// Returns stream name as resolved by lookup of property in streams.
         /// </summary>
- 
+
         public String ResolvedStreamName
         {
             get
@@ -150,7 +155,7 @@ namespace net.esper.eql.expression
         /// <summary>
         /// Return property name as resolved by lookup in streams.
         /// </summary>
-        
+
         public String ResolvedPropertyName
         {
             get
@@ -191,7 +196,7 @@ namespace net.esper.eql.expression
                 }
 
                 // resolves without a stream name, return descriptor and null stream name
-                return new Pair<PropertyResolutionDescriptor, String>(propertyInfo, null);
+                return new Pair<PropertyResolutionDescriptor, String>(propertyInfo, propertyInfo.StreamName);
             }
 
             // try to resolve the property name and stream name as it is (ie. stream name as a stream name)
@@ -245,7 +250,7 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             EventBean ev = eventsPerStream[streamNum];
             if (ev == null)
@@ -311,4 +316,4 @@ namespace net.esper.eql.expression
         }
     }
 }
-    
+

@@ -8,7 +8,7 @@ namespace net.esper.eql.expression
     /// <summary>
     /// Represents a constant in a filter expressiun tree.
     /// </summary>
-    
+
     public class ExprConstantNode : ExprNode
     {
         /// <summary>
@@ -18,7 +18,7 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get
             {
@@ -29,7 +29,12 @@ namespace net.esper.eql.expression
                 return value.GetType();
             }
         }
-
+		
+		public override bool IsConstantResult
+	    {
+	        get { return true; }
+	    }
+		
         private Object value;
 
         /// <summary> Ctor.</summary>
@@ -46,7 +51,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
         }
 
@@ -57,7 +62,7 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             return value;
         }

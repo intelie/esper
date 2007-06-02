@@ -1,4 +1,5 @@
 using System;
+
 namespace net.esper.eql.spec
 {
 	/// <summary>

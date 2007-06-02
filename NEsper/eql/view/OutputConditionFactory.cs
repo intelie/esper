@@ -1,7 +1,7 @@
 using System;
 
 using net.esper.eql.spec;
-using net.esper.view;
+using net.esper.core;
 
 using org.apache.commons.logging;
 
@@ -18,13 +18,16 @@ namespace net.esper.eql.view
 		/// <summary> Creates an output condition instance.</summary>
 		/// <param name="outputLimitSpec">specifies what kind of condition to create
 		/// </param>
-		/// <param name="viewContext">supplies the services required such as for scheduling callbacks
+		/// <param name="statementContext">supplies the services required such as for scheduling callbacks
 		/// </param>
 		/// <param name="outputCallback">is the method to invoke for output
 		/// </param>
 		/// <returns> instance for performing output
 		/// </returns>
-		public static OutputCondition CreateCondition(OutputLimitSpec outputLimitSpec, ViewServiceContext viewContext, OutputCallback outputCallback)
+		public static OutputCondition CreateCondition(
+			OutputLimitSpec outputLimitSpec, 
+			StatementContext statementContext,
+			OutputCallback outputCallback)
 		{
 			if (outputCallback == null)
 			{
@@ -38,7 +41,7 @@ namespace net.esper.eql.view
 			else if (outputLimitSpec.IsDisplayFirstOnly)
 			{
 				log.Debug(".createCondition creating OutputConditionFirst");
-				return new OutputConditionFirst(outputLimitSpec, viewContext, outputCallback);
+				return new OutputConditionFirst(outputLimitSpec, statementContext, outputCallback);
 			}
 			if (outputLimitSpec.EventLimit)
 			{
@@ -48,7 +51,7 @@ namespace net.esper.eql.view
 			else
 			{
 				log.Debug(".createCondition creating OutputConditionTime with interval length " + outputLimitSpec.TimeRate);
-				return new OutputConditionTime(outputLimitSpec.TimeRate, viewContext, outputCallback);
+				return new OutputConditionTime(outputLimitSpec.TimeRate, statementContext, outputCallback);
 			}
 		}
 	}

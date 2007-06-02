@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Collections.Generic;
 using System.Text;
 
+using net.esper.core;
 using net.esper.compat;
 using net.esper.eql.expression;
 using net.esper.eql.spec;
@@ -26,6 +27,7 @@ namespace net.esper.eql.db
         /// <param name="databaseStreamSpec">provides the SQL statement, database name and additional info</param>
         /// <param name="databaseConfigService">for getting database connection and settings</param>
         /// <param name="eventAdapterService">for generating event beans from database information</param>
+		/// <param name="epStatementHandle">the statements-own handle for use in registering callbacks with services</param>
         /// <returns>viewable providing poll functionality</returns>
         /// <throws>ExprValidationException if the validation failed </throws>
 
@@ -33,7 +35,8 @@ namespace net.esper.eql.db
             int streamNumber,
             DBStatementStreamSpec databaseStreamSpec,
             DatabaseConfigService databaseConfigService,
-            EventAdapterService eventAdapterService)
+            EventAdapterService eventAdapterService,
+			EPStatementHandle epStatementHandle)
         {
             #region "Constructing the SQL"
             // Parse the SQL for placeholders and text fragments
@@ -151,7 +154,7 @@ namespace net.esper.eql.db
                                 try
                                 {
                                     connectionCache = databaseConfigService.GetConnectionCache(databaseName, preparedStatementText);
-                                    dataCache = databaseConfigService.GetDataCache(databaseName);
+                                    dataCache = databaseConfigService.GetDataCache(databaseName, epStatementHandle);
                                 }
                                 catch (DatabaseConfigException e)
                                 {
@@ -195,7 +198,7 @@ namespace net.esper.eql.db
                 }
                 else
                 {
-                    buffer.Append("?");
+                    buffer.Append('?');
                 }
             }
 

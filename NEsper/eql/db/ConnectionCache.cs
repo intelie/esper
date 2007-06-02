@@ -52,7 +52,7 @@ namespace net.esper.eql.db
         /// <param name="pair">is the resources to close.
         /// </param>
         
-        protected void Close(Pair<DbConnection, DbCommand> pair)
+        protected static void Close(Pair<DbConnection, DbCommand> pair)
         {
             log.Info(".close Closing statement and connection");
             try

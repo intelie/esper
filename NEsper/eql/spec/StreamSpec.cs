@@ -6,49 +6,22 @@ using net.esper.view;
 
 namespace net.esper.eql.spec
 {
-	/// <summary>
-    /// Abstract base specification for a stream, consists simply of an optional stream name and a list of views
-	/// on to of the stream.
-	/// <para>
-	/// Implementation classes for views and patterns add additional information defining the
-	/// stream of events.
-    /// </para>
-	/// </summary>
+	/**
+	 * Specification for a stream, consists simply of an optional stream name and a list of views
+	 * on to of the stream.
+	 * <p>
+	 * Implementation classes for views and patterns add additional information defining the
+	 * stream of events.
+	 */
 
-    public abstract class StreamSpec
+    public interface StreamSpec
     {
-        private String optionalStreamName;
-        private List<ViewSpec> viewSpecs;
-
-        /// <summary> Returns the name assigned.</summary>
-        /// <returns> stream name or null if not assigned
-        /// </returns>
+        /// <summary>Returns the stream name, or null if undefined.</summary>
         
-        virtual public String OptionalStreamName
-        {
-            get { return optionalStreamName; }
-        }
+        String OptionalStreamName { get ; }
 
-        /// <summary> Ctor.</summary>
-        /// <param name="optionalStreamName">stream name, or null if none supplied
-        /// </param>
-        /// <param name="viewSpecs">specifies what view to use to derive data
-        /// </param>
+        /// <summary> Returns views definitions onto the stream.</summary>
 
-        public StreamSpec(String optionalStreamName, IList<ViewSpec> viewSpecs)
-        {
-            this.optionalStreamName = optionalStreamName;
-            this.viewSpecs = new List<ViewSpec>();
-            this.viewSpecs.AddRange(viewSpecs);
-        }
-
-        /// <summary> Returns view definitions to use to construct views to derive data on stream.</summary>
-        /// <returns> view defs
-        /// </returns>
-
-        public List<ViewSpec> ViewSpecs
-        {
-            get { return viewSpecs; }
-        }
+        List<ViewSpec> ViewSpecs { get ; }
     }
 }

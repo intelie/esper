@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using net.esper.collection;
 using net.esper.compat;
+using net.esper.eql.agg;
 using net.esper.eql.expression;
 using net.esper.eql.spec;
 using net.esper.events;
@@ -50,7 +51,7 @@ namespace net.esper.eql.core
         /// Returns the result set process for the given select expression, group-by clause and
         /// having clause given a set of types describing each stream in the from-clause.
         /// </summary>
-        /// <param name="selectionList">represents select clause and thus the expression nodes listed in the select, or empty if wildcard
+        /// <param name="selectClauseSpec">represents select clause and thus the expression nodes listed in the select, or empty if wildcard
         /// </param>
         /// <param name="groupByNodes">represents the expressions to group-by events based on event properties, or empty if no group-by was specified
         /// </param>
@@ -66,12 +67,14 @@ namespace net.esper.eql.core
         /// </param>
         /// <param name="eventAdapterService">wrapping service for events
         /// </param>
-        /// <param name="autoImportService">for resolving class names
+        /// <param name="methodResolutionService">for resolving class names
+        /// </param>
+		/// <param name="viewResourceDelegate">delegates views resource factory to expression resources requirements
         /// </param>
         /// <returns> result set processor instance
         /// </returns>
         /// <throws>  net.esper.eql.expression.ExprValidationException </throws>
-        public static ResultSetProcessor GetProcessor(IList<SelectExprElementUnnamedSpec> selectionList,
+        public static ResultSetProcessor GetProcessor(SelectClauseSpec selectClauseSpec,
                                                       InsertIntoDesc insertIntoDesc,
                                                       IList<ExprNode> groupByNodes,
                                                       ExprNode optionalHavingNode,
@@ -79,27 +82,29 @@ namespace net.esper.eql.core
                                                       IList<Pair<ExprNode, Boolean>> orderByList,
                                                       StreamTypeService typeService,
                                                       EventAdapterService eventAdapterService,
-                                                      AutoImportService autoImportService)
+													  MethodResolutionService methodResolutionService,
+													  ViewResourceDelegate viewResourceDelegate)
         {
             if (log.IsDebugEnabled)
             {
                 log.Debug(".GetProcessor Getting processor for " +
-            	          " selectionList=" + CollectionHelper.Render( selectionList ) +
+            	          " selectionList=" + selectClauseSpec.SelectList +
+						  " isUsingWildcard=" + selectClauseSpec.IsUsingWildcard +
             	          " groupByNodes=" + CollectionHelper.Render( groupByNodes ) +
             	          " optionalHavingNode=" + optionalHavingNode);
             }
 
             // Expand any instances of select-clause aliases in the
             // order-by clause with the full expression
-            ExpandAliases(selectionList, orderByList);
+            ExpandAliases(selectionList.SelectList, orderByList);
 
             // Validate selection expressions, if any (could be wildcard i.e. empty list)
-            IList<SelectExprElementNamedSpec> namedSelectionList = new List<SelectExprElementNamedSpec>();
-            for (int i = 0; i < selectionList.Count; i++)
+            IList<SelectExprElementCompiledSpec> namedSelectionList = new List<SelectExprElementCompiledSpec>();
+            for (int i = 0; i < selectionClauseSpec.SelectList.Count; i++)
             {
                 // validate element
-                SelectExprElementUnnamedSpec element = selectionList[i];
-                ExprNode validatedExpression = element.SelectExpression.GetValidatedSubtree(typeService, autoImportService);
+                SelectExprElementRawSpec element = selectionList.SelectList[i];
+                ExprNode validatedExpression = element.SelectExpression.GetValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
 
                 // determine an element name if none assigned
                 String asName = element.OptionalAsName;
@@ -108,35 +113,61 @@ namespace net.esper.eql.core
                     asName = validatedExpression.ExpressionString;
                 }
 
-                SelectExprElementNamedSpec validatedElement = new SelectExprElementNamedSpec(validatedExpression, asName);
+                SelectExprElementCompiledSpec validatedElement = new SelectExprElementCompiledSpec(validatedExpression, asName);
                 namedSelectionList.Add(validatedElement);
             }
-            selectionList = null;
+			bool isUsingWildcard = selectClauseSpec.IsUsingWildcard;
+			selectClauseSpec = null;
 
             // Validate group-by expressions, if any (could be empty list for no group-by)
             for (int i = 0; i < groupByNodes.Count; i++)
             {
-                groupByNodes[i] = groupByNodes[i].GetValidatedSubtree(typeService, autoImportService);
+	            // Ensure there is no subselects
+	            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+	            groupByNodes[i].Accept(visitor);
+	            if (visitor.Subselects.Count > 0)
+	            {
+	                throw new ExprValidationException("Subselects not allowed within group-by");
+	            }
+
+	            groupByNodes[i] = groupByNodes[i].GetValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
             }
 
             // Validate having clause, if present
             if (optionalHavingNode != null)
             {
-                optionalHavingNode = optionalHavingNode.GetValidatedSubtree(typeService, autoImportService);
+	            // Ensure there is no subselects
+	            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+	            optionalHavingNode.Accept(visitor);
+	            if (visitor.Subselects.Count > 0)
+	            {
+	                throw new ExprValidationException("Subselects not allowed within having-clause");
+	            }
+
+	            optionalHavingNode = optionalHavingNode.GetValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
             }
 
             // Validate order-by expressions, if any (could be empty list for no order-by)
             for (int i = 0; i < orderByList.Count; i++)
             {
-                ExprNode orderByNode = orderByList[i].First;
-                Boolean isDescending = orderByList[i].Second;
-                Pair<ExprNode, Boolean> validatedPair = new Pair<ExprNode, Boolean>(orderByNode.GetValidatedSubtree(typeService, autoImportService), isDescending);
-                orderByList[i] = validatedPair;
+	        	ExprNode orderByNode = orderByList[i].First;
+
+	            // Ensure there is no subselects
+	            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+	            orderByNode.Accept(visitor);
+	            if (visitor.Subselects.Count > 0)
+	            {
+	                throw new ExprValidationException("Subselects not allowed within order-by clause");
+	            }
+
+	            bool isDescending = orderByList[i].Second;
+	        	Pair<ExprNode, bool> validatedPair = new Pair<ExprNode, bool>(orderByNode.GetValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate), isDescending);
+	        	orderByList[i] = validatedPair;
             }
 
             // Get the select expression nodes
             IList<ExprNode> selectNodes = new List<ExprNode>();
-            foreach (SelectExprElementNamedSpec element in namedSelectionList)
+            foreach (SelectExprElementCompiledSpec element in namedSelectionList)
             {
                 selectNodes.Add(element.SelectExpression);
             }
@@ -150,35 +181,45 @@ namespace net.esper.eql.core
 
             // Determine aggregate functions used in select, if any
             IList<ExprAggregateNode> selectAggregateExprNodes = new List<ExprAggregateNode>();
-            foreach (SelectExprElementNamedSpec element in namedSelectionList)
+            foreach (SelectExprElementCompiledSpec element in namedSelectionList)
             {
                 ExprAggregateNode.GetAggregatesBottomUp(element.SelectExpression, selectAggregateExprNodes);
             }
 
-            // Construct the appropriate aggregation service
-            bool hasGroupBy = groupByNodes.Count > 0;
-            AggregationService aggregationService = AggregationServiceFactory.GetService(selectAggregateExprNodes, hasGroupBy, optionalHavingNode, orderByNodes);
+	        // Determine if we have a having clause with aggregation
+	        IList<ExprAggregateNode> havingAggregateExprNodes = new List<ExprAggregateNode>();
+	        ISet<Pair<int, string>> propertiesAggregatedHaving = new EHashSet<Pair<int, string>>();
+	        if (optionalHavingNode != null)
+	        {
+	            ExprAggregateNode.GetAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
+	            propertiesAggregatedHaving = GetAggregatedProperties(havingAggregateExprNodes);
+	        }
+
+	        // Determine if we have a order-by clause with aggregation
+	        IList<ExprAggregateNode> orderByAggregateExprNodes = new List<ExprAggregateNode>();
+	        if (orderByNodes != null)
+	        {
+	            foreach (ExprNode orderByNode in orderByNodes)
+	            {
+	                ExprAggregateNode.GetAggregatesBottomUp(orderByNode, orderByAggregateExprNodes);
+	            }
+	        }
+
+	        // Construct the appropriate aggregation service
+	        boolean hasGroupBy = groupByNodes.Count > 0 ;
+	        AggregationService aggregationService = AggregationServiceFactory.GetService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, methodResolutionService);
 
             // Construct the processor for sorting output events
             OrderByProcessor orderByProcessor = OrderByProcessorFactory.GetProcessor(namedSelectionList, groupByNodes, orderByList, aggregationService, eventAdapterService);
 
             // Construct the processor for evaluating the select clause
-            SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.GetProcessor(namedSelectionList, insertIntoDesc, typeService, eventAdapterService);
+			SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(namedSelectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
 
             // Get a list of event properties being aggregated in the select clause, if any
             ISet<Pair<Int32, String>> propertiesAggregatedSelect = GetAggregatedProperties(selectAggregateExprNodes);
             ISet<Pair<Int32, String>> propertiesGroupBy = GetGroupByProperties(groupByNodes);
             // Figure out all non-aggregated event properties in the select clause (props not under a sum/avg/max aggregation node)
             ISet<Pair<Int32, String>> nonAggregatedProps = GetNonAggregatedProps(selectNodes);
-
-            // Determine if we have a having clause with aggregation
-            IList<ExprAggregateNode> havingAggregateExprNodes = new List<ExprAggregateNode>();
-            ISet<Pair<Int32, String>> propertiesAggregatedHaving = new EHashSet<Pair<Int32, String>>();
-            if (optionalHavingNode != null)
-            {
-                ExprAggregateNode.GetAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
-                propertiesAggregatedHaving = GetAggregatedProperties(havingAggregateExprNodes);
-            }
 
             // Validate that group-by is filled with sensible nodes (identifiers, and not part of aggregates selected, no aggregates)
             ValidateGroupBy(groupByNodes, propertiesAggregatedSelect, propertiesGroupBy);
@@ -222,23 +263,24 @@ namespace net.esper.eql.core
                 return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
             }
 
-            if ((groupByNodes.Count == 0) && (selectAggregateExprNodes.Count > 0))
-            {
-                // (3)
-                // There is no group-by clause and there are aggregate functions with event properties in the select clause (aggregation case)
-                // and all event properties are aggregated (all properties are under aggregation functions).
-                if (nonAggregatedProps.Count == 0)
-                {
-                    log.Debug(".GetProcessor Using ResultSetProcessorRowForAll");
-                    return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, optionalHavingNode);
-                }
+	        bool hasAggregation = (selectAggregateExprNodes.Count > 0) || (propertiesAggregatedHaving.Count > 0);
+	        if ((groupByNodes.Count == 0) && hasAggregation)
+	        {
+	            // (3)
+	            // There is no group-by clause and there are aggregate functions with event properties in the select clause (aggregation case)
+	            // or having class, and all event properties are aggregated (all properties are under aggregation functions).
+	            if (nonAggregatedProps.Count == 0)
+	            {
+	                log.Debug(".GetProcessor Using ResultSetProcessorRowForAll");
+	                return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, optionalHavingNode);
+	            }
 
-                // (4)
-                // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
-                // and not all event properties are aggregated (some properties are not under aggregation functions).
-                log.Debug(".GetProcessor Using ResultSetProcessorAggregateAll");
-                return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
-            }
+	            // (4)
+	            // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
+	            // or having clause and not all event properties are aggregated (some properties are not under aggregation functions).
+	            log.Debug(".GetProcessor Using ResultSetProcessorAggregateAll");
+	            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+	        }
 
             // Handle group-by cases
             if (groupByNodes.Count == 0)
@@ -303,29 +345,10 @@ namespace net.esper.eql.core
             ISet<Pair<Int32, String>> propertiesGroupedBy,
             ExprNode havingNode)
         {
-            // All aggregation functions in the having node must match with an aggregation function in the select
             IList<ExprAggregateNode> aggregateNodesHaving = new List<ExprAggregateNode>();
             if (aggregateNodesHaving != null)
             {
                 ExprAggregateNode.GetAggregatesBottomUp(havingNode, aggregateNodesHaving);
-            }
-
-            foreach (ExprAggregateNode aggregateNodeHaving in aggregateNodesHaving)
-            {
-                bool foundMatch = false;
-                foreach (ExprAggregateNode aggregateNodeSelect in selectAggregateExprNodes)
-                {
-                    if (ExprNode.DeepEquals(aggregateNodeSelect, aggregateNodeHaving))
-                    {
-                        foundMatch = true;
-                        break;
-                    }
-                }
-
-                if (!foundMatch)
-                {
-                    throw new ExprValidationException("Aggregate functions in the HAVING clause must match aggregate functions in the select clause");
-                }
             }
 
             // Any non-aggregated properties must occur in the group-by clause (if there is one)
@@ -423,9 +446,9 @@ namespace net.esper.eql.core
             return propertiesGroupBy;
         }
 
-        private static void ExpandAliases(IList<SelectExprElementUnnamedSpec> selectionList, IList<Pair<ExprNode, Boolean>> orderByList)
+        private static void ExpandAliases(IList<SelectExprElementRawSpec> selectionList, IList<Pair<ExprNode, Boolean>> orderByList)
         {
-            foreach (SelectExprElementUnnamedSpec selectElement in selectionList)
+            foreach (SelectExprElementRawSpec selectElement in selectionList)
             {
                 String alias = selectElement.OptionalAsName;
                 if (alias != null)

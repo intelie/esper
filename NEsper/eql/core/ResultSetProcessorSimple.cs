@@ -61,7 +61,11 @@ namespace net.esper.eql.core
         {
             get
             {
-				return selectExprProcessor.ResultEventType;
+		        // the type depends on whether we are post-processing a selection result, or not
+				return
+					(selectExprProcessor != null)
+					(selectExprProcessor.ResultEventType) :
+					(null);
             }
         }
 
@@ -80,13 +84,13 @@ namespace net.esper.eql.core
 
             if (optionalHavingExpr == null)
             {
-                selectOldEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly);
-                selectNewEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly, false);
+                selectNewEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly, true);
             }
             else
             {
-                selectOldEvents = GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly);
-                selectNewEvents = GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly, false);
+                selectNewEvents = GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, isOutputLimiting, isOutputLimitLastOnly, true);
             }
 
             return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
@@ -102,8 +106,8 @@ namespace net.esper.eql.core
         /// <returns>pair of new events and old events</returns>
         public Pair<EventBean[], EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData)
         {
-            EventBean[] selectOldEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly);
-            EventBean[] selectNewEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly);
+            EventBean[] selectOldEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly, false);
+            EventBean[] selectNewEvents = GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly, true);
 
             return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
         }
@@ -118,9 +122,17 @@ namespace net.esper.eql.core
         /// <param name="events">input events</param>
         /// <param name="isOutputLimiting">true to indicate that we limit output</param>
         /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event</param>
+		/// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>output events, one for each input event</returns>
 
-        public static EventBean[] GetSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
+        public static EventBean[] GetSelectEventsNoHaving(
+			SelectExprProcessor exprProcessor, 
+			OrderByProcessor orderByProcessor,
+			EventBean[] events, 
+			bool isOutputLimiting,
+			bool isOutputLimitLastOnly,
+			bool isNewData
+			)
         {
             if (isOutputLimiting)
             {
@@ -151,7 +163,7 @@ namespace net.esper.eql.core
                 }
                 else
                 {
-                    result[i] = exprProcessor.Process(eventsPerStream);
+                    result[i] = exprProcessor.Process(eventsPerStream, isNewData);
                 }
 
                 if (orderByProcessor != null)
@@ -162,7 +174,7 @@ namespace net.esper.eql.core
 
             if (orderByProcessor != null)
             {
-                return orderByProcessor.Sort(result, eventGenerators);
+                return orderByProcessor.Sort(result, eventGenerators, isNewData);
             }
             else
             {
@@ -217,8 +229,16 @@ namespace net.esper.eql.core
         /// <param name="events">input events</param>
         /// <param name="isOutputLimiting">true to indicate that we limit output</param>
         /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event</param>
+		/// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>output events, one for each input event</returns>
-        public static EventBean[] GetSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, ISet<MultiKey<EventBean>> events, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
+        public static EventBean[] GetSelectEventsNoHaving(
+			SelectExprProcessor exprProcessor,
+			OrderByProcessor orderByProcessor,
+			ISet<MultiKey<EventBean>> events,
+			bool isOutputLimiting,
+			bool isOutputLimitLastOnly,
+			bool isNewData
+			)
         {
             if (isOutputLimiting)
             {
@@ -242,7 +262,7 @@ namespace net.esper.eql.core
             foreach (MultiKey<EventBean> key in events)
             {
                 EventBean[] eventsPerStream = key.Array;
-                result[count] = exprProcessor.Process(eventsPerStream);
+                result[count] = exprProcessor.Process(eventsPerStream, isNewData);
                 if (orderByProcessor != null)
                 {
                     eventGenerators[count] = eventsPerStream;
@@ -252,7 +272,7 @@ namespace net.esper.eql.core
 
             if (orderByProcessor != null)
             {
-                return orderByProcessor.Sort(result, eventGenerators);
+                return orderByProcessor.Sort(result, eventGenerators, isNewData);
             }
             else
             {
@@ -272,8 +292,17 @@ namespace net.esper.eql.core
         /// <param name="optionalHavingNode">supplies the having-clause expression</param>
         /// <param name="isOutputLimiting">true to indicate that we limit output</param>
         /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event</param>
+		/// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>output events, one for each input event</returns>
-        public static EventBean[] GetSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
+        public static EventBean[] GetSelectEventsHaving(
+			SelectExprProcessor exprProcessor, 
+			OrderByProcessor orderByProcessor, 
+			EventBean[] events,
+			ExprNode optionalHavingNode, 
+			bool isOutputLimiting,
+			bool isOutputLimitLastOnly,
+			bool isNewData
+			)
         {
             if (isOutputLimiting)
             {
@@ -297,13 +326,13 @@ namespace net.esper.eql.core
             {
                 eventsPerStream[0] = events[i];
 
-                Boolean passesHaving = (Boolean)optionalHavingNode.Evaluate(eventsPerStream);
+                bool passesHaving = (bool)optionalHavingNode.Evaluate(eventsPerStream, isNewData);
                 if (!passesHaving)
                 {
                     continue;
                 }
 
-                result.Add(exprProcessor.Process(eventsPerStream));
+                result.Add(exprProcessor.Process(eventsPerStream, isNewData));
                 if (orderByProcessor != null)
                 {
                     eventGenerators.Add(new EventBean[] { events[i] });
@@ -314,7 +343,7 @@ namespace net.esper.eql.core
             {
                 if (orderByProcessor != null)
                 {
-                    return orderByProcessor.Sort(result.ToArray(), eventGenerators.ToArray());
+                    return orderByProcessor.Sort(result.ToArray(), eventGenerators.ToArray(), isNewData);
                 }
                 else
                 {
@@ -340,9 +369,17 @@ namespace net.esper.eql.core
         /// <param name="optionalHavingNode">supplies the having-clause expression</param>
         /// <param name="isOutputLimiting">true to indicate that we limit output</param>
         /// <param name="isOutputLimitLastOnly">true to indicate that we limit output to the last event</param>
+		/// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>output events, one for each input event</returns>
         
-        public static EventBean[] GetSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, ISet<MultiKey<EventBean>> events, ExprNode optionalHavingNode, Boolean isOutputLimiting, Boolean isOutputLimitLastOnly)
+        public static EventBean[] GetSelectEventsHaving(
+			SelectExprProcessor exprProcessor,
+			OrderByProcessor orderByProcessor,
+			ISet<MultiKey<EventBean>> events, ExprNode optionalHavingNode,
+			bool isOutputLimiting,
+			bool isOutputLimitLastOnly,
+			bool isNewData
+			)
         {
             if (isOutputLimiting)
             {
@@ -360,13 +397,13 @@ namespace net.esper.eql.core
             {
                 EventBean[] eventsPerStream = key.Array;
 
-                Boolean passesHaving = (Boolean)optionalHavingNode.Evaluate(eventsPerStream);
+                bool passesHaving = (bool)optionalHavingNode.Evaluate(eventsPerStream, isNewData);
                 if (!passesHaving)
                 {
                     continue;
                 }
 
-                EventBean resultEvent = exprProcessor.Process(eventsPerStream);
+                EventBean resultEvent = exprProcessor.Process(eventsPerStream, isNewData);
                 result.Add(resultEvent);
                 if (orderByProcessor != null)
                 {
@@ -378,7 +415,7 @@ namespace net.esper.eql.core
             {
                 if (orderByProcessor != null)
                 {
-                    return orderByProcessor.Sort(result.ToArray(), eventGenerators.ToArray()) ;
+                    return orderByProcessor.Sort(result.ToArray(), eventGenerators.ToArray(), isNewData) ;
                 }
                 else
                 {

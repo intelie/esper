@@ -5,9 +5,9 @@ using net.esper.eql.core;
 namespace net.esper.eql.expression
 {
 	/// <summary>
-    /// Validation interface for filter nodes.
+    /// Validation interface for expression nodes.
     /// </summary>
-	
+
     public interface ExprValidator
 	{
         /// <summary>
@@ -17,10 +17,7 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated</returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 
-        Type ReturnType
-        {
-            get;
-        }
+        Type ReturnType { get ; }
 
         /// <summary>
         /// Validate node.
@@ -28,7 +25,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-		
-        void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService);
+
+        void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate);
 	}
 }

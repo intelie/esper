@@ -65,7 +65,7 @@ namespace net.esper.eql.core
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents = null;
 
-            selectOldEvents = GetSelectListEvents(selectExprProcessor, optionalHavingNode);
+            selectOldEvents = GetSelectListEvents(selectExprProcessor, optionalHavingNode, false);
 
             if (!oldEvents.IsEmpty)
             {
@@ -85,7 +85,7 @@ namespace net.esper.eql.core
                 }
             }
 
-            selectNewEvents = GetSelectListEvents(selectExprProcessor, optionalHavingNode);
+            selectNewEvents = GetSelectListEvents(selectExprProcessor, optionalHavingNode, true);
 
             if ((selectNewEvents == null) && (selectOldEvents == null))
             {
@@ -107,7 +107,7 @@ namespace net.esper.eql.core
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents = null;
 
-            selectOldEvents = GetSelectListEvents(selectExprProcessor, optionalHavingNode);
+            selectOldEvents = GetSelectListEvents(selectExprProcessor, optionalHavingNode, false);
 
             EventBean[] buffer = new EventBean[1];
             if (oldData != null)
@@ -131,7 +131,7 @@ namespace net.esper.eql.core
             }
 
             // generate new events using select expressions
-            selectNewEvents = GetSelectListEvents(selectExprProcessor, optionalHavingNode);
+            selectNewEvents = GetSelectListEvents(selectExprProcessor, optionalHavingNode, true);
 
             if ((selectNewEvents == null) && (selectOldEvents == null))
             {
@@ -141,14 +141,14 @@ namespace net.esper.eql.core
             return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
         }
 
-        private static EventBean[] GetSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode)
+        private static EventBean[] GetSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode, bool isNewData)
         {
             // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-            EventBean ev = exprProcessor.Process(null);
+            EventBean ev = exprProcessor.Process(null, isNewData);
 
             if (optionalHavingNode != null)
             {
-                Boolean result = (Boolean)optionalHavingNode.Evaluate(null);
+                bool result = (bool)optionalHavingNode.Evaluate(null, isNewData);
                 if (!result)
                 {
                     return null;

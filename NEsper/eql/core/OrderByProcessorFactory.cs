@@ -31,11 +31,11 @@ namespace net.esper.eql.core
         /// <returns>ordering processor instance</returns>
         /// <throws>net.esper.eql.expression.ExprValidationException when validation of expressions fails</throws>
 
-        public static OrderByProcessor GetProcessor(IList<SelectExprElementNamedSpec> selectionList,
-                                                   IList<ExprNode> groupByNodes,
-                                                   IList<Pair<ExprNode, Boolean>> orderByList,
-                                                   AggregationService aggregationService,
-                                                   EventAdapterService eventAdapterService)
+        public static OrderByProcessor GetProcessor(IList<SelectExprElementCompiledSpec> selectionList,
+                                                    IList<ExprNode> groupByNodes,
+                                                    IList<Pair<ExprNode, Boolean>> orderByList,
+                                                    AggregationService aggregationService,
+                                                    EventAdapterService eventAdapterService)
         {
             // Get the order by expression nodes
             IList<ExprNode> orderByNodes = new List<ExprNode>();
@@ -53,7 +53,7 @@ namespace net.esper.eql.core
 
             // Determine aggregate functions used in select, if any
             IList<ExprAggregateNode> selectAggNodes = new List<ExprAggregateNode>();
-            foreach (SelectExprElementNamedSpec element in selectionList)
+            foreach (SelectExprElementCompiledSpec element in selectionList)
             {
                 ExprAggregateNode.GetAggregatesBottomUp(element.SelectExpression, selectAggNodes);
             }

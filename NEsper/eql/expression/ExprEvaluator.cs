@@ -15,8 +15,8 @@ namespace net.esper.eql.expression
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
         /// <returns>evaluation result, a bool value for OR/AND-type evalution nodes.</returns>
-        
-        Object Evaluate(EventBean[] eventsPerStream);
+
+        Object Evaluate(EventBean[] eventsPerStream, bool isNewData);
     }
 
     public delegate Object ExprEvaluatorDelegate(EventBean[] eventsPerStream);
@@ -44,7 +44,7 @@ namespace net.esper.eql.expression
         /// <param name="eventsPerStream">event tuple</param>
         /// <returns>evaluation result, a bool value for OR/AND-type evalution nodes.</returns>
 
-        public Object Evaluate(EventBean[] eventsPerStream)
+        public Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             return m_delegate(eventsPerStream);
         }

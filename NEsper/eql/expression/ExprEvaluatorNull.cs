@@ -7,7 +7,7 @@ namespace net.esper.eql.expression
 	/// <summary>
 	/// Description of ExprEvalutorNull.
 	/// </summary>
-	
+
 	public class ExprEvaluatorNull : ExprEvaluator
 	{
         /// <summary>
@@ -17,7 +17,7 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-		public object Evaluate(EventBean[] eventsPerStream)
+		public object Evaluate(EventBean[] eventsPerStream, bool isNewData)
 		{
 			return null ;
 		}

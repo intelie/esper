@@ -1,7 +1,7 @@
 using System;
 
 using net.esper.eql.spec;
-using net.esper.view;
+using net.esper.core;
 
 namespace net.esper.eql.view
 {
@@ -17,20 +17,20 @@ namespace net.esper.eql.view
         /// <summary> Ctor.</summary>
         /// <param name="outputLimitSpec">specifies what kind of condition to create
         /// </param>
-        /// <param name="viewContext">supplies the services required such as for scheduling callbacks
+        /// <param name="statementContext">supplies the services required such as for scheduling callbacks
         /// </param>
         /// <param name="outputCallback">is the method to invoke for output
         /// </param>
-        public OutputConditionFirst(OutputLimitSpec outputLimitSpec, ViewServiceContext viewContext, OutputCallback outputCallback)
+        public OutputConditionFirst(OutputLimitSpec outputLimitSpec, StatementContext statementContext, OutputCallback outputCallback)
         {
             if (outputCallback == null)
             {
                 throw new System.NullReferenceException("Output condition by count requires a non-null callback");
             }
             this.outputCallback = outputCallback;
-            OutputLimitSpec innerSpec = createInnerSpec(outputLimitSpec);
-            OutputCallback localCallback = createCallbackToLocal();
-            this.innerCondition = OutputConditionFactory.CreateCondition(innerSpec, viewContext, localCallback);
+            OutputLimitSpec innerSpec = CreateInnerSpec(outputLimitSpec);
+            OutputCallback localCallback = CreateCallbackToLocal();
+            this.innerCondition = OutputConditionFactory.CreateCondition(innerSpec, statementContext, localCallback);
             this.witnessedFirst = false;
         }
 
@@ -51,7 +51,7 @@ namespace net.esper.eql.view
             innerCondition.UpdateOutputCondition(newEventsCount, oldEventsCount);
         }
 
-        private OutputLimitSpec createInnerSpec(OutputLimitSpec outputLimitSpec)
+        private static OutputLimitSpec CreateInnerSpec(OutputLimitSpec outputLimitSpec)
         {
             if (outputLimitSpec.EventLimit)
             {
@@ -63,12 +63,12 @@ namespace net.esper.eql.view
             }
         }
 
-        private OutputCallback createCallbackToLocal()
+        private OutputCallback CreateCallbackToLocal()
         {
             return new OutputCallback(continueOutputProcessing);
         }
 
-        private void continueOutputProcessing(bool doOutput, bool forceUpdate)
+        private void ContinueOutputProcessing(bool doOutput, bool forceUpdate)
         {
             doOutput = !witnessedFirst;
             outputCallback(doOutput, forceUpdate);

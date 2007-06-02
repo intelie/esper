@@ -8,9 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.spec;
 using net.esper.events;
+
 using org.apache.commons.logging;
 
 namespace net.esper.eql.expression
@@ -46,7 +49,7 @@ namespace net.esper.eql.expression
 	    {
 	    }
 
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents)
+	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ISet<EventBean> matchingEvents)
 	    {
 	        if (matchingEvents == null)
 	        {

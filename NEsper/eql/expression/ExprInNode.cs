@@ -12,7 +12,7 @@ namespace net.esper.eql.expression
     /// <summary>
     /// Represents the in-clause (set check) function in an expression tree.
     /// </summary>
-    
+
     public class ExprInNode : ExprNode
     {
         /// <summary>
@@ -22,15 +22,38 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return typeof(bool?); }
         }
-
+		
+	    /**
+	     * Returns the coercion type to use if coercion is required.
+	     * @return coercion type
+	     */
+	    public Type CoercionType
+	    {
+	        get { return coercionType; }
+	    }
+		
         private readonly bool isNotIn;
 
         private Type coercionType;
 
+	    /**
+	     * Returns true for not-in, false for regular in
+	     * @return false for "val in (a,b,c)" or true for "val not in (a,b,c)"
+	     */
+	    public bool IsNotIn
+	    {
+	        get { return isNotIn; }
+	    }
+		
+	    public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    } 
+		
         /// <summary> Ctor.</summary>
         /// <param name="isNotIn">is true for "not in" and false for "in"
         /// </param>
@@ -45,10 +68,10 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
         	IList<ExprNode> children = this.ChildNodes ;
-        	
+
             if (children.Count < 2)
             {
                 throw new ExprValidationException("The IN operator requires at least 2 child expressions");
@@ -78,19 +101,19 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             // Evaluate first child which is the base value to compare to
             IEnumerator<ExprNode> it = this.ChildNodes.GetEnumerator() ;
             it.MoveNext() ;
-            Object inPropResult = it.Current.Evaluate(eventsPerStream);
+            Object inPropResult = it.Current.Evaluate(eventsPerStream, isNewData);
            	it.MoveNext() ;
 
             bool matched = false;
             do
             {
                 ExprNode inSetValueExpr = it.Current;
-                Object subExprResult = inSetValueExpr.Evaluate(eventsPerStream);
+                Object subExprResult = inSetValueExpr.Evaluate(eventsPerStream, isNewData);
 
                 if (compare(inPropResult, subExprResult))
                 {
@@ -137,8 +160,8 @@ namespace net.esper.eql.expression
                 String delimiter = "";
 
                 IEnumerator<ExprNode> it = this.ChildNodes.GetEnumerator();
-                it.MoveNext() ;                
-                
+                it.MoveNext() ;
+
                 buffer.Append(it.Current.ExpressionString);
                 if (isNotIn)
                 {
@@ -179,8 +202,8 @@ namespace net.esper.eql.expression
         	}
 
             return Object.Equals(
-                TypeHelper.CoerceNumber(leftResult, coercionType),
-                TypeHelper.CoerceNumber(rightResult, coercionType)
+                TypeHelper.CoerceBoxed(leftResult, coercionType),
+                TypeHelper.CoerceBoxed(rightResult, coercionType)
                 ) ;
         }
     }

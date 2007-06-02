@@ -19,19 +19,26 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return typeof(bool?); }
-
         }
 
-        /// <summary>
+	    public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
+
+		/// <summary>
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(
+			StreamTypeService streamTypeService,
+			MethodResolutionService methodResolutionService,
+			ViewResourceDelegate viewResourceDelegate)
         {
             // Sub-nodes must be returning bool
             foreach (ExprNode child in this.ChildNodes)
@@ -56,11 +63,15 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             foreach (ExprNode child in this.ChildNodes)
             {
-                Boolean evaluated = (Boolean)child.Evaluate(eventsPerStream);
+	            bool evaluated = (bool) child.Evaluate(eventsPerStream, isNewData);
+	            if (evaluated == null)
+	            {
+	                return null;
+	            }
                 if (!evaluated)
                 {
                     return false;

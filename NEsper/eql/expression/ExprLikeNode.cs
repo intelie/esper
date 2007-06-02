@@ -20,13 +20,18 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get
             {
                 return typeof(bool?);
             }
         }
+
+	    public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
 
         private readonly bool isNot;
 
@@ -48,7 +53,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             if ((this.ChildNodes.Count != 2) && (this.ChildNodes.Count != 3))
             {
@@ -70,7 +75,7 @@ namespace net.esper.eql.expression
             {
                 throw new ExprValidationException("The 'like' operator requires a String-type pattern expression");
             }
-            if (this.ChildNodes[1] is ExprConstantNode)
+            if (this.ChildNodes[1].IsConstantResult)
             {
                 isConstantPattern = true;
             }
@@ -93,11 +98,11 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             if (likeUtil == null)
             {
-                String patternVal = (String)this.ChildNodes[1].Evaluate(eventsPerStream);
+                String patternVal = (String)this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
                 if (patternVal == null)
                 {
                     return null;
@@ -107,7 +112,7 @@ namespace net.esper.eql.expression
                 char? escapeCharacter = null;
                 if (this.ChildNodes.Count == 3)
                 {
-                    escape = ((String)this.ChildNodes[2].Evaluate(eventsPerStream));
+                    escape = ((String)this.ChildNodes[2].Evaluate(eventsPerStream, isNewData));
                 }
                 if (escape.Length > 0)
                 {
@@ -120,7 +125,7 @@ namespace net.esper.eql.expression
             {
                 if (!isConstantPattern)
                 {
-                    String patternVal = (String)this.ChildNodes[1].Evaluate(eventsPerStream);
+                    String patternVal = (String)this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
                     if (patternVal == null)
                     {
                         return null;
@@ -129,7 +134,7 @@ namespace net.esper.eql.expression
                 }
             }
 
-            Object evalValue = this.ChildNodes[0].Evaluate(eventsPerStream);
+            Object evalValue = this.ChildNodes[0].Evaluate(eventsPerStream, isNewData);
             if (evalValue == null)
             {
                 return null;

@@ -8,10 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.eql.core;
+using net.esper.eql.compat;
 using net.esper.eql.spec;
 using net.esper.events;
 using net.esper.util;
+
 using org.apache.commons.logging;
 
 namespace net.esper.eql.expression
@@ -22,9 +25,10 @@ namespace net.esper.eql.expression
 	public class ExprSubselectInNode : ExprSubselectNode
 	{
 	    private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	    
 	    private bool isNotIn;
 	    private bool mustCoerce;
-	    private Class coercionType;
+	    private Type coercionType;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="statementSpec">
@@ -108,7 +112,7 @@ namespace net.esper.eql.expression
 
 	    }
 
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents)
+	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ISet<EventBean> matchingEvents)
 	    {
 	        if (matchingEvents == null)
 	        {

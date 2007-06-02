@@ -55,6 +55,6 @@ namespace net.esper.eql.core
 	    /// <throws>
 	    /// EngineImportException if the method cannot be resolved to a visible static method
 	    /// </throws>
-	    Method ResolveMethod(String classNameAlias, String methodName, Type[] paramTypes);
+	    MethodInfo ResolveMethod(String classNameAlias, String methodName, Type[] paramTypes);
 	}
 } // End of namespace

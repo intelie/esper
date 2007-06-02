@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 using net.esper.collection;
 using net.esper.compat;
+using net.esper.events;
+
 using net.esper.eql.agg;
 using net.esper.eql.expression;
-using net.esper.events;
 
 namespace net.esper.eql.core
 {
@@ -75,11 +76,11 @@ namespace net.esper.eql.core
 
             if (optionalHavingNode == null)
             {
-                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly, false);
             }
             else
             {
-                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false);
             }
 
             if (!oldEvents.IsEmpty)
@@ -102,11 +103,11 @@ namespace net.esper.eql.core
 
             if (optionalHavingNode == null)
             {
-                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly, true);
             }
             else
             {
-                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true);
             }
 
             if ((selectNewEvents == null) && (selectOldEvents == null))
@@ -132,12 +133,12 @@ namespace net.esper.eql.core
             // generate old events using select expressions
             if (optionalHavingNode == null)
             {
-                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly, false);
             }
             // generate old events using having then select
             else
             {
-                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+                selectOldEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false);
             }
 
             EventBean[] eventsPerStream = new EventBean[1];
@@ -164,11 +165,11 @@ namespace net.esper.eql.core
             // generate new events using select expressions
             if (optionalHavingNode == null)
             {
-                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly, true);
             }
             else
             {
-                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+                selectNewEvents = ResultSetProcessorSimple.GetSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true);
             }
 
             if ((selectNewEvents == null) && (selectOldEvents == null))

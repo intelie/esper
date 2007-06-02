@@ -8,9 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.eql.spec;
 using net.esper.eql.subquery;
 using net.esper.events;
+
 using org.apache.commons.logging;
 
 namespace net.esper.eql.expression
@@ -42,7 +45,7 @@ namespace net.esper.eql.expression
 	    /// is filtered results from the table of stored subquery events
 	    /// </param>
 	    /// <returns>evaluation result</returns>
-	    public abstract Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents);
+	    public abstract Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ISet<EventBean> matchingEvents);
 
 	    /// <summary>
 	    /// Return true to indicate that wildcard selects are acceptable, or false to indicate wildcard is not acceptable

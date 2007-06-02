@@ -1,11 +1,15 @@
 using System;
-using OuterJoinType = net.esper.type.OuterJoinType;
-using ExprIdentNode = net.esper.eql.expression.ExprIdentNode;
+
+using net.esper.type;
+using net.esper.eql.expression;
+using net.esper.util;
+
 namespace net.esper.eql.spec
 {
-	
-	/// <summary> Contains the ON-clause criteria in an outer join.</summary>
-	public class OuterJoinDesc
+	/// <summary>
+	/// Contains the ON-clause criteria in an outer join.
+	/// </summary>
+	public class OuterJoinDesc : MetaDefItem
 	{
 		/// <summary> Returns the type of outer join (left/right/full).</summary>
 		/// <returns> outer join type

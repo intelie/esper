@@ -50,18 +50,6 @@ namespace net.esper.eql.view
         }
 
         /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        public override String AttachesTo(Viewable parentViewable)
-        {
-            return null;
-        }
-
-        /// <summary>
         /// Notify that data has been added or removed from the Viewable parent.
         /// The last object in the newData array of objects would be the newest object added to the parent view.
         /// The first object of the oldData array of objects would be the oldest object removed from the parent view.
@@ -82,10 +70,11 @@ namespace net.esper.eql.view
         /// </summary>
         /// <param name="newData">is the new data that has been added to the parent view</param>
         /// <param name="oldData">is the old data that has been removed from the parent view</param>
+		
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            EventBean[] filteredNewData = filterEvents(exprEvaluator, newData);
-            EventBean[] filteredOldData = filterEvents(exprEvaluator, oldData);
+            EventBean[] filteredNewData = FilterEvents(exprEvaluator, newData, true);
+            EventBean[] filteredOldData = FilterEvents(exprEvaluator, oldData, false);
 
             if ((filteredNewData != null) || (filteredOldData != null))
             {
@@ -94,14 +83,13 @@ namespace net.esper.eql.view
         }
 
         /// <summary> Filters events using the supplied evaluator.</summary>
-        /// <param name="exprEvaluator">evaluator to use
-        /// </param>
-        /// <param name="events">events to filter
-        /// </param>
+        /// <param name="exprEvaluator">evaluator to use</param>
+        /// <param name="events">events to filter</param>
+		/// <param name="isNewData">true to indicate filter new data (istream) and not old data (rstream)</param>
         /// <returns> filtered events, or null if no events got through the filter 
         /// </returns>
 
-        internal static EventBean[] filterEvents(ExprEvaluator exprEvaluator, EventBean[] events)
+        internal static EventBean[] FilterEvents(ExprEvaluator exprEvaluator, EventBean[] events, bool isNewData)
         {
             if (events == null)
             {
@@ -115,8 +103,8 @@ namespace net.esper.eql.view
             for (int i = 0; i < events.Length; i++)
             {
                 evalEventArr[0] = events[i];
-                bool pass = (Boolean)exprEvaluator.Evaluate(evalEventArr);
-                if (pass)
+                bool? pass = (bool?)exprEvaluator.Evaluate(evalEventArr, isNewData);
+                if (pass ?? false)
                 {
                     passResult[i] = true;
                     passCount++;

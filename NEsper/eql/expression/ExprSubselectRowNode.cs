@@ -39,22 +39,22 @@ namespace net.esper.eql.expression
             get { return false; }
 	    }
 
-	    public Class GetType()
+	    public Type ResultType
 	    {
-	        return selectClause.Type;
+	    	get { return selectClause.Type; }
 	    }
 
 	    public void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
 	    }
 
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents)
+	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ISet<EventBean> matchingEvents)
 	    {
 	        if (matchingEvents == null)
 	        {
 	            return null;
 	        }
-	        if (matchingEvents.Size() == 0)
+	        if (matchingEvents.Count == 0)
 	        {
 	            return null;
 	        }
@@ -76,8 +76,8 @@ namespace net.esper.eql.expression
 	                // Prepare filter expression event list
 	                events[0] = subselectEvent;
 
-	                Boolean pass = (Boolean) filterExpr.Evaluate(events, true);
-	                if ((pass != null) && (pass))
+	                bool? pass = (bool?) filterExpr.Evaluate(events, true);
+	                if (pass ?? false)
 	                {
 	                    if (subSelectResult != null)
 	                    {

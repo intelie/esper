@@ -5,7 +5,7 @@ using antlr.collections;
 
 using net.esper.compat;
 using net.esper.eql.generated;
-using net.esper.view;
+using net.esper.eql.spec;
 
 namespace net.esper.eql.parse
 {

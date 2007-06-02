@@ -27,7 +27,7 @@ namespace net.esper.eql.subquery
         /// <param name="properties">is the property names</param>
         /// <param name="index">is the table to look into</param>
         /// <param name="coercionTypes">is the types to coerce to before lookup</param>
-        public IndexedTableLookupStrategyCoercing(EventType[] eventTypes, int[] streamNumbers, String[] properties, PropertyIndexedEventTable index, Class[] coercionTypes)
+        public IndexedTableLookupStrategyCoercing(EventType[] eventTypes, int[] streamNumbers, String[] properties, PropertyIndexedEventTable index, Type[] coercionTypes)
             : base(eventTypes, streamNumbers, properties, index)
         {
             this.coercionTypes = coercionTypes;
@@ -47,7 +47,7 @@ namespace net.esper.eql.subquery
                 {
                     if (value is Number)
                     {
-                        value = JavaClassHelper.CoerceBoxed((Number)value, coercionTypes[i]);
+                        value = TypeHelper.CoerceBoxed((Number)value, coercionTypes[i]);
                     }
                 }
 

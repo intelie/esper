@@ -20,10 +20,15 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return resultType; }
         }
+		
+	    public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
 
         private Type resultType;
         private bool[] isNumericCoercion;
@@ -32,9 +37,8 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             if (this.ChildNodes.Count < 2)
             {
@@ -72,7 +76,7 @@ namespace net.esper.eql.expression
                 {
                     if (!TypeHelper.IsNumeric(resultType))
                     {
-                        throw new ExprValidationException("Implicit conversion from datatype '" + resultType + "' to " + child.ReturnType + " is not allowed");
+                        throw new ExprValidationException("Implicit conversion from datatype '" + resultType.FullName + "' to " + child.ReturnType + " is not allowed");
                     }
                     isNumericCoercion[count] = true;
                 }
@@ -87,7 +91,7 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             Object value = null;
 
@@ -95,14 +99,14 @@ namespace net.esper.eql.expression
             int count = 0;
             foreach (ExprNode childNode in this.ChildNodes)
             {
-                value = childNode.Evaluate(eventsPerStream);
+                value = childNode.Evaluate(eventsPerStream, isNewData);
 
                 if (value != null)
                 {
                     // Check if we need to coerce
                     if (isNumericCoercion[count])
                     {
-                        return TypeHelper.CoerceNumber(value, resultType);
+                        return TypeHelper.CoerceBoxed(value, resultType);
                     }
                     return value;
                 }

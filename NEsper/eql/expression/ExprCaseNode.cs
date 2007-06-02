@@ -25,10 +25,15 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return resultType; }
         }
+		
+		public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    }
 
         private readonly bool isCase2;
         private IList<UniformPair<ExprNode>> whenThenNodeList;
@@ -53,8 +58,7 @@ namespace net.esper.eql.expression
         /// Validates the specified stream type service_.
         /// </summary>
         /// <param name="streamTypeService_">The stream type service_.</param>
-        /// <param name="autoImportService">The auto import service.</param>
-        public override void Validate(StreamTypeService streamTypeService_, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService_, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             if (isCase2)
             {
@@ -98,15 +102,15 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
             if (!isCase2)
             {
-                return evaluateCaseSyntax1(eventsPerStream);
+                return evaluateCaseSyntax1(eventsPerStream, isNewData);
             }
             else
             {
-                return evaluateCaseSyntax2(eventsPerStream);
+                return evaluateCaseSyntax2(eventsPerStream, isNewData);
             }
         }
 
@@ -172,11 +176,11 @@ namespace net.esper.eql.expression
             }
 
             whenThenNodeList = new List<UniformPair<ExprNode>>();
-            int numWhenThen = children.Count / 2;
+            int numWhenThen = children.Count >> 1;
             for (int i = 0; i < numWhenThen; i++)
             {
-                ExprNode whenExpr = children[i * 2];
-                ExprNode thenExpr = children[i * 2 + 1];
+                ExprNode whenExpr = children[(i << 1)];
+                ExprNode thenExpr = children[(i << 1) + 1];
                 if (!TypeHelper.IsBoolean(whenExpr.ReturnType))
                 {
                     throw new ExprValidationException("Case node 'when' expressions must return a bool value");
@@ -245,7 +249,7 @@ namespace net.esper.eql.expression
             }
         }
 
-        private Object evaluateCaseSyntax1(EventBean[] eventsPerStream)
+        private Object EvaluateCaseSyntax1(EventBean[] eventsPerStream, bool isNewData)
         {
             // Case 1 expression example:
             //      case when a=b then x [when c=d then y...] [else y]
@@ -254,12 +258,12 @@ namespace net.esper.eql.expression
             bool matched = false;
             foreach (UniformPair<ExprNode> p in whenThenNodeList)
             {
-                Boolean whenResult = (Boolean)p.First.Evaluate(eventsPerStream);
+                Boolean whenResult = (Boolean)p.First.Evaluate(eventsPerStream, isNewData);
 
                 // If the 'when'-expression returns true
                 if (whenResult)
                 {
-                    caseResult = p.Second.Evaluate(eventsPerStream);
+                    caseResult = p.Second.Evaluate(eventsPerStream, isNewData);
                     matched = true;
                     break;
                 }
@@ -267,7 +271,7 @@ namespace net.esper.eql.expression
 
             if ((!matched) && (optionalElseExprNode != null))
             {
-                caseResult = optionalElseExprNode.Evaluate(eventsPerStream);
+                caseResult = optionalElseExprNode.Evaluate(eventsPerStream, isNewData);
             }
 
             if (caseResult == null)
@@ -277,28 +281,28 @@ namespace net.esper.eql.expression
 
             if ((caseResult.GetType() != resultType) && (isNumericResult))
             {
-                return TypeHelper.CoerceNumber(caseResult, resultType);
+                return TypeHelper.CoerceBoxed(caseResult, resultType);
             }
 
             return caseResult;
         }
 
-        private Object evaluateCaseSyntax2(EventBean[] eventsPerStream)
+        private Object EvaluateCaseSyntax2(EventBean[] eventsPerStream, bool isNewData)
         {
             // Case 2 expression example:
             //      case p when p1 then x [when p2 then y...] [else z]
 
-            Object checkResult = optionalCompareExprNode.Evaluate(eventsPerStream);
+            Object checkResult = optionalCompareExprNode.Evaluate(eventsPerStream, isNewData);
             Object caseResult = null;
             bool matched = false;
 
             foreach (UniformPair<ExprNode> p in whenThenNodeList)
             {
-                Object whenResult = p.First.Evaluate(eventsPerStream);
+                Object whenResult = p.First.Evaluate(eventsPerStream, isNewData);
 
                 if (compare(checkResult, whenResult))
                 {
-                    caseResult = p.Second.Evaluate(eventsPerStream);
+                    caseResult = p.Second.Evaluate(eventsPerStream, isNewData);
                     matched = true;
                     break;
                 }
@@ -306,7 +310,7 @@ namespace net.esper.eql.expression
 
             if ((!matched) && (optionalElseExprNode != null))
             {
-                caseResult = optionalElseExprNode.Evaluate(eventsPerStream);
+                caseResult = optionalElseExprNode.Evaluate(eventsPerStream, isNewData);
             }
 
             if (caseResult == null)
@@ -316,12 +320,12 @@ namespace net.esper.eql.expression
 
             if ((caseResult.GetType() != resultType) && (isNumericResult))
             {
-                return TypeHelper.CoerceNumber(caseResult, resultType);
+                return TypeHelper.CoerceBoxed(caseResult, resultType);
             }
             return caseResult;
         }
 
-        private bool compare(Object leftResult, Object rightResult)
+        private bool Compare(Object leftResult, Object rightResult)
         {
             if (leftResult == null)
             {
@@ -338,8 +342,8 @@ namespace net.esper.eql.expression
                 return leftResult.Equals(rightResult);
             }
 
-            Object left = TypeHelper.CoerceNumber(leftResult, coercionType);
-            Object right = TypeHelper.CoerceNumber(rightResult, coercionType);
+            Object left = TypeHelper.CoerceBoxed(leftResult, coercionType);
+            Object right = TypeHelper.CoerceBoxed(rightResult, coercionType);
             return Object.Equals(left, right);
         }
 

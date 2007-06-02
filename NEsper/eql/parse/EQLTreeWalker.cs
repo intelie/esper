@@ -1,23 +1,21 @@
 using System;
 using System.Collections.Generic;
 
+using antlr;
 using antlr.collections;
 
-using net.esper.compat;
 using net.esper.collection;
+using net.esper.compat;
+using net.esper.eql.agg;
+using net.esper.eql.core;
 using net.esper.eql.expression;
 using net.esper.eql.generated;
 using net.esper.eql.spec;
-using net.esper.events;
-using net.esper.filter;
 using net.esper.pattern;
-using net.esper.pattern.guard;
 using net.esper.pattern.observer;
+using net.esper.pattern.guard;
 using net.esper.type;
-using net.esper.util;
-using net.esper.view;
 
-//using org.apache.commons.beanutils;
 using org.apache.commons.logging;
 
 namespace net.esper.eql.parse
@@ -32,38 +30,62 @@ namespace net.esper.eql.parse
         /// <summary> Returns statement specification.</summary>
         /// <returns> statement spec.
         /// </returns>
-        virtual public StatementSpec StatementSpec
+        virtual public StatementSpecRaw StatementSpec
         {
             get { return statementSpec; }
         }
 
-        // services required
-        private readonly EventAdapterService eventAdapterService;
+	    // private holding areas for accumulated info
+	    private EDictionary<AST, ExprNode> astExprNodeMap = new EHashDictionary<AST, ExprNode>();
+	    private readonly Stack<EDictionary<AST, ExprNode>> astExprNodeMapStack;
 
-        // private holding areas for accumulated info
-        private readonly EDictionary<AST, ExprNode> astExprNodeMap = new EHashDictionary<AST, ExprNode>();
+	    private readonly EDictionary<AST, EvalNode> astPatternNodeMap = new EHashDictionary<AST, EvalNode>();
 
-        private readonly EDictionary<AST, EvalNode> astPatternNodeMap = new EHashDictionary<AST, EvalNode>();
-        private readonly EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
-        // Stores types for filters with tags
-        private FilterSpec filterSpec;
-        private readonly IList<ViewSpec> viewSpecs = new List<ViewSpec>();
+	    private FilterSpecRaw filterSpec;
+	    private readonly List<ViewSpec> viewSpecs = new List<ViewSpec>();
 
-        // Pattern indicator dictates behavior for some AST nodes
-        private bool isProcessingPattern;
+	    // Pattern indicator dictates behavior for some AST nodes
+	    private bool isProcessingPattern;
 
-        // AST Walk result
-        private readonly StatementSpec statementSpec;
+	    // AST Walk result
+	    private StatementSpecRaw statementSpec;
+	    private readonly Stack<StatementSpecRaw> statementSpecStack;
 
-        /// <summary> Ctor.</summary>
-        /// <param name="eventAdapterService">for resolving event names
-        /// </param>
+	    private readonly EngineImportService engineImportService;
+	    private readonly PatternObjectResolutionService patternObjectResolutionService;
 
-        public EQLTreeWalker(EventAdapterService eventAdapterService)
-        {
-            this.eventAdapterService = eventAdapterService;
-            statementSpec = new StatementSpec();
-        }
+	    /**
+	     * Ctor.
+	     * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
+	     * @param  patternObjectResolutionService resolves plug-in pattern object names (guards and observers)
+	     */
+	    public EQLTreeWalker(EngineImportService engineImportService,
+	                         PatternObjectResolutionService patternObjectResolutionService)
+	    {
+	        this.engineImportService = engineImportService;
+	        this.patternObjectResolutionService = patternObjectResolutionService;
+	        statementSpec = new StatementSpecRaw();
+	        statementSpecStack = new Stack<StatementSpecRaw>();
+	        astExprNodeMapStack = new Stack<EDictionary<AST, ExprNode>>();
+	    }
+
+	    /**
+	     * Pushes a statement into the stack, creating a new empty statement to fill in.
+	     * The leave node method for subquery statements pops from the stack.
+	     * @throws SemanticException is a standard parser exception
+	     */
+	    protected void PushStmtContext()
+		{
+	        if (log.IsDebugEnabled)
+	        {
+	            log.Debug(".pushStmtContext");
+	        }
+	        statementSpecStack.push(statementSpec);
+	        astExprNodeMapStack.push(astExprNodeMap);
+
+	        statementSpec = new StatementSpecRaw();
+	        astExprNodeMap = new EHashDictionary<AST, ExprNode>();
+	    }
 
         /// <summary> Set to indicate that we are walking a pattern.</summary>
         /// <param name="isPatternWalk">is true if walking a pattern
@@ -80,7 +102,7 @@ namespace net.esper.eql.parse
         /// <summary> Leave AST node and process it's type and child nodes.</summary>
         /// <param name="node">is the node to complete
         /// </param>
-        /// <throws>  ASTWalkException </throws>
+        /// <throws>ASTWalkException - if the node tree walk operation failed</throws>
         protected override void leaveNode(AST node)
         {
             if (log.IsDebugEnabled)
@@ -110,15 +132,16 @@ namespace net.esper.eql.parse
                     leaveSelectClause(node);
                     break;
 
+				case EqlEvalTokenTypes.WILDCARD_SELECT:
+					leaveWildcardSelect();
+					break;
+				
                 case EqlEvalTokenTypes.SELECTION_ELEMENT_EXPR:
                     leaveSelectionElement(node);
                     break;
 
                 case EqlEvalTokenTypes.EVENT_PROP_EXPR:
-                    if (!isProcessingPattern)
-                    {
-                        leaveEventPropertyExpr(node);
-                    }
+					leaveEventPropertyExpr(node);
                     break;
 
                 case EqlEvalTokenTypes.EVAL_AND_EXPR:
@@ -131,13 +154,14 @@ namespace net.esper.eql.parse
 
                 case EqlEvalTokenTypes.EVAL_EQUALS_EXPR:
                 case EqlEvalTokenTypes.EVAL_NOTEQUALS_EXPR:
-                    leaveJoinEqualsExpr(node);
+					leaveEqualsExpr(node);
                     break;
 
                 case EqlEvalTokenTypes.WHERE_EXPR:
                     leaveWhereClause();
                     break;
 
+				case EqlEvalTokenTypes.NUM_INT:
                 case EqlEvalTokenTypes.INT_TYPE:
                 case EqlEvalTokenTypes.LONG_TYPE:
                 case EqlEvalTokenTypes.BOOL_TYPE:
@@ -259,8 +283,14 @@ namespace net.esper.eql.parse
 
                 case EqlEvalTokenTypes.IN_SET:
                 case EqlEvalTokenTypes.NOT_IN_SET:
-                    leaveIn(node);
-                    break;
+	                leaveInSet(node);
+	                break;
+
+	            case EqlEvalTokenTypes.IN_RANGE:
+	            case EqlEvalTokenTypes.NOT_IN_RANGE:
+	                leaveInRange(node);
+	                break;
+ 
 
                 case EqlEvalTokenTypes.BETWEEN:
                 case EqlEvalTokenTypes.NOT_BETWEEN:
@@ -277,6 +307,35 @@ namespace net.esper.eql.parse
                     leaveRegexp(node);
                     break;
 
+	            case EqlEvalTokenTypes.PREVIOUS:
+	                leavePrevious(node);
+	                break;
+
+				case EqlEvalTokenTypes.PRIOR:
+	                leavePrior(node);
+	                break;
+
+				case EqlEvalTokenTypes.ARRAY_EXPR:
+	                leaveArray(node);
+	                break;
+
+				case EqlEvalTokenTypes.SUBSELECT_EXPR:
+	                leaveSubselectRow(node);
+	                break;
+
+				case EqlEvalTokenTypes.EXISTS_SUBSELECT_EXPR:
+	                leaveSubselectExists(node);
+	                break;
+
+				case EqlEvalTokenTypes.IN_SUBSELECT_EXPR:
+	            case EqlEvalTokenTypes.NOT_IN_SUBSELECT_EXPR:
+	                leaveSubselectIn(node);
+	                break;
+
+				case EqlEvalTokenTypes.IN_SUBSELECT_QUERY_EXPR:
+	                leaveSubselectQueryIn(node);
+	                break;
+	
                 default:
                     throw new ASTWalkException("Unhandled node type encountered, type '" + node.Type + "' with text '" + node.getText() + "'");
 
@@ -331,6 +390,87 @@ namespace net.esper.eql.parse
             while (childNode != null);
         }
 
+	    private void leavePrevious(AST node)
+	    {
+	        log.Debug(".leavePrevious");
+
+	        ExprPreviousNode previousNode = new ExprPreviousNode();
+	        astExprNodeMap[node] = previousNode;
+	    }
+
+	    private void leavePrior(AST node)
+	    {
+	        log.Debug(".leavePrior");
+
+	        ExprPriorNode priorNode = new ExprPriorNode();
+	        astExprNodeMap[node] = priorNode;
+	    }
+
+	    private void leaveArray(AST node)
+	    {
+	        log.Debug(".leaveArray");
+
+	        ExprArrayNode arrayNode = new ExprArrayNode();
+	        astExprNodeMap[node] = arrayNode;
+	    }
+
+	    private void leaveSubselectRow(AST node)
+	    {
+	        log.Debug(".leaveSubselectRow");
+	       
+	        StatementSpecRaw currentSpec = popStacks();
+	        ExprSubselectRowNode subselectNode = new ExprSubselectRowNode(currentSpec);
+	        astExprNodeMap[node] = subselectNode;
+	    }
+
+	    private void leaveSubselectExists(AST node)
+	    {
+	        log.Debug(".leaveSubselectExists");
+
+	        StatementSpecRaw currentSpec = popStacks();
+	        ExprSubselectNode subselectNode = new ExprSubselectExistsNode(currentSpec);
+	        astExprNodeMap[node] = subselectNode;
+	    }
+
+	    private void leaveSubselectIn(AST node)
+	    {
+	        log.Debug(".leaveSubselectIn");
+
+	        AST nodeEvalExpr = node.getFirstChild();
+	        AST nodeSubquery = nodeEvalExpr.getNextSibling();
+
+	        boolean isNot = false;
+	        if (node.getType() == NOT_IN_SUBSELECT_EXPR)
+	        {
+	            isNot = true;
+	        }
+	        
+	        ExprSubselectInNode subqueryNode = (ExprSubselectInNode) astExprNodeMap.Remove(nodeSubquery);
+	        subqueryNode.setNotIn(isNot);
+
+	        astExprNodeMap[node] = subqueryNode;
+	    }
+
+	    private void leaveSubselectQueryIn(AST node)
+	    {
+	        log.Debug(".leaveSubselectQueryIn");
+
+	        StatementSpecRaw currentSpec = popStacks();
+	        ExprSubselectNode subselectNode = new ExprSubselectInNode(currentSpec);
+	        astExprNodeMap[node] = subselectNode;
+	    }
+
+	    private StatementSpecRaw popStacks()
+	    {
+	        log.Debug(".popStacks");
+
+	        StatementSpecRaw currentSpec = statementSpec;
+	        statementSpec = statementSpecStack.Pop();
+	        astExprNodeMap = astExprNodeMapStack.Pop();
+
+	        return currentSpec;
+	    }
+
         /// <summary> End processing of the AST tree for stand-alone pattern expressions.</summary>
         /// <throws>  ASTWalkException </throws>
         protected override void endPattern()
@@ -345,10 +485,9 @@ namespace net.esper.eql.parse
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.FirstValue;
 
-            PatternStreamSpec streamSpec = new PatternStreamSpec(evalNode, taggedEventTypes, new List<ViewSpec>(), null);
+            PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new List<ViewSpec>(), null);
             statementSpec.StreamSpecs.Add(streamSpec);
 
-            taggedEventTypes.Clear();
             astPatternNodeMap.Clear();
         }
 
@@ -388,8 +527,14 @@ namespace net.esper.eql.parse
             }
 
             // Add as selection element
-            statementSpec.SelectListExpressions.Add(new SelectExprElementUnnamedSpec(exprNode, optionalName));
-        }
+	        statementSpec.SelectClauseSpec.Add(new SelectExprElementRawSpec(exprNode, optionalName));
+	    }
+
+	    private void leaveWildcardSelect()
+	    {
+	    	log.Debug(".leaveWildcardSelect");
+	    	statementSpec.SelectClauseSpec.setIsUsingWildcard(true);
+	    }
 
         private void leaveView(AST node)
         {
@@ -416,11 +561,11 @@ namespace net.esper.eql.parse
             }
 
             // Convert to a stream specification instance
-            StreamSpec streamSpec = null;
+            StreamSpecRaw streamSpec;
             // If the first subnode is a filter node, we have a filter stream specification
             if (node.getFirstChild().Type == EqlEvalTokenTypes.EVENT_FILTER_EXPR)
             {
-                streamSpec = new FilterStreamSpec(filterSpec, viewSpecs, streamName);
+				streamSpec = new FilterStreamSpecRaw(filterSpec, viewSpecs, streamName);
             }
             else if (node.getFirstChild().Type == EqlEvalTokenTypes.PATTERN_INCL_EXPR)
             {
@@ -431,9 +576,8 @@ namespace net.esper.eql.parse
 
                 // Get expression node sub-tree from the AST nodes placed so far
                 EvalNode evalNode = astPatternNodeMap.FirstValue;
-
-                streamSpec = new PatternStreamSpec(evalNode, taggedEventTypes, viewSpecs, streamName);
-                taggedEventTypes.Clear();
+				
+				streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamName);
                 astPatternNodeMap.Clear();
             }
             else if (node.getFirstChild().Type == EqlEvalTokenTypes.DATABASE_JOIN_EXPR)
@@ -489,11 +633,6 @@ namespace net.esper.eql.parse
         {
             log.Debug(".leaveLibFunction");
 
-            if (node.getNumberOfChildren() < 1)
-            {
-                throw new ArgumentException("Illegal number of child nodes for lib function");
-            }
-
             String childNodeText = node.getFirstChild().getText();
             if ((childNodeText.Equals("max")) || (childNodeText.Equals("min")))
             {
@@ -506,16 +645,37 @@ namespace net.esper.eql.parse
                 String className = node.getFirstChild().getText();
                 String methodName = node.getFirstChild().getNextSibling().getText();
                 astExprNodeMap[node] = new ExprStaticMethodNode(className, methodName);
-            }
-            else
-            {
-                throw new SystemException("Unknown method named '" + node.getFirstChild().getText() + "' could not be resolved");
-            }
-        }
+	            return;
+	        }
 
-        private void leaveJoinEqualsExpr(AST node)
-        {
-            log.Debug(".leaveJoinEqualsExpr");
+	        try
+	        {
+	            AggregationSupport aggregation = engineImportService.resolveAggregation(childNodeText);
+
+	            bool isDistinct = false;
+	            if ((node.getFirstChild().getNextSibling() != null) && (node.getFirstChild().getNextSibling().getType() == DISTINCT))
+	            {
+	                isDistinct = true;
+	            }
+
+	            astExprNodeMap[node] = new ExprPlugInAggFunctionNode(isDistinct, aggregation, childNodeText);
+	            return;
+	        }
+	        catch (EngineImportUndefinedException e)
+	        {
+	            // Not an aggretaion function
+	        }
+	        catch (EngineImportException e)
+	        {
+	            throw new IllegalStateException("Error resolving aggregation: " + e.Message, e);
+	        }
+
+	        throw new IllegalStateException("Unknown method named '" + childNodeText + "' could not be resolved");
+	    }
+
+	    private void leaveEqualsExpr(AST node)
+	    {
+	        log.debug(".leaveEqualsExpr");
 
             bool isNot = false;
             if (node.Type == EqlEvalTokenTypes.EVAL_NOTEQUALS_EXPR)
@@ -653,7 +813,7 @@ namespace net.esper.eql.parse
                 isDistinct = true;
             }
 
-            ExprAggregateNode aggregateNode = null;
+			ExprAggregateNode aggregateNode;
 
             switch (node.Type)
             {
@@ -933,36 +1093,46 @@ namespace net.esper.eql.parse
         {
             log.Debug(".leaveFilter");
 
-            if (isProcessingPattern)
-            {
-                FilterSpec spec = ASTFilterSpecHelper.buildSpec(node, taggedEventTypes, eventAdapterService);
-                String optionalTag = ASTFilterSpecHelper.getEventNameTag(node);
-                EvalFilterNode filterNode = new EvalFilterNode(spec, optionalTag);
-                EventType eventType = spec.EventType;
+	        AST startNode = node.getFirstChild();
+	        String optionalPatternTagName = null;
+	        if (startNode.getType() == EVENT_FILTER_NAME_TAG)
+	        {
+	            optionalPatternTagName = startNode.getText();
+	            startNode = startNode.getNextSibling();
+	        }
 
-                if (optionalTag != null)
-                {
-                    EventType existingType = taggedEventTypes.Fetch(optionalTag, null);
-                    if ((existingType != null) && (existingType != eventType))
-                    {
-                        throw new ArgumentException(
-                            "Tag '" + optionalTag +
-                            "' for event type " + eventType.UnderlyingType.FullName + 
-                            " has already been used for events of type " + existingType.UnderlyingType.FullName);
-                    }
-                    taggedEventTypes[optionalTag] = eventType;
-                }
+	        // Determine event type
+	        String eventName = startNode.getText();
 
-                astPatternNodeMap[node] = filterNode;
-            }
-            else
-            {
-                filterSpec = ASTFilterSpecHelper.buildSpec(node, null, eventAdapterService);
+	        AST currentNode = startNode.getNextSibling();
+	        List<ExprNode> exprNodes = new List<ExprNode>();
+	        while(currentNode != null)
+	        {
+	            ExprNode exprNode = astExprNodeMap.Fetch(currentNode);
+	            if (exprNode == null)
+	            {
+	                throw new IllegalStateException("Expression node for AST node not found for type " + currentNode.getType());
+	            }
+	            exprNodes.Add(exprNode);
+	            astExprNodeMap.Remove(currentNode);
+	            currentNode = currentNode.getNextSibling();
+	        }
 
-                // clear the sub-nodes for the filter since the event property expressions have been processed
-                // by building the spec
-				astExprNodeMap.Clear();
-            }
+	        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes);
+	        if (isProcessingPattern)
+	        {
+	            EvalFilterNode filterNode = new EvalFilterNode(rawFilterSpec, optionalPatternTagName);
+	            astPatternNodeMap[node] = filterNode;
+	        }
+	        else
+	        {
+	            // for event streams we keep the filter spec around for use when the stream definition is completed
+	            filterSpec = rawFilterSpec;
+
+	            // clear the sub-nodes for the filter since the event property expressions have been processed
+	            // by building the spec
+	            astExprNodeMap.Clear();
+	        }
         }
 
         private void leaveFollowedBy(AST node)
@@ -986,19 +1156,43 @@ namespace net.esper.eql.parse
             astPatternNodeMap[node] = orNode;
         }
 
-        private void leaveIn(AST node)
+        private void leaveInSet(AST node)
         {
-            log.Debug(".leaveIn");
+            log.Debug(".leaveInSet");
 
             ExprInNode inNode = new ExprInNode(node.Type == EqlEvalTokenTypes.NOT_IN_SET);
             astExprNodeMap[node] = inNode;
         }
+		
+		private void leaveInRange(AST node)
+	    {
+	        log.Debug(".leaveInRange");
+
+	        // The second node must be braces
+	        AST bracesNode = node.getFirstChild().getNextSibling();
+	        if ((bracesNode.getType() != LBRACK) && ((bracesNode.getType() != LPAREN)))
+	        {
+	            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.getType() + "'");
+	        }
+	        bool isLowInclude = bracesNode.getType() == LBRACK;
+
+	        // The fifth node must be braces
+	        bracesNode = bracesNode.getNextSibling().getNextSibling().getNextSibling();
+	        if ((bracesNode.getType() != RBRACK) && ((bracesNode.getType() != RPAREN)))
+	        {
+	            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.getType() + "'");
+	        }
+	        bool isHighInclude = bracesNode.getType() == RBRACK;
+
+	        ExprBetweenNode betweenNode = new ExprBetweenNode(isLowInclude, isHighInclude, node.getType() == NOT_IN_RANGE);
+	        astExprNodeMap[node] = betweenNode;
+	    }
 
         private void leaveBetween(AST node)
         {
             log.Debug(".leaveBetween");
 
-            ExprBetweenNode betweenNode = new ExprBetweenNode(node.Type == EqlEvalTokenTypes.NOT_BETWEEN);
+			ExprBetweenNode betweenNode = new ExprBetweenNode(true, true, node.getType() == NOT_BETWEEN);
             astExprNodeMap[node] = betweenNode;
         }
 
@@ -1055,32 +1249,25 @@ namespace net.esper.eql.parse
                 child = child.getNextSibling();
             }
 
-            // From object name construct guard factory
-            GuardEnum guardEnum = GuardEnum.ForName(objectNamespace, objectName);
-            if (guardEnum == null)
-            {
-                throw new ASTWalkException("Guard in namespace " + objectNamespace + " and name " + objectName + " is not a known guard");
-            }
+	        PatternGuardSpec guardSpec = new PatternGuardSpec(objectNamespace, objectName, objectParams);
 
-            GuardFactory guardFactory = null;
-            try
-            {
-                guardFactory = (GuardFactory) Activator.CreateInstance(guardEnum.Clazz, objectParams.ToArray(), null);
+	        // try out the specification at compile time since the node may not get used till later
+	        GuardFactory factory;
+	        try
+	        {
+	            factory = patternObjectResolutionService.create(guardSpec);
+	            factory.setGuardParameters(objectParams);
+	        }
+	        catch (PatternObjectException e)
+	        {
+	            throw new ASTWalkException(e.Message, e);
+	        }
+	        catch (GuardParameterException e)
+	        {
+	            throw new ASTWalkException(e.Message, e);
+	        }
 
-                if (log.IsDebugEnabled)
-                {
-                    log.Debug(".leaveGuard Successfully instantiated guard");
-                }
-            }
-            catch (System.Exception e)
-            {
-                String message = "Error invoking constructor for guard '" + objectName;
-                message += "', invalid parameter list for the object";
-                log.Fatal(".leaveGuard " + message, e);
-                throw new ASTWalkException(message);
-            }
-
-            EvalGuardNode guardNode = new EvalGuardNode(guardFactory);
+	        EvalGuardNode guardNode = new EvalGuardNode(factory);
             astPatternNodeMap[node] = guardNode;
         }
 
@@ -1110,45 +1297,35 @@ namespace net.esper.eql.parse
             String objectNamespace = node.getFirstChild().getText();
             String objectName = node.getFirstChild().getNextSibling().getText();
 
-            int numNodes = node.getNumberOfChildren();
-            Object[] observerParameters = new Object[numNodes - 2];
+			List<Object> objectParams = new List<Object>();
 
             AST child = node.getFirstChild().getNextSibling().getNextSibling();
-            int index = 0;
             while (child != null)
             {
                 Object _object = ASTParameterHelper.makeParameter(child);
-                observerParameters[index++] = _object;
+				objectParams.Add(_object);
                 child = child.getNextSibling();
             }
 
-            // From object name construct observer factory
-            ObserverEnum observerEnum = ObserverEnum.ForName(objectNamespace, objectName);
-            if (observerEnum == null)
-            {
-                throw new ASTWalkException("EventObserver in namespace " + objectNamespace + " and name " + objectName + " is not a known observer");
-            }
+	       PatternObserverSpec observerSpec = new PatternObserverSpec(objectNamespace, objectName, objectParams);
 
-            ObserverFactory observerFactory = null;
-            try
-            {
-                Object obsFactory = ConstructorHelper.InvokeConstructor(observerEnum.Clazz, new Object[] { observerParameters });
-                observerFactory = (ObserverFactory)obsFactory;
+	        // try out the specification at compile time since the node may not get used till later
+	        ObserverFactory factory;
+	        try
+	        {
+	            factory = patternObjectResolutionService.Create(observerSpec);
+	            factory.setObserverParameters(objectParams);
+	        }
+	        catch (PatternObjectException e)
+	        {
+	            throw new ASTWalkException(e.Message, e);
+	        }
+	        catch (ObserverParameterException e)
+	        {
+	            throw new ASTWalkException(e.Message, e);
+	        }
 
-                if (log.IsDebugEnabled)
-                {
-                    log.Debug(".create Successfully instantiated observer");
-                }
-            }
-            catch (System.Exception e)
-            {
-                String message = "Error invoking constructor for observer '" + objectNamespace + ":" + objectName;
-                message += "', invalid parameter list for the object";
-                log.Fatal(".leaveObserver " + message, e);
-                throw new ASTWalkException(message);
-            }
-
-            EvalObserverNode observerNode = new EvalObserverNode(observerFactory);
+	        EvalObserverNode observerNode = new EvalObserverNode(factory);	 
             astPatternNodeMap[node] = observerNode;
         }
 

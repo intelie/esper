@@ -68,10 +68,10 @@ namespace net.esper.eql.core
 	            throw new EngineImportUndefinedException("Aggregation function named '" + name + "' is not defined");
 	        }
 
-	        Class clazz;
+	        Type clazz;
 	        try
 	        {
-	            clazz = Class.ForName(className);
+	            clazz = Type.ForName(className);
 	        }
 	        catch (ClassNotFoundException ex)
 	        {
@@ -99,9 +99,9 @@ namespace net.esper.eql.core
 	        return (AggregationSupport) object;
 	    }
 
-	    public Method ResolveMethod(String classNameAlias, String methodName, Class[] paramTypes)
+	    public MethodInfo ResolveMethod(String classNameAlias, String methodName, Type[] paramTypes)
 	    {
-	        Class clazz = null;
+	        Type clazz = null;
 	        try
 	        {
 	            clazz = ResolveClass(classNameAlias);
@@ -127,12 +127,12 @@ namespace net.esper.eql.core
 	    /// <param name="className">is the class name to find</param>
 	    /// <returns>class</returns>
 	    /// <throws>ClassNotFoundException if the class cannot be loaded</throws>
-	    protected Class ResolveClass(String className)
+	    protected Type ResolveClass(String className)
 	    {
 			// Attempt to retrieve the class with the name as-is
 			try
 			{
-				return Class.ForName(className);
+				return Type.ForName(className);
 			}
 			catch(ClassNotFoundException e){}
 
@@ -146,7 +146,7 @@ namespace net.esper.eql.core
 				{
 					if(importName.EndsWith(className))
 					{
-						return Class.ForName(importName);
+						return Type.ForName(importName);
 					}
 				}
 				else
@@ -155,7 +155,7 @@ namespace net.esper.eql.core
 					String prefixedClassName = GetPackageName(importName) + '.' + className;
 					try
 					{
-						return Class.ForName(prefixedClassName);
+						return Type.ForName(prefixedClassName);
 					}
 					catch(ClassNotFoundException e){}
 				}

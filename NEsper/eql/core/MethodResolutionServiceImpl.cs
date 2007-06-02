@@ -47,7 +47,7 @@ namespace net.esper.eql.core
 	        }
 	    }
 
-	    public Method ResolveMethod(String classNameAlias, String methodName, Class[] paramTypes)
+	    public MethodInfo ResolveMethod(String classNameAlias, String methodName, Type[] paramTypes)
 	    {
 	        return engineImportService.ResolveMethod(classNameAlias, methodName, paramTypes);
 		}
@@ -66,7 +66,7 @@ namespace net.esper.eql.core
 	        return engineImportService.ResolveAggregation(functionName);
 	    }
 
-	    public AggregationMethod MakeSumAggregator(Class type)
+	    public AggregationMethod MakeSumAggregator(Type type)
 	    {
 	        if ((type == typeof(long?)) || (type == typeof(long)))
 	        {
@@ -107,7 +107,7 @@ namespace net.esper.eql.core
 	        return new MedianAggregator();
 	    }
 
-	    public AggregationMethod MakeMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Class targetType)
+	    public AggregationMethod MakeMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Type targetType)
 	    {
 	        return new MinMaxAggregator(minMaxTypeEnum, targetType);
 	    }

@@ -8,11 +8,14 @@
 
 using System;
 using System.Collections.Generic;
-using net.esper.collection;
+
 using net.esper.core;
+using net.esper.compat;
+using net.esper.collection;
 using net.esper.eql.core;
 using net.esper.eql.spec;
 using net.esper.events;
+
 using org.apache.commons.logging;
 
 namespace net.esper.eql.view
@@ -30,8 +33,8 @@ namespace net.esper.eql.view
 	    private readonly OutputCondition outputCondition;
 	    private List<EventBean> newEventsList = new LinkedList<EventBean>();
 		private List<EventBean> oldEventsList = new LinkedList<EventBean>();
-		private Set<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
-		private Set<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
+		private ISet<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
+		private ISet<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
 
 		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -106,7 +109,7 @@ namespace net.esper.eql.view
 	    /// <summary>This process (update) method is for participation in a join.</summary>
 	    /// <param name="newEvents">new events</param>
 	    /// <param name="oldEvents">old events</param>
-	    public void Process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+	    public void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
 	    {
 	        if (log.IsDebugEnabled())
 	        {

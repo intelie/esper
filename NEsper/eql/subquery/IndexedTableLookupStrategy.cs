@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.eql.join.table;
 using net.esper.events;
 
@@ -67,7 +69,7 @@ namespace net.esper.eql.subquery
             return index;
         }
 
-        public Set<EventBean> Lookup(EventBean[] eventsPerStream)
+        public ISet<EventBean> Lookup(EventBean[] eventsPerStream)
         {
             Object[] keys = GetKeys(eventsPerStream);
             return index.Lookup(keys);

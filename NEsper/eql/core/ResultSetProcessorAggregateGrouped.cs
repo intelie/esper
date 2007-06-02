@@ -36,12 +36,12 @@ namespace net.esper.eql.core
         private readonly Boolean isSorting;
 
         // For output limiting, keep a representative of each group-by group
-        private readonly EDictionary<MultiKey<Object>, EventBean> oldEventGroupReps = new EHashDictionary<MultiKey<Object>, EventBean>();
-        private readonly EDictionary<MultiKey<Object>, EventBean> newEventGroupReps = new EHashDictionary<MultiKey<Object>, EventBean>();
+        private readonly EDictionary<MultiKeyUntyped, EventBean> oldEventGroupReps = new EHashDictionary<MultiKeyUntyped, EventBean>();
+        private readonly EDictionary<MultiKeyUntyped, EventBean> newEventGroupReps = new EHashDictionary<MultiKeyUntyped, EventBean>();
 
         // For sorting, keep the generating events for each outgoing event
-        private readonly EDictionary<MultiKey<Object>, EventBean[]> newGenerators = new EHashDictionary<MultiKey<Object>, EventBean[]>();
-        private readonly EDictionary<MultiKey<Object>, EventBean[]> oldGenerators = new EHashDictionary<MultiKey<Object>, EventBean[]>();
+        private readonly EDictionary<MultiKeyUntyped, EventBean[]> newGenerators = new EHashDictionary<MultiKeyUntyped, EventBean[]>();
+        private readonly EDictionary<MultiKeyUntyped, EventBean[]> oldGenerators = new EHashDictionary<MultiKeyUntyped, EventBean[]>();
 
         /// <summary>
         /// Returns the event type of processed results.
@@ -99,12 +99,12 @@ namespace net.esper.eql.core
         public Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
         {
             // Generate group-by keys for all events
-            MultiKey<Object>[] newDataGroupByKeys = generateGroupKeys(newEvents);
-            MultiKey<Object>[] oldDataGroupByKeys = generateGroupKeys(oldEvents);
+            MultiKeyUntyped[] newDataGroupByKeys = GenerateGroupKeys(newEvents, true);
+            MultiKeyUntyped[] oldDataGroupByKeys = GenerateGroupKeys(oldEvents, false);
 
             // generate old events
             log.Debug(".ProcessJoinResults creating old output events");
-            EventBean[] selectOldEvents = generateOutputEventsJoin(oldEvents, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators);
+            EventBean[] selectOldEvents = GenerateOutputEventsJoin(oldEvents, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators, false);
 
             // update aggregates
             if (!oldEvents.IsEmpty)
@@ -130,7 +130,7 @@ namespace net.esper.eql.core
 
             // generate new events using select expressions
             log.Debug(".ProcessJoinResults creating new output events");
-            EventBean[] selectNewEvents = generateOutputEventsJoin(newEvents, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators);
+            EventBean[] selectNewEvents = GenerateOutputEventsJoin(newEvents, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true);
 
             if ((selectNewEvents != null) || (selectOldEvents != null))
             {
@@ -150,12 +150,12 @@ namespace net.esper.eql.core
         public Pair<EventBean[], EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData)
         {
             // Generate group-by keys for all events
-            MultiKey<Object>[] newDataGroupByKeys = generateGroupKeys(newData);
-            MultiKey<Object>[] oldDataGroupByKeys = generateGroupKeys(oldData);
+            MultiKeyUntyped[] newDataGroupByKeys = GenerateGroupKeys(newData, true);
+            MultiKeyUntyped[] oldDataGroupByKeys = GenerateGroupKeys(oldData, false);
 
             // generate old events
             log.Debug(".ProcessViewResults creating old output events");
-            EventBean[] selectOldEvents = generateOutputEventsView(oldData, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators);
+            EventBean[] selectOldEvents = GenerateOutputEventsView(oldData, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators, false);
 
             // update aggregates
             EventBean[] eventsPerStream = new EventBean[1];
@@ -180,7 +180,7 @@ namespace net.esper.eql.core
 
             // generate new events using select expressions
             log.Debug(".ProcessViewResults creating new output events");
-            EventBean[] selectNewEvents = generateOutputEventsView(newData, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators);
+            EventBean[] selectNewEvents = GenerateOutputEventsView(newData, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true);
 
             if ((selectNewEvents != null) || (selectOldEvents != null))
             {
@@ -192,19 +192,20 @@ namespace net.esper.eql.core
         private EventBean[] ApplyOutputLimitAndOrderBy(
             EventBean[] events,
             EventBean[][] currentGenerators,
-            MultiKey<Object>[] keys,
-            EDictionary<MultiKey<Object>, EventBean> groupReps,
-            EDictionary<MultiKey<Object>, EventBean[]> generators)
+            MultiKeyUntyped[] keys,
+            EDictionary<MultiKeyUntyped, EventBean> groupReps,
+            EDictionary<MultiKeyUntyped, EventBean[]> generators,
+			bool isNewData)
         {
             if (isOutputLimiting && !isOutputLimitLastOnly)
             {
                 // Update the group representatives while keeping track
                 // of the groups that weren't updated
-                ISet<MultiKey<Object>> notUpdatedKeys = new LinkedHashSet<MultiKey<Object>>() ;
+                ISet<MultiKeyUntyped> notUpdatedKeys = new LinkedHashSet<MultiKeyUntyped>() ;
                 notUpdatedKeys.AddAll(groupReps.Keys);
 
                 int countOne = 0;
-                foreach (MultiKey<Object> key in keys)
+                foreach (MultiKeyUntyped key in keys)
                 {
                     notUpdatedKeys.Remove(key);
                     groupReps[key] = events[countOne++];
@@ -223,7 +224,7 @@ namespace net.esper.eql.core
 
                 // Also add a representative for all groups
                 // that weren't updated
-                foreach (MultiKey<Object> key in notUpdatedKeys)
+                foreach (MultiKeyUntyped key in notUpdatedKeys)
                 {
                     result[countTwo++] = groupReps.Fetch(key, null);
                 }
@@ -233,13 +234,13 @@ namespace net.esper.eql.core
                 if (isSorting)
                 {
                     // Update the group-by keys
-                    MultiKey<Object>[] sortKeys = new MultiKey<Object>[outputLength];
+                    MultiKeyUntyped[] sortKeys = new MultiKeyUntyped[outputLength];
                     int countThree = 0;
-                    foreach (MultiKey<Object> key in keys)
+                    foreach (MultiKeyUntyped key in keys)
                     {
                         sortKeys[countThree++] = key;
                     }
-                    foreach (MultiKey<Object> key in notUpdatedKeys)
+                    foreach (MultiKeyUntyped key in notUpdatedKeys)
                     {
                         sortKeys[countThree++] = key;
                     }
@@ -252,7 +253,7 @@ namespace net.esper.eql.core
                     {
                         sortGenerators[countFour++] = gens;
                     }
-                    foreach (MultiKey<Object> key in notUpdatedKeys)
+                    foreach (MultiKeyUntyped key in notUpdatedKeys)
                     {
                         sortGenerators[countFour++] = generators.Fetch(key, null);
                     }
@@ -262,18 +263,19 @@ namespace net.esper.eql.core
 
             if (isSorting)
             {
-                events = orderByProcessor.Sort(events, currentGenerators, keys);
+                events = orderByProcessor.Sort(events, currentGenerators, keys, isNewData);
             }
 
             return events;
         }
 
-        private EventBean[] generateOutputEventsView(
+        private EventBean[] GenerateOutputEventsView(
             EventBean[] outputEvents,
-            MultiKey<Object>[] groupByKeys,
+            MultiKeyUntyped[] groupByKeys,
             ExprNode optionalHavingExpr,
-            EDictionary<MultiKey<Object>, EventBean> groupReps,
-            EDictionary<MultiKey<Object>, EventBean[]> generators)
+            EDictionary<MultiKeyUntyped, EventBean> groupReps,
+            EDictionary<MultiKeyUntyped, EventBean[]> generators,
+			bool isNewData)
         {
             if (outputEvents == null)
             {
@@ -282,7 +284,7 @@ namespace net.esper.eql.core
 
             EventBean[] eventsPerStream = new EventBean[1];
             EventBean[] events = new EventBean[outputEvents.Length];
-            MultiKey<Object>[] keys = new MultiKey<Object>[outputEvents.Length];
+            MultiKeyUntyped[] keys = new MultiKeyUntyped[outputEvents.Length];
             EventBean[][] currentGenerators = null;
             if (isSorting)
             {
@@ -298,14 +300,14 @@ namespace net.esper.eql.core
                 // Filter the having clause
                 if (optionalHavingExpr != null)
                 {
-                    Boolean result = (Boolean)optionalHavingExpr.Evaluate(eventsPerStream);
+                    bool result = (bool)optionalHavingExpr.Evaluate(eventsPerStream, isNewData);
                     if (!result)
                     {
                         continue;
                     }
                 }
 
-                events[count] = selectExprProcessor.Process(eventsPerStream);
+                events[count] = selectExprProcessor.Process(eventsPerStream, isNewData);
                 keys[count] = groupByKeys[count];
                 if (isSorting)
                 {
@@ -330,7 +332,7 @@ namespace net.esper.eql.core
 
                 if (isSorting || (isOutputLimiting && !isOutputLimitLastOnly))
                 {
-                    MultiKey<Object>[] outKeys = new MultiKey<Object>[count];
+                    MultiKeyUntyped[] outKeys = new MultiKeyUntyped[count];
                     Array.Copy(keys, 0, outKeys, 0, count);
                     keys = outKeys;
                 }
@@ -343,29 +345,29 @@ namespace net.esper.eql.core
                 }
             }
 
-            return ApplyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators);
+            return ApplyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators, isNewData);
         }
 
-        private MultiKey<Object>[] generateGroupKeys(ISet<MultiKey<EventBean>> resultSet)
+        private MultiKeyUntyped[] GenerateGroupKeys(ISet<MultiKey<EventBean>> resultSet, bool isNewData)
         {
             if (resultSet.IsEmpty)
             {
                 return null;
             }
 
-            MultiKey<Object>[] keys = new MultiKey<Object>[resultSet.Count];
+            MultiKeyUntyped[] keys = new MultiKeyUntyped[resultSet.Count];
 
             int count = 0;
             foreach (MultiKey<EventBean> eventsPerStream in resultSet)
             {
-                keys[count] = generateGroupKey(eventsPerStream.Array);
+                keys[count] = GenerateGroupKey(eventsPerStream.Array, isNewData);
                 count++;
             }
 
             return keys;
         }
 
-        private MultiKey<Object>[] generateGroupKeys(EventBean[] events)
+        private MultiKeyUntyped[] GenerateGroupKeys(EventBean[] events, bool isNewData)
         {
             if (events == null)
             {
@@ -373,37 +375,38 @@ namespace net.esper.eql.core
             }
 
             EventBean[] eventsPerStream = new EventBean[1];
-            MultiKey<Object>[] keys = new MultiKey<Object>[events.Length];
+            MultiKeyUntyped[] keys = new MultiKeyUntyped[events.Length];
 
             for (int i = 0; i < events.Length; i++)
             {
                 eventsPerStream[0] = events[i];
-                keys[i] = generateGroupKey(eventsPerStream);
+                keys[i] = GenerateGroupKey(eventsPerStream, isNewData);
             }
 
             return keys;
         }
 
-        private MultiKey<Object> generateGroupKey(EventBean[] eventsPerStream)
+        private MultiKeyUntyped GenerateGroupKey(EventBean[] eventsPerStream, bool isNewData)
         {
             Object[] keys = new Object[groupKeyNodes.Count];
 
             int count = 0;
             foreach (ExprNode exprNode in groupKeyNodes)
             {
-                keys[count] = exprNode.Evaluate(eventsPerStream);
+                keys[count] = exprNode.Evaluate(eventsPerStream, isNewData);
                 count++;
             }
 
-            return new MultiKey<Object>(keys);
+            return new MultiKeyUntyped(keys);
         }
 
-        private EventBean[] generateOutputEventsJoin(
+        private EventBean[] GenerateOutputEventsJoin(
             ISet<MultiKey<EventBean>> resultSet,
-            MultiKey<Object>[] groupByKeys,
+            MultiKeyUntyped[] groupByKeys,
             ExprNode optionalHavingExpr,
-            EDictionary<MultiKey<Object>, EventBean> groupReps,
-            EDictionary<MultiKey<Object>, EventBean[]> generators)
+            EDictionary<MultiKeyUntyped, EventBean> groupReps,
+            EDictionary<MultiKeyUntyped, EventBean[]> generators,
+			bool isNewData)
         {
             if (resultSet.IsEmpty)
             {
@@ -411,7 +414,7 @@ namespace net.esper.eql.core
             }
 
             EventBean[] events = new EventBean[resultSet.Count];
-            MultiKey<Object>[] keys = new MultiKey<Object>[resultSet.Count];
+            MultiKeyUntyped[] keys = new MultiKeyUntyped[resultSet.Count];
             EventBean[][] currentGenerators = null;
             if (isSorting)
             {
@@ -428,14 +431,14 @@ namespace net.esper.eql.core
                 // Filter the having clause
                 if (optionalHavingExpr != null)
                 {
-                    Boolean result = (Boolean)optionalHavingExpr.Evaluate(eventsPerStream);
+                    bool result = (bool)optionalHavingExpr.Evaluate(eventsPerStream, isNewData);
                     if (!result)
                     {
                         continue;
                     }
                 }
 
-                events[count] = selectExprProcessor.Process(eventsPerStream);
+                events[count] = selectExprProcessor.Process(eventsPerStream, isNewData);
                 keys[count] = groupByKeys[count];
                 if (isSorting)
                 {
@@ -459,7 +462,7 @@ namespace net.esper.eql.core
 
                 if (isSorting || (isOutputLimiting && !isOutputLimitLastOnly))
                 {
-                    MultiKey<Object>[] outKeys = new MultiKey<Object>[count];
+                    MultiKeyUntyped[] outKeys = new MultiKeyUntyped[count];
                     Array.Copy(keys, 0, outKeys, 0, count);
                     keys = outKeys;
                 }
@@ -472,7 +475,7 @@ namespace net.esper.eql.core
                 }
             }
 
-            return ApplyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators);
+            return ApplyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators, isNewData);
         }
     }
 }

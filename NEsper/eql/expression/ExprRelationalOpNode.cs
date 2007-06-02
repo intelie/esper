@@ -20,12 +20,26 @@ namespace net.esper.eql.expression
         /// <returns> type returned when evaluated
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        override public Type ReturnType
+        public override Type ReturnType
         {
             get { return typeof(bool); }
         }
 
-        private readonly RelationalOpEnum relationalOpEnum;
+	    public override bool IsConstantResult
+	    {
+	        get { return false; }
+	    } 
+	
+	    /**
+	     * Returns the type of relational op used.
+	     * @return enum with relational op type
+	     */
+	    public RelationalOpEnum RelationalOpEnum
+	    {
+	        get { return relationalOpEnum; }
+	    }
+
+		private readonly RelationalOpEnum relationalOpEnum;
         private RelationalOpEnum.Computer computer;
 
         /// <summary> Ctor.</summary>
@@ -42,7 +56,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override void Validate(StreamTypeService streamTypeService, AutoImportService autoImportService)
+        public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             // Must have 2 child nodes
             if (this.ChildNodes.Count != 2)
@@ -77,10 +91,10 @@ namespace net.esper.eql.expression
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
-        public override Object Evaluate(EventBean[] eventsPerStream)
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
-            Object valueLeft = this.ChildNodes[0].Evaluate(eventsPerStream);
-            Object valueRight = this.ChildNodes[1].Evaluate(eventsPerStream);
+            Object valueLeft = this.ChildNodes[0].Evaluate(eventsPerStream, isNewData);
+            Object valueRight = this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
 
             if ((valueLeft == null) || (valueRight == null))
             {
