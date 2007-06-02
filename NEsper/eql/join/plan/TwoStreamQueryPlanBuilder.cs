@@ -10,14 +10,14 @@ namespace net.esper.eql.join.plan
 	
     public class TwoStreamQueryPlanBuilder
 	{
-		/// <summary> Build query plan.</summary>
-		/// <param name="queryGraph">navigability info
-		/// </param>
-		/// <param name="optionalOuterJoinType">outer join type, null if not an outer join
-		/// </param>
-		/// <returns> query plan
-		/// </returns>
-		public static QueryPlan Build(QueryGraph queryGraph, OuterJoinType? optionalOuterJoinType)
+	    /**
+	     * Build query plan.
+	     * @param queryGraph - navigability info
+	     * @param optionalOuterJoinType - outer join type, null if not an outer join
+	     * @param typesPerStream - event types for each stream
+	     * @return query plan
+	     */
+		public static QueryPlan Build(EventType[] typesPerStream, QueryGraph queryGraph, OuterJoinType optionalOuterJoinType)
 		{
 			QueryPlanIndex[] indexSpecs = new QueryPlanIndex[2];
 			QueryPlanNode[] execNodeSpecs = new QueryPlanNode[2];
@@ -29,15 +29,19 @@ namespace net.esper.eql.join.plan
 			{
 				String[][] unkeyedIndexProps = new String[][]{new String[0]};
 				
-				indexSpecs[0] = new QueryPlanIndex(unkeyedIndexProps);
-				indexSpecs[1] = new QueryPlanIndex(unkeyedIndexProps);
+				indexSpecs[0] = new QueryPlanIndex(unkeyedIndexProps, new Type[][] {null});
+				indexSpecs[1] = new QueryPlanIndex(unkeyedIndexProps, new Type[][] {null});
 				lookupPlans[0] = new FullTableScanLookupPlan(0, 1, 0);
 				lookupPlans[1] = new FullTableScanLookupPlan(1, 0, 0);
 			}
 			else
 			{
-				indexSpecs[0] = new QueryPlanIndex(new String[][]{queryGraph.GetIndexProperties(1, 0)});
-				indexSpecs[1] = new QueryPlanIndex(new String[][]{queryGraph.GetIndexProperties(0, 1)});
+	            String[] keyProps = queryGraph.GetKeyProperties(0, 1);
+	            String[] indexProps = queryGraph.GetIndexProperties(0, 1);
+	            Type[] coercionTypes = GetCoercionTypes(typesPerStream, 0, 1, keyProps, indexProps);
+
+	            indexSpecs[0] = new QueryPlanIndex(new String[][] {queryGraph.GetIndexProperties(1, 0)}, new Type[][] {coercionTypes});
+	            indexSpecs[1] = new QueryPlanIndex(new String[][] {queryGraph.GetIndexProperties(0, 1)}, new Type[][] {coercionTypes});
 				lookupPlans[0] = new IndexedTableLookupPlan(0, 1, 0, queryGraph.GetKeyProperties(0, 1));
 				lookupPlans[1] = new IndexedTableLookupPlan(1, 0, 0, queryGraph.GetKeyProperties(1, 0));
 			}
@@ -64,5 +68,48 @@ namespace net.esper.eql.join.plan
 			
 			return new QueryPlan(indexSpecs, execNodeSpecs);
 		}
+		
+	    /**
+	     * Returns null if no coercion is required, or an array of classes for use in coercing the
+	     * lookup keys and index keys into a common type.
+	     * @param typesPerStream is the event types for each stream
+	     * @param lookupStream is the stream looked up from
+	     * @param indexedStream is the indexed stream
+	     * @param keyProps is the properties to use to look up
+	     * @param indexProps is the properties to index on
+	     * @return coercion types, or null if none required
+	     */
+	    protected static Type[] getCoercionTypes(EventType[] typesPerStream,
+												 int lookupStream,
+	                                             int indexedStream,
+	                                             String[] keyProps,
+	                                             String[] indexProps)
+	    {
+	        // Determine if any coercion is required
+	        if (indexProps.Length != keyProps.Length)
+	        {
+	            throw new IllegalStateException("Mismatch in the number of key and index properties");
+	        }
+
+	        Type[] coercionTypes = new Type[indexProps.length];
+	        bool mustCoerce = false;
+	        for (int i = 0; i < keyProps.Length; i++)
+	        {
+	            Type keyPropType = TypeHelper.GetBoxedType(typesPerStream[lookupStream].GetPropertyType(keyProps[i]));
+	            Type indexedPropType = TypeHelper.GetBoxedType(typesPerStream[indexedStream].GetPropertyType(indexProps[i]));
+	            Type coercionType = indexedPropType;
+	            if (keyPropType != indexedPropType)
+	            {
+	                coercionType = TypeHelper.GetCompareToCoercionType(keyPropType, indexedPropType);
+	                mustCoerce = true;
+	            }
+	            coercionTypes[i] = coercionType;
+	        }
+	        if (!mustCoerce)
+	        {
+	            return null;
+	        }
+	        return coercionTypes;
+	    }
 	}
 }

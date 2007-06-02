@@ -60,10 +60,7 @@ namespace net.esper.eql.join.exec
             foreach (EventBean joinedEvent in joinedEvents)
             {
                 EventBean[] events = new EventBean[prefillPath.Length];
-                for (int i = 0; i < events.Length; i++)
-                {
-                    events[i] = prefillPath[i];
-                }
+				Array.Copy(prefillPath, 0, events, 0, events.Length);
                 events[indexedStream] = joinedEvent;
                 result.Add(events);
             }

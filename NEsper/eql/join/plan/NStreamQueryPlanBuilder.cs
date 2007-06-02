@@ -71,7 +71,7 @@ namespace net.esper.eql.join.plan
         /// </summary>
         /// <param name="queryGraph">navigation info between streams</param>
         /// <returns>query plan</returns>
-		public static QueryPlan Build(QueryGraph queryGraph)
+		public static QueryPlan Build(QueryGraph queryGraphqueryGraph, EventType[] typesPerStream)
 		{
 			log.Debug(".build queryGraph=" + queryGraph);
 			
@@ -86,26 +86,30 @@ namespace net.esper.eql.join.plan
 				int[] bestChain = bestChainResult.Chain;
 				log.Debug(".build For stream " + streamNo + " bestChain=" + CollectionHelper.Render(bestChain));
 				
-				planNodeSpecs[streamNo] = CreateStreamPlan(streamNo, bestChain, queryGraph, indexSpecs);
+				planNodeSpecs[streamNo] = CreateStreamPlan(streamNo, bestChain, queryGraph, indexSpecs, typesPerStream);
 				log.Debug(".build spec=" + planNodeSpecs[streamNo]);
 			}
 			
 			return new QueryPlan(indexSpecs, planNodeSpecs);
 		}
 
-        /// <summary>
-        /// Walks the chain of lookups and constructs lookup strategy and plan specification based
-        /// on the index specifications.
-        /// </summary>
-        /// <param name="lookupStream">the stream to construct the query plan for</param>
-        /// <param name="bestChain">the chain that the lookup follows to make best use of indexes</param>
-        /// <param name="queryGraph">the repository for key properties to indexes</param>
-        /// <param name="indexSpecsPerStream">specifications of indexes</param>
-        /// <returns>
-        /// NestedIterationNode with lookups attached underneath
-        /// </returns>
-		public static QueryPlanNode CreateStreamPlan(int lookupStream, int[] bestChain, QueryGraph queryGraph, QueryPlanIndex[] indexSpecsPerStream)
-		{
+	    /**
+	     * Walks the chain of lookups and constructs lookup strategy and plan specification based
+	     * on the index specifications.
+	     * @param lookupStream - the stream to construct the query plan for
+	     * @param bestChain - the chain that the lookup follows to make best use of indexes
+	     * @param queryGraph - the repository for key properties to indexes
+	     * @param indexSpecsPerStream - specifications of indexes
+	     * @param typesPerStream - event types for each stream
+	     * @return NestedIterationNode with lookups attached underneath
+	     */
+	    protected static QueryPlanNode CreateStreamPlan(
+			int lookupStream,
+			int[] bestChain,
+			QueryGraph queryGraph,
+			QueryPlanIndex[] indexSpecsPerStream,
+			EventType[] typesPerStream)
+	    {
 			NestedIterationNode nestedIterNode = new NestedIterationNode(bestChain);
 			int currentLookupStream = lookupStream;
 			
@@ -113,8 +117,8 @@ namespace net.esper.eql.join.plan
 			for (int i = 0; i < bestChain.Length; i++)
 			{
 				int indexedStream = bestChain[i];
-				
-				TableLookupPlan tableLookupPlan = CreateLookupPlan(queryGraph, currentLookupStream, indexedStream, indexSpecsPerStream[indexedStream]);
+
+				TableLookupPlan tableLookupPlan = CreateLookupPlan(queryGraph, currentLookupStream, indexedStream, indexSpecsPerStream[indexedStream], typesPerStream);
 				TableLookupNode tableLookupNode = new TableLookupNode(tableLookupPlan);
 				nestedIterNode.AddChildNode(tableLookupNode);
 				
@@ -124,25 +128,29 @@ namespace net.esper.eql.join.plan
 			return nestedIterNode;
 		}
 
-        /// <summary>
-        /// Create the table lookup plan for a from-stream to look up in an indexed stream
-        /// using the columns supplied in the query graph and looking at the actual indexes available
-        /// and their index number.
-        /// </summary>
-        /// <param name="queryGraph">contains properties joining the 2 streams</param>
-        /// <param name="currentLookupStream">stream to use key values from</param>
-        /// <param name="indexedStream">stream to look up in</param>
-        /// <param name="indexSpecs">index specification defining indexes to be created for stream</param>
-        /// <returns>
-        /// plan for performing a lookup in a given table using one of the indexes supplied
-        /// </returns>
-		public static TableLookupPlan CreateLookupPlan(QueryGraph queryGraph, int currentLookupStream, int indexedStream, QueryPlanIndex indexSpecs)
-		{
+	    /**
+	     * Create the table lookup plan for a from-stream to look up in an indexed stream
+	     * using the columns supplied in the query graph and looking at the actual indexes available
+	     * and their index number.
+	     * @param queryGraph - contains properties joining the 2 streams
+	     * @param currentLookupStream - stream to use key values from
+	     * @param indexedStream - stream to look up in
+	     * @param indexSpecs - index specification defining indexes to be created for stream
+	     * @param typesPerStream - event types for each stream
+	     * @return plan for performing a lookup in a given table using one of the indexes supplied
+	     */
+	    protected static TableLookupPlan CreateLookupPlan(
+			QueryGraph queryGraph,
+			int currentLookupStream,
+			int indexedStream,
+			QueryPlanIndex indexSpecs, 
+			EventType[] typesPerStream)
+	    {
 			String[] indexedStreamIndexProps = queryGraph.GetIndexProperties(currentLookupStream, indexedStream);
 			int indexNum = - 1;
 			
 			// We use an index if there are index properties for the 2 streams
-			TableLookupPlan tableLookupPlan = null;
+			TableLookupPlan tableLookupPlan ;
 			
 			if (indexedStreamIndexProps != null)
 			{
@@ -152,6 +160,22 @@ namespace net.esper.eql.join.plan
 				// Constructed keyed lookup strategy
 				String[] keyGenFields = queryGraph.GetKeyProperties(currentLookupStream, indexedStream);
 				tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
+
+	            // Determine coercion required
+	            Type[] coercionTypes = TwoStreamQueryPlanBuilder.GetCoercionTypes(typesPerStream, currentLookupStream, indexedStream, keyGenFields, indexedStreamIndexProps);
+	            if (coercionTypes != null)
+	            {
+	                // check if there already are coercion types for this index
+	                Type[] existCoercionTypes = indexSpecs.GetCoercionTypes(indexedStreamIndexProps);
+	                if (existCoercionTypes != null)
+	                {
+	                    for (int i = 0; i < existCoercionTypes.Length; i++)
+	                    {
+	                        coercionTypes[i] = TypeHelper.GetCompareToCoercionType(existCoercionTypes[i], coercionTypes[i]);
+	                    }
+	                }
+	                indexSpecs.SetCoercionTypes(indexedStreamIndexProps, coercionTypes);
+	            }
 			}
 			else
 			{
@@ -161,7 +185,7 @@ namespace net.esper.eql.join.plan
 				// If no such full set index exists yet, add to specs
 				if (indexNum == - 1)
 				{
-					indexNum = indexSpecs.AddIndex(new String[0]);
+					indexNum = indexSpecs.AddIndex(new String[0], null);
 				}
 				
 				tableLookupPlan = new FullTableScanLookupPlan(currentLookupStream, indexedStream, indexNum);
@@ -254,7 +278,7 @@ namespace net.esper.eql.join.plan
 			// Build indexes without key properties
 			for (int i = 0; i < indexSpecs.Length; i++)
 			{
-				indexSpecs[i] = new QueryPlanIndex(null);
+				indexSpecs[i] = new QueryPlanIndex(null, null);
 			}
 			
 			// Handle N-stream queries
@@ -277,6 +301,40 @@ namespace net.esper.eql.join.plan
 			return new QueryPlan(indexSpecs, execNodeSpecs);
 		}
 
+	    private static Type[] getCoercionTypes(
+			EventType[] typesPerStream,
+            int lookupStream,
+            int indexedStream,
+            String[] keyProps,
+            String[] indexProps)
+	    {
+	        // Determine if any coercion is required
+	        if (indexProps.Length != keyProps.Length)
+	        {
+	            throw new IllegalStateException("Mismatch in the number of key and index properties");
+	        }
+
+	        Type[] coercionTypes = new Type[indexProps.length];
+	        bool mustCoerce = false;
+	        for (int i = 0; i < keyProps.Length; i++)
+	        {
+	            Type keyPropType = TypeHelper.GetBoxedType(typesPerStream[lookupStream].GetPropertyType(keyProps[i]));
+	            Type indexedPropType = TypeHelper.GetBoxedType(typesPerStream[indexedStream].GetPropertyType(indexProps[i]));
+	            Type coercionType = indexedPropType;
+	            if (keyPropType != indexedPropType)
+	            {
+	                coercionType = TypeHelper.GetCompareToCoercionType(keyPropType, keyPropType);
+	                mustCoerce = true;
+	            }
+	            coercionTypes[i] = coercionType;
+	        }
+	        if (!mustCoerce)
+	        {
+	            return null;
+	        }
+	        return coercionTypes;
+	    }
+		
         /// <summary>
         /// Returns default nesting order for a given number of streams for a certain stream.
         /// Example: numStreams = 5, forStream = 2, result = {0, 1, 3, 4}

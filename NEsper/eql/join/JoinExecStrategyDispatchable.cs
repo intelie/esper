@@ -15,32 +15,28 @@ namespace net.esper.eql.join
     /// execution strategy.
     /// </summary>
 
-    public class JoinExecStrategyDispatchable : Dispatchable, BufferObserver
+    public class JoinExecStrategyDispatchable
+		: EPStatementDispatch
+		, BufferObserver
     {
-        private readonly DispatchService dispatchService;
         private readonly JoinExecutionStrategy joinExecutionStrategy;
-        private readonly EDictionary<Int32, EventBuffer> oldStreamBuffer;
-        private readonly EDictionary<Int32, EventBuffer> newStreamBuffer;
+        private readonly EDictionary<Int32, FlushedEventBuffer> oldStreamBuffer;
+        private readonly EDictionary<Int32, FlushedEventBuffer> newStreamBuffer;
         private readonly int numStreams;
 
-        private bool isDispatchRegistered;
+        private bool hasNewData;
 
         /// <summary> CTor.</summary>
-        /// <param name="dispatchService">dispatches to this object via execute method
-        /// </param>
-        /// <param name="joinExecutionStrategy">strategy for executing the join
-        /// </param>
-        /// <param name="numStreams">number of stream
-        /// </param>
+        /// <param name="joinExecutionStrategy">strategy for executing the join</param>
+        /// <param name="numStreams">number of stream</param>
 
-        public JoinExecStrategyDispatchable(DispatchService dispatchService, JoinExecutionStrategy joinExecutionStrategy, int numStreams)
+        public JoinExecStrategyDispatchable(JoinExecutionStrategy joinExecutionStrategy, int numStreams)
         {
-            this.dispatchService = dispatchService;
             this.joinExecutionStrategy = joinExecutionStrategy;
             this.numStreams = numStreams;
 
-            oldStreamBuffer = new EHashDictionary<Int32, EventBuffer>();
-            newStreamBuffer = new EHashDictionary<Int32, EventBuffer>();
+            oldStreamBuffer = new EHashDictionary<Int32, FlushedEventBuffer>();
+            newStreamBuffer = new EHashDictionary<Int32, FlushedEventBuffer>();
         }
 
         /// <summary>
@@ -48,21 +44,25 @@ namespace net.esper.eql.join
         /// </summary>
         public virtual void Execute()
         {
-            isDispatchRegistered = false;
+            if (!hasNewData)
+	        {
+	            return;
+	        }
+	        hasNewData = false;
 
             EventBean[][] oldDataPerStream = new EventBean[numStreams][];
             EventBean[][] newDataPerStream = new EventBean[numStreams][];
 
             for (int i = 0; i < numStreams; i++)
             {
-                oldDataPerStream[i] = getBufferData(oldStreamBuffer.Fetch(i, null));
-                newDataPerStream[i] = getBufferData(newStreamBuffer.Fetch(i, null));
+                oldDataPerStream[i] = GetBufferData(oldStreamBuffer.Fetch(i, null));
+                newDataPerStream[i] = GetBufferData(newStreamBuffer.Fetch(i, null));
             }
 
             joinExecutionStrategy.Join(newDataPerStream, oldDataPerStream);
         }
 
-        private EventBean[] getBufferData(EventBuffer buffer)
+        private static EventBean[] GetBufferData(FlushedEventBuffer buffer)
         {
             if (buffer == null)
             {
@@ -78,13 +78,9 @@ namespace net.esper.eql.join
         /// <param name="streamId">the stream number sending the events</param>
         /// <param name="newEventBuffer">buffer for new events</param>
         /// <param name="oldEventBuffer">buffer for old events</param>
-        public virtual void NewData(int streamId, EventBuffer newEventBuffer, EventBuffer oldEventBuffer)
+        public virtual void NewData(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer)
         {
-            if (!isDispatchRegistered)
-            {
-                dispatchService.AddInternal(this);
-                isDispatchRegistered = true;
-            }
+			hasNewData = true;
             newStreamBuffer[streamId] = newEventBuffer;
             oldStreamBuffer[streamId] = oldEventBuffer;
         }

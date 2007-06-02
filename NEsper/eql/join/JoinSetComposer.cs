@@ -6,7 +6,6 @@ using net.esper.compat;
 
 namespace net.esper.eql.join
 {
-	
 	/// <summary> Interface for populating a join tuple result set from new data and old data for each stream.</summary>
 	public interface JoinSetComposer
 	{

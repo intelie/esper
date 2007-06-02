@@ -21,7 +21,17 @@ namespace net.esper.eql.join.table
     {
         private readonly int streamNum;
         private readonly String[] propertyNames;
+		
+		/// <summary>
+		/// Getters for properties.
+		/// </summary>
+		
         private readonly EventPropertyGetter[] propertyGetters;
+
+		/// <summary>
+		/// Index table.
+		/// </summary>
+		
         private readonly EDictionary<MultiKeyUntyped, ISet<EventBean>> propertyIndex;
 
         /// <summary> Ctor.</summary>
@@ -46,6 +56,16 @@ namespace net.esper.eql.join.table
 
             propertyIndex = new EHashDictionary<MultiKeyUntyped, ISet<EventBean>>();
         }
+		
+	    /**
+	     * Determine multikey for index access.
+	     * @param event to get properties from for key
+	     * @return multi key
+	     */
+	    protected MultiKeyUntyped GetMultiKey(EventBean _event)
+	    {
+	        return EventBeanUtility.getMultiKey(_event, propertyGetters);
+	    }
 
         /// <summary> Add an array of events. Same event instance is not added twice. Event properties should be immutable.
         /// Allow null passed instead of an empty array.
@@ -99,7 +119,7 @@ namespace net.esper.eql.join.table
 
 		private void Add( EventBean _event )
         {
-			MultiKeyUntyped key = EventBeanUtility.GetMultiKey( _event, propertyGetters );
+			MultiKeyUntyped key = GetMultiKey(_event);
             ISet<EventBean> events = propertyIndex.Fetch(key, null);
 
             if (events == null)
@@ -118,7 +138,7 @@ namespace net.esper.eql.join.table
 
         private void Remove(EventBean _event)
         {
-            MultiKeyUntyped key = EventBeanUtility.GetMultiKey(_event, propertyGetters);
+			MultiKeyUntyped key = GetMultiKey(_event);
 
             ISet<EventBean> events = propertyIndex.Fetch(key, null);
             if (events == null)

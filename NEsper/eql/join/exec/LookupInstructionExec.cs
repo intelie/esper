@@ -152,8 +152,13 @@ namespace net.esper.eql.join.exec
             return hasOneResultRow;
         }
 
-        private int[] ToArray(IList<Int32> list)
+        private static int[] ToArray(IList<Int32> list)
         {
+			if ( list is List<Int32> )
+			{
+				return ((List<Int32>) list).ToArray() ;
+			}
+		
             int[] arr = new int[list.Count];
             int count = 0;
             foreach (int value in list)

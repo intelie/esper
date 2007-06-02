@@ -81,7 +81,7 @@ namespace net.esper.eql.join
                 }
 
                 bool isOuterJoin = false;
-                ExprEqualsNode EqualsNode = null;
+                ExprEqualsNode equalsNode = null;
                 if (outerJoinDescList.Count > 0)
                 {
                     OuterJoinDesc outerJoinDesc = outerJoinDescList[0];
@@ -98,18 +98,18 @@ namespace net.esper.eql.join
                         isOuterJoin = true;
                     }
 
-                    EqualsNode = new ExprEqualsNode(false);
-                    EqualsNode.AddChildNode(outerJoinDesc.LeftNode);
-                    EqualsNode.AddChildNode(outerJoinDesc.RightNode);
-                    EqualsNode.Validate(null, null);
+                    equalsNode = new ExprEqualsNode(false);
+                    equalsNode.AddChildNode(outerJoinDesc.LeftNode);
+                    equalsNode.AddChildNode(outerJoinDesc.RightNode);
+                    equalsNode.Validate(null, null, null);
                 }
 
                 HistoricalEventViewable viewable = (HistoricalEventViewable)streamViews[polledView];
-                queryStrategies[streamView] = new HistoricalDataQueryStrategy(streamView, polledView, viewable, isOuterJoin, EqualsNode);
+                queryStrategies[streamView] = new HistoricalDataQueryStrategy(streamView, polledView, viewable, isOuterJoin, equalsNode);
             }
             else
             {
-                QueryPlan queryPlan = QueryPlanBuilder.GetPlan(streamTypes.Length, outerJoinDescList, optionalFilterNode, streamNames);
+                QueryPlan queryPlan = QueryPlanBuilder.GetPlan(streamTypes, outerJoinDescList, optionalFilterNode, streamNames);
 
                 // Build indexes
                 QueryPlanIndex[] indexSpecs = queryPlan.IndexSpecs;
@@ -117,6 +117,7 @@ namespace net.esper.eql.join
                 for (int streamNo = 0; streamNo < indexSpecs.Length; streamNo++)
                 {
                     String[][] indexProps = indexSpecs[streamNo].IndexProps;
+					Type[][] coercionTypes = indexSpecs[streamNo].CoercionTypesPerIndex;
                     indexes[streamNo] = new EventTable[indexProps.Length];
                     for (int indexNo = 0; indexNo < indexProps.Length; indexNo++)
                     {
@@ -144,16 +145,15 @@ namespace net.esper.eql.join
             return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
         }
 		
-		/// <summary> Build an index/table instance using the event properties for the event type.</summary>
-		/// <param name="indexedStreamNum">number of stream indexed
-		/// </param>
-		/// <param name="indexProps">properties to index
-		/// </param>
-		/// <param name="eventType">type of event to expect
-		/// </param>
-		/// <returns> table build
-		/// </returns>
-		public static EventTable BuildIndex(int indexedStreamNum, String[] indexProps, EventType eventType)
+	    /**
+	     * Build an index/table instance using the event properties for the event type.
+	     * @param indexedStreamNum - number of stream indexed
+	     * @param indexProps - properties to index
+	     * @param optCoercionTypes - optional array of coercion types, or null if no coercion is required
+	     * @param eventType - type of event to expect
+	     * @return table build
+	     */
+	    protected static EventTable BuildIndex(int indexedStreamNum, String[] indexProps, Type[] optCoercionTypes, EventType eventType)
 		{
 			EventTable table = null;
 			if (indexProps.Length == 0)
@@ -162,7 +162,14 @@ namespace net.esper.eql.join
 			}
 			else
 			{
-				table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps);
+	            if (optCoercionTypes == null)
+	            {
+	                table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps);
+	            }
+	            else
+	            {
+	                table = new PropertyIndTableCoerceAll(indexedStreamNum, eventType, indexProps, optCoercionTypes);
+	            }
 			}
 			return table;
 		}

@@ -35,18 +35,17 @@ namespace net.esper.eql.join
             // Filter
             if (filterExprNode != null)
             {
-                Filter(filterExprNode, newEvents);
-                Filter(filterExprNode, oldEvents);
+                Filter(filterExprNode, newEvents, true);
+                Filter(filterExprNode, oldEvents, false);
             }
         }
 
         /// <summary> Filter event by applying the filter nodes evaluation method.</summary>
-        /// <param name="filterExprNode">top node of the filter expression tree.
-        /// </param>
-        /// <param name="events">set of tuples of events
-        /// </param>
+        /// <param name="filterExprNode">top node of the filter expression tree.</param>
+        /// <param name="events">set of tuples of events</param>
+        /// <param name="isNewData">true to indicate filter new data (istream) and not old data (rstream)</param>
 
-        public static void Filter(ExprNode filterExprNode, ISet<MultiKey<EventBean>> events)
+        public static void Filter(ExprNode filterExprNode, ISet<MultiKey<EventBean>> events, bool isNewData)
         {
             List<MultiKey<EventBean>> purgeList = null;
             
@@ -54,9 +53,9 @@ namespace net.esper.eql.join
             {
                 EventBean[] eventArr = key.Array;
 
-                bool matched = (bool)filterExprNode.Evaluate(eventArr);
+                bool? matched = (bool?)filterExprNode.Evaluate(eventArr);
 
-                if (!matched)
+                if (!(matched ?? false))
                 {
                     if (purgeList == null)
                     {

@@ -170,9 +170,9 @@ namespace net.esper.eql.join.plan
 				addedEquivalency = false;
 
 				// For each stream-to-stream combination
-				for ( int lookupStream = 0 ; lookupStream < queryGraph.NumStreams ; lookupStream++ )
+				for ( int lookupStream = 0 ; lookupStream < queryGraph.numStreams ; lookupStream++ )
 				{
-					for ( int indexedStream = 0 ; indexedStream < queryGraph.NumStreams ; indexedStream++ )
+					for ( int indexedStream = 0 ; indexedStream < queryGraph.numStreams ; indexedStream++ )
 					{
 						if ( lookupStream == indexedStream )
 						{
@@ -235,7 +235,7 @@ namespace net.esper.eql.join.plan
 		{
 			bool addedEquivalency = false;
 
-			for ( int otherStream = 0 ; otherStream < queryGraph.NumStreams ; otherStream++ )
+			for ( int otherStream = 0 ; otherStream < queryGraph.numStreams ; otherStream++ )
 			{
 				if ( ( otherStream == lookupStream ) || ( otherStream == indexedStream ) )
 				{

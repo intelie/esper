@@ -18,18 +18,19 @@ namespace net.esper.eql.join.plan
 
 	public class NStreamOuterQueryPlanBuilder
 	{
-		/// <summary> Build a query plan based on the stream property relationships indicated in queryGraph.</summary>
-		/// <param name="queryGraph">navigation info between streams
-		/// </param>
-		/// <param name="streamNames">stream names or aliases
-		/// </param>
-		/// <param name="outerJoinDescList">descriptors for all outer joins
-		/// </param>
-		/// <returns> query plan
-		/// </returns>
-
-		public static QueryPlan Build( QueryGraph queryGraph, IList<OuterJoinDesc> outerJoinDescList, String[] streamNames )
-		{
+	    /**
+	     * Build a query plan based on the stream property relationships indicated in queryGraph.
+	     * @param queryGraph - navigation info between streams
+	     * @param streamNames - stream names or aliases
+	     * @param outerJoinDescList - descriptors for all outer joins
+	     * @param typesPerStream - event types for each stream
+	     * @return query plan
+	     */
+	    protected static QueryPlan build(QueryGraph queryGraph,
+	                                     IList<OuterJoinDesc> outerJoinDescList,
+	                                     String[] streamNames,
+	                                     EventType[] typesPerStream)
+	    {
             log.Debug(".Build queryGraph=" + queryGraph);
 
 			int numStreams = queryGraph.NumStreams;
@@ -46,7 +47,7 @@ namespace net.esper.eql.join.plan
 			// For each stream determine the query plan
 			for ( int streamNo = 0 ; streamNo < numStreams ; streamNo++ )
 			{
-				QueryPlanNode queryPlanNode = Build( numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, indexSpecs );
+				QueryPlanNode queryPlanNode = Build( numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, indexSpecs, typesPerStream );
 
 				if ( log.IsDebugEnabled )
 				{
@@ -73,7 +74,15 @@ namespace net.esper.eql.join.plan
         /// <param name="outerInnerGraph">The outer inner graph.</param>
         /// <param name="indexSpecs">The index specs.</param>
         /// <returns></returns>
-        public static QueryPlanNode Build(int numStreams, int streamNo, String[] streamNames, QueryGraph queryGraph, OuterInnerDirectionalGraph outerInnerGraph, QueryPlanIndex[] indexSpecs)
+        public static QueryPlanNode Build(
+			int numStreams,
+			int streamNo,
+			String[] streamNames,
+			QueryGraph queryGraph,
+			OuterInnerDirectionalGraph outerInnerGraph,
+			QueryPlanIndex[] indexSpecs,
+			EventType[] typesPerStream)
+
 		{
 			// For each stream build an array of substreams, considering required streams (inner joins) first
 			// The order is relevant therefore preserving order via a LinkedHashMap.
@@ -90,7 +99,7 @@ namespace net.esper.eql.join.plan
 
 			// build list of instructions for lookup
 			IList<LookupInstructionPlan> lookupInstructions = BuildLookupInstructions( substreamsPerStream, requiredPerStream,
-				streamNames, queryGraph, indexSpecs );
+				streamNames, queryGraph, indexSpecs, typesPerStream );
 
 			// build strategy tree for putting the result back together
             BaseAssemblyNode assemblyTopNode = AssemblyStrategyTreeBuilder.Build(streamNo, substreamsPerStream, requiredPerStream);
@@ -115,7 +124,8 @@ namespace net.esper.eql.join.plan
 					Boolean[] requiredPerStream,
 					String[] streamNames,
 					QueryGraph queryGraph,
-					QueryPlanIndex[] indexSpecs )
+					QueryPlanIndex[] indexSpecs,
+					EventType[] typesPerStream)
 		{
 			IList<LookupInstructionPlan> result = new List<LookupInstructionPlan>();
 
@@ -131,11 +141,10 @@ namespace net.esper.eql.join.plan
 				}
 
 				TableLookupPlan[] plans = new TableLookupPlan[substreams.Length];
-
 				for ( int i = 0 ; i < substreams.Length ; i++ )
 				{
 					int toStream = substreams[i];
-					TableLookupPlan tableLookupPlan = NStreamQueryPlanBuilder.CreateLookupPlan( queryGraph, fromStream, toStream, indexSpecs[toStream] );
+					TableLookupPlan tableLookupPlan = NStreamQueryPlanBuilder.createLookupPlan(queryGraph, fromStream, toStream, indexSpecs[toStream], typesPerStream);
 					plans[i] = tableLookupPlan;
 				}
 

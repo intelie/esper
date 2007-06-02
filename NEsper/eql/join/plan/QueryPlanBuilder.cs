@@ -24,13 +24,14 @@ namespace net.esper.eql.join.plan
         /// <param name="streamNames">names of streams</param>
         /// <returns>query plan</returns>
 
-        public static QueryPlan GetPlan(int numStreams,
-                                        IList<OuterJoinDesc> outerJoinDescList,
-                                        ExprNode optionalFilterNode,
-                                        String[] streamNames)
-        {
+	    public static QueryPlan GetPlan(EventType[] typesPerStream,
+	                                    IList<OuterJoinDesc> outerJoinDescList,
+	                                    ExprNode optionalFilterNode,
+	                                    String[] streamNames)
+	    {
             String methodName = ".getPlan ";
 
+			int numStreams = typesPerStream.Length;
             if (numStreams < 2)
             {
                 throw new ArgumentException("Number of join stream types is less then 2");
@@ -72,8 +73,8 @@ namespace net.esper.eql.join.plan
                     outerJoinType = outerJoinDescList[0].OuterJoinType;
                 }
 
-                QueryPlan queryPlan = TwoStreamQueryPlanBuilder.Build(queryGraph, outerJoinType);
-
+				QueryPlan queryPlan = TwoStreamQueryPlanBuilder.Build(typesPerStream, queryGraph, outerJoinType);
+ 
                 if (log.IsInfoEnabled)
                 {
                     log.Debug(methodName + "2-Stream queryPlan=" + queryPlan);
@@ -83,7 +84,7 @@ namespace net.esper.eql.join.plan
 
             if (outerJoinDescList.Count == 0)
             {
-                QueryPlan queryPlan = NStreamQueryPlanBuilder.Build(queryGraph);
+                QueryPlan queryPlan = NStreamQueryPlanBuilder.Build(queryGraph, typesPerStream);
 
                 if (log.IsInfoEnabled)
                 {
@@ -93,7 +94,7 @@ namespace net.esper.eql.join.plan
                 return queryPlan;
             }
 
-            return NStreamOuterQueryPlanBuilder.Build(queryGraph, outerJoinDescList, streamNames);
+            return NStreamOuterQueryPlanBuilder.Build(queryGraph, outerJoinDescList, streamNames, typesPerStream);
         }
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

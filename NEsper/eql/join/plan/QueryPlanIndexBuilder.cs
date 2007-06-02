@@ -78,7 +78,7 @@ namespace net.esper.eql.join.plan
                     indexProps2 = tmpArray;
                     indexProps2[0] = new String[0];
                 }
-                indexSpecs[streamIndexed] = new QueryPlanIndex(indexProps2);
+                indexSpecs[streamIndexed] = new QueryPlanIndex(indexProps2, new Type[indexProps.length][]););
             }
 
             return indexSpecs;

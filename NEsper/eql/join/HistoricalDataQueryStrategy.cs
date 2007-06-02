@@ -94,7 +94,7 @@ namespace net.esper.eql.join
                         // In an outer join compare the on-fields
                         if (isOuterJoin)
                         {
-                            Boolean compareResult = (Boolean) outerJoinCompareNode.Evaluate(resultRow);
+                            Boolean compareResult = (Boolean) outerJoinCompareNode.Evaluate(resultRow, true);
                             if (compareResult)
                             {
                                 joinSet.Add(new MultiKey<EventBean>(resultRow));
