@@ -1,12 +1,11 @@
 header
 {
 using System.Collections;
-
 using org.apache.commons.logging;
 }
 options
 {
-        language = "CSharp";
+    language = "CSharp";
 	namespace = "net.esper.eql.generated";
 }
 
@@ -32,9 +31,10 @@ tokens
 	private static Log log = LogFactory.GetLog(typeof(EQLBaseWalker));
 
 	// For pattern processing within EQL and for create pattern
-	protected virtual void setIsPatternWalk(Boolean isPatternWalk) {}
+	protected virtual void setIsPatternWalk(bool isPatternWalk) {}
 	protected virtual void endPattern() {}
 	
+	protected virtual void pushStmtContext() {}
 	protected virtual void leaveNode(AST node) {}
 	protected virtual void end() {}
 }
@@ -63,8 +63,7 @@ insertIntoExprCol
 	;
 
 selectClause
-	:	#(s:SELECTION_EXPR (RSTREAM | ISTREAM)? (STAR | selectionList) { leaveNode(#s); })
-	|	STAR
+	:	#(s:SELECTION_EXPR (RSTREAM | ISTREAM)? selectionList { leaveNode(#s); })
 	;
 
 fromClause
@@ -76,7 +75,8 @@ selectionList
 	;
 	
 selectionListElement
-	:	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
+	:	w:WILDCARD_SELECT { leaveNode(#w); }
+	|	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
 	;
 		
 outerJoin
@@ -159,22 +159,53 @@ valueExpr
 	|	f:builtinFunc { leaveNode(#f); }
 	|   l:libFunc { leaveNode(#l); }
 	|	cs:caseExpr { leaveNode(#cs); }
-	|	in_:inExpr { leaveNode(#in_); }
+	|	in:inExpr { leaveNode(#in); }
 	|	b:betweenExpr { leaveNode(#b); }
 	|	li:likeExpr { leaveNode(#li); }
 	|	r:regExpExpr { leaveNode(#r); }
+	|	arr:arrayExpr { leaveNode(#arr); }
+	|	subin:subSelectInExpr {leaveNode(#subin);}
+	| 	subrow:subSelectRowExpr 
+	| 	subexists:subSelectExistsExpr
 	;
 
+subSelectRowExpr
+	:	{pushStmtContext();} #(SUBSELECT_EXPR subQueryExpr) {leaveNode(#subSelectRowExpr);}
+	;
+
+subSelectExistsExpr
+	:	{pushStmtContext();} #(EXISTS_SUBSELECT_EXPR subQueryExpr) {leaveNode(#subSelectExistsExpr);}
+	;
+	
+subSelectInExpr
+	: 	#(IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr)
+	| 	#(NOT_IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr)
+	;
+
+subSelectInQueryExpr
+	:	{pushStmtContext();} #(IN_SUBSELECT_QUERY_EXPR subQueryExpr) {leaveNode(#subSelectInQueryExpr);}
+	;
+	
+subQueryExpr 
+	:	selectionListElement subSelectFilterExpr (viewExpr)* (IDENT)? (whereClause)?
+	;
+	
+subSelectFilterExpr
+	:	#(v:STREAM_EXPR eventFilterExpr (viewListExpr)? (IDENT)? { leaveNode(#v); } )
+	;
+	
 caseExpr
 	: #(CASE (valueExpr)*)
 	| #(CASE2 (valueExpr)*)
 	;
 	
 inExpr
-	: #(IN_SET valueExpr valueExpr (valueExpr)*)
-	| #(NOT_IN_SET valueExpr valueExpr (valueExpr)*)
+	: #(IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK))
+	| #(NOT_IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK))
+	| #(IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK))
+	| #(NOT_IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK))
 	;
-	
+		
 betweenExpr
 	: #(BETWEEN valueExpr valueExpr valueExpr)
 	| #(NOT_BETWEEN valueExpr valueExpr (valueExpr)*)
@@ -198,6 +229,12 @@ builtinFunc
 	|	#(STDDEV (DISTINCT)? valueExpr)
 	|	#(AVEDEV (DISTINCT)? valueExpr)
 	| 	#(COALESCE valueExpr valueExpr (valueExpr)* )
+	| 	#(PREVIOUS valueExpr eventPropertyExpr)
+	| 	#(PRIOR c:NUM_INT eventPropertyExpr) {leaveNode(#c);}
+	;
+	
+arrayExpr
+	:	#(ARRAY_EXPR (valueExpr)*)
 	;
 	
 arithmeticExpr
@@ -243,11 +280,11 @@ atomicExpr
 	;
 
 eventFilterExpr
-	:	#( f:EVENT_FILTER_EXPR (EVENT_FILTER_NAME_TAG)? CLASS_IDENT (filterParam)* { leaveNode(#f); } )
+	:	#( f:EVENT_FILTER_EXPR (EVENT_FILTER_NAME_TAG)? CLASS_IDENT (valueExpr)* { leaveNode(#f); } )
 	;
 	
 filterParam
-	:	#(EVENT_FILTER_PARAM eventPropertyExpr filterParamComparator)
+	:	#(EVENT_FILTER_PARAM valueExpr (valueExpr)*)
 	;
 	
 filterParamComparator
@@ -257,7 +294,12 @@ filterParamComparator
 	|	#(LE filterAtom)
 	|	#(GT filterAtom)
 	|	#(GE filterAtom)
-	|	#(IN_SET (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
+	|	#(EVENT_FILTER_RANGE (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
+	|	#(EVENT_FILTER_NOT_RANGE (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
+	|	#(EVENT_FILTER_IN (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier)* (RPAREN|RBRACK))
+	|	#(EVENT_FILTER_NOT_IN (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier)* (RPAREN|RBRACK))
+	|	#(EVENT_FILTER_BETWEEN (constant|filterIdentifier) (constant|filterIdentifier))
+	|	#(EVENT_FILTER_NOT_BETWEEN (constant|filterIdentifier) (constant|filterIdentifier))
 	;
 	
 filterAtom

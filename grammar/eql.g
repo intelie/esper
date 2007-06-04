@@ -3,14 +3,14 @@ header
 }
 options
 {
-        language = "CSharp";
+    language = "CSharp";
 	namespace = "net.esper.eql.generated";
 }
 
 class EQLStatementParser extends Parser;
 options
 {
-	k = 3;                           // lookahead
+	k = 4;                           // lookahead
 	exportVocab=Eql;
 	buildAST = true;
     defaultErrorHandler=false;
@@ -74,6 +74,10 @@ tokens
 	ISTREAM="istream";
 	PATTERN="pattern";
 	SQL="sql";
+	PREVIOUS="prev";
+	PRIOR="prior";
+	EXISTS="exists";
+	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
    	NUMERIC_PARAM_FREQUENCY;   	
@@ -83,6 +87,12 @@ tokens
    	EVENT_FILTER_NAME_TAG;
    	EVENT_FILTER_IDENT;
    	EVENT_FILTER_PARAM;
+   	EVENT_FILTER_RANGE;
+   	EVENT_FILTER_NOT_RANGE;
+   	EVENT_FILTER_IN;
+   	EVENT_FILTER_NOT_IN;
+   	EVENT_FILTER_BETWEEN;
+   	EVENT_FILTER_NOT_BETWEEN;
    	CLASS_IDENT;
    	GUARD_EXPR;
    	OBSERVER_EXPR;
@@ -120,6 +130,7 @@ tokens
 	LIB_FUNCTION;
 	UNARY_MINUS;
 	TIME_PERIOD;
+	ARRAY_EXPR;
 	DAY_PART;
 	HOUR_PART;
 	MINUTE_PART;
@@ -132,6 +143,15 @@ tokens
    	DBSELECT_EXPR;
    	DBFROM_CLAUSE;
    	DBWHERE_CLAUSE;
+   	WILDCARD_SELECT;
+	INSERTINTO_STREAM_NAME;
+	IN_RANGE;
+	NOT_IN_RANGE;
+	SUBSELECT_EXPR;
+	EXISTS_SUBSELECT_EXPR;
+	IN_SUBSELECT_EXPR;
+	NOT_IN_SUBSELECT_EXPR;
+	IN_SUBSELECT_QUERY_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -197,7 +217,7 @@ insertIntoExpr
 	:	(ISTREAM | RSTREAM)? INTO! IDENT (insertIntoColumnList)?
 		{ #insertIntoExpr = #([INSERTINTO_EXPR,"insertIntoExpr"], #insertIntoExpr); }
 	;
-	
+		
 insertIntoColumnList
 	: 	LPAREN! IDENT (COMMA! IDENT)* RPAREN!
 		{ #insertIntoColumnList = #([INSERTINTO_EXPRCOL,"insertIntoColumnList"], #insertIntoColumnList); }
@@ -232,8 +252,8 @@ whereClause
 	;
 	
 selectClause
-	:	(r:RSTREAM! | i:ISTREAM!)? (s:STAR | l:selectionList)
-		{ #selectClause = #([SELECTION_EXPR,"selectClause"], #r, #i, #s, #l); }
+	:	(r:RSTREAM! | i:ISTREAM!)? l:selectionList
+		{ #selectClause = #([SELECTION_EXPR,"selectClause"], #r, #i, #l); }
 	;
 
 selectionList 	
@@ -241,10 +261,12 @@ selectionList
 	;
 
 selectionListElement
-	:	expression (AS! IDENT)?
+	:   STAR 
+		{ #selectionListElement = #[WILDCARD_SELECT, "wildcard-select"]; }
+	|	expression (AS! IDENT)?
 		{ #selectionListElement = #([SELECTION_ELEMENT_EXPR,"selectionListElement"], #selectionListElement); }
 	;
-		
+	
 streamExpression
 	:	(eventFilterExpression | patternInclusionExpression | databaseJoinExpression)
 		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)?
@@ -339,17 +361,16 @@ negatedExpression
 	| NOT_EXPR^ evalEqualsExpression
 	;		
 
-
 evalEqualsExpression
 	:	evalRelationalExpression ( 
 			(eq:EQUALS! 
-		  |  is_:IS_!
+		  |  is:IS_!
 		  |  isnot:IS_! NOT_EXPR!
 		  |  sqlne:SQL_NE!
 		  |  ne:NOT_EQUAL!
 		    ) evalRelationalExpression)*
 		{ 
-			if ((eq != null) || (is_ != null))
+			if ((eq != null) || (is != null))
 			{
 				#evalEqualsExpression = #([EVAL_EQUALS_EXPR,"evalEqualsExpression"], #evalEqualsExpression); 
 			}
@@ -368,11 +389,31 @@ evalRelationalExpression
 			(
 				// Represent the optional NOT prefix using the token type by
 				// testing 'n' and setting the token type accordingly.
-				(i:IN_SET^ {
-						#i.setType( (n == null) ? IN_SET : NOT_IN_SET);
-						#i.setText( (n == null) ? "in" : "not in");
+				(i:IN_SET^
+					  (LPAREN | LBRACK) expression	// brackets are for inclusive/exclusive
+						(
+							( col:COLON! (expression) )		// range
+							|
+							( (COMMA! expression)* )		// list of values
+						)
+					  (RPAREN | RBRACK)	
+					  {
+						if (col == null)
+						{
+							#i.setType( (n == null) ? IN_SET : NOT_IN_SET);
+							#i.setText( (n == null) ? "in" : "not in");
+						}
+						else
+						{
+							#i.setType( (n == null) ? IN_RANGE : NOT_IN_RANGE);
+							#i.setText( (n == null) ? "in range" : "not in range");
+						}
+					  }
+					)
+				| IN_SET! s:inSubSelectQuery
+					{	if (n == null) #evalRelationalExpression = #([IN_SUBSELECT_EXPR,"inSubselectExpr"], #evalRelationalExpression); 
+					    else #evalRelationalExpression = #([NOT_IN_SUBSELECT_EXPR,"notInSubselectExpr"], #evalRelationalExpression); 
 					}
-					(LPAREN! expression (COMMA! expression)* RPAREN!))
 				| (b:BETWEEN^ {
 						#b.setType( (n == null) ? BETWEEN : NOT_BETWEEN);
 						#b.setText( (n == null) ? "between" : "not between");
@@ -391,7 +432,12 @@ evalRelationalExpression
 			)	
 		)
 	;
-		
+	
+inSubSelectQuery
+	: subQueryExpr
+		{ #inSubSelectQuery = #([IN_SUBSELECT_QUERY_EXPR,"inSubSelectQuery"], #inSubSelectQuery); }
+	;
+			
 concatenationExpr
 	: additiveExpression ( c:LOR! additiveExpression ( LOR! additiveExpression)* )?
 		{
@@ -413,6 +459,38 @@ unaryExpression
 	| LPAREN! expression RPAREN!
 	| eventPropertyOrLibFunction
 	| builtinFunc
+	| arrayExpression
+	| subSelectExpression
+	| existsSubSelectExpression
+	;
+	
+subSelectExpression 
+	:	subQueryExpr
+		{ #subSelectExpression = #([SUBSELECT_EXPR,"subSelectExpression"], #subSelectExpression); }	
+	;
+
+existsSubSelectExpression 
+	:	EXISTS! subQueryExpr
+		{ #existsSubSelectExpression = #([EXISTS_SUBSELECT_EXPR,"existsSubSelectExpression"], #existsSubSelectExpression); }
+	;
+
+subQueryExpr 
+	:	LPAREN! 
+		SELECT! selectionListElement
+	    FROM! subSelectFilterExpr
+	    (WHERE! whereClause)?
+	    RPAREN!
+	;
+	
+subSelectFilterExpr
+	:	eventFilterExpression
+		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)?
+		{ #subSelectFilterExpr = #([STREAM_EXPR,"subSelectFilterExpr"], #subSelectFilterExpr); }
+	;
+		
+arrayExpression
+	: LCURLY! (expression (COMMA! expression)* )? RCURLY!
+	{ #arrayExpression = #([ARRAY_EXPR,"arrayExpression"], #arrayExpression); }	
 	;
 
 builtinFunc
@@ -429,6 +507,8 @@ builtinFunc
 	| STDDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| AVEDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| COALESCE^ LPAREN! expression COMMA! expression (COMMA! expression)* RPAREN!
+	| PREVIOUS^ LPAREN! expression COMMA! eventProperty RPAREN!
+	| PRIOR^ LPAREN! NUM_INT COMMA! eventProperty RPAREN!
 	// MIN and MAX can also be "Math.min" static function and "min(price)" aggregation function and "min(a, b, c...)" built-in function
 	// therefore handled in code via libFunction as below
 	;
@@ -613,28 +693,9 @@ classIdentifierNonGreedy
 	;	
 	
 filterParamSet
-    :   filterParameter (COMMA! filterParameter)*
+    :   expression (COMMA! expression)*
     ;
-   
-filterParameter
-	:	eventProperty (filterParamConstant | filterParamRange)
-		{ #filterParameter = #([EVENT_FILTER_PARAM,"filterParameter"], #filterParameter); }
-	;
-	
-filterParamConstant 
-	:	(EQUALS^ | NOT_EQUAL^ | LT_^ | LE^ | GE^ | GT^) (constant | filterIdentifier)
-	;
-
-filterParamRange 
-	: 	IN_SET^ (l1:LPAREN! | l2:LBRACK!) (c:constant | f1:filterIdentifier) COLON! (constant | filterIdentifier) (r1:RPAREN! | r2:RBRACK!)
-       { #filterParamRange = #(IN_SET, #l1, #l2, #c, #f1, #r1, #r2); }
-	;    
-
-filterIdentifier
-	:	IDENT DOT! eventProperty
-		{ #filterIdentifier = #([EVENT_FILTER_IDENT,"filterIdentifier"], #filterIdentifier); }
-	;
-	
+   	
 eventProperty
 	:	eventPropertyAtomic (DOT! eventPropertyAtomic)* 
 		{ #eventProperty = #([EVENT_PROP_EXPR,"eventPropertyExpr"], #eventProperty); }
@@ -704,60 +765,58 @@ options {
 	// I need to make ANTLR generate smaller bitsets; see
 	// bottom of JavaLexer.java
 	codeGenBitsetTestThreshold=20;
+	caseSensitive=false;
+	caseSensitiveLiterals=false;
 }
 
 // Operators
-FOLLOWED_BY		:	"->"	;
-EQUALS			:	'='		;
-SQL_NE			: 	"<>"	;
-
-// OPERATORS
-QUESTION		:	'?'		;
-LPAREN			:	'('		;
-RPAREN			:	')'		;
-LBRACK			:	'['		;
-RBRACK			:	']'		;
-LCURLY			:	'{'		;
-RCURLY			:	'}'		;
-COLON			:	':'		;
-COMMA			:	','		;
-//DOT			    :	'.'		;
-//ASSIGN			:	'='		;
-EQUAL			:	"=="	;
-LNOT			:	'!'		;
-BNOT			:	'~'		;
-NOT_EQUAL		:	"!="	;
-DIV				:	'/'		;
-DIV_ASSIGN		:	"/="	;
-PLUS			:	'+'		;
-PLUS_ASSIGN		:	"+="	;
-INC				:	"++"	;
-MINUS			:	'-'		;
-MINUS_ASSIGN	:	"-="	;
-DEC				:	"--"	;
-STAR			:	'*'		;
-STAR_ASSIGN		:	"*="	;
-MOD				:	'%'		;
-MOD_ASSIGN		:	"%="	;
-SR				:	">>"	;
-SR_ASSIGN		:	">>="	;
-BSR				:	">>>"	;
-BSR_ASSIGN		:	">>>="	;
-GE				:	">="	;
-GT				:	">"		;
-SL				:	"<<"	;
-SL_ASSIGN		:	"<<="	;
-LE				:	"<="	;
-LT_				:	'<'		;
-BXOR			:	'^'		;
-BXOR_ASSIGN		:	"^="	;
-BOR				:	'|'		;
-BOR_ASSIGN		:	"|="	;
-LOR				:	"||"	;
-BAND			:	'&'		;
-BAND_ASSIGN		:	"&="	;
-LAND			:	"&&"	;
-SEMI			:	';'		;
+FOLLOWED_BY options {paraphrase = "an followed-by \"->\"";}		:	"->"	;
+EQUALS options {paraphrase = "an equals '='";}					:	'='		;
+SQL_NE options {paraphrase = "a sql-style not equals \"<>\"";}	: 	"<>"	;
+QUESTION options {paraphrase = "a questionmark '?'";}			:	'?'		;
+LPAREN options {paraphrase = "an opening parenthesis '('";}		:	'('		;
+RPAREN options {paraphrase = "a closing parenthesis ')'";}		:	')'		;
+LBRACK options {paraphrase = "a left angle bracket '['";}		:	'['		;
+RBRACK options {paraphrase = "a right angle bracket ']'";}		:	']'		;
+LCURLY options {paraphrase = "a left curly bracket '{'";}		:	'{'		;
+RCURLY options {paraphrase = "a right curly bracket '}'";}		:	'}'		;
+COLON options {paraphrase = "a colon ':'";}						:	':'		;
+COMMA options {paraphrase = "a comma ','";}						:	','		;
+EQUAL options {paraphrase = "an equals compare \"==\"";}		:	"=="	;
+LNOT options {paraphrase = "a not '!'";}						:	'!'		;
+BNOT options {paraphrase = "a binary not '~'";}					:	'~'		;
+NOT_EQUAL options {paraphrase = "a not equals \"!=\"";}			:	"!="	;
+DIV options {paraphrase = "a division operator '\'";}			:	'/'		;
+DIV_ASSIGN options {paraphrase = "a division assign \"/=\"";}	:	"/="	;
+PLUS options {paraphrase = "a plus operator '+'";}				:	'+'		;
+PLUS_ASSIGN	options {paraphrase = "a plus assign \"+=\"";}		:	"+="	;
+INC options {paraphrase = "an increment operator '++'";}		:	"++"	;
+MINUS options {paraphrase = "a minus '-'";}					:	'-'		;
+MINUS_ASSIGN options {paraphrase = "a minus assign \"-=\"";}	:	"-="	;
+DEC options {paraphrase = "a decrement operator '--'";}		:	"--"	;
+STAR options {paraphrase = "a star '*'";}						:	'*'		;
+STAR_ASSIGN options {paraphrase = "a star assign '*='";}		:	"*="	;
+MOD options {paraphrase = "a modulo '%'";}						:	'%'		;
+MOD_ASSIGN options {paraphrase = "a module assign \"%=\"";}		:	"%="	;
+SR options {paraphrase = "a shift right '>>'";}				:	">>"	;
+SR_ASSIGN options {paraphrase = "a shift right assign '>>='";}	:	">>="	;
+BSR options {paraphrase = "a binary shift right \">>>\"";}		:	">>>"	;
+BSR_ASSIGN options {paraphrase = "a binary shift right assign \">>>=\"";}		:	">>>="	;
+GE options {paraphrase = "a greater equals \">=\"";}			:	">="	;
+GT options {paraphrase = "a greater then '>'";}					:	">"		;
+SL options {paraphrase = "a shift left \"<<\"";}				:	"<<"	;
+SL_ASSIGN options {paraphrase = "a shift left assign \"<<=\"";}	:	"<<="	;
+LE options {paraphrase = "a less equals \"<=\"";}				:	"<="	;
+LT_ options {paraphrase = "a lesser then '<'";}					:	'<'		;
+BXOR options {paraphrase = "a binary xor '^'";}					:	'^'		;
+BXOR_ASSIGN options {paraphrase = "a binary xor assign \"^=\"";}:	"^="	;
+BOR	options {paraphrase = "a binary or '|'";}					:	'|'		;
+BOR_ASSIGN options {paraphrase = "a binary or assign \"|=\"";}	:	"|="	;
+LOR	options {paraphrase = "a logical or \"||\"";}				:	"||"	;
+BAND options {paraphrase = "a binary and '&'";}					:	'&'		;
+BAND_ASSIGN options {paraphrase = "a binary and assign \"&=\"";}:	"&="	;
+LAND options {paraphrase = "a logical and \"&&\"";}				:	"&&"	;
+SEMI options {paraphrase = "a semicolon ';'";}					:	';'		;
 
 // Whitespace -- ignored
 WS	:	(	' '
@@ -861,7 +920,7 @@ ESC
 // hexadecimal digit (again, note it's protected!)
 protected
 HEX_DIGIT
-	:	('0'..'9'|'A'..'F'|'a'..'f')
+	:	('0'..'9'|'a'..'f')
 	;
 
 
@@ -869,13 +928,14 @@ HEX_DIGIT
 // that after we match the rule, we look in the literals table to see
 // if it's a literal or really an identifer
 IDENT
-	options {testLiterals=true;}
-	:	('a'..'z'|'A'..'Z'|'_'|'$') ('a'..'z'|'A'..'Z'|'_'|'0'..'9'|'$')*
+	options {testLiterals=true; paraphrase = "an identifier";}		   
+	:	('a'..'z'|'_'|'$') ('a'..'z'|'_'|'0'..'9'|'$')*
 	;
 
 
 // a numeric literal
 NUM_INT
+	options {paraphrase = "a numeric literal";}		   
 	{boolean isDecimal=false; Token t=null;}
     :   '.' {_ttype = DOT;}
             (	('0'..'9')+ (EXPONENT)? (f1:FLOAT_SUFFIX {t=f1;})?
@@ -890,7 +950,7 @@ NUM_INT
             )?
 
 	|	(	'0' {isDecimal = true;} // special case for just '0'
-			(	('x'|'X')
+			(	('x')
 				(											// hex
 					// the 'e'|'E' and float suffix stuff look
 					// like hex digits, hence the (...)+ doesn't
@@ -910,7 +970,7 @@ NUM_INT
 			)?
 		|	('1'..'9') ('0'..'9')*  {isDecimal=true;}		// non-zero decimal
 		)
-		(	('l'|'L') { _ttype = NUM_LONG; }
+		(	('l') { _ttype = NUM_LONG; }
 
 		// only check to see if it's a float if looks like decimal so far
 		|	{isDecimal}?
@@ -933,11 +993,11 @@ NUM_INT
 // a couple protected methods to assist in matching floating point numbers
 protected
 EXPONENT
-	:	('e'|'E') ('+'|'-')? ('0'..'9')+
+	:	('e') ('+'|'-')? ('0'..'9')+
 	;
 
 
 protected
 FLOAT_SUFFIX
-	:	'f'|'F'|'d'|'D'
+	:	'f'|'d'
 	;
