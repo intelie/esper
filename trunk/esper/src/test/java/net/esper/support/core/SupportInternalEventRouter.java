@@ -1,6 +1,7 @@
 package net.esper.support.core;
 
 import net.esper.core.InternalEventRouter;
+import net.esper.core.EPStatementHandle;
 import net.esper.event.EventBean;
 
 import java.util.List;
@@ -10,9 +11,12 @@ public class SupportInternalEventRouter implements InternalEventRouter
 {
     private List<EventBean> routed  = new LinkedList<EventBean>();
 
-    public void route(EventBean event)
+    public void route(EventBean[] events, EPStatementHandle epStatementHandle)
     {
-        routed.add(event);
+        for (int i = 0; i < events.length; i++)
+        {
+            routed.add(events[i]);
+        }
     }
 
     public List<EventBean> getRouted()

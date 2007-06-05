@@ -37,7 +37,7 @@ public class ThreadWorkQueue
      * Adds event to the front of the queue.
      * @param event to add
      */
-    public static void addFront(Object event)
+    protected static void addFront(Object event)
     {
         LinkedList<Object> queue = threadQueue.get();
         queue.addFirst(event);

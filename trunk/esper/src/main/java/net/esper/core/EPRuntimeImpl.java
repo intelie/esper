@@ -45,6 +45,14 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
     };
 
+    private ThreadLocal<ArrayList<ManagedLock>> locksHeldThreadLocal = new ThreadLocal<ArrayList<ManagedLock>>()
+    {
+        protected synchronized ArrayList<ManagedLock> initialValue()
+        {
+            return new ArrayList<ManagedLock>(100);
+        }
+    };
+
     private ThreadLocal<HashMap<EPStatementHandle, Object>> matchesPerStmtThreadLocal =
             new ThreadLocal<HashMap<EPStatementHandle, Object>>()
     {
@@ -160,9 +168,20 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         threadWorkQueue.add(event);
     }
 
-    public void route(EventBean event)
+    // Internal route of events via insert-into, holds a statement lock
+    public void route(EventBean events[], EPStatementHandle epStatementHandle)
     {
-        threadWorkQueue.add(event);
+        for (int i = 0; i < events.length; i++)
+        {
+            threadWorkQueue.add(events[i]);
+        }
+
+        ManagedLock lock = epStatementHandle.getRoutedInsertStreamLock();
+        if (!lock.isHeldByCurrentThread())
+        {
+            lock.acquireLock(services.getStatementLockFactory());
+            locksHeldThreadLocal.get().add(lock);
+        }
     }
 
     public void emit(Object object)
@@ -445,6 +464,12 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
             dispatch();
         }
+
+        for (ManagedLock groupLocks : locksHeldThreadLocal.get())
+        {
+            groupLocks.releaseLock(services.getStatementLockFactory());
+        }
+        locksHeldThreadLocal.get().clear();
     }
 
     private void processMatches(EventBean event)

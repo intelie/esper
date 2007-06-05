@@ -9,7 +9,7 @@ public interface InternalEventRouter
 {
     /**
      * Route the event such that the event is processed as required.
-     * @param event to route
+     * @param events to route
      */
-    public void route(EventBean event);
+    public void route(EventBean[] events, EPStatementHandle statementHandle);
 }

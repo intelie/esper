@@ -12,6 +12,7 @@ import net.esper.view.Viewable;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.core.InternalEventRouter;
+import net.esper.core.EPStatementHandle;
 
 import java.util.Iterator;
 
@@ -24,16 +25,18 @@ public class InternalRouteView extends ViewSupport
     // Do we route the insert stream (new) events, or the remove stream (old) events
     private final boolean isIStream;
     private final InternalEventRouter internalEventRouter;
+    private final EPStatementHandle epStatementHandle;
 
     /**
      * Ctor.
      * @param isIStream true for insert stream, false for remove stream
      * @param internalEventRouter routes the events internally
      */
-    public InternalRouteView(boolean isIStream, InternalEventRouter internalEventRouter)
+    public InternalRouteView(boolean isIStream, InternalEventRouter internalEventRouter, EPStatementHandle epStatementHandle)
     {
         this.isIStream = isIStream;
         this.internalEventRouter = internalEventRouter;
+        this.epStatementHandle = epStatementHandle;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
@@ -53,10 +56,7 @@ public class InternalRouteView extends ViewSupport
 
     private void route(EventBean[] events)
     {
-        for (int i = 0; i < events.length; i++)
-        {
-            internalEventRouter.route(events[i]);
-        }
+        internalEventRouter.route(events, epStatementHandle);
     }
 
     public EventType getEventType()

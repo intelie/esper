@@ -64,4 +64,14 @@ public class ManagedLockImpl implements ManagedLock
             ThreadLogUtil.traceLock(ManagedReadWriteLock.RELEASED_TEXT + name, lock);
         }
     }
+
+    public boolean isHeldByCurrentThread()
+    {
+        boolean isHeld = lock.isHeldByCurrentThread();
+        if (ThreadLogUtil.ENABLED_TRACE)
+        {
+            ThreadLogUtil.traceLock("Held    " + name + " by current:" + isHeld, lock);
+        }
+        return isHeld;
+    }
 }

@@ -231,7 +231,7 @@ public class EPStatementStartMethod
         // Hook up internal event route for insert-into if required
         if (statementSpec.getInsertIntoDesc() != null)
         {
-            InternalRouteView routeView = new InternalRouteView(statementSpec.getInsertIntoDesc().isIStream(), services.getInternalEventRouter());
+            InternalRouteView routeView = new InternalRouteView(statementSpec.getInsertIntoDesc().isIStream(), services.getInternalEventRouter(), statementContext.getEpStatementHandle());
             finalView.addView(routeView);
             finalView = routeView;
         }

@@ -17,8 +17,8 @@ public class TestInternalRouteView extends TestCase
     {
         supportRouter = new SupportInternalEventRouter();
 
-        viewIStream = new InternalRouteView(true, supportRouter);
-        viewRStream = new InternalRouteView(false, supportRouter);
+        viewIStream = new InternalRouteView(true, supportRouter, null);
+        viewRStream = new InternalRouteView(false, supportRouter, null);
 
         childView = new SupportMapView();
         viewIStream.addView(childView);

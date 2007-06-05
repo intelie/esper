@@ -39,7 +39,7 @@ public class TestMTDeterminismListener extends TestCase
 
     public void testSceneOne() throws Exception
     {
-        trySend(4, 100);
+        trySend(3, 1000);
     }
 
     private void trySend(int numThreads, int numEvents) throws Exception

@@ -2,6 +2,7 @@ package net.esper.core;
 
 import net.esper.client.*;
 import net.esper.collection.Pair;
+import net.esper.collection.RefCountedMap;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.*;
 import net.esper.util.ManagedLock;
@@ -9,6 +10,7 @@ import net.esper.eql.expression.ExprNodeSubselectVisitor;
 import net.esper.eql.expression.ExprSubselectNode;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
+import net.esper.util.ManagedLockImpl;
 import net.esper.view.ViewProcessingException;
 import net.esper.view.Viewable;
 import net.esper.event.EventType;
@@ -31,6 +33,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private final Map<String, String> stmtNameToIdMap;
     private final Map<String, EPStatementDesc> stmtIdToDescMap;
     private final Map<String, EPStatement> stmtNameToStmtMap;
+    private final RefCountedMap<String, ManagedLock> insertIntoStreams;
 
     public void init() {}
 
@@ -48,6 +51,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         this.stmtIdToDescMap = new HashMap<String, EPStatementDesc>();
         this.stmtNameToStmtMap = new HashMap<String, EPStatement>();
         this.stmtNameToIdMap = new HashMap<String, String>();
+        this.insertIntoStreams = new RefCountedMap<String, ManagedLock>();
     }
 
     public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName)
@@ -104,6 +108,24 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services);
         StatementSpecCompiled compiledSpec = compile(statementSpec, expression, statementContext);
 
+        // For insert-into streams, create a lock taken out as soon as an event is inserted
+        // Makes the processing between chained statements more predictable.
+        if (statementSpec.getInsertIntoDesc() != null)
+        {
+            String insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeAlias();
+            ManagedLock insertIntoStreamLock = insertIntoStreams.get(insertIntoStreamName);
+            if (insertIntoStreamLock == null)
+            {
+                insertIntoStreamLock = new ManagedLockImpl("insert_stream_" + insertIntoStreamName);
+                insertIntoStreams.put(insertIntoStreamName, insertIntoStreamLock);
+            }
+            else
+            {
+                insertIntoStreams.reference(insertIntoStreamName);
+            }
+            statementContext.getEpStatementHandle().setRoutedInsertStreamLock(insertIntoStreamLock);
+        }
+
         // In a join statements if the same event type or it's deep super types are used in the join more then once,
         // then this is a self-join and the statement handle must know to dispatch the results together
         boolean canSelfJoin = isPotentialSelfJoin(compiledSpec.getStreamSpecs());
@@ -118,7 +140,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             // create start method
             startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
 
-            statementDesc = new EPStatementDesc(statement, startMethod, null);
+            // keep track of the insert-into statements supplying streams.
+            // these may need to lock to get more predictable behavior for multithreaded processing. 
+            String insertIntoStreamName = null;
+            if (statementSpec.getInsertIntoDesc() != null)
+            {
+                insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeAlias();
+            }
+
+            statementDesc = new EPStatementDesc(statement, startMethod, null, insertIntoStreamName);
             stmtIdToDescMap.put(statementId, statementDesc);
             stmtNameToStmtMap.put(statementName, statement);
             stmtNameToIdMap.put(statementName, statementId);
@@ -384,6 +414,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             stmtNameToStmtMap.remove(statement.getName());
             stmtNameToIdMap.remove(statement.getName());
             stmtIdToDescMap.remove(statementId);
+
+            // For insert-into streams, create a lock taken out as soon as an event is inserted
+            // Makes the processing between chained statements more predictable.
+            String insertIntoStreamName = desc.getOptInsertIntoStream();
+            if (insertIntoStreamName != null)
+            {
+                insertIntoStreams.dereference(insertIntoStreamName);
+            }            
         }
         catch (RuntimeException ex)
         {
@@ -510,6 +548,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         private EPStatementSPI epStatement;
         private EPStatementStartMethod startMethod;
         private EPStatementStopMethod stopMethod;
+        private String optInsertIntoStream;
 
         /**
          * Ctor.
@@ -517,11 +556,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
          * @param startMethod the start method
          * @param stopMethod the stop method
          */
-        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod)
+        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream)
         {
             this.epStatement = epStatement;
             this.startMethod = startMethod;
             this.stopMethod = stopMethod;
+            this.optInsertIntoStream = optInsertIntoStream;
         }
 
         /**
@@ -549,6 +589,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         public EPStatementStopMethod getStopMethod()
         {
             return stopMethod;
+        }
+
+        public String getOptInsertIntoStream()
+        {
+            return optInsertIntoStream;
         }
 
         /**

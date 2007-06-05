@@ -2,27 +2,31 @@ package net.esper.multithread;
 
 import net.esper.client.EPServiceProvider;
 
-import java.util.Iterator;
 import java.util.concurrent.Callable;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class SendEventCallable implements Callable
+public class SendEventRWLockCallable implements Callable
 {
     private final int threadNum;
     private final EPServiceProvider engine;
     private final Iterator<Object> events;
+    private final ReentrantReadWriteLock sharedStartLock;
 
-    public SendEventCallable(int threadNum, EPServiceProvider engine, Iterator<Object> events)
+    public SendEventRWLockCallable(int threadNum, ReentrantReadWriteLock sharedStartLock, EPServiceProvider engine, Iterator<Object> events)
     {
         this.threadNum = threadNum;
         this.engine = engine;
         this.events = events;
+        this.sharedStartLock = sharedStartLock;
     }
 
     public Object call() throws Exception
     {
+        sharedStartLock.readLock().lock();
         log.info(".call Thread " + Thread.currentThread().getId() + " starting");
         try
         {
@@ -37,8 +41,9 @@ public class SendEventCallable implements Callable
             return false;
         }
         log.info(".call Thread " + Thread.currentThread().getId() + " done");
+        sharedStartLock.readLock().unlock();
         return true;
     }
 
-    private static final Log log = LogFactory.getLog(SendEventCallable.class);            
+    private static final Log log = LogFactory.getLog(SendEventRWLockCallable.class);
 }

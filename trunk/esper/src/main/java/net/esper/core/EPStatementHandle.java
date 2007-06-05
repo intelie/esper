@@ -18,6 +18,7 @@ public class EPStatementHandle implements MetaDefItem
     // handles self-join (ie. statement where from-clause lists the same event type or a super-type more then once)
     // such that the internal dispatching must occur after both matches are processed
     private boolean canSelfJoin;
+    private ManagedLock routedInsertStreamLock;
 
     /**
      * Ctor.
@@ -35,6 +36,16 @@ public class EPStatementHandle implements MetaDefItem
     public void setCanSelfJoin(boolean canSelfJoin)
     {
         this.canSelfJoin = canSelfJoin;
+    }
+
+    public void setRoutedInsertStreamLock(ManagedLock routedInsertStreamLock)
+    {
+        this.routedInsertStreamLock = routedInsertStreamLock;
+    }
+
+    public ManagedLock getRoutedInsertStreamLock()
+    {
+        return routedInsertStreamLock;
     }
 
     /**

@@ -25,4 +25,6 @@ public interface ManagedLock
      * @param statementLockFactory is the engine lock factory service that the lock can use for engine lock services
      */
     public void releaseLock(StatementLockFactory statementLockFactory);
+
+    public boolean isHeldByCurrentThread();
 }
