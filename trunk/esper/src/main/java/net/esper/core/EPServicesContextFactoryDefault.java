@@ -7,6 +7,7 @@ import net.esper.client.ConfigurationPlugInAggregationFunction;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineImportServiceImpl;
 import net.esper.eql.core.EngineImportException;
+import net.esper.eql.core.EngineSettingsService;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.db.DatabaseConfigServiceImpl;
 import net.esper.event.EventAdapterException;
@@ -42,6 +43,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         SchedulingService schedulingService = SchedulingServiceProvider.newService();
         EngineImportService engineImportService = makeEngineImportService(configSnapshot);
+        EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults());
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
         ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(configSnapshot.getPlugInViews());
         PatternObjectResolutionService patternObjectResolutionService = new PatternObjectResolutionServiceImpl(configSnapshot.getPlugInPatternObjects());
@@ -54,7 +56,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         // New services context
         EPServicesContext services = new EPServicesContext(engineURI, engineURI, schedulingService,
-                eventAdapterService, engineImportService, databaseConfigService, viewResolutionService,
+                eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, viewResolutionService,
                 new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 patternObjectResolutionService);
 

@@ -105,6 +105,8 @@ public class Configuration implements ConfigurationOperations {
      */
     protected List<ConfigurationAdapterLoader> adapterLoaders;
 
+    protected ConfigurationEngineDefaults engineDefaults;
+
     /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
@@ -386,6 +388,20 @@ public class Configuration implements ConfigurationOperations {
         plugInPatternObjects.add(entry);
     }
 
+    public ConfigurationEngineDefaults getEngineDefaults()
+    {
+        return engineDefaults;
+    }
+
+    public void setEngineDefaults(ConfigurationEngineDefaults engineDefaults)
+    {
+        if (engineDefaults == null)
+        {
+            engineDefaults = new ConfigurationEngineDefaults();
+        }
+        this.engineDefaults = engineDefaults;
+    }
+
     /**
 	 * Use the configuration specified in an application
 	 * resource named <tt>esper.cfg.xml</tt>.
@@ -556,6 +572,7 @@ public class Configuration implements ConfigurationOperations {
         adapterLoaders = new ArrayList<ConfigurationAdapterLoader>();
         plugInAggregationFunctions = new ArrayList<ConfigurationPlugInAggregationFunction>();
         plugInPatternObjects = new ArrayList<ConfigurationPlugInPatternObject>();
+        engineDefaults = new ConfigurationEngineDefaults(); 
     }
 
     /**

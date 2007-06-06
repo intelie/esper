@@ -91,6 +91,7 @@ class ConfigurationParser {
         handlePlugInAggregation(configuration, root);
         handlePlugInPatternObjects(configuration, root);
         handleAdapterLoaders(configuration, root);
+        handleEngineSettings(configuration, root);
     }
 
     private static void handleEventTypes(Configuration configuration, Element parentElement)
@@ -384,6 +385,60 @@ class ConfigurationParser {
                 }
             }
             configuration.addAdapterLoader(loaderName, className, properties);
+        }
+    }
+
+    private static void handleEngineSettings(Configuration configuration, Element parentElement)
+    {
+        NodeList nodes = parentElement.getElementsByTagName("engine-settings");
+        for (int i = 0; i < nodes.getLength(); i++)
+        {
+            ElementIterator nodeIterator = new ElementIterator(nodes.item(i).getChildNodes());
+            while (nodeIterator.hasNext())
+            {
+                Element subElement = nodeIterator.next();
+                if (subElement.getNodeName().equals("defaults"))
+                {
+                    handleEngineSettingsDefaults(configuration, subElement);
+                }
+            }
+        }
+    }
+
+    private static void handleEngineSettingsDefaults(Configuration configuration, Element parentElement)
+    {
+        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("threading"))
+            {
+                handleEngineSettingsDefaultsThreading(configuration, subElement);
+            }
+        }
+    }
+
+    private static void handleEngineSettingsDefaultsThreading(Configuration configuration, Element parentElement)
+    {
+        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("listener-dispatch"))
+            {
+                String preserveOrderText = subElement.getAttributes().getNamedItem("preserve-order").getTextContent();
+                Boolean preserveOrder = Boolean.parseBoolean(preserveOrderText);
+                String timeoutMSecText = subElement.getAttributes().getNamedItem("timeout-msec").getTextContent();
+                Long timeoutMSec = Long.parseLong(timeoutMSecText);
+                configuration.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(preserveOrder);
+                configuration.getEngineDefaults().getThreading().setListenerDispatchTimeout(timeoutMSec);
+            }
+            if (subElement.getNodeName().equals("insert-into-dispatch"))
+            {
+                String preserveOrderText = subElement.getAttributes().getNamedItem("preserve-order").getTextContent();
+                Boolean preserveOrder = Boolean.parseBoolean(preserveOrderText);
+                configuration.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(preserveOrder);
+            }
         }
     }
 

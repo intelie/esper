@@ -28,7 +28,7 @@ public class EPStatementImpl implements EPStatementSPI
     private final String statementName;
     private final String expressionText;
     private boolean isPattern;
-    private UpdateDispatchViewBlocking dispatchChildView;
+    private UpdateDispatchViewBase dispatchChildView;
     private StatementLifecycleSvc statementLifecycleSvc;
 
     private Viewable parentView;
@@ -49,14 +49,23 @@ public class EPStatementImpl implements EPStatementSPI
                               String expressionText,
                               boolean isPattern,
                               DispatchService dispatchService,
-                              StatementLifecycleSvc statementLifecycleSvc)
+                              StatementLifecycleSvc statementLifecycleSvc,
+                              boolean isBlockingDispatch,
+                              long msecBlockingTimeout)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
         this.statementName = statementName;
         this.expressionText = expressionText;
         this.statementLifecycleSvc = statementLifecycleSvc;
-        this.dispatchChildView = new UpdateDispatchViewBlocking(this.getListeners(), dispatchService);
+        if (isBlockingDispatch)
+        {
+            this.dispatchChildView = new UpdateDispatchViewBlocking(this.getListeners(), dispatchService, msecBlockingTimeout);
+        }
+        else
+        {
+            this.dispatchChildView = new UpdateDispatchViewNonBlocking(this.getListeners(), dispatchService);
+        }
         this.currentState = EPStatementState.STOPPED;
     }
 

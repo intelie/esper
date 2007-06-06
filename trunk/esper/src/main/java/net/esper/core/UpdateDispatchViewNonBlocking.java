@@ -20,29 +20,8 @@ import org.apache.commons.logging.LogFactory;
  * Convenience view for dispatching view updates received from a parent view to update listeners
  * via the dispatch service.
  */
-public class UpdateDispatchViewNonBlocking extends ViewSupport implements Dispatchable
+public class UpdateDispatchViewNonBlocking extends UpdateDispatchViewBase
 {
-    private Set<UpdateListener> updateListeners;
-    private final DispatchService dispatchService;
-    private EventBean lastIterableEvent;
-
-    private ThreadLocal<Boolean> isDispatchWaiting = new ThreadLocal<Boolean>() {
-        protected synchronized Boolean initialValue() {
-            return new Boolean(false);
-        }
-    };
-
-    private ThreadLocal<LinkedList<EventBean[]>> lastNewEvents = new ThreadLocal<LinkedList<EventBean[]>>() {
-        protected synchronized LinkedList<EventBean[]> initialValue() {
-            return new LinkedList<EventBean[]>();
-        }
-    };
-    private ThreadLocal<LinkedList<EventBean[]>> lastOldEvents = new ThreadLocal<LinkedList<EventBean[]>>() {
-        protected synchronized LinkedList<EventBean[]> initialValue() {
-            return new LinkedList<EventBean[]>();
-        }
-    };
-
     /**
      * Ctor.
      * @param updateListeners - listeners to update
@@ -50,17 +29,7 @@ public class UpdateDispatchViewNonBlocking extends ViewSupport implements Dispat
      */
     public UpdateDispatchViewNonBlocking(Set<UpdateListener> updateListeners, DispatchService dispatchService)
     {
-        this.updateListeners = updateListeners;
-        this.dispatchService = dispatchService;
-    }
-
-    /**
-     * Set new update listeners.
-     * @param updateListeners to set
-     */
-    public void setUpdateListeners(Set<UpdateListener> updateListeners)
-    {
-        this.updateListeners = updateListeners;
+        super(updateListeners, dispatchService);
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
@@ -83,46 +52,6 @@ public class UpdateDispatchViewNonBlocking extends ViewSupport implements Dispat
             dispatchService.addExternal(this);
             isDispatchWaiting.set(true);
         }
-    }
-
-    public EventType getEventType()
-    {
-        return null;
-    }
-
-    public Iterator<EventBean> iterator()
-    {
-        // Iterates over the last new event. For Pattern statements
-        // to allow polling the last event that fired.
-        return new SingleEventIterator(lastIterableEvent);
-    }
-
-    public void execute()
-    {
-        isDispatchWaiting.set(false);
-        EventBean[] newEvents = EventBeanUtility.flatten(lastNewEvents.get());
-        EventBean[] oldEvents = EventBeanUtility.flatten(lastOldEvents.get());
-
-        if (log.isDebugEnabled())
-        {
-            ViewSupport.dumpUpdateParams(".execute", newEvents, oldEvents);
-        }
-
-        for (UpdateListener listener : updateListeners)
-        {
-            listener.update(newEvents, oldEvents);
-        }
-
-        lastNewEvents.get().clear();
-        lastOldEvents.get().clear();
-    }
-
-    /**
-     * Remove event reference to last event.
-     */
-    public void clear()
-    {
-        lastIterableEvent = null;
     }
 
     private static Log log = LogFactory.getLog(UpdateDispatchViewNonBlocking.class);

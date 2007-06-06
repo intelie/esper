@@ -163,5 +163,10 @@ public class TestConfigurationParser extends TestCase
         assertEquals("ext1", pluginPattern.getNamespace());
         assertEquals("observer2", pluginPattern.getName());
         assertEquals(ConfigurationPlugInPatternObject.PatternObjectType.OBSERVER, pluginPattern.getPatternObjectType());
+
+        // assert engine defaults
+        assertFalse(config.getEngineDefaults().getThreading().isInsertIntoDispatchPreserveOrder());
+        assertFalse(config.getEngineDefaults().getThreading().isListenerDispatchPreserveOrder());
+        assertEquals(2000, config.getEngineDefaults().getThreading().getListenerDispatchTimeout());
     }
 }

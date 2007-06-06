@@ -1,10 +1,7 @@
 package net.esper.multithread;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
-import net.esper.client.UpdateListener;
+import net.esper.client.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
@@ -26,7 +23,11 @@ public class TestMTDeterminismInsertInto extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getDefaultProvider();
+        Configuration config = new Configuration();
+        // This should fail all test in this class
+        // config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
+
+        engine = EPServiceProviderManager.getDefaultProvider(config);
         engine.initialize();
         engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
@@ -38,16 +39,6 @@ public class TestMTDeterminismInsertInto extends TestCase
 
     public void testSceneOne() throws Exception
     {
-        // TODO:
-        //  test RFID example
-        //  test performance
-        //  test looping insert-into (deadlocks)
-        //  test complex insert-into
-        //  implement configurable statement behavior and time-outs
-        //  make sure lock and unlock is only taking place for current thread
-        //  documentation
-        // handle exceptions
-        // handle timer insert-into
         trySendCountFollowedBy(4, 10000);
     }
 

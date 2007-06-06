@@ -4,11 +4,11 @@ import java.util.LinkedHashMap;
 
 public class DispatchProducer
 {
-    private final UpdateDispatchView dispatchProcessor;
+    private final UpdateDispatchViewModel dispatchProcessor;
     private int currentCount;
     private LinkedHashMap<Integer, int[]> payloads = new LinkedHashMap<Integer, int[]>();
 
-    public DispatchProducer(UpdateDispatchView dispatchProcessor)
+    public DispatchProducer(UpdateDispatchViewModel dispatchProcessor)
     {
         this.dispatchProcessor = dispatchProcessor;
     }

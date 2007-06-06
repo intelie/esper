@@ -4,7 +4,7 @@ import net.esper.dispatch.DispatchService;
 
 import java.util.LinkedList;
 
-public class UpdateDispatchViewOrderEnforcing implements UpdateDispatchView
+public class UpdateDispatchViewOrderEnforcingModel implements UpdateDispatchViewModel
 {
     private DispatchService dispatchService;
     private DispatchListener dispatchListener;
@@ -21,7 +21,7 @@ public class UpdateDispatchViewOrderEnforcing implements UpdateDispatchView
         }
     };
 
-    public UpdateDispatchViewOrderEnforcing(DispatchService dispatchService, DispatchListener dispatchListener)
+    public UpdateDispatchViewOrderEnforcingModel(DispatchService dispatchService, DispatchListener dispatchListener)
     {
         this.currentFuture = new DispatchFuture(); // use a completed future as a start
         this.dispatchService = dispatchService;

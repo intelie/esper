@@ -3,7 +3,6 @@ package net.esper.multithread.dispatchmodel;
 import junit.framework.TestCase;
 import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.DispatchServiceImpl;
-import net.esper.core.UpdateDispatchViewBlocking;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,8 +26,8 @@ public class TestMTDispatch extends TestCase
     {
         DispatchService dispatchService = new DispatchServiceImpl();
         DispatchListenerImpl listener = new DispatchListenerImpl();
-        //UpdateDispatchView updateDispatchView = new UpdateDispatchViewNonConcurrent(dispatchService, listener);
-        UpdateDispatchViewOrderEnforcing updateDispatchView = new UpdateDispatchViewOrderEnforcing(dispatchService, listener);
+        //UpdateDispatchViewModel updateDispatchView = new UpdateDispatchViewNonConcurrentModel(dispatchService, listener);
+        UpdateDispatchViewOrderEnforcingModel updateDispatchView = new UpdateDispatchViewOrderEnforcingModel(dispatchService, listener);
 
         int numThreads = 2;
         int numActions = 10000;
@@ -60,7 +59,7 @@ public class TestMTDispatch extends TestCase
         }
     }
 
-    private void trySend(int numThreads, int numCount, int ratioDoubleAdd, UpdateDispatchView updateDispatchView, DispatchService dispatchService) throws Exception
+    private void trySend(int numThreads, int numCount, int ratioDoubleAdd, UpdateDispatchViewModel updateDispatchView, DispatchService dispatchService) throws Exception
     {
         // execute
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
@@ -101,10 +100,10 @@ public class TestMTDispatch extends TestCase
         private final int threadNum;
         private final int numActions;
         private final int ratioDoubleAdd;
-        private final UpdateDispatchView updateDispatchView;
+        private final UpdateDispatchViewModel updateDispatchView;
         private final DispatchService dispatchService;
 
-        public DispatchCallable(DispatchProducer sharedProducer, int threadNum, int numActions, int ratioDoubleAdd, UpdateDispatchView updateDispatchView, DispatchService dispatchService)
+        public DispatchCallable(DispatchProducer sharedProducer, int threadNum, int numActions, int ratioDoubleAdd, UpdateDispatchViewModel updateDispatchView, DispatchService dispatchService)
         {
             this.sharedProducer = sharedProducer;
             this.threadNum = threadNum;

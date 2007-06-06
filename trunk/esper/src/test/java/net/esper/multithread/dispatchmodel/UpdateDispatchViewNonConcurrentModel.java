@@ -5,7 +5,7 @@ import net.esper.dispatch.Dispatchable;
 
 import java.util.LinkedList;
 
-public class UpdateDispatchViewNonConcurrent implements UpdateDispatchView, Dispatchable
+public class UpdateDispatchViewNonConcurrentModel implements UpdateDispatchViewModel, Dispatchable
 {
     private DispatchService dispatchService;
     private DispatchListener dispatchListener;
@@ -21,7 +21,7 @@ public class UpdateDispatchViewNonConcurrent implements UpdateDispatchView, Disp
         }
     };
 
-    public UpdateDispatchViewNonConcurrent(DispatchService dispatchService, DispatchListener dispatchListener)
+    public UpdateDispatchViewNonConcurrentModel(DispatchService dispatchService, DispatchListener dispatchListener)
     {
         this.dispatchService = dispatchService;
         this.dispatchListener = dispatchListener;

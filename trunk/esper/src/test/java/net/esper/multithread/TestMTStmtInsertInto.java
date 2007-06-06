@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
-import net.esper.client.time.TimerControlEvent;
+import net.esper.client.ConfigurationEngineDefaults;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportMTUpdateListener;

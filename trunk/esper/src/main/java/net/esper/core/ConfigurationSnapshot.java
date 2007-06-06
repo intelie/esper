@@ -28,6 +28,7 @@ public class ConfigurationSnapshot
     private List<ConfigurationAdapterLoader> adapterLoaders = new LinkedList<ConfigurationAdapterLoader>();
     private List<ConfigurationPlugInAggregationFunction> plugInAggregation = new LinkedList<ConfigurationPlugInAggregationFunction>();
     private List<ConfigurationPlugInPatternObject> plugInPatternObjects = new LinkedList<ConfigurationPlugInPatternObject>();
+    private ConfigurationEngineDefaults engineDefaults;
 
     /**
      * Ctor.
@@ -49,6 +50,7 @@ public class ConfigurationSnapshot
         adapterLoaders.addAll(configuration.getAdapterLoaders());
         plugInAggregation.addAll(configuration.getPlugInAggregationFunctions());
         plugInPatternObjects.addAll(configuration.getPlugInPatternObjects());
+        engineDefaults = configuration.getEngineDefaults();
     }
 
     /**
@@ -148,6 +150,11 @@ public class ConfigurationSnapshot
     public List<ConfigurationPlugInPatternObject> getPlugInPatternObjects()
     {
         return plugInPatternObjects;
+    }
+
+    public ConfigurationEngineDefaults getEngineDefaults()
+    {
+        return engineDefaults;
     }
 }
 

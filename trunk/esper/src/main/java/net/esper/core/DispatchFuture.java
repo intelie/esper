@@ -1,6 +1,8 @@
 package net.esper.core;
 
 import net.esper.dispatch.Dispatchable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * DF3   <-->   DF2  <-->  DF1
@@ -9,15 +11,18 @@ import net.esper.dispatch.Dispatchable;
  */
 public class DispatchFuture implements Dispatchable
 {
+    private static final Log log = LogFactory.getLog(DispatchFuture.class);
     private UpdateDispatchViewBlocking view;
     private DispatchFuture earlier;
     private DispatchFuture later;
     private transient boolean isCompleted;
+    private long msecTimeout;
 
-    public DispatchFuture(UpdateDispatchViewBlocking view, DispatchFuture earlier)
+    public DispatchFuture(UpdateDispatchViewBlocking view, DispatchFuture earlier, long msecTimeout)
     {
         this.view = view;
         this.earlier = earlier;
+        this.msecTimeout = msecTimeout;
     }
 
     public DispatchFuture()
@@ -37,18 +42,17 @@ public class DispatchFuture implements Dispatchable
 
     public void execute()
     {
-        while(!earlier.isCompleted)
+        if (!earlier.isCompleted)
         {
             synchronized(this)
             {
                 try
                 {
-                    this.wait(1000);
+                    this.wait(msecTimeout);
                 }
                 catch (InterruptedException e)
                 {
-                    // TODO
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    log.error(e);
                 }
             }
         }

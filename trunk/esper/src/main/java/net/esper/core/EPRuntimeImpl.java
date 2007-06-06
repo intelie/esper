@@ -36,6 +36,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 {
     private EPServicesContext services;
     private ThreadWorkQueue threadWorkQueue;
+    private boolean isHoldInsertStreamLock;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
     {
@@ -87,6 +88,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     {
         this.services = services;
         threadWorkQueue = new ThreadWorkQueue();
+        isHoldInsertStreamLock = this.services.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
     }
 
     public void timerCallback()
@@ -176,11 +178,14 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             threadWorkQueue.add(events[i]);
         }
 
-        ManagedLock lock = epStatementHandle.getRoutedInsertStreamLock();
-        if (!lock.isHeldByCurrentThread())
+        if (isHoldInsertStreamLock)
         {
-            lock.acquireLock(services.getStatementLockFactory());
-            locksHeldThreadLocal.get().add(lock);
+            ManagedLock lock = epStatementHandle.getRoutedInsertStreamLock();
+            if (!lock.isHeldByCurrentThread())
+            {
+                lock.acquireLock(services.getStatementLockFactory());
+                locksHeldThreadLocal.get().add(lock);
+            }
         }
     }
 
@@ -455,6 +460,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             catch (RuntimeException ex)
             {
+                unlockInsertStreamLocks();
                 throw ex;
             }
             finally
@@ -465,9 +471,21 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             dispatch();
         }
 
-        for (ManagedLock groupLocks : locksHeldThreadLocal.get())
+        unlockInsertStreamLocks();
+    }
+
+    private void unlockInsertStreamLocks()
+    {
+        if (!isHoldInsertStreamLock)
         {
-            groupLocks.releaseLock(services.getStatementLockFactory());
+            return;
+        }
+        for (ManagedLock insertStreamLock : locksHeldThreadLocal.get())
+        {
+            if (insertStreamLock.isHeldByCurrentThread())
+            {
+                insertStreamLock.releaseLock(services.getStatementLockFactory());
+            }
         }
         locksHeldThreadLocal.get().clear();
     }
@@ -520,6 +538,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             catch (RuntimeException ex)
             {
+                unlockInsertStreamLocks();                
                 throw ex;
             }
             finally
@@ -549,6 +568,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             catch (RuntimeException ex)
             {
+                unlockInsertStreamLocks();
                 throw ex;
             }
             finally
@@ -567,6 +587,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
         catch (RuntimeException ex)
         {
+            unlockInsertStreamLocks();
             throw new EPException(ex);
         }
     }

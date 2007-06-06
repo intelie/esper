@@ -3,12 +3,8 @@ package net.esper.multithread;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
-import net.esper.client.UpdateListener;
+import net.esper.client.*;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.util.SupportMTUpdateListener;
 import net.esper.event.EventBean;
 
@@ -26,19 +22,27 @@ public class TestMTDeterminismListener extends TestCase
     private static final Log log = LogFactory.getLog(TestMTDeterminismListener.class);
     private EPServiceProvider engine;
 
-    public void setUp()
-    {
-        engine = EPServiceProviderManager.getDefaultProvider();
-        engine.initialize();
-    }
-
     public void tearDown()
     {
         engine.initialize();
     }
 
-    public void testSceneOne() throws Exception
+    public void testOrderedDelivery() throws Exception
     {
+        engine = EPServiceProviderManager.getDefaultProvider();
+        engine.initialize();
+        trySend(3, 1000);
+    }
+
+    public void manualTestOrderedDeliveryFail() throws Exception
+    {
+        /**
+         * Commented out as this is a manual test
+         */
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false);
+        engine = EPServiceProviderManager.getDefaultProvider(config);
+        engine.initialize();
         trySend(3, 1000);
     }
 

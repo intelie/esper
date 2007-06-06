@@ -28,7 +28,7 @@ public class TestUpdateDispatchView extends TestCase
         listeners.add(listenerTwo);
 
         dispatchService = new DispatchServiceImpl();
-        updateDispatchView = new UpdateDispatchViewBlocking(listeners, dispatchService);
+        updateDispatchView = new UpdateDispatchViewBlocking(listeners, dispatchService, 1000);
     }
 
     public void testUpdateOnceAndDispatch()

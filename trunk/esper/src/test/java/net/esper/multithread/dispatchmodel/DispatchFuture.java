@@ -9,12 +9,12 @@ import net.esper.dispatch.Dispatchable;
  */
 public class DispatchFuture implements Dispatchable
 {
-    private UpdateDispatchView view;
+    private UpdateDispatchViewModel view;
     private DispatchFuture earlier;
     private DispatchFuture later;
     private transient boolean isCompleted;
 
-    public DispatchFuture(UpdateDispatchView view, DispatchFuture earlier)
+    public DispatchFuture(UpdateDispatchViewModel view, DispatchFuture earlier)
     {
         this.view = view;
         this.earlier = earlier;

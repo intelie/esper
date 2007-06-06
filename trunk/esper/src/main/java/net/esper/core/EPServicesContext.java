@@ -12,6 +12,7 @@ import net.esper.dispatch.DispatchServiceProvider;
 import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.EngineImportService;
+import net.esper.eql.core.EngineSettingsService;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
@@ -43,6 +44,7 @@ public final class EPServicesContext
     private final StreamFactoryService streamFactoryService;
     private final EventAdapterService eventAdapterService;
     private final EngineImportService engineImportService;
+    private final EngineSettingsService engineSettingsService;
     private final DatabaseConfigService databaseConfigService;
     private final ViewResolutionService viewResolutionService;
     private final StatementLockFactory statementLockFactory;
@@ -77,6 +79,7 @@ public final class EPServicesContext
                              SchedulingService schedulingService,
                              EventAdapterService eventAdapterService,
                              EngineImportService engineImportService,
+                             EngineSettingsService engineSettingsService,
                              DatabaseConfigService databaseConfigService,
                              ViewResolutionService viewResolutionService,
                              StatementLockFactory statementLockFactory,
@@ -91,6 +94,7 @@ public final class EPServicesContext
         this.schedulingService = schedulingService;
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
+        this.engineSettingsService = engineSettingsService;
         this.databaseConfigService = databaseConfigService;
         this.filterService = FilterServiceProvider.newService();
         this.timerService = TimerServiceProvider.newService();
@@ -323,5 +327,10 @@ public final class EPServicesContext
     public PatternObjectResolutionService getPatternObjectResolutionService()
     {
         return patternObjectResolutionService;
+    }
+
+    public EngineSettingsService getEngineSettingsService()
+    {
+        return engineSettingsService;
     }
 }

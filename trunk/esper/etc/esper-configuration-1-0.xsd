@@ -13,6 +13,7 @@
 				<xs:element ref="plugin-pattern-guard" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="plugin-pattern-observer" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="adapter-loader" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="engine-settings" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -230,6 +231,41 @@
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="engine-settings">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="defaults" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="defaults">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="threading" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="threading">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="listener-dispatch" minOccurs="0"/>
+					<xs:element ref="insert-into-dispatch" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="listener-dispatch">
+		<xs:complexType>
+			<xs:attribute name="preserve-order" type="xs:boolean" use="required"/>
+			<xs:attribute name="timeout-msec" type="xs:long" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="insert-into-dispatch">
+		<xs:complexType>
+			<xs:attribute name="preserve-order" type="xs:boolean" use="required"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

@@ -135,7 +135,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         try
         {
             // create statement - may fail for parser and simple validation errors
-            EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern, services.getDispatchService(), this);
+            boolean preserveDispatchOrder = services.getEngineSettingsService().getEngineSettings().getThreading().isListenerDispatchPreserveOrder();
+            long blockingTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getListenerDispatchTimeout();
+            EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern,
+                    services.getDispatchService(), this, preserveDispatchOrder, blockingTimeout);
 
             // create start method
             startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
