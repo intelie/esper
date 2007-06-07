@@ -1,0 +1,767 @@
+<chapter id="configuration" revision="1">
+
+    <title>Configuration</title>
+    
+    <para>
+        Esper engine configuration is entirely optional. Esper has a very small number of configuration parameters that can be used to simplify event 
+        pattern and EQL statements, and to tune the engine behavior to specific requirements. The Esper engine works out-of-the-box without configuration.
+    </para>
+
+    <sect1 id="configuration-programmatic" revision="1">
+        <title>Programmatic Configuration</title>
+
+        <para>
+            An instance of <literal>net.esper.client.Configuration</literal> represents all configuration parameters. The <literal>Configuration</literal> is used to build an (immutable) <literal>EPServiceProvider</literal>, which provides the administrative and runtime interfaces for an Esper engine instance. 
+        </para>
+
+        <para>
+            You may obtain a <literal>Configuration</literal> instance by instantiating it directly and adding or setting values on it. The <literal>Configuration</literal> instance is then passed to <literal>EPServiceProviderManager</literal> to obtain a configured Esper engine.
+        </para>
+
+		<programlisting><![CDATA[Configuration configuration = new Configuration();
+configuration.addEventTypeAlias("PriceLimit", PriceLimit.class.getName());
+configuration.addEventTypeAlias("StockTick", StockTick.class.getName());
+configuration.addImport("org.mycompany.mypackage.MyUtility");
+configuration.addImport("org.mycompany.util.*");
+
+EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", configuration);
+]]></programlisting>
+
+        <para>
+			Note that <literal>Configuration</literal> is meant only as an initialization-time object. The Esper engine represented by an <literal>EPServiceProvider</literal> is immutable and does not retain any association back to the <literal>Configuration</literal>.
+        </para>
+        
+    </sect1>
+
+	<sect1 id="configuration-via-xml" revision="1">
+        <title>Configuration via XML File</title>
+
+        <para>
+			An alternative approach to configuration is to specify a configuration in an XML file. 
+        </para>
+
+        <para>
+			The default name for the XML configuration file is <literal>esper.cfg.xml</literal>. Esper reads this file from the root of the <literal>CLASSPATH</literal> as an application resource via the <literal>configure</literal> method.
+        </para>
+		<programlisting><![CDATA[Configuration configuration = new Configuration();		
+configuration.configure();
+]]></programlisting>
+
+        <para>
+			The <literal>Configuration</literal> class can read the XML configuration file from other sources as well. The <literal>configure</literal> method accepts <literal>URL, File and String</literal> filename parameters.
+        </para>
+		<programlisting><![CDATA[Configuration configuration = new Configuration();		
+configuration.configure("myengine.esper.cfg.xml");
+]]></programlisting>
+    </sect1>
+
+	<sect1 id="configuration-xml" revision="1">
+        <title>XML Configuration File</title>
+
+        <para>
+			Here is an example configuration file. The schema for the configuration file can be found in the <literal>etc</literal> folder and is named <literal>esper-configuration-1-0</literal>.		</para>
+		<programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<esper-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xsi:noNamespaceSchemaLocation="esper-configuration-1-0.xsd">
+  <event-type alias="StockTick" class="net.esper.example.stockticker.event.StockTick"/>
+  <event-type alias="PriceLimit" class="net.esper.example.stockticker.event.PriceLimit"/>
+  <auto-import import-name="org.mycompany.mypackage.MyUtility"/>
+  <auto-import import-name="org.mycompany.util.*"/>
+</esper-configuration>		
+]]></programlisting>
+
+        <para>
+			The example above is only a subset of the configuration items available. The next chapters outline the available configuration in greater detail.
+		</para>
+    </sect1>
+
+	<sect1 id="configuration-items" revision="1">
+        <title>Configuration Items</title>
+
+		<sect2 id="config-java" revision="1">
+			<title>Events represented by Java Classes</title>
+			
+			<sect3 id="config-java-event-name" revision="1">
+				<title>Event type alias to Java class mapping</title>
+				
+				<para>
+					This configuration item can be used to allow event pattern statements and EQL statements to use an event type alias rather then the fully qualified Java class name. Note that Java Interface classes and abstract classes are also supported as event types via the fully qualified Java class name, and an event type alias can also be defined for such classes.
+				</para>
+				
+				<para>
+					The example pattern statement below first shows a pattern that uses the alias <literal>StockTick</literal>. The second pattern statement is equivalent but specifies the fully-qualified Java class name.
+				</para>
+
+				<programlisting><![CDATA[every StockTick(symbol='IBM')"]]></programlisting>
+				<programlisting><![CDATA[every net.esper.example.stockticker.event.StockTick(symbol='IBM')]]></programlisting>
+
+				<para>
+					The event type alias can be listed in the XML configuration file as shown below. The <literal>Configuration</literal> API can also be used to programatically specify an event type alias, as shown in an earlier code snippet.
+				</para>
+				<programlisting><![CDATA[<event-type alias="StockTick" class="net.esper.example.stockticker.event.StockTick"/>]]></programlisting>
+				
+			</sect3>
+			
+			<sect3 id="config-java-legacy" revision="1">
+				<title>Non-JavaBean and Legacy Java Event Classes</title>
+				
+				<para>
+					Esper can process Java classes that provide event properties through other means then through JavaBean-style getter methods. It is not necessary that the method and member variable names in your Java class adhere to the JavaBean convention - any public methods and public member variables can be exposed as event properties via the below configuration.
+				</para>
+								
+				<para>
+					A Java class can optionally be configured with an accessor style attribute. This attribute instructs the engine how it should expose methods and fields for use as event properties in statements.
+				</para>
+
+				<table frame="topbot">
+					<title>Accessor Styles</title>
+					<tgroup cols="2">
+						<colspec colwidth="1.5*"/>
+						<colspec colwidth="2*"/>
+						<thead>
+							<row>
+								<entry>Style Name</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>javabean</literal></entry>
+								<entry>As the default setting, the engine exposes an event property for each public method following the JavaBean getter-method conventions</entry>
+							</row>
+							<row>
+								<entry><literal>public</literal></entry>
+								<entry>The engine exposes an event property for each public method and public member variable of the given class</entry>
+							</row>
+							<row>
+								<entry><literal>explicit</literal></entry>
+								<entry>The engine exposes an event property only for the explicitly configured public methods and public member variables</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				
+				<para>
+					Using the <literal>public</literal> setting for the <literal>accessor-style</literal> attribute instructs the engine to expose an event property for each public method and public member variable of a Java class. The engine assigns event property names of the same name as the name of the method or member variable in the Java class.
+				</para>
+				
+				<para>					
+					For example, assuming the class <literal>MyLegacyEvent</literal> exposes a method named <literal>readValue</literal> and a member variable named <literal>myField</literal>, we can then use properties as shown. 
+				</para>
+				<programlisting><![CDATA[select readValue, myField from MyLegacyEvent]]></programlisting>
+
+				<para>
+					Using the <literal>explicit</literal> setting for the <literal>accessor-style</literal> attribute requires that event properties are declared via configuration. This is outlined in the next chapter.
+				</para>
+
+				<para>
+					When configuring an engine instance from an XML configuration file, the XML snippet below demonstrates the use of the <literal>legacy-type</literal> element and the <literal>accessor-style</literal> attribute.
+				</para>
+
+				<programlisting><![CDATA[<event-type alias="MyLegacyEvent" class="com.mycompany.mypackage.MyLegacyEventClass">
+  <legacy-type accessor-style="public"/>
+</event-type>]]></programlisting>
+
+				<para>
+					When configuring an engine instance via Configuration API, the sample code below shows how to set the accessor style.
+				</para>
+
+				<programlisting><![CDATA[Configuration configuration = new Configuration();
+ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
+legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);
+config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyDef);
+
+EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", configuration);
+]]></programlisting>
+
+			</sect3>
+
+			<sect3 id="config-java-spec-properties" revision="1">
+				<title>Specifying Event Properties for Java Classes</title>
+				
+				<para>
+					Sometimes it may be convenient to use event property names in pattern and EQL statements that are backed up by a given public method or member variable (field) in a Java class. And it can be useful to declare multiple event properties that each map to the same method or member variable.
+				</para>
+
+				<para>
+					We can configure properties of events via <literal>method-property</literal> and <literal>field-property</literal> elements, as the next example shows.
+				</para>
+
+				<programlisting><![CDATA[<event-type alias="StockTick" class="net.esper.example.stockticker.event.StockTickEvent">
+	<legacy-type accessor-style="javabean" code-generation="enabled">
+		<method-property name="price" accessor-method="getCurrentPrice" />
+		<field-property name="volume" accessor-field="volumeField" />
+	</legacy-type>
+</event-type>]]></programlisting>
+
+				<para>
+					The XML configuration snippet above declared an event property named <literal>price</literal> backed by a getter-method named <literal>getCurrentPrice</literal>, and a second event property named <literal>volume</literal> that is backed by a public member variable named <literal>volumeField</literal>. Thus the price and volume properties can be used in a statement:
+				</para>								
+				<programlisting><![CDATA[select avg(price * volume) from StockTick]]></programlisting>
+
+				<para>
+					As with all configuration options, the API can also be used:
+				</para>
+
+				<programlisting><![CDATA[Configuration configuration = new Configuration();
+ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
+legacyDef.addMethodProperty("price", "getCurrentPrice");
+legacyDef.addFieldProperty("volume", "volumeField");
+config.addEventTypeAlias("StockTick", StockTickEvent.class.getName(), legacyDef);]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-java-codegen" revision="1">
+				<title>Turning off Code Generation</title>
+				
+				<para>
+					Esper employes the <literal>CGLIB</literal> library for very fast read access to event property values. For certain legacy Java classes it may be desirable to disable the use of this library and instead use Java reflection to obtain event property values from event objects.
+				</para>
+								
+				<para>
+					In the XML configuration, the optional <literal>code-generation</literal> attribute in the <literal>legacy-type</literal> section can be set to <literal>disabled</literal> as shown next.
+				</para>
+				<programlisting><![CDATA[<event-type alias="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass">
+	<legacy-type accessor-style="javabean" code-generation="disabled" />
+</event-type>
+]]></programlisting>
+
+				<para>
+					The sample below shows how to configure this option via the API.
+				</para>
+
+				<programlisting><![CDATA[Configuration configuration = new Configuration();
+ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
+legacyDef.setCodeGeneration(ConfigurationEventTypeLegacy.CodeGeneration.DISABLED);
+config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyDef);]]></programlisting>
+
+			</sect3>
+
+		</sect2>
+			
+		<sect2 id="config-java-util-map" revision="1">
+			<title>Events represented by <literal>java.util.Map</literal></title>
+			
+			<para>
+				The engine can process <literal>java.util.Map</literal> events via the <literal>sendEvent(Map map, String eventTypeAlias)</literal> method on the <literal>EPRuntime</literal> interface. Entries in the Map represent event properties. Keys must be of type <literal>java.util.String</literal> for the engine to be able to look up event property names in pattern or EQL statements. Values can be of any type. JavaBean-style objects as values in a <literal>Map</literal> can also be processed by the engine. Please see the <xref linkend="event_representation"/> section for details on how to use <literal>Map</literal> events with the engine.
+			</para>
+			
+			<para>
+				Via configuration we provide an event type alias name for <literal>Map</literal> events for use in statements, and the event property names and types enabling the engine to validate properties in statements.
+			</para>
+			
+			<para>
+				The below snippet of XML configuration configures an event named <literal>MyMapEvent</literal>.
+			</para>
+
+			<programlisting><![CDATA[<event-type alias="MyMapEvent">
+  <java-util-map>
+    <map-property name="carId" class="int"/>
+    <map-property name="carType" class="string"/>
+    <map-property name="assembly" class="com.mycompany.Assembly"/>    
+  </java-util-map>
+</event-type>]]></programlisting>
+
+			<para>
+				This configuration defines the <literal>carId</literal> property of <literal>MyMapEvent</literal> events to be of type <literal>int</literal>, and the <literal>carType</literal> property to be of type <literal>java.util.String</literal>. The <literal>assembly</literal> property of the Map event will contain instances of <literal>com.mycompany.Assembly</literal> for the engine to query.
+			</para>
+
+			<para>
+				The valid list of values for the type definition via the <literal>class</literal> attribute is:
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						<literal>string</literal> or <literal>java.lang.String</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>char</literal> or <literal>java.lang.Character</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>byte</literal> or <literal>java.lang.Byte</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>short</literal> or <literal>java.lang.Short</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>int</literal> or <literal>java.lang.Integer</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>long</literal> or <literal>java.lang.Long</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>float</literal> or <literal>java.lang.Float</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>double</literal> or <literal>java.lang.Double</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>boolean</literal> or <literal>java.lang.Boolean</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Any fully-qualified Java class name that can be resolved by the engine via <literal>Class.forName</literal>
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				 You can also use the configuration API to configure <literal>Map</literal> event types, as the short code snippet below demonstrates. 
+			</para>
+
+			<programlisting><![CDATA[Properties properties = new Properties();
+properties.put("carId", "int");
+properties.put("carType", "string");
+properties.put("assembly", Assembly.class.getName());
+
+Configuration configuration = new Configuration();
+configuration.addEventTypeAlias("MyMapEvent", properties);]]></programlisting>
+
+			<para>
+				Finally, here is a sample EQL statement that uses the configured <literal>MyMapEvent</literal> map event. This statement uses the <literal>chassisTag</literal> and <literal>numParts</literal> properties of <literal>Assembly</literal> objects in each map.
+			</para>
+			<programlisting>select carType, assembly.chassisTag, count(assembly.numParts) from MyMapEvent.win:time(60 sec)</programlisting>
+
+		</sect2>
+		
+		<sect2 id="config-xml-dom" revision="1">
+			<title>Events represented by <literal>org.w3c.dom.Node</literal></title>
+			
+			<para>
+				Via this configuration item the Esper engine can natively process <literal>org.w3c.dom.Node</literal> instances, i.e. XML document object model (DOM) nodes.
+				Please see the <xref linkend="event_representation"/> section for details on how to use <literal>Node</literal> events with the engine.
+			</para>
+			
+			<para>
+				Esper allows configuring XPath expressions as event properties. You can specify arbitrary XPath functions or expressions and provide a property name by which their result values will be available for use in expressions. 
+			</para>
+				
+			<para>
+				For XML documents that follow an XML schema, Esper can load and interrogate your schema and validate event property names and types against the schema information. 
+			</para>
+
+			<para>
+				Nested, mapped and indexed event properties are also supported in expressions against <literal>org.w3c.dom.Node</literal> events. Thus XML trees can conveniently be
+				interrogated using the existing event property syntax for querying JavaBean objects, JavaBean object graphs or <literal>java.util.Map</literal> events.
+			</para>
+
+			<para>
+				In the simplest form, the Esper engine only requires a configuration entry containing the root element name and the event type alias in order to process <literal>org.w3c.dom.Node</literal> events:
+			</para>
+			<programlisting><![CDATA[<event-type alias="MyXMLNodeEvent">
+  <xml-dom root-element-name="myevent" />
+</event-type>]]></programlisting>
+			
+			<para>
+				 You can also use the configuration API to configure XML event types, as the short example below demonstrates. 
+				 In fact, all configuration options available through XML configuration can 
+				 also be provided via setter methods on the <literal>ConfigurationEventTypeXMLDOM</literal> class.
+			</para>
+
+			<programlisting><![CDATA[Configuration configuration = new Configuration();
+ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+desc.setRootElementName("myevent");
+desc.addXPathProperty("name1", "/element/@attribute", XPathConstants.STRING);
+desc.addXPathProperty("name2", "/element/subelement", XPathConstants.NUMBER);
+configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
+
+			<para>
+				 The next example presents all relevant configuration options in a sample configuration entry.
+			</para>
+
+			<programlisting><![CDATA[<event-type alias="AutoIdRFIDEvent">
+  <xml-dom root-element-name="Sensor" schema-resource="data/AutoIdPmlCore.xsd" 
+       default-namespace="urn:autoid:specification:interchange:PMLCore:xml:schema:1">
+    <namespace-prefix prefix="pmlcore" 
+       namespace="urn:autoid:specification:interchange:PMLCore:xml:schema:1"/>
+    <xpath-property property-name="countTags" 
+       xpath="count(/pmlcore:Sensor/pmlcore:Observation/pmlcore:Tag)" type="number"/>
+  </xml-dom>
+</event-type>]]></programlisting>
+
+			<para>
+				 This example configures an event property named <literal>countTags</literal> whose value is computed by an XPath expression. The namespace prefixes
+				 and default namespace are for use with XPath expressions and must also be made known to the engine in order for the engine to compile XPath expressions. 
+				 Via the <literal>schema-resource</literal> attribute we instruct the engine to load a schema file.
+			</para>
+			
+			<para>
+				 Here is an example EQL statement using the configured event type named <literal>AutoIdRFIDEvent</literal>.
+			</para>
+
+			<programlisting><![CDATA[select ID, countTags from AutoIdRFIDEvent.win:time(30 sec)]]></programlisting>
+
+			<sect3 id="config-xml-dom-schema" revision="1">
+				<title>Schema Resource</title>
+				<para>
+					 The <literal>schema-resource</literal> attribute takes a schema resource URL or classpath-relative filename. 
+					 The engine attempts to resolve the schema resource as an URL. If the schema resource name is not a valid URL, the engine attempts to resolve the resource from classpath via the <literal>ClassLoader.getResource</literal> method using the thread context class loader. If the name could not be resolved, the engine uses the Configuration class classloader.
+				</para>
+
+				<para>
+					 By configuring a schema file for the engine to load, the engine performs these additional services:
+				</para>
+				
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							Validates the event properties in a statement, ensuring the event property name matches an attribute or element in the XML
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Determines the type of the event property allowing event properties to be used in type-sensitive expressions such as expressions involving arithmatic (Note: XPath properties are also typed)
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Matches event property names to either element names or attributes
+						</para>
+					</listitem>
+				</itemizedlist>
+
+				<para>
+					 If no schema resource is specified, none of the event properties specified in statements are validated at statement creation time and their type defaults to <literal>java.lang.String</literal>. Also, attributes are not supported
+					 if no schema resource is specified and must thus be declared via XPath expression.
+				</para>
+
+		  </sect3>
+
+			<sect3 id="config-xml-dom-xpathprop" revision="1">
+				<title>XPath Property</title>
+				<para>
+					 The <literal>xpath-property</literal> element adds event properties to the event type that are computed via an XPath expression.
+					 In order for the XPath expression to compile, be sure to specify the <literal>default-namespace</literal> attribute and use the 
+					 <literal>namespace-prefix</literal> to declare namespace prefixes.
+				</para>
+					 
+				<para>
+					 XPath expression properties are strongly typed. The <literal>type</literal> attribute allows the following values. These values correspond to those declared by 
+					 <literal>javax.xml.xpath.XPathConstants</literal>.
+				</para>
+
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							number (Note: resolves to a <literal>double</literal>)
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							string
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							boolean
+						</para>
+					</listitem>
+				</itemizedlist>
+				
+		  </sect3>
+		  
+		</sect2>
+					
+		<sect2 id="config-class--package-imports" revision="1">
+			<title>Class and package imports</title>
+			
+			<para>
+				Esper allows invocations of static Java library functions as outlined in <xref linkend="eql-single-row-function-ref"/>. This configuration 
+				item can be set to allow a partial rather than a fully qualified class name in such invocations. The imports work in the same way as in Java files, so both packages and classes can be imported.
+			</para>
+			
+			<programlisting>select Math.max(priceOne, PriceTwo)
+// via configuration equivalent to
+select java.lang.Math.max(priceOne, priceTwo)</programlisting>
+
+			<para>
+				Esper auto-imports the following Java library packages if no other configuration is supplied.
+				This list is replaced with any configuration specified in a configuration file or through the API.
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						java.lang.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.math.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.text.*
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						java.util.*
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				In an XML configuration file the auto-import configuration may look as below. Note that all configuration options are available through the <literal>Configuration</literal> API as well.
+			</para>
+
+		<programlisting><![CDATA[<auto-import import-name="com.mycompany.mypackage.*"/>
+  <auto-import import-name="com.mycompany.myapp.MyUtilityClass"/>
+]]></programlisting>
+
+		</sect2>
+
+		<sect2 id="config-database-ref" revision="1">
+			<title>Relational Database Access</title>
+			
+			<para>
+				Esper has the capability to join event streams against historical data sources, such as a relational database. This section describes the configuration entries that the engine requires to access data stored in your database. Please see <xref linkend="histdata_overview"/> for information on the use of EQL queries that include historical data sources.
+			</para>
+			
+			<para>
+					EQL queries that poll data from a relational database specify the name of the database as part of the EQL statement. The engine uses the configuration information described here to resolve the database name in the statement to database settings. The required and optional database settings are summarized below. 
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Database connections can be obtained via JDBC <literal>javax.xml.DataSource</literal> or alternatively via <literal>java.sql.DriverManager</literal>. Either one of these methods to obtain new database connections is a required configuration.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Optionally, JDBC connection-level settings such as auto-commit, transaction isolation level, read-only and the catalog name can be defined.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Optionally, a connection lifecycle can be set to indicate to the engine whether the engine must retain connections or must obtain a new connection for each lookup.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Optionally, define a cache policy to allow the engine to retrieve data from a query cache, reducing the number of query executions.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				Some of the settings can have important performance implications that need to be carefully considered in relationship to your database software, JDBC driver and runtime environment. This section attempts to outline such implications where appropriate.
+			</para>
+
+			<para>
+				The sample XML configuration file in the "etc" folder can be used as a template for configuring database settings. All settings are also available by means of the configuration API through the classes <literal>Configuration</literal> and <literal>ConfigurationDBRef</literal>.
+			</para>
+						
+			<sect3 id="config-database-datasource" revision="1">
+				<title>Connections obtained via DataSource</title>
+
+				<para>
+				The snippet of XML below configures a database named <literal>mydb1</literal> to obtain connections via a <literal>javax.sql.DataSource</literal>. The <literal>datasource-connection</literal> element instructs the engine to obtain new connections to the database <literal>mydb1</literal> by performing a lookup via <literal>javax.naming.InitialContext</literal> for the given object lookup name. Optional environment properties for the <literal>InitialContext</literal> are also shown in the example.
+				</para>
+
+				<programlisting><![CDATA[<database-reference name="mydb1">
+  <datasource-connection context-lookup-name="java:comp/env/jdbc/mydb">
+    <env-property name="java.naming.factory.initial" value ="com.myclass.CtxFactory"/>
+    <env-property name="java.naming.provider.url" value ="iiop://localhost:1050"/>
+  </datasource-connection>
+</database-reference>]]></programlisting>
+
+				<para>
+					To help you better understand how the engine uses this information to obtain connections, we have included the logic below.
+				</para>
+				<programlisting><![CDATA[if (envProperties.size() > 0) {
+  initialContext = new InitialContext(envProperties);
+}
+else {
+  initialContext = new InitialContext();
+}
+DataSource dataSource = (DataSource) initialContext.lookup(lookupName);
+Connection connection = dataSource.getConnection();]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-database-drivermanager" revision="1">
+				<title>Connections obtained via DriverManager</title>
+
+				<para>
+				The next snippet of XML configures a database named <literal>mydb2</literal> to obtain connections via <literal>java.sql.DriverManager</literal>. The <literal>drivermanager-connection</literal> element instructs the engine to obtain new connections to the database <literal>mydb2</literal> by means of <literal>Class.forName</literal> and <literal>DriverManager.getConnection</literal> using the class name, URL and optional username, password and connection arguments.
+				</para>
+
+				<programlisting><![CDATA[<database-reference name="mydb2">
+  <drivermanager-connection class-name="my.sql.Driver" 
+        url="jdbc:mysql://localhost/test?user=root&amp;password=mypassword" 
+        user="myuser" password="mypassword">
+    <connection-arg name="user" value ="myuser"/>
+    <connection-arg name="password" value ="mypassword"/>
+    <connection-arg name="somearg" value ="someargvalue"/>
+  </drivermanager-connection>
+</database-reference>]]></programlisting>
+
+				<para>
+					The username and password are shown in multiple places in the XML only as an example. Please check with your database software on the required information in
+					URL and connection arguments.
+				</para>
+			</sect3>
+
+			<sect3 id="config-database-connections" revision="1">
+				<title>Connections-level settings</title>
+
+				<para>
+					Additional connection-level settings can optionally be provided to the engine which the engine will apply to new connections. When the engine obtains a new connection, it applies only those settings to the connection that are explicitly configured. The engine leaves all other connection settings at default values.
+				</para>
+
+				<para>
+					The below XML is a sample of all available configuration settings. Please refer to the Java API JavaDocs for <literal>java.sql.Connection</literal> for more information to each option or check the documentation of your JDBC driver and database software.
+				</para>
+				
+				<programlisting><![CDATA[<database-reference name="mydb2">
+... configure data source or driver manager settings...
+  <connection-settings auto-commit="true" catalog="mycatalog" 
+      read-only="true" transaction-isolation="1" />
+</database-reference>]]></programlisting>
+
+				<para>
+					The <literal>read-only</literal> setting can be used to indicate to your database engine that SQL statements are read-only. The <literal>transaction-isolation</literal> and <literal>auto-commit</literal> help you database software perform the right level of locking and lock release. Consider setting these values to reduce transactional overhead in your database queries.
+				</para>
+			</sect3>
+
+			<sect3 id="config-database-connections-lifecycle" revision="1">
+				<title>Connections lifecycle settings</title>
+
+				<para>
+					By default the engine retains a separate database connection for each started EQL statement. However, it is possible to override this behavior and require the engine to obtain a new database connection for each lookup, and to close that database connection after the lookup is completed. This often makes sense when you have a large number of EQL statements and require pooling of connections via a connection pool. If your runtime environment includes an application server, the connection pool may be exposed as a <literal>DataSource</literal>.
+				</para>
+
+				<para>
+					The XML for this option is below. The connection lifecycle allows the following values: <literal>pooled</literal> and <literal>retain</literal>.
+				</para>
+				
+				<programlisting><![CDATA[<database-reference name="mydb2">
+... configure data source or driver manager settings...
+    <connection-lifecycle value="pooled"/>
+</database-reference>]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-database-cache" revision="1">
+				<title>Cache settings</title>
+
+				<para>
+					Cache settings can dramatically reduce the number of database queries that the engine executes for EQL statements. If no cache setting is specified, the engine does not cache query results and executes a separate database query for every event.
+				</para>
+	
+				<para>
+					Caches store the results of database queries and make these results available to subsequent queries using the exact same query parameters as the query for which
+					the result was stored. If your query returns one or more rows, the cache keep the result rows of the query keyed to the parameters of the query. If your query returns no rows, the cache also keeps the empty result. Query results are held by a cache until the cache entry is evicted. The strategies available for evicting cached 
+					query results are listed next.
+				</para>
+
+				<sect4 id="config-database-cache-lru" revision="1">
+					<title>LRU Cache</title>
+					
+					<para>
+						The least-recently-used (LRU) cache is configured by a maximum size. The cache discards the least recently used query results first once the cache reaches the maximum size.
+					</para>
+					
+					<para>
+						The XML configuration entry for a LRU cache is as below. This entry configures an LRU cache holding up to 1000 query results.
+					</para>
+
+					<programlisting><![CDATA[<database-reference name="mydb">
+... configure data source or driver manager settings...
+    <lru-cache size="1000"/>
+</database-reference>]]></programlisting>
+				</sect4>
+
+				<sect4 id="config-database-cache-expiry" revision="1">
+					<title>Expiry-time Cache</title>
+					
+					<para>
+						The expiry time cache is configured by a maximum age in seconds and a purge interval. The cache discards (on the get operation) any query results that are older then the maximum age so that stale data is not used. If the cache is not empty, then every purge interval number of seconds the engine purges any expired entries from the cache.
+					</para>
+					
+					<para>
+						The XML configuration entry for an expiry-time cache is as follows. The example configures an expiry time cache in which prior query results are valid for 60 seconds and which the engine inspects every 2 minutes to remove query results older then 60 seconds.
+					</para>
+
+					<programlisting><![CDATA[<database-reference name="mydb">
+... configure data source or driver manager settings...
+    <expiry-time-cache max-age-seconds="60" purge-interval-seconds="120"/>
+</database-reference>]]></programlisting>
+				</sect4>
+			</sect3>
+
+		</sect2>
+
+		<sect2 id="config-engine-threading" revision="1">
+			<title>Engine Settings related to Concurrency and Threading</title>
+			
+			<sect3 id="config-engine-threading-dispatch" revision="1">
+				<title>Preserving the order of events delivered to listeners</title>
+
+				<para>
+					In multithreaded environments, this setting controls whether dispatches of statement result events to listeners preserve the ordering in which a statement processes events. By default the engine guarantees that it delivers a statement's result events to statement listeners in the order in which the result is generated. This behavior can be turned off via configuration as below. 
+				</para>
+				
+				<para>
+					The next code snippet shows how to control this feature:
+				</para>
+					<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false);
+engine = EPServiceProviderManager.getDefaultProvider(config);]]></programlisting>
+				
+				<para>
+					An the XML configuration file can also control this feature by adding the following elements:
+				</para>
+					<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <threading>
+      <listener-dispatch preserve-order="false" timeout-msec="2000"/>
+      <insert-into-dispatch preserve-order="false"/>
+    </threading>
+  </defaults>
+</engine-settings>]]></programlisting>
+
+				<para>
+					As discussed, by default the engine can temporarily block a thread when delivering result events to listeners in order to preseve the order in which results are generated by a given statement. The maximum time the engine blocks a thread can also be configured, and by default is set to 1 second.
+				</para>
+
+			</sect3>
+
+			<sect3 id="config-engine-threading-insert-into" revision="1">
+				<title>Preserving the order of events for insert-into streams</title>
+
+				<para>
+					In multithreaded environments, this setting controls whether insert-into streams preserve the order of events inserted into them by one or more statements, allowing statements that consume other statement's events to behave deterministic. 
+				</para>
+
+				<para>
+					By default. the engine acquires a lock per insert-into stream when a statement makes events available to further statements using the <literal>insert into</literal> clause. The lock allows the generated events to be processed by further statements consuming the insert-into stream in the order the generating statement(s) produce events. This allows statements that require order (such as pattern detection, previous and prior functions)  to behave deterministically.				
+				</para>
+				
+				<para>
+					The setting can be changed via the configuration API and XML as shown in the prior section.
+				</para>
+			</sect3>
+
+		</sect2>
+
+    </sect1>
+</chapter>
