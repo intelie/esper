@@ -7,11 +7,11 @@ namespace net.esper.compat
 	/// Description of LinkedHashSet.
 	/// </summary>
 
-	public class LinkedHashSet<T> : ISet<T>
+	public class LinkedHashSet<T> : Set<T>
 	{
 		private LinkedDictionary<T, T> m_dataTable = new LinkedDictionary<T, T>() ;
 
-        #region ISet<T> Members
+        #region Set<T> Members
 
 		/// <summary>
 		/// Converts the set to an array.

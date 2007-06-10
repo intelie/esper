@@ -30,7 +30,7 @@ namespace net.esper.pattern.observer
 
         private readonly String nspace;
         private readonly String name;
-        private readonly Type clazz;
+        private readonly Type type;
 
         /// <summary>
         /// Constructor
@@ -68,9 +68,9 @@ namespace net.esper.pattern.observer
         /// </summary>
         /// <value>The implementation clazz.</value>
 
-        public Type Clazz
+        public Type Type
         {
-            get { return clazz; }
+            get { return type; }
         }
 
 		/// <summary>

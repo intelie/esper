@@ -168,7 +168,6 @@ namespace net.esper.view.std
         public override EventType EventType
         {
             get { return eventType; }
-            set { }
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace net.esper.eql.parse
             }
             catch (RecognitionException e)
             {
-                throw EPStatementSyntaxException.convert(e, expression);
+                throw EPStatementSyntaxException.Convert(e, expression);
             }
         }
 
@@ -73,16 +73,16 @@ namespace net.esper.eql.parse
 	        {
 	            if(mte.token.getText() == null)
 	            {
-	                throw EPStatementSyntaxException.convertEndOfInput(mte, EQLStatementParser._tokenNames[mte.expecting], expression);
+	                throw EPStatementSyntaxException.ConvertEndOfInput(mte, EQLStatementParser._tokenNames[mte.expecting], expression);
 	            }
 	            else
 	            {
-	                throw EPStatementSyntaxException.convert(mte, expression);
+	                throw EPStatementSyntaxException.Convert(mte, expression);
 	            }
 	        }
 	        catch (TokenStreamRecognitionException e)
 	        {
-	            if (e.recog instanceof MismatchedCharException)
+	            if (e.recog is MismatchedCharException)
 	            {
 	                MismatchedCharException mme = (MismatchedCharException) e.recog;
 	                // indicates EOF char
@@ -94,29 +94,29 @@ namespace net.esper.eql.parse
 	                    {
 	                        wrapped = "a singe quote \"'\"";
 	                    }
-	                    throw EPStatementSyntaxException.convertEndOfInput(mme, wrapped, expression);
+	                    throw EPStatementSyntaxException.ConvertEndOfInput(mme, wrapped, expression);
 	                }
 	            }
-	            throw EPStatementSyntaxException.convert(e, expression);
+	            throw EPStatementSyntaxException.Convert(e, expression);
 	        }
 	        catch (TokenStreamException e)
 	        {
-	            throw EPStatementSyntaxException.convert(e, expression);
+	            throw EPStatementSyntaxException.Convert(e, expression);
 	        }
 	        catch (NoViableAltException e)
 	        {
 	            if(e.token.getText() == null)
 	            {
-	                throw EPStatementSyntaxException.convertEndOfInput(e, expression);
+	                throw EPStatementSyntaxException.ConvertEndOfInput(e, expression);
 	            }
 	            else
 	            {
-	                throw EPStatementSyntaxException.convert(e, expression);
+	                throw EPStatementSyntaxException.Convert(e, expression);
 	            }
 	        }
             catch (RecognitionException e)
             {
-                throw EPStatementSyntaxException.convert(e, expression);
+                throw EPStatementSyntaxException.Convert(e, expression);
             }
 
             AST ast = parser.getAST();

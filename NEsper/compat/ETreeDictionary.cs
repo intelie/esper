@@ -114,6 +114,23 @@ namespace net.esper.compat
 		}
 
 		/// <summary>
+		/// Retrieves a dictionary that includes all elements greater than
+		/// or equal to the lower key and less than or equal to the upper key.
+		/// This operation is less expensive than the Range operation.
+		/// </summary>
+		/// <param name="lowerKey"></param>
+		/// <param name="upperKey"></param>
+		/// <returns></returns>
+		
+		public virtual IEnumerator<KeyValuePair<K, V>> RangeFast( K lowerKey, K upperKey )
+		{
+            foreach (C5.KeyValuePair<K, V> keyValuePair in m_subDictionary.RangeFrom(lowerKey, upperKey))
+            {
+                yield return new KeyValuePair<K, V>(keyValuePair.Key, keyValuePair.Value);
+            }
+		}
+		
+		/// <summary>
 		/// Fetches the value associated with the specified key.
 		/// If no value can be found, then the defaultValue is
 		/// returned.

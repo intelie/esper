@@ -15,13 +15,13 @@ namespace net.esper.view
 	/// <summary>Describes that we need random access into a data window by index.</summary>
 	public class ViewCapDataWindowAccess : ViewCapability
 	{
-	    private Integer optionalIndexConstant;
+	    private int? optionalIndexConstant;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="optionalIndexConstant">
 	    /// is the index, or null if expression-supplied index and not constant
 	    /// </param>
-	    public ViewCapDataWindowAccess(Integer optionalIndexConstant)
+	    public ViewCapDataWindowAccess(int? optionalIndexConstant)
 	    {
 	        this.optionalIndexConstant = optionalIndexConstant;
 	    }
@@ -31,13 +31,13 @@ namespace net.esper.view
 	        // We allow the capability only if
 	        //  - 1 view
 	        //  - 2 views and the first view is a group-by (for window-per-group access)
-	        if (viewFactories.Size() == 1)
+	        if (viewFactories.Count == 1)
 	        {
 	            return true;
 	        }
-	        if (viewFactories.Size() == 2)
+	        if (viewFactories.Count == 2)
 	        {
-	            if (viewFactories.Get(0) is GroupByViewFactory)
+	        	if (viewFactories[0] is GroupByViewFactory)
 	            {
 	                return true;
 	            }

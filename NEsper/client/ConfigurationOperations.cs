@@ -9,14 +9,14 @@
 using System;
 using System.Collections.Generic;
 
-using Properties = net.esper.compat.EDataDictionary;
+using net.esper.compat;
 
 namespace net.esper.client
 {
     /// <summary>
     /// Provides configuration operations for configuration-time and runtime parameters.
     /// </summary>
-    interface ConfigurationOperations
+    public interface ConfigurationOperations
     {
         /// <summary>
         /// Adds a plug-in aggregation function given a function name and an aggregation class name.
@@ -52,32 +52,32 @@ namespace net.esper.client
         void AddImport(String importName);
 
         /// <summary>
-        /// Add an alias for an event type represented by JavaBean object events.
+        /// Add an alias for an event type represented by object events.
         /// <p>
         /// Allows a second alias to be added for the same type.
         /// Does not allow the same alias to be used for different types.
         /// </summary>
         /// <param name="eventTypeAlias">is the alias for the event type</param>
-        /// <param name="javaEventClassName">fully-qualified class name of the event type</param>
+        /// <param name="typeEventName">fully-qualified class name of the event type</param>
         /// <throws>
         /// ConfigurationException if the alias is already in used for a different type
         /// </throws>
-        void AddEventTypeAlias(String eventTypeAlias, String javaEventClassName);
+        void AddEventTypeAlias(String eventTypeAlias, String typeEventName);
 
         /// <summary>
-        /// Add an alias for an event type represented by Java-bean plain-old Java object events.
+        /// Add an alias for an event type represented by plain-old object events.
         /// <p>
         /// Allows a second alias to be added for the same type.
         /// Does not allow the same alias to be used for different types.
         /// </summary>
         /// <param name="eventTypeAlias">is the alias for the event type</param>
-        /// <param name="javaEventClass">
-        /// is the Java event class for which to create the alias
+        /// <param name="eventType">
+        /// is the event type for which to create the alias
         /// </param>
         /// <throws>
         /// ConfigurationException if the alias is already in used for a different type
         /// </throws>
-        void AddEventTypeAlias(String eventTypeAlias, Type javaEventClass);
+        void AddEventTypeAlias(String eventTypeAlias, Type eventType);
 
         /// <summary>
         /// Add an alias for an event type that represents java.util.Map events.

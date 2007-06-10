@@ -23,15 +23,15 @@ namespace net.esper.eql.spec
 	public abstract class StreamSpecBase : MetaDefItem
 	{
 	    private String optionalStreamName;
-	    private List<ViewSpec> viewSpecs = new LinkedList<ViewSpec>();
+	    private List<ViewSpec> viewSpecs = new List<ViewSpec>();
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="optionalStreamName">stream name, or null if none supplied</param>
 	    /// <param name="viewSpecs">specifies what view to use to derive data</param>
-	    public StreamSpecBase(String optionalStreamName, List<ViewSpec> viewSpecs)
+	    public StreamSpecBase(String optionalStreamName, IList<ViewSpec> viewSpecs)
 	    {
 	        this.optionalStreamName = optionalStreamName;
-	        this.viewSpecs.AddAll(viewSpecs);
+	        this.viewSpecs.AddRange(viewSpecs);
 	    }
 
 	    /// <summary>Default ctor.</summary>
@@ -50,7 +50,7 @@ namespace net.esper.eql.spec
 	    /// Returns view definitions to use to construct views to derive data on stream.
 	    /// </summary>
 	    /// <returns>view defs</returns>
-	    public List<ViewSpec> ViewSpecs
+	    public IList<ViewSpec> ViewSpecs
 	    {
             get { return viewSpecs; }
 	    }

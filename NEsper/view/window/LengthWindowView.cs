@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.collection;
 using net.esper.compat;
+using net.esper.core;
 using net.esper.events;
 using net.esper.view;
 
@@ -30,7 +32,6 @@ namespace net.esper.view.window
         public int Size
         {
             get { return size; }
-            set { this.size = value; }
         }
 
 	    /// <summary>
@@ -45,10 +46,10 @@ namespace net.esper.view.window
 	    {
 	        if (size < 1)
 	        {
-	            throw new IllegalArgumentException("Illegal argument for size of length window");
+	            throw new ArgumentException("Illegal argument for size of length window");
 	        }
 
-	        this.lengthWindowViewFactory = lengthWindowViewFactory;
+	        this.LengthWindowViewFactory = lengthWindowViewFactory;
 	        this.size = size;
 	        this.viewUpdatedCollection = viewUpdatedCollection;
 	    }
@@ -87,9 +88,6 @@ namespace net.esper.view.window
             {
                 // The event type is the parent view's event type
                 return parent.EventType;
-            }
-            set
-            {
             }
         }
 

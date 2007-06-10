@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.collection;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.expression;
 using net.esper.events;
@@ -17,8 +18,6 @@ using net.esper.type;
 using net.esper.util;
 
 using org.apache.commons.logging;
-
-using Properties = net.esper.compat.EDataDictionary;
 
 namespace net.esper.filter
 {
@@ -65,7 +64,7 @@ namespace net.esper.filter
 
 	        // From the constituents make a filter specification
 	        FilterSpecCompiled spec = MakeFilterSpec(eventType, constituents, taggedEventTypes);
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".makeFilterSpec spec=" + spec);
 	        }
@@ -76,7 +75,7 @@ namespace net.esper.filter
 	    // remove duplicate propertyName + filterOperator items making a judgement to optimize or simply remove the optimized form
 	    private static void Consolidate(List<FilterSpecParam> items, FilterParamExprMap filterParamExprMap)
 	    {
-	        FilterOperator op = items.Get(0).FilterOperator;
+	        FilterOperator op = items[0].FilterOperator;
 	        if (op == FilterOperator.NOT_EQUAL)
 	        {
 	            HandleConsolidateNotEqual(items, filterParamExprMap);
@@ -86,7 +85,7 @@ namespace net.esper.filter
 	        {
 	            // for all others we simple remove the second optimized form (filter param with same prop name and filter op)
 	            // and thus the bool expression that started this is included
-	            for (int i = 1; i < items.Size(); i++)
+	            for (int i = 1; i < items.Count; i++)
 	            {
 	                filterParamExprMap.RemoveValue(items.Get(i));
 	            }
@@ -95,13 +94,13 @@ namespace net.esper.filter
 
 	    private static List<ExprNode> ValidateAndDecompose(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 	    {
-	        List<ExprNode> validatedNodes = new ArrayList<ExprNode>();
+	        List<ExprNode> validatedNodes = new List<ExprNode>();
 	        foreach (ExprNode node in exprNodes)
 	        {
 	            // Ensure there is no subselects
 	            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
 	            node.Accept(visitor);
-	            if (visitor.Subselects.Size() > 0)
+	            if (visitor.Subselects.Count > 0)
 	            {
 	                throw new ExprValidationException("Subselects not allowed within filters");
 	            }
@@ -109,14 +108,14 @@ namespace net.esper.filter
 	            ExprNode validated = node.GetValidatedSubtree(streamTypeService, methodResolutionService, null);
 	            validatedNodes.Add(validated);
 
-	            if ((validated.Type != typeof(bool?)) && (validated.Type != typeof(bool)))
+                if ((validated.GetType() != typeof(bool?)) && (validated.GetType() != typeof(bool)))
 	            {
-	                throw new ExprValidationException("Filter expression not returning a bool value: '" + validated.ToExpressionString() + "'");
+	                throw new ExprValidationException("Filter expression not returning a bool value: '" + validated.ExpressionString + "'");
 	            }
 	        }
 
 	        // Break a top-level AND into constituent expression nodes
-	        List<ExprNode> constituents = new ArrayList<ExprNode>();
+	        List<ExprNode> constituents = new List<ExprNode>();
 	        foreach (ExprNode validated in validatedNodes)
 	        {
 	            if (validated is ExprAndNode)
@@ -166,16 +165,16 @@ namespace net.esper.filter
 	                List<FilterSpecParam> existingParam = mapOfParams.Get(key);
 	                if (existingParam == null)
 	                {
-	                    existingParam = new ArrayList<FilterSpecParam>();
+	                    existingParam = new List<FilterSpecParam>();
 	                    mapOfParams.Put(key, existingParam);
 	                }
 	                existingParam.Add(currentParam);
 	            }
 
-	            foreach (Pair<String, FilterOperator> key in mapOfParams.KeySet())
+	            foreach (Pair<String, FilterOperator> key in mapOfParams.Keys)
 	            {
 	                List<FilterSpecParam> existingParams = mapOfParams.Get(key);
-	                if (existingParams.Size() > 1)
+	                if (existingParams.Count > 1)
 	                {
 	                    haveConsolidated = true;
 	                    Consolidate(existingParams, filterParamExprMap);
@@ -201,7 +200,7 @@ namespace net.esper.filter
 	        Consolidate(filterParamExprMap);
 
 	        // Use all filter parameter and unassigned expressions
-	        List<FilterSpecParam> filterParams = new ArrayList<FilterSpecParam>();
+	        List<FilterSpecParam> filterParams = new List<FilterSpecParam>();
 	        filterParams.AddAll(filterParamExprMap.FilterParams);
 	        List<ExprNode> remainingExprNodes = filterParamExprMap.UnassignedExpressions;
 
@@ -209,9 +208,9 @@ namespace net.esper.filter
 	        ExprNode exprNode = null;
 	        if (!remainingExprNodes.IsEmpty())
 	        {
-	            if (remainingExprNodes.Size() == 1)
+	            if (remainingExprNodes.Count == 1)
 	            {
-	                exprNode = remainingExprNodes.Get(0);
+	                exprNode = remainingExprNodes[0];
 	            }
 	            else
 	            {
@@ -238,7 +237,7 @@ namespace net.esper.filter
 	    // to "val not in (3, 4, 5)"
 	    private static void HandleConsolidateNotEqual(List<FilterSpecParam> paramList, FilterParamExprMap filterParamExprMap)
 	    {
-	        List<FilterSpecParamInValue> values = new ArrayList<FilterSpecParamInValue>();
+	        List<FilterSpecParamInValue> values = new List<FilterSpecParamInValue>();
 
 	        foreach (FilterSpecParam param in paramList)
 	        {
@@ -255,7 +254,7 @@ namespace net.esper.filter
 	            }
 	            else
 	            {
-	                throw new IllegalArgumentException("Unknown filter parameter:" + param.ToString());
+	                throw new ArgumentException("Unknown filter parameter:" + param.ToString());
 	            }
 
 	            filterParamExprMap.RemoveValue(param);
@@ -269,7 +268,7 @@ namespace net.esper.filter
 	    /// <param name="constituent">is the expression to look at</param>
 	    /// <returns>filter parameter representing the expression, or null</returns>
 	    /// <throws>ExprValidationException if the expression is invalid</throws>
-	    protected static FilterSpecParam MakeFilterParam(ExprNode constituent)
+	    public static FilterSpecParam MakeFilterParam(ExprNode constituent)
 	    {
 	        // Is this expresson node a simple compare, i.e. a=5 or b<4; these can be indexed
 	        if ((constituent is ExprEqualsNode) ||
@@ -306,16 +305,18 @@ namespace net.esper.filter
 
 	    private static FilterSpecParam HandleRangeNode(ExprBetweenNode betweenNode)
 	    {
-	        ExprNode left = betweenNode.ChildNodes.Get(0);
+	        ExprNode left = betweenNode.ChildNodes[0];
 	        if (left is ExprIdentNode)
 	        {
 	            ExprIdentNode identNode = (ExprIdentNode) left;
 	            String propertyName = identNode.ResolvedPropertyName;
-	            FilterOperator op = FilterOperator.ParseRangeOperator(betweenNode.IsLowEndpointIncluded(), betweenNode.IsHighEndpointIncluded(),
-	                    betweenNode.IsNotBetween());
+	            FilterOperator op = FilterOperator.ParseRangeOperator(
+	            	betweenNode.IsLowEndpointIncluded,
+	            	betweenNode.IsHighEndpointIncluded,
+					betweenNode.IsNotBetween);
 
-	            FilterSpecParamRangeValue low = HandleRangeNodeEndpoint(betweenNode.ChildNodes.Get(1));
-	            FilterSpecParamRangeValue high = HandleRangeNodeEndpoint(betweenNode.ChildNodes.Get(2));
+	            FilterSpecParamRangeValue low = HandleRangeNodeEndpoint(betweenNode.ChildNodes[1]);
+	            FilterSpecParamRangeValue high = HandleRangeNodeEndpoint(betweenNode.ChildNodes[2]);
 
 	            if ((low != null) && (high != null))
 	            {
@@ -351,18 +352,18 @@ namespace net.esper.filter
 
 	    private static FilterSpecParam HandleInSetNode(ExprInNode constituent)
 	    {
-	        ExprNode left = constituent.ChildNodes.Get(0);
+	        ExprNode left = constituent.ChildNodes[0];
 	        if (left is ExprIdentNode)
 	        {
 	            ExprIdentNode identNodeInSet = (ExprIdentNode) left;
 	            String propertyName = identNodeInSet.ResolvedPropertyName;
 	            FilterOperator op = FilterOperator.IN_LIST_OF_VALUES;
-	            if (constituent.IsNotIn())
+	            if (constituent.IsNotIn)
 	            {
 	                op = FilterOperator.NOT_IN_LIST_OF_VALUES;
 	            }
 
-	            List<FilterSpecParamInValue> listofValues = new ArrayList<FilterSpecParamInValue>();
+	            List<FilterSpecParamInValue> listofValues = new List<FilterSpecParamInValue>();
 	            IEnumerator<ExprNode> it = constituent.ChildNodes.GetEnumerator();
                 it.MoveNext(); // ignore the first node as it's the identifier
 	            while (it.MoveNext())
@@ -384,14 +385,14 @@ namespace net.esper.filter
 	                    }
 
 	                    bool isMustCoerce = false;
-	                    Class numericCoercionType = identNodeInSet.Type;
-	                    if (identNodeInner.Type != identNodeInSet.Type)
+	                    Type numericCoercionType = identNodeInSet.GetType();
+	                    if (identNodeInner.GetType() != identNodeInSet.GetType())
 	                    {
-	                        if (TypeHelper.IsNumeric(identNodeInSet.Type))
+	                        if (TypeHelper.IsNumeric(identNodeInSet.GetType()))
 	                        {
-	                            if (!TypeHelper.CanCoerce(identNodeInner.Type, identNodeInSet.Type))
+	                            if (!TypeHelper.CanCoerce(identNodeInner.GetType(), identNodeInSet.GetType()))
 	                            {
-	                                ThrowConversionError(identNodeInner.Type, identNodeInSet.Type, identNodeInSet.ResolvedPropertyName);
+	                                ThrowConversionError(identNodeInner.GetType(), identNodeInSet.GetType(), identNodeInSet.ResolvedPropertyName);
 	                            }
 	                            isMustCoerce = true;
 	                        }
@@ -401,7 +402,7 @@ namespace net.esper.filter
 	            }
 
 	            // Fallback if not all values in the in-node can be resolved to properties or constants
-	            if (listofValues.Size() == constituent.ChildNodes.Size() - 1)
+	            if (listofValues.Count == constituent.ChildNodes.Count - 1)
 	            {
 	                return new FilterSpecParamIn(propertyName, op, listofValues);
 	            }
@@ -415,7 +416,7 @@ namespace net.esper.filter
 	        if (constituent is ExprEqualsNode)
 	        {
 	            op = FilterOperator.EQUAL;
-	            if (((ExprEqualsNode) constituent).IsNotEquals())
+	            if (((ExprEqualsNode) constituent).IsNotEquals)
 	            {
 	                op = FilterOperator.NOT_EQUAL;
 	            }
@@ -445,8 +446,8 @@ namespace net.esper.filter
 	            }
 	        }
 
-	        ExprNode left = constituent.ChildNodes.Get(0);
-	        ExprNode right = constituent.ChildNodes.Get(1);
+	        ExprNode left = constituent.ChildNodes[0];
+	        ExprNode right = constituent.ChildNodes[1];
 
 	        // check identifier and constant combination
 	        if ((right is ExprConstantNode) && (left is ExprIdentNode))
@@ -491,14 +492,14 @@ namespace net.esper.filter
 	        String propertyName = identNodeLeft.ResolvedPropertyName;
 
 	        bool isMustCoerce = false;
-	        Class numericCoercionType = identNodeLeft.Type;
-	        if (identNodeRight.Type != identNodeLeft.Type)
+	        Type numericCoercionType = identNodeLeft.GetType();
+	        if (identNodeRight.GetType() != identNodeLeft.GetType())
 	        {
-	            if (TypeHelper.IsNumeric(identNodeRight.Type))
+	            if (TypeHelper.IsNumeric(identNodeRight.GetType()))
 	            {
-	                if (!TypeHelper.CanCoerce(identNodeRight.Type, identNodeLeft.Type))
+	                if (!TypeHelper.CanCoerce(identNodeRight.GetType(), identNodeLeft.GetType()))
 	                {
-	                    ThrowConversionError(identNodeRight.Type, identNodeLeft.Type, identNodeLeft.ResolvedPropertyName);
+	                    ThrowConversionError(identNodeRight.GetType(), identNodeLeft.GetType(), identNodeLeft.ResolvedPropertyName);
 	                }
 	                isMustCoerce = true;
 	            }
@@ -508,12 +509,12 @@ namespace net.esper.filter
 	                isMustCoerce, numericCoercionType);
 	    }
 
-	    private static void ThrowConversionError(Class fromType, Class toType, String propertyName)
+	    private static void ThrowConversionError(Type fromType, Type toType, String propertyName)
 	    {
 	        String text = "Implicit conversion from datatype '" +
-	                fromType.SimpleName +
+	                fromType.FullName +
 	                "' to '" +
-	                toType.SimpleName +
+	                toType.FullName +
 	                "' for property '" +
 	                propertyName +
 	                "' is not allowed (strict filter type coercion)";
@@ -524,7 +525,7 @@ namespace net.esper.filter
 	    // filters require the same type
 	    private static Object HandleConstantsCoercion(ExprIdentNode identNode, Object constant)
 	    {
-	        Class identNodeType = identNode.Type;
+	    	Type identNodeType = identNode.GetType();
 	        if (!TypeHelper.IsNumeric(identNodeType))
 	        {
 	            return constant;    // no coercion required, other type checking performed by expression this comes from
@@ -535,12 +536,12 @@ namespace net.esper.filter
 	            return null;
 	        }
 
-	        if (!TypeHelper.CanCoerce(constant.Class, identNodeType))
+	        if (!TypeHelper.CanCoerce(constant.GetType(), identNodeType))
 	        {
-	            ThrowConversionError(constant.Class, identNodeType, identNode.ResolvedPropertyName);
+	        	ThrowConversionError(constant.GetType(), identNodeType, identNode.ResolvedPropertyName);
 	        }
 
-	        Class identNodeTypeBoxed = TypeHelper.GetBoxedType(identNodeType);
+	        Type identNodeTypeBoxed = TypeHelper.GetBoxedType(identNodeType);
 	        return TypeHelper.CoerceBoxed((Number) constant, identNodeTypeBoxed);
 	    }
 

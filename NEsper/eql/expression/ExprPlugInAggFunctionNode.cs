@@ -30,23 +30,23 @@ namespace net.esper.eql.expression
 	        aggregationSupportFunctionName = functionName;
 	    }
 
-	    public AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+	    protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 	    {
-	        Class childType = null;
-	        if (this.ChildNodes.Size() > 1)
+	        Type childType = null;
+	        if (this.ChildNodes.Count > 1)
 	        {
 	            throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.FunctionName + "' requires a single parameter");
 	        }
-	        if (this.ChildNodes.Size() == 1)
+	        if (this.ChildNodes.Count == 1)
 	        {
-	            childType = this.ChildNodes.Get(0).Type;
+	        	childType = this.ChildNodes[0].GetType();
 	        }
 
 	        try
 	        {
 	            aggregationSupport.Validate(childType);
 	        }
-	        catch (RuntimeException ex)
+	        catch (Exception ex)
 	        {
 	            throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.FunctionName + "' failed validation: " + ex.Message);
 	        }
@@ -54,9 +54,9 @@ namespace net.esper.eql.expression
 	        return aggregationSupport;
 	    }
 
-	    public String GetAggregationFunctionName()
+	    protected override string AggregationFunctionName
 	    {
-	        return aggregationSupport.FunctionName;
+	    	get { return aggregationSupport.FunctionName; }
 	    }
 
 	    public override bool EqualsNodeAggregate(ExprAggregateNode node)

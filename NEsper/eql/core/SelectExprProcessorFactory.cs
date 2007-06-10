@@ -34,13 +34,13 @@ namespace net.esper.eql.core
 			EventAdapterService eventAdapterService)
 		{
 	    	// Wildcard not allowed when insert into specifies column order
-	    	if(isUsingWildcard && insertIntoDesc != null && !insertIntoDesc.ColumnNames.isEmpty())
+	    	if(isUsingWildcard && insertIntoDesc != null && (insertIntoDesc.ColumnNames.Count != 0))
 	    	{
 	    		throw new ExprValidationException("Wildcard not allowed when insert-into specifies column order");
 	    	}
 	    	
 	        // Determine wildcard processor (select *)
-	        if (selectionList.isEmpty())
+	        if (selectionList.Count == 0)
 	        {
 	            // For joins
 	            if (typeService.StreamNames.Length > 1)
@@ -72,7 +72,7 @@ namespace net.esper.eql.core
 
 		public static void VerifyNameUniqueness( IList<SelectExprElementCompiledSpec> selectionList )
 		{
-			ISet<String> names = new EHashSet<String>();
+			Set<String> names = new EHashSet<String>();
 			foreach ( SelectExprElementCompiledSpec element in selectionList )
 			{
 				if ( names.Contains( element.AssignedName ) )

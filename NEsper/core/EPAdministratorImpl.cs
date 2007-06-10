@@ -193,7 +193,7 @@ namespace net.esper.core
 	        return services.StatementLifecycleSvc.GetStatementByName(name);
 	    }
 
-	    public String[] StatementNames
+	    public IList<string> StatementNames
 	    {
 	        get { return services.StatementLifecycleSvc.StatementNames; }
 	    }

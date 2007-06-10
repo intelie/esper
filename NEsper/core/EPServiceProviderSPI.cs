@@ -33,9 +33,10 @@ namespace net.esper.core
         FilterService FilterService { get ; }
 
 	    /// <summary>
-	    /// Returns the engine environment context for engine-external resources such as adapters.
+	    /// Returns the engine environment directory for engine-external
+	    /// resources such as adapters.
 	    /// </summary>
-	    /// <returns>engine environment context</returns>
-        Context EnvContext { get; }
+	    /// <returns>engine environment directory</returns>
+	    Directory EnvDirectory { get; }
 	}
 } // End of namespace

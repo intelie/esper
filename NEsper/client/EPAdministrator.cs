@@ -7,6 +7,7 @@
 // ************************************************************************************
 
 using System;
+using System.Collections.Generic;
 
 namespace net.esper.client
 {
@@ -71,7 +72,7 @@ namespace net.esper.client
 		 * This excludes the name of destroyed statements.
 		 * @return statement names
 		 */
-		ICollection<String> StatementNames { get ; };
+		IList<String> StatementNames { get ; }
 
 		/**
 		 * Starts all statements that are in stopped state. Statements in started state

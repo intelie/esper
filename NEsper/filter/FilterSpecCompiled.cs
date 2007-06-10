@@ -8,6 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
+
+using net.esper.compat;
 using net.esper.events;
 using net.esper.pattern;
 
@@ -28,7 +31,7 @@ namespace net.esper.filter
 	    /// </summary>
 	    /// <param name="eventType">is the event type</param>
 	    /// <param name="parameters">is a list of filter parameters</param>
-	    /// <throws>IllegalArgumentException if validation invalid</throws>
+	    /// <throws>ArgumentException if validation invalid</throws>
 	    public FilterSpecCompiled(EventType eventType, List<FilterSpecParam> parameters)
 	    {
 	        this.eventType = eventType;
@@ -59,7 +62,7 @@ namespace net.esper.filter
 	    /// <returns>filter values</returns>
 	    public FilterValueSet GetValueSet(MatchedEventMap matchedEvents)
 	    {
-	        List<FilterValueSetParam> valueList = new LinkedList<FilterValueSetParam>();
+	        List<FilterValueSetParam> valueList = new List<FilterValueSetParam>();
 
 	        // Ask each filter specification parameter for the actual value to filter for
 	        foreach (FilterSpecParam specParam in parameters)
@@ -77,7 +80,7 @@ namespace net.esper.filter
 	    {
 	        StringBuilder buffer = new StringBuilder();
 	        buffer.Append("FilterSpecCompiled type=" + this.eventType);
-	        buffer.Append(" parameters=" + Arrays.ToString(parameters.ToArray()));
+	        buffer.Append(" parameters=" + CollectionHelper.Render(parameters));
 	        return buffer.ToString();
 	    }
 
@@ -99,7 +102,7 @@ namespace net.esper.filter
 	        {
 	            return false;
 	        }
-	        if (this.parameters.Size() != other.parameters.Size())
+	        if (this.parameters.Count != other.parameters.Count)
 	        {
 	            return false;
 	        }

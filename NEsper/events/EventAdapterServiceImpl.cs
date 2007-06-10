@@ -10,22 +10,22 @@ using net.esper.util;
 
 namespace net.esper.events
 {
-	/**
-	 * Provides event adapter services through it's base class.
-	 */
+	/// <summary>
+	/// Provides event adapter services through it's base class.
+	/// </summary>
 	public class EventAdapterServiceImpl : EventAdapterServiceBase
 	{
-	    public EventType AddBeanType(String eventTypeAlias, Type type) 
+	    public override EventType AddBeanType(String eventTypeAlias, Type type) 
 	    {
 	        return base.AddBeanTypeByAliasAndClazz(eventTypeAlias, type);
 	    }
 
-	    public EventType AddBeanType(String eventTypeAlias, String typeName) 
+	    public override EventType AddBeanType(String eventTypeAlias, String typeName) 
 	    {
 	        return base.AddBeanTypeByAliasAndClassName(eventTypeAlias, typeName);
 	    }
 
-	    public EventBean AdapterForBean(Object _event)
+	    public override EventBean AdapterForBean(Object _event)
 	    {
 	        return base.adapterForBean(_event, null);
 	    }

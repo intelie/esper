@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
+using net.esper.compat;
 using net.esper.events;
 
 using org.apache.commons.logging;
@@ -22,11 +24,11 @@ namespace net.esper.filter
 	/// </summary>
 	public sealed class FilterParamIndexNotRange : FilterParamIndexPropBase
 	{
-	    private readonly TreeIDictionary<DoubleRange, EventEvaluator> ranges;
+	    private readonly ETreeDictionary<DoubleRange, EventEvaluator> ranges;
 	    private readonly Set<EventEvaluator> evaluators;
-	    private readonly ReadWriteLock rangesRWLock;
+	    private readonly ReaderWriterLock rangesRWLock;
 
-	    private double largestRangeValueDouble = Double.MIN_VALUE;
+	    private double largestRangeValueDouble = Double.MinValue;
 
 	   /// <summary>Constructs the index for matching ranges.</summary>
 	   /// <param name="attributeName">is the name of the event attribute field</param>
@@ -35,52 +37,67 @@ namespace net.esper.filter
 	    public FilterParamIndexNotRange(String attributeName, FilterOperator filterOperator, EventType eventType)
 	        : base(attributeName, filterOperator, eventType)
 	    {
-	        ranges = new TreeIDictionary<DoubleRange, EventEvaluator>(new DoubleRangeComparator());
-	        evaluators = new HashSet<EventEvaluator>();
-	        rangesRWLock = new ReentrantReadWriteLock();
+	        ranges = new ETreeDictionary<DoubleRange, EventEvaluator>(new DoubleRangeComparator());
+	        evaluators = new EHashSet<EventEvaluator>();
+	        rangesRWLock = new ReaderWriterLock();
 
-	        if (!(filterOperator.IsInvertedRangeOperator()))
+	        if (!FilterOperatorHelper.IsInvertedRangeOperator(filterOperator))
 	        {
-	            throw new IllegalArgumentException("Invalid filter operator " + filterOperator);
+	            throw new ArgumentException("Invalid filter operator " + filterOperator);
 	        }
 	    }
 
-	    public EventEvaluator Get(Object expressionValue)
+	    public override EventEvaluator this[Object expressionValue]
 	    {
-	        if (!(expressionValue is DoubleRange))
-	        {
-	            throw new IllegalArgumentException("Supplied expressionValue must be of type DoubleRange");
-	        }
+	    	get
+	    	{
+	    		DoubleRange doubleRange = expressionValue as DoubleRange ;
+	    		if ( doubleRange == null )
+		        {
+		            throw new ArgumentException("Supplied expressionValue must be of type DoubleRange");
+		        }
+	
+		        return ranges.Fetch(doubleRange);
+	    	}
 
-	        return ranges.Get(expressionValue);
+	    	set
+	    	{
+		        if (!(expressionValue is DoubleRange))
+		        {
+		            throw new ArgumentException("Supplied expressionValue must be of type DoubleRange");
+		        }
+	
+		        DoubleRange range = (DoubleRange) expressionValue;
+	
+		        double? max = range.Max;
+		        double? min = range.Min;
+		        
+		        if ((max == null) || (min == null))
+		        {
+		            return; // null endpoints are ignored
+		        }
+	
+		        double delta = Math.Abs( max.Value - min.Value ) ;
+
+		        if ( delta > largestRangeValueDouble)
+		        {
+		            largestRangeValueDouble = delta;
+		        }
+	
+		        ranges[range] = value;
+		        evaluators.Add(value);
+		    }
 	    }
 
-	    public void Put(Object expressionValue, EventEvaluator matcher)
+	    public override bool Remove(Object filterConstant)
 	    {
-	        if (!(expressionValue is DoubleRange))
-	        {
-	            throw new IllegalArgumentException("Supplied expressionValue must be of type DoubleRange");
-	        }
-
-	        DoubleRange range = (DoubleRange) expressionValue;
-
-	        if ((range.Max == null) || (range.Min == null))
-	        {
-	            return; // null endpoints are ignored
-	        }
-
-	        if ( Math.Abs(range.Max - range.Min) > largestRangeValueDouble)
-	        {
-	            largestRangeValueDouble = Math.Abs(range.Max - range.Min);
-	        }
-
-	        ranges.Put(range, matcher);
-	        evaluators.Add(matcher);
-	    }
-
-	    public bool Remove(Object filterConstant)
-	    {
-	        EventEvaluator eval = ranges.Remove(filterConstant);
+    		DoubleRange doubleRange = expressionValue as DoubleRange ;
+    		if ( doubleRange == null )
+    		{
+    			throw new ArgumentException("Supplied expressionValue must be of type DoubleRange");
+    		}
+    		
+	        EventEvaluator eval = ranges.Remove(doubleRange);
 	        if (eval == null)
 	        {
 	            return false;
@@ -89,21 +106,21 @@ namespace net.esper.filter
 	        return true;
 	    }
 
-	    public int Count
+	    public override int Count
 	    {
             get { return ranges.Count; }
 	    }
 
-	    public ReaderWriterLock ReadWriteLock
+	    public override ReaderWriterLock ReadWriteLock
 	    {
             get { return rangesRWLock; }
 	    }
 
-	    public void MatchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+	    public override void MatchEvent(EventBean eventBean, IList<FilterHandle> matches)
 	    {
 	        Object objAttributeValue = this.Getter.Get(eventBean);
 
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".match Finding range matches, attribute=" + this.PropertyName +
 	                      "  attrValue=" + objAttributeValue);
@@ -117,18 +134,19 @@ namespace net.esper.filter
 	        double attributeValue = ((Number) objAttributeValue).DoubleValue();
 
 	        DoubleRange rangeStart = new DoubleRange(attributeValue - largestRangeValueDouble, attributeValue);
-	        DoubleRange rangeEnd = new DoubleRange(attributeValue, Double.MAX_VALUE);
+	        DoubleRange rangeEnd = new DoubleRange(attributeValue, Double.MaxValue);
 
-	        SortedIDictionary<DoubleRange, EventEvaluator> subMap = ranges.SubMap(rangeStart, rangeEnd);
+	        IEnumerator<KeyValuePair<DoubleRange, EventEvaluator>> subMapEnum = ranges.RangeFast(rangeStart, rangeEnd);
 
 	        // For not including either endpoint
 	        // A bit awkward to duplicate the loop code, however better than checking the bool many times over
 	        // This may be a bit of an early performance optimization - the optimizer after all may do this better
-	        Set<EventEvaluator> matchingEvals = new HashSet<EventEvaluator>();
+	        Set<EventEvaluator> matchingEvals = new EHashSet<EventEvaluator>();
 	        if (this.FilterOperator == FilterOperator.NOT_RANGE_OPEN)  // include neither endpoint
 	        {
-	            foreach (Map.Entry<DoubleRange, EventEvaluator> entry in subMap.EntrySet())
+	        	while( subMapEnum.MoveNext() )	        		
 	            {
+	        		KeyValuePair<DoubleRange, EventEvaluator> entry = subMapEnum.Current;
 	                if ((attributeValue > entry.Key.Min) &&
 	                    (attributeValue < entry.Key.Max))
 	                {
@@ -138,8 +156,9 @@ namespace net.esper.filter
 	        }
 	        else if (this.FilterOperator == FilterOperator.NOT_RANGE_CLOSED)   // include all endpoints
 	        {
-	            foreach (Map.Entry<DoubleRange, EventEvaluator> entry in subMap.EntrySet())
+	        	while( subMapEnum.MoveNext() )	        		
 	            {
+	        		KeyValuePair<DoubleRange, EventEvaluator> entry = subMapEnum.Current;
 	                if ((attributeValue >= entry.Key.Min) &&
 	                    (attributeValue <= entry.Key.Max))
 	                {
@@ -149,8 +168,9 @@ namespace net.esper.filter
 	        }
 	        else if (this.FilterOperator == FilterOperator.NOT_RANGE_HALF_CLOSED) // include high endpoint not low endpoint
 	        {
-	            foreach (Map.Entry<DoubleRange, EventEvaluator> entry in subMap.EntrySet())
+	        	while( subMapEnum.MoveNext() )	        		
 	            {
+	        		KeyValuePair<DoubleRange, EventEvaluator> entry = subMapEnum.Current;
 	                if ((attributeValue > entry.Key.Min) &&
 	                    (attributeValue <= entry.Key.Max))
 	                {
@@ -160,8 +180,9 @@ namespace net.esper.filter
 	        }
 	        else if (this.FilterOperator == FilterOperator.NOT_RANGE_HALF_OPEN) // include low endpoint not high endpoint
 	        {
-	            foreach (Map.Entry<DoubleRange, EventEvaluator> entry in subMap.EntrySet())
+	        	while( subMapEnum.MoveNext() )	        		
 	            {
+	        		KeyValuePair<DoubleRange, EventEvaluator> entry = subMapEnum.Current;
 	                if ((attributeValue >= entry.Key.Min) &&
 	                    (attributeValue < entry.Key.Max))
 	                {
@@ -174,6 +195,10 @@ namespace net.esper.filter
 	            throw new IllegalStateException("Invalid filter operator " + this.FilterOperator);
 	        }
 
+	        // Dispose of the temporary enumerator
+	        subMapEnum.Dispose() ;
+	        subMapEnum = null ;
+	        
 	        // Now we have all the matching evaluators, invoke all that don't match
 	        foreach (EventEvaluator eval in evaluators)
 	        {

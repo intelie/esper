@@ -9,7 +9,7 @@ namespace net.esper.compat
     /// </summary>
     /// <typeparam name="T"></typeparam>
     
-    public class ETreeSet<T> : C5.TreeSet<T>, ISet<T>
+    public class ETreeSet<T> : C5.TreeSet<T>, Set<T>
 	{
         /// <summary>
         /// Initializes a new instance of the <see cref="ETreeSet&lt;T&gt;"/> class.
@@ -60,7 +60,7 @@ namespace net.esper.compat
 			return sortedSet;
 		}
 
-		#region ISet<T> Members
+		#region Set<T> Members
 
 		/// <summary>
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.

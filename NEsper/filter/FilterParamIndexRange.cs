@@ -70,10 +70,13 @@ namespace net.esper.filter
 		        {
 		            return;     // endpoints null - we don't enter
 		        }
+		        
+		        double max = range.Max.Value;
+		        double min = range.Min.Value;
 		
-                if (Math.Abs(range.Max - range.Min) > largestRangeValueDouble)
+                if (Math.Abs(max - min) > largestRangeValueDouble)
                 {
-                    largestRangeValueDouble = Math.Abs(range.Max - range.Min);
+                    largestRangeValueDouble = Math.Abs(max - min);
                 }
 
                 ranges[range] = value;
@@ -130,7 +133,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
         /// <param name="matches">The matches.</param>
-		public override void MatchEvent( EventBean eventBean, ICollection<FilterCallback> matches )
+		public override void MatchEvent( EventBean eventBean, IList<FilterHandle> matches )
 		{
 			Object objAttributeValue = this.Getter.GetValue( eventBean );
 

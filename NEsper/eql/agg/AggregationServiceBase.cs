@@ -34,10 +34,15 @@ namespace net.esper.eql.agg
 	        this.evaluators = evaluators;
 	        this.aggregators = aggregators;
 
-	        if (evaluators.length != aggregators.length)
+	        if (evaluators.Length != aggregators.Length)
 	        {
-	            throw new IllegalArgumentException("Expected the same number of evaluates as computer prototypes");
+	            throw new ArgumentException("Expected the same number of evaluates as computer prototypes");
 	        }
 	    }
+		
+		public abstract void ApplyEnter(net.esper.events.EventBean[] eventsPerStream, net.esper.collection.MultiKeyUntyped optionalGroupKeyPerRow);
+		public abstract void ApplyLeave(net.esper.events.EventBean[] eventsPerStream, net.esper.collection.MultiKeyUntyped optionalGroupKeyPerRow);
+		public abstract void SetCurrentRow(net.esper.collection.MultiKeyUntyped groupKey);
+		public abstract object GetValue(int column);
 	}
 } // End of namespace

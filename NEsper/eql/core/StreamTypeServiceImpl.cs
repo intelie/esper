@@ -99,7 +99,7 @@ namespace net.esper.eql.core
 	        {
 	            if (desc.StreamName != null)
 	            {
-	                throw new PropertyNotFoundException("Property named '" + propertyName + "' must be prefixed by stream name '" + desc.getStreamName() + "'");
+	                throw new PropertyNotFoundException("Property named '" + propertyName + "' must be prefixed by stream name '" + desc.StreamName + "'");
 	            }
 	            else
 	            {

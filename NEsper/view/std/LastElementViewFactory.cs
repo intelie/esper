@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
@@ -21,7 +22,7 @@ namespace net.esper.view.std
 	{
 	    private EventType eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "'Last element' view does not take any parameters";
 	        if (!viewParameters.IsEmpty())
@@ -30,7 +31,7 @@ namespace net.esper.view.std
 	        }
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        this.eventType = parentEventType;
 	    }
@@ -50,9 +51,9 @@ namespace net.esper.view.std
 	        return new LastElementView();
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

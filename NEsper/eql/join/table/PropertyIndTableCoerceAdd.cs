@@ -14,8 +14,6 @@ using net.esper.util;
 
 using org.apache.commons.logging;
 
-using Properties = net.esper.compat.EDataDictionary;
-
 namespace net.esper.eql.join.table
 {
 	/// <summary>
@@ -43,13 +41,13 @@ namespace net.esper.eql.join.table
 	        this.coercionTypes = coercionType;
 	    }
 
-	    protected MultiKeyUntyped GetMultiKey(EventBean _event)
+	    protected override MultiKeyUntyped GetMultiKey(EventBean _event)
 	    {
-	        Object[] keyValues = new Object[propertyGetters.length];
-	        for (int i = 0; i < propertyGetters.length; i++)
+	        Object[] keyValues = new Object[propertyGetters.Length];
+	        for (int i = 0; i < propertyGetters.Length; i++)
 	        {
 	            Object value = propertyGetters[i].Get(_event);
-	            Class coercionType = coercionTypes[i];
+                Type coercionType = coercionTypes[i];
 	            if ((value != null) && (!value.Class.Equals(coercionType)))
 	            {
 	                if (value is Number)

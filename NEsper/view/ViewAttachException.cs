@@ -17,8 +17,8 @@ namespace net.esper.view
 	    /// <summary>Ctor.</summary>
 	    /// <param name="message">validation error message</param>
 	    public ViewAttachException(String message)
+	        : base(message)
 	    {
-	        Super(message);
 	    }
 	}
 } // End of namespace

@@ -21,7 +21,7 @@ namespace net.esper.eql.join.exec
         private readonly TableLookupStrategy[] lookupStrategies;
 
         private readonly int numSubStreams;
-        private readonly ISet<EventBean>[] resultPerStream;
+        private readonly Set<EventBean>[] resultPerStream;
         private readonly int[] requiredSubStreams;
         private readonly int[] optionalSubStreams;
         private readonly bool hasRequiredSubStreams;
@@ -53,7 +53,7 @@ namespace net.esper.eql.join.exec
             this.numSubStreams = toStreams.Length;
             this.lookupStrategies = lookupStrategies;
 
-            resultPerStream = new ISet<EventBean>[numSubStreams];
+            resultPerStream = new Set<EventBean>[numSubStreams];
 
             // Build a separate array for the required and for the optional streams
             IList<Int32> required = new List<Int32>();
@@ -109,7 +109,7 @@ namespace net.esper.eql.join.exec
                 // For that event, lookup in all required streams
                 while (streamCount < requiredSubStreams.Length)
                 {
-                    ISet<EventBean> lookupResult = lookupStrategies[streamCount].Lookup(lookupEvent);
+                    Set<EventBean> lookupResult = lookupStrategies[streamCount].Lookup(lookupEvent);
 
                     // There is no result, break if this is a required stream
                     if (lookupResult == null)
@@ -138,7 +138,7 @@ namespace net.esper.eql.join.exec
                 // For that event, lookup in all optional streams
                 for (int i = 0; i < optionalSubStreams.Length; i++)
                 {
-                    ISet<EventBean> lookupResult = lookupStrategies[streamCount].Lookup(lookupEvent);
+                    Set<EventBean> lookupResult = lookupStrategies[streamCount].Lookup(lookupEvent);
 
                     if (lookupResult != null)
                     {

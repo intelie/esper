@@ -77,7 +77,7 @@ namespace net.esper.core
 	    /// for use by join statements that require an explicit indicator that all
 	    /// joined streams results have been processed.
 	    /// </summary>
-	    public void OptionalDispatchable
+	    public EPStatementDispatch OptionalDispatchable
 	    {
 			get { return this.optionalDispatchable ; }
 	        set { this.optionalDispatchable = value; }

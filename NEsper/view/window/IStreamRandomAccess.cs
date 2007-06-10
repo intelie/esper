@@ -43,7 +43,7 @@ namespace net.esper.view.window
 	        {
 	            for (int i = 0; i < newData.Length; i++)
 	            {
-	                arrayList.Add(0, newData[i]);
+	                arrayList.Insert(0, newData[i]);
 	            }
 	        }
 
@@ -51,7 +51,7 @@ namespace net.esper.view.window
 	        {
 	            for (int i = 0; i < oldData.Length; i++)
 	            {
-	                arrayList.Remove(arrayList.Count - 1);
+	                arrayList.RemoveAt(arrayList.Count - 1);
 	            }
 	        }
 	    }
@@ -80,7 +80,7 @@ namespace net.esper.view.window
 	         * Callback to indicate an update
 	         * @param iStreamRandomAccess is the collection
 	         */
-	        public void Updated(IStreamRandomAccess iStreamRandomAccess);
+	        void Updated(IStreamRandomAccess iStreamRandomAccess);
 	    }
 	}
 }

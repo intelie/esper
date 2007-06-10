@@ -38,7 +38,7 @@ namespace net.esper.eql.join
         /// <param name="oldDataPerStream">old events for each stream</param>
 		public virtual void Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
 		{
-			UniformPair<ISet<MultiKey<EventBean>>> joinSet = composer.Join( newDataPerStream, oldDataPerStream );
+			UniformPair<Set<MultiKey<EventBean>>> joinSet = composer.Join( newDataPerStream, oldDataPerStream );
 			
 			filter.Process(joinSet.First, joinSet.Second);
 			

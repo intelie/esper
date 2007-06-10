@@ -7,7 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
+
+using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
+using net.esper.events;
 
 namespace net.esper.view
 {
@@ -31,5 +36,13 @@ namespace net.esper.view
 	    {
 	        return false;
 	    }
+		
+		abstract public net.esper.events.EventType EventType { get ; }
+		
+		abstract public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<object> viewParameters);
+		
+		abstract public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories);
+		
+		abstract public View MakeView(net.esper.core.StatementContext statementContext);
 	}
 } // End of namespace

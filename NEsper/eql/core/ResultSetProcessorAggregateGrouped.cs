@@ -96,7 +96,7 @@ namespace net.esper.eql.core
         /// <param name="newEvents">new events posted by join</param>
         /// <param name="oldEvents">old events posted by join</param>
         /// <returns>pair of new events and old events</returns>
-        public Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        public Pair<EventBean[], EventBean[]> ProcessJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
         {
             // Generate group-by keys for all events
             MultiKeyUntyped[] newDataGroupByKeys = GenerateGroupKeys(newEvents, true);
@@ -201,7 +201,7 @@ namespace net.esper.eql.core
             {
                 // Update the group representatives while keeping track
                 // of the groups that weren't updated
-                ISet<MultiKeyUntyped> notUpdatedKeys = new LinkedHashSet<MultiKeyUntyped>() ;
+                Set<MultiKeyUntyped> notUpdatedKeys = new LinkedHashSet<MultiKeyUntyped>() ;
                 notUpdatedKeys.AddAll(groupReps.Keys);
 
                 int countOne = 0;
@@ -294,7 +294,7 @@ namespace net.esper.eql.core
             int count = 0;
             for (int i = 0; i < outputEvents.Length; i++)
             {
-                aggregationService.CurrentRow = groupByKeys[count];
+                aggregationService.SetCurrentRow(groupByKeys[count]);
                 eventsPerStream[0] = outputEvents[count];
 
                 // Filter the having clause
@@ -348,7 +348,7 @@ namespace net.esper.eql.core
             return ApplyOutputLimitAndOrderBy(events, currentGenerators, keys, groupReps, generators, isNewData);
         }
 
-        private MultiKeyUntyped[] GenerateGroupKeys(ISet<MultiKey<EventBean>> resultSet, bool isNewData)
+        private MultiKeyUntyped[] GenerateGroupKeys(Set<MultiKey<EventBean>> resultSet, bool isNewData)
         {
             if (resultSet.IsEmpty)
             {
@@ -401,7 +401,7 @@ namespace net.esper.eql.core
         }
 
         private EventBean[] GenerateOutputEventsJoin(
-            ISet<MultiKey<EventBean>> resultSet,
+            Set<MultiKey<EventBean>> resultSet,
             MultiKeyUntyped[] groupByKeys,
             ExprNode optionalHavingExpr,
             EDictionary<MultiKeyUntyped, EventBean> groupReps,
@@ -426,7 +426,7 @@ namespace net.esper.eql.core
             {
                 EventBean[] eventsPerStream = row.Array;
 
-                aggregationService.CurrentRow = groupByKeys[count];
+                aggregationService.SetCurrentRow(groupByKeys[count]);
 
                 // Filter the having clause
                 if (optionalHavingExpr != null)

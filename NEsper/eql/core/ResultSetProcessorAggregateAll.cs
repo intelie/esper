@@ -69,7 +69,7 @@ namespace net.esper.eql.core
         /// <param name="newEvents">new events posted by join</param>
         /// <param name="oldEvents">old events posted by join</param>
         /// <returns>pair of new events and old events</returns>
-        public Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        public Pair<EventBean[], EventBean[]> ProcessJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
         {
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents = null;

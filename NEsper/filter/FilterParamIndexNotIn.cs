@@ -24,9 +24,9 @@ namespace net.esper.filter
 	/// </summary>
 	public sealed class FilterParamIndexNotIn : FilterParamIndexPropBase
 	{
-	    private readonly IDictionary<Object, Set<EventEvaluator>> constantsMap;
-	    private readonly IDictionary<MultiKeyUntyped, EventEvaluator> filterValueEvaluators;
-	    private readonly ISet<EventEvaluator> evaluatorsSet;
+	    private readonly EDictionary<Object, Set<EventEvaluator>> constantsMap;
+	    private readonly EDictionary<MultiKeyUntyped, EventEvaluator> filterValueEvaluators;
+	    private readonly Set<EventEvaluator> evaluatorsSet;
 	    private readonly ReaderWriterLock constantsMapRWLock;
 
 	    /// <summary>Constructs the index for multiple-exact matches.</summary>
@@ -37,40 +37,43 @@ namespace net.esper.filter
 	    public FilterParamIndexNotIn(String propertyName, EventType eventType)
 	        : base(propertyName, FilterOperator.NOT_IN_LIST_OF_VALUES, eventType)
 	    {
-	        constantsMap = new EHashDictionary<Object, ISet<EventEvaluator>>();
+	        constantsMap = new EHashDictionary<Object, Set<EventEvaluator>>();
 	        filterValueEvaluators = new EHashDictionary<MultiKeyUntyped, EventEvaluator>();
 	        evaluatorsSet = new EHashSet<EventEvaluator>();
 	        constantsMapRWLock = new ReaderWriterLock();
 	    }
 
-	    public EventEvaluator Get(Object filterConstant)
+	    public override EventEvaluator this[Object filterConstant]
 	    {
-	        MultiKeyUntyped keyValues = (MultiKeyUntyped) filterConstant;
-	        return filterValueEvaluators.Get(keyValues);
+	    	get
+		    {
+		        MultiKeyUntyped keyValues = (MultiKeyUntyped) filterConstant;
+		        return filterValueEvaluators.Fetch(keyValues);
+		    }
+
+	    	set
+		    {
+		        // Store evaluator keyed to set of values
+		        MultiKeyUntyped keys = (MultiKeyUntyped) filterConstant;
+		        filterValueEvaluators.Put(keys, value);
+		        evaluatorsSet.Add(value);
+	
+		        // Store each value to match against in Map with it's evaluator as a list
+		        Object[] keyValues = keys.Keys;
+		        foreach (Object keyValue in keyValues)
+		        {
+		            Set<EventEvaluator> evaluators = constantsMap.Fetch(keyValue);
+		            if (evaluators == null)
+		            {
+		                evaluators = new EHashSet<EventEvaluator>();
+		                constantsMap.Put(keyValue, evaluators);
+		            }
+		            evaluators.Add(value);
+		        }
+	    	}
 	    }
 
-	    public void Put(Object filterConstant, EventEvaluator evaluator)
-	    {
-	        // Store evaluator keyed to set of values
-	        MultiKeyUntyped keys = (MultiKeyUntyped) filterConstant;
-	        filterValueEvaluators.Put(keys, evaluator);
-	        evaluatorsSet.Add(evaluator);
-
-	        // Store each value to match against in Map with it's evaluator as a list
-	        Object[] keyValues = keys.Keys;
-	        foreach (Object keyValue in keyValues)
-	        {
-	            ISet<EventEvaluator> evaluators = constantsMap.Get(keyValue);
-	            if (evaluators == null)
-	            {
-	                evaluators = new EHashSet<EventEvaluator>();
-	                constantsMap.Put(keyValue, evaluators);
-	            }
-	            evaluators.Add(evaluator);
-	        }
-	    }
-
-	    public bool Remove(Object filterConstant)
+	    public override bool Remove(Object filterConstant)
 	    {
 	        MultiKeyUntyped keys = (MultiKeyUntyped) filterConstant;
 
@@ -86,11 +89,11 @@ namespace net.esper.filter
 	        Object[] keyValues = keys.Keys;
 	        foreach (Object keyValue in keyValues)
 	        {
-	            Set<EventEvaluator> evaluators = constantsMap.Get(keyValue);
+	            Set<EventEvaluator> evaluators = constantsMap.Fetch(keyValue);
 	            if (evaluators != null) // could already be removed as constants may be the same
 	            {
 	                evaluators.Remove(eval);
-	                if (evaluators.IsEmpty())
+	                if (evaluators.Count == 0)
 	                {
 	                    constantsMap.Remove(keyValue);
 	                }
@@ -99,23 +102,23 @@ namespace net.esper.filter
 	        return isRemoved;
 	    }
 
-	    public int Count
+	    public override int Count
 	    {
             get { return constantsMap.Count; }
 	    }
 
-	    public ReaderWriterLock ReadWriteLock
+	    public override ReaderWriterLock ReadWriteLock
 	    {
             get { return constantsMapRWLock; }
 	    }
 
-	    public void MatchEvent(EventBean eventBean, ICollection<FilterHandle> matches)
+	    public override void MatchEvent(EventBean eventBean, IList<FilterHandle> matches)
 	    {
-	        Object attributeValue = this.Getter.Get(eventBean);
+	        Object attributeValue = this.GetGetter().Get(eventBean);
 
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
-	            log.Debug(".match (" + Thread.CurrentThread().Id + ") attributeValue=" + attributeValue);
+	            log.Debug(".match (" + Thread.CurrentThread.ManagedThreadId + ") attributeValue=" + attributeValue);
 	        }
 
 	        if (attributeValue == null)
@@ -125,7 +128,7 @@ namespace net.esper.filter
 
 	        // Look up in hashtable the set of not-in evaluators
 	        constantsMapRWLock.ReadLock().Lock();
-	        ISet<EventEvaluator> evalNotMatching = constantsMap.Get(attributeValue);
+	        Set<EventEvaluator> evalNotMatching = constantsMap.Fetch(attributeValue);
 
 	        // if all known evaluators are matching, invoke all
 	        if (evalNotMatching == null)
@@ -139,7 +142,7 @@ namespace net.esper.filter
 	        }
 
 	        // if none are matching, we are done
-	        if (evalNotMatching.Size() == evaluatorsSet.Size())
+	        if (evalNotMatching.Count == evaluatorsSet.Count)
 	        {
 	            constantsMapRWLock.ReadLock().Unlock();
 	            return;

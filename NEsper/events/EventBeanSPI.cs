@@ -10,11 +10,14 @@ using System;
 
 namespace net.esper.events
 {
-	/// <summary>SPI for events for internal use.</summary>
+	/// <summary>
+	/// SPI for events for internal use.
+	/// </summary>
+	
 	public interface EventBeanSPI : EventBean
 	{
 	    /// <summary>Returns the event id object.</summary>
 	    /// <returns>event id</returns>
-	    Object GetEventBeanId();
+	    Object EventBeanId { get ; }
 	}
 } // End of namespace

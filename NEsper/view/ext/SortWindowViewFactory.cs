@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.util;
@@ -27,19 +28,19 @@ namespace net.esper.view.ext
 	    private EventType eventType;
 	    private RandomAccessByIndexGetter randomAccessGetterImpl;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "Sort window view requires a field name, a bool sort order and a numeric size parameter or parameter list";
-	        if (viewParameters.Size() == 3)
+	        if (viewParameters.Count == 3)
 	        {
-	            if ((viewParameters.Get(0) is String) &&
-	                (viewParameters.Get(1) is Boolean) &&
+	            if ((viewParameters[0] is String) &&
+	                (viewParameters[1] is Boolean) &&
 	                (viewParameters.Get(2) is Number))
 	            {
-	                sortFieldNames = new String[] {(String)viewParameters.Get(0)};
-	                isDescendingValues = new Boolean[] {(Boolean) viewParameters.Get(1)};
+	                sortFieldNames = new String[] {(String)viewParameters[0]};
+	                isDescendingValues = new Boolean[] {(Boolean) viewParameters[1]};
 	                Number sizeParam = (Number) viewParameters.Get(2);
-	                if (JavaClassHelper.IsFloatingPointNumber(sizeParam))
+	                if (TypeHelper.IsFloatingPointNumber(sizeParam))
 	                {
 	                    throw new ViewParameterException(errorMessage);
 	                }
@@ -50,26 +51,26 @@ namespace net.esper.view.ext
 	                throw new ViewParameterException(errorMessage);
 	            }
 	        }
-	        else if (viewParameters.Size() == 2)
+	        else if (viewParameters.Count == 2)
 	        {
-	            if ( (!(viewParameters.Get(0) is Object[]) ||
-	                 (!(viewParameters.Get(1) is Integer))) )
+	            if ( (!(viewParameters[0] is Object[]) ||
+	                 (!(viewParameters[1] is Integer))) )
 	            {
 	                throw new ViewParameterException(errorMessage);
 	            }
 
-	            Object[] ascFieldsArr = (Object[]) viewParameters.Get(0);
+	            Object[] ascFieldsArr = (Object[]) viewParameters[0];
 	            try
 	            {
 	                SetNamesAndIsDescendingValues(ascFieldsArr);
 	            }
-	            catch (RuntimeException ex)
+	            catch (Exception ex)
 	            {
 	                throw new ViewParameterException(errorMessage + ",reason:" + ex.Message);
 	            }
 
-	            Number sizeParam = (Number) viewParameters.Get(1);
-	            if (JavaClassHelper.IsFloatingPointNumber(sizeParam))
+	            Number sizeParam = (Number) viewParameters[1];
+	            if (TypeHelper.IsFloatingPointNumber(sizeParam))
 	            {
 	                throw new ViewParameterException(errorMessage);
 	            }
@@ -86,7 +87,7 @@ namespace net.esper.view.ext
 	        }
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        // Attaches to parent views where the sort fields exist and implement Comparable
 	        String result = null;
@@ -117,7 +118,7 @@ namespace net.esper.view.ext
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        if (!canProvideCapability(viewCapability))
+            if (!CanProvideCapability(viewCapability))
 	        {
 	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
 	        }
@@ -142,9 +143,9 @@ namespace net.esper.view.ext
 	        return new SortWindowView(this, sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess);
 	    }
 
-	    public EventType GetEventType()
-	    {
-	        return eventType;
+		public EventType EventType
+		{
+			get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)
@@ -167,12 +168,12 @@ namespace net.esper.view.ext
 
 	    private void SetNamesAndIsDescendingValues(Object[] propertiesAndDirections)
 	    {
-	        if(propertiesAndDirections.length % 2 != 0)
+	        if(propertiesAndDirections.Length % 2 != 0)
 	        {
-	            throw new IllegalArgumentException("Each property to sort by must have an isDescending bool qualifier");
+	            throw new ArgumentException("Each property to sort by must have an isDescending bool qualifier");
 	        }
 
-	        int length = propertiesAndDirections.length / 2;
+	        int length = propertiesAndDirections.Length / 2;
 	        sortFieldNames = new String[length];
 	        isDescendingValues  = new Boolean[length];
 

@@ -42,6 +42,6 @@ namespace net.esper.eql.core
         /// <returns> pair of new events and old events 
         /// </returns>
 
-        Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
+        Pair<EventBean[], EventBean[]> ProcessJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents);
     }
 }

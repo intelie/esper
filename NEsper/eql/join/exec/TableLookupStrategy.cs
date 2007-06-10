@@ -19,6 +19,6 @@ namespace net.esper.eql.join.exec
 		/// <returns> set of matching events, or null if none matching
 		/// </returns>
     
-        ISet<EventBean> Lookup(EventBean ev);
+        Set<EventBean> Lookup(EventBean ev);
 	}
 }

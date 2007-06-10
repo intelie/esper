@@ -19,6 +19,6 @@ namespace net.esper.filter
 	     * @param matchedEvents is the prior results
 	     * @return filter value
 	     */
-	    double GetFilterValue(MatchedEventMap matchedEvents);
+	    double? GetFilterValue(MatchedEventMap matchedEvents);
     }
 }

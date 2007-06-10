@@ -19,5 +19,14 @@ namespace net.esper.compat
 			: base( new Dictionary<K,V>() )
 		{
 		}
+		
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EHashDictionary&lt;K, V&gt;"/> class.
+        /// </summary>
+		
+		public EHashDictionary(IEqualityComparer<K> eqComparer)
+			: base( new Dictionary<K,V>( eqComparer ) )
+		{
+		}
 	}
 }

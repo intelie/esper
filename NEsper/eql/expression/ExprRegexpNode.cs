@@ -3,11 +3,10 @@ using System.Data.Common;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-using StreamTypeService = net.esper.eql.core.StreamTypeService;
-using AutoImportService = net.esper.eql.core.AutoImportService;
-using EventBean = net.esper.events.EventBean;
-using TypeHelper = net.esper.util.TypeHelper;
-using EPException = net.esper.client.EPException;
+using net.esper.client;
+using net.esper.eql.core;
+using net.esper.events;
+using net.esper.util;
 
 namespace net.esper.eql.expression
 {

@@ -34,7 +34,7 @@ namespace net.esper.filter
         /// <summary> Range includes low endpoint but not high endpoint, i.e. [a,b)</summary>
         RANGE_HALF_OPEN,
         /// <summary> Range includes high endpoint but not low endpoint, i.e. (a,b]</summary>
-        RANGE_HALF_CLOSED
+        RANGE_HALF_CLOSED,
 	    /// <summary> Inverted-Range contains neither endpoint, i.e. (a,b)</summary>
 	    NOT_RANGE_OPEN,
 	    /// <summary> Inverted-Range contains low and high endpoint, i.e. [a,b]</summary>

@@ -30,7 +30,7 @@ namespace net.esper.view.internals
 	        this.buffer = buffer;
 	    }
 
-	    public void Update(EventBean[] newData, EventBean[] oldData)
+	    public override void Update(EventBean[] newData, EventBean[] oldData)
 	    {
 	        buffer.Update(newData, oldData);
 	        this.UpdateChildren(newData, oldData);
@@ -38,17 +38,17 @@ namespace net.esper.view.internals
 
 	    /// <summary>Returns the underlying buffer used for access to prior events.</summary>
 	    /// <returns>buffer</returns>
-	    protected ViewUpdatedCollection GetBuffer()
+	    protected ViewUpdatedCollection Buffer
 	    {
-	        return buffer;
+	    	get { return buffer; }
 	    }
 
-	    public EventType GetEventType()
+	    public override EventType EventType
 	    {
-	        return parent.EventType;
+	    	get { return parent.EventType; }
 	    }
 
-	    public IEnumerator<EventBean> GetEnumerator()
+	    public override IEnumerator<EventBean> GetEnumerator()
 	    {
 	        return parent.GetEnumerator();
 	    }

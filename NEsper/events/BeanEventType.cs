@@ -256,7 +256,7 @@ namespace net.esper.events
 
             // Determine deep supertypes
             // Get Java super types (superclasses and interfaces), deep get of all in the tree
-            ISet<Type> supers = new EHashSet<Type>();
+            Set<Type> supers = new EHashSet<Type>();
             GetSuper(type, supers);
             RemoveCoreLibInterfaces(supers);    // Remove core library super types
 
@@ -317,13 +317,13 @@ namespace net.esper.events
         /// <param name="type">The type to introspect.</param>
         /// <param name="result">The result.</param>
 
-        public static void GetSuper(Type type, ISet<Type> result)
+        public static void GetSuper(Type type, Set<Type> result)
         {
             GetSuperInterfaces(type, result);
             GetSuperClasses(type, result);
         }
 
-        private static void GetSuperInterfaces(Type type, ISet<Type> result)
+        private static void GetSuperInterfaces(Type type, Set<Type> result)
         {
             foreach (Type interfaceType in type.GetInterfaces())
             {
@@ -332,7 +332,7 @@ namespace net.esper.events
             }
         }
 
-        private static void GetSuperClasses(Type type, ISet<Type> result)
+        private static void GetSuperClasses(Type type, Set<Type> result)
         {
             Type superClass = type.BaseType;
             if (superClass == null)
@@ -344,7 +344,7 @@ namespace net.esper.events
             GetSuper(superClass, result);
         }
 
-        private static void RemoveCoreLibInterfaces(ISet<Type> classes)
+        private static void RemoveCoreLibInterfaces(Set<Type> classes)
         {
             IList<Type> deadList = new List<Type>();
 

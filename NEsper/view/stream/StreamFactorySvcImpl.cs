@@ -79,7 +79,7 @@ namespace net.esper.view.stream
 	    /// </returns>
 	    public EventStream CreateStream(FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, bool isJoin)
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".createStream hashCode=" + filterSpec.GetHashCode() + " filter=" + filterSpec);
 	        }
@@ -88,11 +88,11 @@ namespace net.esper.view.stream
 	        Pair<EventStream, EPStatementHandleCallback> pair = null;
 	        if (isJoin)
 	        {
-	            pair = eventStreamsIdentity.Get(filterSpec);
+	            pair = eventStreamsIdentity.Fetch(filterSpec);
 	        }
 	        else
 	        {
-	            pair = eventStreamsRefCounted.Get(filterSpec);
+	            pair = eventStreamsRefCounted.Fetch(filterSpec);
 	        }
 
 	        // If pair exists, either reference count or illegal state
@@ -126,11 +126,11 @@ namespace net.esper.view.stream
 	        pair = new Pair<EventStream, EPStatementHandleCallback>(eventStream, handle);
 	        if (isJoin)
 	        {
-	            eventStreamsIdentity.Put(filterSpec, pair);
+	        	eventStreamsIdentity[filterSpec] = pair;
 	        }
 	        else
 	        {
-	            eventStreamsRefCounted.Put(filterSpec, pair);
+	        	eventStreamsRefCounted[filterSpec] = pair;
 	        }
 
 	        // Activate filter
@@ -150,7 +150,7 @@ namespace net.esper.view.stream
 
 	        if (isJoin)
 	        {
-	            pair = eventStreamsIdentity.Get(filterSpec);
+	            pair = eventStreamsIdentity.Fetch(filterSpec);
 	            if (pair == null)
 	            {
 	                throw new IllegalStateException("Filter spec object not in collection");
@@ -160,7 +160,7 @@ namespace net.esper.view.stream
 	        }
 	        else
 	        {
-	            pair = eventStreamsRefCounted.Get(filterSpec);
+	        	pair = eventStreamsRefCounted[filterSpec];
 	            bool isLast = eventStreamsRefCounted.Dereference(filterSpec);
 	            if (isLast)
 	            {

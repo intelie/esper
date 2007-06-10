@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Log = org.apache.commons.logging.Log;
 using LogFactory = org.apache.commons.logging.LogFactory;
 
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.util;
@@ -97,7 +98,7 @@ namespace net.esper.eql.expression
 	     * @return the root node of the validated subtree, possibly
 	     *         different than the root node of the unvalidated subtree
 	     */
-		public ExprNode getValidatedSubtree(
+		public ExprNode GetValidatedSubtree(
 			StreamTypeService streamTypeService,
 			MethodResolutionService methodResolutionService,
 			ViewResourceDelegate viewResourceDelegate)
@@ -217,7 +218,7 @@ namespace net.esper.eql.expression
 	        StringBuilder mappedProperty = new StringBuilder(identNode.UnresolvedPropertyName);
 	        if(identNode.StreamOrPropertyName != null)
 	        {
-				mappedProperty.insert(0, '.');
+				mappedProperty.Insert(0, '.');
 	            mappedProperty.Insert(0, identNode.StreamOrPropertyName);
 	        }
 
@@ -259,7 +260,7 @@ namespace net.esper.eql.expression
 	            {
 	                result.Validate(streamTypeService, methodResolutionService, null);
 	            }
-	            catch (RuntimeException e)
+	            catch (Exception e)
 	            {
 	                throw new ExprValidationException("Plug-in aggregation function '" + parse.MethodName + "' failed validation: " + e.Message);
 	            }
@@ -344,13 +345,13 @@ namespace net.esper.eql.expression
 	        String argument = property.Substring(startArg + 1, endArg);
 
 	        // get method
-	        String[] splitDots = property.ToString.Split("[\\.]");
-	        if (splitDots.length == 0)
+	        String[] splitDots = property.ToString().Split("[\\.]");
+	        if (splitDots.Length == 0)
 	        {
 	            return null;
 	        }
 
-	        String method = splitDots[splitDots.length - 1];
+	        String method = splitDots[splitDots.Length - 1];
 	        int indexParan = method.IndexOf("(");
 	        if (indexParan == -1)
 	        {
@@ -444,7 +445,7 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 
         public abstract void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate);

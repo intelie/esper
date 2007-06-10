@@ -27,12 +27,12 @@ namespace net.esper.filter
 	    /// <param name="propertyName">is the event property name</param>
 	    /// <param name="filterOperator">is expected to be the IN-list operator</param>
 	    /// <param name="listofValues">is a list of constants and event property names</param>
-	    /// <throws>IllegalArgumentException for illegal args</throws>
+	    /// <throws>ArgumentException for illegal args</throws>
 	    public FilterSpecParamIn(String propertyName,
 	                             FilterOperator filterOperator,
 	                             List<FilterSpecParamInValue> listofValues)
+	    	: base(propertyName, filterOperator)
 	    {
-	        Super(propertyName, filterOperator);
 	        this.listOfValues = listofValues;
 
 	        bool isAllConstants = false;
@@ -47,7 +47,7 @@ namespace net.esper.filter
 
 	        if (isAllConstants)
 	        {
-	            Object[] constants = new Object[listOfValues.Size()];
+	            Object[] constants = new Object[listOfValues.Count];
 	            int count = 0;
 	            foreach (FilterSpecParamInValue valuePlaceholder in listOfValues)
 	            {
@@ -58,12 +58,12 @@ namespace net.esper.filter
 
 	        if ((filterOperator != FilterOperator.IN_LIST_OF_VALUES) && ((filterOperator != FilterOperator.NOT_IN_LIST_OF_VALUES)))
 	        {
-	            throw new IllegalArgumentException("Illegal filter operator " + filterOperator + " supplied to " +
+	            throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " +
 	                    "in-values filter parameter");
 	        }
 	    }
 
-	    public Object GetFilterValue(MatchedEventMap matchedEvents)
+	    public override Object GetFilterValue(MatchedEventMap matchedEvents)
 	    {
 	        // If the list of values consists of all-constants and no event properties, then use cached version
 	        if (inListConstantsOnly != null)
@@ -72,7 +72,7 @@ namespace net.esper.filter
 	        }
 
 	        // Determine actual values since the in-list of values contains one or more event properties
-	        Object[] actualValues = new Object[listOfValues.Size()];
+	        Object[] actualValues = new Object[listOfValues.Count];
 	        int count = 0;
 	        foreach (FilterSpecParamInValue valuePlaceholder in listOfValues)
 	        {
@@ -90,7 +90,7 @@ namespace net.esper.filter
 
 	    public override String ToString()
 	    {
-	        return super.ToString() + "  in=(listOfValues=" + listOfValues.ToString() + ')';
+	        return baseToString() + "  in=(listOfValues=" + listOfValues.ToString() + ')';
 	    }
 
 	    public override bool Equals(Object obj)
@@ -106,12 +106,12 @@ namespace net.esper.filter
 	        }
 
 	        FilterSpecParamIn other = (FilterSpecParamIn) obj;
-	        if (!super.Equals(other))
+	        if (!base.Equals(other))
 	        {
 	            return false;
 	        }
 
-	        if (listOfValues.Size() != other.listOfValues.Size())
+	        if (listOfValues.Count != other.listOfValues.Count)
 	        {
 	            return false;
 	        }
@@ -122,5 +122,10 @@ namespace net.esper.filter
 	        }
 	        return true;
 	    }
+	    
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 } // End of namespace

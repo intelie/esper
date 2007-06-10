@@ -268,7 +268,6 @@ namespace net.esper.view.stat
         public override EventType EventType
 		{
             get { return eventType; }
-            set { }
 		}
 
         /// <summary>
@@ -339,7 +338,7 @@ namespace net.esper.view.stat
 	     * @param statementContext is the event adapter service
 	     * @return event type of view
 	     */
-	    protected static EventType CreateEventType(StatementContext statementContext)
+	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
 	        EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
 	        schemaMap.Put(ViewFieldEnum.MULTIDIM_OLAP__CUBE.Name, typeof(Cube));

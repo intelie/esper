@@ -8,13 +8,16 @@
 
 using System;
 
+using net.esper.compat;
 using net.esper.events;
 using net.esper.pattern;
 using net.esper.util;
 
 namespace net.esper.filter
 {
-	/// <summary>Event property value in a list of values following an in-keyword.</summary>
+	/// <summary>
+	/// Event property value in a list of values following an in-keyword.
+	/// </summary>
 	public class InSetOfValuesEventProp : FilterSpecParamInValue
 	{
 	    private readonly String resultEventAsName;
@@ -96,5 +99,10 @@ namespace net.esper.filter
 
 	        return false;
 	    }
+	    
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 } // End of namespace

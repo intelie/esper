@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.collection;
+using net.esper.compat;
 using net.esper.events;
 using net.esper.view.window;
 
@@ -33,7 +34,7 @@ namespace net.esper.view.internals
 	public class PriorEventBufferSingle : ViewUpdatedCollection, RelativeAccessByEventNIndex
 	{
 	    private readonly int priorEventIndex;
-	    private readonly Map<EventBean, EventBean> priorEventMap;
+	    private readonly EDictionary<EventBean, EventBean> priorEventMap;
 	    private readonly RollingEventBuffer newEvents;
 	    private EventBean[] lastOldData;
 
@@ -46,7 +47,7 @@ namespace net.esper.view.internals
 	        this.priorEventIndex = priorEventIndex;
 	        // Construct a rolling buffer of new data for holding max index + 1 (position 1 requires 2 events to keep)
 	        newEvents = new RollingEventBuffer(priorEventIndex + 1);
-	        priorEventMap = new HashMap<EventBean, EventBean>();
+	        priorEventMap = new EHashDictionary<EventBean, EventBean>();
 	    }
 
 	    public void Update(EventBean[] newData, EventBean[] oldData)
@@ -54,7 +55,7 @@ namespace net.esper.view.internals
 	        // Remove last old data posted in previous post
 	        if (lastOldData != null)
 	        {
-	            for (int i = 0; i < lastOldData.length; i++)
+	            for (int i = 0; i < lastOldData.Length; i++)
 	            {
 	                priorEventMap.Remove(lastOldData[i]);
 	            }
@@ -63,7 +64,7 @@ namespace net.esper.view.internals
 	        // Post new data to rolling buffer starting with the oldest
 	        if (newData != null)
 	        {
-	            for (int i = 0; i < newData.length; i++)
+	            for (int i = 0; i < newData.Length; i++)
 	            {
 	                EventBean newEvent = newData[i];
 
@@ -84,9 +85,9 @@ namespace net.esper.view.internals
 	    {
 	        if (priorToIndex != 0)
 	        {
-	            throw new IllegalArgumentException("Single prior event buffer takes only a given index of zero");
+	            throw new ArgumentException("Single prior event buffer takes only a given index of zero");
 	        }
-	        EventBean priorEvent = priorEventMap.Get(_event);
+	        EventBean priorEvent = priorEventMap.Fetch(_event);
 	        if (priorEvent == null)
 	        {
 	            if (!priorEventMap.ContainsKey(_event))

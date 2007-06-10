@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using net.esper.eql;
 using net.esper.eql.expression;
 using net.esper.eql.spec;
+using net.esper.events;
 using net.esper.type;
 
 using Log = org.apache.commons.logging.Log;

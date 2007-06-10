@@ -106,111 +106,111 @@ namespace net.esper.core
 
 	    /// <summary>Returns the statement id.</summary>
 	    /// <returns>statement id</returns>
-	    public String GetStatementId()
+	    public String StatementId
 	    {
-	        return statementId;
+	    	get { return statementId; }
 	    }
 
 	    /// <summary>Returns the statement name</summary>
 	    /// <returns>statement name</returns>
-	    public String GetStatementName()
+	    public String StatementName
 	    {
-	        return statementName;
+	    	get { return statementName; }
 	    }
 
 	    /// <summary>Returns service to use for schedule evaluation.</summary>
 	    /// <returns>schedule evaluation service implemetation</returns>
-	    public SchedulingService GetSchedulingService()
+	    public SchedulingService SchedulingService
 	    {
-	        return schedulingService;
+	    	get { return schedulingService; }
 	    }
 
 	    /// <summary>Returns service for generating events and handling event types.</summary>
 	    /// <returns>event adapter service</returns>
-	    public EventAdapterService GetEventAdapterService()
+	    public EventAdapterService EventAdapterService
 	    {
-	        return eventAdapterService;
+	    	get { return eventAdapterService; }
 	    }
 
 	    /// <summary>
 	    /// Returns the schedule bucket for ordering schedule callbacks within this pattern.
 	    /// </summary>
 	    /// <returns>schedule bucket</returns>
-	    public ScheduleBucket GetScheduleBucket()
+	    public ScheduleBucket ScheduleBucket
 	    {
-	        return scheduleBucket;
+	    	get { return scheduleBucket; }
 	    }
 
 	    /// <summary>Returns the statement's resource locks.</summary>
 	    /// <returns>statement resource lock/handle</returns>
-	    public EPStatementHandle GetEpStatementHandle()
+	    public EPStatementHandle EpStatementHandle
 	    {
-	        return epStatementHandle;
+	    	get { return epStatementHandle; }
 	    }
 
 	    /// <summary>Returns view resolution svc.</summary>
 	    /// <returns>view resolution</returns>
-	    public ViewResolutionService GetViewResultionService()
+	    public ViewResolutionService ViewResultionService
 	    {
-	        return viewResultionService;
+	    	get { return viewResultionService; }
 	    }
 
 	    /// <summary>Returns extension context.</summary>
 	    /// <returns>context</returns>
-	    public ExtensionServicesContext GetExtensionServicesContext()
+	    public ExtensionServicesContext ExtensionServicesContext
 	    {
-	        return extensionServicesContext;
+	    	get { return extensionServicesContext; }
 	    }
 
 	    /// <summary>Returns statement stop subscription taker.</summary>
 	    /// <returns>stop service</returns>
-	    public StatementStopService GetStatementStopService()
+	    public StatementStopService StatementStopService
 	    {
-	        return statementStopService;
+	    	get { return statementStopService; }
 	    }
 
 	    /// <summary>
 	    /// Returns service to look up static and aggregation methods or functions.
 	    /// </summary>
 	    /// <returns>method resolution</returns>
-	    public MethodResolutionService GetMethodResolutionService()
+	    public MethodResolutionService MethodResolutionService
 	    {
-	        return methodResolutionService;
+	    	get { return methodResolutionService; }
 	    }
 
 	    /// <summary>Returns the pattern context factory for the statement.</summary>
 	    /// <returns>pattern context factory</returns>
-	    public PatternContextFactory GetPatternContextFactory()
+	    public PatternContextFactory PatternContextFactory
 	    {
-	        return patternContextFactory;
+	    	get { return patternContextFactory; }
 	    }
 
 	    /// <summary>Returns the statement expression text</summary>
 	    /// <returns>expression text</returns>
-	    public String GetExpression()
+	    public String Expression
 	    {
-	        return expression;
+	    	get { return expression; }
 	    }
 
 	    /// <summary>Returns the engine URI.</summary>
 	    /// <returns>engine URI</returns>
-	    public String GetEngineURI()
+	    public String EngineURI
 	    {
-	        return engineURI;
+	    	get { return engineURI; }
 	    }
 
 	    /// <summary>Returns the engine instance id.</summary>
 	    /// <returns>instance id</returns>
-	    public String GetEngineInstanceId()
+	    public String EngineInstanceId
 	    {
-	        return engineInstanceId;
+	    	get { return engineInstanceId; }
 	    }
 
 	    /// <summary>Returns the filter service.</summary>
 	    /// <returns>filter service</returns>
-	    public FilterService GetFilterService()
+	    public FilterService FilterService
 	    {
-	        return filterService;
+	    	get { return filterService; }
 	    }
 
 	    public override String ToString()

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.util;
 
 namespace net.esper.eql.spec
@@ -23,7 +24,7 @@ namespace net.esper.eql.spec
 	    /// <summary>Ctor.</summary>
 	    public SelectClauseSpec()
 		{
-			selectList = new ArrayList<SelectExprElementRawSpec>();
+			selectList = new List<SelectExprElementRawSpec>();
 		}
 
 	    /// <summary>Ctor.</summary>

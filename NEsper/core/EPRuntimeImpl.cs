@@ -8,6 +8,8 @@ using net.esper.client.time;
 using net.esper.collection;
 using net.esper.compat;
 using net.esper.events;
+using net.esper.filter;
+using net.esper.schedule;
 using net.esper.timer;
 
 using org.apache.commons.logging;
@@ -59,8 +61,8 @@ namespace net.esper.core
 		}
 
 		[ThreadStatic]
-		private EDictionary<EPStatementHandle, Object>> matchesPerStmtThreadLocal;
-		private EDictionary<EPStatementHandle, Object>> MatchesPerStmt
+		private EDictionary<EPStatementHandle, Object> matchesPerStmtThreadLocal;
+		private EDictionary<EPStatementHandle, Object> MatchesPerStmt
 		{
 			get
 			{
@@ -73,14 +75,16 @@ namespace net.esper.core
 
 		[ThreadStatic]
 		private ArrayBackedCollection<ScheduleHandle> scheduleArrayThreadLocal;
-		private ArrayBackedCollection<ScheduleHandle> ScheduleArray;
+		private ArrayBackedCollection<ScheduleHandle> ScheduleArray
 		{
 			get
 			{
 				if ( scheduleArrayThreadLocal == null )
 				{
-					scheduleArrayThreadLocal = return new ArrayBackedCollection<ScheduleHandle>(100);
+					scheduleArrayThreadLocal = new ArrayBackedCollection<ScheduleHandle>(100);
 				}
+
+			    return scheduleArrayThreadLocal;
 			}
         }
 
@@ -442,8 +446,8 @@ namespace net.esper.core
 	            }
 
 	            // This statement has been encountered more then once before
-	            LinkedList<ScheduleHandleCallback> entries = (LinkedList<ScheduleHandleCallback>) entry;
-	            entries.Add(callback);
+	            LinkedList<ScheduleHandleCallback> _entries = (LinkedList<ScheduleHandleCallback>) entry;
+	            _entries.Add(callback);
 	        }
 	        handles.Clear();
 
@@ -454,9 +458,9 @@ namespace net.esper.core
 	            handle.StatementLock.AcquireLock(services.StatementLockFactory);
 	            try
 	            {
-	                if (callbackObject is LinkedList)
+                    LinkedList<ScheduleHandleCallback> callbackList = callbackObject as LinkedList<ScheduleHandleCallback>;
+                    if (callbackList != null)
 	                {
-	                    LinkedList<ScheduleHandleCallback> callbackList = (LinkedList<ScheduleHandleCallback>) callbackObject;
 	                    foreach (ScheduleHandleCallback callback in callbackList)
 	                    {
 	                        callback.ScheduledTrigger(services.ExtensionServicesContext);

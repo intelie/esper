@@ -26,7 +26,7 @@ namespace net.esper.view.internals
 
         private BufferObserver observer;
         private FlushedEventBuffer newDataBuffer = new FlushedEventBuffer();
-        private FlushedEventBuffer oldDataBuffer = new flushedEventBuffer();
+        private FlushedEventBuffer oldDataBuffer = new FlushedEventBuffer();
 
         /// <summary> Ctor.</summary>
         /// <param name="streamId">number of the stream for which the view buffers the generated events.
@@ -47,7 +47,6 @@ namespace net.esper.view.internals
         public override EventType EventType
         {
             get { return parent.EventType; }
-            set { }
         }
 
         /// <summary>

@@ -26,6 +26,6 @@ namespace net.esper.eql.subquery
         /// </summary>
         /// <param name="events">to look up</param>
         /// <returns>set of matching events, or null if none matching</returns>
-        ISet<EventBean> Lookup(EventBean[] events);
+        Set<EventBean> Lookup(EventBean[] events);
     }
 }

@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.eql.expression;
 using net.esper.view;
 

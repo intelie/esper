@@ -12,8 +12,6 @@ using System.Collections.Generic;
 using net.esper.client;
 using net.esper.compat;
 
-using Properties = net.esper.compat.EDataDictionary;
-
 namespace net.esper.core
 {
 	/// <summary>
@@ -22,17 +20,17 @@ namespace net.esper.core
 	/// </summary>
 	public class ConfigurationSnapshot
 	{
-	    private IDictionary<String, String> typeAliases = new EHashDictionary<String, String>();
-	    private IDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = new EHashDictionary<String, ConfigurationEventTypeXMLDOM>();
-	    private IDictionary<String, ConfigurationEventTypeLegacy> legacyAliases = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
+	    private EDictionary<String, String> typeAliases = new EHashDictionary<String, String>();
+	    private EDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = new EHashDictionary<String, ConfigurationEventTypeXMLDOM>();
+	    private EDictionary<String, ConfigurationEventTypeLegacy> legacyAliases = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
 	    private String[] autoImports;
-	    private IDictionary<String, Properties> mapAliases = new EHashDictionary<String, Properties>();
-	    private IDictionary<String, ConfigurationDBRef> databaseRefs = new EHashDictionary<String, ConfigurationDBRef>();
+	    private EDictionary<String, Properties> mapAliases = new EHashDictionary<String, Properties>();
+	    private EDictionary<String, ConfigurationDBRef> databaseRefs = new EHashDictionary<String, ConfigurationDBRef>();
 	    private String epServicesContextFactoryClassName;
-	    private List<ConfigurationPlugInView> plugInViews = new LinkedList<ConfigurationPlugInView>();
-	    private List<ConfigurationAdapterLoader> adapterLoaders = new LinkedList<ConfigurationAdapterLoader>();
-	    private List<ConfigurationPlugInAggregationFunction> plugInAggregation = new LinkedList<ConfigurationPlugInAggregationFunction>();
-	    private List<ConfigurationPlugInPatternObject> plugInPatternObjects = new LinkedList<ConfigurationPlugInPatternObject>();
+	    private List<ConfigurationPlugInView> plugInViews = new List<ConfigurationPlugInView>();
+	    private List<ConfigurationAdapterLoader> adapterLoaders = new List<ConfigurationAdapterLoader>();
+	    private List<ConfigurationPlugInAggregationFunction> plugInAggregation = new List<ConfigurationPlugInAggregationFunction>();
+	    private List<ConfigurationPlugInPatternObject> plugInPatternObjects = new List<ConfigurationPlugInPatternObject>();
 
 	    /// <summary>
 	    /// Ctor.
@@ -57,7 +55,7 @@ namespace net.esper.core
 	    }
 
 	    /// <summary>Gets event type alias to type name mapping.</summary>
-	    public IDictionary<String, String> TypeAliases()
+	    public IDictionary<String, String> TypeAliases
 	    {
 	        get { return typeAliases; }
 	    }
@@ -78,7 +76,7 @@ namespace net.esper.core
 
 	    /// <summary>Returns a map of event type alias to Map-event type properties.</summary>
 	    /// <returns>alias to event properties mapping for Map event types</returns>
-	    public IDictionary<String, Properties> MapAliases
+	    public EDictionary<String, Properties> MapAliases
 	    {
 	        get { return mapAliases; }
 	    }
@@ -87,14 +85,14 @@ namespace net.esper.core
 	    /// Returns the map of event type alias to legacy event type configuration.
 	    /// </summary>
 	    /// <returns>map with alias as the key and legacy type config as the value</returns>
-	    public IDictionary<String, ConfigurationEventTypeLegacy> LegacyAliases
+	    public EDictionary<String, ConfigurationEventTypeLegacy> LegacyAliases
 	    {
 	        get { return legacyAliases; }
 	    }
 
 	    /// <summary>Returns a map of database name to database configuration.</summary>
 	    /// <returns>database configs</returns>
-	    public IDictionary<String, ConfigurationDBRef> DatabaseRefs
+	    public EDictionary<String, ConfigurationDBRef> DatabaseRefs
 	    {
 	        get { return databaseRefs; }
 	    }
@@ -108,7 +106,7 @@ namespace net.esper.core
 
 	    /// <summary>Returns a list of configured plug-in views.</summary>
 	    /// <returns>configs for views</returns>
-	    public List<ConfigurationPlugInView> PlugInViews
+	    public IList<ConfigurationPlugInView> PlugInViews
 	    {
 	        get { return plugInViews; }
 	    }
@@ -117,21 +115,21 @@ namespace net.esper.core
 	    /// Returns a list of adapter loaders configured for the engine instance.
 	    /// </summary>
 	    /// <returns>list of loader</returns>
-	    public List<ConfigurationAdapterLoader> GetAdapterLoaders
+	    public IList<ConfigurationAdapterLoader> AdapterLoaders
 	    {
 	        get { return adapterLoaders; }
 	    }
 
 	    /// <summary>Returns a list of configured aggregation functions.</summary>
 	    /// <returns>aggregation function configs</returns>
-	    public List<ConfigurationPlugInAggregationFunction> PlugInAggregation
+	    public IList<ConfigurationPlugInAggregationFunction> PlugInAggregation
 	    {
 	        get { return plugInAggregation; }
 	    }
 
 	    /// <summary>Returns the list of configured pattern objects plugged-in.</summary>
 	    /// <returns>list of pattern objects</returns>
-	    public List<ConfigurationPlugInPatternObject> PlugInPatternObjects
+	    public IList<ConfigurationPlugInPatternObject> PlugInPatternObjects
 	    {
 	        get { return plugInPatternObjects; }
 	    }

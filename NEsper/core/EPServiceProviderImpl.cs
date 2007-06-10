@@ -1,5 +1,4 @@
 using System;
-using System.Configuration;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading;
@@ -9,6 +8,7 @@ using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.db;
 using net.esper.events;
+using net.esper.filter;
 using net.esper.schedule;
 using net.esper.util;
 
@@ -28,7 +28,7 @@ namespace net.esper.core
 		/// Gets the engine URI
 		/// </summary>
 		
-		virtual public string EngineURI
+		virtual public string URI
 		{
 			get { return engineURI; }
 		}
@@ -57,11 +57,11 @@ namespace net.esper.core
 	        get { return engine.Services.FilterService; }
 	    }
 
-	    public Context EnvContext
+	    public Directory EnvDirectory
 	    {
-	        get { return engine.Services.EngineEnvContext; }
+	        get { return engine.Services.EngineDirectory; }
 	    }
-		
+
         /// <summary>
         /// Returns a class instance of EPRuntime.
         /// </summary>
@@ -124,7 +124,7 @@ namespace net.esper.core
 	        if (epServicesContextFactoryClassName == null)
 	        {
 	            // Check system properties
-	            epServicesContextFactoryClassName = System.getProperty("ESPER_EPSERVICE_CONTEXT_FACTORY_CLASS");
+	            epServicesContextFactoryClassName = Environment.GetEnvironmentVariable("ESPER_EPSERVICE_CONTEXT_FACTORY_CLASS");
 	        }
 	        if (epServicesContextFactoryClassName == null)
 	        {
@@ -196,7 +196,7 @@ namespace net.esper.core
 		 */
 	    private void LoadAdapters(ConfigurationSnapshot configuration, EPServicesContext services)
 	    {
-	        List<ConfigurationAdapterLoader> adapterLoaders = configuration.AdapterLoaders;
+	        IList<ConfigurationAdapterLoader> adapterLoaders = configuration.AdapterLoaders;
 	        if ((adapterLoaders == null) || (adapterLoaders.Count == 0))
 	        {
 	            return;
@@ -236,7 +236,7 @@ namespace net.esper.core
 	            {
 	                services.EngineEnvContext.Bind("adapter-loader/" + config.LoaderName, adapterLoader);
 	            }
-	            catch (NamingException e)
+	            catch (DirectoryException e)
 	            {
 	                throw new EPException("Failed to use context to bind adapter loader", e);
 	            }

@@ -38,8 +38,8 @@ namespace net.esper.eql.join
         private readonly SelectClauseStreamSelectorEnum selectStreamSelectorEnum;
 
         // Set semantic eliminates duplicates in result set, use Linked set to preserve order
-        private ISet<MultiKey<EventBean>> oldResults = new LinkedHashSet<MultiKey<EventBean>>();
-        private ISet<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
+        private Set<MultiKey<EventBean>> oldResults = new LinkedHashSet<MultiKey<EventBean>>();
+        private Set<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
 
         /// <summary> Ctor.</summary>
         /// <param name="repositories">for each stream an array of (indexed/unindexed) tables for lookup.
@@ -62,7 +62,7 @@ namespace net.esper.eql.join
         /// <param name="newDataPerStream">for each stream the event array (can be null).</param>
         /// <param name="oldDataPerStream">for each stream the event array (can be null).</param>
         /// <returns>join tuples</returns>
-        public UniformPair<ISet<MultiKey<EventBean>>> Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+        public UniformPair<Set<MultiKey<EventBean>>> Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
         {
             oldResults.Clear();
             newResults.Clear();
@@ -115,7 +115,7 @@ namespace net.esper.eql.join
                 }
             }
 
-            return new UniformPair<ISet<MultiKey<EventBean>>>(newResults, oldResults);
+            return new UniformPair<Set<MultiKey<EventBean>>>(newResults, oldResults);
         }
     }
 }

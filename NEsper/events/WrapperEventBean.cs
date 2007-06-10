@@ -11,8 +11,6 @@ using System.Collections.Generic;
 
 using net.esper.collection;
 
-using Properties = net.esper.compat.EDataDictionary;
-
 namespace net.esper.events
 {
 	/// <summary>
@@ -23,12 +21,12 @@ namespace net.esper.events
 	/// The event type of such events is always {@link WrapperEventType}. Additional properties are stored in a
 	/// Map.
 	/// </summary>
-	public class WrapperEventBean : EventBean {
-
+	public class WrapperEventBean : EventBean
+	{
 		private readonly EventBean _event;
-		private readonly IDictionary<String, Object> map;
+		private readonly IDictionary<string, object> map;
 		private readonly EventType eventType;
-	    private Integer hashCode;
+	    private int hashCode;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="_event">is the wrapped event</param>
@@ -43,39 +41,45 @@ namespace net.esper.events
 			this.eventType = eventType;
 		}
 
-		public Object Get(String property)
+	    public Object this[String property]
 		{
-	        EventPropertyGetter getter = eventType.GetGetter(property);
-	        if (getter == null)
-	        {
-	            throw new IllegalArgumentException("Property named '" + property + "' is not a valid property name for this type");
-	        }
-	        return eventType.GetGetter(property).Get(this);
+	    	get
+	    	{
+		        EventPropertyGetter getter = eventType.GetGetter(property);
+		        if (getter == null)
+		        {
+		            throw new ArgumentException("Property named '" + property + "' is not a valid property name for this type");
+		        }
+		        return eventType.GetGetter(property).Get(this);
+	    	}
 		}
 
-		public EventType GetEventType()
+		public EventType EventType
 		{
-			return eventType;
+			get { return eventType; }
 		}
 
-		public Object GetUnderlying()
+		public Object Underlying
 		{
-	        // If wrapper is simply for the underlyingg with no additional properties, then return the underlying type
-	        if (map.IsEmpty())
-	        {
-	            return _event.Underlying;
-	        }
-	        else
-	        {
-	            return new Pair<Object, Map>(_event.Underlying, map);
-	        }
+			get
+			{
+		        // If wrapper is simply for the underlyingg with no additional properties, then return the underlying type
+		        if (map.Count == 0)
+		        {
+		            return _event.Underlying;
+		        }
+		        else
+		        {
+		            return new Pair<Object, IDictionary<string,object>>(_event.Underlying, map);
+		        }
+			}
 	    }
 
 	    /// <summary>
 	    /// Returns the underlying map storing the additional properties, if any.
 	    /// </summary>
 	    /// <returns>event property IDictionary</returns>
-	    public Map UnderlyingMap
+	    public IDictionary<string,object> UnderlyingMap
 	    {
 	        get { return map; }
 	    }
@@ -107,7 +111,7 @@ namespace net.esper.events
 	            return false;
 	        }
 
-	        if (Class != otherObject.Class)
+	        if (GetType() != otherObject.GetType())
 	        {
 	            return false;
 	        }
@@ -119,13 +123,13 @@ namespace net.esper.events
 	            return false;
 	        }
 
-	        if (map.Size() != other.map.Size())
+	        if (map.Count != other.map.Count)
 	        {
 	            return false;
 	        }
 
 	        // Compare entry by entry
-	        foreach (Map.Entry<String, Object> entry in map.EntrySet())
+	        foreach (KeyValuePair<String, Object> entry in map)
 	        {
 	            String name = entry.Key;
 	            Object value = entry.Value;
@@ -155,7 +159,7 @@ namespace net.esper.events
 	        if (hashCode == null)
 	        {
 	            int hashCodeVal = 0;
-	            foreach (Map.Entry<String, Object> entry in map.EntrySet())
+	            foreach (KeyValuePair<String, Object> entry in map)
 	            {
 	                String name = entry.Key;
 	                Object value = entry.Value;

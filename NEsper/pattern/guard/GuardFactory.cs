@@ -19,12 +19,11 @@ namespace net.esper.pattern.guard
 	    IList<Object> GuardParameters { set ; }
 	
 		/// <summary> Constructs a guard instance.</summary>
-		/// <param name="context">services for use by guard
-		/// </param>
-		/// <param name="quitable">to use for indicating the guard has quit
-		/// </param>
-		/// <returns> guard instance
-		/// </returns>
-		Guard MakeGuard(PatternContext context, Quitable quitable);
+		/// <param name="context">services for use by guard</param>
+		/// <param name="quitable">to use for indicating the guard has quit</param>
+		/// <param name="stateNodeId">a node id for the state object</param>
+     	/// <param name="guardState">state node for guard</param>
+		/// <returns>guard instance</returns>
+		Guard MakeGuard(PatternContext context, Quitable quitable, Object stateNodeId, Object guardState);
 	}
 }

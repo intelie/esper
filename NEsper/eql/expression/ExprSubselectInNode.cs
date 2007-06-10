@@ -9,8 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
 using net.esper.eql.core;
-using net.esper.eql.compat;
 using net.esper.eql.spec;
 using net.esper.events;
 using net.esper.util;
@@ -39,7 +39,7 @@ namespace net.esper.eql.expression
 		{
 	    }
 
-	    public bool IsAllowWildcardSelect
+	    public override bool IsAllowWildcardSelect
 	    {
             get { return false; }
 	    }
@@ -52,7 +52,7 @@ namespace net.esper.eql.expression
         /// </returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 
-        public abstract Type ReturnType
+        public override Type ReturnType
         {
             get { return typeof(bool?); }
         }
@@ -64,16 +64,16 @@ namespace net.esper.eql.expression
 	        isNotIn = notIn;
 	    }
 
-	    public void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
-	        if (this.ChildNodes.Size() != 1)
+	        if (this.ChildNodes.Count != 1)
 	        {
 	            throw new ExprValidationException("The Subselect-IN requires 1 child expression");
 	        }
 
 	        // Must be the same boxed type returned by expressions under this
-	        Class typeOne = TypeHelper.GetBoxedType(this.ChildNodes.Get(0).Type);
-	        Class typeTwo = selectClause.Type;
+	        Type typeOne = TypeHelper.GetBoxedType(this.ChildNodes[0].GetType());
+	        Type typeTwo = selectClause.GetType();
 
 	        // Null constants can be compared for any type
 	        if ((typeOne == null) || (typeTwo == null))
@@ -86,7 +86,7 @@ namespace net.esper.eql.expression
 	        {
 	            coercionType = TypeHelper.GetCompareToCoercionType(typeOne, typeTwo);
 	        }
-	        catch (IllegalArgumentException ex)
+	        catch (ArgumentException ex)
 	        {
 	            throw new ExprValidationException("Implicit conversion from datatype '" +
 	                    typeTwo.SimpleName +
@@ -112,13 +112,13 @@ namespace net.esper.eql.expression
 
 	    }
 
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ISet<EventBean> matchingEvents)
+	    public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents)
 	    {
 	        if (matchingEvents == null)
 	        {
 	            return isNotIn;
 	        }
-	        if (matchingEvents.Size() == 0)
+	        if (matchingEvents.Count == 0)
 	        {
 	            return isNotIn;
 	        }
@@ -126,35 +126,35 @@ namespace net.esper.eql.expression
 	        // Filter according to the filter expression
 	        // Evaluate the select expression for each remaining row
 	        // Check if any of the results match the child expression, using coercion
-	        Collection<EventBean> matchedFilteredEvents = matchingEvents;
+	        Set<EventBean> matchedFilteredEvents = matchingEvents;
 
 	        // Evaluate filter
-	        EventBean[] events = new EventBean[eventsPerStream.length + 1];
-	        System.Arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
+	        EventBean[] events = new EventBean[eventsPerStream.Length + 1];
+            Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
 
 	        if (filterExpr != null)
 	        {
-	            matchedFilteredEvents = new ArrayList<EventBean>();
+	            matchedFilteredEvents = new List<EventBean>();
 	            foreach (EventBean subselectEvent in matchingEvents)
 	            {
 	                // Prepare filter expression event list
 	                events[0] = subselectEvent;
 
 	                // Eval filter expression
-	                Boolean pass = (Boolean) filterExpr.Evaluate(events, true);
-	                if ((pass != null) && (pass))
+	                bool? pass = (bool?) filterExpr.Evaluate(events, true);
+	                if (pass ?? false)
 	                {
 	                    matchedFilteredEvents.Add(subselectEvent);
 	                }
 	            }
 	        }
-	        if (matchedFilteredEvents.Size() == 0)
+	        if (matchedFilteredEvents.Count == 0)
 	        {
 	            return isNotIn;
 	        }
 
 	        // Evaluate the child expression
-	        Object leftResult = this.ChildNodes.Get(0).Evaluate(eventsPerStream, isNewData);
+	        Object leftResult = this.ChildNodes[0].Evaluate(eventsPerStream, isNewData);
 
 	        // Evaluate each select until we have a match
 	        foreach (EventBean _event in matchedFilteredEvents)
@@ -184,9 +184,9 @@ namespace net.esper.eql.expression
 	            }
 	            else
 	            {
-	                Number left = TypeHelper.CoerceBoxed((Number) leftResult, coercionType);
-	                Number right = TypeHelper.CoerceBoxed((Number) rightResult, coercionType);
-	                if (left.Equals(right))
+	                Object left = TypeHelper.CoerceBoxed((Number) leftResult, coercionType);
+	                Object right = TypeHelper.CoerceBoxed((Number) rightResult, coercionType);
+	                if (Object.Equals( left, right ))
 	                {
 	                    return !isNotIn;
 	                }

@@ -7,7 +7,7 @@
 // ************************************************************************************
 
 using System;
-using System.Text
+using System.Text;
 
 namespace net.esper.client
 {

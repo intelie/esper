@@ -94,9 +94,9 @@ namespace net.esper.view
         /// Returns all added views.
         /// </summary>
         /// <returns>list of added views</returns>
-        public virtual IList<View> GetViews()
+        public virtual IList<View> Views
         {
-            return children;
+        	get { return children; }
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace net.esper.view
             else
             {
                 writer.WriteLine(prefix + " newData.size=" + newData.Length + "...");
-                printObjectArray(prefix, writer, newData);
+                PrintObjectArray(prefix, writer, newData);
             }
 
             if (oldData == null)
@@ -185,13 +185,13 @@ namespace net.esper.view
             else
             {
                 writer.WriteLine(prefix + " oldData.size=" + oldData.Length + "...");
-                printObjectArray(prefix, writer, oldData);
+                PrintObjectArray(prefix, writer, oldData);
             }
 
             log.Debug(".dumpUpdateParams Dumping update parameters..." + writer.ToString());
         }
 
-        private static void printObjectArray(String prefix, TextWriter writer, Object[] objects)
+        private static void PrintObjectArray(String prefix, TextWriter writer, Object[] objects)
         {
             int count = 0;
             foreach (Object obj in objects)
@@ -211,7 +211,7 @@ namespace net.esper.view
         {
             if (log.IsDebugEnabled)
             {
-                foreach (View child in parentViewable.GetViews())
+                foreach (View child in parentViewable.Views)
                 {
                     log.Debug(".dumpChildViews " + prefix + " " + child.ToString());
                     DumpChildViews(prefix + "  ", child);
@@ -233,9 +233,7 @@ namespace net.esper.view
         {
             Stack<View> stack = new Stack<View>();
 
-            bool found ;
-
-            foreach (View view in parentView.GetViews())
+            foreach (View view in parentView.Views)
             {
                 if (view == descendentView)
                 {
@@ -244,7 +242,7 @@ namespace net.esper.view
                     return viewList;
                 }
 
-                found = findDescendentRecusive(view, descendentView, stack);
+                bool found = FindDescendentRecusive(view, descendentView, stack);
 
                 if (found)
                 {
@@ -257,19 +255,19 @@ namespace net.esper.view
             return null;
         }
 
-        private static bool findDescendentRecusive(View parentView, Viewable descendentView, Stack<View> stack)
+        private static bool FindDescendentRecusive(View parentView, Viewable descendentView, Stack<View> stack)
         {
             stack.Push(parentView);
 
-            Boolean found = false;
-            foreach (View view in parentView.GetViews())
+            bool found = false;
+            foreach (View view in parentView.Views)
             {
                 if (view == descendentView)
                 {
                     return true;
                 }
 
-                found = findDescendentRecusive(view, descendentView, stack);
+                found = FindDescendentRecusive(view, descendentView, stack);
 
                 if (found)
                 {
@@ -289,16 +287,6 @@ namespace net.esper.view
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         #region View Members
-        
-        /// <summary>
-        /// Return null if the view will accept being attached to a particular object.
-        /// </summary>
-        /// <param name="parentViewable">is the potential parent for this view</param>
-        /// <returns>
-        /// null if this view can successfully attach to the parent, an error message if it cannot.
-        /// </returns>
-        
-        abstract public string AttachesTo(Viewable parentViewable);
 
         /// <summary>
         /// Notify that data has been added or removed from the Viewable parent.
@@ -340,7 +328,6 @@ namespace net.esper.view
         abstract public EventType EventType
         {
             get;
-            set; // Allows sub-classes to define this otherwise many things fail
         }
 
         #endregion

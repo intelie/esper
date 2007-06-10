@@ -7,7 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 using System.Threading;
+using System.Runtime.InteropServices;
+
+using net.esper.pattern;
+using net.esper.view.internals;
 
 using org.apache.commons.logging;
 
@@ -59,7 +64,7 @@ namespace net.esper.util
 	    /// <summary>Logs the lock and action.</summary>
 	    /// <param name="lockAction">is the action towards the lock</param>
 	    /// <param name="lock">is the lock instance</param>
-	    public static void TraceLock(String lockAction, ReentrantLock lockObj)
+	    public static void TraceLock(String lockAction, Object lockObj)
 	    {
 	        if (!ENABLED_TRACE)
 	        {
@@ -80,24 +85,25 @@ namespace net.esper.util
 	        Write(lockAction + " " + GetLockInfo(lockObj));
 	    }
 
-	    private static String GetLockInfo(ReentrantLock lockObj)
+	    private static String GetLockInfo(Object lockObj)
 	    {
-	        String lockid = "Lock@" + Integer.ToHexString(lockObj.GetHashCode());
-	        return "lock " + lockid + " held=" + lockObj.HoldCount + " isHeldMe=" + lockObj.IsHeldByCurrentThread() +
-	                " hasQueueThreads=" + lockObj.HasQueuedThreads();
+	    	String lockid = String.Format("Lock@{0:X8}", Marshal.GetIUnknownForObject(lockObj).ToInt64());
+	    	return "lock " + lockid;
+	        //return "lock " + lockid + " held=" + lockObj.HoldCount + " isHeldMe=" + lockObj.IsHeldByCurrentThread() +
+	        //        " hasQueueThreads=" + lockObj.HasQueuedThreads();
 	    }
 
-	    private static String GetLockInfo(ReentrantReadWriteLock lockObj)
+	    private static String GetLockInfo(ReaderWriterLock lockObj)
 	    {
-	        String lockid = "RWLock@" + Integer.ToHexString(lockObj.GetHashCode());
+	        String lockid = String.Format("RWLock@{0:X}", lockObj.GetHashCode());
 	        return lockid +
-	               " readLockCount=" + lockObj.ReadLockCount +
-	               " isWriteLocked=" + lockObj.IsWriteLocked();
+	               //" readLockCount=" + lockObj.ReadLockCount +
+	               " isWriteLocked=" + lockObj.IsWriterLockHeld;
 	    }
 
 	    private static void Write(String text, params Object[] objects)
 	    {
-	        StringBuffer buf = new StringBuffer();
+	        StringBuilder buf = new StringBuilder();
 	        buf.Append(text);
 	        buf.Append(' ');
 	        foreach (Object obj in objects)
@@ -108,9 +114,9 @@ namespace net.esper.util
 	            }
 	            else
 	            {
-	                buf.Append(obj.Class.SimpleName);
+	                buf.Append(obj.GetType().FullName);
 	                buf.Append('@');
-	                buf.Append(Integer.ToHexString(obj.GetHashCode()));
+	                buf.Append(String.Format("{0:X2}", obj.GetHashCode()));
 	            }
 	            buf.Append(' ');
 	        }

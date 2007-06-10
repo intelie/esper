@@ -19,13 +19,14 @@ namespace net.esper.eql.expression
 	    /// <summary>Ctor.</summary>
 	    public ExprNodeSubselectVisitor()
 	    {
-	        subselects = new LinkedList<ExprSubselectNode>();
+	        subselects = new List<ExprSubselectNode>();
 	    }
 
 	    /// <summary>Returns a list of subquery expression nodes.</summary>
 	    /// <returns>subquery nodes</returns>
-	    public List<ExprSubselectNode> GetSubselects() {
-	        return subselects;
+	    public IList<ExprSubselectNode> Subselects
+        {
+	        get { return subselects; }
 	    }
 
 	    public bool IsVisit(ExprNode exprNode)

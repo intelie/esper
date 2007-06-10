@@ -234,7 +234,13 @@ namespace net.esper.client
 		        }
 	            return rootElementNamespace == other.rootElementNamespace;
 		    }
-			
+		    
+			public override int GetHashCode()
+			{
+				return
+					this.name.GetHashCode() * 31 +
+					this.xpath.GetHashCode() ;
+			}			
         }
     }
 }

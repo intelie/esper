@@ -37,7 +37,7 @@ namespace net.esper.core
 		/// </p>
 		/// </summary>
 	    /// <returns>listener set</returns>
-        ISet<UpdateListener> Listeners
+        Set<UpdateListener> Listeners
 		{
 			get;
 			set;

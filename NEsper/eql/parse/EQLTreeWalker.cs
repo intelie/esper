@@ -439,8 +439,8 @@ namespace net.esper.eql.parse
 	        AST nodeEvalExpr = node.getFirstChild();
 	        AST nodeSubquery = nodeEvalExpr.getNextSibling();
 
-	        boolean isNot = false;
-	        if (node.getType() == NOT_IN_SUBSELECT_EXPR)
+	        bool isNot = false;
+	        if (node.Type == NOT_IN_SUBSELECT_EXPR)
 	        {
 	            isNot = true;
 	        }
@@ -650,10 +650,10 @@ namespace net.esper.eql.parse
 
 	        try
 	        {
-	            AggregationSupport aggregation = engineImportService.resolveAggregation(childNodeText);
+	            AggregationSupport aggregation = engineImportService.ResolveAggregation(childNodeText);
 
 	            bool isDistinct = false;
-	            if ((node.getFirstChild().getNextSibling() != null) && (node.getFirstChild().getNextSibling().getType() == DISTINCT))
+	            if ((node.getFirstChild().getNextSibling() != null) && (node.getFirstChild().getNextSibling().Type == DISTINCT))
 	            {
 	                isDistinct = true;
 	            }
@@ -1095,7 +1095,7 @@ namespace net.esper.eql.parse
 
 	        AST startNode = node.getFirstChild();
 	        String optionalPatternTagName = null;
-	        if (startNode.getType() == EVENT_FILTER_NAME_TAG)
+	        if (startNode.Type == EVENT_FILTER_NAME_TAG)
 	        {
 	            optionalPatternTagName = startNode.getText();
 	            startNode = startNode.getNextSibling();
@@ -1111,7 +1111,7 @@ namespace net.esper.eql.parse
 	            ExprNode exprNode = astExprNodeMap.Fetch(currentNode);
 	            if (exprNode == null)
 	            {
-	                throw new IllegalStateException("Expression node for AST node not found for type " + currentNode.getType());
+	                throw new IllegalStateException("Expression node for AST node not found for type " + currentNode.Type);
 	            }
 	            exprNodes.Add(exprNode);
 	            astExprNodeMap.Remove(currentNode);
@@ -1170,21 +1170,21 @@ namespace net.esper.eql.parse
 
 	        // The second node must be braces
 	        AST bracesNode = node.getFirstChild().getNextSibling();
-	        if ((bracesNode.getType() != LBRACK) && ((bracesNode.getType() != LPAREN)))
+	        if ((bracesNode.Type != LBRACK) && ((bracesNode.Type != LPAREN)))
 	        {
-	            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.getType() + "'");
+	            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.Type + "'");
 	        }
-	        bool isLowInclude = bracesNode.getType() == LBRACK;
+	        bool isLowInclude = bracesNode.Type == LBRACK;
 
 	        // The fifth node must be braces
 	        bracesNode = bracesNode.getNextSibling().getNextSibling().getNextSibling();
-	        if ((bracesNode.getType() != RBRACK) && ((bracesNode.getType() != RPAREN)))
+	        if ((bracesNode.Type != RBRACK) && ((bracesNode.Type != RPAREN)))
 	        {
-	            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.getType() + "'");
+	            throw new IllegalStateException("Invalid in-range syntax, no braces but type '" + bracesNode.Type + "'");
 	        }
-	        bool isHighInclude = bracesNode.getType() == RBRACK;
+	        bool isHighInclude = bracesNode.Type == RBRACK;
 
-	        ExprBetweenNode betweenNode = new ExprBetweenNode(isLowInclude, isHighInclude, node.getType() == NOT_IN_RANGE);
+	        ExprBetweenNode betweenNode = new ExprBetweenNode(isLowInclude, isHighInclude, node.Type == NOT_IN_RANGE);
 	        astExprNodeMap[node] = betweenNode;
 	    }
 
@@ -1192,7 +1192,7 @@ namespace net.esper.eql.parse
         {
             log.Debug(".leaveBetween");
 
-			ExprBetweenNode betweenNode = new ExprBetweenNode(true, true, node.getType() == NOT_BETWEEN);
+			ExprBetweenNode betweenNode = new ExprBetweenNode(true, true, node.Type == NOT_BETWEEN);
             astExprNodeMap[node] = betweenNode;
         }
 

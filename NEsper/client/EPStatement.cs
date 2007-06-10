@@ -36,7 +36,7 @@ namespace net.esper.client
         String Text { get ; }
 
 		/// <summary>Gets the statement's current state</summary>		
-		EPStatementState { get ; }
+		EPStatementState State { get ; }
 		
         /// <summary> Start the statement.</summary>
         void Start();

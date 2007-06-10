@@ -20,7 +20,7 @@ namespace net.esper.eql.expression
         /// <value></value>
         /// <returns> aggregation function name
         /// </returns>
-		override protected internal String AggregationFunctionName
+		override protected String AggregationFunctionName
 		{
 			get { return minMaxTypeEnum.ExpressionText; }
 		}
@@ -44,7 +44,7 @@ namespace net.esper.eql.expression
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
-		public override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+		protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 		{
 			if (this.ChildNodes.Count != 1)
 			{
@@ -52,7 +52,7 @@ namespace net.esper.eql.expression
 			}
 
 	        ExprNode child = this.ChildNodes[0];
-	        return methodResolutionService.MakeMinMaxAggregator(minMaxTypeEnum, child.ResultType);
+	        return methodResolutionService.MakeMinMaxAggregator(minMaxTypeEnum, child.ReturnType);
 		}
 
         /// <summary>

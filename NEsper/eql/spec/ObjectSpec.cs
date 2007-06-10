@@ -74,7 +74,7 @@ namespace net.esper.eql.spec
 	            return false;
 	        }
 
-	        if (Class != otherObject.Class)
+	        if (GetType() != otherObject.GetType())
 	        {
 	            return false;
 	        }
@@ -85,7 +85,7 @@ namespace net.esper.eql.spec
 	            return false;
 	        }
 
-	        if (objectParameters.Size() != other.objectParameters.Size())
+	        if (objectParameters.Count != other.objectParameters.Count)
 	        {
 	            return false;
 	        }
@@ -94,7 +94,7 @@ namespace net.esper.eql.spec
 	        int index = 0;
 	        foreach (Object thisParam in objectParameters)
 	        {
-	            Object otherParam = other.objectParameters.Get(index);
+	            Object otherParam = other.objectParameters[index];
 	            index++;
 
 	            if (!(thisParam.Equals(otherParam)))
@@ -105,6 +105,13 @@ namespace net.esper.eql.spec
 
 	        return true;
 	    }
+	    
+		public override int GetHashCode()
+		{
+			return
+				(this.objectName.GetHashCode() * 31) +
+				(this.objectNamespace.GetHashCode()) ;
+		}
 
 	    public override String ToString()
 	    {

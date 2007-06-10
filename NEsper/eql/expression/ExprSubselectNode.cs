@@ -45,7 +45,7 @@ namespace net.esper.eql.expression
 	    /// is filtered results from the table of stored subquery events
 	    /// </param>
 	    /// <returns>evaluation result</returns>
-	    public abstract Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ISet<EventBean> matchingEvents);
+	    public abstract Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents);
 
 	    /// <summary>
 	    /// Return true to indicate that wildcard selects are acceptable, or false to indicate wildcard is not acceptable
@@ -62,84 +62,87 @@ namespace net.esper.eql.expression
 	        this.statementSpecRaw = statementSpec;
 	    }
 
-	    public bool IsConstantResult()
+	    public override bool IsConstantResult
 	    {
-	        if (selectClause != null)
-	        {
-	            return selectClause.IsConstantResult();
-	        }
-	        return false;
+	    	get
+	    	{
+		        if (selectClause != null)
+		        {
+		            return selectClause.IsConstantResult;
+		        }
+		        return false;
+	    	}
 	    }
 
-	    /// <summary>Supplies a compiled statement spec.</summary>
-	    /// <param name="statementSpecCompiled">compiled validated filters</param>
-	    public void SetStatementSpecCompiled(StatementSpecCompiled statementSpecCompiled)
+	    /// <summary>Gets or sets the compiled statement spec.</summary>
+	    public StatementSpecCompiled StatementSpecCompiled
 	    {
-	        this.statementSpecCompiled = statementSpecCompiled;
+	    	get { return this.statementSpecCompiled; }
+	    	set { this.statementSpecCompiled = value ; }
 	    }
 
-	    /// <summary>Returns the compiled statement spec.</summary>
-	    /// <returns>compiled statement</returns>
-	    public StatementSpecCompiled GetStatementSpecCompiled()
+	    /// <summary>Gets or sets the validate select clause</summary>
+	    public ExprNode SelectClause
 	    {
-	        return statementSpecCompiled;
+	    	get { return this.selectClause ; }
+	    	set { this.selectClause = value ; }
 	    }
 
-	    /// <summary>Sets the validate select clause</summary>
-	    /// <param name="selectClause">is the expression representing the select clause</param>
-	    public void SetSelectClause(ExprNode selectClause)
-	    {
-	        this.selectClause = selectClause;
-	    }
-
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
+	    public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
 	    {
 	        Set<EventBean> matchingEvents = strategy.Lookup(eventsPerStream);
 	        return Evaluate(eventsPerStream, isNewData, matchingEvents);
 	    }
 
 	    /// <summary>Returns the uncompiled statement spec.</summary>
-	    /// <returns>statement spec uncompiled</returns>
-	    public StatementSpecRaw GetStatementSpecRaw()
+	    public StatementSpecRaw StatementSpecRaw
 	    {
-	        return statementSpecRaw;
+	    	get { return statementSpecRaw; }
 	    }
 
-	    /// <summary>Supplies the name of the select expression as-tag</summary>
-	    /// <param name="selectAsName">is the as-name</param>
-	    public void SetSelectAsName(String selectAsName)
+	    /// <summary>
+	    /// Gets or sets the name of the select expression as-tag
+	    /// </summary>
+	    public string SelectAsName
 	    {
-	        this.selectAsName = selectAsName;
+	    	get { return this.selectAsName; }
+	    	set { this.selectAsName = value ; }
 	    }
 
-	    /// <summary>Sets the validated filter expression, or null if there is none.</summary>
-	    /// <param name="filterExpr">is the filter</param>
-	    public void SetFilterExpr(ExprNode filterExpr)
+	    /// <summary>
+	    /// Gets or sets the validated filter expression, or null
+	    /// if there is none.</summary>
+	    public ExprNode FilterExpr
 	    {
-	        this.filterExpr = filterExpr;
+	    	get { return this.filterExpr; }
+	    	set { this.filterExpr = filterExpr; }
 	    }
 
-	    public String ToExpressionString()
+	    public override string ExpressionString
 	    {
-	        if (selectAsName != null)
-	        {
-	            return selectAsName;
-	        }
-	        return selectClause.ToExpressionString();
+	    	get
+	    	{
+		        if (selectAsName != null)
+		        {
+		            return selectAsName;
+		        }
+		        return selectClause.ExpressionString;
+	    	}
 	    }
 
-	    public bool EqualsNode(ExprNode node)
+	    public override bool EqualsNode(ExprNode node)
 	    {
 	        return false;   // 2 subselects are never equivalent
 	    }
 
 	    /// <summary>
-	    /// Sets the strategy for boiling down the table of subquery events into a subset against which to run the filter.
+	    /// Gets or sets the strategy for boiling down the table of
+	    /// subquery events into a subset against which to run the filter.
 	    /// </summary>
-	    /// <param name="strategy">is the looking strategy (full table scan or indexed)</param>
-	    public void SetStrategy(SubqueryTableLookupStrategy strategy)
+	    public SubqueryTableLookupStrategy Strategy
 	    {
-	        this.strategy = strategy;
+	    	get { return this.strategy ; }
+	    	set { this.strategy = strategy; }
 	    }
 	}
 } // End of namespace

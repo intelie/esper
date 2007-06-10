@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 
-using Properties = net.esper.compat.EDataDictionary;
+using net.esper.compat;
 
 namespace net.esper.client
 {

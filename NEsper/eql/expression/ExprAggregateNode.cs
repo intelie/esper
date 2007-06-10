@@ -54,12 +54,12 @@ namespace net.esper.eql.expression
 	     */
 	    protected abstract AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService);
 
-	    public bool IsConstantResult
+	    public override bool IsConstantResult
 	    {
 	        get { return false; }
 	    }
 
-	    public void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
 	        this.aggregationMethod = ValidateAggregationChild(streamTypeService, methodResolutionService);
 	        if (isDistinct)
@@ -68,7 +68,7 @@ namespace net.esper.eql.expression
 	        }
 	    }
 
-	    public virtual Type ReturnType
+	    public override Type ReturnType
 	    {
 			get
 			{
@@ -116,12 +116,6 @@ namespace net.esper.eql.expression
         {
             isDistinct = distinct;
         }
-
-        /// <summary> Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.</summary>
-        /// <returns> prototype aggregation state as a factory for aggregation states per group-by key value
-        /// </returns>
-
-        public abstract Aggregator AggregationFunction { get; }
 
         /// <summary>
         /// Return true if a expression aggregate node semantically equals the current node, or false if not.

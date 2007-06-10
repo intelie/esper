@@ -101,7 +101,7 @@ namespace net.esper.events
 
 	            String eventTypeId = "TYPE_" + type.FullName;
 	            eventType = new BeanEventType(type, this, legacyDef, eventTypeId);
-	            typesPerBean.put(type, eventType);
+			    typesPerBean[type] = eventType;
 	        }
 		}
 	}

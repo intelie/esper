@@ -5,6 +5,7 @@ using System.IO;
 using net.esper.compat;
 using net.esper.eql.spec;
 using net.esper.eql.join.assemble;
+using net.esper.events;
 using net.esper.type;
 
 using Log = org.apache.commons.logging.Log;
@@ -91,7 +92,7 @@ namespace net.esper.eql.join.plan
 
 			// Recursive populating the required (outer) and optional (inner) relationships
 			// of this stream and the substream
-			ISet<Int32> completedStreams = new EHashSet<Int32>();
+			Set<Int32> completedStreams = new EHashSet<Int32>();
 			RecursiveBuild( streamNo, queryGraph, outerInnerGraph, completedStreams, substreamsPerStream, requiredPerStream );
 
 			// verify the substreamsPerStream, all streams must exists and be linked
@@ -179,7 +180,7 @@ namespace net.esper.eql.join.plan
         public static void RecursiveBuild( int streamNum,
 			QueryGraph queryGraph,
 			OuterInnerDirectionalGraph outerInnerGraph,
-			ISet<Int32> completedStreams,
+			Set<Int32> completedStreams,
 			LinkedDictionary<Int32, int[]> substreamsPerStream,
 			Boolean[] requiredPerStream )
 		{
@@ -187,14 +188,14 @@ namespace net.esper.eql.join.plan
             completedStreams.Add(streamNum);
 
 			// Determine the streams we can navigate to from this stream
-			ISet<Int32> navigableStreams = queryGraph.GetNavigableStreams( streamNum );
+			Set<Int32> navigableStreams = queryGraph.GetNavigableStreams( streamNum );
 
 			// remove those already done
 			navigableStreams.RemoveAll( completedStreams );
 
 			// Which streams are inner streams to this stream (optional), which ones are outer to the stream (required)
-			ISet<Int32> requiredStreams = GetOuterStreams( streamNum, navigableStreams, outerInnerGraph );
-			ISet<Int32> optionalStreams = GetInnerStreams( streamNum, navigableStreams, outerInnerGraph );
+			Set<Int32> requiredStreams = GetOuterStreams( streamNum, navigableStreams, outerInnerGraph );
+			Set<Int32> optionalStreams = GetInnerStreams( streamNum, navigableStreams, outerInnerGraph );
 
 			// Remove from the required streams the optional streams which places 'full' joined streams
 			// into the optional stream category
@@ -247,12 +248,12 @@ namespace net.esper.eql.join.plan
         /// <param name="toStreams">To streams.</param>
         /// <param name="outerInnerGraph">The outer inner graph.</param>
         /// <returns></returns>
-		public static ISet<Int32> GetInnerStreams(
+		public static Set<Int32> GetInnerStreams(
             int fromStream,
-            ISet<Int32> toStreams,
+            Set<Int32> toStreams,
             OuterInnerDirectionalGraph outerInnerGraph )
 		{
-			ISet<Int32> innerStreams = new EHashSet<Int32>();
+			Set<Int32> innerStreams = new EHashSet<Int32>();
 			foreach ( int toStream in toStreams )
 			{
 				if ( outerInnerGraph.IsInner( fromStream, toStream ) )
@@ -264,9 +265,9 @@ namespace net.esper.eql.join.plan
 		}
 
 		// which streams are to this table an outer stream
-		private static ISet<Int32> GetOuterStreams( int fromStream, ISet<Int32> toStreams, OuterInnerDirectionalGraph outerInnerGraph )
+		private static Set<Int32> GetOuterStreams( int fromStream, Set<Int32> toStreams, OuterInnerDirectionalGraph outerInnerGraph )
 		{
-			ISet<Int32> outerStreams = new EHashSet<Int32>();
+			Set<Int32> outerStreams = new EHashSet<Int32>();
 			foreach ( int toStream in toStreams )
 			{
 				if ( outerInnerGraph.IsOuter( toStream, fromStream ) )
@@ -353,7 +354,7 @@ namespace net.esper.eql.join.plan
 		/// </param>
 		public static void VerifyJoinedPerStream( int rootStream, IDictionary<Int32, int[]> streamsJoinedPerStream )
 		{
-			ISet<Int32> streams = new EHashSet<Int32>();
+			Set<Int32> streams = new EHashSet<Int32>();
             streams.Add(rootStream);
 
 			RecursiveAdd( rootStream, streamsJoinedPerStream, streams );
@@ -365,7 +366,7 @@ namespace net.esper.eql.join.plan
 			}
 		}
 
-		private static void RecursiveAdd( int currentStream, IDictionary<Int32, int[]> streamsJoinedPerStream, ISet<Int32> streams )
+		private static void RecursiveAdd( int currentStream, IDictionary<Int32, int[]> streamsJoinedPerStream, Set<Int32> streams )
 		{
 			if ( currentStream >= streamsJoinedPerStream.Count )
 			{

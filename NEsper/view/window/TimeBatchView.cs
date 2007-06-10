@@ -60,7 +60,6 @@ namespace net.esper.view.window
         public long MsecIntervalSize
         {
             get { return msecIntervalSize; }
-            set { this.msecIntervalSize = value; }
         }
 
         /// <summary>
@@ -71,7 +70,6 @@ namespace net.esper.view.window
         public long? InitialReferencePoint
         {
             get { return initialReferencePoint; }
-            set { this.initialReferencePoint = value; }
         }
 
 		/// <summary>
@@ -84,7 +82,6 @@ namespace net.esper.view.window
         public override EventType EventType
         {
             get { return parent.EventType; }
-            set { }
         }
 
 	    /// <summary>Constructor.</summary>
@@ -115,7 +112,7 @@ namespace net.esper.view.window
 	        this.scheduleSlot = statementContext.ScheduleBucket.AllocateSlot();
 	    }
 
-	    public override View CloneView(StatementContext statementContext)
+	    public View CloneView(StatementContext statementContext)
 	    {
 	        return timeBatchViewFactory.MakeView(statementContext);
 	    }

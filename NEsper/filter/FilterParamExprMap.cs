@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
 using net.esper.eql.expression;
 
 namespace net.esper.filter
@@ -43,24 +44,27 @@ namespace net.esper.filter
 
 	    /// <summary>Returns all expression nodes for which no filter parameter exists.</summary>
 	    /// <returns>list of expression nodes</returns>
-	    public List<ExprNode> GetUnassignedExpressions()
+	    public List<ExprNode> UnassignedExpressions
 	    {
-	        List<ExprNode> unassigned = new ArrayList<ExprNode>();
-	        foreach (ExprNode exprNode in exprNodes.KeySet())
-	        {
-	            if (exprNodes.Get(exprNode) == null)
-	            {
-	                unassigned.Add(exprNode);
-	            }
-	        }
-	        return unassigned;
+	    	get
+	    	{
+		        List<ExprNode> unassigned = new List<ExprNode>();
+		        foreach (ExprNode exprNode in exprNodes.Keys)
+		        {
+		            if (exprNodes.Get(exprNode) == null)
+		            {
+		                unassigned.Add(exprNode);
+		            }
+		        }
+		        return unassigned;
+	    	}
 	    }
 
 	    /// <summary>Returns all filter parameters.</summary>
 	    /// <returns>filter parameters</returns>
-	    public Collection<FilterSpecParam> GetFilterParams()
+	    public ICollection<FilterSpecParam> FilterParams
 	    {
-	        return specParams.KeySet();
+	    	get { return specParams.Keys; }
 	    }
 
 	    /// <summary>Removes a filter parameter and it's associated expression node</summary>

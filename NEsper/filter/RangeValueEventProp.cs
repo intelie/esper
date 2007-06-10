@@ -29,9 +29,9 @@ namespace net.esper.filter
             this.resultEventProperty = resultEventProperty;
         }
 
-	   public double GetFilterValue(MatchedEventMap matchedEvents)
+	   public double? GetFilterValue(MatchedEventMap matchedEvents)
 	    {
-	        EventBean _event = matchedEvents.getMatchingEvent(resultEventAsName);
+	        EventBean _event = matchedEvents.GetMatchingEvent(resultEventAsName);
 	        if (_event == null)
 	        {
 	            throw new IllegalStateException("Matching event named " +

@@ -26,7 +26,6 @@ namespace net.esper.view
 	                                            EventType parentEventType,
 	                                            IList<ViewSpec> viewSpecDefinitions,
 	                                            StatementContext context)
-	            throws ViewProcessingException
 	    {
 	        // Clone the view spec list to prevent parameter modification
 	        IList<ViewSpec> viewSpecList = new List<ViewSpec>(viewSpecDefinitions);

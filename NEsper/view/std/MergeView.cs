@@ -48,7 +48,7 @@ namespace net.esper.view.std
 	   /// is passed by the factory as the factory adds the merged fields to an event type
 	   /// </param>
 	   /// <param name="statementContext">contains required view services</param>
-	    public MergeView(StatementContext statementContext, String groupFieldNames[], EventType resultEventType)
+	   public MergeView(StatementContext statementContext, String[] groupFieldNames, EventType resultEventType)
 	    {
 	        this.groupFieldNames = groupFieldNames;
 	        this.eventType = resultEventType;

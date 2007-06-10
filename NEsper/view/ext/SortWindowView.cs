@@ -45,7 +45,7 @@ namespace net.esper.view.ext
         /// <returns> field names to sort by
         /// </returns>
 
-        protected String[] SortFieldNames
+        public String[] SortFieldNames
         {
             get { return sortFieldNames; }
         }
@@ -54,7 +54,7 @@ namespace net.esper.view.ext
         /// <returns> the isDescending value for each sort property
         /// </returns>
 
-        protected Boolean[] IsDescendingValues
+        public bool[] IsDescendingValues
         {
             get { return isDescendingValues; }
         }
@@ -63,7 +63,7 @@ namespace net.esper.view.ext
         /// <returns> size of window
         /// </returns>
 
-        protected int SortWindowSize
+        public int SortWindowSize
         {
             get { return sortWindowSize; }
         }
@@ -72,7 +72,7 @@ namespace net.esper.view.ext
 	     * Returns the friend handling the random access, cal be null if not required.
 	     * @return random accessor to sort window contents
 	     */
-	    protected IStreamSortedRandomAccess OptionalSortedRandomAccess
+	    public IStreamSortedRandomAccess OptionalSortedRandomAccess
 	    {
 	        get { return optionalSortedRandomAccess; }
 	    }
@@ -145,7 +145,6 @@ namespace net.esper.view.ext
                 // The schema is the parent view's schema
                 return parent.EventType;
             }
-            set { }
         }
 
         /// <summary>

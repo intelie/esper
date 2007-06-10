@@ -18,22 +18,22 @@ namespace net.esper.view
 	/// </summary>
 	public class ViewCapPriorEventAccess : ViewCapability
 	{
-	    private Integer indexConstant;
+	    private int? indexConstant;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="indexConstant">
 	    /// is the index of the prior event, with zero being the current event.
 	    /// </param>
-	    public ViewCapPriorEventAccess(Integer indexConstant)
+	    public ViewCapPriorEventAccess(int? indexConstant)
 	    {
 	        this.indexConstant = indexConstant;
 	    }
 
 	    /// <summary>Index or the prior event we are asking for.</summary>
 	    /// <returns>prior event index constant</returns>
-	    public Integer GetIndexConstant()
+	    public int? IndexConstant
 	    {
-	        return indexConstant;
+	    	get { return indexConstant; }
 	    }
 
 	    public bool Inspect(List<ViewFactory> viewFactories)

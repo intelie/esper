@@ -17,7 +17,7 @@ namespace net.esper.eql.expression
         /// <value></value>
         /// <returns> aggregation function name
         /// </returns>
-		protected internal override string AggregationFunctionName
+		protected override string AggregationFunctionName
 		{
 			get { return "stddev"; }
 		}
@@ -31,7 +31,7 @@ namespace net.esper.eql.expression
 		{
 		}
 
-		public override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+		protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 		{
 			base.ValidateSingleNumericChild( streamTypeService );
 			return methodResolutionService.MakeStddevAggregator();

@@ -33,8 +33,8 @@ namespace net.esper.eql.view
 	    private readonly OutputCondition outputCondition;
 	    private List<EventBean> newEventsList = new LinkedList<EventBean>();
 		private List<EventBean> oldEventsList = new LinkedList<EventBean>();
-		private ISet<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
-		private ISet<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
+		private Set<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
+		private Set<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
 
 		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -61,7 +61,7 @@ namespace net.esper.eql.view
 
 	    	if(streamCount < 1)
 	    	{
-	    		throw new IllegalArgumentException("Output process view is part of at least 1 stream");
+	    		throw new ArgumentException("Output process view is part of at least 1 stream");
 	    	}
 
 	    	OutputCallback outputCallback = GetCallbackToLocal(streamCount);
@@ -74,13 +74,13 @@ namespace net.esper.eql.view
 	    /// </summary>
 	    /// <param name="newData">new events</param>
 	    /// <param name="oldData">old events</param>
-	    public void Update(EventBean[] newData, EventBean[] oldData)
+	    public override void Update(EventBean[] newData, EventBean[] oldData)
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".update Received update, " +
-	                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-	                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
+	                    "  newData.Length==" + ((newData == null) ? 0 : newData.Length) +
+	                    "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
 	        }
 
 	        // add the incoming events to the event batches
@@ -88,7 +88,7 @@ namespace net.esper.eql.view
 	        int oldDataLength = 0;
 	        if(newData != null)
 	        {
-	        	newDataLength = newData.length;
+	        	newDataLength = newData.Length;
 	        	foreach (EventBean _event in newData)
 	        	{
 	        		newEventsList.Add(_event);
@@ -96,7 +96,7 @@ namespace net.esper.eql.view
 	        }
 	        if(oldData != null)
 	        {
-	        	oldDataLength = oldData.length;
+	        	oldDataLength = oldData.Length;
 	        	foreach (EventBean _event in oldData)
 	        	{
 	        		oldEventsList.Add(_event);
@@ -109,13 +109,13 @@ namespace net.esper.eql.view
 	    /// <summary>This process (update) method is for participation in a join.</summary>
 	    /// <param name="newEvents">new events</param>
 	    /// <param name="oldEvents">old events</param>
-	    public void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+	    public override void Process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".process Received update, " +
-	                    "  newData.length==" + ((newEvents == null) ? 0 : newEvents.Size()) +
-	                    "  oldData.length==" + ((oldEvents == null) ? 0 : oldEvents.Size()));
+	                    "  newData.Length==" + ((newEvents == null) ? 0 : newEvents.Count) +
+	                    "  oldData.Length==" + ((oldEvents == null) ? 0 : oldEvents.Count));
 	        }
 
 			// add the incoming events to the event batches
@@ -128,7 +128,7 @@ namespace net.esper.eql.view
 				oldEventsSet.Add(_event);
 			}
 
-			outputCondition.UpdateOutputCondition(newEvents.Size(), oldEvents.Size());
+			outputCondition.UpdateOutputCondition(newEvents.Count, oldEvents.Count);
 	    }
 
 		/// <summary>
@@ -160,8 +160,8 @@ namespace net.esper.eql.view
 			else if(outputLastOnly)
 			{
 				// Keep only the last event, if there is one
-				newEvents = newEvents != null ? new EventBean[] { newEvents[newEvents.length - 1] } : newEvents;
-				oldEvents = oldEvents != null ? new EventBean[] { oldEvents[oldEvents.length - 1] } : oldEvents;
+				newEvents = newEvents != null ? new EventBean[] { newEvents[newEvents.Length - 1] } : newEvents;
+				oldEvents = oldEvents != null ? new EventBean[] { oldEvents[oldEvents.Length - 1] } : oldEvents;
 			}
 
 			if(doOutput)
@@ -242,31 +242,6 @@ namespace net.esper.eql.view
 	                {
 	                    ContinueOutputProcessingJoin(doOutput, forceUpdate);
 	                });
-	        }
-	    }
-
-	    /// <summary>
-        /// Method to transform an event based on the select expression.
-        /// </summary>
-	    public class OutputProcessTransform : TransformEventMethod
-	    {
-	        private readonly ResultSetProcessor resultSetProcessor;
-	        private readonly EventBean[] newData;
-
-	        /// <summary>Ctor.</summary>
-	        /// <param name="resultSetProcessor">
-	        /// is applying the select expressions to the events for the transformation
-	        /// </param>
-	        public OutputProcessTransform(ResultSetProcessor resultSetProcessor) {
-	            this.resultSetProcessor = resultSetProcessor;
-	            newData = new EventBean[1];
-	        }
-
-	        public EventBean Transform(EventBean _event)
-	        {
-	            newData[0] = _event;
-	            Pair<EventBean[], EventBean[]> pair = resultSetProcessor.ProcessViewResult(newData, null);
-	            return pair.First[0];
 	        }
 	    }
 	}

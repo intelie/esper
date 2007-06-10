@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 namespace net.esper.pattern.guard
 {
@@ -15,5 +16,8 @@ namespace net.esper.pattern.guard
 	/// </summary>
 	public abstract class GuardFactorySupport : GuardFactory
 	{
+		abstract public IList<object> GuardParameters { set ; }
+		
+		abstract public Guard MakeGuard(PatternContext context, Quitable quitable, object stateNodeId, object guardState);
 	}
 } // End of namespace

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.db;
 using net.esper.events;
@@ -17,8 +18,6 @@ using net.esper.pattern;
 using net.esper.schedule;
 using net.esper.util;
 using net.esper.view;
-
-using Properties = net.esper.compat.EDataDictionary;
 
 namespace net.esper.core
 {
@@ -40,8 +39,8 @@ namespace net.esper.core
 	        ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(configSnapshot.PlugInViews);
 	        PatternObjectResolutionService patternObjectResolutionService = new PatternObjectResolutionServiceImpl(configSnapshot.PlugInPatternObjects);
 
-	        // JNDI context for binding resources
-	        EngineEnvContext jndiContext = new EngineEnvContext();
+	        // Directory for binding resources
+	        EngineEnvContext resourceDirectory = new EngineEnvContext();
 
 	        // Statement context factory
 	        StatementContextFactory statementContextFactory = new StatementContextFactoryDefault();
@@ -49,7 +48,7 @@ namespace net.esper.core
 	        // New services context
 	        EPServicesContext services = new EPServicesContext(engineURI, engineURI, schedulingService,
 	                eventAdapterService, engineImportService, databaseConfigService, viewResolutionService,
-	                new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
+	                new StatementLockFactoryImpl(), eventProcessingRWLock, null, resourceDirectory, statementContextFactory,
 	                patternObjectResolutionService);
 
 	        // Circular dependency
@@ -70,11 +69,11 @@ namespace net.esper.core
 	        // to allow discovery of superclasses and interfaces during event type construction for bean events,
 	        // such that superclasses and interfaces can use the legacy type definitions.
 	        IDictionary<String, ConfigurationEventTypeLegacy> classLegacyInfo = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
-	        foreach (Map.Entry<String, String> entry in configSnapshot.JavaClassAliases.EntrySet())
+	        foreach (KeyValuePair<String, String> entry in configSnapshot.TypeAliases)
 	        {
 	            String aliasName = entry.Key;
 	            String className = entry.Value;
-	            ConfigurationEventTypeLegacy legacyDef = configSnapshot.LegacyAliases.Get(aliasName);
+	            ConfigurationEventTypeLegacy legacyDef = configSnapshot.LegacyAliases.Fetch(aliasName);
 	            if (legacyDef != null)
 	            {
 	                classLegacyInfo.Put(className, legacyDef);
@@ -83,10 +82,10 @@ namespace net.esper.core
 	        eventAdapterServiceClassLegacyConfigs = classLegacyInfo;
 
 	        // Add from the configuration the Java event class aliases
-	        IDictionary<String, String> javaClassAliases = configSnapshot.JavaClassAliases;
-	        foreach (Map.Entry<String, String> entry in javaClassAliases.EntrySet())
+	        IDictionary<String, String> javaClassAliases = configSnapshot.TypeAliases;
+	        foreach (KeyValuePair<String, String> entry in javaClassAliases)
 	        {
-	            // Add Java class alias
+	            // Add type alias
 	            try
 	            {
 	                String aliasName = entry.Key;
@@ -100,9 +99,9 @@ namespace net.esper.core
 
 	        // Add from the configuration the XML DOM aliases and type def
 	        IDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = configSnapshot.XmlDOMAliases;
-	        foreach (Map.Entry<String, ConfigurationEventTypeXMLDOM> entry in xmlDOMAliases.EntrySet())
+	        foreach (KeyValuePair<String, ConfigurationEventTypeXMLDOM> entry in xmlDOMAliases)
 	        {
-	            // Add Java class alias
+	            // Add type alias
 	            try
 	            {
 	                eventAdapterService.AddXMLDOMType(entry.Key, entry.Value);
@@ -115,11 +114,11 @@ namespace net.esper.core
 
 	        // Add map event types
 	        IDictionary<String, Properties> mapAliases = configSnapshot.MapAliases;
-	        foreach (Map.Entry<String, Properties> entry in mapAliases.EntrySet())
+	        foreach (KeyValuePair<String, Properties> entry in mapAliases)
 	        {
 	            try
 	            {
-	                IDictionary<String, Class> propertyTypes = CreatePropertyTypes(entry.Value);
+	                EDictionary<String, Type> propertyTypes = CreatePropertyTypes(entry.Value);
 	                eventAdapterService.AddMapType(entry.Key, propertyTypes);
 	            }
 	            catch (EventAdapterException ex)
@@ -172,7 +171,7 @@ namespace net.esper.core
 	            ScheduleBucket allStatementsBucket = schedulingService.AllocateBucket();
 	            databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.DatabaseRefs, schedulingService, allStatementsBucket);
 	        }
-	        catch (IllegalArgumentException ex)
+	        catch (ArgumentException ex)
 	        {
 	            throw new ConfigurationException("Error configuring engine: " + ex.Message, ex);
 	        }
@@ -180,32 +179,31 @@ namespace net.esper.core
 	        return databaseConfigService;
 	    }
 
-	    private static IDictionary<String, Class> CreatePropertyTypes(Properties properties)
+	    private static EDictionary<String, Type> CreatePropertyTypes(Properties properties)
 	    {
-	        IDictionary<String, Class> propertyTypes = new EHashDictionary<String, Class>();
-	        foreach (Object property in properties.KeySet())
+	        EDictionary<string, Type> propertyTypes = new EHashDictionary<string, Type>();
+	        foreach (string property in properties.Keys)
 	        {
-	            String className = (String) properties.Get(property);
-
-	            if ("string".Equals(className))
+	            string typeName = properties.Fetch(property);
+	            if (typeName == "string")
 	            {
-	                className = typeof(String).FullName;
+	                typeName = typeof(string).FullName;
 	            }
 
 	            // use the boxed type for primitives
-	            String boxedClassName = TypeHelper.GetBoxedClassName(className);
+	            string boxedTypeName = TypeHelper.GetBoxedTypeName(typeName);
 
-	            Class clazz = null;
+	            Type type = null;
 	            try
 	            {
-	                clazz = Class.ForName(boxedClassName);
+	            	type = Type.GetType(boxedTypeName);
 	            }
-	            catch (ClassNotFoundException ex)
+                catch (TypeLoadException ex)
 	            {
-	                throw new EventAdapterException("Unable to load class '" + boxedClassName + "', class not found", ex);
+	                throw new EventAdapterException("Unable to load type '" + boxedTypeName + "', class not found", ex);
 	            }
 
-	            propertyTypes.Put((String) property, clazz);
+	            propertyTypes[(String) property] = type;
 	        }
 	        return propertyTypes;
 	    }

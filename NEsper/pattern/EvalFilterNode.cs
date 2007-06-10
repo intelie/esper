@@ -12,7 +12,7 @@ namespace net.esper.pattern
     /// This class represents a filter of events in the evaluation tree representing
     /// any event expressions.
     /// </summary>
-	public sealed class EvalFilterNode:EvalNode
+	public sealed class EvalFilterNode : EvalNode
 	{
 		/// <summary> Returns filter specification.</summary>
 		/// <returns> filter definition

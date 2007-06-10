@@ -30,7 +30,7 @@ namespace net.esper.eql.join
         /// </summary>
         /// <param name="newEvents">set of event tuples representing new data</param>
         /// <param name="oldEvents">set of event tuples representing old data</param>
-        public void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        public void Process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
         {
             // Filter
             if (filterExprNode != null)
@@ -45,7 +45,7 @@ namespace net.esper.eql.join
         /// <param name="events">set of tuples of events</param>
         /// <param name="isNewData">true to indicate filter new data (istream) and not old data (rstream)</param>
 
-        public static void Filter(ExprNode filterExprNode, ISet<MultiKey<EventBean>> events, bool isNewData)
+        public static void Filter(ExprNode filterExprNode, Set<MultiKey<EventBean>> events, bool isNewData)
         {
             List<MultiKey<EventBean>> purgeList = null;
             

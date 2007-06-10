@@ -27,9 +27,8 @@ namespace net.esper.pattern
 	                                         EvalFollowedByNode evalFollowedByNode,
 	                                         MatchedEventMap beginState,
 	                                         PatternContext context)
+            : base(evalFollowedByNode, parentNode, null)
 	    {
-	        super(evalFollowedByNode, parentNode, null);
-
 	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".constructor");

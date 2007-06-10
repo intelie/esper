@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
@@ -19,15 +21,15 @@ namespace net.esper.view.std
 	public class MergeViewFactory : ViewFactory
 	{
 	    private String[] fieldNames;
-	    private Class[] fieldTypes;
+	    private Type[] fieldTypes;
 	    private EventType eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        fieldNames = GroupByViewFactory.GetFieldNameParams(viewParameters, "Group-by-merge");
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        // Find the group by view matching the merge view
 	        ViewFactory groupByViewFactory = null;
@@ -50,8 +52,8 @@ namespace net.esper.view.std
 	        }
 
 	        // determine types of fields
-	        fieldTypes = new Class[fieldNames.length];
-	        for (int i = 0; i < fieldTypes.length; i++)
+            fieldTypes = new Type[fieldNames.Length];
+	        for (int i = 0; i < fieldTypes.Length; i++)
 	        {
 	            fieldTypes[i] = groupByViewFactory.EventType.GetPropertyType(fieldNames[i]);
 	        }
@@ -62,7 +64,7 @@ namespace net.esper.view.std
 
 	        // If the parent event type contains the merge fields, we use the same event type
 	        bool parentContainsMergeKeys = true;
-	        for (int i = 0; i < fieldNames.length; i++)
+	        for (int i = 0; i < fieldNames.Length; i++)
 	        {
 	            if (!(parentEventType.IsProperty(fieldNames[i])))
 	            {
@@ -100,9 +102,9 @@ namespace net.esper.view.std
 	        return new MergeView(statementContext, fieldNames, eventType);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

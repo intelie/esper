@@ -7,6 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
+using net.esper.pattern;
+
 using org.apache.commons.logging;
 
 namespace net.esper.pattern
@@ -18,6 +21,10 @@ namespace net.esper.pattern
 	{
 	    /// <summary>Accept callback to indicate pattern results.</summary>
 	    /// <param name="callback">is a pattern result call</param>
-	    void SetCallback(PatternMatchCallback callback);
+	    PatternMatchCallback Callback
+	    {
+	    	get ;
+	    	set ;
+	    }
 	}
 } // End of namespace

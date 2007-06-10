@@ -24,7 +24,7 @@ namespace net.esper.filter
             this.doubleValue = doubleValue;
         }
 
-	    public double GetFilterValue(MatchedEventMap matchedEvents)
+	    public double? GetFilterValue(MatchedEventMap matchedEvents)
 	    {
 	        return doubleValue;
 	    }

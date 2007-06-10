@@ -33,17 +33,17 @@ namespace net.esper.eql.subquery
             this.coercionTypes = coercionTypes;
         }
 
-        protected Object[] GetKeys(EventBean[] eventsPerStream)
+        protected override Object[] GetKeys(EventBean[] eventsPerStream)
         {
-            Object[] keyValues = new Object[propertyGetters.length];
-            for (int i = 0; i < propertyGetters.length; i++)
+            Object[] keyValues = new Object[propertyGetters.Length];
+            for (int i = 0; i < propertyGetters.Length; i++)
             {
                 int streamNum = streamNumbers[i];
                 EventBean _event = eventsPerStream[streamNum];
                 Object value = propertyGetters[i].Get(_event);
 
-                Class coercionType = coercionTypes[i];
-                if ((value != null) && (!value.GetClass().Equals(coercionType)))
+                Type coercionType = coercionTypes[i];
+                if ((value != null) && (value.GetType() != coercionType))
                 {
                     if (value is Number)
                     {

@@ -102,7 +102,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
         /// <param name="matches">The matches.</param>
-        public override void MatchEvent(EventBean eventBean, ICollection<FilterCallback> matches)
+        public override void MatchEvent(EventBean eventBean, IList<FilterHandle> matches)
         {
             Object attributeValue = this.Getter.GetValue(eventBean);
 
@@ -116,7 +116,7 @@ namespace net.esper.filter
                 // Look up in hashtable
                 constantsMapRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
 
-		        for (Object key in constantsMap.Keys)
+		        foreach (Object key in constantsMap.Keys)
 		        {
 		            if (key == null)
 		            {
@@ -155,7 +155,7 @@ namespace net.esper.filter
 	        {
 	            if (this.PropertyBoxedType != filterConstant.GetType())
 	            {
-	                throw new IllegalArgumentException("Invalid type of filter constant of " +
+	                throw new ArgumentException("Invalid type of filter constant of " +
 	                        filterConstant.GetType().FullName + " for property " + this.PropertyName);
 	            }
 	        }

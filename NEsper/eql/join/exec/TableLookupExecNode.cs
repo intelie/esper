@@ -49,7 +49,7 @@ namespace net.esper.eql.join.exec
         public override void Process(EventBean lookupEvent, EventBean[] prefillPath, IList<EventBean[]> result)
         {
             // Lookup events
-            ISet<EventBean> joinedEvents = lookupStrategy.Lookup(lookupEvent);
+            Set<EventBean> joinedEvents = lookupStrategy.Lookup(lookupEvent);
 
             if (joinedEvents == null)
             {

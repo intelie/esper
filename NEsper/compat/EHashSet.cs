@@ -9,7 +9,7 @@ namespace net.esper.compat
     /// </summary>
     /// <typeparam name="T"></typeparam>
 
-	public sealed class EHashSet<T> : ISet<T>
+	public sealed class EHashSet<T> : Set<T>
 	{
 		private Dictionary<T, T> m_dataTable = new Dictionary<T, T>() ;
 
@@ -26,13 +26,13 @@ namespace net.esper.compat
 		/// </summary>
 		/// <param name="sourceData"></param>
 		
-		public EHashSet( ISet<T> sourceData )
+		public EHashSet( Set<T> sourceData )
 		{
 			AddAll( sourceData ) ;
 		}
 		
 		
-        #region ISet<T> Members
+        #region Set<T> Members
 
 		/// <summary>
 		/// Converts the set to an array.

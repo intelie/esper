@@ -12,8 +12,6 @@ using System.Collections.Generic;
 using net.esper.client;
 using net.esper.collection;
 
-using Properties = net.esper.compat.EDataDictionary;
-
 namespace net.esper.events
 {
 	/// <summary>
@@ -43,14 +41,14 @@ namespace net.esper.events
 	    /// <param name="eventAdapterService">is the ser</param>
 	    public WrapperEventType(String typeName, EventType eventType, IDictionary<String, Type> properties, EventAdapterService eventAdapterService)
 		{
-			checkForRepeatedPropertyNames(eventType, properties);
+			CheckForRepeatedPropertyNames(eventType, properties);
 
 			this.underlyingEventType = eventType;
 			this.underlyingMapType = new MapEventType(typeName, properties, eventAdapterService);
 	        this.hashCode = underlyingMapType.GetHashCode() ^ underlyingEventType.GetHashCode();
-	        this.isNoMapProperties = properties.IsEmpty();
+	        this.isNoMapProperties = properties.Count == 0;
 
-	        List<String> propertyNames = new ArrayList<String>();
+	        List<String> propertyNames = new List<String>();
 			foreach (String eventProperty in underlyingEventType.PropertyNames)
 			{
 				propertyNames.Add(eventProperty);
@@ -59,10 +57,10 @@ namespace net.esper.events
 			{
 				propertyNames.Add(mapProperty);
 			}
-			this.propertyNames = propertyNames.ToArray(new String[0]);
+			this.propertyNames = propertyNames.ToArray();
 		}
 
-		public IEnumerator<EventType> DeepSuperTypes
+		public IEnumerable<EventType> DeepSuperTypes
 		{
 			get { return null; }
 		}
@@ -71,7 +69,7 @@ namespace net.esper.events
 		{
 			if(underlyingEventType.IsProperty(property))
 			{
-	            return new EventPropertyGetterImpl(
+	            return new EventPropertyGetterImpl(new EventPropertyGetterDelegate(
                     delegate(EventBean _event)
 	                {
 	                    if(!(_event is WrapperEventBean))
@@ -80,8 +78,8 @@ namespace net.esper.events
 	                    }
 	                    WrapperEventBean wrapperEvent = (WrapperEventBean) _event;
 	                    EventBean wrappedEvent = wrapperEvent.UnderlyingEvent;
-	                    return underlyingEventType.GetGetter(property).Get(wrappedEvent);
-	                });
+	                    return underlyingEventType.GetGetter(property).GetValue(wrappedEvent);
+                    }));
 			}
 			else if (underlyingMapType.IsProperty(property))
 			{
@@ -93,7 +91,7 @@ namespace net.esper.events
 	                        throw new PropertyAccessException("Mismathched property getter to EventBean type");
 	                    }
 	                    WrapperEventBean wrapperEvent = (WrapperEventBean) _event;
-	                    Map map = wrapperEvent.UnderlyingMap;
+	                    IDictionary<string,object> map = wrapperEvent.UnderlyingMap;
 	                    return underlyingMapType.GetValue(property, map);
 	                });
 			}
@@ -103,7 +101,7 @@ namespace net.esper.events
 			}
 		}
 
-		public String[] PropertyNames
+		public ICollection<string> PropertyNames
 		{
 			get { return propertyNames; }
 		}
@@ -124,7 +122,7 @@ namespace net.esper.events
 			}
 		}
 
-		public EventType[] SuperTypes
+		public IEnumerable<EventType> SuperTypes
 		{
 			get { return null; }
 		}
@@ -192,7 +190,7 @@ namespace net.esper.events
 		{
 			foreach (String property in eventType.PropertyNames)
 			{
-				if(properties.KeySet().Contains(property))
+				if(properties.ContainsKey(property))
 				{
 					throw new EPException("Property " + property + " occurs in both the underlying event and in the additional properties");
 				}

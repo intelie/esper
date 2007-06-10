@@ -35,27 +35,27 @@ namespace net.esper.eql.expression
 	    {
 	    }
 
-	    public bool IsAllowWildcardSelect
+	    public override bool IsAllowWildcardSelect
 	    {
             get { return true; }
 	    }
 
-        public Type ReturnType
+        public override Type ReturnType
 	    {
             get { return typeof(bool?); }
 	    }
 
-	    public void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
 	    }
 
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ISet<EventBean> matchingEvents)
+	    public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents)
 	    {
 	        if (matchingEvents == null)
 	        {
 	            return false;
 	        }
-	        if (matchingEvents.Size() == 0)
+	        if (matchingEvents.Count == 0)
 	        {
 	            return false;
 	        }
@@ -66,8 +66,8 @@ namespace net.esper.eql.expression
 	        }
 
 	        // Evaluate filter
-	        EventBean[] events = new EventBean[eventsPerStream.length + 1];
-	        System.Arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
+	        EventBean[] events = new EventBean[eventsPerStream.Length + 1];
+            Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
 
 	        foreach (EventBean subselectEvent in matchingEvents)
 	        {

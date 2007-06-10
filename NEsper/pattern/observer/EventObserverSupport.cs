@@ -15,5 +15,7 @@ namespace net.esper.pattern.observer
 	/// </summary>
 	public abstract class EventObserverSupport : EventObserver
 	{
+		abstract public void StartObserve();
+		abstract public void StopObserve();
 	}
 } // End of namespace

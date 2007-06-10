@@ -17,43 +17,48 @@ using net.esper.util;
 namespace net.esper.pattern.observer
 {
 	/// <summary>Factory for making observer instances.</summary>
-	public class TimerIntervalObserverFactory : ObserverFactory, MetaDefItem
+	public class TimerIntervalObserverFactory
+		: ObserverFactory
+		, MetaDefItem
 	{
 	    /// <summary>Number of milliseconds after which the interval should fire.</summary>
 	    protected long milliseconds;
 
-	    public void SetObserverParameters(List<Object> observerParameters)
+	    public IList<Object> ObserverParameters
 	    {
-	        String errorMessage = "Timer-interval observer requires a single numeric or time period parameter";
-	        if (observerParameters.Size() != 1)
-	        {
-	            throw new ObserverParameterException(errorMessage);
-	        }
-
-	        Object parameter = observerParameters.Get(0);
-	        if (parameter is TimePeriodParameter)
-	        {
-	            TimePeriodParameter param = (TimePeriodParameter) parameter;
-	            milliseconds = Math.Round(1000d * param.NumSeconds);
-	        }
-	        else if (!(parameter is Number))
-	        {
-	            throw new ObserverParameterException(errorMessage);
-	        }
-	        else
-	        {
-	            Number param = (Number) parameter;
-	            if (TypeHelper.IsFloatingPointNumber(param))
-	            {
-	                milliseconds = Math.Round(1000d * param.DoubleValue());
-	            }
-	            else
-	            {
-	                milliseconds = 1000 * param.LongValue();
-	            }
-	        }
+	    	set
+		    {
+		        String errorMessage = "Timer-interval observer requires a single numeric or time period parameter";
+		        if (value.Count != 1)
+		        {
+		            throw new ObserverParameterException(errorMessage);
+		        }
+	
+		        Object parameter = value[0];
+		        if (parameter is TimePeriodParameter)
+		        {
+		            TimePeriodParameter param = (TimePeriodParameter) parameter;
+		            milliseconds = Math.Round(1000d * param.NumSeconds);
+		        }
+		        else if (!(parameter is Number))
+		        {
+		            throw new ObserverParameterException(errorMessage);
+		        }
+		        else
+		        {
+		            Number param = (Number) parameter;
+		            if (TypeHelper.IsFloatingPointNumber(param))
+		            {
+		                milliseconds = Math.Round(1000d * param.DoubleValue());
+		            }
+		            else
+		            {
+		                milliseconds = 1000 * param.LongValue();
+		            }
+		        }
+		    }
 	    }
-
+	    
 	    public EventObserver MakeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
 	    {
 	        return new TimerIntervalObserver(milliseconds, context, beginState, observerEventEvaluator);

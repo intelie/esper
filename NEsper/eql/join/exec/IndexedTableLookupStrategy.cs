@@ -79,7 +79,7 @@ namespace net.esper.eql.join.exec
         /// <returns>
         /// set of matching events, or null if none matching
         /// </returns>
-        public ISet<EventBean> Lookup(EventBean ev)
+        public Set<EventBean> Lookup(EventBean ev)
         {
             Object[] keys = GetKeys(ev);
             return index.Lookup(keys);

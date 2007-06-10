@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 using net.esper.eql.core;
 using net.esper.events;
@@ -32,27 +33,27 @@ namespace net.esper.eql.expression
 	    {
 	    }
 
-	    public void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
-	        length = this.ChildNodes.Size();
+	        length = this.ChildNodes.Count;
 
 	        // Can be an empty array with no content
-	        if (this.ChildNodes.Size() == 0)
+	        if (this.ChildNodes.Count == 0)
 	        {
 	            coercionType = typeof(Object);
 	            constantResult = new Object[0];
 	            return;
 	        }
 
-	        List<Class> comparedTypes = new LinkedList<Class>();
+	        List<Type> comparedTypes = new List<Type>();
 	        for (int i = 0; i < length; i++)
 	        {
-	            comparedTypes.Add(this.ChildNodes.Get(i).Type);
+	        	comparedTypes.Add(this.ChildNodes[i].GetType());
 	        }
 
 	        // Determine common denominator type
 	        try {
-	            coercionType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray(new Class[0]));
+	            coercionType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
 
 	            // Determine if we need to coerce numbers when one type doesn't match any other type
 	            if (TypeHelper.IsNumeric(coercionType))
@@ -82,7 +83,7 @@ namespace net.esper.eql.expression
 	        int index = 0;
 	        foreach (ExprNode child in this.ChildNodes)
 	        {
-	            if (!child.IsConstantResult())
+	            if (!child.IsConstantResult)
 	            {
 	                results = null;  // not using a constant result
 	                break;
@@ -93,7 +94,8 @@ namespace net.esper.eql.expression
 	        // Copy constants into array and coerce, if required
 	        if (results != null)
 	        {
-	            constantResult = Array.NewInstance(coercionType, length);
+                Array tempArray = Array.CreateInstance(coercionType, length);
+	            constantResult = tempArray;
 	            for (int i = 0; i < length; i++)
 	            {
 	                if (mustCoerce)
@@ -102,28 +104,31 @@ namespace net.esper.eql.expression
 	                    if (boxed != null)
 	                    {
 	                        Object coercedResult = TypeHelper.CoerceBoxed(boxed, coercionType);
-	                        Array.Set(constantResult, i, coercedResult);
+	                        tempArray.SetValue(coercedResult, i);
 	                    }
 	                }
 	                else
 	                {
-	                    Array.Set(constantResult, i, results[i]);
+	                    tempArray.SetValue(results[i], i);
 	                }
 	            }
 	        }
 	    }
 
-	    public bool IsConstantResult()
+	    public override bool IsConstantResult
 	    {
-	        return constantResult != null;
+	    	get { return constantResult != null; }
 	    }
 
-	    public Type GetType()
+	    public override Type ReturnType
 	    {
-	        return Array.NewInstance(coercionType, 0).Class;
+	    	get
+	    	{
+	        	return Array.NewInstance(coercionType, 0).Class;
+	    	}
 	    }
 
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
+	    public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
 	    {
 	        if (constantResult != null)
 	        {
@@ -160,24 +165,27 @@ namespace net.esper.eql.expression
 	        return array;
 	    }
 
-	    public String ToExpressionString()
+	    public override string ExpressionString
 	    {
-	        StringBuilder buffer = new StringBuilder();
-	        String delimiter = "";
-
-	        buffer.Append("{");
-	        foreach (ExprNode expr in this.ChildNodes)
-	        {
-	            buffer.Append(delimiter);
-	            buffer.Append(expr.ToExpressionString());
-	            delimiter = ",";
-	        }
-
-	        buffer.Append('}');
-	        return buffer.ToString();
+	    	get
+	    	{
+		        StringBuilder buffer = new StringBuilder();
+		        String delimiter = "";
+	
+		        buffer.Append("{");
+		        foreach (ExprNode expr in this.ChildNodes)
+		        {
+		            buffer.Append(delimiter);
+		            buffer.Append(expr.ExpressionString);
+		            delimiter = ",";
+		        }
+	
+		        buffer.Append('}');
+		        return buffer.ToString();
+	    	}
 	    }
 
-	    public bool EqualsNode(ExprNode node)
+	    public override bool EqualsNode(ExprNode node)
 	    {
 	        if (!(node is ExprArrayNode))
 	        {

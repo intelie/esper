@@ -92,7 +92,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="ev">The ev.</param>
         /// <param name="matches">The matches.</param>
-        public void MatchEvent(EventBean ev, ICollection<FilterHandle> matches)
+        public void MatchEvent(EventBean ev, IList<FilterHandle> matches)
         {
             if (log.IsDebugEnabled)
             {

@@ -221,9 +221,41 @@ namespace net.esper.util
                 ;
         }
 
-        /// <summary> Determines if the class passed in is one of the numeric classes.</summary>
-        /// <param name="type">to check
-        /// </param>
+        /// <summary> Determines if the type passed in is one of the integral numeric types.</summary>
+        /// <param name="type">to check</param>
+        public static bool IsIntegral(Type type)
+        {
+            return
+                (type == typeof(short?)) ||
+                (type == typeof(ushort?)) ||
+                (type == typeof(int?)) ||
+                (type == typeof(uint?)) ||
+                (type == typeof(long?)) ||
+                (type == typeof(ulong?)) ||
+                (type == typeof(sbyte?)) ||
+                (type == typeof(byte?)) ||
+                (type == typeof(short)) ||
+                (type == typeof(ushort)) ||
+                (type == typeof(int)) ||
+                (type == typeof(uint)) ||
+                (type == typeof(long)) ||
+                (type == typeof(ulong)) ||
+                (type == typeof(sbyte))
+                ;
+        }
+
+        /// <summary> Determines if the type passed in is one of the integral numeric types.</summary>
+        /// <param name="type">to check</param>
+        public static bool IsIntegralNumber(Object value)
+        {
+        	return
+        		(value != null) ?
+        		(IsIntegral(value.GetType())):
+        		(false);
+        }
+
+        /// <summary> Determines if the type passed in is one of the numeric types.</summary>
+        /// <param name="type">to check</param>
         /// <returns> true if numeric, false if not
         /// </returns>
         public static bool IsNumeric(Type type)
@@ -249,6 +281,18 @@ namespace net.esper.util
                 (type == typeof(ulong)) ||
                 (type == typeof(sbyte))
                 ;
+        }
+
+        /// <summary> Determines if the value passed in is one of the numeric types.</summary>
+        /// <param name="type">to check</param>
+        /// <returns> true if numeric, false if not</returns>
+
+        public static bool IsNumericValue(Object value)
+        {
+        	return
+        		(value != null) ?
+        		(IsNumeric(value.GetType())):
+        		(false);
         }
 
         /// <summary>
@@ -281,7 +325,7 @@ namespace net.esper.util
                 long? value = Convert.ToInt64(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(float?))
+            if (resultBoxedType == typeof(float?))
             {
                 float? value = Convert.ToSingle(numToCoerce);
                 return value;
@@ -291,7 +335,7 @@ namespace net.esper.util
                 uint? value = Convert.ToUInt32(numToCoerce);
                 return value;
             }
-            if (resultType == typeof(int?))
+            if (resultBoxedType == typeof(int?))
             {
                 int? value = Convert.ToInt32(numToCoerce);
                 return value;
@@ -461,7 +505,7 @@ namespace net.esper.util
 
 	        if (!IsNumeric(numberClassToBeCoerced))
 	        {
-	            throw new IllegalArgumentException("Type '" + numberClassToBeCoerced + "' is not a numeric type'");
+	            throw new ArgumentException("Type '" + numberClassToBeCoerced + "' is not a numeric type'");
 	        }
 
 	        if (boxedTo == typeof(float?))
@@ -512,7 +556,7 @@ namespace net.esper.util
 	        }
 	        else
 	        {
-	            throw new IllegalArgumentException("Type '" + numberClassToCoerceTo + "' is not a numeric type'");
+	            throw new ArgumentException("Type '" + numberClassToCoerceTo + "' is not a numeric type'");
 	        }
 	    }
         /// <summary>

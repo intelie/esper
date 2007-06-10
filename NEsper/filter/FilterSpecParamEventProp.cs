@@ -70,7 +70,7 @@ namespace net.esper.filter
 										FilterOperator filterOperator,
 										String resultEventAsName,
 										String resultEventProperty,
-										boolean isMustCoerce,
+										bool isMustCoerce,
 										Type coercionType)
             : base(propertyName, filterOperator)
         {

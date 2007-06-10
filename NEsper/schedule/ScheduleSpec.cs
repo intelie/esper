@@ -16,13 +16,13 @@ namespace net.esper.schedule
 	{
 		// Per unit hold the set of valid integer values, or null if wildcarded.
 		// The seconds unit is optional.
-		private readonly EnumDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues;
+		private readonly EDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues;
 
 		/// <summary> Constructor - validates that all mandatory schedule.</summary>
 		/// <param name="unitValues">are the values for each minute, hour, day, month etc.
 		/// </param>
 		/// <throws>  ArgumentException - if validation of value set per unit fails </throws>
-		public ScheduleSpec( EnumDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues )
+		public ScheduleSpec( EDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues )
 		{
 			Validate( unitValues );
 
@@ -38,7 +38,7 @@ namespace net.esper.schedule
 
 		public ScheduleSpec()
 		{
-			unitValues = new EnumDictionary<ScheduleUnit, ETreeSet<Int32>>();
+			unitValues = new EHashDictionary<ScheduleUnit, ETreeSet<Int32>>();
 			unitValues[ScheduleUnit.MINUTES] = null;
 			unitValues[ScheduleUnit.HOURS] = null;
 			unitValues[ScheduleUnit.DAYS_OF_MONTH] = null;
@@ -50,7 +50,7 @@ namespace net.esper.schedule
 		/// <returns> map of 5 or 6 entries each with a set of integers
 		/// </returns>
 
-		public EnumDictionary<ScheduleUnit, ETreeSet<Int32>> UnitValues
+		public EDictionary<ScheduleUnit, ETreeSet<Int32>> UnitValues
 		{
 			get { return unitValues; }
 		}
@@ -89,7 +89,7 @@ namespace net.esper.schedule
 					continue;
 				}
 
-				ISet<Int32> valueSet = unitValues.Fetch( element, null ) ;
+				Set<Int32> valueSet = unitValues.Fetch( element, null ) ;
 				buffer.Append( element + "={" );
 				if ( valueSet == null )
 				{
@@ -139,8 +139,8 @@ namespace net.esper.schedule
 
 			foreach ( KeyValuePair<ScheduleUnit, ETreeSet<Int32>> entry in unitValues )
 			{
-				ISet<Int32> mySet = entry.Value;
-				ISet<Int32> otherSet = other.unitValues.Fetch( entry.Key, null ) ;
+				Set<Int32> mySet = entry.Value;
+				Set<Int32> otherSet = other.unitValues.Fetch( entry.Key, null ) ;
 
 				if ( ( otherSet == null ) && ( mySet != null ) )
 				{

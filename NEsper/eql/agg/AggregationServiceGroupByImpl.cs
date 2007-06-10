@@ -50,7 +50,7 @@ namespace net.esper.eql.agg
 	        this.aggregatorsPerGroup = new EHashDictionary<MultiKeyUntyped, AggregationMethod[]>();
 	    }
 
-	    public void ApplyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
+	    public override void ApplyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
 	    {
 	        AggregationMethod[] groupAggregators = aggregatorsPerGroup.Get(groupByKey);
 
@@ -62,14 +62,14 @@ namespace net.esper.eql.agg
 	        }
 
 	        // For this row, evaluate sub-expressions, enter result
-	        for (int j = 0; j < evaluators.length; j++)
+	        for (int j = 0; j < evaluators.Length; j++)
 	        {
 	            Object columnResult = evaluators[j].Evaluate(eventsPerStream, true);
 	            groupAggregators[j].Enter(columnResult);
 	        }
 	    }
 
-	    public void ApplyLeave(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
+	    public override void ApplyLeave(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
 	    {
 	        AggregationMethod[] groupAggregators = aggregatorsPerGroup.Get(groupByKey);
 
@@ -81,14 +81,14 @@ namespace net.esper.eql.agg
 	        }
 
 	        // For this row, evaluate sub-expressions, enter result
-	        for (int j = 0; j < evaluators.length; j++)
+	        for (int j = 0; j < evaluators.Length; j++)
 	        {
 	            Object columnResult = evaluators[j].Evaluate(eventsPerStream, false);
 	            groupAggregators[j].Leave(columnResult);
 	        }
 	    }
 
-	    public void SetCurrentRow(MultiKeyUntyped groupByKey)
+	    public override void SetCurrentRow(MultiKeyUntyped groupByKey)
 	    {
 	        currentAggregatorRow = aggregatorsPerGroup.Get(groupByKey);
 
@@ -99,7 +99,7 @@ namespace net.esper.eql.agg
 	        }
 	    }
 
-	    public Object GetValue(int column)
+	    public override Object GetValue(int column)
 	    {
 	        return currentAggregatorRow[column].Value;
 	    }

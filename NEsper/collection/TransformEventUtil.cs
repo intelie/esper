@@ -25,7 +25,7 @@ namespace net.esper.collection
         /// <param name="sourceEnum">The source enum.</param>
         /// <param name="transformEventMethod">The transform event method.</param>
         /// <returns></returns>
-        public IEnumerator<EventBean> TransformEnumerator(IEnumerator<EventBean> sourceEnum, TransformEventMethod transformEventMethod)
+        public static IEnumerator<EventBean> TransformEnumerator(IEnumerator<EventBean> sourceEnum, TransformEventMethod transformEventMethod)
         {
             while (sourceEnum.MoveNext())
             {

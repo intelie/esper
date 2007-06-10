@@ -39,16 +39,16 @@ namespace net.esper.eql.expression
             get { return false; }
 	    }
 
-	    public Type ResultType
+	    public override Type ReturnType
 	    {
-	    	get { return selectClause.Type; }
+            get { return selectClause.GetType(); }
 	    }
 
-	    public void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
 	    }
 
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ISet<EventBean> matchingEvents)
+	    public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents)
 	    {
 	        if (matchingEvents == null)
 	        {
@@ -58,16 +58,16 @@ namespace net.esper.eql.expression
 	        {
 	            return null;
 	        }
-	        if ((filterExpr == null) && (matchingEvents.Size() > 1))
+	        if ((filterExpr == null) && (matchingEvents.Count > 1))
 	        {
-	            log.Warn("Subselect returned more then one row in subselect '" + ToExpressionString() + "', returning null result");
+	            log.Warn("Subselect returned more then one row in subselect '" + ExpressionString + "', returning null result");
 	            return null;
 	        }
 
 	        // Evaluate filter
 	        EventBean subSelectResult = null;
-	        EventBean[] events = new EventBean[eventsPerStream.length + 1];
-	        System.Arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
+	        EventBean[] events = new EventBean[eventsPerStream.Length + 1];
+	        Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
 
 	        if (filterExpr != null)
 	        {
@@ -81,7 +81,7 @@ namespace net.esper.eql.expression
 	                {
 	                    if (subSelectResult != null)
 	                    {
-	                        log.Warn("Subselect returned more then one row in subselect '" + ToExpressionString() + "', returning null result");
+	                        log.Warn("Subselect returned more then one row in subselect '" + ExpressionString + "', returning null result");
 	                        return null;
 	                    }
 	                    subSelectResult = subselectEvent;
@@ -95,7 +95,10 @@ namespace net.esper.eql.expression
 	        }
 	        else
 	        {
-	            subSelectResult = matchingEvents.Iterator().Next();
+                
+	            IEnumerator<EventBean> tempEnum = matchingEvents.GetEnumerator();
+	            tempEnum.MoveNext();
+	            subSelectResult = tempEnum.Current;
 	        }
 
 	        events[0] = subSelectResult;

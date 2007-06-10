@@ -119,8 +119,8 @@ namespace net.esper.eql.core
 
 	    public AggregationMethod[] NewAggregators(AggregationMethod[] prototypes, MultiKeyUntyped groupKey)
 	    {
-	        AggregationMethod[] row = new AggregationMethod[prototypes.length];
-	        for (int i = 0; i < prototypes.length; i++)
+	        AggregationMethod[] row = new AggregationMethod[prototypes.Length];
+	        for (int i = 0; i < prototypes.Length; i++)
 	        {
 	            row[i] = prototypes[i].NewAggregator(this);
 	        }

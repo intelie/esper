@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using net.esper.compat;
 using net.esper.collection;
+using net.esper.core;
 using net.esper.eql.parse;
 using net.esper.events;
 using net.esper.view;
@@ -40,7 +41,6 @@ namespace net.esper.view.window
         public String TimestampFieldName
         {
             get { return timestampFieldName; }
-            set { this.timestampFieldName = value; }
         }
 
         /// <summary>
@@ -126,7 +126,6 @@ namespace net.esper.view.window
                 // The schema is the parent view's schema
                 return parent.EventType;
             }
-            set { }
         }
 
         /// <summary>

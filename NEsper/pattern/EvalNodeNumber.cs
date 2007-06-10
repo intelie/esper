@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.util;
 
 namespace net.esper.pattern
@@ -37,14 +39,14 @@ namespace net.esper.pattern
 	    /// <returns>child number</returns>
 	    public short GetChildNumber()
 	    {
-	        return number[number.length - 1];
+	        return number[number.Length - 1];
 	    }
 
 	    /// <summary>Returns true for a root node, false for child nodes.</summary>
 	    /// <returns>true if root, false if child node</returns>
 	    public bool IsRoot()
 	    {
-	        return number.length == 0;
+	        return number.Length == 0;
 	    }
 
 	    /// <summary>
@@ -57,8 +59,8 @@ namespace net.esper.pattern
 	        {
 	            return null;
 	        }
-	        short[] num = new short[number.length - 1];
-	        System.Arraycopy(number, 0, num, 0, number.length - 1);
+	        short[] num = new short[number.Length - 1];
+            Array.Copy(number, 0, num, 0, number.Length - 1);
 	        return new EvalNodeNumber(num);
 	    }
 
@@ -66,9 +68,9 @@ namespace net.esper.pattern
 	    /// <returns>child node number</returns>
 	    public EvalNodeNumber NewChildNumber()
 	    {
-	        short[] num = new short[number.length + 1];
-	        System.Arraycopy(number, 0, num, 0, number.length);
-	        num[number.length] = 0;
+	        short[] num = new short[number.Length + 1];
+            Array.Copy(number, 0, num, 0, number.Length);
+	        num[number.Length] = 0;
 	        return new EvalNodeNumber(num);
 	    }
 
@@ -78,14 +80,14 @@ namespace net.esper.pattern
 	    /// <returns>sibling node number</returns>
 	    public EvalNodeNumber NewSiblingNumber()
 	    {
-	        int size = number.length;
+	        int size = number.Length;
 	        if (size == 0)
 	        {
 	            throw new IllegalStateException("Cannot create a new node number for root node");
 	        }
 
 	        short[] num = new short[size];
-	        System.Arraycopy(number, 0, num, 0, size);
+            Array.Copy(number, 0, num, 0, size);
 	        short next = number[size - 1];
 	        num[size - 1] = ++next;
 	        return new EvalNodeNumber(num);
@@ -109,7 +111,7 @@ namespace net.esper.pattern
 	        {
 	            return true;
 	        }
-	        if (o == null || Class != o.Class)
+	        if (o == null || GetType() != o.GetType())
 	        {
 	            return false;
 	        }

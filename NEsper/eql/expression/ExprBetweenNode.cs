@@ -47,7 +47,7 @@ namespace net.esper.eql.expression
 	        isNotBetween = notBetween;
 	    }
 
-	    public bool IsConstantResult
+	    public override bool IsConstantResult
 	    {
 	        get { return false; }
 	    }

@@ -101,7 +101,7 @@ namespace net.esper.pattern
 	        }
 	        foreach (EvalNode node in currentNode.ChildNodes)
 	        {
-	            recusiveFilterChildNodes(nodeList, node);
+	            RecusiveFilterChildNodes(nodeList, node);
 	        }
 	    }
 

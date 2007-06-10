@@ -27,9 +27,9 @@ namespace net.esper.eql.join.exec
         /// </summary>
         /// <param name="ev">The ev.</param>
         /// <returns></returns>
-        public ISet<EventBean> Lookup(EventBean ev)
+        public Set<EventBean> Lookup(EventBean ev)
         {
-            ISet<EventBean> result = eventIndex.EventSet;
+            Set<EventBean> result = eventIndex.EventSet;
             if (result.IsEmpty)
             {
                 return null;

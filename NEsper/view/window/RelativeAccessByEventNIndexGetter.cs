@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.events;
 
 namespace net.esper.view.window
@@ -17,16 +19,16 @@ namespace net.esper.view.window
 	/// </summary>
 	public class RelativeAccessByEventNIndexGetter : IStreamRelativeAccess.IStreamRelativeAccessUpdateObserver
 	{
-	    private readonly IDictionary<EventBean, IStreamRelativeAccess> accessorByEvent = new EHashDictionary<EventBean, IStreamRelativeAccess>();
-	    private readonly IDictionary<IStreamRelativeAccess, EventBean[]> eventsByAccessor  = new EHashDictionary<IStreamRelativeAccess, EventBean[]>();
+	    private readonly EDictionary<EventBean, IStreamRelativeAccess> accessorByEvent = new EHashDictionary<EventBean, IStreamRelativeAccess>();
+	    private readonly EDictionary<IStreamRelativeAccess, EventBean[]> eventsByAccessor  = new EHashDictionary<IStreamRelativeAccess, EventBean[]>();
 
 	    public void Updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData)
 	    {
 	        // remove data posted from the last update
-	        EventBean[] lastNewData = eventsByAccessor.Get(iStreamRelativeAccess);
+	        EventBean[] lastNewData = eventsByAccessor.Fetch(iStreamRelativeAccess);
 	        if (lastNewData != null)
 	        {
-	            for (int i = 0; i < lastNewData.length; i++)
+	            for (int i = 0; i < lastNewData.Length; i++)
 	            {
 	                accessorByEvent.Remove(lastNewData[i]);
 	            }
@@ -44,7 +46,7 @@ namespace net.esper.view.window
 	        }
 
 	        // save new data for access to later removal
-	        eventsByAccessor.Put(iStreamRelativeAccess, newData);
+	        eventsByAccessor[iStreamRelativeAccess] = newData;
 	    }
 
 	    /// <summary>Returns the access into window contents given an event.</summary>
@@ -52,7 +54,7 @@ namespace net.esper.view.window
 	    /// <returns>buffer</returns>
 	    public IStreamRelativeAccess GetAccessor(EventBean _event)
 	    {
-	        IStreamRelativeAccess iStreamRelativeAccess = accessorByEvent.Get(_event);
+	        IStreamRelativeAccess iStreamRelativeAccess = accessorByEvent.Fetch(_event);
 	        if (iStreamRelativeAccess == null)
 	        {
                 throw new IllegalStateException("Accessor for window random access not found for event " + _event);

@@ -105,7 +105,6 @@ namespace net.esper.view.std
                 // The schema is the parent view's schema
                 return parent.EventType;
             }
-            set { }
         }
 
         /// <summary>
@@ -253,7 +252,7 @@ namespace net.esper.view.std
             ELinkedList<View> subViewList = new ELinkedList<View>();
 
             // For each child node
-            foreach (View originalChildView in groupView.GetViews())
+            foreach (View originalChildView in groupView.Views)
             {
                 if (originalChildView is MergeView)
                 {
@@ -283,7 +282,7 @@ namespace net.esper.view.std
 
         private static void CopySubViews(String[] groupFieldNames, Object[] groupByValues, View originalView, View copyView, StatementContext statementContext)
         {
-            foreach (View subView in originalView.GetViews())
+            foreach (View subView in originalView.Views)
             {
                 // Determine if view is our merge view
                 if (subView is MergeView)

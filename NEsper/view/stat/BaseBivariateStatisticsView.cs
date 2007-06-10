@@ -71,6 +71,8 @@ namespace net.esper.view.stat
 	        this.fieldNameY = fieldNameY;
 	    }
 
+	    abstract public View CloneView(StatementContext statementContext);
+	    	    
         /// <summary>
         /// Gets or sets the view's parent viewable.
         /// </summary>

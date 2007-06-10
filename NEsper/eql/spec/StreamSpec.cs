@@ -22,6 +22,6 @@ namespace net.esper.eql.spec
 
         /// <summary> Returns views definitions onto the stream.</summary>
 
-        List<ViewSpec> ViewSpecs { get ; }
+        IList<ViewSpec> ViewSpecs { get ; }
     }
 }

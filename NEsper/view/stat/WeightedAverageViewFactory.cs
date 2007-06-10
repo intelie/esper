@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
@@ -22,25 +24,25 @@ namespace net.esper.view.stat
 	    private String fieldNameWeight;
 	    private EventType eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "'Weighted average' view requires two field names as parameters";
-	        if (viewParameters.Size() != 2)
+	        if (viewParameters.Count != 2)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        if ( (!(viewParameters.Get(0) is String)) ||
-	             (!(viewParameters.Get(1) is String)) )
+	        if ( (!(viewParameters[0] is String)) ||
+	             (!(viewParameters[1] is String)) )
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        fieldNameX = (String) viewParameters.Get(0);
-	        fieldNameWeight = (String) viewParameters.Get(1);
+	        fieldNameX = (String) viewParameters[0];
+	        fieldNameWeight = (String) viewParameters[1];
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        String result = PropertyCheckHelper.CheckNumeric(parentEventType, fieldNameX, fieldNameWeight);
 	        if (result != null)
@@ -65,9 +67,9 @@ namespace net.esper.view.stat
 	        return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

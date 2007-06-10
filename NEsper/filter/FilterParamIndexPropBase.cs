@@ -44,7 +44,7 @@ namespace net.esper.filter
 	        this.propertyBoxedType = TypeHelper.GetBoxedType(eventType.GetPropertyType(propertyName));
 	        if (getter == null)
 	        {
-	            throw new IllegalArgumentException("Property named '" + propertyName + "' not valid for event type ");
+	            throw new ArgumentException("Property named '" + propertyName + "' not valid for event type ");
 	        }
 	    }
 
@@ -59,7 +59,7 @@ namespace net.esper.filter
 	    /// <returns>
 	    /// event evaluator stored for the filter constant, or null if not found
 	    /// </returns>
-	    protected abstract EventEvaluator Get(Object filterConstant);
+	    //public abstract EventEvaluator Get(Object filterConstant);
 
 	    /// <summary>
 	    /// Store the event evaluation instance for the given constant. Can override an existing value
@@ -69,7 +69,7 @@ namespace net.esper.filter
 	    /// </summary>
 	    /// <param name="filterConstant">is the constant supplied in the filter parameter</param>
 	    /// <param name="evaluator">to be stored for the constant</param>
-	    protected abstract void Put(Object filterConstant, EventEvaluator evaluator);
+	    //public abstract void Put(Object filterConstant, EventEvaluator evaluator);
 
 	    /// <summary>
 	    /// Remove the event evaluation instance for the given constant. Returns true if
@@ -79,7 +79,7 @@ namespace net.esper.filter
 	    /// </summary>
 	    /// <param name="filterConstant">is the value supplied in the filter paremeter</param>
 	    /// <returns>true if found and removed, false if not found</returns>
-	    protected abstract bool Remove(Object filterConstant);
+	    //public abstract bool Remove(Object filterConstant);
 
 	    /// <summary>
 	    /// Return the number of distinct filter parameter constants stored.
@@ -87,11 +87,14 @@ namespace net.esper.filter
 	    /// for multi-threaded writes, the GetReadWriteLock() method must supply a lock for this purpose.
 	    /// </summary>
 	    /// <returns>Number of entries in index</returns>
-	    protected abstract int Size();
+	    //public abstract int Count { get ; }
 
 	    /// <summary>Supplies the lock for protected access.</summary>
 	    /// <returns>lock</returns>
-	    protected abstract ReaderWriterLock GetReadWriteLock();
+	    //public abstract ReaderWriterLock ReadWriteLock
+	    //{
+	    //	get ;
+	    //}
 
 	    /// <summary>
 	    /// Returns the name of the property to get the value for to match against the values
@@ -105,9 +108,9 @@ namespace net.esper.filter
 
 	    /// <summary>Returns getter for property.</summary>
 	    /// <returns>property value getter</returns>
-	    public EventPropertyGetter GetGetter()
+	    public EventPropertyGetter Getter
 	    {
-	        return getter;
+	        get { return getter; }
 	    }
 
 	    /// <summary>Returns boxed property type.</summary>

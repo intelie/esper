@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using net.esper.pattern;
 using net.esper.eql.parse;
@@ -14,12 +15,14 @@ namespace net.esper.pattern.guard
 		: GuardFactory
 		, MetaDefItem
 	{
-		private readonly long milliseconds;
+		private long milliseconds;
 		
 		public IList<Object> GuardParameters
 		{
 			set
 			{
+				IList<Object> guardParameters = value;
+				
 		        String errorMessage = "Timer-within guard requires a single numeric or time period parameter";
 		        if (guardParameters.Count != 1)
 		        {
@@ -30,7 +33,7 @@ namespace net.esper.pattern.guard
 		        if (parameter is TimePeriodParameter)
 		        {
 		            TimePeriodParameter param = (TimePeriodParameter) parameter;
-		            milliseconds = Math.Round(1000d * param.NumSeconds);
+		            milliseconds = (long) Math.Round(1000d * param.NumSeconds);
 		        }
 		        else if (! TypeHelper.IsNumeric(parameter))
 		        {
@@ -40,11 +43,11 @@ namespace net.esper.pattern.guard
 		        {
 		            if (TypeHelper.IsFloatingPointNumber(parameter))
 		            {
-		                milliseconds = Math.Round(1000d * Convert.ToDouble(parameter)) ;
+		            	milliseconds = (long) Math.Round(1000d * Convert.ToDouble(parameter)) ;
 		            }
 		            else
 		            {
-		                milliseconds = 1000 * Convert.ToLong(parameter) ;
+		                milliseconds = 1000 * Convert.ToInt64(parameter) ;
 		            }
 		        }
 			}

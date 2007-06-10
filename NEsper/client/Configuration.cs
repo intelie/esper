@@ -55,7 +55,7 @@ namespace net.esper.client
         /// into the engine.
         /// </summary>
 
-        private EDictionary<String, EDictionary<string,string>> mapAliases;
+        private EDictionary<String, Properties> mapAliases;
 
         /// <summary> The java-style class and package name imports that
         /// will be used to resolve partial class names.
@@ -113,26 +113,36 @@ namespace net.esper.client
 	        entry.Name = functionName;
 	        plugInAggregationFunctions.Add(entry);
 	    }
-
-        /// <summary> Add an alias for an event type represented by Java-bean plain-old Java object events.</summary>
-        /// <param name="eventTypeAlias">is the alias for the event type
+	    
+        /// <summary> Add a database reference with a given database name.</summary>
+        /// <param name="name">is the database name
         /// </param>
-        /// <param name="javaEventClassName">fully-qualified class name of the event type
+        /// <param name="configurationDBRef">descriptor containing database connection and access policy information
         /// </param>
-
-        public virtual void AddEventTypeAlias(String eventTypeAlias, String javaEventClassName)
+        public virtual void AddDatabaseReference(String name, ConfigurationDBRef configurationDBRef)
         {
-            eventClasses[eventTypeAlias] = javaEventClassName;
+            databaseReferences[name] = configurationDBRef;
         }
 
         /// <summary> Add an alias for an event type represented by Java-bean plain-old Java object events.</summary>
         /// <param name="eventTypeAlias">is the alias for the event type
         /// </param>
-        /// <param name="javaEventClass">is the Java event class for which to create the alias
+        /// <param name="eventTypeName">fully-qualified class name of the event type
         /// </param>
-        public virtual void AddEventTypeAlias(String eventTypeAlias, Type javaEventClass)
+
+        public virtual void AddEventTypeAlias(String eventTypeAlias, String eventTypeName)
         {
-            AddEventTypeAlias(eventTypeAlias, javaEventClass.FullName);
+            eventClasses[eventTypeAlias] = eventTypeName;
+        }
+
+        /// <summary> Add an alias for an event type represented by Java-bean plain-old Java object events.</summary>
+        /// <param name="eventTypeAlias">is the alias for the event type
+        /// </param>
+        /// <param name="eventType">is the Java event class for which to create the alias
+        /// </param>
+        public virtual void AddEventTypeAlias(String eventTypeAlias, Type eventType)
+        {
+            AddEventTypeAlias(eventTypeAlias, eventType.FullName);
         }
 
         /// <summary> Add an alias for an event type that represents java.util.Map events.</summary>
@@ -140,10 +150,30 @@ namespace net.esper.client
         /// </param>
         /// <param name="typeMap">maps the name of each property in the Map event to the type (as a string) of its value in the Map object
         /// </param>
-        public virtual void AddEventTypeAlias(String eventTypeAlias, EDictionary<string,string> typeMap)
+        public virtual void AddEventTypeAlias(String eventTypeAlias, Properties typeMap)
         {
             mapAliases[eventTypeAlias] = typeMap;
         }
+        
+        /// <summary>
+        /// Add an alias for an event type that represents java.util.Map events, taking a Map of
+        /// event property and class name as a parameter.
+     	/// <p>
+     	/// This method is provided for convenience and is same in function to method
+     	/// taking a Properties object that contain fully qualified class name as values.
+     	/// </p>
+        /// </summary>
+        /// <param name="eventTypeAlias">the alias for the event type</param>
+        /// <param name="typeMap">maps the name of each property in the Map event to the type of its value in the Map object</param>
+	    public virtual void AddEventTypeAlias(String eventTypeAlias, IDictionary<String, Type> typeMap)
+	    {
+	        Properties properties = new Properties();
+	        foreach( KeyValuePair<String,Type> entry in typeMap )
+	        {
+	        	properties[entry.Key] = entry.Value.FullName;
+	        }
+	        AddEventTypeAlias(eventTypeAlias, properties);
+	    }
 
         /// <summary> Add an alias for an event type that represents org.w3c.dom.Node events.</summary>
         /// <param name="eventTypeAlias">is the alias for the event type
@@ -155,26 +185,16 @@ namespace net.esper.client
             eventTypesXMLDOM[eventTypeAlias] = xmlDOMEventTypeDesc;
         }
 
-        /// <summary> Add a database reference with a given database name.</summary>
-        /// <param name="name">is the database name
-        /// </param>
-        /// <param name="configurationDBRef">descriptor containing database connection and access policy information
-        /// </param>
-        public virtual void AddDatabaseReference(String name, ConfigurationDBRef configurationDBRef)
-        {
-            databaseReferences[name] = configurationDBRef;
-        }
-
         /// <summary> Add an alias for an event type that represents legacy Java type (non-JavaBean style) events.</summary>
         /// <param name="eventTypeAlias">is the alias for the event type
         /// </param>
-        /// <param name="javaEventClass">fully-qualified class name of the event type
+        /// <param name="eventType">fully-qualified class name of the event type
         /// </param>
         /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for Legacy Java type events
         /// </param>
-        public virtual void AddEventTypeAlias(String eventTypeAlias, String javaEventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        public virtual void AddEventTypeAlias(String eventTypeAlias, String eventType, ConfigurationEventTypeLegacy legacyEventTypeDesc)
         {
-            eventClasses[eventTypeAlias] = javaEventClass;
+            eventClasses[eventTypeAlias] = eventType;
             eventTypesLegacy[eventTypeAlias] = legacyEventTypeDesc;
         }
 
@@ -183,14 +203,14 @@ namespace net.esper.client
         /// </summary>
         /// <param name="autoImport">the import to add
         /// </param>
-        public virtual void AddImport(String autoImport)
+        public virtual void AddImport(String importName)
         {
             if (isUsingDefaultImports)
             {
                 isUsingDefaultImports = false;
                 imports.Clear();
             }
-            imports.Add(autoImport);
+            imports.Add(importName);
         }
 
         /// <summary> Returns the mapping of event type alias to Java class name.</summary>
@@ -207,7 +227,7 @@ namespace net.esper.client
         /// <returns> map of event type alias name and definition of event properties
         /// </returns>
 
-        public EDictionary<String, EDictionary<string,string>> EventTypesMapEvents
+        public EDictionary<String, Properties> EventTypesMapEvents
         {
             get { return mapAliases; }
         }
@@ -279,14 +299,14 @@ namespace net.esper.client
 
 		/// <summary>Add an input/output adapter loader.</summary>
 		/// <param name="loaderName">is the name of the loader</param>
-		/// <param name="className">is the fully-qualified classname of the loader class</param>
+		/// <param name="typeName">is the fully-qualified classname of the loader class</param>
 		/// <param name="configuration">is loader cofiguration entries</param>
 
-	    public void AddAdapterLoader(String loaderName, String className, Properties configuration)
+	    public void AddAdapterLoader(String loaderName, String typeName, Properties configuration)
 	    {
 	        ConfigurationAdapterLoader adapterLoader = new ConfigurationAdapterLoader();
 	        adapterLoader.LoaderName = loaderName;
-	        adapterLoader.ClassName = className;
+	        adapterLoader.TypeName = typeName;
 	        adapterLoader.ConfigProperties = configuration ;
 	        adapterLoaders.Add(adapterLoader);
 	    }
@@ -316,12 +336,12 @@ namespace net.esper.client
 	        entry.Namespace = _namespace;
 	        entry.Name = name;
 	        entry.FactoryClassName = observerFactoryClass;
-	        entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectType.OBSERVER;
+	        entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER;
 	        plugInPatternObjects.Add(entry);
 	    }
 
 		/// <summary>Add a pattern guard for plug-in.</summary>
-		/// <param name="namespace">is the namespace the guard should be available under</param>
+		/// <param name="_namespace">is the namespace the guard should be available under</param>
 		/// <param name="name">is the name of the guard</param>
 		/// <param name="guardFactoryClass">is the guard factory class to use</param>
 
@@ -331,7 +351,7 @@ namespace net.esper.client
 	        entry.Namespace = _namespace;
 	        entry.Name = name;
 	        entry.FactoryClassName = guardFactoryClass;
-	        entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectType.GUARD;
+	        entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.GUARD;
 	        plugInPatternObjects.Add(entry);
 	    }
 
@@ -496,7 +516,7 @@ namespace net.esper.client
         internal virtual void Reset()
         {
             eventClasses = new EHashDictionary<String, String>();
-            mapAliases = new EHashDictionary<String, EDictionary<string, string>>();
+            mapAliases = new EHashDictionary<String, Properties>();
             eventTypesXMLDOM = new EHashDictionary<String, ConfigurationEventTypeXMLDOM>();
             eventTypesLegacy = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
             databaseReferences = new EHashDictionary<String, ConfigurationDBRef>();

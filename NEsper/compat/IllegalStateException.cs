@@ -8,7 +8,7 @@ namespace net.esper.compat
     /// </summary>
 
 	[Serializable]
-	public class IllegalStateException : SystemException
+	public class IllegalStateException : Exception
 	{
         /// <summary>
         /// Initializes a new instance of the <see cref="IllegalStateException"/> class.

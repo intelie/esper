@@ -43,7 +43,7 @@ namespace net.esper.view
 
 			// Get a new array created rather then re-use the old one since some client listeners
 			// to this view may keep reference to the new data
-			EventBean[] row = new EventBean[]{event};
+			EventBean[] row = new EventBean[]{ev};
 			foreach (View childView in children)
 			{
 				childView.Update(row, null);
@@ -88,9 +88,9 @@ namespace net.esper.view
         /// Returns all added views.
         /// </summary>
         /// <returns>list of added views</returns>
-        public IList<View> GetViews()
+        public IList<View> Views
         {
-            return children;
+        	get { return children; }
         }
 
         /// <summary>

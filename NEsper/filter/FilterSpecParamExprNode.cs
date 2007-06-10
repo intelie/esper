@@ -32,7 +32,7 @@ namespace net.esper.filter
 	    /// <param name="taggedEventTypes">
 	    /// is null if the expression doesn't need other streams, or is filled with a ordered list of stream names and types
 	    /// </param>
-	    /// <throws>IllegalArgumentException for illegal args</throws>
+	    /// <throws>ArgumentException for illegal args</throws>
 	    public FilterSpecParamExprNode(String propertyName,
 	                             FilterOperator filterOperator,
 	                             ExprNode exprNode,
@@ -41,7 +41,7 @@ namespace net.esper.filter
 	    {
 	        if (filterOperator != FilterOperator.BOOLEAN_EXPRESSION)
 	        {
-	            throw new IllegalArgumentException("Invalid filter operator for filter expression node");
+	            throw new ArgumentException("Invalid filter operator for filter expression node");
 	        }
 	        this.exprNode = exprNode;
 	        this.taggedEventTypes = taggedEventTypes;
@@ -53,9 +53,9 @@ namespace net.esper.filter
 	    /// Returns the expression node of the bool expression this filter parameter represents.
 	    /// </summary>
 	    /// <returns>expression node</returns>
-	    public ExprNode GetExprNode()
+	    public ExprNode ExprNode
 	    {
-	        return exprNode;
+	    	get { return exprNode; }
 	    }
 
 	    /// <summary>
@@ -67,13 +67,13 @@ namespace net.esper.filter
 	        return taggedEventTypes;
 	    }
 
-	    public Object GetFilterValue(MatchedEventMap matchedEvents)
+	    public override Object GetFilterValue(MatchedEventMap matchedEvents)
 	    {
 	        if (taggedEventTypes != null)
 	        {
-	            EventBean[] events = new EventBean[taggedEventTypes.Size() + 1];
+	            EventBean[] events = new EventBean[taggedEventTypes.Count + 1];
 	            int count = 1;
-	            foreach (String tag in taggedEventTypes.KeySet())
+	            foreach (String tag in taggedEventTypes.Keys)
 	            {
 	                events[count] = matchedEvents.GetMatchingEvent(tag);
 	                count++;
@@ -85,7 +85,7 @@ namespace net.esper.filter
 
 	    public override String ToString()
 	    {
-	        return super.ToString() + "  exprNode=" + exprNode.ToString();
+	        return base.ToString() + "  exprNode=" + exprNode.ToString();
 	    }
 
 	    public override bool Equals(Object obj)
@@ -101,7 +101,7 @@ namespace net.esper.filter
 	        }
 
 	        FilterSpecParamExprNode other = (FilterSpecParamExprNode) obj;
-	        if (!super.Equals(other))
+	        if (!base.Equals(other))
 	        {
 	            return false;
 	        }
@@ -113,5 +113,12 @@ namespace net.esper.filter
 
 	        return true;
 	    }
+	    
+		public override int GetHashCode()
+		{
+			return
+				base.GetHashCode() * 31 +
+				exprNode.GetHashCode() ;
+		}
 	}
 } // End of namespace

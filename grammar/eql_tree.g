@@ -159,7 +159,7 @@ valueExpr
 	|	f:builtinFunc { leaveNode(#f); }
 	|   l:libFunc { leaveNode(#l); }
 	|	cs:caseExpr { leaveNode(#cs); }
-	|	in:inExpr { leaveNode(#in); }
+	|	in_:inExpr { leaveNode(#in_); }
 	|	b:betweenExpr { leaveNode(#b); }
 	|	li:likeExpr { leaveNode(#li); }
 	|	r:regExpExpr { leaveNode(#r); }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using net.esper.collection;
 using net.esper.compat;
+using net.esper.core;
 using net.esper.dispatch;
 using net.esper.events;
 using net.esper.view.internals;
@@ -17,7 +18,6 @@ namespace net.esper.eql.join
 
     public class JoinExecStrategyDispatchable
 		: EPStatementDispatch
-		, BufferObserver
     {
         private readonly JoinExecutionStrategy joinExecutionStrategy;
         private readonly EDictionary<Int32, FlushedEventBuffer> oldStreamBuffer;

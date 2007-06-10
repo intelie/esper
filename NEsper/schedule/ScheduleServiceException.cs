@@ -7,7 +7,7 @@ namespace net.esper.schedule
 	/// </summary>
 	
 	[Serializable]
-	public sealed class ScheduleServiceException : SystemException
+	public class ScheduleServiceException : Exception
 	{
 		/// <summary> Constructor.</summary>
 		/// <param name="message">is the error message

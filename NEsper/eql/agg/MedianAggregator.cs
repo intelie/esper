@@ -44,26 +44,29 @@ namespace net.esper.eql.agg
 	        vector.Remove(value);
 	    }
 
-	    public Object GetValue()
+	    public Object Value
 	    {
-	        if (vector.Size() == 0)
-	        {
-	            return null;
-	        }
-	        if (vector.Size() == 1)
-	        {
-	            return vector.GetValue(0);
-	        }
-
-	        int middle = vector.Size() >> 1;
-	        if (vector.Size() % 2 == 0)
-	        {
-	            return (vector.GetValue(middle - 1) + vector.GetValue(middle)) / 2;
-	        }
-	        else
-	        {
-	            return vector.GetValue(middle);
-	        }
+	    	get
+	    	{
+		        if (vector.Count == 0)
+		        {
+		            return null;
+		        }
+		        if (vector.Count == 1)
+		        {
+		        	return vector[0];
+		        }
+	
+		        int middle = vector.Count >> 1;
+		        if (vector.Count % 2 == 0)
+		        {
+		        	return (vector[middle - 1] + vector[middle]) / 2;
+		        }
+		        else
+		        {
+		        	return vector[middle];
+		        }
+	    	}
 	    }
 
 	    public Type ValueType

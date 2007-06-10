@@ -48,5 +48,13 @@ namespace net.esper.eql.agg
 	    {
 	        return methodResolutionService.MakePlugInAggregator(functionName);
 	    }
+		
+	    abstract public object Value { get ; }
+	
+	    abstract public Type ValueType { get ; }
+		
+		abstract public void Enter(object value);
+		
+		abstract public void Leave(object value);
 	}
 } // End of namespace

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 namespace net.esper.pattern.observer
 {
@@ -15,5 +16,7 @@ namespace net.esper.pattern.observer
 	/// </summary>
 	public abstract class ObserverFactorySupport : ObserverFactory
 	{
+		abstract public IList<object> ObserverParameters { set ; }
+		abstract public EventObserver MakeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, object stateNodeId, object observerState);
 	}
 } // End of namespace

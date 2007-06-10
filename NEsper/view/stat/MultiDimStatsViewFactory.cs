@@ -8,14 +8,18 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
 
 namespace net.esper.view.stat
 {
-	/// <summary>Factory for {@link MultiDimStatsView} instances.</summary>
+	/// <summary>
+	/// Factory for {@link MultiDimStatsView} instances.
+	/// </summary>
 	public class MultiDimStatsViewFactory : ViewFactory
 	{
 	    private String[] derivedMeasures;
@@ -25,41 +29,41 @@ namespace net.esper.view.stat
 	    private String pageField;
 	    private EventType eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "'Multi-dimensional stats' view requires a String-array and 2 or more field names as parameters";
-	        if (viewParameters.Size() < 3)
+	        if (viewParameters.Count < 3)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        if ( (!(viewParameters.Get(0) is String[])) ||
-	             (!(viewParameters.Get(1) is String)) ||
-	             (!(viewParameters.Get(2) is String)) )
+	        if ( (!(viewParameters[0] is String[])) ||
+	             (!(viewParameters[1] is String)) ||
+	             (!(viewParameters[2] is String)) )
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        derivedMeasures = (String[]) viewParameters.Get(0);
-	        measureField = (String) viewParameters.Get(1);
-	        columnField = (String) viewParameters.Get(2);
+	        derivedMeasures = (String[]) viewParameters[0];
+	        measureField = (String) viewParameters[1];
+	        columnField = (String) viewParameters[2];
 
-	        if (viewParameters.Size() > 3)
+	        if (viewParameters.Count > 3)
 	        {
-	            if (!(viewParameters.Get(3) is String))
+	        	if (!(viewParameters[3] is String))
 	            {
 	                throw new ViewParameterException(errorMessage);
 	            }
-	            rowField = (String) viewParameters.Get(3);
+	            rowField = (String) viewParameters[3];
 	        }
 
-	        if (viewParameters.Size() > 4)
+	        if (viewParameters.Count > 4)
 	        {
-	            if (!(viewParameters.Get(4) is String))
+	        	if (!(viewParameters[4] is String))
 	            {
 	                throw new ViewParameterException(errorMessage);
 	            }
-	            pageField = (String) viewParameters.Get(4);
+	            pageField = (String) viewParameters[4];
 	        }
 
 	        foreach (String measureName in derivedMeasures)
@@ -71,7 +75,7 @@ namespace net.esper.view.stat
 	        }
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        String message = PropertyCheckHelper.CheckNumeric(parentEventType, measureField);
 	        if (message != null)
@@ -121,9 +125,9 @@ namespace net.esper.view.stat
 	        return new MultiDimStatsView(statementContext, derivedMeasures, measureField, columnField, rowField, pageField);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

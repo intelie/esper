@@ -22,7 +22,7 @@ namespace net.esper.view
         /// <returns> list of added views
         /// </returns>
 
-        IList<View> GetViews();
+        IList<View> Views { get ; }
 
         /// <summary> Remove a view.</summary>
         /// <param name="view">to remove

@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
@@ -23,15 +25,15 @@ namespace net.esper.view.std
 
 	    private EventType eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "'Unique' view requires a single string parameter";
-	        if (viewParameters.Size() != 1)
+	        if (viewParameters.Count != 1)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        Object parameter = viewParameters.Get(0);
+	        Object parameter = viewParameters[0];
 	        if (!(parameter is String))
 	        {
 	            throw new ViewParameterException(errorMessage);
@@ -39,7 +41,7 @@ namespace net.esper.view.std
 	        propertyName = (String) parameter;
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        // Attaches to just about anything as long as the field exists
 	        String message = PropertyCheckHelper.Exists(parentEventType, propertyName);
@@ -65,9 +67,9 @@ namespace net.esper.view.std
 	        return new UniqueByPropertyView(propertyName);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

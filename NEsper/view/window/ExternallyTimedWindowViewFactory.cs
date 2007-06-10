@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.parse;
 using net.esper.events;
@@ -25,21 +27,21 @@ namespace net.esper.view.window
 	    private EventType eventType;
 	    private RandomAccessByIndexGetter randomAccessGetterImpl;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "Externally-timed window view requires a timestamp field name and a numeric or time period parameter";
-	        if (viewParameters.Size() != 2)
+	        if (viewParameters.Count != 2)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        if (!(viewParameters.Get(0) is String))
+	        if (!(viewParameters[0] is String))
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
-	        timestampFieldName = (String) viewParameters.Get(0);
+	        timestampFieldName = (String) viewParameters[0];
 
-	        Object parameter = viewParameters.Get(1);
+	        Object parameter = viewParameters[1];
 	        if (parameter is TimePeriodParameter)
 	        {
 	            TimePeriodParameter param = (TimePeriodParameter) parameter;
@@ -52,7 +54,7 @@ namespace net.esper.view.window
 	        else
 	        {
 	            Number param = (Number) parameter;
-	            if (JavaClassHelper.IsFloatingPointNumber(param))
+	            if (TypeHelper.IsFloatingPointNumber(param))
 	            {
 	                millisecondsBeforeExpiry = Math.Round(1000d * param.DoubleValue());
 	            }
@@ -63,7 +65,7 @@ namespace net.esper.view.window
 	        }
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        String message = PropertyCheckHelper.CheckLong(parentEventType, timestampFieldName);
 	        if (message != null)
@@ -111,9 +113,9 @@ namespace net.esper.view.window
 	        return new ExternallyTimedWindowView(this, timestampFieldName, millisecondsBeforeExpiry, randomAccess);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

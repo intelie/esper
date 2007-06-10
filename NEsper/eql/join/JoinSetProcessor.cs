@@ -18,6 +18,6 @@ namespace net.esper.eql.join
 		/// </param>
 		/// <param name="oldEvents">set of event tuples representing old data
 		/// </param>
-		void  Process( ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
+		void  Process( Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents);
 	}
 }

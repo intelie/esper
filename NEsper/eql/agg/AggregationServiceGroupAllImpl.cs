@@ -31,30 +31,30 @@ namespace net.esper.eql.agg
 	        Super(evaluators, aggregators);
 	    }
 
-	    public void ApplyEnter(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
+	    public override void ApplyEnter(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
 	    {
-	        for (int j = 0; j < evaluators.length; j++)
+	        for (int j = 0; j < evaluators.Length; j++)
 	        {
 	            Object columnResult = evaluators[j].Evaluate(eventsPerStream, true);
 	            aggregators[j].Enter(columnResult);
 	        }
 	    }
 
-	    public void ApplyLeave(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
+	    public override void ApplyLeave(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
 	    {
-	        for (int j = 0; j < evaluators.length; j++)
+	        for (int j = 0; j < evaluators.Length; j++)
 	        {
 	            Object columnResult = evaluators[j].Evaluate(eventsPerStream, false);
 	            aggregators[j].Leave(columnResult);
 	        }
 	    }
 
-	    public void SetCurrentRow(MultiKeyUntyped groupKey)
+	    public override void SetCurrentRow(MultiKeyUntyped groupKey)
 	    {
 	        // no action needed - this implementation does not group and the current row is the single group
 	    }
 
-	    public Object GetValue(int column)
+	    public override Object GetValue(int column)
 	    {
 	        return aggregators[column].GetValue();
 	    }

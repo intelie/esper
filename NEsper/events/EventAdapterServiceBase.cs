@@ -11,11 +11,10 @@ using System.Collections.Generic;
 using System.Xml;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.events.xml;
 
 using org.apache.commons.logging;
-
-using Properties = net.esper.compat.EDataDictionary;
 
 namespace net.esper.events
 {
@@ -39,13 +38,13 @@ namespace net.esper.events
     {
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IDictionary<String, EventType> idToTypeMap;
-        private readonly IDictionary<String, String> idToAliasMap;
-        private readonly IDictionary<EventType, String> typeToIdMap;
-        private readonly IDictionary<String, EventType> aliasToTypeMap;
+        private readonly EDictionary<String, EventType> idToTypeMap;
+        private readonly EDictionary<String, String> idToAliasMap;
+        private readonly EDictionary<EventType, String> typeToIdMap;
+        private readonly EDictionary<String, EventType> aliasToTypeMap;
 
         private BeanEventAdapter beanEventAdapter;
-        private IDictionary<String, EventType> xmldomRootElementNames;
+        private EDictionary<String, EventType> xmldomRootElementNames;
 
         /// <summary>Ctor.</summary>
         public EventAdapterServiceBase()
@@ -58,9 +57,9 @@ namespace net.esper.events
             beanEventAdapter = new BeanEventAdapter();
         }
 
-        /// <summary>Set the legacy Java class type information.</summary>
+        /// <summary>Set the legacy class type information.</summary>
         /// <param name="classToLegacyConfigs">is the legacy class configs</param>
-        public void SetClassLegacyConfigs(IDictionary<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
+        public void SetClassLegacyConfigs(EDictionary<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
         {
             beanEventAdapterClassToLegacyConfigs = classToLegacyConfigs;
         }
@@ -69,14 +68,14 @@ namespace net.esper.events
         {
             if (eventTypeAlias == null)
             {
-                throw new IllegalArgumentException("Null event type alias parameter");
+                throw new ArgumentException("Null event type alias parameter");
             }
-            EventType type = aliasToTypeMap.Get(eventTypeAlias);
+            EventType type = aliasToTypeMap.Fetch(eventTypeAlias);
             if (type == null)
             {
                 throw new IllegalStateException("Event type alias " + eventTypeAlias + " not in collection");
             }
-            String id = typeToIdMap.Get(type);
+            String id = typeToIdMap.Fetch(type);
             if (id == null)
             {
                 throw new IllegalStateException("Event type id " + id + " not in collection");
@@ -88,9 +87,9 @@ namespace net.esper.events
         {
             if (eventTypeID == null)
             {
-                throw new IllegalArgumentException("Null event type id parameter");
+                throw new ArgumentException("Null event type id parameter");
             }
-            EventType eventType = idToTypeMap.Get(eventTypeID);
+            EventType eventType = idToTypeMap.Fetch(eventTypeID);
             if (eventType == null)
             {
                 throw new IllegalStateException("Event type id " + eventTypeID + " not in collection");
@@ -98,22 +97,22 @@ namespace net.esper.events
             return eventType;
         }
 
-        public EventType GetExistsTypeByAlias(String eventTypeAlias)
+        public EventType GetEventTypeByAlias(String eventTypeAlias)
         {
             if (eventTypeAlias == null)
             {
                 throw new IllegalStateException("Null event type alias parameter");
             }
-            return aliasToTypeMap.Get(eventTypeAlias);
+            return aliasToTypeMap.Fetch(eventTypeAlias);
         }
 
         public String GetIdByType(EventType eventType)
         {
             if (eventType == null)
             {
-                throw new IllegalArgumentException("Null event type parameter");
+                throw new ArgumentException("Null event type parameter");
             }
-            String id = typeToIdMap.Get(eventType);
+            String id = typeToIdMap.Fetch(eventType);
             if (id == null)
             {
                 throw new IllegalStateException("Event type " + eventType.ToString() + " not in collection");
@@ -125,9 +124,9 @@ namespace net.esper.events
         {
             if (eventTypeID == null)
             {
-                throw new IllegalArgumentException("Null event type id parameter");
+                throw new ArgumentException("Null event type id parameter");
             }
-            String alias = idToAliasMap.Get(eventTypeID);
+            String alias = idToAliasMap.Fetch(eventTypeID);
             if (alias == null)
             {
                 throw new IllegalStateException("Event type id " + eventTypeID + " not in collection");
@@ -144,12 +143,12 @@ namespace net.esper.events
         {
             lock (this)
             {
-                if (log.IsDebugEnabled())
+                if (log.IsDebugEnabled)
                 {
                     log.Debug(".addBeanType Adding " + eventTypeAlias + " for type " + type.FullName);
                 }
 
-                EventType existingType = aliasToTypeMap.Get(eventTypeAlias);
+                EventType existingType = aliasToTypeMap.Fetch(eventTypeAlias);
                 if (existingType != null)
                 {
                     if (existingType.UnderlyingType.Equals(type))
@@ -192,17 +191,17 @@ namespace net.esper.events
         {
             lock (this)
             {
-                if (log.IsDebugEnabled())
+                if (log.IsDebugEnabled)
                 {
                     log.Debug(".addBeanType Adding " + eventTypeAlias + " for type " + fullyQualClassName);
                 }
 
-                EventType existingType = aliasToTypeMap.Get(eventTypeAlias);
+                EventType existingType = aliasToTypeMap.Fetch(eventTypeAlias);
                 if (existingType != null)
                 {
                     if (existingType.UnderlyingType.Name.Equals(fullyQualClassName))
                     {
-                        if (log.IsDebugEnabled())
+                        if (log.IsDebugEnabled)
                         {
                             log.Debug(".addBeanType Returning existing type for " + eventTypeAlias);
                         }
@@ -234,13 +233,13 @@ namespace net.esper.events
             }
         }
 
-        public EventType AddMapType(String eventTypeAlias, IDictionary<String, Type> propertyTypes)
+        public EventType AddMapType(String eventTypeAlias, EDictionary<String, Type> propertyTypes)
         {
             lock (this)
             {
                 MapEventType newEventType = new MapEventType(eventTypeAlias, propertyTypes, this);
 
-                EventType existingType = aliasToTypeMap.Get(eventTypeAlias);
+                EventType existingType = aliasToTypeMap.Fetch(eventTypeAlias);
                 if (existingType != null)
                 {
                     // The existing type must be the same as the type createdStatement
@@ -264,42 +263,42 @@ namespace net.esper.events
             }
         }
 
-        public EventType CreateAnonymousMapType(IDictionary<String, Type> propertyTypes)
+        public EventType CreateAnonymousMapType(EDictionary<String, Type> propertyTypes)
         {
             return new MapEventType("", propertyTypes, this);
         }
 
-        public EventType CreateAnonymousWrapperType(EventType underlyingEventType, IDictionary<String, Type> propertyTypes)
+        public EventType CreateAnonymousWrapperType(EventType underlyingEventType, EDictionary<String, Type> propertyTypes)
         {
             return new WrapperEventType("", underlyingEventType, propertyTypes, this);
         }
 
-        public EventBean AdapterForMap(Map _event, String eventTypeAlias)
+        public EventBean AdapterForMap(EDictionary<String, Object> _event, String eventTypeAlias)
         {
-            EventType existingType = aliasToTypeMap.Get(eventTypeAlias);
+            EventType existingType = aliasToTypeMap.Fetch(eventTypeAlias);
             if (existingType == null)
             {
                 throw new EventAdapterException("Event type alias '" + eventTypeAlias + "' has not been defined");
             }
 
-            IDictionary<String, Object> eventMap = (IDictionary<String, Object>)_event;
+            EDictionary<String, Object> eventMap = (EDictionary<String, Object>)_event;
 
             return CreateMapFromValues(eventMap, existingType);
         }
 
-        public EventBean CreateMapFromValues(IDictionary<String, Object> properties, EventType eventType)
+        public EventBean CreateMapFromValues(IDataDictionary properties, EventType eventType)
         {
             return new MapEventBean(properties, eventType);
         }
 
-        public EventBean CreateMapFromUnderlying(IDictionary<String, EventBean> events, EventType eventType)
+        public EventBean CreateMapFromUnderlying(EDictionary<String, EventBean> events, EventType eventType)
         {
             return new MapEventBean(eventType, events);
         }
 
         public EventType CreateAddToEventType(EventType originalType, String[] fieldNames, Type[] fieldTypes)
         {
-            IDictionary<String, Type> types = new EHashDictionary<String, Type>();
+            EDictionary<String, Type> types = new EHashDictionary<String, Type>();
 
             // Copy properties of original event, add property value
             foreach (String property in originalType.PropertyNames)
@@ -308,7 +307,7 @@ namespace net.esper.events
             }
 
             // Copy new properties
-            for (int i = 0; i < fieldNames.length; i++)
+            for (int i = 0; i < fieldNames.Length; i++)
             {
                 types.Put(fieldNames[i], fieldTypes[i]);
             }
@@ -316,13 +315,13 @@ namespace net.esper.events
             return CreateAnonymousMapType(types);
         }
 
-        public EventBean AdapterForDOM(Node node)
+        public EventBean AdapterForDOM(XmlNode node)
         {
             String rootElementName = null;
-            Node namedNode = null;
-            if (node is Document)
+            XmlNode namedNode = null;
+            if (node is XmlDocument)
             {
-                namedNode = ((Document)node).DocumentElement;
+                namedNode = ((XmlDocument)node).DocumentElement;
             }
             rootElementName = namedNode.LocalName;
             if (rootElementName == null)
@@ -330,7 +329,7 @@ namespace net.esper.events
                 rootElementName = namedNode.NodeName;
             }
 
-            EventType eventType = xmldomRootElementNames.Get(rootElementName);
+            EventType eventType = xmldomRootElementNames.Fetch(rootElementName);
             if (eventType == null)
             {
                 throw new EventAdapterException("DOM event root element name '" + rootElementName +
@@ -340,12 +339,12 @@ namespace net.esper.events
             return new XMLEventBean(node, eventType);
         }
 
-        public EventType CreateAnonymousCompositeType(IDictionary<String, EventType> taggedEventTypes)
+        public EventType CreateAnonymousCompositeType(EDictionary<String, EventType> taggedEventTypes)
         {
             return new CompositeEventType(taggedEventTypes);
         }
 
-        public EventBean AdapterForCompositeEvent(EventType eventType, IDictionary<String, EventBean> taggedEvents)
+        public EventBean AdapterForCompositeEvent(EventType eventType, EDictionary<String, EventBean> taggedEvents)
         {
             return new CompositeEventBean(taggedEvents, eventType);
         }
@@ -374,7 +373,7 @@ namespace net.esper.events
                     type = new SchemaXMLEventType(configurationEventTypeXMLDOM);
                 }
 
-                EventType existingType = aliasToTypeMap.Get(eventTypeAlias);
+                EventType existingType = aliasToTypeMap.Fetch(eventTypeAlias);
                 if (existingType != null)
                 {
                     // The existing type must be the same as the type createdStatement
@@ -400,13 +399,13 @@ namespace net.esper.events
             }
         }
 
-        public EventType AddWrapperType(String eventTypeAlias, EventType underlyingEventType, IDictionary<String, Type> propertyTypes)
+        public EventType AddWrapperType(String eventTypeAlias, EventType underlyingEventType, EDictionary<String, Type> propertyTypes)
         {
             lock (this)
             {
                 WrapperEventType newEventType = new WrapperEventType(eventTypeAlias, underlyingEventType, propertyTypes, this);
 
-                EventType existingType = aliasToTypeMap.Get(eventTypeAlias);
+                EventType existingType = aliasToTypeMap.Fetch(eventTypeAlias);
                 if (existingType != null)
                 {
                     // The existing type must be the same as the type createdStatement
@@ -430,14 +429,14 @@ namespace net.esper.events
             }
         }
 
-        public EventBean CreateWrapper(EventBean _event, IDictionary<String, Object> properties, EventType eventType)
+        public EventBean CreateWrapper(EventBean _event, EDictionary<String, Object> properties, EventType eventType)
         {
             return new WrapperEventBean(_event, properties, eventType);
         }
 
-        public EventType CreateAnonymousMapTypeUnd(IDictionary<String, EventType> propertyTypes)
+        public EventType CreateAnonymousMapTypeUnd(EDictionary<String, EventType> propertyTypes)
         {
-            IDictionary<String, Type> underlyingTypes = GetUnderlyingTypes(propertyTypes);
+            EDictionary<String, Type> underlyingTypes = GetUnderlyingTypes(propertyTypes);
             return this.CreateAnonymousMapType(underlyingTypes);
         }
 
@@ -447,16 +446,22 @@ namespace net.esper.events
         /// </summary>
         /// <param name="types">is the various event types returned.</param>
         /// <returns>map of property name and type</returns>
-        private static IDictionary<String, Type> GetUnderlyingTypes(IDictionary<String, EventType> types)
+        private static EDictionary<String, Type> GetUnderlyingTypes(EDictionary<String, EventType> types)
         {
-            IDictionary<String, Type> classes = new EHashDictionary<String, Type>();
+            EDictionary<String, Type> classes = new EHashDictionary<String, Type>();
 
-            foreach (Map.Entry<String, EventType> type in types.EntrySet())
+            foreach (KeyValuePair<String, EventType> type in types)
             {
                 classes.Put(type.Key, type.Value.UnderlyingType);
             }
 
             return classes;
         }
+    	
+		abstract public EventType AddBeanType(string eventTypeAlias, string fullyQualClassName);
+    	
+		abstract public EventType AddBeanType(string eventTypeAlias, Type type);
+    	
+		abstract public EventBean AdapterForBean(object ev);
     }
 } // End of namespace

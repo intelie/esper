@@ -8,6 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
+
+using net.esper.compat;
 using net.esper.events;
 
 namespace net.esper.pattern
@@ -20,7 +23,7 @@ namespace net.esper.pattern
 	/// </summary>
 	public sealed class MatchedEventMapImpl : MatchedEventMap
 	{
-	    private IDictionary<String, EventBean> events = new EHashDictionary<String, EventBean>();
+	    private EDictionary<String, EventBean> events = new EHashDictionary<String, EventBean>();
 
 	    /// <summary>
         /// Constructor creates an empty collection of events.
@@ -29,7 +32,7 @@ namespace net.esper.pattern
 	    {
 	    }
 
-	    private MatchedEventMapImpl(IDictionary<String, EventBean> events)
+	    private MatchedEventMapImpl(EDictionary<String, EventBean> events)
 	    {
 	        this.events = events;
 	    }
@@ -39,7 +42,7 @@ namespace net.esper.pattern
 	    /// <param name="event">is the event object to be added</param>
 	    public void Add(String tag, EventBean _event)
 	    {
-	        events.Put(tag, _event);
+	    	events[tag] = _event;
 	    }
 
 	    /// <summary>
@@ -47,7 +50,7 @@ namespace net.esper.pattern
 	    /// instance.
 	    /// </summary>
 	    /// <returns>Hashtable containing event instances</returns>
-	    public IDictionary<String, EventBean> MatchingEvents
+	    public EDictionary<String, EventBean> MatchingEvents
 	    {
 	        get { return events; }
 	    }
@@ -59,7 +62,7 @@ namespace net.esper.pattern
 	    /// <returns>event instances for the tag</returns>
 	    public EventBean GetMatchingEvent(String tag)
 	    {
-	        return events.Get(tag);
+	        return events.Fetch(tag);
 	    }
 
 	    public override bool Equals(Object otherObject)
@@ -74,20 +77,20 @@ namespace net.esper.pattern
 	            return false;
 	        }
 
-	        if (Class != otherObject.Class)
+	        if (GetType() != otherObject.GetType())
 	        {
 	            return false;
 	        }
 
 	        MatchedEventMapImpl other = (MatchedEventMapImpl) otherObject;
 
-	        if (events.Size() != other.events.Size())
+	        if (events.Count != other.events.Count)
 	        {
 	            return false;
 	        }
 
 	        // Compare entry by entry
-	        foreach (Map.Entry<String, EventBean> entry in events.EntrySet())
+	        foreach (KeyValuePair<String, EventBean> entry in events)
 	        {
 	            String tag = entry.Key;
 	            Object _event = entry.Value;
@@ -106,7 +109,7 @@ namespace net.esper.pattern
 	        StringBuilder buffer = new StringBuilder();
 	        int count = 0;
 
-	        foreach (Map.Entry<String, EventBean> entry in events.EntrySet())
+	        foreach (KeyValuePair<String, EventBean> entry in events)
 	        {
 	            buffer.Append(" (" + (count++) + ") ");
 	            buffer.Append("tag=" + entry.Key);
@@ -123,9 +126,9 @@ namespace net.esper.pattern
 
 	    /// <summary>Make a shallow copy of this collection.</summary>
 	    /// <returns>shallow copy</returns>
-	    public MatchedEventMapImpl ShallowCopy()
+	    public MatchedEventMap ShallowCopy()
 	    {
-	        IDictionary<String, EventBean> copy = new EHashDictionary<String, EventBean>();
+	        EDictionary<String, EventBean> copy = new EHashDictionary<String, EventBean>();
 	        copy.PutAll(events);
 	        return new MatchedEventMapImpl(copy);
 	    }

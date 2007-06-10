@@ -33,16 +33,16 @@ namespace net.esper.filter
 			this.max = max;
 			
 			if ((! FilterOperatorHelper.IsRangeOperator( filterOperator )) &&
-			    (! FilterOperatorHelper.IsInvertedRange( filterOperator )))
+			    (! FilterOperatorHelper.IsInvertedRangeOperator( filterOperator )))
 			{
 				throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " + "range filter parameter");
 			}
 		}
 
-	    public Object GetFilterValue(MatchedEventMap matchedEvents)
+	    public override Object GetFilterValue(MatchedEventMap matchedEvents)
 	    {
-	        double begin = min.GetFilterValue(matchedEvents);
-	        double end = max.GetFilterValue(matchedEvents);
+	        double? begin = min.GetFilterValue(matchedEvents);
+	        double? end = max.GetFilterValue(matchedEvents);
 	        return new DoubleRange(begin, end);
 	    }
 

@@ -29,7 +29,7 @@ namespace net.esper.eql.parse
 		/// </returns>
 		public static EPStatementSyntaxException Convert(RecognitionException e, String expression)
 		{
-	        return new EPStatementSyntaxException(e.getMessage() + getPositionInfo(e), expression);
+	        return new EPStatementSyntaxException(e.Message + GetPositionInfo(e), expression);
 	    }
 
 	    /**

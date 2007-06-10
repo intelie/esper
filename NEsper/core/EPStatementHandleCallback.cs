@@ -46,27 +46,27 @@ namespace net.esper.core
 
 	    /// <summary>Returns the statement handle.</summary>
 	    /// <returns>handle containing a statement resource lock</returns>
-	    public EPStatementHandle GetEpStatementHandle()
+	    public EPStatementHandle EpStatementHandle
 	    {
-	        return epStatementHandle;
+	    	get { return epStatementHandle; }
 	    }
 
 	    /// <summary>
 	    /// Returns the statement filter callback, or null if this is a schedule callback handle.
 	    /// </summary>
 	    /// <returns>filter callback</returns>
-	    public FilterHandleCallback GetFilterCallback()
+	    public FilterHandleCallback FilterCallback
 	    {
-	        return filterCallback;
+	    	get { return filterCallback; }
 	    }
 
 	    /// <summary>
 	    /// Returns the statement schedule callback, or null if this is a filter callback handle.
 	    /// </summary>
 	    /// <returns>schedule callback</returns>
-	    public ScheduleHandleCallback GetScheduleCallback()
+	    public ScheduleHandleCallback ScheduleCallback
 	    {
-	        return scheduleCallback;
+	    	get { return scheduleCallback; }
 	    }
 	}
 } // End of namespace

@@ -174,9 +174,9 @@ namespace net.esper.eql.db
         /// Returns all added views.
         /// </summary>
         /// <returns>list of added views</returns>
-        public IList<View> GetViews()
+        public IList<View> Views
         {
-			return new List<View>() ;
+        	get { return new List<View>() ; }
         }
 
         /// <summary>

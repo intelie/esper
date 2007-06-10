@@ -54,7 +54,7 @@ namespace net.esper.view.window
 	        this.timeWindowViewFactory = timeWindowViewFactory;
 	        this.millisecondsBeforeExpiry = millisecondsBeforeExpiry;
 	        this.viewUpdatedCollection = viewUpdatedCollection;
-	        this.scheduleSlot = statementContext.getScheduleBucket().allocateSlot();
+	        this.scheduleSlot = statementContext.ScheduleBucket.AllocateSlot() ;
 	    }
 
 	    public View CloneView(StatementContext statementContext)
@@ -68,7 +68,6 @@ namespace net.esper.view.window
 		public long MillisecondsBeforeExpiry
 		{
 			get { return millisecondsBeforeExpiry; }
-			set { this.millisecondsBeforeExpiry = value; }
 		}
 
 	    /// <summary>
@@ -80,12 +79,12 @@ namespace net.esper.view.window
 	        get { return viewUpdatedCollection; }
 	    }
 
-	    public EventType EventType
+	    public override EventType EventType
 	    {
 	        get { return parent.EventType; }
 	    }
 
-	    public void Update(EventBean[] newData, EventBean[] oldData)
+	    public override void Update(EventBean[] newData, EventBean[] oldData)
 	    {
 	        if (statementContext == null)
 	        {
@@ -131,7 +130,7 @@ namespace net.esper.view.window
 	    /// This method removes (expires) objects from the window and schedules a new callback for the
 	    /// time when the next oldest message would expire from the window.
 	    /// </summary>
-	    protected void Expire()
+	    internal void Expire()
 	    {
 	        long expireBeforeTimestamp = statementContext.SchedulingService.Time - millisecondsBeforeExpiry + 1;
 
@@ -174,7 +173,7 @@ namespace net.esper.view.window
 	        {
 	            return;
 	        }
-	        Long oldestTimestamp = timeWindow.getOldestTimestamp();
+	        long? oldestTimestamp = timeWindow.OldestTimestamp;
 	        long currentTimestamp = statementContext.SchedulingService.Time;
 	        long scheduleMillisec = millisecondsBeforeExpiry - (currentTimestamp - oldestTimestamp);
 	        ScheduleCallback(scheduleMillisec);
@@ -185,12 +184,12 @@ namespace net.esper.view.window
 	        }
 	    }
 
-	    private void scheduleCallback(long msecAfterCurrentTime)
+	    private void ScheduleCallback(long msecAfterCurrentTime)
 	    {
 	        ScheduleHandleCallback callback = new ScheduleHandleCallback(
 	            delegate(ExtensionServicesContext extensionServicesContext)
 	            {
-	                TimeWindowView.this.expire();
+	                this.expire();
 	            });
 
 			EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);

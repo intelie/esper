@@ -25,7 +25,7 @@ namespace net.esper.eql.spec
 	    /// <param name="filterSpec">specifies what events we are interested in.</param>
 	    /// <param name="viewSpecs">specifies what view to use to derive data</param>
 	    /// <param name="optionalStreamName">stream name, or null if none supplied</param>
-	    public FilterStreamSpecCompiled(FilterSpecCompiled filterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
+	    public FilterStreamSpecCompiled(FilterSpecCompiled filterSpec, IList<ViewSpec> viewSpecs, String optionalStreamName)
 	        : base(optionalStreamName, viewSpecs)
 	    {
 	        this.filterSpec = filterSpec;
@@ -35,9 +35,9 @@ namespace net.esper.eql.spec
 	    /// Returns filter specification for which events the stream will getSelectListEvents.
 	    /// </summary>
 	    /// <returns>filter spec</returns>
-	    public FilterSpecCompiled GetFilterSpec()
+	    public FilterSpecCompiled FilterSpec
 	    {
-	        return filterSpec;
+	    	get { return filterSpec; }
 	    }
 	}
 } // End of namespace

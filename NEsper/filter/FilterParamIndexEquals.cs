@@ -104,7 +104,7 @@ namespace net.esper.filter
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
         /// <param name="matches">The matches.</param>
-        public override void MatchEvent(EventBean eventBean, ICollection<FilterCallback> matches)
+        public override void MatchEvent(EventBean eventBean, IList<FilterHandle> matches)
         {
             Object attributeValue = this.Getter.GetValue(eventBean);
 

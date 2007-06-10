@@ -12,8 +12,6 @@ using System.Collections.Generic;
 using net.esper.core;
 using net.esper.compat;
 
-using Properties = net.esper.compat.EDataDictionary;
-
 namespace net.esper.adapter
 {
     /// <summary>

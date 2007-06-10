@@ -8,8 +8,10 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.client;
 using net.esper.collection;
+using net.esper.compat;
 using net.esper.eql.spec;
 using net.esper.pattern.guard;
 using net.esper.pattern.observer;
@@ -25,14 +27,14 @@ namespace net.esper.pattern
 	    private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 	    // Map of namespace, name, factory class and bool (true=guard, false=observer)
-	    private readonly IDictionary<String, IDictionary<String, Pair<Class, TypeEnum>>> nameToFactoryMap;
+	    private readonly EDictionary<String, IDictionary<String, Pair<Type, TypeEnum>>> nameToFactoryMap;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="configEntries">is the pattern plug-in objects configured</param>
 	    /// <throws>ConfigurationException if the configs are invalid</throws>
-	    public PatternObjectResolutionServiceImpl(List<ConfigurationPlugInPatternObject> configEntries)
+	    public PatternObjectResolutionServiceImpl(IList<ConfigurationPlugInPatternObject> configEntries)
 	    {
-	        nameToFactoryMap = new EHashDictionary<String, IDictionary<String, Pair<Class, TypeEnum>>>();
+	        nameToFactoryMap = new EHashDictionary<String, IDictionary<String, Pair<Type, TypeEnum>>>();
 
 	        if (configEntries == null)
 	        {
@@ -58,95 +60,89 @@ namespace net.esper.pattern
 	                throw new ConfigurationException("Pattern object type has not been supplied for object '" + entry.Name + "'");
 	            }
 
-	            Class clazz;
+	            Type type;
 	            try
 	            {
-	                clazz = Class.ForName(entry.FactoryClassName);
+	                type = Type.GetType(entry.FactoryClassName);
 	            }
-	            catch (ClassNotFoundException ex)
+	            catch (TypeLoadException ex)
 	            {
 	                throw new ConfigurationException("Pattern object factory class " + entry.FactoryClassName + " could not be loaded");
 	            }
 
-	            IDictionary<String, Pair<Class, TypeEnum>> namespaceMap = nameToFactoryMap.Get(entry.Namespace);
+	            EDictionary<String, Pair<Type, TypeEnum>> namespaceMap = nameToFactoryMap.Fetch(entry.Namespace);
 	            if (namespaceMap == null)
 	            {
-	                namespaceMap = new EHashDictionary<String, Pair<Class, TypeEnum>>();
-	                nameToFactoryMap.Put(entry.Namespace, namespaceMap);
+	                namespaceMap = new EHashDictionary<String, Pair<Type, TypeEnum>>();
+	                nameToFactoryMap[entry.Namespace] = namespaceMap;
 	            }
 	            TypeEnum typeEnum;
-	            if (entry.PatternObjectType == ConfigurationPlugInPatternObject.PatternObjectType.GUARD)
+	            if (entry.PatternObjectType == ConfigurationPlugInPatternObject.PatternObjectTypeEnum.GUARD)
 	            {
 	                typeEnum =  TypeEnum.GUARD;
 	            }
-	            else if (entry.PatternObjectType == ConfigurationPlugInPatternObject.PatternObjectType.OBSERVER)
+	            else if (entry.PatternObjectType == ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER)
 	            {
 	                typeEnum =  TypeEnum.OBSERVER;
 	            }
 	            else
 	            {
-	                throw new IllegalArgumentException("Pattern object type '" + entry.PatternObjectType + "' not known");
+	                throw new ArgumentException("Pattern object type '" + entry.PatternObjectType + "' not known");
 	            }
-	            namespaceMap.Put(entry.Name, new Pair<Class, TypeEnum>(clazz, typeEnum));
+	            namespaceMap[entry.Name] = new Pair<Type, TypeEnum>(type, typeEnum);
 	        }
 	    }
 
 	    public ObserverFactory Create(PatternObserverSpec spec)
 	    {
 	        Object result = CreateFactory(spec, TypeEnum.OBSERVER);
-	        ObserverFactory factory;
-	        try
-	        {
-	            factory = (ObserverFactory) result;
-
-	            if (log.IsDebugEnabled())
-	            {
-	                log.Debug(".create Successfully instantiated observer");
-	            }
-	        }
-	        catch (ClassCastException e)
+	        ObserverFactory factory = result as ObserverFactory;
+	        if ( factory == null )
 	        {
 	            String message = "Error casting observer factory instance to " + typeof(ObserverFactory).FullName + " interface for observer '" + spec.ObjectName + "'";
 	            throw new PatternObjectException(message, e);
 	        }
-	        return factory;
+
+            if (log.IsDebugEnabled)
+            {
+                log.Debug(".create Successfully instantiated observer");
+            }
+
+            return factory;
 	    }
 
 	    public GuardFactory Create(PatternGuardSpec spec)
 	    {
 	        Object result = CreateFactory(spec, TypeEnum.GUARD);
-	        GuardFactory factory;
-	        try
-	        {
-	            factory = (GuardFactory) result;
-
-	            if (log.IsDebugEnabled())
-	            {
-	                log.Debug(".create Successfully instantiated guard");
-	            }
-	        }
-	        catch (ClassCastException e)
-	        {
+	        GuardFactory factory = result as GuardFactory;
+            if ( factory == null )
+            {
 	            String message = "Error casting guard factory instance to " + typeof(GuardFactory).FullName + " interface for guard '" + spec.ObjectName + "'";
-	            throw new PatternObjectException(message, e);
-	        }
-	        return factory;
+	            throw new PatternObjectException(message);
+            }
+
+            if (log.IsDebugEnabled)
+            {
+                log.Debug(".create Successfully instantiated guard");
+            }
+
+            return factory;
 	    }
 
 	    private Object CreateFactory(ObjectSpec spec, TypeEnum type)
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".create Creating observer factory, spec=" + spec.ToString());
 	        }
 
-	        Class factoryClass = null;
+	        Type factoryClass = null;
 
 	        // Pre-configured objects override build-in
-	        IDictionary<String, Pair<Class, TypeEnum>> namespaceMap = nameToFactoryMap.Get(spec.ObjectNamespace);
+	        EDictionary<String, Pair<Type, TypeEnum>> namespaceMap = nameToFactoryMap.Fetch(spec.ObjectNamespace);
 	        if (namespaceMap != null)
 	        {
-	            Pair<Class, TypeEnum> pair = namespaceMap.Get(spec.ObjectName);
+	            Pair<Type, TypeEnum> pair = namespaceMap.Fetch(spec.ObjectName);
 	            if (pair != null)
 	            {
 	                if (pair.Second == type)
@@ -168,6 +164,8 @@ namespace net.esper.pattern
 	            }
 	        }
 
+	        String message = null;
+	        
 	        // if not found in the plugins, try o resolve as a builtin
 	        if (factoryClass == null)
 	        {
@@ -179,11 +177,11 @@ namespace net.esper.pattern
 	                {
 	                    if (ObserverEnum.ForName(spec.ObjectNamespace, spec.ObjectName) != null)
 	                    {
-	                        String message = "Invalid use for pattern observer named '" + spec.ObjectName + "'";
+	                        message = "Invalid use for pattern observer named '" + spec.ObjectName + "'";
 	                        throw new PatternObjectException(message);
 	                    }
 
-	                    String message = "Pattern guard name '" + spec.ObjectName + "' is not a known pattern object name";
+	                    message = "Pattern guard name '" + spec.ObjectName + "' is not a known pattern object name";
 	                    throw new PatternObjectException(message);
 	                }
 
@@ -197,11 +195,11 @@ namespace net.esper.pattern
 	                {
 	                    if (GuardEnum.ForName(spec.ObjectNamespace, spec.ObjectName) != null)
 	                    {
-	                        String message = "Invalid use for pattern guard named '" + spec.ObjectName + "' outside of where-clause";
+	                        message = "Invalid use for pattern guard named '" + spec.ObjectName + "' outside of where-clause";
 	                        throw new PatternObjectException(message);
 	                    }
 
-	                    String message = "Pattern observer name '" + spec.ObjectName + "' is not a known pattern object name";
+	                    message = "Pattern observer name '" + spec.ObjectName + "' is not a known pattern object name";
 	                    throw new PatternObjectException(message);
 	                }
 
@@ -216,17 +214,17 @@ namespace net.esper.pattern
 	        Object result = null;
 	        try
 	        {
-	            result = factoryClass.NewInstance();
+	        	result = Activator.CreateInstance(factoryType);
 	        }
 	        catch (IllegalAccessException e)
 	        {
-	            String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
+	            message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
 	            message += "', no invocation access for Class.newInstance";
 	            throw new PatternObjectException(message, e);
 	        }
 	        catch (InstantiationException e)
 	        {
-	            String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
+	            message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
 	            message += "' using Class.newInstance";
 	            throw new PatternObjectException(message, e);
 	        }

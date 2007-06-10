@@ -14,7 +14,7 @@ namespace net.esper.pattern.observer
 	     * @param observerParameters is a list of parameters
 	     * @throws ObserverParameterException thrown to indicate a parameter problem
 	     */
-	    List<Object> ObserverParameters { set ; }
+	    IList<Object> ObserverParameters { set ; }
 	
 	    /**
 	     * Make an observer instance.

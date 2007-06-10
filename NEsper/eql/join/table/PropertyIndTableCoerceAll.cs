@@ -17,8 +17,6 @@ using net.esper.util;
 
 using org.apache.commons.logging;
 
-using Properties = net.esper.compat.EDataDictionary;
-
 namespace net.esper.eql.join.table
 {
 	/// <summary>
@@ -54,13 +52,13 @@ namespace net.esper.eql.join.table
 	    /// <returns>
 	    /// set of events with property value, or null if none found (never returns zero-sized set)
 	    /// </returns>
-	    public ISet<EventBean> Lookup(Object[] keys)
+	    public override Set<EventBean> Lookup(Object[] keys)
 	    {
-	        for (int i = 0; i < keys.length; i++)
+	        for (int i = 0; i < keys.Length; i++)
 	        {
-	            Class coercionType = coercionTypes[i];
+	            Type coercionType = coercionTypes[i];
 	            Object key = keys[i];
-	            if ((key != null) && (!key.Class.Equals(coercionType)))
+	            if ((key != null) && (!key.GetType() == coercionType))
 	            {
 	                if (key is Number)
 	                {
@@ -69,8 +67,9 @@ namespace net.esper.eql.join.table
 	                }
 	            }
 	        }
-	        MultiKeyUntyped key = new MultiKeyUntyped(keys);
-	        Set<EventBean> events = propertyIndex.Get(key);
+	        
+	        MultiKeyUntyped _key = new MultiKeyUntyped(keys);
+	        Set<EventBean> events = propertyIndex.Get(_key);
 	        return events;
 	    }
 

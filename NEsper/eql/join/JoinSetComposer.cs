@@ -17,6 +17,6 @@ namespace net.esper.eql.join
 		/// <returns> join tuples
 		/// </returns>
 
-		UniformPair<ISet<MultiKey<EventBean>>> Join( EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream );
+		UniformPair<Set<MultiKey<EventBean>>> Join( EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream );
 	}
 }

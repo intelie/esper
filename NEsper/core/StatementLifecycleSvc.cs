@@ -15,7 +15,9 @@ using net.esper.eql.spec;
 
 namespace net.esper.core
 {
-    /// <summary>Handles statement management.</summary>
+    /// <summary>
+    /// Handles statement management.
+    /// </summary>
     public interface StatementLifecycleSvc
     {
         /// <summary>Create and start the statement.</summary>
@@ -58,7 +60,7 @@ namespace net.esper.core
         /// Only returns started and stopped statements.
         /// </summary>
         /// <returns>statement names</returns>
-        String[] StatementNames { get; }
+        IList<string> StatementNames { get; }
 
         /// <summary>
         /// Starts all stopped statements. First statement to fail supplies the exception.
@@ -83,6 +85,6 @@ namespace net.esper.core
         /// </summary>
         /// <param name="statementId">is the statement id for which listeners were added</param>
         /// <param name="listeners">is the set of listeners after adding the new listener</param>
-        void UpdatedListeners(String statementId, ISet<UpdateListener> listeners);
+        void UpdatedListeners(String statementId, Set<UpdateListener> listeners);
     }
 }

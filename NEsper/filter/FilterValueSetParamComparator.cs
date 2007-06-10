@@ -15,7 +15,7 @@ namespace net.esper.filter
 	/// Sort comparator for filter parameters that sorts filter parameters according to filter operator type, and
 	/// within the same filter operator sorts by event property name.
 	/// </summary>
-	public class FilterValueSetParamComparator : Comparator<FilterValueSetParam>
+	public class FilterValueSetParamComparator : Comparer<FilterValueSetParam>
 	{
 	    /// <summary>
 	    /// Defines the sort order among filter operator types. The idea is to sort EQUAL-type operators first
@@ -47,14 +47,14 @@ namespace net.esper.filter
 
 	    static FilterValueSetParamComparator()
 	    {
-	        filterSortOrder = new int[FilterOperator.Values().length];
+	        filterSortOrder = new int[FilterOperator.Values().Length];
 	        for (int i = 0; i < filterSortOrder.Length ; i++)
 	        {
 	            filterSortOrder[i] = IndexOf(FilterOperator.Values()[i]);
 	        }
 	    }
 
-	    public int Compare(FilterValueSetParam param1, FilterValueSetParam param2)
+	    public override int Compare(FilterValueSetParam param1, FilterValueSetParam param2)
 	    {
 	        // Within the same filter operator type sort by attribute name
 	        if (param1.FilterOperator == param2.FilterOperator)
@@ -78,7 +78,7 @@ namespace net.esper.filter
 
 	    private static int IndexOf(FilterOperator filterOperator)
 	    {
-	        for (int i = 0; i < FilterOperator_SortOrder.length; i++)
+	        for (int i = 0; i < FilterOperator_SortOrder.Length; i++)
 	        {
 	            if (FilterOperator_SortOrder[i] == filterOperator)
 	            {
@@ -86,7 +86,7 @@ namespace net.esper.filter
 	            }
 	        }
 
-	        return FilterOperator_SortOrder.length;
+	        return FilterOperator_SortOrder.Length;
 	    }
 	}
 } // End of namespace

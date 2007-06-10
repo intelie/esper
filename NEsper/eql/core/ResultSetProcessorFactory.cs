@@ -188,7 +188,7 @@ namespace net.esper.eql.core
 
 	        // Determine if we have a having clause with aggregation
 	        IList<ExprAggregateNode> havingAggregateExprNodes = new List<ExprAggregateNode>();
-	        ISet<Pair<int, string>> propertiesAggregatedHaving = new EHashSet<Pair<int, string>>();
+	        Set<Pair<int, string>> propertiesAggregatedHaving = new EHashSet<Pair<int, string>>();
 	        if (optionalHavingNode != null)
 	        {
 	            ExprAggregateNode.GetAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
@@ -206,20 +206,20 @@ namespace net.esper.eql.core
 	        }
 
 	        // Construct the appropriate aggregation service
-	        boolean hasGroupBy = groupByNodes.Count > 0 ;
+	        bool hasGroupBy = groupByNodes.Count > 0 ;
 	        AggregationService aggregationService = AggregationServiceFactory.GetService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, methodResolutionService);
 
             // Construct the processor for sorting output events
             OrderByProcessor orderByProcessor = OrderByProcessorFactory.GetProcessor(namedSelectionList, groupByNodes, orderByList, aggregationService, eventAdapterService);
 
             // Construct the processor for evaluating the select clause
-			SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(namedSelectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
+			SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.GetProcessor(namedSelectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
 
             // Get a list of event properties being aggregated in the select clause, if any
-            ISet<Pair<Int32, String>> propertiesAggregatedSelect = GetAggregatedProperties(selectAggregateExprNodes);
-            ISet<Pair<Int32, String>> propertiesGroupBy = GetGroupByProperties(groupByNodes);
+            Set<Pair<Int32, String>> propertiesAggregatedSelect = GetAggregatedProperties(selectAggregateExprNodes);
+            Set<Pair<Int32, String>> propertiesGroupBy = GetGroupByProperties(groupByNodes);
             // Figure out all non-aggregated event properties in the select clause (props not under a sum/avg/max aggregation node)
-            ISet<Pair<Int32, String>> nonAggregatedProps = GetNonAggregatedProps(selectNodes);
+            Set<Pair<Int32, String>> nonAggregatedProps = GetNonAggregatedProps(selectNodes);
 
             // Validate that group-by is filled with sensible nodes (identifiers, and not part of aggregates selected, no aggregates)
             ValidateGroupBy(groupByNodes, propertiesAggregatedSelect, propertiesGroupBy);
@@ -289,7 +289,7 @@ namespace net.esper.eql.core
             }
 
             // Figure out if all non-aggregated event properties in the select clause are listed in the group by
-            ISet<Pair<Int32, String>> nonAggregatedPropsSelect = GetNonAggregatedProps(selectNodes);
+            Set<Pair<Int32, String>> nonAggregatedPropsSelect = GetNonAggregatedProps(selectNodes);
             bool allInGroupBy = true;
             foreach (Pair<Int32, String> nonAggregatedProp in nonAggregatedPropsSelect)
             {
@@ -306,7 +306,7 @@ namespace net.esper.eql.core
             }
 
             // Figure out if all non-aggregated event properties in the order-by clause are listed in the select expression
-            ISet<Pair<Int32, String>> nonAggregatedPropsOrderBy = GetNonAggregatedProps(orderByNodes);
+            Set<Pair<Int32, String>> nonAggregatedPropsOrderBy = GetNonAggregatedProps(orderByNodes);
 
             bool allInSelect = true;
             foreach (Pair<Int32, String> nonAggregatedProp in nonAggregatedPropsOrderBy)
@@ -342,7 +342,7 @@ namespace net.esper.eql.core
 
         private static void ValidateHaving(
             IList<ExprAggregateNode> selectAggregateExprNodes,
-            ISet<Pair<Int32, String>> propertiesGroupedBy,
+            Set<Pair<Int32, String>> propertiesGroupedBy,
             ExprNode havingNode)
         {
             IList<ExprAggregateNode> aggregateNodesHaving = new List<ExprAggregateNode>();
@@ -357,7 +357,7 @@ namespace net.esper.eql.core
                 ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);
                 havingNode.Accept(visitor);
                 IList<Pair<Int32, String>> allPropertiesHaving = visitor.ExprProperties;
-                ISet<Pair<Int32, String>> aggPropertiesHaving = GetAggregatedProperties(aggregateNodesHaving);
+                Set<Pair<Int32, String>> aggPropertiesHaving = GetAggregatedProperties(aggregateNodesHaving);
                 CollectionHelper.RemoveAll(allPropertiesHaving, aggPropertiesHaving);
                 CollectionHelper.RemoveAll(allPropertiesHaving, propertiesGroupedBy);
 
@@ -371,8 +371,8 @@ namespace net.esper.eql.core
 
         private static void ValidateGroupBy(
         	IList<ExprNode> groupByNodes,
-        	ISet<Pair<Int32, String>> propertiesAggregated,
-        	ISet<Pair<Int32, String>> propertiesGroupedBy)
+        	Set<Pair<Int32, String>> propertiesAggregated,
+        	Set<Pair<Int32, String>> propertiesGroupedBy)
         {
             // Make sure there is no aggregate function in group-by
             IList<ExprAggregateNode> aggNodes = new List<ExprAggregateNode>();
@@ -395,10 +395,10 @@ namespace net.esper.eql.core
             }
         }
 
-        private static ISet<Pair<Int32, String>> GetNonAggregatedProps(IList<ExprNode> exprNodes)
+        private static Set<Pair<Int32, String>> GetNonAggregatedProps(IList<ExprNode> exprNodes)
         {
             // Determine all event properties in the clause
-            ISet<Pair<Int32, String>> nonAggProps = new EHashSet<Pair<Int32, String>>();
+            Set<Pair<Int32, String>> nonAggProps = new EHashSet<Pair<Int32, String>>();
             foreach (ExprNode node in exprNodes)
             {
                 ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(false);
@@ -410,10 +410,10 @@ namespace net.esper.eql.core
             return nonAggProps;
         }
 
-        private static ISet<Pair<Int32, String>> GetAggregatedProperties(IList<ExprAggregateNode> aggregateNodes)
+        private static Set<Pair<Int32, String>> GetAggregatedProperties(IList<ExprAggregateNode> aggregateNodes)
         {
             // Get a list of properties being aggregated in the clause.
-            ISet<Pair<Int32, String>> propertiesAggregated = new EHashSet<Pair<Int32, String>>();
+            Set<Pair<Int32, String>> propertiesAggregated = new EHashSet<Pair<Int32, String>>();
             foreach (ExprNode selectAggExprNode in aggregateNodes)
             {
                 ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);
@@ -425,10 +425,10 @@ namespace net.esper.eql.core
             return propertiesAggregated;
         }
 
-        private static ISet<Pair<Int32, String>> GetGroupByProperties(IList<ExprNode> groupByNodes)
+        private static Set<Pair<Int32, String>> GetGroupByProperties(IList<ExprNode> groupByNodes)
         {
             // Get the set of properties refered to by all group-by expression nodes.
-            ISet<Pair<Int32, String>> propertiesGroupBy = new EHashSet<Pair<Int32, String>>();
+            Set<Pair<Int32, String>> propertiesGroupBy = new EHashSet<Pair<Int32, String>>();
             foreach (ExprNode groupByNode in groupByNodes)
             {
                 ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);

@@ -83,7 +83,7 @@ namespace net.esper.eql.join.rep
             if (nodeEnumerator.MoveNext())
             {
                 currentNode = nodeEnumerator.Current;
-                ISet<EventBean> events = currentNode.Events;
+                Set<EventBean> events = currentNode.Events;
                 if (events != null)
                 {
                     currentEnumerator = events.GetEnumerator();

@@ -66,7 +66,9 @@ namespace net.esper.filter
         /// <returns> filter parameter, or null if no matching parameter found.
         /// </returns>
         
-        public static FilterValueSetParam FindParameter(ETreeSet<FilterValueSetParam> parameters, FilterParamIndex index)
+        public static FilterValueSetParam FindParameter(
+        	ETreeSet<FilterValueSetParam> parameters,
+        	FilterParamIndexBase index)
         {
 	        if (index is FilterParamIndexPropBase)
 	        {

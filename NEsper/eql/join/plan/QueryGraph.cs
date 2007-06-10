@@ -96,9 +96,9 @@ namespace net.esper.eql.join.plan
 		/// <returns> set of streams related to this stream, or empty set if none
 		/// </returns>
 
-		public ISet<Int32> GetNavigableStreams( int streamFrom )
+		public Set<Int32> GetNavigableStreams( int streamFrom )
 		{
-			ISet<Int32> result = new EHashSet<Int32>();
+			Set<Int32> result = new EHashSet<Int32>();
 			for ( int i = 0 ; i < numStreams ; i++ )
 			{
 				if ( IsNavigable( streamFrom, i ) )

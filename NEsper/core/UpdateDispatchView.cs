@@ -18,7 +18,7 @@ namespace net.esper.core
 
     public class UpdateDispatchView : ViewSupport, Dispatchable
     {
-        private ISet<UpdateListener> updateListeners;
+        private Set<UpdateListener> updateListeners;
         private readonly DispatchService dispatchService;
 		private EventBean lastIterableEvent;
 		
@@ -65,7 +65,7 @@ namespace net.esper.core
         /// <param name="dispatchService">for performing the dispatch
         /// </param>
 
-        public UpdateDispatchView(ISet<UpdateListener> updateListeners, DispatchService dispatchService)
+        public UpdateDispatchView(Set<UpdateListener> updateListeners, DispatchService dispatchService)
         {
             this.updateListeners = updateListeners;
             this.dispatchService = dispatchService;
@@ -119,7 +119,6 @@ namespace net.esper.core
         public override EventType EventType
         {
             get { return null; }
-            set { }
         }
 
         /// <summary>

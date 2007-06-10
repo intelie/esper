@@ -53,5 +53,13 @@ namespace net.esper.filter
 	        InSetOfValuesConstant other = (InSetOfValuesConstant) obj;
 	        return other.constant.Equals(this.constant);
 	    }
+	    
+		public override int GetHashCode()
+		{
+			return 
+				constant != null ?
+				base.GetHashCode() * 31 + constant.GetHashCode() :
+				base.GetHashCode() ;
+		}
 	}
 } // End of namespace

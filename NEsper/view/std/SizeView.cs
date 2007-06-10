@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 
 using net.esper.compat;
 using net.esper.collection;
+using net.esper.core;
 using net.esper.events;
 using net.esper.view;
 
@@ -30,8 +31,13 @@ namespace net.esper.view.std
 	        this.statementContext = statementContext;
 	        this.eventType = createEventType(statementContext);
 	    }
+    	
+		public View CloneView(StatementContext statementContext)
+		{
+			return new SizeView(statementContext);
+		}
 
-        /// <summary>
+		/// <summary>
         /// Provides metadata information about the type of object the event collection contains.
         /// </summary>
         /// <value></value>
@@ -41,7 +47,6 @@ namespace net.esper.view.std
         public override EventType EventType
         {
             get { return eventType; }
-            set { }
         }
 
         /// <summary>
@@ -115,10 +120,10 @@ namespace net.esper.view.std
 		/// <summary>Creates the event type for this view</summary>
 		/// <param name="statementContext">is the event adapter service</param>
 		/// <returns>event type for view</returns>
-	    protected static EventType CreateEventType(StatementContext statementContext)
+	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
 	        EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
-	        schemaMap.put(ViewFieldEnum.SIZE_VIEW__SIZE.Name, typeof(long));
+		    schemaMap[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = typeof (long);
 	        return statementContext.EventAdapterService.CreateAnonymousMapType(schemaMap);
 	    }
     }

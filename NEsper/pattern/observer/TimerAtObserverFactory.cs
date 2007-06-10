@@ -24,29 +24,32 @@ namespace net.esper.pattern.observer
 	     */
 	    protected ScheduleSpec spec = null;
 
-	    public List<Object> ObserverParameters
+	    public IList<Object> ObserverParameters
 	    {
-	        if (log.IsDebugEnabled)
-	        {
-	            log.Debug(".setObserverParameters " + value);
-	        }
-
-	        if ((value.Count < 5) || (value.Count > 6))
-	        {
-	            throw new ObserverParameterException("Invalid number of parameters for timer:at");
-	        }
-
-	        EnumMap<ScheduleUnit, SortedSet<Int32>> unitMap = new EnumMap<ScheduleUnit, SortedSet<Int32>>(typeof(ScheduleUnit));
-	        unitMap[ScheduleUnit.MINUTES] = ComputeValues(value[0], ScheduleUnit.MINUTES);
-	        unitMap[ScheduleUnit.HOURS] = ComputeValues(value[1], ScheduleUnit.HOURS);
-	        unitMap[ScheduleUnit.DAYS_OF_WEEK] = ComputeValues(value[2], ScheduleUnit.DAYS_OF_WEEK);
-	        unitMap[ScheduleUnit.DAYS_OF_MONTH] = ComputeValues(value[3], ScheduleUnit.DAYS_OF_MONTH);
-	        unitMap[ScheduleUnit.MONTHS] = ComputeValues(value[4], ScheduleUnit.MONTHS);
-	        if (observerParameters.Count > 5)
-	        {
-	            unitMap[ScheduleUnit.SECONDS] = ComputeValues(value[5], ScheduleUnit.SECONDS);
-	        }
-			spec = new ScheduleSpec(unitMap);
+			set
+			{
+		    	if (log.IsDebugEnabled)
+		        {
+		            log.Debug(".setObserverParameters " + value);
+		        }
+	
+		        if ((value.Count < 5) || (value.Count > 6))
+		        {
+		            throw new ObserverParameterException("Invalid number of parameters for timer:at");
+		        }
+	
+		        EDictionary<ScheduleUnit, ETreeSet<Int32>> unitMap = new EHashDictionary<ScheduleUnit, ETreeSet<Int32>>();
+		        unitMap[ScheduleUnit.MINUTES] = ComputeValues(value[0], ScheduleUnit.MINUTES);
+		        unitMap[ScheduleUnit.HOURS] = ComputeValues(value[1], ScheduleUnit.HOURS);
+		        unitMap[ScheduleUnit.DAYS_OF_WEEK] = ComputeValues(value[2], ScheduleUnit.DAYS_OF_WEEK);
+		        unitMap[ScheduleUnit.DAYS_OF_MONTH] = ComputeValues(value[3], ScheduleUnit.DAYS_OF_MONTH);
+		        unitMap[ScheduleUnit.MONTHS] = ComputeValues(value[4], ScheduleUnit.MONTHS);
+		        if (observerParameters.Count > 5)
+		        {
+		            unitMap[ScheduleUnit.SECONDS] = ComputeValues(value[5], ScheduleUnit.SECONDS);
+		        }
+				spec = new ScheduleSpec(unitMap);
+			}
 		}
 
         private static ETreeSet<Int32> ComputeValues(Object unitParameter, ScheduleUnit unit)
@@ -64,7 +67,7 @@ namespace net.esper.pattern.observer
                 return null;
             }
 
-            ISet<Int32> _result = numberSet.GetValuesInRange(unit.Min(), unit.Max());
+            Set<Int32> _result = numberSet.GetValuesInRange(unit.Min(), unit.Max());
             ETreeSet<Int32> resultSorted = new ETreeSet<Int32>();
             resultSorted.AddAll(_result);
 

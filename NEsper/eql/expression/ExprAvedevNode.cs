@@ -31,7 +31,7 @@ namespace net.esper.eql.expression
         /// <value></value>
         /// <returns> aggregation function name
         /// </returns>
-        override protected internal String AggregationFunctionName
+        protected override String AggregationFunctionName
         {
             get { return "avedev"; }
         }
@@ -51,7 +51,7 @@ namespace net.esper.eql.expression
         /// <param name="autoImportService">for resolving class names in library method invocations</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 
-	    public override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+	    protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 	    {
 	        base.ValidateSingleNumericChild(streamTypeService);
 	        return methodResolutionService.MakeAvedevAggregator();

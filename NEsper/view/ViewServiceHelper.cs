@@ -203,7 +203,7 @@ namespace net.esper.view
 
 	        bool foundMatch;
 
-	        if (viewFactories.IsEmpty)
+	        if (viewFactories.Count == 0)
 	        {
 	            return new Pair<Viewable, IList<View>>(rootViewable, new List<View>());
 	        }

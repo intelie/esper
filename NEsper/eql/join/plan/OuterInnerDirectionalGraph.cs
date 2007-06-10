@@ -14,7 +14,7 @@ namespace net.esper.eql.join.plan
 
     public class OuterInnerDirectionalGraph
     {
-        private readonly EDictionary<int, ISet<int>> streamToInnerMap;
+        private readonly EDictionary<int, Set<int>> streamToInnerMap;
         private readonly int numStreams;
 
         /// <summary> Ctor.</summary>
@@ -24,7 +24,7 @@ namespace net.esper.eql.join.plan
         public OuterInnerDirectionalGraph(int numStreams)
         {
             this.numStreams = numStreams;
-            this.streamToInnerMap = new EHashDictionary<int, ISet<int>>();
+            this.streamToInnerMap = new EHashDictionary<int, Set<int>>();
         }
 
         /// <summary> Add an outer-to-inner join stream relationship.</summary>
@@ -39,7 +39,7 @@ namespace net.esper.eql.join.plan
             CheckArgs(outerStream, innerStream);
 
             // add set
-            ISet<int> innerSet = streamToInnerMap.Fetch( outerStream, null ) ;
+            Set<int> innerSet = streamToInnerMap.Fetch( outerStream, null ) ;
             if ( innerSet == null )
             {
                 innerSet = new EHashSet<int>();
@@ -62,10 +62,10 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <returns> set of inner streams, or null if empty
         /// </returns>
-        public ISet<int> GetInner(int outerStream)
+        public Set<int> GetInner(int outerStream)
         {
             CheckArgs(outerStream);
-            ISet<int> innerSet = streamToInnerMap.Fetch(outerStream, null);
+            Set<int> innerSet = streamToInnerMap.Fetch(outerStream, null);
             return innerSet;
         }
 
@@ -74,15 +74,15 @@ namespace net.esper.eql.join.plan
         /// </param>
         /// <returns> set of outer streams, or null if empty
         /// </returns>
-        public ISet<int> GetOuter(int innerStream)
+        public Set<int> GetOuter(int innerStream)
         {
             CheckArgs(innerStream);
 
-            ISet<int> result = new EHashSet<int>();
-            foreach( KeyValuePair<int, ISet<int>> keyValuePair in streamToInnerMap )
+            Set<int> result = new EHashSet<int>();
+            foreach( KeyValuePair<int, Set<int>> keyValuePair in streamToInnerMap )
             {
                 int key = keyValuePair.Key;
-                ISet<int> set = keyValuePair.Value;
+                Set<int> set = keyValuePair.Value;
 
                 if (set.Contains(innerStream))
                 {
@@ -109,7 +109,7 @@ namespace net.esper.eql.join.plan
         {
             CheckArgs(outerStream, innerStream);
 
-            ISet<int> innerSet = streamToInnerMap.Fetch(outerStream, null);
+            Set<int> innerSet = streamToInnerMap.Fetch(outerStream, null);
             if (innerSet == null)
             {
                 return false;
@@ -127,7 +127,7 @@ namespace net.esper.eql.join.plan
         public virtual bool IsOuter(int outerStream, int innerStream)
         {
             CheckArgs(outerStream, innerStream);
-            ISet<int> outerStreams = GetOuter(innerStream);
+            Set<int> outerStreams = GetOuter(innerStream);
             if (outerStreams == null)
             {
                 return false;
@@ -143,9 +143,9 @@ namespace net.esper.eql.join.plan
             StringBuilder buffer = new StringBuilder();
             String delimiter = "";
 
-            foreach( KeyValuePair<int, ISet<int>> kvPair in streamToInnerMap )
+            foreach( KeyValuePair<int, Set<int>> kvPair in streamToInnerMap )
             {
-                ISet<int> set = kvPair.Value;
+                Set<int> set = kvPair.Value;
 
                 buffer.Append(delimiter);
                 buffer.Append(kvPair.Key);

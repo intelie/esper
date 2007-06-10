@@ -12,7 +12,7 @@ namespace net.esper.eql.join.table
     public class UnindexedEventTable : EventTable
     {
         private readonly int streamNum;
-        private ISet<EventBean> eventSet = new EHashSet<EventBean>();
+        private Set<EventBean> eventSet = new EHashSet<EventBean>();
 
         /// <summary> Ctor.</summary>
         /// <param name="streamNum">is the indexed stream's number
@@ -61,7 +61,7 @@ namespace net.esper.eql.join.table
         /// <returns> all events
         /// </returns>
 
-        public ISet<EventBean> EventSet
+        public Set<EventBean> EventSet
         {
             get { return eventSet; }
         }

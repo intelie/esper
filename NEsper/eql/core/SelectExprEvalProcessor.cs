@@ -53,7 +53,7 @@ namespace net.esper.eql.core
 	        {
 	            if (entry.AssignedName == null)
 	            {
-	                throw new IllegalArgumentException("Expected name for each expression has not been supplied");
+	                throw new ArgumentException("Expected name for each expression has not been supplied");
 	            }
 	        }
 
@@ -219,7 +219,7 @@ namespace net.esper.eql.core
                                              IList<SelectExprElementCompiledSpec> selectionList)
         {
             // Verify all column names are unique
-            ISet<String> names = new EHashSet<String>();
+            Set<String> names = new EHashSet<String>();
             foreach (String element in insertIntoDesc.ColumnNames)
             {
                 if (names.Contains(element))

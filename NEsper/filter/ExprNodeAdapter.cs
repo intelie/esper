@@ -57,8 +57,8 @@ namespace net.esper.filter
 	        }
 	        else
 	        {
-	            eventsPerStream = new EventBean[prototype.length];
-	            for (int i = 1; i < prototype.length; i++)
+	            eventsPerStream = new EventBean[prototype.Length];
+	            for (int i = 1; i < prototype.Length; i++)
 	            {
 	                eventsPerStream[i] = prototype[i];
 	            }

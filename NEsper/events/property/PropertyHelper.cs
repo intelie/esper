@@ -37,7 +37,7 @@ namespace net.esper.events.property
 		public static IList<EventPropertyDescriptor> GetProperties(Type type)
         {
             // Determine all interfaces implemented and the interface's parent interfaces if any
-            ISet<Type> propertyOrigClasses = new EHashSet<Type>();
+            Set<Type> propertyOrigClasses = new EHashSet<Type>();
             GetImplementedInterfaceParents(type, propertyOrigClasses);
 
             // Add class itself
@@ -55,7 +55,7 @@ namespace net.esper.events.property
 		/// <param name="type">The type.</param>
 		/// <param name="typesResult">The classes result.</param>
         
-		private static void GetImplementedInterfaceParents(Type type, ISet<Type> typesResult)
+		private static void GetImplementedInterfaceParents(Type type, Set<Type> typesResult)
         {
 			Type[] interfaces = type.GetInterfaces();
 
@@ -77,7 +77,7 @@ namespace net.esper.events.property
 		/// <param name="propertyClasses">The property classes.</param>
 		/// <returns></returns>
         
-		private static IList<EventPropertyDescriptor> GetPropertiesForClasses(ISet<Type> propertyClasses)
+		private static IList<EventPropertyDescriptor> GetPropertiesForClasses(Set<Type> propertyClasses)
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
 

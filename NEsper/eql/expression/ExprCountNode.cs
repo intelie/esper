@@ -17,12 +17,9 @@ namespace net.esper.eql.expression
         /// <value></value>
         /// <returns> aggregation function name
         /// </returns>
-		protected internal override String AggregationFunctionName
+		protected override String AggregationFunctionName
 		{
-			get
-			{
-				return "count";
-			}
+			get { return "count"; }
 		}
 		
 		/// <summary> Ctor.</summary>
@@ -33,7 +30,7 @@ namespace net.esper.eql.expression
 		{
 		}
 
-	    public override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+	    protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 	    {
 	        // Empty child node list signals count(*), does not ignore nulls
 	        if (this.ChildNodes.Count == 0)
@@ -47,27 +44,9 @@ namespace net.esper.eql.expression
 	            {
 	                throw new ExprValidationException("Count node must have zero or 1 child nodes");
 	            }
-	            return methodResolutionService.makeCountAggregator(true);
+	            return methodResolutionService.MakeCountAggregator(true);
 	        }
 	    }
-
-        /// <summary>
-        /// Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
-        /// </summary>
-        /// <value></value>
-        /// <returns> prototype aggregation state as a factory for aggregation states per group-by key value
-        /// </returns>
-		public override Aggregator AggregationFunction
-		{
-			get
-			{
-				if ( computer == null )
-				{
-					throw new SystemException( "Node has not been initalized through validate call" );
-				}
-				return computer;
-			}
-		}
 
         /// <summary>
         /// Return true if a expression aggregate node semantically equals the current node, or false if not.

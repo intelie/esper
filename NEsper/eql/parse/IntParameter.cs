@@ -54,9 +54,9 @@ namespace net.esper.eql.parse
         /// <param name="min">lower end of range</param>
         /// <param name="max">upper end of range</param>
         /// <returns>set of integer</returns>
-		public ISet<Int32> GetValuesInRange(int min, int max)
+		public Set<Int32> GetValuesInRange(int min, int max)
 		{
-			ISet<Int32> values = new EHashSet<Int32>();
+			Set<Int32> values = new EHashSet<Int32>();
 			
 			if ((intValue >= min) && (intValue <= max))
 			{

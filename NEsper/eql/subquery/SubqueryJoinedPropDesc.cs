@@ -67,7 +67,7 @@ namespace net.esper.eql.subquery
         /// <returns>key stream numbers</returns>
         public static int[] GetKeyStreamNums(ICollection<SubqueryJoinedPropDesc> descList)
         {
-            int[] streamIds = new int[descList.Size()];
+            int[] streamIds = new int[descList.Count];
             int count = 0;
             foreach (SubqueryJoinedPropDesc desc in descList)
             {
@@ -81,7 +81,7 @@ namespace net.esper.eql.subquery
         /// <returns>key property names</returns>
         public static String[] GetKeyProperties(ICollection<SubqueryJoinedPropDesc> descList)
         {
-            String[] result = new String[descList.Size()];
+            String[] result = new String[descList.Count];
             int count = 0;
             foreach (SubqueryJoinedPropDesc desc in descList)
             {
@@ -95,7 +95,7 @@ namespace net.esper.eql.subquery
         /// <returns>key coercion types</returns>
         public static Type[] GetCoercionTypes(ICollection<SubqueryJoinedPropDesc> descList)
         {
-            Type[] result = new Class[descList.Size()];
+            Type[] result = new Type[descList.Count];
             int count = 0;
             foreach (SubqueryJoinedPropDesc desc in descList)
             {

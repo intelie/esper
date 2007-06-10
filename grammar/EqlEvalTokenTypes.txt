@@ -163,18 +163,18 @@ COLON("a colon ':'")=163
 BAND("a binary and '&'")=164
 BOR("a binary or '|'")=165
 BXOR("a binary xor '^'")=166
-SQL_NE("a sql-style not equals \"<>\"")=167
-NOT_EQUAL("a not equals \"!=\"")=168
+SQL_NE("a sql-style not equals '<>'")=167
+NOT_EQUAL("a not equals '!='")=168
 LT_("a lesser then '<'")=169
 GT("a greater then '>'")=170
-LE("a less equals \"<=\"")=171
-GE("a greater equals \">=\"")=172
-LOR("a logical or \"||\"")=173
+LE("a less equals '<='")=171
+GE("a greater equals '>='")=172
+LOR("a logical or '||'")=173
 DIV("a division operator '\'")=174
 MOD("a modulo '%'")=175
 LCURLY("a left curly bracket '{'")=176
 RCURLY("a right curly bracket '}'")=177
-FOLLOWED_BY("an followed-by \"->\"")=178
+FOLLOWED_BY("an followed-by '->'")=178
 LITERAL_days="days"=179
 LITERAL_day="day"=180
 LITERAL_hours="hours"=181
@@ -186,26 +186,26 @@ LITERAL_milliseconds="milliseconds"=186
 LITERAL_millisecond="millisecond"=187
 LITERAL_msec="msec"=188
 QUESTION("a questionmark '?'")=189
-EQUAL("an equals compare \"==\"")=190
+EQUAL("an equals compare '=='")=190
 LNOT("a not '!'")=191
 BNOT("a binary not '~'")=192
-DIV_ASSIGN("a division assign \"/=\"")=193
-PLUS_ASSIGN("a plus assign \"+=\"")=194
+DIV_ASSIGN("a division assign '/='")=193
+PLUS_ASSIGN("a plus assign '+='")=194
 INC("an increment operator '++'")=195
-MINUS_ASSIGN("a minus assign \"-=\"")=196
+MINUS_ASSIGN("a minus assign '-='")=196
 DEC("a decrement operator '--'")=197
 STAR_ASSIGN("a star assign '*='")=198
-MOD_ASSIGN("a module assign \"%=\"")=199
+MOD_ASSIGN("a module assign '%='")=199
 SR("a shift right '>>'")=200
 SR_ASSIGN("a shift right assign '>>='")=201
-BSR("a binary shift right \">>>\"")=202
-BSR_ASSIGN("a binary shift right assign \">>>=\"")=203
-SL("a shift left \"<<\"")=204
-SL_ASSIGN("a shift left assign \"<<=\"")=205
-BXOR_ASSIGN("a binary xor assign \"^=\"")=206
-BOR_ASSIGN("a binary or assign \"|=\"")=207
-BAND_ASSIGN("a binary and assign \"&=\"")=208
-LAND("a logical and \"&&\"")=209
+BSR("a binary shift right '>>>'")=202
+BSR_ASSIGN("a binary shift right assign '>>>='")=203
+SL("a shift left '<<'")=204
+SL_ASSIGN("a shift left assign '<<='")=205
+BXOR_ASSIGN("a binary xor assign '^='")=206
+BOR_ASSIGN("a binary or assign '|='")=207
+BAND_ASSIGN("a binary and assign '&='")=208
+LAND("a logical and '&&'")=209
 SEMI("a semicolon ';'")=210
 WS=211
 SL_COMMENT=212
@@ -215,5 +215,4 @@ HEX_DIGIT=215
 EXPONENT=216
 FLOAT_SUFFIX=217
 BOGUS=218
-LT=219
-NUMERIC_PARAM_FREQUENCE=220
+NUMERIC_PARAM_FREQUENCE=219

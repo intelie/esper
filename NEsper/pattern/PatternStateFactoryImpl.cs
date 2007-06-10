@@ -8,6 +8,8 @@
 
 using System;
 
+using net.esper.compat;
+
 namespace net.esper.pattern
 {
 	/// <summary>Default pattern state factory.</summary>

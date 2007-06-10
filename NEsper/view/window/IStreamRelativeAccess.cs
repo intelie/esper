@@ -46,7 +46,7 @@ namespace net.esper.view.window
 	        {
 	            for (int i = 0; i < newData.Length; i++)
 	            {
-	                indexPerEvent[newdata[i]] = i;
+	                indexPerEvent[newData[i]] = i;
 	            }
 	        }
 	    }
@@ -60,7 +60,7 @@ namespace net.esper.view.window
 
 	        if (prevIndex == 0)
 	        {
-	            return event;
+	            return _event;
 	        }
 
 			int indexIncoming;
@@ -92,7 +92,7 @@ namespace net.esper.view.window
 	         * @param iStreamRelativeAccess is the collection
 	         * @param newData is the new data available
 	         */
-	        public void Updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData);
+	        void Updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData);
 	    }
 	}
 }

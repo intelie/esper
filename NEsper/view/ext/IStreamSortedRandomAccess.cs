@@ -8,112 +8,116 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.collection;
 using net.esper.events;
 using net.esper.view.window;
 
 namespace net.esper.view.ext
 {
-	/// <summary>Provides random access into a sorted-window's data.</summary>
+	/// <summary>
+	/// Provides random access into a sorted-window's data.
+	/// </summary>
 	public class IStreamSortedRandomAccess : RandomAccessByIndex
 	{
-	    private readonly IStreamRandomAccessUpdateObserver updateObserver;
+		private readonly IStreamRandomAccessUpdateObserver updateObserver;
 
-	    private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
-	    private int currentSize;
+		private ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
+		private int currentSize;
 
-	    private Iterator<LinkedList<EventBean>> iterator;
-	    private EventBean[] cache;
-	    private int cacheFilledTo;
+		private IEnumerator<LinkedList<EventBean>> enumerator;
+		private EventBean[] cache;
+		private int cacheFilledTo;
 
-	    /// <summary>Ctor.</summary>
-	    /// <param name="updateObserver">for indicating updates to</param>
-	    public IStreamSortedRandomAccess(IStreamRandomAccessUpdateObserver updateObserver)
-	    {
-	        this.updateObserver = updateObserver;
-	    }
+		/// <summary>Ctor.</summary>
+		/// <param name="updateObserver">for indicating updates to</param>
+		public IStreamSortedRandomAccess(IStreamRandomAccessUpdateObserver updateObserver)
+		{
+			this.updateObserver = updateObserver;
+		}
 
-	    /// <summary>Refreshes the random access data with the updated information.</summary>
-	    /// <param name="sortedEvents">is the sorted window contents</param>
-	    /// <param name="currentSize">is the current size of the window</param>
-	    /// <param name="maxSize">is the maximum size of the window</param>
-	    public void Refresh(TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents, int currentSize, int maxSize)
-	    {
-	        updateObserver.Updated(this);
-	        this.sortedEvents = sortedEvents;
-	        this.currentSize = currentSize;
+		/// <summary>Refreshes the random access data with the updated information.</summary>
+		/// <param name="sortedEvents">is the sorted window contents</param>
+		/// <param name="currentSize">is the current size of the window</param>
+		/// <param name="maxSize">is the maximum size of the window</param>
+		public void Refresh(ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents, int currentSize, int maxSize)
+		{
+			updateObserver.Updated(this);
+			this.sortedEvents = sortedEvents;
+			this.currentSize = currentSize;
 
-	        this.iterator = null;
-	        this.cacheFilledTo = 0;
-	        if (cache == null)
-	        {
-	            cache = new EventBean[maxSize];
-	        }
-	    }
+			this.enumerator = null;
+			this.cacheFilledTo = 0;
+			if (cache == null)
+			{
+				cache = new EventBean[maxSize];
+			}
+		}
 
-	    public EventBean GetNewData(int index)
-	    {
-	        if (iterator == null)
-	        {
-	            iterator = sortedEvents.Values().Iterator();
-	        }
+		public EventBean GetNewData(int index)
+		{
+			if (enumerator == null)
+			{
+				enumerator = sortedEvents.Values.GetEnumerator();
+			}
 
-	        // if asking for more then the sorted window currently holds, return no data
-	        if (index >= currentSize)
-	        {
-	            return null;
-	        }
+			// if asking for more then the sorted window currently holds, return no data
+			if (index >= currentSize)
+			{
+				return null;
+			}
 
-	        // If we have it in cache, serve from cache
-	        if (index < cacheFilledTo)
-	        {
-	            return cache[index];
-	        }
+			// If we have it in cache, serve from cache
+			if (index < cacheFilledTo)
+			{
+				return cache[index];
+			}
 
-	        // Load more into cache
-	        while(true)
-	        {
-	            if (cacheFilledTo == currentSize)
-	            {
-	                break;
-	            }
-	            if (!iterator.HasNext())
-	            {
-	                break;
-	            }
-	            LinkedList<EventBean> events = iterator.Next();
-	            foreach (EventBean _event in events)
-	            {
-	                cache[cacheFilledTo] = _event;
-	                cacheFilledTo++;
-	            }
+			// Load more into cache
+			while(true)
+			{
+				if (cacheFilledTo == currentSize)
+				{
+					break;
+				}
+				if (!iterator.HasNext())
+				{
+					break;
+				}
+				LinkedList<EventBean> events = iterator.Next();
+				foreach (EventBean _event in events)
+				{
+					cache[cacheFilledTo] = _event;
+					cacheFilledTo++;
+				}
 
-	            if (cacheFilledTo > index)
-	            {
-	                break;
-	            }
-	        }
+				if (cacheFilledTo > index)
+				{
+					break;
+				}
+			}
 
-	        // If we have it in cache, serve from cache
-	        if (index <= cacheFilledTo)
-	        {
-	            return cache[index];
-	        }
+			// If we have it in cache, serve from cache
+			if (index <= cacheFilledTo)
+			{
+				return cache[index];
+			}
 
-	        return null;
-	    }
+			return null;
+		}
 
-	    public EventBean GetOldData(int index)
-	    {
-	        return null;
-	    }
+		public EventBean GetOldData(int index)
+		{
+			return null;
+		}
 
-	    /// <summary>For indicating that the collection has been updated.</summary>
-	    public interface IStreamRandomAccessUpdateObserver
-	    {
-	        /// <summary>Callback to indicate an update</summary>
-	        /// <param name="iStreamSortedRandomAccess">is the collection</param>
-	        void Updated(IStreamSortedRandomAccess iStreamSortedRandomAccess);
-	    }
+		/// <summary>For indicating that the collection has been updated.</summary>
+		public interface IStreamRandomAccessUpdateObserver
+		{
+			/// <summary>Callback to indicate an update</summary>
+			/// <param name="iStreamSortedRandomAccess">is the collection</param>
+			void Updated(IStreamSortedRandomAccess iStreamSortedRandomAccess);
+		}
 	}
 } // End of namespace

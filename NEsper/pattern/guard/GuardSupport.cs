@@ -15,5 +15,10 @@ namespace net.esper.pattern.guard
 	/// </summary>
 	public abstract class GuardSupport : Guard
 	{
+		abstract public void StartGuard();
+		
+		abstract public void StopGuard();
+		
+		abstract public bool Inspect(MatchedEventMap matchEvent);
 	}
 } // End of namespace

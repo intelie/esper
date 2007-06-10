@@ -10,11 +10,10 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.util;
-
-using Properties = net.esper.compat.EDataDictionary;
 
 namespace net.esper.core
 {
@@ -60,11 +59,11 @@ namespace net.esper.core
 	        }
 	    }
 
-	    public void AddEventTypeAlias(String eventTypeAlias, String javaEventClassName)
+	    public void AddEventTypeAlias(String eventTypeAlias, String eventTypeClassName)
 	    {
 	        try
 	        {
-	            eventAdapterService.AddBeanType(eventTypeAlias, javaEventClassName);
+	            eventAdapterService.AddBeanType(eventTypeAlias, eventTypeName);
 	        }
 	        catch (EventAdapterException t)
 	        {
@@ -72,11 +71,11 @@ namespace net.esper.core
 	        }
 	    }
 
-	    public void AddEventTypeAlias(String eventTypeAlias, Type javaEventClass)
+	    public void AddEventTypeAlias(String eventTypeAlias, Type eventType)
 	    {
 	        try
 	        {
-	            eventAdapterService.AddBeanType(eventTypeAlias, javaEventClass);
+	            eventAdapterService.AddBeanType(eventTypeAlias, eventType);
 	        }
 	        catch (EventAdapterException t)
 	        {
@@ -86,7 +85,7 @@ namespace net.esper.core
 
 	    public void AddEventTypeAlias(String eventTypeAlias, Properties typeMap)
 	    {
-	        IDictionary<String, Class> types = CreatePropertyTypes(typeMap);
+	        EDictionary<String, Type> types = CreatePropertyTypes(typeMap);
 	        try
 	        {
 	            eventAdapterService.AddMapType(eventTypeAlias, types);
@@ -121,32 +120,32 @@ namespace net.esper.core
 	        }
 	    }
 
-	    private static IDictionary<String, Class> CreatePropertyTypes(Properties properties)
+	    private static EDictionary<String, Type> CreatePropertyTypes(Properties properties)
 	    {
-	        IDictionary<String, Type> propertyTypes = new EHashDictionary<String, Type>();
-	        foreach(Object property in properties.KeySet())
+	        EDictionary<String, Type> propertyTypes = new EHashDictionary<String, Type>();
+	        foreach(string property in properties.Keys)
 	        {
-	            String className = (String) properties.Get(property);
+	            string typename = properties.Fetch(property);
 
-	            if ("string".Equals(className))
+	            if (typename == "string")
 	            {
-	                className = typeof(String).FullName;
+	                typename = typeof(string).FullName;
 	            }
 
 	            // use the boxed type for primitives
-	            String boxedClassName = TypeHelper.GetBoxedClassName(className);
+	            string boxedTypeName = TypeHelper.GetBoxedTypeName(typename);
 
 	            Type type = null;
 	            try
 	            {
-	                type = Class.ForName(boxedClassName);
+	                type = Type.GetType(boxedTypeName);
 	            }
-	            catch (ClassNotFoundException ex)
+	            catch (TypeLoadException ex)
 	            {
-	                throw new ConfigurationException("Unable to load class '" + boxedClassName + "', class not found", ex);
+	                throw new ConfigurationException("Unable to load class '" + boxedTypeName + "', class not found", ex);
 	            }
 
-	            propertyTypes.Put((String) property, type);
+	            propertyTypes[property] = type;
 	        }
 	        return propertyTypes;
 	    }

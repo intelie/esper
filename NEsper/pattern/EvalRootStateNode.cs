@@ -112,7 +112,7 @@ namespace net.esper.pattern
                 topStateNode = null;
             }
 
-            callback.MatchFound(matchEvent.GetMatchingEvents());
+            callback.MatchFound(matchEvent.MatchingEvents);
         }
 
         /// <summary>

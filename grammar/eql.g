@@ -364,13 +364,13 @@ negatedExpression
 evalEqualsExpression
 	:	evalRelationalExpression ( 
 			(eq:EQUALS! 
-		  |  is:IS_!
+		  |  is_:IS_!
 		  |  isnot:IS_! NOT_EXPR!
 		  |  sqlne:SQL_NE!
 		  |  ne:NOT_EQUAL!
 		    ) evalRelationalExpression)*
 		{ 
-			if ((eq != null) || (is != null))
+			if ((eq != null) || (is_ != null))
 			{
 				#evalEqualsExpression = #([EVAL_EQUALS_EXPR,"evalEqualsExpression"], #evalEqualsExpression); 
 			}
@@ -770,9 +770,9 @@ options {
 }
 
 // Operators
-FOLLOWED_BY options {paraphrase = "an followed-by \"->\"";}		:	"->"	;
+FOLLOWED_BY options {paraphrase = "an followed-by '->'";}		:	"->"	;
 EQUALS options {paraphrase = "an equals '='";}					:	'='		;
-SQL_NE options {paraphrase = "a sql-style not equals \"<>\"";}	: 	"<>"	;
+SQL_NE options {paraphrase = "a sql-style not equals '<>'";}	: 	"<>"	;
 QUESTION options {paraphrase = "a questionmark '?'";}			:	'?'		;
 LPAREN options {paraphrase = "an opening parenthesis '('";}		:	'('		;
 RPAREN options {paraphrase = "a closing parenthesis ')'";}		:	')'		;
@@ -782,40 +782,40 @@ LCURLY options {paraphrase = "a left curly bracket '{'";}		:	'{'		;
 RCURLY options {paraphrase = "a right curly bracket '}'";}		:	'}'		;
 COLON options {paraphrase = "a colon ':'";}						:	':'		;
 COMMA options {paraphrase = "a comma ','";}						:	','		;
-EQUAL options {paraphrase = "an equals compare \"==\"";}		:	"=="	;
+EQUAL options {paraphrase = "an equals compare '=='";}		:	"=="	;
 LNOT options {paraphrase = "a not '!'";}						:	'!'		;
 BNOT options {paraphrase = "a binary not '~'";}					:	'~'		;
-NOT_EQUAL options {paraphrase = "a not equals \"!=\"";}			:	"!="	;
+NOT_EQUAL options {paraphrase = "a not equals '!='";}			:	"!="	;
 DIV options {paraphrase = "a division operator '\'";}			:	'/'		;
-DIV_ASSIGN options {paraphrase = "a division assign \"/=\"";}	:	"/="	;
+DIV_ASSIGN options {paraphrase = "a division assign '/='";}	:	"/="	;
 PLUS options {paraphrase = "a plus operator '+'";}				:	'+'		;
-PLUS_ASSIGN	options {paraphrase = "a plus assign \"+=\"";}		:	"+="	;
+PLUS_ASSIGN	options {paraphrase = "a plus assign '+='";}		:	"+="	;
 INC options {paraphrase = "an increment operator '++'";}		:	"++"	;
 MINUS options {paraphrase = "a minus '-'";}					:	'-'		;
-MINUS_ASSIGN options {paraphrase = "a minus assign \"-=\"";}	:	"-="	;
+MINUS_ASSIGN options {paraphrase = "a minus assign '-='";}	:	"-="	;
 DEC options {paraphrase = "a decrement operator '--'";}		:	"--"	;
 STAR options {paraphrase = "a star '*'";}						:	'*'		;
 STAR_ASSIGN options {paraphrase = "a star assign '*='";}		:	"*="	;
 MOD options {paraphrase = "a modulo '%'";}						:	'%'		;
-MOD_ASSIGN options {paraphrase = "a module assign \"%=\"";}		:	"%="	;
+MOD_ASSIGN options {paraphrase = "a module assign '%='";}		:	"%="	;
 SR options {paraphrase = "a shift right '>>'";}				:	">>"	;
 SR_ASSIGN options {paraphrase = "a shift right assign '>>='";}	:	">>="	;
-BSR options {paraphrase = "a binary shift right \">>>\"";}		:	">>>"	;
-BSR_ASSIGN options {paraphrase = "a binary shift right assign \">>>=\"";}		:	">>>="	;
-GE options {paraphrase = "a greater equals \">=\"";}			:	">="	;
+BSR options {paraphrase = "a binary shift right '>>>'";}		:	">>>"	;
+BSR_ASSIGN options {paraphrase = "a binary shift right assign '>>>='";}		:	">>>="	;
+GE options {paraphrase = "a greater equals '>='";}			:	">="	;
 GT options {paraphrase = "a greater then '>'";}					:	">"		;
-SL options {paraphrase = "a shift left \"<<\"";}				:	"<<"	;
-SL_ASSIGN options {paraphrase = "a shift left assign \"<<=\"";}	:	"<<="	;
-LE options {paraphrase = "a less equals \"<=\"";}				:	"<="	;
+SL options {paraphrase = "a shift left '<<'";}				:	"<<"	;
+SL_ASSIGN options {paraphrase = "a shift left assign '<<='";}	:	"<<="	;
+LE options {paraphrase = "a less equals '<='";}				:	"<="	;
 LT_ options {paraphrase = "a lesser then '<'";}					:	'<'		;
 BXOR options {paraphrase = "a binary xor '^'";}					:	'^'		;
-BXOR_ASSIGN options {paraphrase = "a binary xor assign \"^=\"";}:	"^="	;
+BXOR_ASSIGN options {paraphrase = "a binary xor assign '^='";}:	"^="	;
 BOR	options {paraphrase = "a binary or '|'";}					:	'|'		;
-BOR_ASSIGN options {paraphrase = "a binary or assign \"|=\"";}	:	"|="	;
-LOR	options {paraphrase = "a logical or \"||\"";}				:	"||"	;
+BOR_ASSIGN options {paraphrase = "a binary or assign '|='";}	:	"|="	;
+LOR	options {paraphrase = "a logical or '||'";}				:	"||"	;
 BAND options {paraphrase = "a binary and '&'";}					:	'&'		;
-BAND_ASSIGN options {paraphrase = "a binary and assign \"&=\"";}:	"&="	;
-LAND options {paraphrase = "a logical and \"&&\"";}				:	"&&"	;
+BAND_ASSIGN options {paraphrase = "a binary and assign '&='";}:	"&="	;
+LAND options {paraphrase = "a logical and '&&'";}				:	"&&"	;
 SEMI options {paraphrase = "a semicolon ';'";}					:	';'		;
 
 // Whitespace -- ignored

@@ -15,7 +15,7 @@ namespace net.esper.view.stat
 
     public sealed class UnivariateStatisticsView 
 		: ViewSupport
-		, Cloneable
+		, CloneableView
     {
         /// <summary>
         /// Gets or sets field name of the field to report statistics on.
@@ -140,7 +140,6 @@ namespace net.esper.view.stat
         public override EventType EventType
         {
             get { return eventType; }
-            set { }
         }
 
         /// <summary>
@@ -188,7 +187,7 @@ namespace net.esper.view.stat
 	     * @param statementContext is the event adapter service
 	     * @return event type of view
 	     */
-	    protected static EventType CreateEventType(StatementContext statementContext)
+	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
 	        EDictionary<String, Type> eventTypeMap = new EHashDictionary<String, Type>();
 	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__COUNT.Name, typeof(long));

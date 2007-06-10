@@ -32,7 +32,7 @@ namespace net.esper.eql.join.table
 		/// Index table.
 		/// </summary>
 		
-        private readonly EDictionary<MultiKeyUntyped, ISet<EventBean>> propertyIndex;
+        private readonly EDictionary<MultiKeyUntyped, Set<EventBean>> propertyIndex;
 
         /// <summary> Ctor.</summary>
         /// <param name="streamNum">the stream number that is indexed
@@ -54,7 +54,7 @@ namespace net.esper.eql.join.table
                 propertyGetters[i] = eventType.GetGetter(propertyNames[i]);
             }
 
-            propertyIndex = new EHashDictionary<MultiKeyUntyped, ISet<EventBean>>();
+            propertyIndex = new EHashDictionary<MultiKeyUntyped, Set<EventBean>>();
         }
 		
 	    /**
@@ -62,7 +62,7 @@ namespace net.esper.eql.join.table
 	     * @param event to get properties from for key
 	     * @return multi key
 	     */
-	    protected MultiKeyUntyped GetMultiKey(EventBean _event)
+	    protected virtual MultiKeyUntyped GetMultiKey(EventBean _event)
 	    {
 	        return EventBeanUtility.getMultiKey(_event, propertyGetters);
 	    }
@@ -110,17 +110,17 @@ namespace net.esper.eql.join.table
         /// <returns> set of events with property value, or null if none found (never returns zero-sized set)
         /// </returns>
 
-        public ISet<EventBean> Lookup(Object[] keys)
+        public virtual Set<EventBean> Lookup(Object[] keys)
         {
             MultiKeyUntyped key = new MultiKeyUntyped(keys);
-            ISet<EventBean> events = propertyIndex.Fetch(key);
+            Set<EventBean> events = propertyIndex.Fetch(key);
             return events;
         }
 
 		private void Add( EventBean _event )
         {
 			MultiKeyUntyped key = GetMultiKey(_event);
-            ISet<EventBean> events = propertyIndex.Fetch(key, null);
+            Set<EventBean> events = propertyIndex.Fetch(key, null);
 
             if (events == null)
             {
@@ -140,7 +140,7 @@ namespace net.esper.eql.join.table
         {
 			MultiKeyUntyped key = GetMultiKey(_event);
 
-            ISet<EventBean> events = propertyIndex.Fetch(key, null);
+            Set<EventBean> events = propertyIndex.Fetch(key, null);
             if (events == null)
             {
                 log.Debug(".remove Event could not be located in index, event " + _event);

@@ -92,7 +92,6 @@ namespace net.esper.view.std
                 // The schema is the parent view's schema
                 return parent.EventType;
             }
-            set { }
         }
 
         /// <summary>

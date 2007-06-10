@@ -11,9 +11,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 using net.esper.client;
-using net.esper.eql.spec;
 using net.esper.collection;
+using net.esper.compat;
 using net.esper.eql.expression;
+using net.esper.eql.spec;
 using net.esper.events;
 using net.esper.pattern;
 using net.esper.util;
@@ -30,9 +31,9 @@ namespace net.esper.core
         private readonly EPServicesContext services;
         private readonly ManagedReadWriteLock eventProcessingRWLock;
 
-        private readonly IDictionary<String, String> stmtNameToIdMap;
-        private readonly IDictionary<String, EPStatementDesc> stmtIdToDescMap;
-        private readonly IDictionary<String, EPStatement> stmtNameToStmtMap;
+        private readonly EDictionary<String, String> stmtNameToIdMap;
+        private readonly EDictionary<String, EPStatementDesc> stmtIdToDescMap;
+        private readonly EDictionary<String, EPStatement> stmtNameToStmtMap;
 
         /// <summary>Ctor.</summary>
         /// <param name="services">is engine services</param>
@@ -79,7 +80,7 @@ namespace net.esper.core
         {
             lock (this)
             {
-                if (log.IsDebugEnabled())
+                if (log.IsDebugEnabled)
                 {
                     log.Debug(".start Creating and starting statement " + statementId);
                 }
@@ -121,16 +122,16 @@ namespace net.esper.core
                     startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
 
                     statementDesc = new EPStatementDesc(statement, startMethod, null);
-                    stmtIdToDescMap.Put(statementId, statementDesc);
-                    stmtNameToStmtMap.Put(statementName, statement);
-                    stmtNameToIdMap.Put(statementName, statementId);
+                    stmtIdToDescMap[statementId] = statementDesc;
+                    stmtNameToStmtMap[statementName] = statement;
+                    stmtNameToIdMap[statementName] = statementId;
                 }
-                catch (RuntimeException ex)
+                catch (Exception ex)
                 {
                     stmtIdToDescMap.Remove(statementId);
                     stmtNameToIdMap.Remove(statementName);
                     stmtNameToStmtMap.Remove(statementName);
-                    throw ex;
+                    throw;
                 }
                 finally
                 {
@@ -141,16 +142,16 @@ namespace net.esper.core
             }
         }
 
-        private bool IsPotentialSelfJoin(List<StreamSpecCompiled> streamSpecs)
+        private bool IsPotentialSelfJoin(IList<StreamSpecCompiled> streamSpecs)
         {
             // not a join (pattern doesn't count)
-            if (streamSpecs.Size() == 1)
+            if (streamSpecs.Count == 1)
             {
                 return false;
             }
 
             // join - determine types joined
-            List<EventType> filteredTypes = new ArrayList<EventType>();
+            List<EventType> filteredTypes = new List<EventType>();
             bool hasFilterStream = false;
             foreach (StreamSpecCompiled streamSpec in streamSpecs)
             {
@@ -174,7 +175,7 @@ namespace net.esper.core
                 }
             }
 
-            if (filteredTypes.Size() == 1)
+            if (filteredTypes.Count == 1)
             {
                 return false;
             }
@@ -185,9 +186,9 @@ namespace net.esper.core
             }
 
             // is type overlap
-            for (int i = 0; i < filteredTypes.Size(); i++)
+            for (int i = 0; i < filteredTypes.Count; i++)
             {
-                for (int j = i + 1; j < filteredTypes.Size(); j++)
+                for (int j = i + 1; j < filteredTypes.Count; j++)
                 {
                     EventType typeOne = filteredTypes.Get(i);
                     EventType typeTwo = filteredTypes.Get(j);
@@ -219,7 +220,7 @@ namespace net.esper.core
         {
             lock (this)
             {
-                if (log.IsDebugEnabled())
+                if (log.IsDebugEnabled)
                 {
                     log.Debug(".start Starting statement " + statementId);
                 }
@@ -229,16 +230,12 @@ namespace net.esper.core
                 eventProcessingRWLock.AcquireWriteLock();
                 try
                 {
-                    EPStatementDesc desc = stmtIdToDescMap.Get(statementId);
+                    EPStatementDesc desc = stmtIdToDescMap.Fetch(statementId);
                     if (desc == null)
                     {
                         throw new IllegalStateException("Cannot start statement, statement is in destroyed state");
                     }
                     StartInternal(statementId, desc);
-                }
-                catch (RuntimeException ex)
-                {
-                    throw ex;
                 }
                 finally
                 {
@@ -252,7 +249,7 @@ namespace net.esper.core
         /// <param name="desc">is the cached statement info</param>
         public void Start(String statementId, EPStatementDesc desc)
         {
-            if (log.IsDebugEnabled())
+            if (log.IsDebugEnabled)
             {
                 log.Debug(".start Starting statement " + statementId + " from desc=" + desc);
             }
@@ -264,10 +261,6 @@ namespace net.esper.core
             {
                 StartInternal(statementId, desc);
             }
-            catch (RuntimeException ex)
-            {
-                throw ex;
-            }
             finally
             {
                 eventProcessingRWLock.ReleaseWriteLock();
@@ -276,7 +269,7 @@ namespace net.esper.core
 
         private void StartInternal(String statementId, EPStatementDesc desc)
         {
-            if (log.IsDebugEnabled())
+            if (log.IsDebugEnabled)
             {
                 log.Debug(".startInternal Starting statement " + statementId + " from desc=" + desc);
             }
@@ -330,7 +323,7 @@ namespace net.esper.core
                 eventProcessingRWLock.AcquireWriteLock();
                 try
                 {
-                    EPStatementDesc desc = stmtIdToDescMap.Get(statementId);
+                    EPStatementDesc desc = stmtIdToDescMap.Fetch(statementId);
                     if (desc == null)
                     {
                         throw new IllegalStateException("Cannot stop statement, statement is in destroyed state");
@@ -354,10 +347,6 @@ namespace net.esper.core
 
                     statementCurrentState = EPStatementState.STOPPED;
                 }
-                catch (RuntimeException ex)
-                {
-                    throw ex;
-                }
                 finally
                 {
                     eventProcessingRWLock.ReleaseWriteLock();
@@ -374,7 +363,7 @@ namespace net.esper.core
                 eventProcessingRWLock.AcquireWriteLock();
                 try
                 {
-                    EPStatementDesc desc = stmtIdToDescMap.Get(statementId);
+                    EPStatementDesc desc = stmtIdToDescMap.Fetch(statementId);
                     if (desc == null)
                     {
                         throw new IllegalStateException("Statement already destroyed");
@@ -385,7 +374,7 @@ namespace net.esper.core
                     {
                         EPStatementStopMethod stopMethod = desc.StopMethod;
                         statementParentView = null;
-                        stopMethod.Stop();
+                        stopMethod() ;
                     }
 
                     statementCurrentState = EPStatementState.DESTROYED;
@@ -394,7 +383,7 @@ namespace net.esper.core
                     stmtNameToIdMap.Remove(statement.Name);
                     stmtIdToDescMap.Remove(statementId);
                 }
-                catch (RuntimeException ex)
+                catch (Exception ex)
                 {
                     throw ex;
                 }
@@ -409,7 +398,7 @@ namespace net.esper.core
         {
             lock (this)
             {
-                return stmtNameToStmtMap.Get(name);
+                return stmtNameToStmtMap.Fetch(name);
             }
         }
 
@@ -418,34 +407,37 @@ namespace net.esper.core
         /// <returns>statement</returns>
         public EPStatementSPI GetStatementById(String id)
         {
-            return this.stmtIdToDescMap.Get(id).EpStatement;
+        	return this.stmtIdToDescMap[id].EpStatement;
         }
 
-        public String[] GetStatementNames()
+        public IList<string> StatementNames
         {
-            lock (this)
-            {
-                String[] statements = new String[stmtNameToStmtMap.Size()];
-                int count = 0;
-                foreach (String key in stmtNameToStmtMap.KeySet())
-                {
-                    statements[count++] = key;
-                }
-                return statements;
-            }
+        	get
+        	{
+        		lock (this)
+	            {
+	                String[] statements = new String[stmtNameToStmtMap.Count];
+	                int count = 0;
+	                foreach (String key in stmtNameToStmtMap.Keys)
+	                {
+	                    statements[count++] = key;
+	                }
+	                return statements;
+	            }
+        	}
         }
 
         public void StartAllStatements()
         {
             lock (this)
             {
-                String[] statementIds = GetStatementIds();
-                for (int i = 0; i < statementIds.length; i++)
+                IList<String> statementIds = StatementIds;
+                foreach( string statementId in statementIds )
                 {
-                    EPStatement statement = stmtIdToDescMap.Get(statementIds[i]).EpStatement;
+                	EPStatement statement = stmtIdToDescMap[statementId].EpStatement;
                     if (statement.State == EPStatementState.STOPPED)
                     {
-                        Start(statementIds[i]);
+                        Start(statementId);
                     }
                 }
             }
@@ -455,13 +447,13 @@ namespace net.esper.core
         {
             lock (this)
             {
-                String[] statementIds = GetStatementIds();
-                for (int i = 0; i < statementIds.length; i++)
+                IList<String> statementIds = StatementIds;
+                foreach( string statementId in statementIds )
                 {
-                    EPStatement statement = stmtIdToDescMap.Get(statementIds[i]).EpStatement;
+                	EPStatement statement = stmtIdToDescMap[statementId].EpStatement;
                     if (statement.State == EPStatementState.STARTED)
                     {
-                        Stop(statementIds[i]);
+                        Stop(statementId);
                     }
                 }
             }
@@ -471,28 +463,31 @@ namespace net.esper.core
         {
             lock (this)
             {
-                String[] statementIds = GetStatementIds();
-                for (int i = 0; i < statementIds.length; i++)
+                IList<String> statementIds = StatementIds;
+                foreach( string statementId in statementIds )
                 {
-                    Destroy(statementIds[i]);
+                    Destroy(statementId);
                 }
             }
         }
 
-        private String[] GetStatementIds()
+        private IList<string> StatementIds
         {
-            String[] statementIds = new String[stmtNameToStmtMap.Size()];
-            int count = 0;
-            foreach (String id in stmtNameToIdMap.Values())
-            {
-                statementIds[count++] = id;
-            }
-            return statementIds;
+        	get
+        	{
+	            String[] statementIds = new String[stmtNameToStmtMap.Count];
+	            int count = 0;
+	            foreach (String id in stmtNameToIdMap.Values)
+	            {
+	                statementIds[count++] = id;
+	            }
+	            return statementIds;
+        	}
         }
 
-        private String GetUniqueStatementName(String statementName, String statementId)
+        private string GetUniqueStatementName(string statementName, string statementId)
 	    {
-	        String finalStatementName;
+	        string finalStatementName;
 
 	        if (stmtNameToIdMap.ContainsKey(statementName))
 	        {
@@ -504,7 +499,7 @@ namespace net.esper.core
 	                {
 	                    break;
 	                }
-	                if (count > Integer.MAX_VALUE - 2)
+	                if (count > Int32.MaxValue - 2)
 	                {
 	                    throw new EPException("Failed to establish a unique statement name");
 	                }
@@ -516,11 +511,11 @@ namespace net.esper.core
 	            finalStatementName = statementName;
 	        }
 
-	        stmtNameToIdMap.Put(finalStatementName, statementId);
+	        stmtNameToIdMap[finalStatementName] = statementId;
 	        return finalStatementName;
 	    }
 
-        public void UpdatedListeners(String statementId, Set<UpdateListener> listeners)
+        public void UpdatedListeners(string statementId, Set<UpdateListener> listeners)
         {
             log.Debug(".updatedListeners No action for base implementation");
         }
@@ -545,30 +540,24 @@ namespace net.esper.core
 
             /// <summary>Returns the statement.</summary>
             /// <returns>statement.</returns>
-            public EPStatementSPI GetEpStatement()
+            public EPStatementSPI EpStatement
             {
-                return epStatement;
+            	get { return epStatement; }
             }
 
             /// <summary>Returns the start method.</summary>
             /// <returns>start method</returns>
-            public EPStatementStartMethod GetStartMethod()
+            public EPStatementStartMethod StartMethod
             {
-                return startMethod;
+            	get { return startMethod; }
             }
 
-            /// <summary>Returns the stop method.</summary>
+            /// <summary>Gets or sets the stop method.</summary>
             /// <returns>stop method</returns>
-            public EPStatementStopMethod GetStopMethod()
+            public EPStatementStopMethod StopMethod
             {
-                return stopMethod;
-            }
-
-            /// <summary>Sets the stop method.</summary>
-            /// <param name="stopMethod">to set</param>
-            public void SetStopMethod(EPStatementStopMethod stopMethod)
-            {
-                this.stopMethod = stopMethod;
+            	get { return stopMethod; }
+            	set { stopMethod = value ; }
             }
         }
 
@@ -578,7 +567,7 @@ namespace net.esper.core
 
             try
             {
-                compiledStreams = new ArrayList<StreamSpecCompiled>();
+                compiledStreams = new List<StreamSpecCompiled>();
                 foreach (StreamSpecRaw rawSpec in spec.StreamSpecs)
                 {
                     StreamSpecCompiled compiled = rawSpec.Compile(statementContext.EventAdapterService, statementContext.MethodResolutionService);
@@ -589,11 +578,11 @@ namespace net.esper.core
             {
                 throw new EPStatementException(ex.Message, eqlStatement);
             }
-            catch (RuntimeException ex)
+            catch (Exception ex)
             {
                 String text = "Unexpected error compiling statement";
                 log.Error(".compile " + text, ex);
-                throw new EPStatementException(text + ":" + ex.Class.Name + ":" + ex.Message, eqlStatement);
+                throw new EPStatementException(text + ":" + ex.GetType().FullName + ":" + ex.Message, eqlStatement);
             }
 
             // Look for expressions with sub-selects in select expression list and filter expression

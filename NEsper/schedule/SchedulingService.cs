@@ -26,7 +26,7 @@ namespace net.esper.schedule
         /// </param>
         /// <throws>  ScheduleServiceException thrown if the add operation did not complete </throws>
         
-        void Add(long afterMSec, ScheduleHandler handle, ScheduleSlot slot);
+        void Add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot);
 
         /// <summary> Add a callback for a time specified by the schedule specification passed in based on the current time.
         /// If the same callback (equals) was already added before, the method will not add a new
@@ -40,7 +40,7 @@ namespace net.esper.schedule
         /// </param>
         /// <throws>  ScheduleServiceException thrown if the add operation did not complete </throws>
         
-        void Add(ScheduleSpec scheduleSpec, ScheduleHandler handle, ScheduleSlot slot);
+        void Add(ScheduleSpec scheduleSpec, ScheduleHandle handle, ScheduleSlot slot);
 
         /// <summary> Remove a callback.
         /// If the callback to be removed was not found an exception is thrown.
@@ -51,7 +51,7 @@ namespace net.esper.schedule
         /// </param>
         /// <throws>  ScheduleServiceException thrown if the callback was not located </throws>
         
-        void Remove(ScheduleHandler handle, ScheduleSlot slot);
+        void Remove(ScheduleHandle handle, ScheduleSlot slot);
 
         /// <summary> Gets the last time known to the scheduling service.</summary>
         /// <summary> Set the time based upon which the evaluation of events invokes callbacks.</summary>

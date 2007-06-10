@@ -21,7 +21,7 @@ namespace net.esper.filter
 	public sealed class FilterParamIndexBooleanExpr : FilterParamIndexBase
 	{
 	    private readonly IDictionary<ExprNodeAdapter, EventEvaluator> evaluatorsMap;
-	    private readonly ReadWriteLock constantsMapRWLock;
+	    private readonly ReaderWriterLock constantsMapRWLock;
 
 	    /// <summary>Constructs the index for multiple-exact matches.</summary>
 	    /// <param name="eventType">
@@ -31,47 +31,49 @@ namespace net.esper.filter
 	        : base(FilterOperator.BOOLEAN_EXPRESSION)
 	    {
 	        evaluatorsMap = new EHashDictionary<ExprNodeAdapter, EventEvaluator>();
-	        constantsMapRWLock = new ReentrantReadWriteLock();
+	        constantsMapRWLock = new ReaderWriterLock();
 	    }
 
-	    public EventEvaluator Get(Object filterConstant)
+	    public override EventEvaluator this[Object filterConstant]
 	    {
-	        ExprNodeAdapter keyValues = (ExprNodeAdapter) filterConstant;
-	        return evaluatorsMap.Get(keyValues);
+	    	get
+	    	{
+		        ExprNodeAdapter keyValues = (ExprNodeAdapter) filterConstant;
+		        return evaluatorsMap.Get(keyValues);
+	    	}
+			set
+		    {
+		        ExprNodeAdapter keys = (ExprNodeAdapter) filterConstant;
+	    	    evaluatorsMap.Put(keys, value);
+		    }
 	    }
 
-	    public void Put(Object filterConstant, EventEvaluator evaluator)
-	    {
-	        ExprNodeAdapter keys = (ExprNodeAdapter) filterConstant;
-	        evaluatorsMap.Put(keys, evaluator);
-	    }
-
-	    public bool Remove(Object filterConstant)
+	    public override bool Remove(Object filterConstant)
 	    {
 	        ExprNodeAdapter keys = (ExprNodeAdapter) filterConstant;
 	        return evaluatorsMap.Remove(keys) != null;
 	    }
 
-	    public int Count
+	    public override int Count
 	    {
             get { return evaluatorsMap.Count; }
 	    }
 
-	    public ReaderWriterLock ReadWriteLock
+	    public override ReaderWriterLock ReadWriteLock
 	    {
             get { return constantsMapRWLock; }
 	    }
 
-	    public void MatchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+	    public override void MatchEvent(EventBean eventBean, IList<FilterHandle> matches)
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".match (" + Thread.CurrentThread().Id + ")");
 	        }
 
-	        List<EventEvaluator> evaluators = new ArrayList<EventEvaluator>();
+	        List<EventEvaluator> evaluators = new List<EventEvaluator>();
 	        constantsMapRWLock.ReadLock().Lock();
-	        foreach (ExprNodeAdapter exprNodeAdapter in evaluatorsMap.KeySet())
+	        foreach (ExprNodeAdapter exprNodeAdapter in evaluatorsMap.Keys)
 	        {
 	            if (exprNodeAdapter.Evaluate(eventBean))
 	            {

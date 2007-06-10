@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.core;
+using net.esper.events;
+using net.esper.eql.spec;
+
 namespace net.esper.view
 {
 	/// <summary> Service interface for creating views.</summary>
-
     public interface ViewService
     {
 	    /// <summary>
@@ -31,7 +34,7 @@ namespace net.esper.view
 	    /// ViewProcessingException thrown if a view factory doesn't take parameters as supplied,
 	    /// or cannot hook onto it's parent view or event stream
 	    /// </throws>
-	    ViewFactoryChain createFactories(int streamNum,
+	    ViewFactoryChain CreateFactories(int streamNum,
                                          EventType parentEventType,
 										 IList<ViewSpec> viewSpecList,
                                          StatementContext context);
@@ -50,7 +53,7 @@ namespace net.esper.view
 	    /// <returns>
 	    /// last viewable in chain, or the eventStreamViewable if no view factories are supplied
 	    /// </returns>
-	    Viewable createViews(Viewable eventStreamViewable,
+	    Viewable CreateViews(Viewable eventStreamViewable,
 	                         IList<ViewFactory> viewFactoryChain,
 	                         StatementContext context);
 

@@ -68,7 +68,7 @@ namespace net.esper.eql.join.rep
         /// Gets or sets the events.
         /// </summary>
         /// <value>The events.</value>
-        virtual public ISet<EventBean> Events
+        virtual public Set<EventBean> Events
         {
             get { return events; }
             set { events = value; }
@@ -77,7 +77,7 @@ namespace net.esper.eql.join.rep
         private readonly int stream;
 		private Node parent;
 		private EventBean parentEvent;
-		private ISet<EventBean> events;
+		private Set<EventBean> events;
 		
 		/// <summary> Ctor.</summary>
 		/// <param name="stream">this node stores results for

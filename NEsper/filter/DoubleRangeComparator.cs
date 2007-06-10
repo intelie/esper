@@ -22,10 +22,10 @@ namespace net.esper.filter
         /// <returns></returns>
 		public int Compare(DoubleRange r1, DoubleRange r2)
 		{
-			double minOne = r1.Min;
-			double minTwo = r2.Min;
-			double maxOne = r1.Max;
-			double maxTwo = r2.Max;
+			double? minOne = r1.Min;
+			double? minTwo = r2.Min;
+			double? maxOne = r1.Max;
+			double? maxTwo = r2.Max;
 			
 			if (minOne < minTwo)
 			{

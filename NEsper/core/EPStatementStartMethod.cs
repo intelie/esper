@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using net.esper.client;
 using net.esper.collection;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.db;
 using net.esper.eql.expression;
@@ -69,18 +70,18 @@ namespace net.esper.core
 	    {
 	        // Determine stream names for each stream - some streams may not have a name given
 	        String[] streamNames = DetermineStreamNames(statementSpec.StreamSpecs);
-	        bool isJoin = statementSpec.StreamSpecs.Size() > 1;
+	        bool isJoin = statementSpec.StreamSpecs.Count > 1;
 
 	        // First we create streams for subselects, if there are any
 	        SubSelectStreamCollection subSelectStreamDesc = CreateSubSelectStreams(isJoin);
 
-	        int numStreams = streamNames.length;
+	        int numStreams = streamNames.Length;
 	        List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
 
 	        // Create streams and views
 	        Viewable[] eventStreamParentViewable = new Viewable[numStreams];
 	        ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
-	        for (int i = 0; i < statementSpec.StreamSpecs.Size(); i++)
+	        for (int i = 0; i < statementSpec.StreamSpecs.Count; i++)
 	        {
 	            StreamSpecCompiled streamSpec = statementSpec.StreamSpecs.Get(i);
 
@@ -104,12 +105,14 @@ namespace net.esper.core
 	                EvalRootNode rootNode = new EvalRootNode();
 	                rootNode.AddChildNode(patternStreamSpec.EvalNode);
 
-	                PatternMatchCallback callback = new PatternMatchCallbackImpl(
+	                PatternMatchCallback callback =
+	                	new PatternMatchCallbackImpl(
+	                	new PatternMatcherDelegate(
                         delegate(IDictionary<String, EventBean> matchEvent)
 	                    {
 	                        EventBean compositeEvent = statementContext.EventAdapterService.AdapterForCompositeEvent(eventType, matchEvent);
 	                        sourceEventStream.Insert(compositeEvent);
-	                    });
+                        }));
 
 	                PatternContext patternContext = statementContext.PatternContextFactory.CreateContext(statementContext,
 	                        i, rootNode);
@@ -119,17 +122,17 @@ namespace net.esper.core
 	            // Create view factories and parent view based on a database SQL statement
 	            else if (streamSpec is DBStatementStreamSpec)
 	            {
-	                if (!streamSpec.ViewSpecs.IsEmpty())
+	            	if (streamSpec.ViewSpecs.Count != 0)
 	                {
 	                    throw new ExprValidationException("Historical data joins do not allow views onto the data, view '"
-	                            + streamSpec.ViewSpecs.Get(0).ObjectNamespace + ':' + streamSpec.ViewSpecs.Get(0).ObjectName + "' is not valid in this context");
+	                            + streamSpec.ViewSpecs[0].ObjectNamespace + ':' + streamSpec.ViewSpecs[0].ObjectName + "' is not valid in this context");
 	                }
 
 	                DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
 	                HistoricalEventViewable historicalEventViewable = PollingViewableFactory.CreateDBStatementView(i, sqlStreamSpec, services.DatabaseRefService, services.EventAdapterService, statementContext.EpStatementHandle);
-	                unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.EventType, new LinkedList<ViewFactory>());
+	                unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.EventType, new List<ViewFactory>());
 	                eventStreamParentViewable[i] = historicalEventViewable;
-	                stopCallbacks.Add(historicalEventViewable);
+	                stopCallbacks.Add(historicalEventViewable.Stop);
 	            }
 	            else
 	            {
@@ -138,8 +141,8 @@ namespace net.esper.core
 	        }
 
 	        // Obtain event types from ViewFactoryChains
-	        EventType[] streamEventTypes = new EventType[statementSpec.StreamSpecs.Size()];
-	        for (int i = 0; i < unmaterializedViewChain.length; i++)
+	        EventType[] streamEventTypes = new EventType[statementSpec.StreamSpecs.Count];
+	        for (int i = 0; i < unmaterializedViewChain.Length; i++)
 	        {
 	            streamEventTypes[i] = unmaterializedViewChain[i].EventType;
 	        }
@@ -148,8 +151,8 @@ namespace net.esper.core
 	        StartSubSelect(subSelectStreamDesc, streamNames, streamEventTypes);
 
 	        // List of statement streams
-	        List<StreamSpecCompiled> statementStreamSpecs = new ArrayList<StreamSpecCompiled>();
-	        statementStreamSpecs.AddAll(statementSpec.StreamSpecs);
+	        List<StreamSpecCompiled> statementStreamSpecs = new List<StreamSpecCompiled>();
+	        statementStreamSpecs.AddRange(statementSpec.StreamSpecs);
 
 	        // Construct type information per stream
 	        StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames);
@@ -175,7 +178,7 @@ namespace net.esper.core
 	                }
 	                foreach (ExprSubselectNode subselect in statementSpec.SubSelectExpressions)
 	                {
-	                    FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) subselect.StatementSpecCompiled.StreamSpecs.Get(0);
+	                    FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) subselect.StatementSpecCompiled.StreamSpecs[0];
 	                    services.StreamService.DropStream(filterStreamSpec.FilterSpec, services.FilterService, isJoin);
 	                }
 	            });
@@ -209,15 +212,15 @@ namespace net.esper.core
 	        ValidateNodes(typeService, statementContext.MethodResolutionService, viewResourceDelegate);
 
 	        // Materialize views
-	        Viewable[] streamViews = new Viewable[streamEventTypes.length];
-	        for (int i = 0; i < streamViews.length; i++)
+	        Viewable[] streamViews = new Viewable[streamEventTypes.Length];
+	        for (int i = 0; i < streamViews.Length; i++)
 	        {
 	            streamViews[i] = services.ViewService.CreateViews(eventStreamParentViewable[i], unmaterializedViewChain[i].ViewFactoryChain, statementContext);
 	        }
 
 	        // For just 1 event stream without joins, handle the one-table process separatly.
 	        Viewable finalView;
-	        if (streamNames.length == 1)
+	        if (streamNames.Length == 1)
 	        {
 	            finalView = HandleSimpleSelect(streamViews[0], optionalResultSetProcessor, statementContext);
 	        }
@@ -256,17 +259,17 @@ namespace net.esper.core
 	        // Handle joins
 	        JoinSetComposer composer = JoinSetComposerFactory.MakeComposer(statementSpec.OuterJoinDescList, statementSpec.FilterRootNode, streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
 	        JoinSetFilter filter = new JoinSetFilter(statementSpec.FilterRootNode);
-	        OutputProcessView indicatorView = OutputProcessViewFactory.MakeView(optionalResultSetProcessor, statementSpec.StreamSpecs.Size(), statementSpec.OutputLimitSpec, statementContext);
+	        OutputProcessView indicatorView = OutputProcessViewFactory.MakeView(optionalResultSetProcessor, statementSpec.StreamSpecs.Count, statementSpec.OutputLimitSpec, statementContext);
 
 	        // Create strategy for join execution
 	        JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
 
 	        // Hook up dispatchable with buffer and execution strategy
-	        JoinExecStrategyDispatchable joinStatementDispatch = new JoinExecStrategyDispatchable(execution, statementSpec.StreamSpecs.Size());
+	        JoinExecStrategyDispatchable joinStatementDispatch = new JoinExecStrategyDispatchable(execution, statementSpec.StreamSpecs.Count);
 	        epStatementHandleOptionalDispatchable = joinStatementDispatch;
 
 	        // Create buffer for each view. Point buffer to dispatchable for join.
-	        for (int i = 0; i < statementSpec.StreamSpecs.Size(); i++)
+	        for (int i = 0; i < statementSpec.StreamSpecs.Count; i++)
 	        {
 	            BufferView buffer = new BufferView(i);
 	            streamViews[i].AddView(buffer);
@@ -283,12 +286,12 @@ namespace net.esper.core
 	    /// <returns>array of stream names</returns>
 	    protected static String[] DetermineStreamNames(List<StreamSpecCompiled> streams)
 	    {
-	        String[] streamNames = new String[streams.Size()];
-	        for (int i = 0; i < streams.Size(); i++)
+	        String[] streamNames = new String[streams.Count];
+	        for (int i = 0; i < streams.Count; i++)
 	        {
 	            // Assign a stream name for joins, if not supplied
 	            streamNames[i] = streams.Get(i).OptionalStreamName;
-	            if ((streamNames[i] == null) && (streams.Size() > 1))
+	            if ((streamNames[i] == null) && (streams.Count > 1))
 	            {
 	                streamNames[i] = "stream_" + i;
 	            }
@@ -318,12 +321,12 @@ namespace net.esper.core
 	            }
 	            catch (ExprValidationException ex)
 	            {
-	                log.Debug(".validateNodes Validation exception for filter=" + optionalFilterNode.ToExpressionString(), ex);
+	                log.Debug(".validateNodes Validation exception for filter=" + optionalFilterNode.ExpressionString, ex);
 	                throw new EPStatementException("Error validating expression: " + ex.Message, statementContext.Expression);
 	            }
 	        }
 
-	        for (int outerJoinCount = 0; outerJoinCount < statementSpec.OuterJoinDescList.Size(); outerJoinCount++)
+	        for (int outerJoinCount = 0; outerJoinCount < statementSpec.OuterJoinDescList.Count; outerJoinCount++)
 	        {
 	            OuterJoinDesc outerJoinDesc = statementSpec.OuterJoinDescList.Get(outerJoinCount);
 
@@ -339,7 +342,7 @@ namespace net.esper.core
 	            }
 	            catch (ExprValidationException ex)
 	            {
-	                log.Debug("Validation exception for outer join node=" + equalsNode.ToExpressionString(), ex);
+	                log.Debug("Validation exception for outer join node=" + equalsNode.ExpressionString, ex);
 	                throw new EPStatementException("Error validating expression: " + ex.Message, statementContext.Expression);
 	            }
 
@@ -398,7 +401,7 @@ namespace net.esper.core
 	        // Add select expression view if there is any
 	       if (optionalResultSetProcessor != null || statementSpec.OutputLimitSpec != null)
 	        {
-	            OutputProcessView selectView = OutputProcessViewFactory.MakeView(optionalResultSetProcessor, statementSpec.StreamSpecs.Size(), statementSpec.OutputLimitSpec, statementContext);
+	            OutputProcessView selectView = OutputProcessViewFactory.MakeView(optionalResultSetProcessor, statementSpec.StreamSpecs.Count, statementSpec.OutputLimitSpec, statementContext);
 	            finalView.AddView(selectView);
 	            finalView = selectView;
 	        }
@@ -414,9 +417,9 @@ namespace net.esper.core
 	        // Process all subselect expression nodes
 	        foreach (ExprSubselectNode subselect in statementSpec.SubSelectExpressions)
 	        {
-	            StatementSpecCompiled statementSpec = subselect.StatementSpecCompiled;
-	            SelectClauseSpec selectClauseSpec = statementSpec.SelectClauseSpec;
-	            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.StreamSpecs.Get(0);
+	            StatementSpecCompiled _statementSpec = subselect.StatementSpecCompiled;
+	            SelectClauseSpec selectClauseSpec = _statementSpec.SelectClauseSpec;
+	            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) _statementSpec.StreamSpecs[0];
 
 	            // Validate select clause wildcard use
 	            if ((!subselect.IsAllowWildcardSelect) && (selectClauseSpec.IsUsingWildcard))
@@ -425,30 +428,30 @@ namespace net.esper.core
 	            }
 
 	            // no aggregation functions allowed in select
-	            if (selectClauseSpec.SelectList.Size() > 0)
+	            if (selectClauseSpec.SelectList.Count > 0)
 	            {
-	                ExprNode selectExpression = selectClauseSpec.SelectList.Get(0).SelectExpression;
-	                List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
+	                ExprNode selectExpression = selectClauseSpec.SelectList[0].SelectExpression;
+	                List<ExprAggregateNode> aggExprNodes = new List<ExprAggregateNode>();
 	                ExprAggregateNode.GetAggregatesBottomUp(selectExpression, aggExprNodes);
-	                if (aggExprNodes.Size() > 0)
+	                if (aggExprNodes.Count > 0)
 	                {
 	                    throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
 	                }
 	            }
 
 	            // no aggregation functions allowed in filter
-	            if (statementSpec.FilterRootNode != null)
+	            if (_statementSpec.FilterRootNode != null)
 	            {
-	                List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
-	                ExprAggregateNode.GetAggregatesBottomUp(statementSpec.FilterRootNode, aggExprNodes);
-	                if (aggExprNodes.Size() > 0)
+	                List<ExprAggregateNode> aggExprNodes = new List<ExprAggregateNode>();
+	                ExprAggregateNode.GetAggregatesBottomUp(_statementSpec.FilterRootNode, aggExprNodes);
+	                if (aggExprNodes.Count > 0)
 	                {
 	                    throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
 	                }
 	            }
 
 	            // A child view is required to limit the stream
-	            if (filterStreamSpec.ViewSpecs.Size() == 0)
+	            if (filterStreamSpec.ViewSpecs.Count == 0)
 	            {
 	                throw new ExprValidationException("Subqueries require one or more views to limit the stream, consider declaring a length or time window");
 	            }
@@ -456,8 +459,11 @@ namespace net.esper.core
 	            subselectStreamNumber++;
 
 	            // Register filter, create view factories
-	            Viewable viewable = services.StreamService.CreateStream(filterStreamSpec.FilterSpec,
-	                    services.FilterService, statementContext.EpStatementHandle, isJoin);
+	            Viewable viewable = services.StreamService.CreateStream(
+	            	filterStreamSpec.FilterSpec,
+	                services.FilterService, 
+	                statementContext.EpStatementHandle,
+	                isJoin);
 	            ViewFactoryChain viewFactoryChain = services.ViewService.CreateFactories(subselectStreamNumber, viewable.EventType, filterStreamSpec.ViewSpecs, statementContext);
 
 	            // Add subquery to list, for later starts
@@ -471,8 +477,8 @@ namespace net.esper.core
 	    {
 	        foreach (ExprSubselectNode subselect in statementSpec.SubSelectExpressions)
 	        {
-	            StatementSpecCompiled statementSpec = subselect.StatementSpecCompiled;
-	            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.StreamSpecs.Get(0);
+	            StatementSpecCompiled _statementSpec = subselect.StatementSpecCompiled;
+	            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) _statementSpec.StreamSpecs[0];
 	            ViewFactoryChain viewFactoryChain = subSelectStreamDesc.GetViewFactoryChain(subselect);
 	            EventType eventType = viewFactoryChain.EventType;
 
@@ -487,7 +493,7 @@ namespace net.esper.core
 	            // Streams event types are the original stream types with the stream zero the subselect stream
 	            LinkedDictionary<String, EventType> namesAndTypes = new LinkedDictionary<String, EventType>();
 	            namesAndTypes.Put(subexpressionStreamName, eventType);
-	            for (int i = 0; i < outerEventTypes.length; i++)
+	            for (int i = 0; i < outerEventTypes.Length; i++)
 	            {
 	                namesAndTypes.Put(outerStreamNames[i], outerEventTypes[i]);
 	            }
@@ -496,20 +502,20 @@ namespace net.esper.core
 
 	            // Validate select expression
 	            SelectClauseSpec selectClauseSpec = subselect.StatementSpecCompiled.SelectClauseSpec;
-	            if (selectClauseSpec.SelectList.Size() > 0)
+	            if (selectClauseSpec.SelectList.Count > 0)
 	            {
-	                ExprNode selectExpression = selectClauseSpec.SelectList.Get(0).SelectExpression;
+	                ExprNode selectExpression = selectClauseSpec.SelectList[0].SelectExpression;
 	                selectExpression = selectExpression.GetValidatedSubtree(subselectTypeService, statementContext.MethodResolutionService, viewResourceDelegateSubselect);
 	                subselectSelectClause = selectExpression;
-	                subselectSelectAsName = selectClauseSpec.SelectList.Get(0).OptionalAsName;
+	                subselectSelectAsName = selectClauseSpec.SelectList[0].OptionalAsName;
 	            }
 
 	            // Validate filter expression, if there is one
-	            ExprNode filterExpr = statementSpec.FilterRootNode;
+	            ExprNode filterExpr = _statementSpec.FilterRootNode;
 	            if (filterExpr != null)
 	            {
 	                filterExpr = filterExpr.GetValidatedSubtree(subselectTypeService, statementContext.MethodResolutionService, viewResourceDelegateSubselect);
-	                if (TypeHelper.GetBoxedType(filterExpr.Type) != typeof(bool?))
+                    if (TypeHelper.GetBoxedType(filterExpr.GetType()) != typeof(bool?))
 	                {
 	                    throw new ExprValidationException("Subselect filter expression must return a bool value");
 	                }
@@ -528,12 +534,12 @@ namespace net.esper.core
 
 	            // hook up subselect viewable and event table
 	            BufferView bufferView = new BufferView(subselectStreamNumber);
-                bufferView.SetObserver(new BufferObserver(
+                bufferView.Observer = new BufferObserver(
                     delegate(int streamId, FlushedEventBuffer newEventBuffer, FlushedEventBuffer oldEventBuffer)
                     {
-                        eventIndex.Remove(oldEventBuffer.AndFlush);
-                        eventIndex.Add(newEventBuffer.AndFlush);
-                    }));
+                    	eventIndex.Remove(oldEventBuffer.GetAndFlush());
+                    	eventIndex.Add(newEventBuffer.GetAndFlush());
+                    });;
 	            subselectView.AddView(bufferView);
 	        }
 	    }
@@ -552,31 +558,31 @@ namespace net.esper.core
 	        }
 
 	        // analyze query graph
-	        QueryGraph queryGraph = new QueryGraph(outerEventTypes.length + 1);
+	        QueryGraph queryGraph = new QueryGraph(outerEventTypes.Length + 1);
 	        FilterExprAnalyzer.Analyze(filterExpr, queryGraph);
 
 	        // Build a list of streams and indexes
 	        IDictionary<String, SubqueryJoinedPropDesc> joinProps = new LinkedDictionary<String, SubqueryJoinedPropDesc>();
             bool mustCoerce = false;
-	        for (int stream = 0; stream <  outerEventTypes.length; stream++)
+	        for (int stream = 0; stream <  outerEventTypes.Length; stream++)
 	        {
 	            int lookupStream = stream + 1;
 	            String[] keyPropertiesJoin = queryGraph.GetKeyProperties(lookupStream, 0);
 	            String[] indexPropertiesJoin = queryGraph.GetIndexProperties(lookupStream, 0);
-	            if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
+	            if ((keyPropertiesJoin == null) || (keyPropertiesJoin.Length == 0))
 	            {
 	                continue;
 	            }
-	            if (keyPropertiesJoin.length != indexPropertiesJoin.length)
+	            if (keyPropertiesJoin.Length != indexPropertiesJoin.Length)
 	            {
 	                throw new IllegalStateException("Invalid query key and index property collection for stream " + stream);
 	            }
 
-	            for (int i = 0; i < keyPropertiesJoin.length; i++)
+	            for (int i = 0; i < keyPropertiesJoin.Length; i++)
 	            {
-	                Class keyPropType = TypeHelper.GetBoxedType(subselectTypeService.EventTypes[lookupStream].GetPropertyType(keyPropertiesJoin[i]));
-	                Class indexedPropType = TypeHelper.GetBoxedType(subselectTypeService.EventTypes[0].GetPropertyType(indexPropertiesJoin[i]));
-	                Class coercionType = indexedPropType;
+	                Type keyPropType = TypeHelper.GetBoxedType(subselectTypeService.EventTypes[lookupStream].GetPropertyType(keyPropertiesJoin[i]));
+	                Type indexedPropType = TypeHelper.GetBoxedType(subselectTypeService.EventTypes[0].GetPropertyType(indexPropertiesJoin[i]));
+	                Type coercionType = indexedPropType;
 	                if (keyPropType != indexedPropType)
 	                {
 	                    coercionType = TypeHelper.GetCompareToCoercionType(keyPropType, keyPropType);
@@ -585,15 +591,15 @@ namespace net.esper.core
 
 	                SubqueryJoinedPropDesc desc = new SubqueryJoinedPropDesc(indexPropertiesJoin[i],
 	                        coercionType, keyPropertiesJoin[i], stream);
-	                joinProps.Put(indexPropertiesJoin[i], desc);
+	                joinProps[indexPropertiesJoin[i]] = desc;
 	            }
 	        }
 
-	        if (joinProps.Size() != 0)
+	        if (joinProps.Count != 0)
 	        {
-	            String[] indexedProps = joinProps.KeySet().ToArray(new String[0]);
-	            int[] keyStreamNums = SubqueryJoinedPropDesc.GetKeyStreamNums(joinProps.Values());
-	            String[] keyProps = SubqueryJoinedPropDesc.GetKeyProperties(joinProps.Values());
+	            String[] indexedProps = joinProps.Keys.ToArray(new String[0]);
+	            int[] keyStreamNums = SubqueryJoinedPropDesc.GetKeyStreamNums(joinProps.Values);
+	            String[] keyProps = SubqueryJoinedPropDesc.GetKeyProperties(joinProps.Values);
 
 	            if (!mustCoerce)
 	            {
@@ -604,7 +610,7 @@ namespace net.esper.core
 	            }
 	            else
 	            {
-	                Type[] coercionTypes = SubqueryJoinedPropDesc.GetCoercionTypes(joinProps.Values());
+	                Type[] coercionTypes = SubqueryJoinedPropDesc.GetCoercionTypes(joinProps.Values);
 	                PropertyIndTableCoerceAdd table = new PropertyIndTableCoerceAdd(0, viewableEventType, indexedProps, coercionTypes);
 	                SubqueryTableLookupStrategy strategy = new IndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
 	                return new Pair<EventTable, SubqueryTableLookupStrategy>(table, strategy);

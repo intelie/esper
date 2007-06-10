@@ -9,7 +9,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 
+using net.esper.compat;
 using net.esper.eql.agg;
 using net.esper.util;
 
@@ -19,12 +22,12 @@ namespace net.esper.eql.core
 	public class EngineImportServiceImpl : EngineImportService
 	{
 		private readonly List<String> imports;
-	    private readonly IDictionary<String, String> aggregationFunctions;
+	    private readonly EDictionary<String, String> aggregationFunctions;
 
 		/// <summary>Ctor.</summary>
 		public EngineImportServiceImpl()
 	    {
-	        imports = new ArrayList<String>();
+	        imports = new List<String>();
 	        aggregationFunctions = new EHashDictionary<String, String>();
 	    }
 
@@ -40,16 +43,16 @@ namespace net.esper.eql.core
 
 	    public void AddAggregation(String functionName, String aggregationClass)
 	    {
-	        String existing = aggregationFunctions.Get(functionName);
+	        String existing = aggregationFunctions.Fetch(functionName);
 	        if (existing != null)
 	        {
 	            throw new EngineImportException("Aggregation function by name '" + functionName + "' is already defined");
 	        }
-	        if(!isFunctionName(functionName))
+	        if(!IsFunctionName(functionName))
 	        {
 	            throw new EngineImportException("Invalid aggregation function name '" + functionName + "'");
 	        }
-	        if(!isClassName(aggregationClass))
+	        if(!IsClassName(aggregationClass))
 	        {
 	            throw new EngineImportException("Invalid class name for aggregation '" + aggregationClass + "'");
 	        }
@@ -58,10 +61,10 @@ namespace net.esper.eql.core
 
 	    public AggregationSupport ResolveAggregation(String name)
 	    {
-	        String className = aggregationFunctions.Get(name);
+            String className = aggregationFunctions.Fetch(name);
 	        if (className == null)
 	        {
-	            className = aggregationFunctions.Get(name.ToLowerCase());
+                className = aggregationFunctions.Fetch(name.ToLower());
 	        }
 	        if (className == null)
 	        {
@@ -71,17 +74,17 @@ namespace net.esper.eql.core
 	        Type clazz;
 	        try
 	        {
-	            clazz = Type.ForName(className);
+	            clazz = Type.GetType(className);
 	        }
-	        catch (ClassNotFoundException ex)
+	        catch (TypeLoadException ex)
 	        {
 	            throw new EngineImportException("Could not load aggregation class by name '" + className + "'", ex);
 	        }
 
-	        Object object = null;
+	        Object obj = null;
 	        try
 	        {
-	            object = clazz.NewInstance();
+	            obj = Activator.CreateInstance(clazz);
 	        }
 	        catch (InstantiationException e)
 	        {
@@ -92,19 +95,19 @@ namespace net.esper.eql.core
 	            throw new EngineImportException("Illegal access instatiating aggregation class by name '" + className + "'", e);
 	        }
 
-	        if (!(object is AggregationSupport))
+	        if (!(obj is AggregationSupport))
 	        {
 	            throw new EngineImportException("Aggregation class by name '" + className + "' does not subclass AggregationSupport");
 	        }
-	        return (AggregationSupport) object;
+	        return (AggregationSupport) obj;
 	    }
 
 	    public MethodInfo ResolveMethod(String classNameAlias, String methodName, Type[] paramTypes)
 	    {
-	        Type clazz = null;
+	        Type type = null;
 	        try
 	        {
-	            clazz = ResolveClass(classNameAlias);
+	            type = ResolveClass(classNameAlias);
 	        }
 	        catch (ClassNotFoundException e)
 	        {
@@ -132,9 +135,9 @@ namespace net.esper.eql.core
 			// Attempt to retrieve the class with the name as-is
 			try
 			{
-				return Type.ForName(className);
+				return Type.GetType(className);
 			}
-			catch(ClassNotFoundException e){}
+			catch(TypeLoadException e){}
 
 			// Try all the imports
 			foreach (String importName in imports)
@@ -146,7 +149,7 @@ namespace net.esper.eql.core
 				{
 					if(importName.EndsWith(className))
 					{
-						return Type.ForName(importName);
+						return Type.GetType(importName);
 					}
 				}
 				else
@@ -155,9 +158,9 @@ namespace net.esper.eql.core
 					String prefixedClassName = GetPackageName(importName) + '.' + className;
 					try
 					{
-						return Type.ForName(prefixedClassName);
+						return Type.GetType(prefixedClassName);
 					}
-					catch(ClassNotFoundException e){}
+					catch(TypeLoadException e){}
 				}
 			}
 
@@ -169,7 +172,7 @@ namespace net.esper.eql.core
 	    /// <returns>returns auto-import list as array</returns>
 	    protected String[] GetImports()
 		{
-			return imports.ToArray(new String[0]);
+			return imports.ToArray();
 		}
 
 	    private static bool IsFunctionName(String functionName)
@@ -193,7 +196,7 @@ namespace net.esper.eql.core
 		// Strip off the trailing ".*"
 		private static String GetPackageName(String importName)
 		{
-			return importName.Substring(0, importName.Length() - 2);
+			return importName.Substring(0, importName.Length - 2);
 		}
 	}
 } // End of namespace

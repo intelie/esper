@@ -19,6 +19,6 @@ namespace net.esper.eql.join
         /// <param name="joinSet">result join tuples of events 
         /// </param>
 
-        void Lookup(EventBean[] lookupEvents, ISet<MultiKey<EventBean>> joinSet);
+        void Lookup(EventBean[] lookupEvents, Set<MultiKey<EventBean>> joinSet);
     }
 }

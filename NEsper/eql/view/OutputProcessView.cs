@@ -43,7 +43,7 @@ namespace net.esper.eql.view
 	        this.resultSetProcessor = resultSetProcessor;
 	    }
 
-	    public EventType EventType
+	    public override EventType EventType
 	    {
 			get
 			{
@@ -63,16 +63,22 @@ namespace net.esper.eql.view
 		    }
 		}
 
-	    public IEnumerator<EventBean> GetEnumerator()
+	    public override IEnumerator<EventBean> GetEnumerator()
 	    {
 	    	if(resultSetProcessor != null)
 	    	{
-	            return new TransformEventIterator(parent.GetEnumerator(), new OutputProcessViewPolicy.OutputProcessTransform(resultSetProcessor));
+	    		OutputProcessTransform transform =
+	    			new OutputProcessTransform(resultSetProcessor) ;
+	    		return TransformEventUtil.TransformEnumerator(
+	    			parent.GetEnumerator(),
+	    			transform.Transform) ;
 	    	}
 	    	else
 	    	{
 	    		return parent.GetEnumerator();
 	    	}
 	    }    
+		
+		abstract public void Process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents);
     }
 }

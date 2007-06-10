@@ -9,6 +9,8 @@ namespace net.esper.eql.generated
 	using TextReader                      = System.IO.TextReader;
 	using Hashtable                       = System.Collections.Hashtable;
 	using Comparer                        = System.Collections.Comparer;
+	using CaseInsensitiveHashCodeProvider = System.Collections.CaseInsensitiveHashCodeProvider;
+	using CaseInsensitiveComparer         = System.Collections.CaseInsensitiveComparer;
 	
 	using TokenStreamException            = antlr.TokenStreamException;
 	using TokenStreamIOException          = antlr.TokenStreamIOException;
@@ -90,146 +92,165 @@ namespace net.esper.eql.generated
 		public const int ISTREAM = 56;
 		public const int PATTERN = 57;
 		public const int SQL = 58;
-		public const int NUMERIC_PARAM_RANGE = 59;
-		public const int NUMERIC_PARAM_LIST = 60;
-		public const int NUMERIC_PARAM_FREQUENCY = 61;
-		public const int FOLLOWED_BY_EXPR = 62;
-		public const int ARRAY_PARAM_LIST = 63;
-		public const int EVENT_FILTER_EXPR = 64;
-		public const int EVENT_FILTER_NAME_TAG = 65;
-		public const int EVENT_FILTER_IDENT = 66;
-		public const int EVENT_FILTER_PARAM = 67;
-		public const int CLASS_IDENT = 68;
-		public const int GUARD_EXPR = 69;
-		public const int OBSERVER_EXPR = 70;
-		public const int VIEW_EXPR = 71;
-		public const int PATTERN_INCL_EXPR = 72;
-		public const int DATABASE_JOIN_EXPR = 73;
-		public const int WHERE_EXPR = 74;
-		public const int HAVING_EXPR = 75;
-		public const int EVAL_BITWISE_EXPR = 76;
-		public const int EVAL_AND_EXPR = 77;
-		public const int EVAL_OR_EXPR = 78;
-		public const int EVAL_EQUALS_EXPR = 79;
-		public const int EVAL_NOTEQUALS_EXPR = 80;
-		public const int EVAL_IDENT = 81;
-		public const int SELECTION_EXPR = 82;
-		public const int SELECTION_ELEMENT_EXPR = 83;
-		public const int STREAM_EXPR = 84;
-		public const int OUTERJOIN_EXPR = 85;
-		public const int LEFT_OUTERJOIN_EXPR = 86;
-		public const int RIGHT_OUTERJOIN_EXPR = 87;
-		public const int FULL_OUTERJOIN_EXPR = 88;
-		public const int GROUP_BY_EXPR = 89;
-		public const int ORDER_BY_EXPR = 90;
-		public const int ORDER_ELEMENT_EXPR = 91;
-		public const int EVENT_PROP_EXPR = 92;
-		public const int EVENT_PROP_SIMPLE = 93;
-		public const int EVENT_PROP_MAPPED = 94;
-		public const int EVENT_PROP_INDEXED = 95;
-		public const int EVENT_LIMIT_EXPR = 96;
-		public const int SEC_LIMIT_EXPR = 97;
-		public const int MIN_LIMIT_EXPR = 98;
-		public const int INSERTINTO_EXPR = 99;
-		public const int INSERTINTO_EXPRCOL = 100;
-		public const int CONCAT = 101;
-		public const int LIB_FUNCTION = 102;
-		public const int UNARY_MINUS = 103;
-		public const int TIME_PERIOD = 104;
-		public const int DAY_PART = 105;
-		public const int HOUR_PART = 106;
-		public const int MINUTE_PART = 107;
-		public const int SECOND_PART = 108;
-		public const int MILLISECOND_PART = 109;
-		public const int NOT_IN_SET = 110;
-		public const int NOT_BETWEEN = 111;
-		public const int NOT_LIKE = 112;
-		public const int NOT_REGEXP = 113;
-		public const int DBSELECT_EXPR = 114;
-		public const int DBFROM_CLAUSE = 115;
-		public const int DBWHERE_CLAUSE = 116;
-		public const int INT_TYPE = 117;
-		public const int LONG_TYPE = 118;
-		public const int FLOAT_TYPE = 119;
-		public const int DOUBLE_TYPE = 120;
-		public const int STRING_TYPE = 121;
-		public const int BOOL_TYPE = 122;
-		public const int NULL_TYPE = 123;
-		public const int NUM_INT = 124;
-		public const int NUM_LONG = 125;
-		public const int NUM_FLOAT = 126;
-		public const int NUM_DOUBLE = 127;
-		public const int MINUS = 128;
-		public const int PLUS = 129;
-		public const int LITERAL_true = 130;
-		public const int LITERAL_false = 131;
-		public const int LITERAL_null = 132;
-		public const int STRING_LITERAL = 133;
-		public const int QUOTED_STRING_LITERAL = 134;
-		public const int IDENT = 135;
-		public const int LPAREN = 136;
-		public const int COMMA = 137;
-		public const int RPAREN = 138;
-		public const int EQUALS = 139;
-		public const int STAR = 140;
-		public const int DOT = 141;
-		public const int LBRACK = 142;
-		public const int RBRACK = 143;
-		public const int COLON = 144;
-		public const int BAND = 145;
-		public const int BOR = 146;
-		public const int BXOR = 147;
-		public const int SQL_NE = 148;
-		public const int NOT_EQUAL = 149;
-		public const int LT_ = 150;
-		public const int GT = 151;
-		public const int LE = 152;
-		public const int GE = 153;
-		public const int LOR = 154;
-		public const int DIV = 155;
-		public const int MOD = 156;
-		public const int FOLLOWED_BY = 157;
-		public const int LCURLY = 158;
-		public const int RCURLY = 159;
-		public const int LITERAL_days = 160;
-		public const int LITERAL_day = 161;
-		public const int LITERAL_hours = 162;
-		public const int LITERAL_hour = 163;
-		public const int LITERAL_minute = 164;
-		public const int LITERAL_second = 165;
-		public const int LITERAL_sec = 166;
-		public const int LITERAL_milliseconds = 167;
-		public const int LITERAL_millisecond = 168;
-		public const int LITERAL_msec = 169;
-		public const int QUESTION = 170;
-		public const int EQUAL = 171;
-		public const int LNOT = 172;
-		public const int BNOT = 173;
-		public const int DIV_ASSIGN = 174;
-		public const int PLUS_ASSIGN = 175;
-		public const int INC = 176;
-		public const int MINUS_ASSIGN = 177;
-		public const int DEC = 178;
-		public const int STAR_ASSIGN = 179;
-		public const int MOD_ASSIGN = 180;
-		public const int SR = 181;
-		public const int SR_ASSIGN = 182;
-		public const int BSR = 183;
-		public const int BSR_ASSIGN = 184;
-		public const int SL = 185;
-		public const int SL_ASSIGN = 186;
-		public const int BXOR_ASSIGN = 187;
-		public const int BOR_ASSIGN = 188;
-		public const int BAND_ASSIGN = 189;
-		public const int LAND = 190;
-		public const int SEMI = 191;
-		public const int WS = 192;
-		public const int SL_COMMENT = 193;
-		public const int ML_COMMENT = 194;
-		public const int ESC = 195;
-		public const int HEX_DIGIT = 196;
-		public const int EXPONENT = 197;
-		public const int FLOAT_SUFFIX = 198;
+		public const int PREVIOUS = 59;
+		public const int PRIOR = 60;
+		public const int EXISTS = 61;
+		public const int NUMERIC_PARAM_RANGE = 62;
+		public const int NUMERIC_PARAM_LIST = 63;
+		public const int NUMERIC_PARAM_FREQUENCY = 64;
+		public const int FOLLOWED_BY_EXPR = 65;
+		public const int ARRAY_PARAM_LIST = 66;
+		public const int EVENT_FILTER_EXPR = 67;
+		public const int EVENT_FILTER_NAME_TAG = 68;
+		public const int EVENT_FILTER_IDENT = 69;
+		public const int EVENT_FILTER_PARAM = 70;
+		public const int EVENT_FILTER_RANGE = 71;
+		public const int EVENT_FILTER_NOT_RANGE = 72;
+		public const int EVENT_FILTER_IN = 73;
+		public const int EVENT_FILTER_NOT_IN = 74;
+		public const int EVENT_FILTER_BETWEEN = 75;
+		public const int EVENT_FILTER_NOT_BETWEEN = 76;
+		public const int CLASS_IDENT = 77;
+		public const int GUARD_EXPR = 78;
+		public const int OBSERVER_EXPR = 79;
+		public const int VIEW_EXPR = 80;
+		public const int PATTERN_INCL_EXPR = 81;
+		public const int DATABASE_JOIN_EXPR = 82;
+		public const int WHERE_EXPR = 83;
+		public const int HAVING_EXPR = 84;
+		public const int EVAL_BITWISE_EXPR = 85;
+		public const int EVAL_AND_EXPR = 86;
+		public const int EVAL_OR_EXPR = 87;
+		public const int EVAL_EQUALS_EXPR = 88;
+		public const int EVAL_NOTEQUALS_EXPR = 89;
+		public const int EVAL_IDENT = 90;
+		public const int SELECTION_EXPR = 91;
+		public const int SELECTION_ELEMENT_EXPR = 92;
+		public const int STREAM_EXPR = 93;
+		public const int OUTERJOIN_EXPR = 94;
+		public const int LEFT_OUTERJOIN_EXPR = 95;
+		public const int RIGHT_OUTERJOIN_EXPR = 96;
+		public const int FULL_OUTERJOIN_EXPR = 97;
+		public const int GROUP_BY_EXPR = 98;
+		public const int ORDER_BY_EXPR = 99;
+		public const int ORDER_ELEMENT_EXPR = 100;
+		public const int EVENT_PROP_EXPR = 101;
+		public const int EVENT_PROP_SIMPLE = 102;
+		public const int EVENT_PROP_MAPPED = 103;
+		public const int EVENT_PROP_INDEXED = 104;
+		public const int EVENT_LIMIT_EXPR = 105;
+		public const int SEC_LIMIT_EXPR = 106;
+		public const int MIN_LIMIT_EXPR = 107;
+		public const int INSERTINTO_EXPR = 108;
+		public const int INSERTINTO_EXPRCOL = 109;
+		public const int CONCAT = 110;
+		public const int LIB_FUNCTION = 111;
+		public const int UNARY_MINUS = 112;
+		public const int TIME_PERIOD = 113;
+		public const int ARRAY_EXPR = 114;
+		public const int DAY_PART = 115;
+		public const int HOUR_PART = 116;
+		public const int MINUTE_PART = 117;
+		public const int SECOND_PART = 118;
+		public const int MILLISECOND_PART = 119;
+		public const int NOT_IN_SET = 120;
+		public const int NOT_BETWEEN = 121;
+		public const int NOT_LIKE = 122;
+		public const int NOT_REGEXP = 123;
+		public const int DBSELECT_EXPR = 124;
+		public const int DBFROM_CLAUSE = 125;
+		public const int DBWHERE_CLAUSE = 126;
+		public const int WILDCARD_SELECT = 127;
+		public const int INSERTINTO_STREAM_NAME = 128;
+		public const int IN_RANGE = 129;
+		public const int NOT_IN_RANGE = 130;
+		public const int SUBSELECT_EXPR = 131;
+		public const int EXISTS_SUBSELECT_EXPR = 132;
+		public const int IN_SUBSELECT_EXPR = 133;
+		public const int NOT_IN_SUBSELECT_EXPR = 134;
+		public const int IN_SUBSELECT_QUERY_EXPR = 135;
+		public const int INT_TYPE = 136;
+		public const int LONG_TYPE = 137;
+		public const int FLOAT_TYPE = 138;
+		public const int DOUBLE_TYPE = 139;
+		public const int STRING_TYPE = 140;
+		public const int BOOL_TYPE = 141;
+		public const int NULL_TYPE = 142;
+		public const int NUM_INT = 143;
+		public const int NUM_LONG = 144;
+		public const int NUM_FLOAT = 145;
+		public const int NUM_DOUBLE = 146;
+		public const int MINUS = 147;
+		public const int PLUS = 148;
+		public const int LITERAL_true = 149;
+		public const int LITERAL_false = 150;
+		public const int LITERAL_null = 151;
+		public const int STRING_LITERAL = 152;
+		public const int QUOTED_STRING_LITERAL = 153;
+		public const int IDENT = 154;
+		public const int LPAREN = 155;
+		public const int COMMA = 156;
+		public const int RPAREN = 157;
+		public const int EQUALS = 158;
+		public const int STAR = 159;
+		public const int DOT = 160;
+		public const int LBRACK = 161;
+		public const int RBRACK = 162;
+		public const int COLON = 163;
+		public const int BAND = 164;
+		public const int BOR = 165;
+		public const int BXOR = 166;
+		public const int SQL_NE = 167;
+		public const int NOT_EQUAL = 168;
+		public const int LT_ = 169;
+		public const int GT = 170;
+		public const int LE = 171;
+		public const int GE = 172;
+		public const int LOR = 173;
+		public const int DIV = 174;
+		public const int MOD = 175;
+		public const int LCURLY = 176;
+		public const int RCURLY = 177;
+		public const int FOLLOWED_BY = 178;
+		public const int LITERAL_days = 179;
+		public const int LITERAL_day = 180;
+		public const int LITERAL_hours = 181;
+		public const int LITERAL_hour = 182;
+		public const int LITERAL_minute = 183;
+		public const int LITERAL_second = 184;
+		public const int LITERAL_sec = 185;
+		public const int LITERAL_milliseconds = 186;
+		public const int LITERAL_millisecond = 187;
+		public const int LITERAL_msec = 188;
+		public const int QUESTION = 189;
+		public const int EQUAL = 190;
+		public const int LNOT = 191;
+		public const int BNOT = 192;
+		public const int DIV_ASSIGN = 193;
+		public const int PLUS_ASSIGN = 194;
+		public const int INC = 195;
+		public const int MINUS_ASSIGN = 196;
+		public const int DEC = 197;
+		public const int STAR_ASSIGN = 198;
+		public const int MOD_ASSIGN = 199;
+		public const int SR = 200;
+		public const int SR_ASSIGN = 201;
+		public const int BSR = 202;
+		public const int BSR_ASSIGN = 203;
+		public const int SL = 204;
+		public const int SL_ASSIGN = 205;
+		public const int BXOR_ASSIGN = 206;
+		public const int BOR_ASSIGN = 207;
+		public const int BAND_ASSIGN = 208;
+		public const int LAND = 209;
+		public const int SEMI = 210;
+		public const int WS = 211;
+		public const int SL_COMMENT = 212;
+		public const int ML_COMMENT = 213;
+		public const int ESC = 214;
+		public const int HEX_DIGIT = 215;
+		public const int EXPONENT = 216;
+		public const int FLOAT_SUFFIX = 217;
 		
 		public EQLStatementLexer(Stream ins) : this(new ByteBuffer(ins))
 		{
@@ -245,13 +266,13 @@ namespace net.esper.eql.generated
 		
 		public EQLStatementLexer(LexerSharedInputState state) : base(state)
 		{
-			Initialize();
+			initialize();
 		}
-		private void Initialize()
+		private void initialize()
 		{
-			caseSensitiveLiterals = true;
-			setCaseSensitive(true);
-			literals = new Hashtable(100, (float) 0.4, null, Comparer.Default);
+			caseSensitiveLiterals = false;
+			setCaseSensitive(false);
+			literals = new Hashtable(100, (float) 0.4, CaseInsensitiveHashCodeProvider.Default, CaseInsensitiveComparer.Default);
 			literals.Add("between", 5);
 			literals.Add("rstream", 55);
 			literals.Add("case", 25);
@@ -269,7 +290,7 @@ namespace net.esper.eql.generated
 			literals.Add("not", 11);
 			literals.Add("events", 45);
 			literals.Add("from", 31);
-			literals.Add("null", 132);
+			literals.Add("null", 151);
 			literals.Add("count", 23);
 			literals.Add("last", 49);
 			literals.Add("like", 6);
@@ -278,7 +299,7 @@ namespace net.esper.eql.generated
 			literals.Add("coalesce", 19);
 			literals.Add("istream", 56);
 			literals.Add("escape", 8);
-			literals.Add("msec", 169);
+			literals.Add("msec", 188);
 			literals.Add("join", 33);
 			literals.Add("is", 38);
 			literals.Add("or", 9);
@@ -288,25 +309,28 @@ namespace net.esper.eql.generated
 			literals.Add("as", 14);
 			literals.Add("first", 48);
 			literals.Add("by", 39);
-			literals.Add("millisecond", 168);
-			literals.Add("days", 160);
-			literals.Add("second", 165);
+			literals.Add("millisecond", 187);
+			literals.Add("days", 179);
+			literals.Add("second", 184);
 			literals.Add("all", 43);
 			literals.Add("order", 52);
-			literals.Add("hour", 163);
-			literals.Add("hours", 162);
+			literals.Add("hour", 182);
+			literals.Add("hours", 181);
 			literals.Add("pattern", 57);
-			literals.Add("false", 131);
-			literals.Add("milliseconds", 167);
+			literals.Add("false", 150);
+			literals.Add("exists", 61);
+			literals.Add("milliseconds", 186);
 			literals.Add("asc", 53);
-			literals.Add("minute", 164);
-			literals.Add("sec", 166);
+			literals.Add("minute", 183);
+			literals.Add("sec", 185);
 			literals.Add("left", 34);
-			literals.Add("day", 161);
+			literals.Add("day", 180);
 			literals.Add("desc", 54);
 			literals.Add("max", 17);
+			literals.Add("prev", 59);
 			literals.Add("sum", 15);
 			literals.Add("on", 37);
+			literals.Add("prior", 60);
 			literals.Add("into", 51);
 			literals.Add("else", 27);
 			literals.Add("right", 35);
@@ -314,7 +338,7 @@ namespace net.esper.eql.generated
 			literals.Add("avg", 16);
 			literals.Add("median", 20);
 			literals.Add("every", 12);
-			literals.Add("true", 130);
+			literals.Add("true", 149);
 			literals.Add("stddev", 21);
 			literals.Add("group", 40);
 			literals.Add("having", 41);
@@ -421,20 +445,13 @@ tryAgain:
 							theRetToken = returnToken_;
 							break;
 						}
-						case '$':  case 'A':  case 'B':  case 'C':
-						case 'D':  case 'E':  case 'F':  case 'G':
-						case 'H':  case 'I':  case 'J':  case 'K':
-						case 'L':  case 'M':  case 'N':  case 'O':
-						case 'P':  case 'Q':  case 'R':  case 'S':
-						case 'T':  case 'U':  case 'V':  case 'W':
-						case 'X':  case 'Y':  case 'Z':  case '_':
-						case 'a':  case 'b':  case 'c':  case 'd':
-						case 'e':  case 'f':  case 'g':  case 'h':
-						case 'i':  case 'j':  case 'k':  case 'l':
-						case 'm':  case 'n':  case 'o':  case 'p':
-						case 'q':  case 'r':  case 's':  case 't':
-						case 'u':  case 'v':  case 'w':  case 'x':
-						case 'y':  case 'z':
+						case '$':  case '_':  case 'a':  case 'b':
+						case 'c':  case 'd':  case 'e':  case 'f':
+						case 'g':  case 'h':  case 'i':  case 'j':
+						case 'k':  case 'l':  case 'm':  case 'n':
+						case 'o':  case 'p':  case 'q':  case 'r':
+						case 's':  case 't':  case 'u':  case 'v':
+						case 'w':  case 'x':  case 'y':  case 'z':
 						{
 							mIDENT(true);
 							theRetToken = returnToken_;
@@ -1292,7 +1309,7 @@ tryAgain:
 		_ttype = WS;
 		
 		{ // ( ... )+
-			int _cnt285=0;
+			int _cnt292=0;
 			for (;;)
 			{
 				switch ( cached_LA1 )
@@ -1339,12 +1356,12 @@ tryAgain:
 				}
 				default:
 				{
-					if (_cnt285 >= 1) { goto _loop285_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
+					if (_cnt292 >= 1) { goto _loop292_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
 				}
 				break; }
-				_cnt285++;
+				_cnt292++;
 			}
-_loop285_breakloop:			;
+_loop292_breakloop:			;
 		}    // ( ... )+
 		if (0==inputState.guessing)
 		{
@@ -1375,11 +1392,11 @@ _loop285_breakloop:			;
 				}
 				else
 				{
-					goto _loop289_breakloop;
+					goto _loop296_breakloop;
 				}
 				
 			}
-_loop289_breakloop:			;
+_loop296_breakloop:			;
 		}    // ( ... )*
 		{
 			switch ( cached_LA1 )
@@ -1462,11 +1479,11 @@ _loop289_breakloop:			;
 				}
 				else
 				{
-					goto _loop295_breakloop;
+					goto _loop302_breakloop;
 				}
 				
 			}
-_loop295_breakloop:			;
+_loop302_breakloop:			;
 		}    // ( ... )*
 		match("*/");
 		if (0==inputState.guessing)
@@ -1501,11 +1518,11 @@ _loop295_breakloop:			;
 				}
 				else
 				{
-					goto _loop299_breakloop;
+					goto _loop306_breakloop;
 				}
 				
 			}
-_loop299_breakloop:			;
+_loop306_breakloop:			;
 		}    // ( ... )*
 		match('"');
 		if (_createToken && (null == _token) && (_ttype != Token.SKIP))
@@ -1568,7 +1585,7 @@ _loop299_breakloop:			;
 			case 'u':
 			{
 				{ // ( ... )+
-					int _cnt307=0;
+					int _cnt314=0;
 					for (;;)
 					{
 						if ((cached_LA1=='u'))
@@ -1577,12 +1594,12 @@ _loop299_breakloop:			;
 						}
 						else
 						{
-							if (_cnt307 >= 1) { goto _loop307_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
+							if (_cnt314 >= 1) { goto _loop314_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
 						}
 						
-						_cnt307++;
+						_cnt314++;
 					}
-_loop307_breakloop:					;
+_loop314_breakloop:					;
 				}    // ( ... )+
 				mHEX_DIGIT(false);
 				mHEX_DIGIT(false);
@@ -1673,11 +1690,11 @@ _loop307_breakloop:					;
 				}
 				else
 				{
-					goto _loop303_breakloop;
+					goto _loop310_breakloop;
 				}
 				
 			}
-_loop303_breakloop:			;
+_loop310_breakloop:			;
 		}    // ( ... )*
 		match('\'');
 		if (_createToken && (null == _token) && (_ttype != Token.SKIP))
@@ -1701,12 +1718,6 @@ _loop303_breakloop:			;
 			case '8':  case '9':
 			{
 				matchRange('0','9');
-				break;
-			}
-			case 'A':  case 'B':  case 'C':  case 'D':
-			case 'E':  case 'F':
-			{
-				matchRange('A','F');
 				break;
 			}
 			case 'a':  case 'b':  case 'c':  case 'd':
@@ -1748,17 +1759,6 @@ _loop303_breakloop:			;
 				matchRange('a','z');
 				break;
 			}
-			case 'A':  case 'B':  case 'C':  case 'D':
-			case 'E':  case 'F':  case 'G':  case 'H':
-			case 'I':  case 'J':  case 'K':  case 'L':
-			case 'M':  case 'N':  case 'O':  case 'P':
-			case 'Q':  case 'R':  case 'S':  case 'T':
-			case 'U':  case 'V':  case 'W':  case 'X':
-			case 'Y':  case 'Z':
-			{
-				matchRange('A','Z');
-				break;
-			}
 			case '_':
 			{
 				match('_');
@@ -1791,17 +1791,6 @@ _loop303_breakloop:			;
 					matchRange('a','z');
 					break;
 				}
-				case 'A':  case 'B':  case 'C':  case 'D':
-				case 'E':  case 'F':  case 'G':  case 'H':
-				case 'I':  case 'J':  case 'K':  case 'L':
-				case 'M':  case 'N':  case 'O':  case 'P':
-				case 'Q':  case 'R':  case 'S':  case 'T':
-				case 'U':  case 'V':  case 'W':  case 'X':
-				case 'Y':  case 'Z':
-				{
-					matchRange('A','Z');
-					break;
-				}
 				case '_':
 				{
 					match('_');
@@ -1821,11 +1810,11 @@ _loop303_breakloop:			;
 				}
 				default:
 				{
-					goto _loop316_breakloop;
+					goto _loop323_breakloop;
 				}
 				 }
 			}
-_loop316_breakloop:			;
+_loop323_breakloop:			;
 		}    // ( ... )*
 		_ttype = testLiteralsTable(_ttype);
 		if (_createToken && (null == _token) && (_ttype != Token.SKIP))
@@ -1844,7 +1833,7 @@ _loop316_breakloop:			;
 		IToken f2 = null;
 		IToken f3 = null;
 		IToken f4 = null;
-		Boolean isDecimal=false; IToken t=null;
+		bool isDecimal=false; Token t=null;
 		
 		switch ( cached_LA1 )
 		{
@@ -1859,7 +1848,7 @@ _loop316_breakloop:			;
 				if (((cached_LA1 >= '0' && cached_LA1 <= '9')))
 				{
 					{ // ( ... )+
-						int _cnt320=0;
+						int _cnt327=0;
 						for (;;)
 						{
 							if (((cached_LA1 >= '0' && cached_LA1 <= '9')))
@@ -1868,15 +1857,15 @@ _loop316_breakloop:			;
 							}
 							else
 							{
-								if (_cnt320 >= 1) { goto _loop320_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
+								if (_cnt327 >= 1) { goto _loop327_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
 							}
 							
-							_cnt320++;
+							_cnt327++;
 						}
-_loop320_breakloop:						;
+_loop327_breakloop:						;
 					}    // ( ... )+
 					{
-						if ((cached_LA1=='E'||cached_LA1=='e'))
+						if ((cached_LA1=='e'))
 						{
 							mEXPONENT(false);
 						}
@@ -1885,7 +1874,7 @@ _loop320_breakloop:						;
 						
 					}
 					{
-						if ((cached_LA1=='D'||cached_LA1=='F'||cached_LA1=='d'||cached_LA1=='f'))
+						if ((cached_LA1=='d'||cached_LA1=='f'))
 						{
 							mFLOAT_SUFFIX(true);
 							f1 = returnToken_;
@@ -1901,7 +1890,7 @@ _loop320_breakloop:						;
 					if (0==inputState.guessing)
 					{
 						
-										if (t != null && t.getText().ToUpper().IndexOf('F')>=0) {
+										if (t != null && t.getText().toUpperCase().indexOf('F')>=0) {
 							_ttype = NUM_FLOAT;
 										}
 										else {
@@ -1931,56 +1920,40 @@ _loop320_breakloop:						;
 						isDecimal = true;
 					}
 					{
-						if ((cached_LA1=='X'||cached_LA1=='x'))
+						if ((cached_LA1=='x'))
 						{
 							{
-								switch ( cached_LA1 )
-								{
-								case 'x':
-								{
-									match('x');
-									break;
-								}
-								case 'X':
-								{
-									match('X');
-									break;
-								}
-								default:
-								{
-									throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());
-								}
-								 }
+								match('x');
 							}
 							{ // ( ... )+
-								int _cnt327=0;
+								int _cnt334=0;
 								for (;;)
 								{
-									if ((tokenSet_4_.member(cached_LA1)) && (true) && (true) && (true))
+									if ((cached_LA1=='0'||cached_LA1=='1'||cached_LA1=='2'||cached_LA1=='3'||cached_LA1=='4'||cached_LA1=='5'||cached_LA1=='6'||cached_LA1=='7'||cached_LA1=='8'||cached_LA1=='9'||cached_LA1=='a'||cached_LA1=='b'||cached_LA1=='c'||cached_LA1=='d'||cached_LA1=='e'||cached_LA1=='f') && (true) && (true) && (true))
 									{
 										mHEX_DIGIT(false);
 									}
 									else
 									{
-										if (_cnt327 >= 1) { goto _loop327_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
+										if (_cnt334 >= 1) { goto _loop334_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
 									}
 									
-									_cnt327++;
+									_cnt334++;
 								}
-_loop327_breakloop:								;
+_loop334_breakloop:								;
 							}    // ( ... )+
 						}
 						else {
-							bool synPredMatched332 = false;
+							bool synPredMatched339 = false;
 							if ((((cached_LA1 >= '0' && cached_LA1 <= '9')) && (true) && (true) && (true)))
 							{
-								int _m332 = mark();
-								synPredMatched332 = true;
+								int _m339 = mark();
+								synPredMatched339 = true;
 								inputState.guessing++;
 								try {
 									{
 										{ // ( ... )+
-											int _cnt330=0;
+											int _cnt337=0;
 											for (;;)
 											{
 												if (((cached_LA1 >= '0' && cached_LA1 <= '9')))
@@ -1989,12 +1962,12 @@ _loop327_breakloop:								;
 												}
 												else
 												{
-													if (_cnt330 >= 1) { goto _loop330_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
+													if (_cnt337 >= 1) { goto _loop337_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
 												}
 												
-												_cnt330++;
+												_cnt337++;
 											}
-_loop330_breakloop:											;
+_loop337_breakloop:											;
 										}    // ( ... )+
 										{
 											switch ( cached_LA1 )
@@ -2004,12 +1977,12 @@ _loop330_breakloop:											;
 												match('.');
 												break;
 											}
-											case 'E':  case 'e':
+											case 'e':
 											{
 												mEXPONENT(false);
 												break;
 											}
-											case 'D':  case 'F':  case 'd':  case 'f':
+											case 'd':  case 'f':
 											{
 												mFLOAT_SUFFIX(false);
 												break;
@@ -2024,15 +1997,15 @@ _loop330_breakloop:											;
 								}
 								catch (RecognitionException)
 								{
-									synPredMatched332 = false;
+									synPredMatched339 = false;
 								}
-								rewind(_m332);
+								rewind(_m339);
 								inputState.guessing--;
 							}
-							if ( synPredMatched332 )
+							if ( synPredMatched339 )
 							{
 								{ // ( ... )+
-									int _cnt334=0;
+									int _cnt341=0;
 									for (;;)
 									{
 										if (((cached_LA1 >= '0' && cached_LA1 <= '9')))
@@ -2041,17 +2014,17 @@ _loop330_breakloop:											;
 										}
 										else
 										{
-											if (_cnt334 >= 1) { goto _loop334_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
+											if (_cnt341 >= 1) { goto _loop341_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
 										}
 										
-										_cnt334++;
+										_cnt341++;
 									}
-_loop334_breakloop:									;
+_loop341_breakloop:									;
 								}    // ( ... )+
 							}
 							else if (((cached_LA1 >= '0' && cached_LA1 <= '7')) && (true) && (true) && (true)) {
 								{ // ( ... )+
-									int _cnt336=0;
+									int _cnt343=0;
 									for (;;)
 									{
 										if (((cached_LA1 >= '0' && cached_LA1 <= '7')))
@@ -2060,12 +2033,12 @@ _loop334_breakloop:									;
 										}
 										else
 										{
-											if (_cnt336 >= 1) { goto _loop336_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
+											if (_cnt343 >= 1) { goto _loop343_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
 										}
 										
-										_cnt336++;
+										_cnt343++;
 									}
-_loop336_breakloop:									;
+_loop343_breakloop:									;
 								}    // ( ... )+
 							}
 							else {
@@ -2090,11 +2063,11 @@ _loop336_breakloop:									;
 								}
 								else
 								{
-									goto _loop339_breakloop;
+									goto _loop346_breakloop;
 								}
 								
 							}
-_loop339_breakloop:							;
+_loop346_breakloop:							;
 						}    // ( ... )*
 						if (0==inputState.guessing)
 						{
@@ -2109,33 +2082,17 @@ _loop339_breakloop:							;
 					 }
 				}
 				{
-					if ((cached_LA1=='L'||cached_LA1=='l'))
+					if ((cached_LA1=='l'))
 					{
 						{
-							switch ( cached_LA1 )
-							{
-							case 'l':
-							{
-								match('l');
-								break;
-							}
-							case 'L':
-							{
-								match('L');
-								break;
-							}
-							default:
-							{
-								throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());
-							}
-							 }
+							match('l');
 						}
 						if (0==inputState.guessing)
 						{
 							_ttype = NUM_LONG;
 						}
 					}
-					else if (((cached_LA1=='.'||cached_LA1=='D'||cached_LA1=='E'||cached_LA1=='F'||cached_LA1=='d'||cached_LA1=='e'||cached_LA1=='f'))&&(isDecimal)) {
+					else if (((cached_LA1=='.'||cached_LA1=='d'||cached_LA1=='e'||cached_LA1=='f'))&&(isDecimal)) {
 						{
 							switch ( cached_LA1 )
 							{
@@ -2151,14 +2108,14 @@ _loop339_breakloop:							;
 										}
 										else
 										{
-											goto _loop344_breakloop;
+											goto _loop351_breakloop;
 										}
 										
 									}
-_loop344_breakloop:									;
+_loop351_breakloop:									;
 								}    // ( ... )*
 								{
-									if ((cached_LA1=='E'||cached_LA1=='e'))
+									if ((cached_LA1=='e'))
 									{
 										mEXPONENT(false);
 									}
@@ -2167,7 +2124,7 @@ _loop344_breakloop:									;
 									
 								}
 								{
-									if ((cached_LA1=='D'||cached_LA1=='F'||cached_LA1=='d'||cached_LA1=='f'))
+									if ((cached_LA1=='d'||cached_LA1=='f'))
 									{
 										mFLOAT_SUFFIX(true);
 										f2 = returnToken_;
@@ -2182,11 +2139,11 @@ _loop344_breakloop:									;
 								}
 								break;
 							}
-							case 'E':  case 'e':
+							case 'e':
 							{
 								mEXPONENT(false);
 								{
-									if ((cached_LA1=='D'||cached_LA1=='F'||cached_LA1=='d'||cached_LA1=='f'))
+									if ((cached_LA1=='d'||cached_LA1=='f'))
 									{
 										mFLOAT_SUFFIX(true);
 										f3 = returnToken_;
@@ -2201,7 +2158,7 @@ _loop344_breakloop:									;
 								}
 								break;
 							}
-							case 'D':  case 'F':  case 'd':  case 'f':
+							case 'd':  case 'f':
 							{
 								mFLOAT_SUFFIX(true);
 								f4 = returnToken_;
@@ -2220,7 +2177,7 @@ _loop344_breakloop:									;
 						if (0==inputState.guessing)
 						{
 							
-										if (t != null && t.getText().ToUpper().IndexOf('F') >= 0) {
+										if (t != null && t.getText().toUpperCase() .indexOf('F') >= 0) {
 							_ttype = NUM_FLOAT;
 										}
 							else {
@@ -2254,23 +2211,7 @@ _loop344_breakloop:									;
 		_ttype = EXPONENT;
 		
 		{
-			switch ( cached_LA1 )
-			{
-			case 'e':
-			{
-				match('e');
-				break;
-			}
-			case 'E':
-			{
-				match('E');
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());
-			}
-			 }
+			match('e');
 		}
 		{
 			switch ( cached_LA1 )
@@ -2298,7 +2239,7 @@ _loop344_breakloop:									;
 			 }
 		}
 		{ // ( ... )+
-			int _cnt352=0;
+			int _cnt359=0;
 			for (;;)
 			{
 				if (((cached_LA1 >= '0' && cached_LA1 <= '9')))
@@ -2307,12 +2248,12 @@ _loop344_breakloop:									;
 				}
 				else
 				{
-					if (_cnt352 >= 1) { goto _loop352_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
+					if (_cnt359 >= 1) { goto _loop359_breakloop; } else { throw new NoViableAltForCharException(cached_LA1, getFilename(), getLine(), getColumn());; }
 				}
 				
-				_cnt352++;
+				_cnt359++;
 			}
-_loop352_breakloop:			;
+_loop359_breakloop:			;
 		}    // ( ... )+
 		if (_createToken && (null == _token) && (_ttype != Token.SKIP))
 		{
@@ -2334,19 +2275,9 @@ _loop352_breakloop:			;
 			match('f');
 			break;
 		}
-		case 'F':
-		{
-			match('F');
-			break;
-		}
 		case 'd':
 		{
 			match('d');
-			break;
-		}
-		case 'D':
-		{
-			match('D');
 			break;
 		}
 		default:
@@ -2405,15 +2336,6 @@ _loop352_breakloop:			;
 		return data;
 	}
 	public static readonly BitSet tokenSet_3_ = new BitSet(mk_tokenSet_3_());
-	private static long[] mk_tokenSet_4_()
-	{
-		long[] data = new long[513];
-		data[0]=287948901175001088L;
-		data[1]=541165879422L;
-		for (int i = 2; i<=512; i++) { data[i]=0L; }
-		return data;
-	}
-	public static readonly BitSet tokenSet_4_ = new BitSet(mk_tokenSet_4_());
 	
 }
 }

@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
@@ -21,23 +23,23 @@ namespace net.esper.view.stat
 	    private String fieldName;
 	    private EventType eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "'Univariate statistics' view require a single field name as a parameter";
-	        if (viewParameters.Size() != 1)
+	        if (viewParameters.Count != 1)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        if (!(viewParameters.Get(0) is String))
+	        if (!(viewParameters[0] is String))
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        fieldName = (String) viewParameters.Get(0);
+	        fieldName = (String) viewParameters[0];
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        String result = PropertyCheckHelper.CheckNumeric(parentEventType, fieldName);
 	        if (result != null)
@@ -62,9 +64,9 @@ namespace net.esper.view.stat
 	        return new UnivariateStatisticsView(statementContext, fieldName);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

@@ -19,7 +19,7 @@ namespace net.esper.eql.expression
         /// <value><c>true</c> if [not equals]; otherwise, <c>false</c>.</value>
         /// <returns> true for !=, false for =
         /// </returns>
-        virtual public bool NotEquals
+        virtual public bool IsNotEquals
         {
             get { return isNotEquals; }
         }

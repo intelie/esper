@@ -19,7 +19,7 @@ namespace net.esper.client
 
     public sealed class EPServiceProviderManager
     {
-        private static IDictionary<String, EPServiceProviderImpl> runtimes = new Dictionary<String, EPServiceProvider>();
+        private static IDictionary<String, EPServiceProviderImpl> runtimes = new Dictionary<String, EPServiceProviderImpl>();
         private static EPServiceProviderImpl defaultServiceProvider;
 
         /// <summary> Returns the default EPServiceProvider.</summary>

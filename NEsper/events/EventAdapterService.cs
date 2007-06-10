@@ -118,7 +118,7 @@ namespace net.esper.events
 		* @param eventType os the type metadata for any wrappers of this type
 		* @return wrapper event bean
 		*/
-		EventBean CreateWrapper(EventBean _event, Map<String, Object> properties, EventType eventType);
+		EventBean CreateWrapper(EventBean _event, EDictionary<String, Object> properties, EventType eventType);
 
         /// <summary> Create an aggregate event wrapper bean from a set of named events stored in a Map.</summary>
         /// <param name="events">is key-value pairs where the key is the event name and the value is the event
@@ -156,12 +156,12 @@ namespace net.esper.events
         /// </summary>
         /// <param name="eventTypeAlias">is the alias name for the event type
         /// </param>
-        /// <param name="clazz">is the fully Java class
+        /// <param name="type">is the type
         /// </param>
         /// <returns> event type is the type added
         /// </returns>
         /// <throws>  EventAdapterException if alias already exists and doesn't match class names </throws>
-        EventType AddBeanType(String eventTypeAlias, Type clazz);
+        EventType AddBeanType(String eventTypeAlias, Type type);
 
         /// <summary> Wrap the native event returning an <seealso cref="EventBean" />.</summary>
         /// <param name="ev">event to be wrapped

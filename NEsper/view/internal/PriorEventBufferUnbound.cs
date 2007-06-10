@@ -42,7 +42,7 @@ namespace net.esper.view.internals
 	        // Post new data to rolling buffer starting with the oldest
 	        if (newData != null)
 	        {
-	            for (int i = 0; i < newData.length; i++)
+	            for (int i = 0; i < newData.Length; i++)
 	            {
 	                EventBean newEvent = newData[i];
 
@@ -56,7 +56,7 @@ namespace net.esper.view.internals
 	    {
 	        if (index >= maxSize)
 	        {
-	            throw new IllegalArgumentException("Index " + index + " not allowed, max size is " + maxSize);
+	            throw new ArgumentException("Index " + index + " not allowed, max size is " + maxSize);
 	        }
 	        return newEvents.Get(index);
 	    }

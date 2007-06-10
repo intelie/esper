@@ -14,7 +14,7 @@ namespace net.esper.core
 
 	public class PatternListenerDispatch : Dispatchable
 	{
-		private readonly ISet<UpdateListener> listeners;
+		private readonly Set<UpdateListener> listeners;
 		private EventBean singleEvent;
 		private List<EventBean> eventList;
 
@@ -22,7 +22,7 @@ namespace net.esper.core
 		/// <param name="listeners">is the listeners to dispatch to.
 		/// </param>
 
-		public PatternListenerDispatch( ISet<UpdateListener> listeners )
+		public PatternListenerDispatch( Set<UpdateListener> listeners )
 		{
 			this.listeners = listeners;
 		}

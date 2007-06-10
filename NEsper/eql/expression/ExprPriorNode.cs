@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using net.esper.eql.core;
 using net.esper.events;
@@ -26,18 +27,18 @@ namespace net.esper.eql.expression
 	    private RelativeAccessByEventNIndex relativeAccess;
 	    private RandomAccessByIndex randomAccess;
 
-	    public void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
-	        if (this.ChildNodes.Size() != 2)
+	        if (this.ChildNodes.Count != 2)
 	        {
 	            throw new ExprValidationException("Prior node must have 2 child nodes");
 	        }
-	        if (!(this.ChildNodes.Get(0).IsConstantResult()))
+	        if (!(this.ChildNodes[0].IsConstantResult))
 	        {
 	            throw new ExprValidationException("Prior function requires an integer index parameter");
 	        }
-	        ExprNode constantNode = this.ChildNodes.Get(0);
-	        if (constantNode.Type != typeof(int))
+	        ExprNode constantNode = this.ChildNodes[0];
+            if (constantNode.GetType() != typeof(int))
 	        {
 	            throw new ExprValidationException("Prior function requires an integer index parameter");
 	        }
@@ -46,9 +47,9 @@ namespace net.esper.eql.expression
 	        constantIndexNumber = ((Number) value).IntValue();
 
 	        // Determine stream number
-	        ExprIdentNode identNode = (ExprIdentNode) this.ChildNodes.Get(1);
+	        ExprIdentNode identNode = (ExprIdentNode) this.ChildNodes[1];
 	        streamNumber = identNode.StreamId;
-	        resultType = this.ChildNodes.Get(1).Type;
+            resultType = this.ChildNodes[1].GetType();
 
 	        if (viewResourceDelegate == null)
 	        {
@@ -60,18 +61,18 @@ namespace net.esper.eql.expression
 	            throw new ExprValidationException("Prior function requires the prior event view resource");
 	        }
 	    }
-
-	    public Type ResultType
+	    
+	    public override Type ReturnType
 	    {
 	    	get { return resultType; }
 	    }
 
-	    public bool IsConstantResult
+	    public override bool IsConstantResult
 	    {
 	    	get { return false; }
 	    }
 
-	    public Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
+	    public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
 	    {
 	        EventBean originalEvent = eventsPerStream[streamNumber];
 	        EventBean substituteEvent = null;
@@ -94,24 +95,27 @@ namespace net.esper.eql.expression
 
 	        // Substitute original event with prior event, evaluate inner expression
 	        eventsPerStream[streamNumber] = substituteEvent;
-	        Object evalResult = this.ChildNodes.Get(1).Evaluate(eventsPerStream, isNewData);
+	        Object evalResult = this.ChildNodes[1].Evaluate(eventsPerStream, isNewData);
 	        eventsPerStream[streamNumber] = originalEvent;
 
 	        return evalResult;
 	    }
 
-	    public String ToExpressionString()
+	    public override string ExpressionString
 	    {
-	        StringBuilder buffer = new StringBuilder();
-	        buffer.Append("prior(");
-	        buffer.Append(this.ChildNodes.Get(0).ToExpressionString());
-	        buffer.Append(',');
-	        buffer.Append(this.ChildNodes.Get(1).ToExpressionString());
-	        buffer.Append(')');
-	        return buffer.ToString();
+	    	get
+	    	{
+		        StringBuilder buffer = new StringBuilder();
+		        buffer.Append("prior(");
+		        buffer.Append(this.ChildNodes[0].ExpressionString);
+		        buffer.Append(',');
+		        buffer.Append(this.ChildNodes[1].ExpressionString);
+		        buffer.Append(')');
+		        return buffer.ToString();
+	    	}
 	    }
 
-	    public bool EqualsNode(ExprNode node)
+	    public override bool EqualsNode(ExprNode node)
 	    {
 	        if (!(node is ExprPriorNode))
 	        {
@@ -133,7 +137,7 @@ namespace net.esper.eql.expression
 	        }
 	        else
 	        {
-	            throw new IllegalArgumentException("View resource " + resource.Class + " not recognized by expression node");
+	            throw new ArgumentException("View resource " + resource.Class + " not recognized by expression node");
 	        }
 	    }
 	}

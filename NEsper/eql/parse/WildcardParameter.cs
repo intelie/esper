@@ -30,9 +30,9 @@ namespace net.esper.eql.parse
         /// <param name="min">lower end of range</param>
         /// <param name="max">upper end of range</param>
         /// <returns>set of integer</returns>
-        public ISet<int> GetValuesInRange(int min, int max)
+        public Set<int> GetValuesInRange(int min, int max)
         {
-            ISet<int> result = new EHashSet<Int32>();
+            Set<int> result = new EHashSet<Int32>();
             for (int i = min; i <= max; i++)
             {
                 result.Add(i);

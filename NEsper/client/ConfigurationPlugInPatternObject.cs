@@ -18,7 +18,7 @@ namespace net.esper.client
 	    private String _namespace;
 	    private String name;
 	    private String factoryClassName;
-	    private PatternObjectType patternObjectType;
+	    private PatternObjectTypeEnum patternObjectType;
 
 	    /// <summary>Ctor.</summary>
 	    public ConfigurationPlugInPatternObject()
@@ -37,7 +37,7 @@ namespace net.esper.client
 	    /// <summary>
 		/// Gets or sets the view name.
 		/// </summary>
-	    public String GetName
+	    public String Name
 	    {
 	        get { return name; }
 			set { this.name = value ; }
@@ -46,7 +46,7 @@ namespace net.esper.client
 	    /// <summary>
 		/// Gets or sets the view factory class name.
 		/// </summary>
-	    public String GetFactoryClassName
+	    public String FactoryClassName
 	    {
 	        get { return factoryClassName; }
 			set { this.factoryClassName = value ; }
@@ -55,14 +55,14 @@ namespace net.esper.client
 	    /// <summary>
 		/// Gets or sets the type of the pattern object for the plug-in.
 		/// </summary>
-	    public PatternObjectType PatternObjectType
+	    public PatternObjectTypeEnum PatternObjectType
 	    {
 	        get { return patternObjectType; }
 			set { this.patternObjectType = value; }
 	    }
 
 	    /// <summary>Choice for type of pattern object.</summary>
-	    public enum PatternObjectType
+	    public enum PatternObjectTypeEnum
 	    {
 	        /// <summary>Observer observes externally-supplied events.</summary>
 	        OBSERVER,

@@ -8,8 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.client;
+using net.esper.compat;
 using net.esper.eql.spec;
+
 using org.apache.commons.logging;
 
 namespace net.esper.view
@@ -20,14 +23,15 @@ namespace net.esper.view
 	public class ViewResolutionServiceImpl : ViewResolutionService
 	{
 	    private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-	    private readonly IDictionary<String, IDictionary<String, Class>> nameToFactoryMap;
+	    
+	    private readonly EDictionary<String, IDictionary<String, Type>> nameToFactoryMap;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="configurationPlugInViews">is the configured plug-in views</param>
 	    /// <throws>ConfigurationException when plug-in views cannot be solved</throws>
 	    public ViewResolutionServiceImpl(List<ConfigurationPlugInView> configurationPlugInViews)
 	    {
-	        nameToFactoryMap = new EHashDictionary<String, IDictionary<String, Class>>();
+	        nameToFactoryMap = new EHashDictionary<String, IDictionary<String, Type>>();
 
 	        if (configurationPlugInViews == null)
 	        {
@@ -49,40 +53,40 @@ namespace net.esper.view
 	                throw new ConfigurationException("Name has not been supplied for object in namespace '" + entry.Namespace + "'");
 	            }
 
-	            Class clazz;
+	            Type type;
 	            try
 	            {
-	                clazz = Class.ForName(entry.FactoryClassName);
+	                type = Type.GetType(entry.FactoryClassName);
 	            }
-	            catch (ClassNotFoundException ex)
+	            catch (TypeLoadException ex)
 	            {
 	                throw new ConfigurationException("View factory class " + entry.FactoryClassName + " could not be loaded");
 	            }
 
-	            IDictionary<String, Class> namespaceMap = nameToFactoryMap.Get(entry.Namespace);
+	            IDictionary<String, Type> namespaceMap = nameToFactoryMap.Fetch(entry.Namespace);
 	            if (namespaceMap == null)
 	            {
-	                namespaceMap = new EHashDictionary<String, Class>();
-	                nameToFactoryMap.Put(entry.Namespace, namespaceMap);
+	                namespaceMap = new EHashDictionary<String, Type>();
+	                nameToFactoryMap[entry.Namespace] = namespaceMap;
 	            }
-	            namespaceMap.Put(entry.Name, clazz);
+	            namespaceMap[entry.Name] = type;
 	        }
 	    }
 
 	    public ViewFactory Create(ViewSpec spec)
 	    {
-	        if (log.IsDebugEnabled())
+	    	if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".create Creating view factory, spec=" + spec.ToString());
 	        }
 
-	        Class viewFactoryClass = null;
+	        Type viewFactoryType = null;
 
 	        // Pre-configured views override build-in views
-	        IDictionary<String, Class> namespaceMap = nameToFactoryMap.Get(spec.ObjectNamespace);
+	        IDictionary<String, Type> namespaceMap = nameToFactoryMap.Fetch(spec.ObjectNamespace);
 	        if (namespaceMap != null)
 	        {
-	            viewFactoryClass = namespaceMap.Get(spec.ObjectName);
+	            viewFactoryClass = namespaceMap.Fetch(spec.ObjectName);
 	        }
 
 	        // if not found in the plugin views, try o resolve as a builtin view
@@ -105,7 +109,7 @@ namespace net.esper.view
 	        {
 	            viewFactory = (ViewFactory) viewFactoryClass.NewInstance();
 
-	            if (log.IsDebugEnabled())
+	            if (log.IsDebugEnabled)
 	            {
 	                log.Debug(".create Successfully instantiated view");
 	            }

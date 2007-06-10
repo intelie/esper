@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
@@ -21,15 +23,15 @@ namespace net.esper.view.std
 	    private String[] groupFieldNames;
 	    private EventType eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        groupFieldNames = GetFieldNameParams(viewParameters, "Group-by");
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        // Attaches to just about anything as long as all the fields exists
-	        for (int i = 0; i < groupFieldNames.length; i++)
+	        for (int i = 0; i < groupFieldNames.Length; i++)
 	        {
 	            String message = PropertyCheckHelper.Exists(parentEventType, groupFieldNames[i]);
 	            if (message != null)
@@ -63,9 +65,9 @@ namespace net.esper.view.std
 	        return new GroupByView(statementContext, groupFieldNames);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    /// <summary>
@@ -85,9 +87,9 @@ namespace net.esper.view.std
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        if (viewParameters.Size() > 1)
+	        if (viewParameters.Count > 1)
 	        {
-	            List<String> fields = new ArrayList<String>();
+	            List<String> fields = new List<String>();
 	            foreach (Object param in viewParameters)
 	            {
 	                if (!(param is String))
@@ -100,11 +102,11 @@ namespace net.esper.view.std
 	        }
 	        else
 	        {
-	            Object param = viewParameters.Get(0);
+	            Object param = viewParameters[0];
 	            if (param is String[])
 	            {
 	                String[] arr = (String[]) param;
-	                if (arr.length == 0)
+	                if (arr.Length == 0)
 	                {
 	                    throw new ViewParameterException(errorMessage);
 	                }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using net.esper.core;
 using net.esper.collection;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.view;
@@ -21,7 +22,7 @@ namespace net.esper.view.internals
 	/// <summary>Factory for making {@link PriorEventView} instances.</summary>
 	public class PriorEventViewFactory : ViewFactory
 	{
-	    private TreeMap<Integer, List<ViewResourceCallback>> callbacksPerIndex = new TreeMap<Integer, List<ViewResourceCallback>>();
+	    private ETreeDictionary<int, List<ViewResourceCallback>> callbacksPerIndex = new ETreeDictionary<int, List<ViewResourceCallback>>();
 	    private EventType eventType;
 	    private readonly bool isUnbound;
 
@@ -35,12 +36,12 @@ namespace net.esper.view.internals
 	        isUnbound = unbound;
 	    }
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        throw new UnsupportedOperationException("View not available through EQL");
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        eventType = parentEventType;
 	    }
@@ -59,9 +60,9 @@ namespace net.esper.view.internals
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        if (!canProvideCapability(viewCapability))
+	        if (!CanProvideCapability(viewCapability))
 	        {
-	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	        	throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	        }
 
 	        // Get the index requested, such as the 8th prior event
@@ -69,7 +70,7 @@ namespace net.esper.view.internals
 	        int reqIndex = requested.IndexConstant;
 
 	        // Store in a list per index such that we can consolidate this into a single buffer
-	        List<ViewResourceCallback> callbackList = callbacksPerIndex.Get(reqIndex);
+	        List<ViewResourceCallback> callbackList = callbacksPerIndex.Fetch(reqIndex);
 	        if (callbackList == null)
 	        {
 	            callbackList = new LinkedList<ViewResourceCallback>();
@@ -82,15 +83,15 @@ namespace net.esper.view.internals
 	    {
 	        ViewUpdatedCollection viewUpdatedCollection = null;
 
-	        if (callbacksPerIndex.IsEmpty())
+	        if (callbacksPerIndex.Count == 0)
 	        {
 	            throw new IllegalStateException("No resources requested");
 	        }
 
 	        // Construct an array of requested prior-event indexes (such as 10th prior event, 8th prior = {10, 8})
-	        int[] requested = new int[callbacksPerIndex.Size()];
+	        int[] requested = new int[callbacksPerIndex.Count];
 	        int count = 0;
-	        foreach (int reqIndex in callbacksPerIndex.KeySet())
+	        foreach (int reqIndex in callbacksPerIndex.Keys)
 	        {
 	            requested[count++] = reqIndex;
 	        }
@@ -99,10 +100,10 @@ namespace net.esper.view.internals
 	        // For unbound streams the buffer is strictly rolling new events
 	        if (isUnbound)
 	        {
-	            viewUpdatedCollection = new PriorEventBufferUnbound(callbacksPerIndex.LastKey());
+	            viewUpdatedCollection = new PriorEventBufferUnbound(callbacksPerIndex.LastKey);
 	        }
 	        // For bound streams (with views posting old and new data), and if only one prior index requested
-	        else if (requested.length == 1)
+	        else if (requested.Length == 1)
 	        {
 	            viewUpdatedCollection = new PriorEventBufferSingle(requested[0]);
 	        }
@@ -118,9 +119,9 @@ namespace net.esper.view.internals
 	        // into {2, 8} the relative index is {0, 1}.
 	        // Map the expression-supplied index to a relative viewUpdatedCollection-known index via wrapper
 	        int relativeIndex = 0;
-	        foreach (int reqIndex in callbacksPerIndex.KeySet())
+	        foreach (int reqIndex in callbacksPerIndex.Keys)
 	        {
-	            List<ViewResourceCallback> callbacks = callbacksPerIndex.Get(reqIndex);
+	            List<ViewResourceCallback> callbacks = callbacksPerIndex.Fetch(reqIndex);
 	            foreach (ViewResourceCallback callback in callbacks)
 	            {
 	                if (viewUpdatedCollection is RelativeAccessByEventNIndex)
@@ -140,9 +141,9 @@ namespace net.esper.view.internals
 	        return priorEventView;
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

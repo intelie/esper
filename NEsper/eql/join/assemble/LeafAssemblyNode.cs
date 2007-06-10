@@ -49,7 +49,7 @@ namespace net.esper.eql.join.assemble
 
             foreach (Node node in nodes)
             {
-                ISet<EventBean> events = node.Events;
+                Set<EventBean> events = node.Events;
                 foreach (EventBean ev in events)
                 {
                     processEvent(ev, node);

@@ -9,7 +9,7 @@ namespace net.esper.compat
     /// </summary>
     /// <typeparam name="T"></typeparam>
 
-	public interface ISet<T> : ICollection<T>
+	public interface Set<T> : ICollection<T>
 	{
 		/// <summary>
 		/// Converts the set to an array.

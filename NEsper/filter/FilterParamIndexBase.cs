@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace net.esper.filter
@@ -36,6 +37,11 @@ namespace net.esper.filter
 	    /// Get the event evaluation instance associated with the constant. Returns null if no entry found for the constant.
 	    /// The calling class must make sure that access to the underlying resource is protected
 	    /// for multi-threaded access, the GetReadWriteLock() method must supply a lock for this purpose.
+	    /// 
+	    /// Store the event evaluation instance for the given constant. Can override an existing value
+	    /// for the same constant.
+	    /// The calling class must make sure that access to the underlying resource is protected
+	    /// for multi-threaded access, the GetReadWriteLock() method must supply a lock for this purpose.
 	    /// </summary>
 	    /// <param name="filterConstant">
 	    /// is the constant supplied in the event filter parameter
@@ -43,17 +49,11 @@ namespace net.esper.filter
 	    /// <returns>
 	    /// event evaluator stored for the filter constant, or null if not found
 	    /// </returns>
-	    protected abstract EventEvaluator Get(Object filterConstant);
-
-	    /// <summary>
-	    /// Store the event evaluation instance for the given constant. Can override an existing value
-	    /// for the same constant.
-	    /// The calling class must make sure that access to the underlying resource is protected
-	    /// for multi-threaded access, the GetReadWriteLock() method must supply a lock for this purpose.
-	    /// </summary>
-	    /// <param name="filterConstant">is the constant supplied in the filter parameter</param>
-	    /// <param name="evaluator">to be stored for the constant</param>
-	    protected abstract void Put(Object filterConstant, EventEvaluator evaluator);
+	    public abstract EventEvaluator this[Object filterConstant]
+	    {
+	    	get ;
+	    	set ;
+	    }
 
 	    /// <summary>
 	    /// Remove the event evaluation instance for the given constant. Returns true if
@@ -63,7 +63,7 @@ namespace net.esper.filter
 	    /// </summary>
 	    /// <param name="filterConstant">is the value supplied in the filter paremeter</param>
 	    /// <returns>true if found and removed, false if not found</returns>
-	    protected abstract bool Remove(Object filterConstant);
+	    public abstract bool Remove(Object filterConstant);
 
 	    /// <summary>
 	    /// Return the number of distinct filter parameter constants stored.
@@ -71,11 +71,11 @@ namespace net.esper.filter
 	    /// for multi-threaded writes, the GetReadWriteLock() method must supply a lock for this purpose.
 	    /// </summary>
 	    /// <returns>Number of entries in index</returns>
-	    protected abstract int Count { get ; }
+	    public abstract int Count { get ; }
 
 	    /// <summary>Supplies the lock for protected access.</summary>
 	    /// <returns>lock</returns>
-	    protected abstract ReaderWriterLock ReadWriteLock { get ; }
+	    public abstract ReaderWriterLock ReadWriteLock { get ; }
 
 	    /// <summary>Returns the filter operator that the index matches for.</summary>
 	    /// <returns>filter operator</returns>
@@ -88,5 +88,7 @@ namespace net.esper.filter
 	    {
 	        return "filterOperator=" + filterOperator;
 	    }
+		
+		abstract public void MatchEvent(net.esper.events.EventBean _event, IList<FilterHandle> matches);
 	}
 } // End of namespace

@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
+
 namespace net.esper.collection
 {
 	/// <summary>
@@ -58,7 +60,7 @@ namespace net.esper.collection
 	        // allocate more by duplicating the current size
 	        int newSize = lastIndex * 2 + 2;
 	        Object[] newHandles = new Object[newSize];
-	        System.Arraycopy(handles, 0, newHandles, 0, handles.length);
+            Array.Copy(handles, 0, newHandles, 0, handles.Length);
 	        handles = newHandles;
 	        lastIndex = newSize - 1;
 

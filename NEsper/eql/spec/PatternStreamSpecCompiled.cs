@@ -9,11 +9,10 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
 using net.esper.eql.spec;
 using net.esper.events;
 using net.esper.pattern;
-
-using Properties = net.esper.compat.EDataDictionary;
 
 namespace net.esper.eql.spec
 {
@@ -28,7 +27,7 @@ namespace net.esper.eql.spec
 	public class PatternStreamSpecCompiled : StreamSpecBase, StreamSpecCompiled
 	{
 	    private readonly EvalNode evalNode;
-	    private readonly IDictionary<String, EventType> taggedEventTypes;       // Stores types for filters with tags
+	    private readonly EDictionary<String, EventType> taggedEventTypes;       // Stores types for filters with tags
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="evalNode">pattern evaluation node representing pattern statement</param>
@@ -42,7 +41,7 @@ namespace net.esper.eql.spec
 	    {
 	        this.evalNode = evalNode;
 
-	        IDictionary<String, EventType> copy = new EHashDictionary<String, EventType>();
+	        EDictionary<String, EventType> copy = new EHashDictionary<String, EventType>();
 	        copy.PutAll(taggedEventTypes);
 	        this.taggedEventTypes = copy;
 	    }
@@ -51,16 +50,16 @@ namespace net.esper.eql.spec
 	    /// Returns the pattern expression evaluation node for the top pattern operator.
 	    /// </summary>
 	    /// <returns>parent pattern expression node</returns>
-	    public EvalNode GetEvalNode()
+	    public EvalNode EvalNode
 	    {
-	        return evalNode;
+	    	get { return evalNode; }
 	    }
 
 	    /// <summary>Returns event types tagged in the pattern expression.</summary>
 	    /// <returns>map of tag and event type tagged in pattern expression</returns>
-	    public IDictionary<String, EventType> GetTaggedEventTypes()
+	    public EDictionary<String, EventType> TaggedEventTypes
 	    {
-	        return taggedEventTypes;
+	    	get { return taggedEventTypes; }
 	    }
 	}
 } // End of namespace

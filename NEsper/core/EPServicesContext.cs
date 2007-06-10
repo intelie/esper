@@ -6,8 +6,10 @@ using net.esper.eql.core;
 using net.esper.eql.db;
 using net.esper.events;
 using net.esper.filter;
+using net.esper.pattern;
 using net.esper.schedule;
 using net.esper.timer;
+using net.esper.util;
 using net.esper.view;
 using net.esper.view.stream;
 
@@ -33,7 +35,7 @@ namespace net.esper.core
 	    private readonly StatementLockFactory statementLockFactory;
 	    private readonly ManagedReadWriteLock eventProcessingRWLock;
 	    private readonly ExtensionServicesContext extensionServicesContext;
-	    private readonly EngineEnvContext engineEnvContext;
+	    private readonly Directory engineDirectory;
 	    private readonly StatementContextFactory statementContextFactory;
 	    private readonly PatternObjectResolutionService patternObjectResolutionService;
 
@@ -148,12 +150,13 @@ namespace net.esper.core
 	    }
 
 	    /// <summary>
-	    /// Returns statement lifecycle svc
+	    /// Gets or sets the service dealing with starting and stopping statements.
 		/// </summary>
 	    /// <returns> service for statement start and stop</returns>
 	    public StatementLifecycleSvc StatementLifecycleSvc
 	    {
 	        get { return statementLifecycleSvc; }
+	    	set { this.statementLifecycleSvc = value; }
 	    }
 
 	    /// <summary>
@@ -166,18 +169,18 @@ namespace net.esper.core
 	    }
 
 	    /// <summary>
-	    /// Returns the engine environment context for getting access to engine-external resources, such as adapters
+	    /// Returns the engine directory for getting access to engine-external resources, such as adapters
 		/// </summary>
-	    /// <returns> engine environment context</returns>
-	    public EngineEnvContext EngineEnvContext
+	    /// <returns> engine directory</returns>
+	    public Directory EngineDirectory
 	    {
-	        get { return engineEnvContext; }
+	        get { return engineDirectory; }
 	    }
 
 	    /// <summary>
 	    /// Destroy services.
 	    /// </summary>
-	    public virtual void Destroy()
+	    public void Destroy()
 	    {
 	        if (extensionServicesContext != null)
 	        {
@@ -216,7 +219,7 @@ namespace net.esper.core
 	    /// Returns the pattern object resolver.
 		/// </summary>
 	    /// <returns> resolver for plug-in pattern objects.</returns>
-	    public PatternObjectResolutionService PatternObjectResolutionService
+	    public net.esper.pattern.PatternObjectResolutionService PatternObjectResolutionService
 	    {
 	        get { return patternObjectResolutionService; }
 	    }
@@ -250,9 +253,9 @@ namespace net.esper.core
 	                             StatementLockFactory statementLockFactory,
 	                             ManagedReadWriteLock eventProcessingRWLock,
 	                             ExtensionServicesContext extensionServicesContext,
-	                             EngineEnvContext engineEnvContext,
-	                             StatementContextFactory statementContextFactory,
-	                             PatternObjectResolutionService patternObjectResolutionService)
+	                             Directory engineDirectory,
+	                             net.esper.core.StatementContextFactory statementContextFactory,
+	                             net.esper.pattern.PatternObjectResolutionService patternObjectResolutionService)
 	    {
 	        this.engineURI = engineURI;
 	        this.engineInstanceId = engineInstanceId;
@@ -260,28 +263,19 @@ namespace net.esper.core
 	        this.eventAdapterService = eventAdapterService;
 	        this.engineImportService = engineImportService;
 	        this.databaseConfigService = databaseConfigService;
-	        this.filterService = FilterServiceProvider.newService();
-	        this.timerService = TimerServiceProvider.newService();
-	        this.emitService = EmitServiceProvider.newService();
-	        this.dispatchService = DispatchServiceProvider.newService();
-	        this.viewService = ViewServiceProvider.newService();
+            this.filterService = FilterServiceProvider.NewService();
+            this.timerService = TimerServiceProvider.NewService();
+	        this.emitService = EmitServiceProvider.NewService();
+            this.dispatchService = DispatchServiceProvider.NewService();
+            this.viewService = ViewServiceProvider.NewService();
 	        this.streamFactoryService = StreamFactoryServiceProvider.NewService(eventAdapterService);
 	        this.viewResolutionService = viewResolutionService;
 	        this.statementLockFactory = statementLockFactory;
 	        this.eventProcessingRWLock = eventProcessingRWLock;
 	        this.extensionServicesContext = extensionServicesContext;
-	        this.engineEnvContext = engineEnvContext;
+	        this.engineDirectory = engineDirectory;
 	        this.statementContextFactory = statementContextFactory;
 	        this.patternObjectResolutionService = patternObjectResolutionService;
-	    }
-
-		/**
-		 * Sets the service dealing with starting and stopping statements.
-		 * @param statementLifecycleSvc statement lifycycle svc
-		 */
-	    public StatementLifecycleSvc StatementLifecycleSvc
-	    {
-	        this.statementLifecycleSvc = value;
 	    }
 	}
 }

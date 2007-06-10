@@ -189,7 +189,6 @@ namespace net.esper.view.stat
         public override EventType EventType
         {
             get { return eventType; }
-            set { }
         }
 
         /// <summary>
@@ -202,7 +201,7 @@ namespace net.esper.view.stat
         {
         	EDataDictionary newDataMap = new EDataDictionary();
         	newDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = currentValue ;
-            yield return new statementContext.EventAdapterService.CreateMapFromValues(newDataMap, eventType);
+            yield return statementContext.EventAdapterService.CreateMapFromValues(newDataMap, eventType);
         }
 
         /// <summary>

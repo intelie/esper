@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.util;
@@ -24,15 +25,15 @@ namespace net.esper.view.window
 	    private EventType eventType;
 	    private RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "Length window view requires a single integer-type parameter";
-	        if (viewParameters.Size() != 1)
+	        if (viewParameters.Count != 1)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        Object parameter = viewParameters.Get(0);
+	        Object parameter = viewParameters[0];
 	        if (!(parameter is Number))
 	        {
 	            throw new ViewParameterException(errorMessage);
@@ -51,7 +52,7 @@ namespace net.esper.view.window
 	        }
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        this.eventType = parentEventType;
 	    }
@@ -63,7 +64,7 @@ namespace net.esper.view.window
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        if (!canProvideCapability(viewCapability))
+	        if (!CanProvideCapability(viewCapability))
 	        {
 	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
 	        }
@@ -87,9 +88,9 @@ namespace net.esper.view.window
 	        return new LengthBatchView(this, size, relativeAccessByEvent);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

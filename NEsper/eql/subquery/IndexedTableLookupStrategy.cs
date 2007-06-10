@@ -40,8 +40,8 @@ namespace net.esper.eql.subquery
             this.properties = properties;
             this.index = index;
 
-            propertyGetters = new EventPropertyGetter[properties.length];
-            for (int i = 0; i < streamNumbers.length; i++)
+            propertyGetters = new EventPropertyGetter[properties.Length];
+            for (int i = 0; i < streamNumbers.Length; i++)
             {
                 int streamNumber = streamNumbers[i];
                 String property = properties[i];
@@ -50,26 +50,26 @@ namespace net.esper.eql.subquery
 
                 if (propertyGetters[i] == null)
                 {
-                    throw new IllegalArgumentException("Property named '" + properties[i] + "' is invalid for type " + eventType);
+                    throw new ArgumentException("Property named '" + properties[i] + "' is invalid for type " + eventType);
                 }
             }
         }
 
         /// <summary>Returns properties to use from lookup event to look up in index.</summary>
         /// <returns>properties to use from lookup event</returns>
-        public String[] GetProperties()
+        public virtual IList<string> Properties
         {
-            return properties;
+        	get { return properties; }
         }
 
         /// <summary>Returns index to look up in.</summary>
         /// <returns>index to use</returns>
-        public PropertyIndexedEventTable GetIndex()
+        public virtual PropertyIndexedEventTable Index
         {
-            return index;
+        	get { return index; }
         }
 
-        public ISet<EventBean> Lookup(EventBean[] eventsPerStream)
+        public virtual Set<EventBean> Lookup(EventBean[] eventsPerStream)
         {
             Object[] keys = GetKeys(eventsPerStream);
             return index.Lookup(keys);
@@ -78,10 +78,10 @@ namespace net.esper.eql.subquery
         /// <summary>Get the index lookup keys.</summary>
         /// <param name="eventsPerStream">is the events for each stream</param>
         /// <returns>key object</returns>
-        protected Object[] GetKeys(EventBean[] eventsPerStream)
+        protected virtual Object[] GetKeys(EventBean[] eventsPerStream)
         {
-            Object[] keyValues = new Object[propertyGetters.length];
-            for (int i = 0; i < propertyGetters.length; i++)
+            Object[] keyValues = new Object[propertyGetters.Length];
+            for (int i = 0; i < propertyGetters.Length; i++)
             {
                 int streamNum = streamNumbers[i];
                 EventBean _event = eventsPerStream[streamNum];

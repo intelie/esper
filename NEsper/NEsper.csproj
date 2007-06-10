@@ -45,6 +45,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -80,7 +81,6 @@
     <Compile Include="client\time\TimerEvent.cs" />
     <Compile Include="client\UpdateListener.cs" />
     <Compile Include="collection\ArrayBackedCollection.cs" />
-    <Compile Include="collection\EventBuffer.cs" />
     <Compile Include="collection\FlushedEventBuffer.cs" />
     <Compile Include="collection\IndexedDataCollection.cs" />
     <Compile Include="collection\InterchangeablePair.cs" />
@@ -94,13 +94,14 @@
     <Compile Include="collection\RefCountedMap.cs" />
     <Compile Include="collection\RefCountedSet.cs" />
     <Compile Include="collection\RollingEventBuffer.cs" />
+    <Compile Include="collection\SingleEventIterator.cs" />
     <Compile Include="collection\SortedDoubleVector.cs" />
     <Compile Include="collection\SortedRefCountedSet.cs" />
     <Compile Include="collection\ThreadWorkQueue.cs" />
     <Compile Include="collection\TimeWindow.cs" />
     <Compile Include="collection\TimeWindowIterator.cs" />
-    <Compile Include="collection\TransformEventUtil.cs" />
     <Compile Include="collection\TransformEventMethod.cs" />
+    <Compile Include="collection\TransformEventUtil.cs" />
     <Compile Include="collection\UniformPair.cs" />
     <Compile Include="collection\ViewUpdatedCollection.cs" />
     <Compile Include="compat\ArrayHelper.cs" />
@@ -118,19 +119,22 @@
     <Compile Include="compat\HighResolutionTimer.cs" />
     <Compile Include="compat\HighResolutionTimerFactory.cs" />
     <Compile Include="compat\IDataDictionary.cs" />
+    <Compile Include="compat\IdentityDictionary.cs" />
     <Compile Include="compat\IllegalStateException.cs" />
-    <Compile Include="compat\ISet.cs" />
+    <Compile Include="compat\Set.cs" />
     <Compile Include="compat\ITimer.cs" />
     <Compile Include="compat\ITimerFactory.cs" />
     <Compile Include="compat\LinkedDictionary.cs" />
     <Compile Include="compat\LinkedHashSet.cs" />
     <Compile Include="compat\LockConstants.cs" />
+    <Compile Include="compat\Properties.cs" />
     <Compile Include="compat\ReaderLock.cs" />
     <Compile Include="compat\ReadOnlyList.cs" />
     <Compile Include="compat\ResourceManager.cs" />
     <Compile Include="compat\SystemTimerFactory.cs" />
     <Compile Include="compat\TimerException.cs" />
     <Compile Include="compat\TimerFactory.cs" />
+    <Compile Include="compat\UnsupportedOperationException.cs" />
     <Compile Include="compat\WeakDictionary.cs" />
     <Compile Include="compat\WeakKeyComparer.cs" />
     <Compile Include="compat\WeakKeyReference.cs" />
@@ -138,9 +142,11 @@
     <Compile Include="compat\WeakReference.cs" />
     <Compile Include="compat\WriterLock.cs" />
     <Compile Include="compat\XMLConstants.cs" />
+    <Compile Include="core\ActiveDirectory.cs" />
     <Compile Include="core\ConfigurationOperationsImpl.cs" />
     <Compile Include="core\ConfigurationSnapshot.cs" />
-    <Compile Include="core\EngineEnvContext.cs" />
+    <Compile Include="core\Directory.cs" />
+    <Compile Include="core\DirectoryException.cs" />
     <Compile Include="core\EPAdministratorImpl.cs" />
     <Compile Include="core\EPRuntimeImpl.cs" />
     <Compile Include="core\EPServiceProviderImpl.cs" />
@@ -158,6 +164,7 @@
     <Compile Include="core\ExtensionServicesContext.cs" />
     <Compile Include="core\InternalEventRouter.cs" />
     <Compile Include="core\PatternListenerDispatch.cs" />
+    <Compile Include="core\SimpleServiceDirectory.cs" />
     <Compile Include="core\StatementContext.cs" />
     <Compile Include="core\StatementContextFactory.cs" />
     <Compile Include="core\StatementContextFactoryDefault.cs" />
@@ -411,6 +418,7 @@
     <Compile Include="eql\view\OutputConditionFirst.cs" />
     <Compile Include="eql\view\OutputConditionNull.cs" />
     <Compile Include="eql\view\OutputConditionTime.cs" />
+    <Compile Include="eql\view\OutputProcessTransform.cs" />
     <Compile Include="eql\view\OutputProcessView.cs" />
     <Compile Include="eql\view\OutputProcessViewDirect.cs" />
     <Compile Include="eql\view\OutputProcessViewFactory.cs" />
@@ -718,6 +726,7 @@
     <Compile Include="view\ViewResolutionService.cs" />
     <Compile Include="view\ViewResolutionServiceImpl.cs" />
     <Compile Include="view\ViewService.cs" />
+    <Compile Include="view\ViewServiceContext.cs" />
     <Compile Include="view\ViewServiceHelper.cs" />
     <Compile Include="view\ViewServiceImpl.cs" />
     <Compile Include="view\ViewServiceProvider.cs" />
@@ -725,6 +734,8 @@
     <Compile Include="view\window\DataWindowView.cs" />
     <Compile Include="view\window\ExternallyTimedWindowView.cs" />
     <Compile Include="view\window\ExternallyTimedWindowViewFactory.cs" />
+    <Compile Include="view\window\IStreamRandomAccess.cs" />
+    <Compile Include="view\window\IStreamRelativeAccess.cs" />
     <Compile Include="view\window\LengthBatchView.cs" />
     <Compile Include="view\window\LengthBatchViewFactory.cs" />
     <Compile Include="view\window\LengthWindowView.cs" />

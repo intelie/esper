@@ -28,7 +28,7 @@ namespace net.esper.view.stat
 	    {
 	    }
 
-	    public View cloneView(StatementContext statementContext)
+	    public override View CloneView(StatementContext statementContext)
 	    {
 	        return new CorrelationView(statementContext, this.FieldNameX, this.FieldNameY);
 	    }
@@ -50,7 +50,6 @@ namespace net.esper.view.stat
                 }
                 return eventType;
             }
-            set { }
 		}
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace net.esper.view.stat
 	     * @param statementContext is the event adapter service
 	     * @return event type of view
 	     */
-	    protected static EventType CreateEventType(StatementContext statementContext)
+	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
 	        return statementContext.EventAdapterService.AddBeanType(typeof(CorrelationBean).FullName, typeof(CorrelationBean));
 	    }

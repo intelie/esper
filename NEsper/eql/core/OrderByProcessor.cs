@@ -39,6 +39,6 @@ namespace net.esper.eql.core
 		/// </param>
 		/// <returns> an array containing the output events in sorted order
 		/// </returns>
-        EventBean[] Sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKey<Object>[] groupByKeys, bool isNewData);
+        EventBean[] Sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, bool isNewData);
 	}
 }

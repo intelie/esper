@@ -35,7 +35,6 @@ namespace net.esper.eql.view
         public override EventType EventType
         {
             get { return parent.EventType; }
-            set { }
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace net.esper.eql.expression
         /// <value></value>
         /// <returns> aggregation function name
         /// </returns>
-		override protected internal String AggregationFunctionName
+		protected override string AggregationFunctionName
 		{
 			get { return "median"; }
 		}
@@ -31,10 +31,10 @@ namespace net.esper.eql.expression
 		{
 		}
 
-		public override AggregationMethod ValidateAggregationChild( StreamTypeService streamTypeService, AutoImportService autoImportService )
+	    protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 		{
 			base.ValidateSingleNumericChild( streamTypeService );
-			return methodResolutionService.makeMedianAggregator();
+			return methodResolutionService.MakeMedianAggregator();
 		}
 
         /// <summary>

@@ -9,6 +9,7 @@
 using System;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
@@ -106,7 +107,7 @@ namespace net.esper.client
 
         private static void HandleSubElement(String aliasName, String optionalClassName, Configuration configuration, XmlNode parentNode)
         {
-            ElementEnumerator eventTypeNodeEnumerator = new ElementEnumerator(parentNode.ChildNodes);
+            IEnumerator<XmlElement> eventTypeNodeEnumerator = CreateElementEnumerator(parentNode.ChildNodes);
             while (eventTypeNodeEnumerator.MoveNext())
             {
                 XmlElement eventTypeElement = eventTypeNodeEnumerator.Current;
@@ -153,7 +154,7 @@ namespace net.esper.client
             xmlDOMEventTypeDesc.DefaultNamespace = defaultNamespace;
             configuration.AddEventTypeAlias(aliasName, xmlDOMEventTypeDesc);
 
-            ElementEnumerator propertyNodeEnumerator = new ElementEnumerator(xmldomElement.ChildNodes);
+            IEnumerator<XmlElement> propertyNodeEnumerator = CreateElementEnumerator(xmldomElement.ChildNodes);
             while (propertyNodeEnumerator.MoveNext())
             {
                 XmlElement propertyElement = propertyNodeEnumerator.Current;
@@ -208,7 +209,7 @@ namespace net.esper.client
             legacyDesc.CodeGeneration = (ConfigurationEventTypeLegacy.CodeGenerationEnum) Enum.Parse( typeof( ConfigurationEventTypeLegacy.CodeGenerationEnum ), codeGeneration, true ) ;
             configuration.AddEventTypeAlias(aliasName, className, legacyDesc);
 
-            ElementEnumerator propertyNodeEnumerator = new ElementEnumerator(xmldomElement.ChildNodes);
+            IEnumerator<XmlElement> propertyNodeEnumerator = CreateElementEnumerator(xmldomElement.ChildNodes);
             while (propertyNodeEnumerator.MoveNext())
             {
                 XmlElement propertyElement = propertyNodeEnumerator.Current;
@@ -250,7 +251,7 @@ namespace net.esper.client
                 ConfigurationDBRef configDBRef = new ConfigurationDBRef();
                 configuration.AddDatabaseReference(name, configDBRef);
 
-                ElementEnumerator nodeEnumerator = new ElementEnumerator(dbRefNodes.Item(i).ChildNodes);
+                IEnumerator<XmlElement> nodeEnumerator = CreateElementEnumerator(dbRefNodes.Item(i).ChildNodes);
                 while (nodeEnumerator.MoveNext())
                 {
                     XmlElement subElement = nodeEnumerator.Current;
@@ -307,75 +308,75 @@ namespace net.esper.client
 		
 	    private static void HandlePlugInView(Configuration configuration, XmlElement parentElement)
 	    {
-	        NodeList nodes = parentElement.getElementsByTagName("plugin-view");
-	        for (int i = 0; i < nodes.getLength(); i++)
-	        {
-	            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
-	            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
-	            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
-	            configuration.addPlugInView(namespace, name, factoryClassName);
+	        XmlNodeList nodes = parentElement.GetElementsByTagName("plugin-view");
+            foreach (XmlNode node in nodes)
+            {
+                String _namespace = node.Attributes.GetNamedItem("namespace").getTextContent();
+	            String name = node.Attributes.GetNamedItem("name").getTextContent();
+	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").getTextContent();
+	            configuration.AddPlugInView(_namespace, name, factoryClassName);
 	        }
 	    }
 
-	    private static void handlePlugInAggregation(Configuration configuration, XmlElement parentElement)
+	    private static void HandlePlugInAggregation(Configuration configuration, XmlElement parentElement)
 	    {
-	        NodeList nodes = parentElement.getElementsByTagName("plugin-aggregation-function");
-	        for (int i = 0; i < nodes.getLength(); i++)
+	        XmlNodeList nodes = parentElement.GetElementsByTagName("plugin-aggregation-function");
+            foreach( XmlNode node in nodes )
 	        {
-	            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
-	            String functionClassName = nodes.item(i).getAttributes().getNamedItem("function-class").getTextContent();
-	            configuration.addPlugInAggregationFunction(name, functionClassName);
+	            String name = node.Attributes.GetNamedItem("name").getTextContent();
+	            String functionClassName = node.Attributes.GetNamedItem("function-class").getTextContent();
+	            configuration.AddPlugInAggregationFunction(name, functionClassName);
 	        }
 	    }
 
 	    private static void HandlePlugInPatternObjects(Configuration configuration, XmlElement parentElement)
 	    {
-	        NodeList nodes = parentElement.getElementsByTagName("plugin-pattern-guard");
-	        for (int i = 0; i < nodes.getLength(); i++)
+	        XmlNodeList nodes = parentElement.GetElementsByTagName("plugin-pattern-guard");
+            foreach( XmlNode node in nodes )
 	        {
-	            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
-	            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
-	            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
-	            configuration.addPlugInPatternGuard(namespace, name, factoryClassName);
+	            String _namespace = node.Attributes.GetNamedItem("namespace").getTextContent();
+	            String name = node.Attributes.GetNamedItem("name").getTextContent();
+	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").getTextContent();
+	            configuration.AddPlugInPatternGuard(_namespace, name, factoryClassName);
 	        }
 
-	        nodes = parentElement.getElementsByTagName("plugin-pattern-observer");
-	        for (int i = 0; i < nodes.getLength(); i++)
+	        nodes = parentElement.GetElementsByTagName("plugin-pattern-observer");
+            foreach( XmlNode node in nodes )
 	        {
-	            String namespace = nodes.item(i).getAttributes().getNamedItem("namespace").getTextContent();
-	            String name = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
-	            String factoryClassName = nodes.item(i).getAttributes().getNamedItem("factory-class").getTextContent();
-	            configuration.addPlugInPatternObserver(namespace, name, factoryClassName);
+	            String _namespace = node.Attributes.GetNamedItem("namespace").getTextContent();
+	            String name = node.Attributes.GetNamedItem("name").getTextContent();
+	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").getTextContent();
+	            configuration.AddPlugInPatternObserver(_namespace, name, factoryClassName);
 	        }
 	    }
 
-	    private static void HandleAdapterLoaders(Configuration configuration, Element parentElement)
+	    private static void HandleAdapterLoaders(Configuration configuration, XmlElement parentElement)
 	    {
-	        NodeList nodes = parentElement.getElementsByTagName("adapter-loader");
-	        for (int i = 0; i < nodes.getLength(); i++)
+	        XmlNodeList nodes = parentElement.GetElementsByTagName("adapter-loader");
+	        foreach(XmlNode node in nodes)
 	        {
-	            String loaderName = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
-	            String className = nodes.item(i).getAttributes().getNamedItem("class-name").getTextContent();
+	            String loaderName = node.Attributes.GetNamedItem("name").getTextContent();
+	            String className = node.Attributes.GetNamedItem("class-name").getTextContent();
 	            Properties properties = new Properties();
-	            ElementIterator nodeIterator = new ElementIterator(nodes.item(i).getChildNodes());
-	            while (nodeIterator.hasNext())
+	            IEnumerator<XmlElement> nodeEnumerator = CreateElementEnumerator(node.ChildNodes);
+	            while (nodeEnumerator.MoveNext())
 	            {
-	                Element subElement = nodeIterator.next();
-	                if (subElement.getNodeName().equals("init-arg"))
+	                XmlElement subElement = nodeEnumerator.Current;
+	                if (subElement.Name == "init-arg")
 	                {
-	                    String name = subElement.getAttributes().getNamedItem("name").getTextContent();
-	                    String value = subElement.getAttributes().getNamedItem("value").getTextContent();
-	                    properties.put(name, value);
+	                    String name = subElement.Attributes.GetNamedItem("name").getTextContent();
+	                    String value = subElement.Attributes.GetNamedItem("value").getTextContent();
+	                    properties[name] = value;
 	                }
 	            }
-	            configuration.addAdapterLoader(loaderName, className, properties);
+	            configuration.AddAdapterLoader(loaderName, className, properties);
 	        }
 	    }
 
         private static NameValueCollection HandleProperties(XmlElement element, String propElementName)
         {
             NameValueCollection properties = new NameValueCollection();
-            ElementEnumerator nodeEnumerator = new ElementEnumerator(element.ChildNodes);
+            IEnumerator<XmlElement> nodeEnumerator = CreateElementEnumerator(element.ChildNodes);
             while (nodeEnumerator.MoveNext())
             {
                 XmlElement subElement = nodeEnumerator.Current;
@@ -420,51 +421,17 @@ namespace net.esper.client
             }
             return null;
         }
-
-        private class ElementEnumerator : System.Collections.Generic.IEnumerator<XmlElement>
+        
+        private static IEnumerator<XmlElement> CreateElementEnumerator( XmlNodeList nodeList )
         {
-			private XmlNodeList nodeList;
-			private IEnumerator nodeListEnum;
-
-			public virtual XmlElement Current
+        	foreach( XmlNode node in nodeList )
             {
-                get { return (XmlElement)nodeListEnum.Current; }
-            }
-
-			Object IEnumerator.Current
-			{
-				get { return nodeListEnum.Current; }
-			}
-			
-            public ElementEnumerator(XmlNodeList nodeList)
-            {
-                this.nodeList = nodeList;
-                this.nodeListEnum = nodeList.GetEnumerator();
-            }
-
-            public virtual bool MoveNext()
-            {
-                while (nodeListEnum.MoveNext())
+                if (node is XmlElement)
                 {
-                    Object node = nodeListEnum.Current;
-                    if (node is XmlElement)
-                    {
-                        return true;
-                    }
+                    yield return node as XmlElement ;
                 }
-
-                return false;
             }
-
-            public void Reset()
-            {
-                throw new NotSupportedException() ;
-            }
-
-			public void Dispose()
-			{
-			}
-		}
+        }
 
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }

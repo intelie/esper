@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.expression;
 using net.esper.eql.spec;
@@ -18,10 +20,10 @@ using net.esper.util;
 
 namespace net.esper.eql.spec
 {
-
-
-
-	/// <summary>Pattern specification in unvalidated, unoptimized form.</summary>
+	/// <summary>
+	/// Pattern specification in unvalidated, unoptimized form.
+	/// </summary>
+	
 	public class PatternStreamSpecRaw : StreamSpecBase, StreamSpecRaw
 	{
 	    private readonly EvalNode evalNode;
@@ -62,10 +64,10 @@ namespace net.esper.eql.spec
 	            // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
 	            if (optionalTag != null)
 	            {
-	                EventType existingType = taggedEventTypes.Get(optionalTag);
+	                EventType existingType = taggedEventTypes.Fetch(optionalTag);
 	                if ((existingType != null) && (existingType != eventType))
 	                {
-	                    throw new IllegalArgumentException("Tag '" + optionalTag + "' for event '" + eventName +
+	                    throw new ArgumentException("Tag '" + optionalTag + "' for event '" + eventName +
 	                            "' has already been declared for events of type " + existingType.UnderlyingType.Name);
 	                }
 	                taggedEventTypes.Put(optionalTag, eventType);

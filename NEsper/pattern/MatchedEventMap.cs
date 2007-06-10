@@ -29,7 +29,7 @@ namespace net.esper.pattern
 		/// <returns> Hashtable containing event instances
 		/// </returns>
 
-		EDictionary<String, EventBean> GetMatchingEvents();
+		EDictionary<String, EventBean> MatchingEvents { get ; }
 		
 		/// <summary> Returns a single event instance given the tag identifier, or null if the tag could not be located.</summary>
 		/// <param name="tag">is the identifier to look for

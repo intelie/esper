@@ -1,5 +1,7 @@
 using System;
 
+using net.esper.compat;
+using net.esper.events;
 using net.esper.type;
 
 namespace net.esper.eql.join.plan
@@ -91,7 +93,7 @@ namespace net.esper.eql.join.plan
 	            throw new IllegalStateException("Mismatch in the number of key and index properties");
 	        }
 
-	        Type[] coercionTypes = new Type[indexProps.length];
+	        Type[] coercionTypes = new Type[indexProps.Length];
 	        bool mustCoerce = false;
 	        for (int i = 0; i < keyProps.Length; i++)
 	        {

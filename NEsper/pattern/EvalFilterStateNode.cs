@@ -24,19 +24,17 @@ namespace net.esper.pattern
 	    private bool isStarted;
 	    private EPStatementHandleCallback handle;
 
-        /// <summary> Constructor.</summary>
-        /// <param name="parentNode">is the parent evaluator to call to indicate truth value
-        /// </param>
-        /// <param name="filterSpec">is the filter definition
-        /// </param>
-        /// <param name="eventAsName">is the name to use to store the event
-        /// </param>
-        /// <param name="beginState">contains the events that make up prior matches
-        /// </param>
-        /// <param name="context">contains handles to services required
-        /// </param>
-
-        public EvalFilterStateNode(Evaluator parentNode, FilterSpec filterSpec, String eventAsName, MatchedEventMap beginState, PatternContext context)
+	    /**
+	     * Constructor.
+	     * @param parentNode is the parent evaluator to call to indicate truth value
+	     * @param beginState contains the events that make up prior matches
+	     * @param context contains handles to services required
+	     * @param evalFilterNode is the factory node associated to the state
+	     */
+	    public EvalFilterStateNode(Evaluator parentNode,
+	                               EvalFilterNode evalFilterNode,
+	                               MatchedEventMap beginState,
+	                               PatternContext context)
             : base(evalFilterNode, parentNode, null)
         {
             if (log.IsDebugEnabled)

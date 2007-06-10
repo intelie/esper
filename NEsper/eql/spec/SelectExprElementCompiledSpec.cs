@@ -11,8 +11,6 @@ using net.esper.eql.expression;
 
 namespace net.esper.eql.spec
 {
-
-
 	/// <summary>
 	/// Represents a single item in a SELECT-clause, with a name assigned
 	/// either by the engine or by the user specifying an "as" tag name.
@@ -40,16 +38,16 @@ namespace net.esper.eql.spec
 	    /// Returns the expression node representing the item in the select clause.
 	    /// </summary>
 	    /// <returns>expression node for item</returns>
-	    public ExprNode GetSelectExpression()
+	    public ExprNode SelectExpression
 	    {
-	        return selectExpression;
+            get { return selectExpression; }
 	    }
 
 	    /// <summary>Returns the name of the item in the select clause.</summary>
 	    /// <returns>name of item</returns>
-	    public String GetAssignedName()
+	    public String AssignedName
 	    {
-	        return assignedName;
+            get { return assignedName; }
 	    }
 	}
 } // End of namespace

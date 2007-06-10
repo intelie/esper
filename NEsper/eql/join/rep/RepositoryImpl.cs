@@ -63,7 +63,7 @@ namespace net.esper.eql.join.rep
         /// <param name="cursor">provides result position and parent event and node information</param>
         /// <param name="lookupResults">is the events found</param>
         /// <param name="resultStream">is the stream number of the stream providing the results</param>
-        public void AddResult(Cursor cursor, ISet<EventBean> lookupResults, int resultStream)
+        public void AddResult(Cursor cursor, Set<EventBean> lookupResults, int resultStream)
         {
             if (lookupResults.Count == 0)
             {

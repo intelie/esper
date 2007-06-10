@@ -44,14 +44,14 @@ namespace net.esper.eql.agg
 	    /// is required to resolve aggregation methods
 	    /// </param>
 	    /// <returns>instance for aggregation handling</returns>
-	    public static AggregationService GetService(List<ExprAggregateNode> selectAggregateExprNodes,
-	                                                List<ExprAggregateNode> havingAggregateExprNodes,
-	                                                List<ExprAggregateNode> orderByAggregateExprNodes,
+	    public static AggregationService GetService(IList<ExprAggregateNode> selectAggregateExprNodes,
+	                                                IList<ExprAggregateNode> havingAggregateExprNodes,
+	                                                IList<ExprAggregateNode> orderByAggregateExprNodes,
 	                                                bool hasGroupByClause,
 	                                                MethodResolutionService methodResolutionService)
 	    {
 	        // No aggregates used, we do not need this service
-	        if ((selectAggregateExprNodes.IsEmpty()) && (havingAggregateExprNodes.IsEmpty()))
+	        if ((selectAggregateExprNodes.Count == 0) && (havingAggregateExprNodes.Count == 0))
 	        {
 	        	return new AggregationServiceNull();
 	        }
@@ -59,7 +59,7 @@ namespace net.esper.eql.agg
 	        // Compile a map of aggregation nodes and equivalent-to aggregation nodes.
 	        // Equivalent-to functions are for example "select Sum(a*b), 5*Sum(a*b)".
 	        // Reducing the total number of aggregation functions.
-	        Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList = new LinkedHashMap<ExprAggregateNode, List<ExprAggregateNode>>();
+	        LinkedDictionary<ExprAggregateNode, IList<ExprAggregateNode>> equivalencyList = new LinkedDictionary<ExprAggregateNode, IList<ExprAggregateNode>>();
 	        foreach (ExprAggregateNode selectAggNode in selectAggregateExprNodes)
 	        {
 	            AddEquivalent(selectAggNode, equivalencyList);
@@ -75,33 +75,33 @@ namespace net.esper.eql.agg
 
 	        // Construct a list of evaluation node for the aggregation function.
 	        // For example "sum(2 * 3)" would make the sum an evaluation node.
-	        AggregationMethod[] aggregators = new AggregationMethod[equivalencyList.Size()];
-	        ExprEvaluator[] evaluators = new ExprEvaluator[equivalencyList.Size()];
+	        AggregationMethod[] aggregators = new AggregationMethod[equivalencyList.Count];
+	        ExprEvaluator[] evaluators = new ExprEvaluator[equivalencyList.Count];
 
 	        int index = 0;
-	        foreach (ExprAggregateNode aggregateNode in equivalencyList.KeySet())
+	        foreach (ExprAggregateNode aggregateNode in equivalencyList.Keys)
 	        {
-	            if (aggregateNode.GetChildNodes().Size() > 1)
+	            if (aggregateNode.ChildNodes.Count > 1)
 	            {
 	                throw new IllegalStateException("Aggregate node is expected to have at most a single child node");
 	            }
 
 	            // Use the evaluation node under the aggregation node to obtain the aggregation value
-	            if (!aggregateNode.GetChildNodes().IsEmpty())
+	            if (!aggregateNode.ChildNodes.Count == 0)
 	            {
-	                evaluators[index] = aggregateNode.GetChildNodes().Get(0);
+	            	evaluators[index] = aggregateNode.ChildNodes[0];
 	            }
 	            // For aggregation that doesn't evaluate any particular sub-expression, return null on evaluation
 	            else
 	            {
-	                evaluators[index] = new ExprEvaluatorImpl(
+	                evaluators[index] = new ExprEvaluatorImpl(new ExprEvaluatorDelegate(
                         delegate(EventBean[] eventsPerStream, bool isNewData)
 	                    {
 	                        return null;
-	                    }) ;
+                        })) ;
 	            }
 
-	            aggregators[index] = aggregateNode.GetPrototypeAggregator();
+	            aggregators[index] = aggregateNode.PrototypeAggregator;
 	            index++;
 	        }
 
@@ -121,12 +121,12 @@ namespace net.esper.eql.agg
 	        // Thus on expression evaluation time each aggregate node calls back to find out what the
 	        // group's state is (and thus does not evaluate by asking its child node for its result).
 	        int column = 0;
-	        foreach (ExprAggregateNode aggregateNode in equivalencyList.KeySet())
+	        foreach (ExprAggregateNode aggregateNode in equivalencyList.Keys)
 	        {
 	            aggregateNode.SetAggregationResultFuture(service, column);
 
 	            // hand to all equivalent-to
-	            List<ExprAggregateNode> equivalentAggregators = equivalencyList.Get(aggregateNode);
+	            List<ExprAggregateNode> equivalentAggregators = equivalencyList.Fetch(aggregateNode);
 	            if (equivalentAggregators != null)
 	            {
 	                foreach (ExprAggregateNode equivalentAggNode in equivalentAggregators)
@@ -141,21 +141,21 @@ namespace net.esper.eql.agg
 	        return service;
 	    }
 
-	    private static void AddEquivalent(ExprAggregateNode aggNodeToAdd, EDictionary<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList)
+	    private static void AddEquivalent(ExprAggregateNode aggNodeToAdd, EDictionary<ExprAggregateNode, IList<ExprAggregateNode>> equivalencyList)
 	    {
 	        // Check any same aggregation nodes among all aggregation clauses
 	        bool foundEquivalent = false;
-	        foreach (ExprAggregateNode aggNode in equivalencyList.KeySet())
+	        foreach (ExprAggregateNode aggNode in equivalencyList.Keys)
 	        {
 	            if (ExprNode.DeepEquals(aggNode, aggNodeToAdd))
 	            {
-	                List<ExprAggregateNode> equivalentAggregators = equivalencyList.Get(aggNode);
+	                IList<ExprAggregateNode> equivalentAggregators = equivalencyList.Fetch(aggNode);
 	                if (equivalentAggregators == null)
 	                {
-	                    equivalentAggregators = new ArrayList<ExprAggregateNode>();
+	                    equivalentAggregators = new List<ExprAggregateNode>();
 	                }
 	                equivalentAggregators.Add(aggNodeToAdd);
-	                equivalencyList.Put(aggNode, equivalentAggregators);
+	                equivalencyList[aggNode] = equivalentAggregators;
 	                foundEquivalent = true;
 	                break;
 	            }
@@ -163,7 +163,7 @@ namespace net.esper.eql.agg
 
 	        if (!foundEquivalent)
 	        {
-	            equivalencyList.Put(aggNodeToAdd, null);
+	        	equivalencyList[aggNodeToAdd] = null;
 	        }
 	    }
 

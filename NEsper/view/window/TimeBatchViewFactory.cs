@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.parse;
 using net.esper.events;
@@ -21,58 +23,54 @@ namespace net.esper.view.window
 	public class TimeBatchViewFactory : ViewFactory
 	{
 	    private long millisecondsBeforeExpiry;
-	    private Long optionalReferencePoint;
+	    private long? optionalReferencePoint;
 	    private EventType eventType;
 	    private RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "Time batch view requires a single numeric or time period parameter, and an optional long-typed reference point in msec";
-	        if ((viewParameters.Size() < 1) || (viewParameters.Size() > 2))
+	        if ((viewParameters.Count < 1) || (viewParameters.Count > 2))
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        Object parameter = viewParameters.Get(0);
+	        Object parameter = viewParameters[0];
 	        if (parameter is TimePeriodParameter)
 	        {
 	            TimePeriodParameter param = (TimePeriodParameter) parameter;
-	            millisecondsBeforeExpiry = Math.Round(1000d * param.NumSeconds);
+	            millisecondsBeforeExpiry = (long) Math.Round(1000d * param.NumSeconds);
 	        }
-	        else if (!(parameter is Number))
-	        {
+	        else if (TypeHelper.IsFloatingPointNumber(parameter))
+            {
+            	millisecondsBeforeExpiry = Math.Round(1000d * Convert.ToDouble(parameter));
+            }
+            else if (TypeHelper.IsIntegral(parameter))
+            {
+            	millisecondsBeforeExpiry = 1000 * Convert.ToInt64(parameter);
+            }
+            else
+            {
 	            throw new ViewParameterException(errorMessage);
-	        }
-	        else
-	        {
-	            Number param = (Number) parameter;
-	            if (JavaClassHelper.IsFloatingPointNumber(param))
-	            {
-	                millisecondsBeforeExpiry = Math.Round(1000d * param.DoubleValue());
-	            }
-	            else
-	            {
-	                millisecondsBeforeExpiry = 1000 * param.LongValue();
-	            }
-	        }
+            }
 
 	        if (millisecondsBeforeExpiry < 100)
 	        {
 	            throw new ViewParameterException("Time batch view requires a size of at least 100 msec");
 	        }
 
-	        if (viewParameters.Size() == 2)
+	        if (viewParameters.Count == 2)
 	        {
-	            Object paramRef = viewParameters.Get(1);
-	            if ((!(paramRef is Number)) || (JavaClassHelper.IsFloatingPointNumber((Number)paramRef)))
-	            {
+	        	Object paramRef = viewParameters[1];
+	        	if (!TypeHelper.IsIntegral( paramRef ))
+	        	{
 	                throw new ViewParameterException("Time batch view requires a Long-typed reference point in msec as a second parameter");
 	            }
-	            optionalReferencePoint = ((Number) paramRef).LongValue();
+	        	optionalReferencePoint = Convert.ToInt64(paramRef);
 	        }
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        this.eventType = parentEventType;
 	    }
@@ -84,9 +82,9 @@ namespace net.esper.view.window
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        if (!canProvideCapability(viewCapability))
+	        if (!CanProvideCapability(viewCapability))
 	        {
-	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	        	throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	        }
 	        if (relativeAccessGetterImpl == null)
 	        {
@@ -108,9 +106,9 @@ namespace net.esper.view.window
 	        return new TimeBatchView(this, statementContext, millisecondsBeforeExpiry, optionalReferencePoint, relativeAccessByEvent);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)
@@ -128,7 +126,7 @@ namespace net.esper.view.window
 
 	        if ((myView.InitialReferencePoint != null) && (optionalReferencePoint != null))
 	        {
-	            if (!myView.InitialReferencePoint.Equals(optionalReferencePoint.LongValue()))
+	            if (myView.InitialReferencePoint != optionalReferencePoint)
 	            {
 	                return false;
 	            }
@@ -139,7 +137,7 @@ namespace net.esper.view.window
 	            return false;
 	        }
 
-	        return myView.IsEmpty();
+	        return myView.Count == 0;
 	    }
 	}
 } // End of namespace

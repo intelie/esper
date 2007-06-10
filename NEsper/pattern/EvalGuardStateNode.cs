@@ -82,7 +82,7 @@ namespace net.esper.pattern
                 log.Debug(".evaluateTrue fromNode=" + fromNode.GetHashCode());
             }
 
-	        boolean haveQuitted = activeChildNode == null;
+	        bool haveQuitted = activeChildNode == null;
 
             // If one of the children quits, remove the child
             if (isQuitted)

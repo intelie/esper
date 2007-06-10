@@ -8,15 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.collection;
+using net.esper.compat;
 using net.esper.events;
 using net.esper.view.window;
 
 namespace net.esper.view.internals
 {
-
-
-
 	/// <summary>
 	/// Buffers view-posted insert stream (new data) and remove stream (old data) events for
 	/// use with determining prior results in these streams, for multiple different prior events.
@@ -36,7 +35,7 @@ namespace net.esper.view.internals
 	{
 	    private readonly int priorToIndexesSize;
 	    private readonly int[] priorToIndexes;
-	    private readonly Map<EventBean, EventBean[]> priorEventMap;
+	    private readonly EDictionary<EventBean, EventBean[]> priorEventMap;
 	    private readonly RollingEventBuffer newEvents;
 	    private EventBean[] lastOldData;
 
@@ -50,7 +49,7 @@ namespace net.esper.view.internals
 	    {
 	        // Determine the maximum prior index to retain
 	        int maxPriorIndex = 0;
-	        foreach (Integer priorIndex in priorToIndexSet)
+	        foreach (int priorIndex in priorToIndexSet)
 	        {
 	            if (priorIndex > maxPriorIndex)
 	            {
@@ -59,10 +58,10 @@ namespace net.esper.view.internals
 	        }
 
 	        // Copy the set of indexes into an array, sort in ascending order
-	        priorToIndexesSize = priorToIndexSet.length;
+	        priorToIndexesSize = priorToIndexSet.Length;
 	        priorToIndexes = new int[priorToIndexesSize];
 	        int count = 0;
-	        foreach (Integer priorIndex in priorToIndexSet)
+	        foreach (int priorIndex in priorToIndexSet)
 	        {
 	            priorToIndexes[count++] = priorIndex;
 	        }
@@ -70,7 +69,7 @@ namespace net.esper.view.internals
 
 	        // Construct a rolling buffer of new data for holding max index + 1 (position 1 requires 2 events to keep)
 	        newEvents = new RollingEventBuffer(maxPriorIndex + 1);
-	        priorEventMap = new HashMap<EventBean, EventBean[]>();
+	        priorEventMap = new EHashDictionary<EventBean, EventBean[]>();
 	    }
 
 	    public void Update(EventBean[] newData, EventBean[] oldData)
@@ -78,7 +77,7 @@ namespace net.esper.view.internals
 	        // Remove last old data posted in previous post
 	        if (lastOldData != null)
 	        {
-	            for (int i = 0; i < lastOldData.length; i++)
+	            for (int i = 0; i < lastOldData.Length; i++)
 	            {
 	                priorEventMap.Remove(lastOldData[i]);
 	            }
@@ -87,7 +86,7 @@ namespace net.esper.view.internals
 	        // Post new data to rolling buffer starting with the oldest
 	        if (newData != null)
 	        {
-	            for (int i = 0; i < newData.length; i++)
+	            for (int i = 0; i < newData.Length; i++)
 	            {
 	                EventBean newEvent = newData[i];
 
@@ -113,9 +112,9 @@ namespace net.esper.view.internals
 	    {
 	        if (priorToIndex >= priorToIndexesSize)
 	        {
-	            throw new IllegalArgumentException("Index " + priorToIndex + " not allowed, max size is " + priorToIndexesSize);
+	            throw new ArgumentException("Index " + priorToIndex + " not allowed, max size is " + priorToIndexesSize);
 	        }
-	        EventBean[] priorEvents = priorEventMap.Get(_event);
+	        EventBean[] priorEvents = priorEventMap.Fetch(_event);
 	        if (priorEvents == null)
 	        {
 	            throw new IllegalStateException("Event not currently in collection, event=" + _event);

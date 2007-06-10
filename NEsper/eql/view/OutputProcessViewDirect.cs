@@ -35,7 +35,7 @@ namespace net.esper.eql.view
 	        log.Debug(".ctor");
 	        if (resultSetProcessor == null)
 	        {
-	            throw new IllegalArgumentException("Null result set processor, no output processor required");
+	            throw new ArgumentException("Null result set processor, no output processor required");
 	        }
 	    }
 
@@ -44,13 +44,13 @@ namespace net.esper.eql.view
 	    /// </summary>
 	    /// <param name="newData">new events</param>
 	    /// <param name="oldData">old events</param>
-	    public void Update(EventBean[] newData, EventBean[] oldData)
+	    public override void Update(EventBean[] newData, EventBean[] oldData)
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".update Received update, " +
-	                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-	                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
+	                    "  newData.Length==" + ((newData == null) ? 0 : newData.Length) +
+	                    "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
 	        }
 
 	        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.ProcessViewResult(newData, oldData);
@@ -67,13 +67,13 @@ namespace net.esper.eql.view
 	    /// <summary>This process (update) method is for participation in a join.</summary>
 	    /// <param name="newEvents">new events</param>
 	    /// <param name="oldEvents">old events</param>
-	    public void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+	    public override void Process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".process Received update, " +
-	                    "  newData.length==" + ((newEvents == null) ? 0 : newEvents.Size()) +
-	                    "  oldData.length==" + ((oldEvents == null) ? 0 : oldEvents.Size()));
+	                    "  newData.Length==" + ((newEvents == null) ? 0 : newEvents.Count) +
+	                    "  oldData.Length==" + ((oldEvents == null) ? 0 : oldEvents.Count));
 	        }
 
 	        log.Debug(".continueOutputProcessingJoin");

@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.core;
 using net.esper.events;
 using net.esper.filter;
 using net.esper.schedule;

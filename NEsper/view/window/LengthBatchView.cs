@@ -22,13 +22,16 @@ namespace net.esper.view.window
 	/// <p>
 	/// The view works similar to a length_window but is not continuous, and similar to a time_batch however is not time-based
 	/// but reacts to the number of events.
+	/// </p>
 	/// <p>
 	/// The view releases the batched events, when a certain number of batched events has been reached or exceeded,
 	/// as new data to child views. The prior batch if
 	/// not empty is released as old data to any child views. The view doesn't release intervals with no old or new data.
 	/// It also does not collect old data published by a parent view.
+	/// </p>
 	/// <p>
 	/// If there are no events in the current and prior batch, the view will not invoke the update method of child views.
+	/// </p>
 	/// </summary>
 	public sealed class LengthBatchView : ViewSupport, CloneableView, DataWindowView
 	{
@@ -51,13 +54,13 @@ namespace net.esper.view.window
 	                         int size,
 	                         ViewUpdatedCollection viewUpdatedCollection)
 	    {
-	        this.lengthBatchViewFactory = lengthBatchViewFactory;
+	        this.LengthBatchViewFactory = lengthBatchViewFactory;
 	        this.size = size;
 	        this.viewUpdatedCollection = viewUpdatedCollection;
 
 	        if (size <= 0)
 	        {
-	            throw new IllegalArgumentException("Invalid size parameter, size=" + size);
+	            throw new ArgumentException("Invalid size parameter, size=" + size);
 	        }
 	    }
 
@@ -73,34 +76,34 @@ namespace net.esper.view.window
             get { return size; }
 	    }
 
-	    public EventType EventType
+	    public override EventType EventType
 	    {
             get { return parent.EventType; }
 	    }
 
-	    public void Update(EventBean[] newData, EventBean[] oldData)
+	    public override void Update(EventBean[] newData, EventBean[] oldData)
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".update Received update, " +
-	                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-	                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
+	                    "  newData.Length==" + ((newData == null) ? 0 : newData.Length) +
+	                    "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
 	        }
 
 	        // we don't care about removed data from a prior view
-	        if ((newData == null) || (newData.length == 0))
+	        if ((newData == null) || (newData.Length == 0))
 	        {
 	            return;
 	        }
 
 	        // add data points to the current batch
-	        for (int i = 0; i < newData.length; i++)
+	        for (int i = 0; i < newData.Length; i++)
 	        {
 	            currentBatch.Add(newData[i]);
 	        }
 
 	        // check if we reached the minimum size
-	        if (currentBatch.Size() < size)
+	        if (currentBatch.Count < size)
 	        {
 	            // done if no overflow
 	            return;
@@ -110,9 +113,9 @@ namespace net.esper.view.window
 	    }
 
 	    /// <summary>This method updates child views and clears the batch of events.</summary>
-	    protected void SendBatch()
+	    internal void SendBatch()
 	    {
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".sendBatch Update child views");
 	        }
@@ -143,9 +146,9 @@ namespace net.esper.view.window
 	            }
 	        }
 
-	        if (log.IsDebugEnabled())
+	        if (log.IsDebugEnabled)
 	        {
-	            log.Debug(".sendBatch Published updated data, ....newData size=" + currentBatch.Size());
+	            log.Debug(".sendBatch Published updated data, ....newData size=" + currentBatch.Count);
 	            foreach (Object item in currentBatch)
 	            {
 	                log.Debug(".sendBatch object=" + item);
@@ -173,7 +176,7 @@ namespace net.esper.view.window
             }
 	    }
 
-	    public IEnumerator<EventBean> GetEnumerator()
+	    public override IEnumerator<EventBean> GetEnumerator()
 	    {
 	        return currentBatch.GetEnumerator();
 	    }

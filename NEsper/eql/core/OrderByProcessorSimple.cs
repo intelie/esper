@@ -119,7 +119,7 @@ namespace net.esper.eql.core
 			Array.Sort( sortValuesMultiKeys, comparator );
 
             // Sort the outgoing events in the same order
-            ISet<MultiKeyUntyped> sortSet = new LinkedHashSet<MultiKeyUntyped>() ;
+            Set<MultiKeyUntyped> sortSet = new LinkedHashSet<MultiKeyUntyped>() ;
             sortSet.AddAll( sortValuesMultiKeys );
             
             EventBean[] result = new EventBean[outgoingEvents.Length];
@@ -191,7 +191,7 @@ namespace net.esper.eql.core
                 // Make a new multikey that contains the sort-by values.
                 if (needsGroupByKeys)
                 {
-                    aggregationService.CurrentRow = groupByKeys[count];
+                    aggregationService.SetCurrentRow(groupByKeys[count]);
                 }
 
                 Object[] values = new Object[orderByList.Count];

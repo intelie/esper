@@ -17,7 +17,7 @@ namespace net.esper.eql.expression
         /// <value></value>
         /// <returns> aggregation function name
         /// </returns>
-		override protected internal String AggregationFunctionName
+		protected override String AggregationFunctionName
         {
             get { return "sum"; }
         }
@@ -30,7 +30,7 @@ namespace net.esper.eql.expression
         {
         }
 
-		public override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+		protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 		{
             Type childType = base.ValidateSingleNumericChild(streamTypeService);
 			return methodResolutionService.MakeSumAggregator(childType);

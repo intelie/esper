@@ -157,7 +157,7 @@ namespace net.esper.eql.join.assemble
         /// <summary> Compute an array of supersets of sub stream numbers per stream, for at least 3 or more streams.</summary>
         /// <param name="subStreamsPerChild">is for each stream number a list of direct child sub streams
         /// </param>
-        /// <returns> an array in with length (subStreamsPerChild.length - 2) in which
+        /// <returns> an array in with length (subStreamsPerChild.Length - 2) in which
         /// array[0] contains the streams for subStreamsPerChild[0] and subStreamsPerChild[1] combined, and
         /// array[1] contains the streams for subStreamsPerChild[0], subStreamsPerChild[1] and subStreamsPerChild[2] combined
         /// </returns>
@@ -170,7 +170,7 @@ namespace net.esper.eql.join.assemble
 
             // Add all substreams of (1 + 2)  up into = Sum3
             // Then add all substreams of (Sum3 + 3) => Sum4
-            // Results in an array of size (subStreamsPerChild.length - 2) containing Sum3, Sum4 etc
+            // Results in an array of size (subStreamsPerChild.Length - 2) containing Sum3, Sum4 etc
 
             int[][] result = new int[subStreamsPerChild.Length - 2][];
 

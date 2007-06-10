@@ -243,7 +243,7 @@ namespace net.esper.eql.join.plan
         /// <param name="nextStreams">list of stream numbers next in lookup</param>
         /// <param name="queryGraph">indexing information</param>
         /// <returns>
-        /// value between 0 and (nextStreams.length - 1)
+        /// value between 0 and (nextStreams.Length - 1)
         /// </returns>
 		public static int ComputeNavigableDepth(int lookupStream, int[] nextStreams, QueryGraph queryGraph)
 		{
@@ -314,7 +314,7 @@ namespace net.esper.eql.join.plan
 	            throw new IllegalStateException("Mismatch in the number of key and index properties");
 	        }
 
-	        Type[] coercionTypes = new Type[indexProps.length];
+	        Type[] coercionTypes = new Type[indexProps.Length];
 	        bool mustCoerce = false;
 	        for (int i = 0; i < keyProps.Length; i++)
 	        {

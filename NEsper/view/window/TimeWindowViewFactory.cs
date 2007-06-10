@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using net.esper.core;
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.eql.parse;
 using net.esper.events;
@@ -24,34 +26,35 @@ namespace net.esper.view.window
 	    private RandomAccessByIndexGetter randomAccessGetterImpl;
 	    private EventType eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters)
+	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "Time window view requires a single numeric or time period parameter";
-	        if (viewParameters.Size() != 1)
+	        if (viewParameters.Count != 1)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        Object parameter = viewParameters.Get(0);
+	        Object parameter = viewParameters[0];
 	        if (parameter is TimePeriodParameter)
 	        {
 	            TimePeriodParameter param = (TimePeriodParameter) parameter;
-	            millisecondsBeforeExpiry = Math.Round(1000d * param.NumSeconds);
+	            millisecondsBeforeExpiry = (long) Math.Round(1000d * param.NumSeconds);
 	        }
-	        else if (!(parameter is Number))
+	        else if (! TypeHelper.IsNumericValue(parameter))
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 	        else
 	        {
-	            Number param = (Number) parameter;
-	            if (JavaClassHelper.IsFloatingPointNumber(param))
+	        	ValueType valueType = (ValueType) parameter;
+	        	
+	            if (TypeHelper.IsFloatingPointNumber(parameter))
 	            {
-	                millisecondsBeforeExpiry = Math.Round(1000d * param.DoubleValue());
+	                millisecondsBeforeExpiry = Math.Round(1000d * parameter.DoubleValue());
 	            }
 	            else
 	            {
-	                millisecondsBeforeExpiry = 1000 * param.LongValue();
+	                millisecondsBeforeExpiry = 1000 * parameter.LongValue();
 	            }
 	        }
 
@@ -61,7 +64,7 @@ namespace net.esper.view.window
 	        }
 	    }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories)
+	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
 	    {
 	        this.eventType = parentEventType;
 	    }
@@ -87,7 +90,7 @@ namespace net.esper.view.window
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        if (!canProvideCapability(viewCapability))
+            if (!CanProvideCapability(viewCapability))
 	        {
 	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
 	        }
@@ -111,9 +114,9 @@ namespace net.esper.view.window
 	        return new TimeWindowView(statementContext, this, millisecondsBeforeExpiry, randomAccess);
 	    }
 
-	    public EventType GetEventType()
+	    public EventType EventType
 	    {
-	        return eventType;
+	    	get { return eventType; }
 	    }
 
 	    public bool CanReuse(View view)

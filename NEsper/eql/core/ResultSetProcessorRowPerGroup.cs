@@ -95,8 +95,8 @@ namespace net.esper.eql.core
         /// <param name="oldEvents">old events posted by join</param>
         /// <returns>pair of new events and old events</returns>
         public Pair<EventBean[], EventBean[]> ProcessJoinResult(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents)
+            Set<MultiKey<EventBean>> newEvents,
+            Set<MultiKey<EventBean>> oldEvents)
         {
             // Generate group-by keys for all events, collect all keys in a set for later event generation
             IDictionary<MultiKeyUntyped, EventBean[]> keysAndEvents = new Dictionary<MultiKeyUntyped, EventBean[]>();
@@ -215,7 +215,7 @@ namespace net.esper.eql.core
             foreach (KeyValuePair<MultiKeyUntyped, EventBean> entry in keysAndEvents)
             {
                 // Set the current row of aggregation states
-                aggregationService.CurrentRow = entry.Key;
+                aggregationService.SetCurrentRow(entry.Key);
 
                 eventsPerStream[0] = entry.Value;
 
@@ -289,7 +289,7 @@ namespace net.esper.eql.core
             int count = 0;
             foreach (KeyValuePair<MultiKeyUntyped, EventBean[]> entry in keysAndEvents)
             {
-                aggregationService.CurrentRow = entry.Key;
+                aggregationService.SetCurrentRow(entry.Key);
                 EventBean[] eventsPerStream = entry.Value;
 
                 // Filter the having clause
@@ -408,7 +408,7 @@ namespace net.esper.eql.core
         }
 
         private MultiKeyUntyped[] GenerateGroupKeys(
-			ISet<MultiKey<EventBean>> resultSet,
+			Set<MultiKey<EventBean>> resultSet,
 			IDictionary<MultiKeyUntyped, EventBean[]> eventPerKey,
 			bool isNewData)
         {

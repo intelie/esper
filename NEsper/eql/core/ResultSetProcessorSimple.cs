@@ -63,7 +63,7 @@ namespace net.esper.eql.core
             {
 		        // the type depends on whether we are post-processing a selection result, or not
 				return
-					(selectExprProcessor != null)
+					(selectExprProcessor != null) ?
 					(selectExprProcessor.ResultEventType) :
 					(null);
             }
@@ -77,7 +77,7 @@ namespace net.esper.eql.core
         /// <param name="newEvents">new events posted by join</param>
         /// <param name="oldEvents">old events posted by join</param>
         /// <returns>pair of new events and old events</returns>
-        public Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        public Pair<EventBean[], EventBean[]> ProcessJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
         {
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents = null;
@@ -204,12 +204,12 @@ namespace net.esper.eql.core
         /// <param name="isOutputLimitLastOnly">flag to indicate output all versus output last</param>
         /// <returns>events to output</returns>
 
-        public static ISet<MultiKey<EventBean>> ApplyOutputLimit(ISet<MultiKey<EventBean>> eventSet, Boolean isOutputLimitLastOnly)
+        public static Set<MultiKey<EventBean>> ApplyOutputLimit(Set<MultiKey<EventBean>> eventSet, Boolean isOutputLimitLastOnly)
         {
             if (isOutputLimitLastOnly && eventSet != null && eventSet.Count > 0)
             {
 				Object[] events = eventSet.ToArray();
-                ISet<MultiKey<EventBean>> resultSet = new LinkedHashSet<MultiKey<EventBean>>();
+                Set<MultiKey<EventBean>> resultSet = new LinkedHashSet<MultiKey<EventBean>>();
                 resultSet.Add((MultiKey<EventBean>)events[events.Length - 1]);
                 return resultSet;
             }
@@ -234,7 +234,7 @@ namespace net.esper.eql.core
         public static EventBean[] GetSelectEventsNoHaving(
 			SelectExprProcessor exprProcessor,
 			OrderByProcessor orderByProcessor,
-			ISet<MultiKey<EventBean>> events,
+			Set<MultiKey<EventBean>> events,
 			bool isOutputLimiting,
 			bool isOutputLimitLastOnly,
 			bool isNewData
@@ -375,7 +375,7 @@ namespace net.esper.eql.core
         public static EventBean[] GetSelectEventsHaving(
 			SelectExprProcessor exprProcessor,
 			OrderByProcessor orderByProcessor,
-			ISet<MultiKey<EventBean>> events, ExprNode optionalHavingNode,
+			Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode,
 			bool isOutputLimiting,
 			bool isOutputLimitLastOnly,
 			bool isNewData
