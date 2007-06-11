@@ -40,7 +40,7 @@ namespace net.esper.pattern.observer
         {
             this.nspace = nspace;
             this.name = name;
-            this.clazz = clazz;
+            this.type = type;
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace net.esper.pattern.observer
         
         public static ObserverEnum ForName(String nspace, String name)
         {
-            foreach (ObserverEnum observerEnum in ObserverEnum.Values)
+            foreach (ObserverEnum observerEnum in Values)
             {
                 if ((observerEnum.Namespace == nspace) &&
                     (observerEnum.Name == name))

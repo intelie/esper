@@ -27,7 +27,7 @@ namespace net.esper.eql.join.plan
 	     * @param typesPerStream - event types for each stream
 	     * @return query plan
 	     */
-	    protected static QueryPlan build(QueryGraph queryGraph,
+	    protected static QueryPlan Build(QueryGraph queryGraph,
 	                                     IList<OuterJoinDesc> outerJoinDescList,
 	                                     String[] streamNames,
 	                                     EventType[] typesPerStream)
@@ -145,7 +145,7 @@ namespace net.esper.eql.join.plan
 				for ( int i = 0 ; i < substreams.Length ; i++ )
 				{
 					int toStream = substreams[i];
-					TableLookupPlan tableLookupPlan = NStreamQueryPlanBuilder.createLookupPlan(queryGraph, fromStream, toStream, indexSpecs[toStream], typesPerStream);
+					TableLookupPlan tableLookupPlan = NStreamQueryPlanBuilder.CreateLookupPlan(queryGraph, fromStream, toStream, indexSpecs[toStream], typesPerStream);
 					plans[i] = tableLookupPlan;
 				}
 

@@ -40,7 +40,7 @@ namespace net.esper.view.std
 	                continue;
 	            }
 	            GroupByViewFactory candidateGroupByView = (GroupByViewFactory) parentView;
-	            if (Arrays.Equals(candidateGroupByView.GroupFieldNames, this.fieldNames))
+	            if (CollectionHelper.AreEqual(candidateGroupByView.GroupFieldNames, this.fieldNames))
 	            {
 	                groupByViewFactory = candidateGroupByView;
 	            }
@@ -94,7 +94,7 @@ namespace net.esper.view.std
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	        throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -115,7 +115,7 @@ namespace net.esper.view.std
 	        }
 
 	        MergeView myView = (MergeView) view;
-	        if (!Arrays.DeepEquals(myView.GroupFieldNames, fieldNames))
+            if (!CollectionHelper.AreEqual(myView.GroupFieldNames, fieldNames))
 	        {
 	            return false;
 	        }

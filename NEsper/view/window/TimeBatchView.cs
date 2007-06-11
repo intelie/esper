@@ -295,7 +295,7 @@ namespace net.esper.view.window
 
         private void ScheduleCallback()
         {
-            long current = statmentContext.SchedulingService.Time;
+            long current = statementContext.SchedulingService.Time;
             long afterMSec = ComputeWaitMSec(current, this.currentReferencePoint.Value, this.msecIntervalSize);
 
             if (log.IsDebugEnabled)
@@ -308,7 +308,7 @@ namespace net.esper.view.window
                     " msecIntervalSize=" + msecIntervalSize);
             }
 
-            ScheduleHandleCallback callback = new ScheduleHandleCallback(SendBatch);
+            ScheduleHandleCallback callback = new ScheduleHandleCallbackImpl(new ScheduleHandleDelegate(SendBatch));
 			EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.EpStatementHandle, callback);
 			statementContext.SchedulingService.Add(afterMSec, handle, scheduleSlot);
         }

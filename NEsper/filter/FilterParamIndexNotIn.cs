@@ -43,6 +43,18 @@ namespace net.esper.filter
 	        constantsMapRWLock = new ReaderWriterLock();
 	    }
 
+        /// <summary>
+        /// Get the event evaluation instance associated with the constant. Returns null if no entry found for the constant.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded access, the GetReadWriteLock() method must supply a lock for this purpose.
+        /// Store the event evaluation instance for the given constant. Can override an existing value
+        /// for the same constant.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded access, the GetReadWriteLock() method must supply a lock for this purpose.
+        /// </summary>
+        /// <returns>
+        /// event evaluator stored for the filter constant, or null if not found
+        /// </returns>
 	    public override EventEvaluator this[Object filterConstant]
 	    {
 	    	get
@@ -73,18 +85,27 @@ namespace net.esper.filter
 	    	}
 	    }
 
+        /// <summary>
+        /// Remove the event evaluation instance for the given constant. Returns true if
+        /// the constant was found, or false if not.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded writes, the GetReadWriteLock() method must supply a lock for this purpose.
+        /// </summary>
+        /// <param name="filterConstant">is the value supplied in the filter paremeter</param>
+        /// <returns>
+        /// true if found and removed, false if not found
+        /// </returns>
 	    public override bool Remove(Object filterConstant)
 	    {
 	        MultiKeyUntyped keys = (MultiKeyUntyped) filterConstant;
 
 	        // remove the mapping of value set to evaluator
-	        EventEvaluator eval = filterValueEvaluators.Remove(keys);
-	        evaluatorsSet.Remove(eval);
-	        bool isRemoved = false;
-	        if (eval != null)
-	        {
-	            isRemoved = true;
-	        }
+	        EventEvaluator eval;
+            bool isRemoved = filterValueEvaluators.Remove(keys, out eval);
+            if (isRemoved)
+            {
+                evaluatorsSet.Remove(eval);
+            }
 
 	        Object[] keyValues = keys.Keys;
 	        foreach (Object keyValue in keyValues)
@@ -102,19 +123,36 @@ namespace net.esper.filter
 	        return isRemoved;
 	    }
 
+        /// <summary>
+        /// Return the number of distinct filter parameter constants stored.
+        /// The calling class must make sure that access to the underlying resource is protected
+        /// for multi-threaded writes, the GetReadWriteLock() method must supply a lock for this purpose.
+        /// </summary>
+        /// <value></value>
+        /// <returns>Number of entries in index</returns>
 	    public override int Count
 	    {
             get { return constantsMap.Count; }
 	    }
 
+        /// <summary>
+        /// Supplies the lock for protected access.
+        /// </summary>
+        /// <value></value>
+        /// <returns>lock</returns>
 	    public override ReaderWriterLock ReadWriteLock
 	    {
             get { return constantsMapRWLock; }
 	    }
 
+        /// <summary>
+        /// Matches the event.
+        /// </summary>
+        /// <param name="eventBean">The event bean.</param>
+        /// <param name="matches">The matches.</param>
 	    public override void MatchEvent(EventBean eventBean, IList<FilterHandle> matches)
 	    {
-	        Object attributeValue = this.GetGetter().Get(eventBean);
+	        Object attributeValue = Getter.GetValue(eventBean);
 
 	        if (log.IsDebugEnabled)
 	        {
@@ -127,37 +165,35 @@ namespace net.esper.filter
 	        }
 
 	        // Look up in hashtable the set of not-in evaluators
-	        constantsMapRWLock.ReadLock().Lock();
-	        Set<EventEvaluator> evalNotMatching = constantsMap.Fetch(attributeValue);
+            using (new ReaderLock(constantsMapRWLock))
+            {
+                Set<EventEvaluator> evalNotMatching = constantsMap.Fetch(attributeValue);
 
-	        // if all known evaluators are matching, invoke all
-	        if (evalNotMatching == null)
-	        {
-	            foreach (EventEvaluator eval in evaluatorsSet)
-	            {
-	                eval.MatchEvent(eventBean, matches);
-	            }
-	            constantsMapRWLock.ReadLock().Unlock();
-	            return;
-	        }
+                // if all known evaluators are matching, invoke all
+                if (evalNotMatching == null)
+                {
+                    foreach (EventEvaluator eval in evaluatorsSet)
+                    {
+                        eval.MatchEvent(eventBean, matches);
+                    }
+                    return;
+                }
 
-	        // if none are matching, we are done
-	        if (evalNotMatching.Count == evaluatorsSet.Count)
-	        {
-	            constantsMapRWLock.ReadLock().Unlock();
-	            return;
-	        }
+                // if none are matching, we are done
+                if (evalNotMatching.Count == evaluatorsSet.Count)
+                {
+                    return;
+                }
 
-	        // handle partial matches: loop through all evaluators and see which one should not be matching, match all else
-	        foreach (EventEvaluator eval in evaluatorsSet)
-	        {
-	            if (!(evalNotMatching.Contains(eval)))
-	            {
-	                eval.MatchEvent(eventBean, matches);
-	            }
-	        }
-
-	        constantsMapRWLock.ReadLock().Unlock();
+                // handle partial matches: loop through all evaluators and see which one should not be matching, match all else
+                foreach (EventEvaluator eval in evaluatorsSet)
+                {
+                    if (!(evalNotMatching.Contains(eval)))
+                    {
+                        eval.MatchEvent(eventBean, matches);
+                    }
+                }
+            }
 	    }
 
 	    private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

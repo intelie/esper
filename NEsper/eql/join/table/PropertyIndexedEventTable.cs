@@ -26,13 +26,13 @@ namespace net.esper.eql.join.table
 		/// Getters for properties.
 		/// </summary>
 		
-        private readonly EventPropertyGetter[] propertyGetters;
+        protected readonly EventPropertyGetter[] propertyGetters;
 
 		/// <summary>
 		/// Index table.
 		/// </summary>
-		
-        private readonly EDictionary<MultiKeyUntyped, Set<EventBean>> propertyIndex;
+
+        protected readonly EDictionary<MultiKeyUntyped, Set<EventBean>> propertyIndex;
 
         /// <summary> Ctor.</summary>
         /// <param name="streamNum">the stream number that is indexed
@@ -64,7 +64,7 @@ namespace net.esper.eql.join.table
 	     */
 	    protected virtual MultiKeyUntyped GetMultiKey(EventBean _event)
 	    {
-	        return EventBeanUtility.getMultiKey(_event, propertyGetters);
+	        return EventBeanUtility.GetMultiKey(_event, propertyGetters);
 	    }
 
         /// <summary> Add an array of events. Same event instance is not added twice. Event properties should be immutable.

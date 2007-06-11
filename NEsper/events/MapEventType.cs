@@ -129,7 +129,7 @@ namespace net.esper.events
 	        if (types.Fetch(propertyName) != null)
 	        {
 				Object temp = null ;
-				values.TryGetValue(propertyName, out value);
+				values.TryGetValue(propertyName, out temp);
 				return temp ;
 	        }
 
@@ -143,7 +143,7 @@ namespace net.esper.events
 
 	        // Take apart the nested property into a map key and a nested value class property name
 	        String propertyMap = propertyName.Substring(0, index);
-	        String propertyNested = propertyName.Substring(index + 1, propertyName.Length());
+	        String propertyNested = propertyName.Substring(index + 1, propertyName.Length);
 
 	        Type result = types.Fetch(propertyMap);
 	        if (result == null)
@@ -166,8 +166,8 @@ namespace net.esper.events
 	        {
 	            return null;
 	        }
-	        EventBean _event = this.eventAdapterService.adapterForBean(value);
-	        return nestedGetter.get(_event);
+	        EventBean _event = this.eventAdapterService.AdapterForBean(value);
+	        return nestedGetter.GetValue(_event);
 	    }
 		
         /// <summary>
@@ -395,7 +395,7 @@ namespace net.esper.events
             }
 		
 			// Should have the same type name
-		    if (!other.typeName.equals(this.typeName))
+		    if (other.typeName != this.typeName)
 	        {
 	            return false;
 	        }
@@ -414,7 +414,7 @@ namespace net.esper.events
 	            {
 	                continue;
 	            }
-	            if (!otherClass.equals(thisClass))
+	            if (!otherClass.Equals(thisClass))
 	            {
 	                return false;
 	            }

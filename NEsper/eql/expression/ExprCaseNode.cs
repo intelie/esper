@@ -106,11 +106,11 @@ namespace net.esper.eql.expression
         {
             if (!isCase2)
             {
-                return evaluateCaseSyntax1(eventsPerStream, isNewData);
+                return EvaluateCaseSyntax1(eventsPerStream, isNewData);
             }
             else
             {
-                return evaluateCaseSyntax2(eventsPerStream, isNewData);
+                return EvaluateCaseSyntax2(eventsPerStream, isNewData);
             }
         }
 
@@ -300,7 +300,7 @@ namespace net.esper.eql.expression
             {
                 Object whenResult = p.First.Evaluate(eventsPerStream, isNewData);
 
-                if (compare(checkResult, whenResult))
+                if (Compare(checkResult, whenResult))
                 {
                     caseResult = p.Second.Evaluate(eventsPerStream, isNewData);
                     matched = true;

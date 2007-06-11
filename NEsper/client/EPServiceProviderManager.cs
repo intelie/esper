@@ -71,7 +71,7 @@ namespace net.esper.client
                 {
                     if (defaultServiceProvider == null)
                     {
-                        defaultServiceProvider = new EPServiceProviderImpl(configuration);
+                        defaultServiceProvider = new EPServiceProviderImpl(configuration, uri);
 						defaultServiceProvider.Configuration = configuration;
                     }
 
@@ -86,7 +86,7 @@ namespace net.esper.client
                 }
 
                 // New runtime
-                EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration);
+                EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, uri);
                 runtimes[uri] = runtime;
 
                 return runtime;

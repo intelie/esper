@@ -26,37 +26,33 @@ namespace net.esper.pattern.observer
 
 	    public IList<Object> ObserverParameters
 	    {
-	    	set
-		    {
-		        String errorMessage = "Timer-interval observer requires a single numeric or time period parameter";
-		        if (value.Count != 1)
-		        {
-		            throw new ObserverParameterException(errorMessage);
-		        }
-	
-		        Object parameter = value[0];
-		        if (parameter is TimePeriodParameter)
-		        {
-		            TimePeriodParameter param = (TimePeriodParameter) parameter;
-		            milliseconds = Math.Round(1000d * param.NumSeconds);
-		        }
-		        else if (!(parameter is Number))
-		        {
-		            throw new ObserverParameterException(errorMessage);
-		        }
-		        else
-		        {
-		            Number param = (Number) parameter;
-		            if (TypeHelper.IsFloatingPointNumber(param))
-		            {
-		                milliseconds = Math.Round(1000d * param.DoubleValue());
-		            }
-		            else
-		            {
-		                milliseconds = 1000 * param.LongValue();
-		            }
-		        }
-		    }
+            set
+            {
+                String errorMessage = "Timer-interval observer requires a single numeric or time period parameter";
+                if (value.Count != 1)
+                {
+                    throw new ObserverParameterException(errorMessage);
+                }
+
+                Object parameter = value[0];
+                if (parameter is TimePeriodParameter)
+                {
+                    TimePeriodParameter param = (TimePeriodParameter) parameter;
+                    milliseconds = (long) Math.Round(1000d*param.NumSeconds);
+                }
+                else if (TypeHelper.IsFloatingPointNumber(parameter))
+                {
+                    milliseconds = (long) Math.Round(1000d*Convert.ToDouble(parameter));
+                }
+                else if (TypeHelper.IsIntegralNumber(parameter))
+                {
+                    milliseconds = 1000*Convert.ToInt64(parameter);
+                }
+                else
+                {
+                    throw new ObserverParameterException(errorMessage);
+                }
+            }
 	    }
 	    
 	    public EventObserver MakeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)

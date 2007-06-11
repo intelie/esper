@@ -25,7 +25,7 @@ namespace net.esper.view.std
 	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<Object> viewParameters)
 	    {
 	        String errorMessage = "'Last element' view does not take any parameters";
-	        if (!viewParameters.IsEmpty())
+	        if (viewParameters.Count != 0)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
@@ -43,7 +43,7 @@ namespace net.esper.view.std
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	        throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	    }
 
 	    public View MakeView(StatementContext statementContext)

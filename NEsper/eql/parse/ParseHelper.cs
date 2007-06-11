@@ -89,7 +89,7 @@ namespace net.esper.eql.parse
 	                if (mme.foundChar == 65535)
 	                {
 	                    char expected = (char) mme.expecting;
-	                    String wrapped = "'" + new String(Character.toString(expected)) + "'";
+	                    String wrapped = String.Format("'{0}'", expected);
 	                    if (expected == '\'')
 	                    {
 	                        wrapped = "a singe quote \"'\"";

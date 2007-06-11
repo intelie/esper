@@ -22,7 +22,7 @@ namespace net.esper.pattern
 
 	        PatternContext patternContext = new PatternContext(statementContext, streamId, patternStateFactory);
 
-	        patternStateFactoryContext = patternContext;
+	        patternStateFactory.SetContext(patternContext);
 
 	        return patternContext;
 	    }

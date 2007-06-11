@@ -121,14 +121,14 @@ namespace net.esper.core
 		{
 			set
 			{
-				if (viewable == null)
+                if (value == null)
 				{
 					parentView.RemoveView(dispatchChildView);
 					parentView = null;
 				}
 				else
 				{
-					parentView = viewable;
+					parentView = value;
 					parentView.AddView(dispatchChildView);
 					eventType = parentView.EventType;
 				}
@@ -196,7 +196,7 @@ namespace net.esper.core
 				this.listeners = value;
 				if (dispatchChildView != null)
 				{
-					dispatchChildViewUpdateListeners = value;
+					dispatchChildView.UpdateListeners = value;
 				}
 			}
 		}

@@ -96,7 +96,7 @@ namespace net.esper.eql.join.plan
 	    {
 	        for (int i = 0; i < indexProps.Length; i++)
 	        {
-	            if (Arrays.DeepEquals(indexProps[i], indexProperties))
+	            if (CollectionHelper.AreEqual(indexProps[i], indexProperties))
 	            {
 	                return this.optCoercionTypes[i];
 	            }
@@ -109,12 +109,12 @@ namespace net.esper.eql.join.plan
 	     * @param indexProperties is the index property names
 	     * @param coercionTypes is the coercion types
 	     */
-	    public void setCoercionTypes(String[] indexProperties, Type[] coercionTypes)
+	    public void SetCoercionTypes(String[] indexProperties, Type[] coercionTypes)
 	    {
 	        bool found = false;
 	        for (int i = 0; i < indexProps.Length; i++)
 	        {
-	            if (Arrays.DeepEquals(indexProps[i], indexProperties))
+                if (CollectionHelper.AreEqual(indexProps[i], indexProperties))
 	            {
 	                this.optCoercionTypes[i] = coercionTypes;
 	                found = true;

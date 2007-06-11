@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 
-using net.esper.compat;
 using net.esper.events;
 using net.esper.pattern;
+using net.esper.util;
 
 namespace net.esper.filter
 {

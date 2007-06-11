@@ -59,7 +59,7 @@ namespace net.esper.core
 	        }
 	    }
 
-	    public void AddEventTypeAlias(String eventTypeAlias, String eventTypeClassName)
+	    public void AddEventTypeAlias(String eventTypeAlias, String eventTypeName)
 	    {
 	        try
 	        {
@@ -100,7 +100,7 @@ namespace net.esper.core
 	    {
 	        try
 	        {
-	            eventAdapterService.AddMapType(eventTypeAlias, typeMap);
+                eventAdapterService.AddMapType(eventTypeAlias, new EBaseDictionary<String, Type>(typeMap));
 	        }
 	        catch (EventAdapterException t)
 	        {

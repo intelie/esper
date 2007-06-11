@@ -68,7 +68,7 @@ namespace net.esper.view.stat
 
 	        foreach (String measureName in derivedMeasures)
 	        {
-	            if (Arrays.BinarySearch(ViewFieldEnum.MULTIDIM_OLAP__MEASURES, measureName) < 0)
+	            if (Array.BinarySearch(ViewFieldEnum.MULTIDIM_OLAP__MEASURES, measureName) < 0)
 	            {
 	                throw new ViewParameterException("Derived measure named '" + measureName + "' is not a valid measure");
 	            }
@@ -117,7 +117,7 @@ namespace net.esper.view.stat
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	        throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -138,7 +138,7 @@ namespace net.esper.view.stat
 	        }
 
 	        MultiDimStatsView other = (MultiDimStatsView) view;
-	        if (!Arrays.DeepEquals(other.DerivedMeasures, derivedMeasures))
+            if (!CollectionHelper.AreEqual(other.DerivedMeasures, derivedMeasures))
 	        {
 	            return false;
 	        }

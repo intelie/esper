@@ -96,9 +96,9 @@ namespace net.esper.filter
     		{
     			throw new ArgumentException("Supplied expressionValue must be of type DoubleRange");
     		}
-    		
-	        EventEvaluator eval = ranges.Remove(doubleRange);
-	        if (eval == null)
+
+	        EventEvaluator eval;
+	        if (!ranges.Remove(doubleRange, out eval))
 	        {
 	            return false;
 	        }
@@ -118,7 +118,7 @@ namespace net.esper.filter
 
 	    public override void MatchEvent(EventBean eventBean, IList<FilterHandle> matches)
 	    {
-	        Object objAttributeValue = this.Getter.Get(eventBean);
+            Object objAttributeValue = this.Getter.GetValue(eventBean);
 
 	        if (log.IsDebugEnabled)
 	        {
@@ -131,7 +131,7 @@ namespace net.esper.filter
 	            return;
 	        }
 
-	        double attributeValue = ((Number) objAttributeValue).DoubleValue();
+	        double attributeValue = Convert.ToDouble(objAttributeValue);
 
 	        DoubleRange rangeStart = new DoubleRange(attributeValue - largestRangeValueDouble, attributeValue);
 	        DoubleRange rangeEnd = new DoubleRange(attributeValue, Double.MaxValue);

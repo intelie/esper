@@ -17,7 +17,7 @@ namespace net.esper.events
 	{
 	    public override EventType AddBeanType(String eventTypeAlias, Type type) 
 	    {
-	        return base.AddBeanTypeByAliasAndClazz(eventTypeAlias, type);
+	        return base.AddBeanTypeByAliasAndType(eventTypeAlias, type);
 	    }
 
 	    public override EventType AddBeanType(String eventTypeAlias, String typeName) 
@@ -27,7 +27,7 @@ namespace net.esper.events
 
 	    public override EventBean AdapterForBean(Object _event)
 	    {
-	        return base.adapterForBean(_event, null);
+	        return base.AdapterForBean(_event, null);
 	    }
 	}
 }

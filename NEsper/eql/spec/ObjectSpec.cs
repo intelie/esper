@@ -26,7 +26,7 @@ namespace net.esper.eql.spec
 	{
 	    private readonly String objectNamespace;
 	    private readonly String objectName;
-	    private readonly List<Object> objectParameters;
+	    private readonly IList<Object> objectParameters;
 
 	    /// <summary>Constructor.</summary>
 	    /// <param name="_namespace">if the namespace the object is in</param>
@@ -34,7 +34,7 @@ namespace net.esper.eql.spec
 	    /// <param name="objectParameters">
 	    /// is a list of values representing the object parameters
 	    /// </param>
-	    public ObjectSpec(String _namespace, String objectName, List<Object> objectParameters)
+	    public ObjectSpec(String _namespace, String objectName, IList<Object> objectParameters)
 	    {
 	        this.objectNamespace = _namespace;
 	        this.objectName = objectName;
@@ -57,7 +57,7 @@ namespace net.esper.eql.spec
 
 	    /// <summary>Returns the list of object parameters.</summary>
 	    /// <returns>list of values representing object parameters</returns>
-	    public List<Object> ObjectParameters
+	    public IList<Object> ObjectParameters
 	    {
 	        get { return objectParameters; }
 	    }
@@ -80,7 +80,7 @@ namespace net.esper.eql.spec
 	        }
 
 	        ObjectSpec other = (ObjectSpec) otherObject;
-	        if (!(this.objectName).Equals(other.objectName))
+	        if (this.objectName != other.objectName)
 	        {
 	            return false;
 	        }

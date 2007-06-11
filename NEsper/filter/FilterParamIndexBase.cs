@@ -19,8 +19,10 @@ namespace net.esper.filter
 	/// For example, a filter with a parameter of "count EQUALS 10" would be represented as index
 	/// for a property named "count" and for a filter operator typed "EQUALS". The index
 	/// would store a value of "10" in its internal structure.
+	/// </p>
 	/// <p>
 	/// Implementations make sure that the type of the Object constant in get and put calls matches the event property type.
+	/// </p>
 	/// </summary>
 	public abstract class FilterParamIndexBase : EventEvaluator
 	{

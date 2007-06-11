@@ -32,11 +32,11 @@ namespace net.esper.util
 		 * @return - the Method object for this method
 		 * @throws NoSuchMethodException if the method could not be found
 		 */
-		public static MethodInfo resolveMethod(Type declaringClass, String methodName, Type[] paramTypes)
+		public static MethodInfo ResolveMethod(Type declaringClass, String methodName, Type[] paramTypes)
 		{
 	        if (log.IsDebugEnabled)
 	        {
-	            log.Debug(".resolve method className=" + declaringClass.getSimpleName() + ", methodName=" + methodName);
+	            log.Debug(".resolve method className=" + declaringClass.FullName + ", methodName=" + methodName);
 	        }
 
             // Get the method with the specified signature
@@ -93,7 +93,7 @@ namespace net.esper.util
 				}
 			}
 
-			if(bestMatch != null)
+			if (bestMatch != null)
 			{
 				return bestMatch;
 			}

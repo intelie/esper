@@ -49,12 +49,12 @@ namespace net.esper.filter
 	                    '\'' + resultEventAsName + "' not found in event result set");
 	        }
 
-	        Object value = _event.Get(resultEventProperty);
+	        Object value = _event[resultEventProperty];
 
 	        // Coerce if necessary
 	        if (isMustCoerce)
 	        {
-	            value = TypeHelper.CoerceBoxed((Number) value, coercionType);
+	            value = TypeHelper.CoerceBoxed(value, coercionType);
 	        }
 	        return value;
 	    }

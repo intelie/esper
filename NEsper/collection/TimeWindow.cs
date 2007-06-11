@@ -162,7 +162,7 @@ namespace net.esper.collection
         {
 			foreach( Pair<Int64, List<EventBean>> pair in window )
 			{
-				foreach( EventBean eventBean in pair.Value )
+				foreach( EventBean eventBean in pair.Second )
 				{
 					yield return eventBean ;
 				}

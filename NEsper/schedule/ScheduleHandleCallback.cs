@@ -6,12 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using net.esper.core;
 
 namespace net.esper.schedule
 {
-	/// <summary>Interface for scheduled callbacks.</summary>
+	/// <summary>
+	/// Interface for scheduled callbacks.
+	/// </summary>
 	public interface ScheduleHandleCallback : ScheduleHandle
 	{
 	    /// <summary>
@@ -23,4 +24,27 @@ namespace net.esper.schedule
 	    /// </param>
 	    void ScheduledTrigger(ExtensionServicesContext extensionServicesContext);
 	}
+
+    public delegate void ScheduleHandleDelegate(ExtensionServicesContext extensionServicesContext);
+
+    /// <summary>
+    /// Proxy implementation that allows CLR to use delegates to facilitate the implementation
+    /// of the interface.
+    /// </summary>
+
+    public class ScheduleHandleCallbackImpl : ScheduleHandleCallback
+    {
+        private ScheduleHandleDelegate m_delegate;
+
+        public ScheduleHandleCallbackImpl( ScheduleHandleDelegate dg )
+        {
+            m_delegate = dg;
+        }
+
+        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
+        {
+            m_delegate(extensionServicesContext);
+        }
+    }
+
 } // End of namespace

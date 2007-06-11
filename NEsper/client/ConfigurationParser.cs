@@ -311,9 +311,9 @@ namespace net.esper.client
 	        XmlNodeList nodes = parentElement.GetElementsByTagName("plugin-view");
             foreach (XmlNode node in nodes)
             {
-                String _namespace = node.Attributes.GetNamedItem("namespace").getTextContent();
-	            String name = node.Attributes.GetNamedItem("name").getTextContent();
-	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").getTextContent();
+                String _namespace = node.Attributes.GetNamedItem("namespace").InnerText;
+                String name = node.Attributes.GetNamedItem("name").InnerText;
+	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").InnerText;
 	            configuration.AddPlugInView(_namespace, name, factoryClassName);
 	        }
 	    }
@@ -323,8 +323,8 @@ namespace net.esper.client
 	        XmlNodeList nodes = parentElement.GetElementsByTagName("plugin-aggregation-function");
             foreach( XmlNode node in nodes )
 	        {
-	            String name = node.Attributes.GetNamedItem("name").getTextContent();
-	            String functionClassName = node.Attributes.GetNamedItem("function-class").getTextContent();
+	            String name = node.Attributes.GetNamedItem("name").InnerText;
+	            String functionClassName = node.Attributes.GetNamedItem("function-class").InnerText;
 	            configuration.AddPlugInAggregationFunction(name, functionClassName);
 	        }
 	    }
@@ -334,18 +334,18 @@ namespace net.esper.client
 	        XmlNodeList nodes = parentElement.GetElementsByTagName("plugin-pattern-guard");
             foreach( XmlNode node in nodes )
 	        {
-	            String _namespace = node.Attributes.GetNamedItem("namespace").getTextContent();
-	            String name = node.Attributes.GetNamedItem("name").getTextContent();
-	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").getTextContent();
+	            String _namespace = node.Attributes.GetNamedItem("namespace").InnerText;
+	            String name = node.Attributes.GetNamedItem("name").InnerText;
+	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").InnerText;
 	            configuration.AddPlugInPatternGuard(_namespace, name, factoryClassName);
 	        }
 
 	        nodes = parentElement.GetElementsByTagName("plugin-pattern-observer");
             foreach( XmlNode node in nodes )
 	        {
-	            String _namespace = node.Attributes.GetNamedItem("namespace").getTextContent();
-	            String name = node.Attributes.GetNamedItem("name").getTextContent();
-	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").getTextContent();
+	            String _namespace = node.Attributes.GetNamedItem("namespace").InnerText;
+	            String name = node.Attributes.GetNamedItem("name").InnerText;
+	            String factoryClassName = node.Attributes.GetNamedItem("factory-class").InnerText;
 	            configuration.AddPlugInPatternObserver(_namespace, name, factoryClassName);
 	        }
 	    }
@@ -355,8 +355,8 @@ namespace net.esper.client
 	        XmlNodeList nodes = parentElement.GetElementsByTagName("adapter-loader");
 	        foreach(XmlNode node in nodes)
 	        {
-	            String loaderName = node.Attributes.GetNamedItem("name").getTextContent();
-	            String className = node.Attributes.GetNamedItem("class-name").getTextContent();
+	            String loaderName = node.Attributes.GetNamedItem("name").InnerText;
+	            String className = node.Attributes.GetNamedItem("class-name").InnerText;
 	            Properties properties = new Properties();
 	            IEnumerator<XmlElement> nodeEnumerator = CreateElementEnumerator(node.ChildNodes);
 	            while (nodeEnumerator.MoveNext())
@@ -364,8 +364,8 @@ namespace net.esper.client
 	                XmlElement subElement = nodeEnumerator.Current;
 	                if (subElement.Name == "init-arg")
 	                {
-	                    String name = subElement.Attributes.GetNamedItem("name").getTextContent();
-	                    String value = subElement.Attributes.GetNamedItem("value").getTextContent();
+	                    String name = subElement.Attributes.GetNamedItem("name").InnerText;
+	                    String value = subElement.Attributes.GetNamedItem("value").InnerText;
 	                    properties[name] = value;
 	                }
 	            }

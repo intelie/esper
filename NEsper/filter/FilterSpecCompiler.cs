@@ -73,7 +73,7 @@ namespace net.esper.filter
 	    }
 
 	    // remove duplicate propertyName + filterOperator items making a judgement to optimize or simply remove the optimized form
-	    private static void Consolidate(List<FilterSpecParam> items, FilterParamExprMap filterParamExprMap)
+	    private static void Consolidate(IList<FilterSpecParam> items, FilterParamExprMap filterParamExprMap)
 	    {
 	        FilterOperator op = items[0].FilterOperator;
 	        if (op == FilterOperator.NOT_EQUAL)
@@ -87,12 +87,12 @@ namespace net.esper.filter
 	            // and thus the bool expression that started this is included
 	            for (int i = 1; i < items.Count; i++)
 	            {
-	                filterParamExprMap.RemoveValue(items.Get(i));
+	                filterParamExprMap.RemoveValue(items[i]);
 	            }
 	        }
 	    }
 
-	    private static List<ExprNode> ValidateAndDecompose(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+	    private static List<ExprNode> ValidateAndDecompose(IList<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 	    {
 	        List<ExprNode> validatedNodes = new List<ExprNode>();
 	        foreach (ExprNode node in exprNodes)
@@ -128,9 +128,9 @@ namespace net.esper.filter
 	            }
 
 	            // Ensure there is no aggregation nodes
-	            List<ExprAggregateNode> aggregateExprNodes = new LinkedList<ExprAggregateNode>();
+	            List<ExprAggregateNode> aggregateExprNodes = new List<ExprAggregateNode>();
 	            ExprAggregateNode.GetAggregatesBottomUp(validated, aggregateExprNodes);
-	            if (!aggregateExprNodes.IsEmpty())
+	            if (aggregateExprNodes.Count != 0)
 	            {
 	                throw new ExprValidationException("Aggregation functions not allowed within filters");
 	            }
@@ -146,8 +146,8 @@ namespace net.esper.filter
 	        // i.e. we are looking for "a!=5 and a!=6"  to transform to "a not in (5,6)" which can match faster
 	        // considering that "a not in (5,6) and a not in (7,8)" is "a not in (5, 6, 7, 8)" therefore
 	        // we need to consolidate until there is no more work to do
-	        IDictionary<Pair<String, FilterOperator>, List<FilterSpecParam>> mapOfParams =
-	                new EHashDictionary<Pair<String, FilterOperator>, List<FilterSpecParam>>();
+	        EDictionary<Pair<String, FilterOperator>, IList<FilterSpecParam>> mapOfParams =
+	                new EHashDictionary<Pair<String, FilterOperator>, IList<FilterSpecParam>>();
 
 	        bool haveConsolidated;
 	        do
@@ -162,18 +162,18 @@ namespace net.esper.filter
 	                FilterOperator op = currentParam.FilterOperator;
 	                Pair<String, FilterOperator> key = new Pair<String, FilterOperator>(propName, op);
 
-	                List<FilterSpecParam> existingParam = mapOfParams.Get(key);
+	                IList<FilterSpecParam> existingParam = mapOfParams.Fetch(key);
 	                if (existingParam == null)
 	                {
 	                    existingParam = new List<FilterSpecParam>();
-	                    mapOfParams.Put(key, existingParam);
+	                    mapOfParams[key] = existingParam;
 	                }
 	                existingParam.Add(currentParam);
 	            }
 
 	            foreach (Pair<String, FilterOperator> key in mapOfParams.Keys)
 	            {
-	                List<FilterSpecParam> existingParams = mapOfParams.Get(key);
+	                IList<FilterSpecParam> existingParams = mapOfParams.Fetch(key);
 	                if (existingParams.Count > 1)
 	                {
 	                    haveConsolidated = true;
@@ -201,12 +201,12 @@ namespace net.esper.filter
 
 	        // Use all filter parameter and unassigned expressions
 	        List<FilterSpecParam> filterParams = new List<FilterSpecParam>();
-	        filterParams.AddAll(filterParamExprMap.FilterParams);
+	        filterParams.AddRange(filterParamExprMap.FilterParams);
 	        List<ExprNode> remainingExprNodes = filterParamExprMap.UnassignedExpressions;
 
 	        // any unoptimized expression nodes are put under one AND
 	        ExprNode exprNode = null;
-	        if (!remainingExprNodes.IsEmpty())
+	        if (remainingExprNodes.Count != 0)
 	        {
 	            if (remainingExprNodes.Count == 1)
 	            {
@@ -235,7 +235,7 @@ namespace net.esper.filter
 
 	    // consolidate "val != 3 and val != 4 and val != 5"
 	    // to "val not in (3, 4, 5)"
-	    private static void HandleConsolidateNotEqual(List<FilterSpecParam> paramList, FilterParamExprMap filterParamExprMap)
+	    private static void HandleConsolidateNotEqual(IList<FilterSpecParam> paramList, FilterParamExprMap filterParamExprMap)
 	    {
 	        List<FilterSpecParamInValue> values = new List<FilterSpecParamInValue>();
 
@@ -250,11 +250,11 @@ namespace net.esper.filter
 	            {
 	                FilterSpecParamEventProp eventProp = (FilterSpecParamEventProp) param;
 	                values.Add(new InSetOfValuesEventProp(eventProp.ResultEventAsName, eventProp.ResultEventProperty,
-	                        eventProp.IsMustCoerce(), eventProp.CoercionType));
+	                        eventProp.IsMustCoerce, eventProp.CoercionType));
 	            }
 	            else
 	            {
-	                throw new ArgumentException("Unknown filter parameter:" + param.ToString());
+	                throw new ArgumentException("Unknown filter parameter:" + param);
 	            }
 
 	            filterParamExprMap.RemoveValue(param);
@@ -310,7 +310,7 @@ namespace net.esper.filter
 	        {
 	            ExprIdentNode identNode = (ExprIdentNode) left;
 	            String propertyName = identNode.ResolvedPropertyName;
-	            FilterOperator op = FilterOperator.ParseRangeOperator(
+	            FilterOperator op = FilterOperatorHelper.ParseRangeOperator(
 	            	betweenNode.IsLowEndpointIncluded,
 	            	betweenNode.IsHighEndpointIncluded,
 					betweenNode.IsNotBetween);
@@ -332,8 +332,8 @@ namespace net.esper.filter
 	        if (endpoint is ExprConstantNode)
 	        {
 	            ExprConstantNode node = (ExprConstantNode) endpoint;
-	            Number result = (Number) node.Evaluate(null, true);
-	            return new RangeValueDouble(result.DoubleValue());
+	            Object result = node.Evaluate(null, true);
+	            return new RangeValueDouble(Convert.ToDouble(result));
 	        }
 
 	        // or property
@@ -542,7 +542,7 @@ namespace net.esper.filter
 	        }
 
 	        Type identNodeTypeBoxed = TypeHelper.GetBoxedType(identNodeType);
-	        return TypeHelper.CoerceBoxed((Number) constant, identNodeTypeBoxed);
+	        return TypeHelper.CoerceBoxed(constant, identNodeTypeBoxed);
 	    }
 
 	    private static void RecursiveAndConstituents(List<ExprNode> constituents, ExprNode exprNode)

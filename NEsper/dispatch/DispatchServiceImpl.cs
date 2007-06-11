@@ -16,42 +16,27 @@ namespace net.esper.dispatch
     public class DispatchServiceImpl : DispatchService
     {
         [ThreadStatic]
-        private static Queue<Dispatchable> threadDispatchQueueInternal = new Queue<Dispatchable>();
-        [ThreadStatic]
-        private static Queue<Dispatchable> threadDispatchQueueExternal = new Queue<Dispatchable>();
+        private static Queue<Dispatchable> threadDispatchQueue = new Queue<Dispatchable>();
 
-        private static Queue<Dispatchable> QueueInternal
+        private static Queue<Dispatchable> ThreadDispatchQueue
         {
             get
             {
-                if (threadDispatchQueueInternal == null)
+                if (threadDispatchQueue == null)
                 {
-                    threadDispatchQueueInternal = new Queue<Dispatchable>();
+                    threadDispatchQueue = new Queue<Dispatchable>();
                 }
-                return threadDispatchQueueInternal;
-            }
-        }
-
-        private static Queue<Dispatchable> QueueExternal
-        {
-            get
-            {
-                if (threadDispatchQueueExternal == null)
-                {
-                    threadDispatchQueueExternal = new Queue<Dispatchable>();
-                }
-                return threadDispatchQueueExternal;
+                return threadDispatchQueue;
             }
         }
 
         /// <summary>
-        /// Dispatches events in either the internal or external queue.
+        /// Dispatches events in the queue.
         /// </summary>
 
         public void Dispatch()
         {
-            DispatchFromQueue(QueueInternal);
-            DispatchFromQueue(QueueExternal);
+            DispatchFromQueue(ThreadDispatchQueue);
         }
 
         /// <summary>
@@ -61,27 +46,7 @@ namespace net.esper.dispatch
         /// <param name="dispatchable">to execute later</param>
         public void AddExternal(Dispatchable dispatchable)
         {
-            Queue<Dispatchable> dispatchQueue = QueueExternal;
-            AddToQueue(dispatchable, dispatchQueue);
-        }
-
-        /// <summary>
-        /// Add an item to be dispatched.  The item is added to
-        /// the internal dispatch queue.
-        /// </summary>
-        /// <param name="dispatchable">to execute later</param>
-        public void AddInternal(Dispatchable dispatchable)
-        {
-            Queue<Dispatchable> dispatchQueue = QueueInternal;
-            AddToQueue(dispatchable, dispatchQueue);
-        }
-
-        private void AddToQueue(Dispatchable dispatchable, Queue<Dispatchable> dispatchQueue)
-        {
-            // Make sure the same dispatchable is added once.
-            // Could this be a performance problem when the list gets large, it should not get large.
-            AssertionFacility.AssertFalse(dispatchQueue.Contains(dispatchable), "Dispatchable instance already in queue");
-
+            Queue<Dispatchable> dispatchQueue = ThreadDispatchQueue;
             dispatchQueue.Enqueue(dispatchable);
         }
 
@@ -96,8 +61,7 @@ namespace net.esper.dispatch
             {
                 while (dispatchQueue.Count > 0)
                 {
-                    Dispatchable next = dispatchQueue.Dequeue();
-                    next.Execute();
+                    dispatchQueue.Dequeue().Execute();
                 }
             }
             catch (InvalidOperationException)

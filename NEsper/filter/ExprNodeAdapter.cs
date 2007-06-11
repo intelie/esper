@@ -34,18 +34,16 @@ namespace net.esper.filter
 	    /// Provides the prototype events-per-stream where stream zero is the current stream
 	    /// and is filled when the expression is evaluated.
 	    /// </summary>
-	    /// <param name="prototype">
-	    /// is the row of events for which stream zero is missing as the current event is filled in later
-	    /// </param>
-	    public void SetPrototype(EventBean[] prototype)
+        public EventBean[] Prototype
 	    {
-	        this.prototype = prototype;
+            get { return this.prototype; }
+	        set { this.prototype = prototype; }
 	    }
 
 	    /// <summary>
 	    /// Evaluate the bool expression given the event as a stream zero event.
 	    /// </summary>
-	    /// <param name="event">is the stream zero event (current event)</param>
+	    /// <param name="_event">is the stream zero event (current event)</param>
 	    /// <returns>bool result of the expression</returns>
 	    public bool Evaluate(EventBean _event)
 	    {

@@ -65,7 +65,7 @@ namespace net.esper.eql.view
 
         private OutputCallback CreateCallbackToLocal()
         {
-            return new OutputCallback(continueOutputProcessing);
+            return new OutputCallback(ContinueOutputProcessing);
         }
 
         private void ContinueOutputProcessing(bool doOutput, bool forceUpdate)

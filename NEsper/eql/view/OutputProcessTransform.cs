@@ -1,5 +1,4 @@
-using System;
-
+using net.esper.collection;
 using net.esper.events;
 using net.esper.eql.core;
 

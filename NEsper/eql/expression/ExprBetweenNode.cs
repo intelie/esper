@@ -127,7 +127,7 @@ namespace net.esper.eql.expression
 				
 				Type intermedType = TypeHelper.GetCompareToCoercionType(typeOne, typeTwo);
 				compareType = TypeHelper.GetCompareToCoercionType(intermedType, typeThree);
-				computer = makeComputer(compareType);
+				computer = MakeComputer(compareType);
 			}
 		}
 

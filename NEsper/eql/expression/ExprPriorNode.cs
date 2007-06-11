@@ -33,7 +33,7 @@ namespace net.esper.eql.expression
 	        {
 	            throw new ExprValidationException("Prior node must have 2 child nodes");
 	        }
-	        if (!(this.ChildNodes[0].IsConstantResult))
+	        if (!this.ChildNodes[0].IsConstantResult)
 	        {
 	            throw new ExprValidationException("Prior function requires an integer index parameter");
 	        }
@@ -44,7 +44,7 @@ namespace net.esper.eql.expression
 	        }
 
 	        Object value = constantNode.Evaluate(null, false);
-	        constantIndexNumber = ((Number) value).IntValue();
+	        constantIndexNumber = Convert.ToInt32(value);
 
 	        // Determine stream number
 	        ExprIdentNode identNode = (ExprIdentNode) this.ChildNodes[1];
@@ -125,20 +125,23 @@ namespace net.esper.eql.expression
 	        return true;
 	    }
 
-	    public void SetViewResource(Object resource)
+	    public Object ViewResource
 	    {
-	        if (resource is RelativeAccessByEventNIndex)
-	        {
-	            relativeAccess = (RelativeAccessByEventNIndex) resource;
-	        }
-	        else if (resource is RandomAccessByIndex)
-	        {
-	            randomAccess = (RandomAccessByIndex) resource;
-	        }
-	        else
-	        {
-	            throw new ArgumentException("View resource " + resource.Class + " not recognized by expression node");
-	        }
+            set
+            {
+                if (value is RelativeAccessByEventNIndex)
+                {
+                    relativeAccess = (RelativeAccessByEventNIndex)value;
+                }
+                else if (value is RandomAccessByIndex)
+                {
+                    randomAccess = (RandomAccessByIndex)value;
+                }
+                else
+                {
+                    throw new ArgumentException("View resource " + value.GetType() + " not recognized by expression node");
+                }
+            }
 	    }
 	}
 } // End of namespace

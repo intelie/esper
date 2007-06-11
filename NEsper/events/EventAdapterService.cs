@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Xml;
 
 using net.esper.client;
@@ -109,7 +108,7 @@ namespace net.esper.events
         /// </param>
         /// <returns> EventBean instance
         /// </returns>
-        EventBean CreateMapFromValues(IDataDictionary properties, EventType eventType);
+        EventBean CreateMapFromValues(EDictionary<string,object> properties, EventType eventType);
 
 		/**
 		* Create a wrapper around an event and some additional properties

@@ -22,7 +22,7 @@ namespace net.esper.pattern
         /// <param name="callback">The callback.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-		public StopCallback Start(PatternMatchCallback callback, PatternContext context)
+		public PatternStopCallback Start(PatternMatchCallback callback, PatternContext context)
 		{
 			MatchedEventMap beginState = new MatchedEventMapImpl();
 			EvalStateNode rootStateNode = NewState(null, beginState, context, null);

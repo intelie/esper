@@ -726,7 +726,7 @@ _loop217_breakloop:			;
 			if (0==inputState.guessing)
 			{
 				constant_AST = (AST)currentAST.root;
-				constant_AST.setType(n_AST.getType()); 
+				constant_AST.setType(n_AST.Type); 
 					                                   constant_AST.setText( (m == null) ? n_AST.getText() : "-" + n_AST.getText()); 
 					
 			}

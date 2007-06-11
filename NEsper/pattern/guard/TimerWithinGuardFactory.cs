@@ -19,38 +19,35 @@ namespace net.esper.pattern.guard
 		
 		public IList<Object> GuardParameters
 		{
-			set
-			{
-				IList<Object> guardParameters = value;
-				
-		        String errorMessage = "Timer-within guard requires a single numeric or time period parameter";
-		        if (guardParameters.Count != 1)
-		        {
-		            throw new GuardParameterException(errorMessage);
-		        }
+            set
+            {
+                IList<Object> guardParameters = value;
 
-		        Object parameter = guardParameters[0];
-		        if (parameter is TimePeriodParameter)
-		        {
-		            TimePeriodParameter param = (TimePeriodParameter) parameter;
-		            milliseconds = (long) Math.Round(1000d * param.NumSeconds);
-		        }
-		        else if (! TypeHelper.IsNumeric(parameter))
-		        {
-		            throw new GuardParameterException(errorMessage);
-		        }
-		        else
-		        {
-		            if (TypeHelper.IsFloatingPointNumber(parameter))
-		            {
-		            	milliseconds = (long) Math.Round(1000d * Convert.ToDouble(parameter)) ;
-		            }
-		            else
-		            {
-		                milliseconds = 1000 * Convert.ToInt64(parameter) ;
-		            }
-		        }
-			}
+                String errorMessage = "Timer-within guard requires a single numeric or time period parameter";
+                if (guardParameters.Count != 1)
+                {
+                    throw new GuardParameterException(errorMessage);
+                }
+
+                Object parameter = guardParameters[0];
+                if (parameter is TimePeriodParameter)
+                {
+                    TimePeriodParameter param = (TimePeriodParameter) parameter;
+                    milliseconds = (long) Math.Round(1000d*param.NumSeconds);
+                }
+                if (TypeHelper.IsFloatingPointNumber(parameter))
+                {
+                    milliseconds = (long) Math.Round(1000d*Convert.ToDouble(parameter));
+                }
+                else if (TypeHelper.IsIntegralNumber(parameter))
+                {
+                    milliseconds = 1000*Convert.ToInt64(parameter);
+                }
+                else
+                {
+                    throw new GuardParameterException(errorMessage);
+                }
+            }
 		}
 		
         /// <summary>

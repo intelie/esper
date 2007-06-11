@@ -80,8 +80,8 @@ namespace net.esper.eql.parse
 	        {
 	            log.Debug(".pushStmtContext");
 	        }
-	        statementSpecStack.push(statementSpec);
-	        astExprNodeMapStack.push(astExprNodeMap);
+	        statementSpecStack.Push(statementSpec);
+	        astExprNodeMapStack.Push(astExprNodeMap);
 
 	        statementSpec = new StatementSpecRaw();
 	        astExprNodeMap = new EHashDictionary<AST, ExprNode>();
@@ -445,8 +445,11 @@ namespace net.esper.eql.parse
 	            isNot = true;
 	        }
 	        
-	        ExprSubselectInNode subqueryNode = (ExprSubselectInNode) astExprNodeMap.Remove(nodeSubquery);
-	        subqueryNode.setNotIn(isNot);
+            ExprNode tempOut;
+	        astExprNodeMap.Remove(nodeSubquery, out tempOut);
+
+            ExprSubselectInNode subqueryNode = (ExprSubselectInNode) tempOut;
+	        subqueryNode.SetNotIn(isNot);
 
 	        astExprNodeMap[node] = subqueryNode;
 	    }
@@ -533,7 +536,7 @@ namespace net.esper.eql.parse
 	    private void leaveWildcardSelect()
 	    {
 	    	log.Debug(".leaveWildcardSelect");
-	    	statementSpec.SelectClauseSpec.setIsUsingWildcard(true);
+	    	statementSpec.SelectClauseSpec.IsUsingWildcard = true;
 	    }
 
         private void leaveView(AST node)
@@ -675,7 +678,7 @@ namespace net.esper.eql.parse
 
 	    private void leaveEqualsExpr(AST node)
 	    {
-	        log.debug(".leaveEqualsExpr");
+	        log.Debug(".leaveEqualsExpr");
 
             bool isNot = false;
             if (node.Type == EqlEvalTokenTypes.EVAL_NOTEQUALS_EXPR)
@@ -704,7 +707,7 @@ namespace net.esper.eql.parse
         private void leaveConstant(AST node)
         {
             log.Debug(".leaveConstant");
-            ExprConstantNode constantNode = new ExprConstantNode(ASTConstantHelper.parse(node));
+            ExprConstantNode constantNode = new ExprConstantNode(ASTConstantHelper.Parse(node));
             astExprNodeMap[node] = constantNode;
         }
 
@@ -1255,8 +1258,8 @@ namespace net.esper.eql.parse
 	        GuardFactory factory;
 	        try
 	        {
-	            factory = patternObjectResolutionService.create(guardSpec);
-	            factory.setGuardParameters(objectParams);
+	            factory = patternObjectResolutionService.Create(guardSpec);
+	            factory.GuardParameters = objectParams;
 	        }
 	        catch (PatternObjectException e)
 	        {
@@ -1314,7 +1317,7 @@ namespace net.esper.eql.parse
 	        try
 	        {
 	            factory = patternObjectResolutionService.Create(observerSpec);
-	            factory.setObserverParameters(objectParams);
+	            factory.ObserverParameters = objectParams;
 	        }
 	        catch (PatternObjectException e)
 	        {

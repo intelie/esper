@@ -24,14 +24,14 @@ namespace net.esper.view
 	{
 	    private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	    
-	    private readonly EDictionary<String, IDictionary<String, Type>> nameToFactoryMap;
+	    private readonly EDictionary<String, EDictionary<String, Type>> nameToFactoryMap;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="configurationPlugInViews">is the configured plug-in views</param>
 	    /// <throws>ConfigurationException when plug-in views cannot be solved</throws>
-	    public ViewResolutionServiceImpl(List<ConfigurationPlugInView> configurationPlugInViews)
+	    public ViewResolutionServiceImpl(IList<ConfigurationPlugInView> configurationPlugInViews)
 	    {
-	        nameToFactoryMap = new EHashDictionary<String, IDictionary<String, Type>>();
+	        nameToFactoryMap = new EHashDictionary<String, EDictionary<String, Type>>();
 
 	        if (configurationPlugInViews == null)
 	        {
@@ -63,7 +63,7 @@ namespace net.esper.view
 	                throw new ConfigurationException("View factory class " + entry.FactoryClassName + " could not be loaded");
 	            }
 
-	            IDictionary<String, Type> namespaceMap = nameToFactoryMap.Fetch(entry.Namespace);
+	            EDictionary<String, Type> namespaceMap = nameToFactoryMap.Fetch(entry.Namespace);
 	            if (namespaceMap == null)
 	            {
 	                namespaceMap = new EHashDictionary<String, Type>();
@@ -83,14 +83,14 @@ namespace net.esper.view
 	        Type viewFactoryType = null;
 
 	        // Pre-configured views override build-in views
-	        IDictionary<String, Type> namespaceMap = nameToFactoryMap.Fetch(spec.ObjectNamespace);
+	        EDictionary<String, Type> namespaceMap = nameToFactoryMap.Fetch(spec.ObjectNamespace);
 	        if (namespaceMap != null)
 	        {
-	            viewFactoryClass = namespaceMap.Fetch(spec.ObjectName);
+	            viewFactoryType = namespaceMap.Fetch(spec.ObjectName);
 	        }
 
 	        // if not found in the plugin views, try o resolve as a builtin view
-	        if (viewFactoryClass == null)
+            if (viewFactoryType == null)
 	        {
 	            // Determine view class
 	            ViewEnum viewEnum = ViewEnum.ForName(spec.ObjectNamespace, spec.ObjectName);
@@ -101,34 +101,28 @@ namespace net.esper.view
 	                throw new ViewProcessingException(message);
 	            }
 
-	            viewFactoryClass = viewEnum.FactoryClass;
+	            viewFactoryType = viewEnum.FactoryType;
 	        }
 
 	        ViewFactory viewFactory = null;
 	        try
 	        {
-	            viewFactory = (ViewFactory) viewFactoryClass.NewInstance();
+                viewFactory = (ViewFactory) Activator.CreateInstance(viewFactoryType);
 
 	            if (log.IsDebugEnabled)
 	            {
 	                log.Debug(".create Successfully instantiated view");
 	            }
 	        }
-	        catch (ClassCastException e)
+	        catch (InvalidCastException e)
 	        {
 	            String message = "Error casting view factory instance to " + typeof(ViewFactory) + " interface for view '" + spec.ObjectName + "'";
 	            throw new ViewProcessingException(message, e);
 	        }
-	        catch (IllegalAccessException e)
+	        catch (MethodAccessException e)
 	        {
 	            String message = "Error invoking view factory constructor for view '" + spec.ObjectName;
 	            message += "', no invocation access for Class.newInstance";
-	            throw new ViewProcessingException(message, e);
-	        }
-	        catch (InstantiationException e)
-	        {
-	            String message = "Error invoking view factory constructor for view '" + spec.ObjectName;
-	            message += "' using Class.newInstance";
 	            throw new ViewProcessingException(message, e);
 	        }
 

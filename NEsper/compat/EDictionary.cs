@@ -52,5 +52,15 @@ namespace net.esper.compat
 		/// <returns></returns>
 		
 		V FirstValue { get ; }
+
+        /// <summary>
+        /// Removes the item from the dictionary that is associated with
+        /// the specified key.
+        /// </summary>
+        /// <param name="key">Search key into the dictionary</param>
+        /// <param name="value">The value removed from the dictionary (if found).</param>
+        /// <returns></returns>
+
+        bool Remove(K key, out V value);
 	}
 }

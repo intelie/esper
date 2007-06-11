@@ -36,7 +36,7 @@ namespace net.esper.eql.spec
 	    /// event tags and their types as specified in the pattern, copied to allow original collection to change
 	    /// </param>
 	    /// <param name="optionalStreamName">stream name, or null if none supplied</param>
-	    public PatternStreamSpecCompiled(EvalNode evalNode, IDictionary<String, EventType> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName)
+	    public PatternStreamSpecCompiled(EvalNode evalNode, IDictionary<String, EventType> taggedEventTypes, IList<ViewSpec> viewSpecs, String optionalStreamName)
 	        : base(optionalStreamName, viewSpecs)
 	    {
 	        this.evalNode = evalNode;

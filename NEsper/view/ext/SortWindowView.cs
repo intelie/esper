@@ -59,6 +59,14 @@ namespace net.esper.view.ext
             get { return isDescendingValues; }
         }
 
+        /// <summary>
+        /// True to indicate the sort window is empty, or false if not empty.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get { return sortedEvents.Count == 0; }
+        }
+
         /// <summary> Gets or sets the number of elements kept by the sort window.</summary>
         /// <returns> size of window
         /// </returns>

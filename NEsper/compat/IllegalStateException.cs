@@ -19,5 +19,11 @@ namespace net.esper.compat
         /// </summary>
         /// <param name="message">The message.</param>
 		public IllegalStateException( string message ) : base( message ) { }
-	}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IllegalStateException"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="e">The underlying exception.</param>
+        public IllegalStateException(string message, Exception e) : base(message, e) { }
+    }
 }

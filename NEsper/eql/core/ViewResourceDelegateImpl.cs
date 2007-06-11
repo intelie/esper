@@ -32,13 +32,13 @@ namespace net.esper.eql.core
 
 	        // first we give the capability implementation a chance to inspect the view factory chain
 	        // it can deny by returning false
-	        if (!(requestedCabability.Inspect(factories.ViewFactoryChain)))
+	        if (!(requestedCabability.Inspect(factories.FactoryChain)))
 	        {
 	            return false;
 	        }
 
 	        // then ask each view in turn to support the capability
-	        foreach (ViewFactory factory in factories.ViewFactoryChain)
+	        foreach (ViewFactory factory in factories.FactoryChain)
 	        {
 	            if (factory.CanProvideCapability(requestedCabability))
 	            {

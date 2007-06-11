@@ -323,10 +323,7 @@ namespace net.esper.filter
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".AddToIndex (" + currentThreadId + ") Adding to index " +
-                          "  property=" + index.PropertyName +
-                          "  opType=" + index.FilterOperator +
-                          "  expressionValue=" + filterForValue);
+                log.Debug(string.Format(".addToIndex ({0}) Adding to index {1}  expressionValue={2}", currentThreadId, index.ToString(), filterForValue));
             }
 
             EventEvaluator eventEvaluator = null ;
@@ -339,10 +336,9 @@ namespace net.esper.filter
                 // The filter parameter value already existed in bean, add and release locks
                 if (eventEvaluator != null)
                 {
-                    Boolean added = AddToEvaluator(eventEvaluator, treePathInfo);
+                    bool added = AddToEvaluator(eventEvaluator, treePathInfo);
                     if (added)
                     {
-                        index.ReadWriteLock.ReleaseReaderLock();
                         return;
                     }
                 }
@@ -352,14 +348,14 @@ namespace net.esper.filter
                 index.ReadWriteLock.ReleaseReaderLock();
             }
 
-            using (WriterLock writeLock = new WriterLock(index.ReadWriteLock))
+            using (new WriterLock(index.ReadWriteLock))
             {
                 eventEvaluator = index[filterForValue];
 
                 // It may exist now since another thread could have added the entry
                 if (eventEvaluator != null)
                 {
-                    Boolean added = AddToEvaluator(eventEvaluator, treePathInfo);
+                    bool added = AddToEvaluator(eventEvaluator, treePathInfo);
                     if (added)
                     {
                         return;

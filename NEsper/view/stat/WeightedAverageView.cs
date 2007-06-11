@@ -216,5 +216,19 @@ namespace net.esper.view.stat
                 " fieldName=" + fieldNameX +
                 " fieldNameWeight=" + fieldNameWeight;
         }
+
+        /**
+         * Creates the event type for this view.
+         * @param statementContext is the event adapter service
+         * @return event type of view
+         */
+        protected static EventType CreateEventType(StatementContext statementContext)
+        {
+            EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
+            schemaMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = typeof (double);
+            EventType eventType = statementContext.EventAdapterService.CreateAnonymousMapType(schemaMap);
+            return eventType;
+        }
+
     }
 }

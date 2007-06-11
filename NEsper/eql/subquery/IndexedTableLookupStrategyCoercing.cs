@@ -40,14 +40,14 @@ namespace net.esper.eql.subquery
             {
                 int streamNum = streamNumbers[i];
                 EventBean _event = eventsPerStream[streamNum];
-                Object value = propertyGetters[i].Get(_event);
+                Object value = propertyGetters[i].GetValue(_event);
 
                 Type coercionType = coercionTypes[i];
                 if ((value != null) && (value.GetType() != coercionType))
                 {
-                    if (value is Number)
+                    if (TypeHelper.IsNumericValue(value))
                     {
-                        value = TypeHelper.CoerceBoxed((Number)value, coercionTypes[i]);
+                        value = TypeHelper.CoerceBoxed(value, coercionTypes[i]);
                     }
                 }
 

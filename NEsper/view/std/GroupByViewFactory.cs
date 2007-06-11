@@ -45,9 +45,9 @@ namespace net.esper.view.std
 
 	    /// <summary>Returns the names of fields to group by</summary>
 	    /// <returns>field names</returns>
-	    public String[] GetGroupFieldNames()
+	    public String[] GroupFieldNames
 	    {
-	        return groupFieldNames;
+            get { return groupFieldNames; }
 	    }
 
 	    public bool CanProvideCapability(ViewCapability viewCapability)
@@ -57,7 +57,7 @@ namespace net.esper.view.std
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	        throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -77,12 +77,12 @@ namespace net.esper.view.std
 	    /// <param name="viewName">is the name of the view</param>
 	    /// <returns>field names</returns>
 	    /// <throws>ViewParameterException thrown to indicate a parameter problem</throws>
-	    protected static String[] GetFieldNameParams(List<Object> viewParameters, String viewName)
+	    protected static String[] GetFieldNameParams(IList<Object> viewParameters, String viewName)
 	    {
 	        String[] fieldNames;
 
 	        String errorMessage = '\'' + viewName + "' view requires a list of String values or a String-array as parameter";
-	        if (viewParameters.IsEmpty())
+	        if (viewParameters.Count == 0)
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
@@ -98,7 +98,7 @@ namespace net.esper.view.std
 	                }
 	                fields.Add((String) param);
 	            }
-	            fieldNames = fields.ToArray(new String[0]);
+	            fieldNames = fields.ToArray();
 	        }
 	        else
 	        {
@@ -133,7 +133,7 @@ namespace net.esper.view.std
 	        }
 
 	        GroupByView myView = (GroupByView) view;
-	        if (!Arrays.DeepEquals(myView.GroupFieldNames, groupFieldNames))
+	        if (!CollectionHelper.AreEqual(myView.GroupFieldNames, groupFieldNames))
 	        {
 	            return false;
 	        }

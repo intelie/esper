@@ -88,7 +88,7 @@ namespace net.esper.pattern
 	        buffer.Append("EvalFilterNode rawFilterSpec=" + this.rawFilterSpec);
 	        buffer.Append(" filterSpec=" + this.filterSpec);
 	        buffer.Append(" eventAsName=" + this.eventAsName);
-	        return buffer.toString();
+	        return buffer.ToString();
 		}
 		
 		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

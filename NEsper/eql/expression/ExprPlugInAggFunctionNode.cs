@@ -27,7 +27,7 @@ namespace net.esper.eql.expression
 			: base(distinct)
 	    {
 	        this.aggregationSupport = aggregationSupport;
-	        aggregationSupportFunctionName = functionName;
+	        aggregationSupport.FunctionName = functionName;
 	    }
 
 	    protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)

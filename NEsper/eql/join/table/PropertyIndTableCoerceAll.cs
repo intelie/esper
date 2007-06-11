@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using net.esper.collection;
 using net.esper.compat;
@@ -24,10 +23,12 @@ namespace net.esper.eql.join.table
 	/// with {@link net.esper.collection.MultiKeyUntyped} keys that store the property values.
 	/// <p>
 	/// Performs coercion of the index keys before storing the keys, and coercion of the lookup keys before lookup.
+	/// </p>
 	/// <p>
 	/// Takes a list of property names as parameter. Doesn't care which event type the events have as long as the properties
 	/// exist. If the same event is added twice, the class throws an exception on add.
-	/// </summary>
+    /// </p>
+    /// </summary>
 	public class PropertyIndTableCoerceAll : PropertyIndTableCoerceAdd
 	{
 	    private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -38,11 +39,11 @@ namespace net.esper.eql.join.table
 	    /// <param name="streamNum">is the stream number of the indexed stream</param>
 	    /// <param name="eventType">is the event type of the indexed stream</param>
 	    /// <param name="propertyNames">are the property names to get property values</param>
-	    /// <param name="coercionType">are the classes to coerce indexed values to</param>
-	    public PropertyIndTableCoerceAll(int streamNum, EventType eventType, String[] propertyNames, Type[] coercionType)
-	        : base(streamNum, eventType, propertyNames, coercionType)
+	    /// <param name="coercionTypes">are the classes to coerce indexed values to</param>
+	    public PropertyIndTableCoerceAll(int streamNum, EventType eventType, String[] propertyNames, Type[] coercionTypes)
+	        : base(streamNum, eventType, propertyNames, coercionTypes)
 	    {
-	        this.coercionTypes = coercionType;
+	        this.coercionTypes = coercionTypes;
 	    }
 
 	    /// <summary>
@@ -58,18 +59,18 @@ namespace net.esper.eql.join.table
 	        {
 	            Type coercionType = coercionTypes[i];
 	            Object key = keys[i];
-	            if ((key != null) && (!key.GetType() == coercionType))
+	            if ((key != null) && (key.GetType() != coercionType))
 	            {
-	                if (key is Number)
+	                if (TypeHelper.IsNumericValue(key))
 	                {
-	                    key = TypeHelper.CoerceBoxed((Number) key, coercionTypes[i]);
+	                    key = TypeHelper.CoerceBoxed(key, coercionTypes[i]);
 	                    keys[i] = key;
 	                }
 	            }
 	        }
 	        
 	        MultiKeyUntyped _key = new MultiKeyUntyped(keys);
-	        Set<EventBean> events = propertyIndex.Get(_key);
+	        Set<EventBean> events = propertyIndex.Fetch(_key);
 	        return events;
 	    }
 

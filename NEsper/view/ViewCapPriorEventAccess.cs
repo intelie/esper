@@ -36,9 +36,9 @@ namespace net.esper.view
 	    	get { return indexConstant; }
 	    }
 
-	    public bool Inspect(List<ViewFactory> viewFactories)
+	    public bool Inspect(IList<ViewFactory> viewFactories)
 	    {
-	        bool unboundStream = viewFactories.IsEmpty();
+	        bool unboundStream = viewFactories.Count == 0;
 
 	        // Find the prior event view to see if it has already been added
 	        PriorEventViewFactory factory = null;

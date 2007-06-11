@@ -33,7 +33,7 @@ namespace net.esper.eql.core
 
 	    public void AddImport(String importName)
 	    {
-	        if(!isClassName(importName) && !isPackageName(importName))
+	        if(!IsTypeName(importName) && !IsNamespace(importName))
 	        {
 	            throw new EngineImportException("Invalid import name '" + importName + "'");
 	        }
@@ -52,11 +52,11 @@ namespace net.esper.eql.core
 	        {
 	            throw new EngineImportException("Invalid aggregation function name '" + functionName + "'");
 	        }
-	        if(!IsClassName(aggregationClass))
+	        if(!IsTypeName(aggregationClass))
 	        {
 	            throw new EngineImportException("Invalid class name for aggregation '" + aggregationClass + "'");
 	        }
-	        aggregationFunctions.Put(functionName.ToLowerCase(), aggregationClass);
+	        aggregationFunctions.Put(functionName.ToLower(), aggregationClass);
 	    }
 
 	    public AggregationSupport ResolveAggregation(String name)
@@ -71,10 +71,10 @@ namespace net.esper.eql.core
 	            throw new EngineImportUndefinedException("Aggregation function named '" + name + "' is not defined");
 	        }
 
-	        Type clazz;
+	        Type type;
 	        try
 	        {
-	            clazz = Type.GetType(className);
+	            type = Type.GetType(className);
 	        }
 	        catch (TypeLoadException ex)
 	        {
@@ -82,18 +82,22 @@ namespace net.esper.eql.core
 	        }
 
 	        Object obj = null;
-	        try
-	        {
-	            obj = Activator.CreateInstance(clazz);
-	        }
-	        catch (InstantiationException e)
-	        {
-	            throw new EngineImportException("Error instantiating aggregation class by name '" + className + "'", e);
-	        }
-	        catch (IllegalAccessException e)
-	        {
-	            throw new EngineImportException("Illegal access instatiating aggregation class by name '" + className + "'", e);
-	        }
+            try
+            {
+                obj = Activator.CreateInstance(type);
+            }
+            catch (TypeLoadException e)
+            {
+                throw new EngineImportException("Error instantiating aggregation class", e);
+            }
+            catch (MethodAccessException e)
+            {
+                throw new EngineImportException("Error instantiating aggregation class - Caller does not have permission to use constructor", e);
+            }
+            catch (ArgumentException e)
+            {
+                throw new EngineImportException("Error instantiating aggregation class - Type is not a RuntimeType", e);
+            }
 
 	        if (!(obj is AggregationSupport))
 	        {
@@ -107,18 +111,18 @@ namespace net.esper.eql.core
 	        Type type = null;
 	        try
 	        {
-	            type = ResolveClass(classNameAlias);
+	            type = ResolveType(classNameAlias);
 	        }
-	        catch (ClassNotFoundException e)
+	        catch (TypeLoadException e)
 	        {
 	            throw new EngineImportException("Could not load class by name '" + classNameAlias + "' ", e);
 	        }
 
 	        try
 	        {
-	            return StaticMethodResolver.ResolveMethod(clazz, methodName, paramTypes);
+	            return StaticMethodResolver.ResolveMethod(type, methodName, paramTypes);
 	        }
-	        catch (NoSuchMethodException e)
+	        catch (MissingMethodException e)
 	        {
 	            throw new EngineImportException("Could not find method named '" + methodName + "' in class '" + classNameAlias + "' ", e);
 	        }
@@ -130,7 +134,7 @@ namespace net.esper.eql.core
 	    /// <param name="className">is the class name to find</param>
 	    /// <returns>class</returns>
 	    /// <throws>ClassNotFoundException if the class cannot be loaded</throws>
-	    protected Type ResolveClass(String className)
+	    protected Type ResolveType(String className)
 	    {
 			// Attempt to retrieve the class with the name as-is
 			try
@@ -142,7 +146,7 @@ namespace net.esper.eql.core
 			// Try all the imports
 			foreach (String importName in imports)
 			{
-				bool isClassName = IsClassName(importName);
+				bool isClassName = IsTypeName(importName);
 
 				// Import is a class name
 				if(isClassName)
@@ -165,7 +169,7 @@ namespace net.esper.eql.core
 			}
 
 			// No import worked, the class isn't resolved
-			throw new ClassNotFoundException("Unknown class " + className);
+			throw new TypeLoadException("Unknown class " + className);
 		}
 
 	    /// <summary>For testing, returns imports.</summary>
@@ -177,20 +181,20 @@ namespace net.esper.eql.core
 
 	    private static bool IsFunctionName(String functionName)
 	    {
-	        String classNameRegEx = "\\w+";
-	        return functionName.Matches(classNameRegEx);
+	        String methodRegEx = "\\w+";
+            return Regex.IsMatch(functionName, methodRegEx);
 	    }
 
-		private static bool IsClassName(String importName)
+		private static bool IsTypeName(String importName)
 		{
-			String classNameRegEx = "(\\w+\\.)*\\w+";
-			return importName.Matches(classNameRegEx);
+			String methodRegEx = "(\\w+\\.)*\\w+";
+			return Regex.IsMatch(importName, methodRegEx);
 		}
 
-		private static bool IsPackageName(String importName)
+		private static bool IsNamespace(String importName)
 		{
-			String classNameRegEx = "(\\w+\\.)+\\*";
-			return importName.Matches(classNameRegEx);
+			String methodRegEx = "(\\w+\\.)+\\*";
+		    return Regex.IsMatch(importName, methodRegEx);
 		}
 
 		// Strip off the trailing ".*"

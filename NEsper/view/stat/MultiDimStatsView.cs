@@ -239,7 +239,7 @@ namespace net.esper.view.stat
 			{
 				foreach ( EventBean newValue in newData )
 				{
-					processElement( newValue, true );
+                    ProcessElement(newValue, true);
 				}
 			}
 
@@ -247,13 +247,13 @@ namespace net.esper.view.stat
 			{
 				foreach ( EventBean oldValue in oldData )
 				{
-					processElement( oldValue, false );
+					ProcessElement( oldValue, false );
 				}
 			}
 
 			if ( HasViews )
 			{
-				EventBean postNewData = populateEvent();
+				EventBean postNewData = PopulateEvent();
 				UpdateChildren( new EventBean[] { postNewData }, null );
 			}
 		}
@@ -278,7 +278,7 @@ namespace net.esper.view.stat
         /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
 		{
-            yield return populateEvent();
+            yield return PopulateEvent();
 		}
 
         /// <summary>

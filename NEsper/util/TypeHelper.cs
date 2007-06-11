@@ -419,7 +419,7 @@ namespace net.esper.util
         /// <param name="number">to check</param>
         /// <returns>true if number is Float or double type</returns>
 
-        public static bool IsFloatingPointNumber(ValueType number)
+        public static bool IsFloatingPointNumber(Object number)
         {
             return
                 (number is float) ||

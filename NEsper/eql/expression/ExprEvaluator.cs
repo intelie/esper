@@ -19,7 +19,7 @@ namespace net.esper.eql.expression
         Object Evaluate(EventBean[] eventsPerStream, bool isNewData);
     }
 
-    public delegate Object ExprEvaluatorDelegate(EventBean[] eventsPerStream);
+    public delegate Object ExprEvaluatorDelegate(EventBean[] eventsPerStream, bool isNewData);
 
     /// <summary>
     /// Implements the ExprEvaluator with a delegate.
@@ -46,7 +46,7 @@ namespace net.esper.eql.expression
 
         public Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
-            return m_delegate(eventsPerStream);
+            return m_delegate(eventsPerStream, isNewData);
         }
     }
 }

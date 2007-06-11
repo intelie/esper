@@ -29,7 +29,7 @@ namespace net.esper.view.std
 	    public SizeView(StatementContext statementContext)
 	    {
 	        this.statementContext = statementContext;
-	        this.eventType = createEventType(statementContext);
+	        this.eventType = CreateEventType(statementContext);
 	    }
     	
 		public View CloneView(StatementContext statementContext)
@@ -103,7 +103,7 @@ namespace net.esper.view.std
         {
             EDataDictionary current = new EDataDictionary();
             current[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = size;
-            yield return new statementContext.EventAdapterService.CreateMapFromValues(current, eventType);
+            yield return statementContext.EventAdapterService.CreateMapFromValues(current, eventType);
         }
 
         /// <summary>

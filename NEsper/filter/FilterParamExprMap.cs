@@ -20,8 +20,8 @@ namespace net.esper.filter
 	/// </summary>
 	public class FilterParamExprMap
 	{
-	    private IDictionary<ExprNode, FilterSpecParam> exprNodes;
-	    private IDictionary<FilterSpecParam, ExprNode> specParams;
+	    private EDictionary<ExprNode, FilterSpecParam> exprNodes;
+	    private EDictionary<FilterSpecParam, ExprNode> specParams;
 
 	    /// <summary>Ctor.</summary>
 	    public FilterParamExprMap()
@@ -35,7 +35,7 @@ namespace net.esper.filter
 	    /// <param name="param">is null if the expression node has not optimized form</param>
 	    public void Put(ExprNode exprNode, FilterSpecParam param)
 	    {
-	        exprNodes.Put(exprNode, param);
+	        exprNodes[exprNode] = param;
 	        if (param != null)
 	        {
 	            specParams.Put(param, exprNode);
@@ -51,7 +51,7 @@ namespace net.esper.filter
 		        List<ExprNode> unassigned = new List<ExprNode>();
 		        foreach (ExprNode exprNode in exprNodes.Keys)
 		        {
-		            if (exprNodes.Get(exprNode) == null)
+		            if (!exprNodes.ContainsKey(exprNode))
 		            {
 		                unassigned.Add(exprNode);
 		            }
@@ -71,7 +71,7 @@ namespace net.esper.filter
 	    /// <param name="param">is the parameter to remove</param>
 	    public void RemoveEntry(FilterSpecParam param)
 	    {
-	        ExprNode exprNode = specParams.Get(param);
+	        ExprNode exprNode = specParams.Fetch(param);
 	        if (exprNode == null)
 	        {
 	            throw new IllegalStateException("Not found in collection param: " + param);
@@ -85,14 +85,14 @@ namespace net.esper.filter
 	    /// <param name="param">filter parameter to remove</param>
 	    public void RemoveValue(FilterSpecParam param)
 	    {
-	        ExprNode exprNode = specParams.Get(param);
+	        ExprNode exprNode = specParams.Fetch(param);
 	        if (exprNode == null)
 	        {
 	            throw new IllegalStateException("Not found in collection param: " + param);
 	        }
 
 	        specParams.Remove(param);
-	        exprNodes.Put(exprNode, null);
+	        exprNodes[exprNode] = null;
 	    }
 	}
 }

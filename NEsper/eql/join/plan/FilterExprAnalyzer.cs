@@ -23,7 +23,7 @@ namespace net.esper.eql.join.plan
             if (topNode is ExprEqualsNode)
             {
                 ExprEqualsNode EqualsNode = (ExprEqualsNode)topNode;
-                if (!EqualsNode.NotEquals)
+                if (!EqualsNode.IsNotEquals)
                 {
                     AnalyzeEqualsNode(EqualsNode, queryGraph);
                 }
@@ -63,7 +63,7 @@ namespace net.esper.eql.join.plan
             foreach (ExprNode childNode in andNode.ChildNodes)
             {
                 ExprEqualsNode equalsNode = childNode as ExprEqualsNode;
-                if ((equalsNode != null) && (!equalsNode.NotEquals))
+                if ((equalsNode != null) && (!equalsNode.IsNotEquals))
                 {
                     AnalyzeEqualsNode(equalsNode, queryGraph);
                 }

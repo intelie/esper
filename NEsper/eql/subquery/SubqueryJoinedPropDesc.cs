@@ -71,7 +71,7 @@ namespace net.esper.eql.subquery
             int count = 0;
             foreach (SubqueryJoinedPropDesc desc in descList)
             {
-                streamIds[count++] = desc.GetKeyStreamId();
+                streamIds[count++] = desc.KeyStreamId.Value;
             }
             return streamIds;
         }
@@ -85,7 +85,7 @@ namespace net.esper.eql.subquery
             int count = 0;
             foreach (SubqueryJoinedPropDesc desc in descList)
             {
-                result[count++] = desc.GetKeyPropName();
+                result[count++] = desc.KeyPropName;
             }
             return result;
         }
@@ -99,7 +99,7 @@ namespace net.esper.eql.subquery
             int count = 0;
             foreach (SubqueryJoinedPropDesc desc in descList)
             {
-                result[count++] = desc.GetCoercionType();
+                result[count++] = desc.CoercionType;
             }
             return result;
         }

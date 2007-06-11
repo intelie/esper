@@ -34,18 +34,12 @@ namespace net.esper.view.window
 	        }
 
 	        Object parameter = viewParameters[0];
-	        if (!(parameter is Number))
-	        {
-	            throw new ViewParameterException(errorMessage);
-	        }
-	        Number numParam = (Number) parameter;
-	        if ( (TypeHelper.IsFloatingPointNumber(numParam)) ||
-	             (numParam is Long))
-	        {
-	            throw new ViewParameterException(errorMessage);
-	        }
+            if ( !TypeHelper.IsIntegralNumber( parameter ))
+            {
+                throw new ViewParameterException(errorMessage);
+            }
 
-	        size =  numParam.IntValue();
+            size = Convert.ToInt32(parameter);
 	        if (size <= 0)
 	        {
 	            throw new ViewParameterException("Length window requires a positive number");
@@ -66,13 +60,13 @@ namespace net.esper.view.window
 	    {
 	        if (!CanProvideCapability(viewCapability))
 	        {
-	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	            throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	        }
 	        if (relativeAccessGetterImpl == null)
 	        {
 	            relativeAccessGetterImpl = new RelativeAccessByEventNIndexGetter();
 	        }
-	        resourceCallbackViewResource = relativeAccessGetterImpl;
+	        resourceCallback.ViewResource = relativeAccessGetterImpl;
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -101,12 +95,12 @@ namespace net.esper.view.window
 	        }
 
 	        LengthBatchView myView = (LengthBatchView) view;
-	        if (myView.Size != size)
+	        if (myView.Count != size)
 	        {
 	            return false;
 	        }
 
-	        return myView.IsEmpty();
+	        return myView.IsEmpty;
 	    }
 	}
 }

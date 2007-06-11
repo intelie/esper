@@ -29,24 +29,24 @@ namespace net.esper.filter
             this.resultEventProperty = resultEventProperty;
         }
 
-	   public double? GetFilterValue(MatchedEventMap matchedEvents)
-	    {
-	        EventBean _event = matchedEvents.GetMatchingEvent(resultEventAsName);
-	        if (_event == null)
-	        {
-	            throw new IllegalStateException("Matching event named " +
-	                    '\'' + resultEventAsName + "' not found in event result set");
-	        }
+        public double? GetFilterValue(MatchedEventMap matchedEvents)
+        {
+            EventBean _event = matchedEvents.GetMatchingEvent(resultEventAsName);
+            if (_event == null)
+            {
+                throw new IllegalStateException("Matching event named " +
+                                                '\'' + resultEventAsName + "' not found in event result set");
+            }
 
-	        Object value = _event.Get(resultEventProperty);
-	        if (value == null)
-	        {
-	            return null;
-	        }
-	        return Convert.ToDouble(value);
-	    }
+            Object value = _event[resultEventProperty];
+            if (value == null)
+            {
+                return null;
+            }
+            return Convert.ToDouble(value);
+        }
 
-	    /**
+        /**
 	     * Returns the tag name or stream name to use for the event property.
 	     * @return tag name
 	     */

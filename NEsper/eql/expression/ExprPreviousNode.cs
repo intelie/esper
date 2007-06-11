@@ -42,18 +42,13 @@ namespace net.esper.eql.expression
 	        {
 	            ExprNode constantNode = (ExprNode) this.ChildNodes[0];
 	            Object value = constantNode.Evaluate(null, false);
-	            if (!(value is Number))
-	            {
-	                throw new ExprValidationException("Previous function requires an integer index parameter or expression");
-	            }
+                if (!TypeHelper.IsIntegralNumber(value))
+                {
+                    throw new ExprValidationException(
+                        "Previous function requires an integer index parameter or expression");
+                }
 
-	            Number valueNumber = (Number) value;
-	            if (TypeHelper.IsFloatingPointNumber(valueNumber))
-	            {
-	                throw new ExprValidationException("Previous function requires an integer index parameter or expression");
-	            }
-
-	            constantIndexNumber = valueNumber.IntValue();
+	            constantIndexNumber = Convert.ToInt32(value);
 	            isConstantIndex = true;
 	        }
 
@@ -91,7 +86,7 @@ namespace net.esper.eql.expression
 	        // Use constant if supplied
 	        if (isConstantIndex)
 	        {
-	            index = constantIndexNumber;
+	            index = constantIndexNumber.Value;
 	        }
 	        else
 	        {
@@ -101,7 +96,7 @@ namespace net.esper.eql.expression
 	            {
 	                return null;
 	            }
-	            index = ((Number) indexResult).IntValue();
+	            index = Convert.ToInt32(indexResult);
 	        }
 
 	        // access based on index returned
@@ -161,20 +156,24 @@ namespace net.esper.eql.expression
 	        return true;
 	    }
 
-	    public void SetViewResource(Object resource)
+        public Object ViewResource
 	    {
-	        if (resource is RandomAccessByIndexGetter)
-	        {
-	            randomAccessGetter = (RandomAccessByIndexGetter) resource;
-	        }
-	        else if (resource is RelativeAccessByEventNIndexGetter)
-	        {
-	            relativeAccessGetter = (RelativeAccessByEventNIndexGetter) resource;
-	        }
-	        else
-	        {
-	            throw new ArgumentException("View resource " + resource.Class + " not recognized by expression node");
-	        }
+            set
+            {
+                if (value is RandomAccessByIndexGetter)
+                {
+                    randomAccessGetter = (RandomAccessByIndexGetter)value;
+                }
+                else if (value is RelativeAccessByEventNIndexGetter)
+                {
+                    relativeAccessGetter = (RelativeAccessByEventNIndexGetter)value;
+                }
+                else
+                {
+                    throw new ArgumentException("View resource " + value.GetType() +
+                                                " not recognized by expression node");
+                }
+            }
 	    }
 	}
 } // End of namespace

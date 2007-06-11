@@ -21,12 +21,13 @@ namespace net.esper.core
         private Set<UpdateListener> updateListeners;
         private readonly DispatchService dispatchService;
 		private EventBean lastIterableEvent;
-		
-		[ThreadStatic]
-        private bool? isDispatchWaiting;
+
+        [ThreadStatic]
+        private bool isDispatchWaiting;
 		private bool IsDispatchWaiting
 		{
-			get { return isDispatchWaiting ?? false ; }
+			get { return isDispatchWaiting ; }
+		  //get { return isDispatchWaiting ?? false ; }
 		}
 
 		[ThreadStatic]
@@ -58,6 +59,15 @@ namespace net.esper.core
 				return lastOldEvents_;
 			}
 		}
+
+        /// <summary>
+        /// Gets or sets new update listeners.
+        /// </summary>
+        public Set<UpdateListener> UpdateListeners
+        {
+            get { return updateListeners; }
+            set { updateListeners = value; }
+        }
 
         /// <summary> Ctor.</summary>
         /// <param name="updateListeners">listeners to update
@@ -96,13 +106,13 @@ namespace net.esper.core
             }
             if (newData != null)
             {
-                lastNewEvents.Add(newData);
+                LastNewEvents.Add(newData);
             }
             if (oldData != null)
             {
-                lastOldEvents.Add(oldData);
+                LastOldEvents.Add(oldData);
             }
-            if (!isDispatchWaiting)
+            if (!IsDispatchWaiting)
             {
                 dispatchService.AddExternal(this);
                 isDispatchWaiting = true;
@@ -138,8 +148,8 @@ namespace net.esper.core
         public virtual void Execute()
         {
             isDispatchWaiting = false;
-            EventBean[] newEvents = EventBeanUtility.Flatten(lastNewEvents);
-            EventBean[] oldEvents = EventBeanUtility.Flatten(lastOldEvents);
+            EventBean[] newEvents = EventBeanUtility.Flatten(LastNewEvents);
+            EventBean[] oldEvents = EventBeanUtility.Flatten(LastOldEvents);
 
             if (log.IsDebugEnabled)
             {
@@ -151,8 +161,8 @@ namespace net.esper.core
                 listener(newEvents, oldEvents);
             }
 
-            lastNewEvents.Clear();
-            lastOldEvents.Clear();
+            LastNewEvents.Clear();
+            LastOldEvents.Clear();
         }
 
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

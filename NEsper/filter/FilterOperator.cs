@@ -149,7 +149,7 @@ namespace net.esper.filter
         /// </param>
         /// <returns> FilterOperator for the combination inclusive or exclusive
         /// </returns>
-        public static FilterOperator ParseRangeOperator(bool isInclusiveFirst, bool isInclusiveLast)
+        public static FilterOperator ParseRangeOperator(bool isInclusiveFirst, bool isInclusiveLast, bool isNot)
         {
 			if (isInclusiveFirst && isInclusiveLast)
 			{
@@ -162,7 +162,7 @@ namespace net.esper.filter
 					return FilterOperator.RANGE_CLOSED;
 				}
 			}
-			if (isInclusiveFirst && !isInclusiveLast)
+			if (isInclusiveFirst)
 			{
 				if (isNot)
 				{

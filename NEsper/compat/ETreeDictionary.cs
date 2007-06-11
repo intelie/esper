@@ -124,7 +124,7 @@ namespace net.esper.compat
 		
 		public virtual IEnumerator<KeyValuePair<K, V>> RangeFast( K lowerKey, K upperKey )
 		{
-            foreach (C5.KeyValuePair<K, V> keyValuePair in m_subDictionary.RangeFrom(lowerKey, upperKey))
+            foreach (C5.KeyValuePair<K, V> keyValuePair in m_subDictionary.RangeFromTo(lowerKey, upperKey))
             {
                 yield return new KeyValuePair<K, V>(keyValuePair.Key, keyValuePair.Value);
             }
@@ -213,6 +213,20 @@ namespace net.esper.compat
 				return kvPairEnum.Current.Value;
 			}
 		}
+
+        /// <summary>
+        /// Removes the item from the dictionary that is associated with
+        /// the specified key.  Returns the value that was found at that
+        /// location and removed or the defaultValue.
+        /// </summary>
+        /// <param name="key">Search key into the dictionary</param>
+        /// <param name="value">The value removed from the dictionary (if found).</param>
+        /// <returns></returns>
+
+        public bool Remove(K key, out V value)
+        {
+            return m_subDictionary.Remove(key, out value);
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="V"/> with the specified key.

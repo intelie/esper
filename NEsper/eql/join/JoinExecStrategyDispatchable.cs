@@ -18,6 +18,7 @@ namespace net.esper.eql.join
 
     public class JoinExecStrategyDispatchable
 		: EPStatementDispatch
+        , BufferObserver
     {
         private readonly JoinExecutionStrategy joinExecutionStrategy;
         private readonly EDictionary<Int32, FlushedEventBuffer> oldStreamBuffer;

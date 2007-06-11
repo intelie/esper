@@ -33,18 +33,13 @@ namespace net.esper.view.ext
 	        String errorMessage = "Sort window view requires a field name, a bool sort order and a numeric size parameter or parameter list";
 	        if (viewParameters.Count == 3)
 	        {
-	            if ((viewParameters[0] is String) &&
-	                (viewParameters[1] is Boolean) &&
-	                (viewParameters.Get(2) is Number))
+	            if ((viewParameters[0] is string) &&
+	                (viewParameters[1] is bool) &&
+	                (TypeHelper.IsIntegralNumber(viewParameters[2])))
 	            {
-	                sortFieldNames = new String[] {(String)viewParameters[0]};
-	                isDescendingValues = new Boolean[] {(Boolean) viewParameters[1]};
-	                Number sizeParam = (Number) viewParameters.Get(2);
-	                if (TypeHelper.IsFloatingPointNumber(sizeParam))
-	                {
-	                    throw new ViewParameterException(errorMessage);
-	                }
-	                sortWindowSize = sizeParam.IntValue();
+	                sortFieldNames = new string[] {(string)viewParameters[0]};
+	                isDescendingValues = new bool[] {(bool) viewParameters[1]};
+	                sortWindowSize = Convert.ToInt32(viewParameters[2]);
 	            }
 	            else
 	            {
@@ -54,7 +49,7 @@ namespace net.esper.view.ext
 	        else if (viewParameters.Count == 2)
 	        {
 	            if ( (!(viewParameters[0] is Object[]) ||
-	                 (!(viewParameters[1] is Integer))) )
+	                 (!(viewParameters[1] is Int32))) )
 	            {
 	                throw new ViewParameterException(errorMessage);
 	            }
@@ -69,12 +64,12 @@ namespace net.esper.view.ext
 	                throw new ViewParameterException(errorMessage + ",reason:" + ex.Message);
 	            }
 
-	            Number sizeParam = (Number) viewParameters[1];
+	            Object sizeParam = viewParameters[1];
 	            if (TypeHelper.IsFloatingPointNumber(sizeParam))
 	            {
 	                throw new ViewParameterException(errorMessage);
 	            }
-	            sortWindowSize = sizeParam.IntValue();
+	            sortWindowSize = Convert.ToInt32(sizeParam);
 	        }
 	        else
 	        {
@@ -120,14 +115,14 @@ namespace net.esper.view.ext
 	    {
             if (!CanProvideCapability(viewCapability))
 	        {
-	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	            throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	        }
 
 	        if (randomAccessGetterImpl == null)
 	        {
 	            randomAccessGetterImpl = new RandomAccessByIndexGetter();
 	        }
-	        resourceCallbackViewResource = randomAccessGetterImpl;
+	        resourceCallback.ViewResource = randomAccessGetterImpl;
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -157,13 +152,13 @@ namespace net.esper.view.ext
 
 	        SortWindowView other = (SortWindowView) view;
 	        if ((other.SortWindowSize != sortWindowSize) ||
-	            (!Arrays.DeepEquals(other.IsDescendingValues, isDescendingValues)) ||
-	            (!Arrays.DeepEquals(other.SortFieldNames, sortFieldNames)) )
+	            (!CollectionHelper.AreEqual(other.IsDescendingValues, isDescendingValues)) ||
+	            (!CollectionHelper.AreEqual(other.SortFieldNames, sortFieldNames)) )
 	        {
 	            return false;
 	        }
 
-	        return other.IsEmpty();
+	        return other.IsEmpty;
 	    }
 
 	    private void SetNamesAndIsDescendingValues(Object[] propertiesAndDirections)

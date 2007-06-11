@@ -78,7 +78,7 @@ namespace net.esper.filter
 	                events[count] = matchedEvents.GetMatchingEvent(tag);
 	                count++;
 	            }
-	            adapterPrototype = events;
+	            adapter.Prototype = events;
 	        }
 	        return adapter;
 	    }

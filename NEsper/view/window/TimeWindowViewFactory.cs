@@ -50,11 +50,11 @@ namespace net.esper.view.window
 	        	
 	            if (TypeHelper.IsFloatingPointNumber(parameter))
 	            {
-	                millisecondsBeforeExpiry = Math.Round(1000d * parameter.DoubleValue());
+	                millisecondsBeforeExpiry = (long) Math.Round(1000d*Convert.ToDouble(parameter));
 	            }
 	            else
 	            {
-	                millisecondsBeforeExpiry = 1000 * parameter.LongValue();
+	                millisecondsBeforeExpiry = 1000*Convert.ToInt64(parameter);
 	            }
 	        }
 
@@ -92,13 +92,13 @@ namespace net.esper.view.window
 	    {
             if (!CanProvideCapability(viewCapability))
 	        {
-	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	            throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	        }
 	        if (randomAccessGetterImpl == null)
 	        {
 	            randomAccessGetterImpl = new RandomAccessByIndexGetter();
 	        }
-	        resourceCallbackViewResource = randomAccessGetterImpl;
+	        resourceCallback.ViewResource = randomAccessGetterImpl;
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -133,7 +133,7 @@ namespace net.esper.view.window
 	        }
 
 	        // For reuse of the time window it doesn't matter if it provides random access or not
-	        return myView.IsEmpty();
+	        return myView.IsEmpty;
 	    }
 	}
 } // End of namespace

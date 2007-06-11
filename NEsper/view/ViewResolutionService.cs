@@ -19,8 +19,9 @@ namespace net.esper.view
 	{
 	    /// <summary>
 	    /// Instantiates a {@link ViewFactory} based on the view namespace and name stored in the view spec.
-	    /// <p>
+	    /// <para>
 	    /// Does not actually use the view factory object created.
+	    /// </para>
 	    /// </summary>
 	    /// <param name="spec">contains view name and namespace</param>
 	    /// <returns>{@link ViewFactory} instance</returns>

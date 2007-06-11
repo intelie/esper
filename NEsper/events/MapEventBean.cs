@@ -49,7 +49,7 @@ namespace net.esper.events
         /// <param name="eventType">is the type of the event, i.e. describes the map entries
         /// </param>
 
-        public MapEventBean(IDataDictionary properties, EventType eventType)
+        public MapEventBean(EDictionary<string,object> properties, EventType eventType)
         {
         	this.properties = new EDataDictionary() ;
             this.properties.PutAll(properties);
@@ -153,7 +153,7 @@ namespace net.esper.events
                     continue;
                 }
 
-                if ((otherValue == null) && (value != null))
+                if (otherValue == null)
                 {
                     return false;
                 }

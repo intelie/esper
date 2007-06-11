@@ -14,12 +14,12 @@ namespace net.esper.view
 	/// <summary>Provides subscription list for statement stop callbacks.</summary>
 	public class StatementStopServiceImpl : StatementStopService
 	{
-	    private List<StatementStopCallback> statementStopCallbacks;
+	    private IList<StatementStopCallback> statementStopCallbacks;
 
 	    /// <summary>ctor.</summary>
 	    public StatementStopServiceImpl()
 	    {
-	        statementStopCallbacks = new LinkedList<StatementStopCallback>();
+	        statementStopCallbacks = new List<StatementStopCallback>();
 	    }
 
 	    public void AddSubscriber(StatementStopCallback callback)
@@ -31,7 +31,7 @@ namespace net.esper.view
 	    {
 	        foreach (StatementStopCallback statementStopCallback in statementStopCallbacks)
 	        {
-	            statementStopCallback.StatementStopped();
+	            statementStopCallback();
 	        }
 	    }
 	}

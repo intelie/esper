@@ -10,15 +10,16 @@ using System;
 
 namespace net.esper.view
 {
-
-	/// <summary>Thrown to indicate a validation error in view parameterization.</summary>
+	/// <summary>
+	/// Thrown to indicate a validation error in view parameterization.
+	/// </summary>
 	public class ViewParameterException : Exception
 	{
 	    /// <summary>Ctor.</summary>
 	    /// <param name="message">validation error message</param>
 	    public ViewParameterException(String message)
+	        : base(message)
 	    {
-	        Super(message);
 	    }
 	}
 } // End of namespace

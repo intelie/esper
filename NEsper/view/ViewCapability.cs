@@ -29,6 +29,6 @@ namespace net.esper.view
 	    /// <returns>
 	    /// true to indicate inspection success, or false to indicate inspection failure
 	    /// </returns>
-	    bool Inspect(List<ViewFactory> viewFactories);
+	    bool Inspect(IList<ViewFactory> viewFactories);
 	}
 } // End of namespace

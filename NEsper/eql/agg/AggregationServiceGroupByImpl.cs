@@ -24,7 +24,7 @@ namespace net.esper.eql.agg
 	public class AggregationServiceGroupByImpl : AggregationServiceBase
 	{
 	    // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
-	    private IDictionary<MultiKeyUntyped, AggregationMethod[]> aggregatorsPerGroup;
+	    private EDictionary<MultiKeyUntyped, AggregationMethod[]> aggregatorsPerGroup;
 
 	    // maintain a current row for random access into the aggregator state table
 	    // (row=groups, columns=expression nodes that have aggregation functions)
@@ -52,13 +52,13 @@ namespace net.esper.eql.agg
 
 	    public override void ApplyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
 	    {
-	        AggregationMethod[] groupAggregators = aggregatorsPerGroup.Get(groupByKey);
+	        AggregationMethod[] groupAggregators = aggregatorsPerGroup.Fetch(groupByKey);
 
 	        // The aggregators for this group do not exist, need to create them from the prototypes
 	        if (groupAggregators == null)
 	        {
 	            groupAggregators = methodResolutionService.NewAggregators(aggregators, groupByKey);
-	            aggregatorsPerGroup.Put(groupByKey, groupAggregators);
+	            aggregatorsPerGroup[groupByKey] = groupAggregators;
 	        }
 
 	        // For this row, evaluate sub-expressions, enter result
@@ -71,13 +71,13 @@ namespace net.esper.eql.agg
 
 	    public override void ApplyLeave(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
 	    {
-	        AggregationMethod[] groupAggregators = aggregatorsPerGroup.Get(groupByKey);
+	        AggregationMethod[] groupAggregators = aggregatorsPerGroup.Fetch(groupByKey);
 
 	        // The aggregators for this group do not exist, need to create them from the prototypes
 	        if (groupAggregators == null)
 	        {
 	            groupAggregators = methodResolutionService.NewAggregators(aggregators, groupByKey);
-	            aggregatorsPerGroup.Put(groupByKey, groupAggregators);
+	            aggregatorsPerGroup[groupByKey] = groupAggregators;
 	        }
 
 	        // For this row, evaluate sub-expressions, enter result
@@ -90,12 +90,12 @@ namespace net.esper.eql.agg
 
 	    public override void SetCurrentRow(MultiKeyUntyped groupByKey)
 	    {
-	        currentAggregatorRow = aggregatorsPerGroup.Get(groupByKey);
+	        currentAggregatorRow = aggregatorsPerGroup.Fetch(groupByKey);
 
 	        if (currentAggregatorRow == null)
 	        {
 	            currentAggregatorRow = methodResolutionService.NewAggregators(aggregators, groupByKey);
-	            aggregatorsPerGroup.Put(groupByKey, currentAggregatorRow);
+	            aggregatorsPerGroup[groupByKey] = currentAggregatorRow;
 	        }
 	    }
 

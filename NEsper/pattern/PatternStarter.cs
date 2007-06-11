@@ -21,6 +21,6 @@ namespace net.esper.pattern
 		/// <returns> a callback to Stop the expression again
 		/// </returns>
 		
-		StopCallback Start(PatternMatchCallback matchCallback, PatternContext context);
+		PatternStopCallback Start(PatternMatchCallback matchCallback, PatternContext context);
 	}
 }

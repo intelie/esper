@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using ReaderWriterLock = System.Threading.ReaderWriterLock;
+using System.Threading;
 
 using net.esper.client;
 using net.esper.client.time;
@@ -10,7 +10,7 @@ using net.esper.compat;
 using net.esper.events;
 using net.esper.filter;
 using net.esper.schedule;
-using net.esper.timer;
+using net.esper.util;
 
 using org.apache.commons.logging;
 
@@ -55,8 +55,10 @@ namespace net.esper.core
 			{
 				if ( matchesArrayThreadLocal == null )
 				{
-					return new ArrayBackedCollection<FilterHandle>(100);
+					matchesArrayThreadLocal = new ArrayBackedCollection<FilterHandle>(100);
 				}
+
+			    return matchesArrayThreadLocal;
 			}
 		}
 
@@ -70,6 +72,8 @@ namespace net.esper.core
 				{
 					matchesPerStmtThreadLocal = new EHashDictionary<EPStatementHandle, Object>(10000);
 				}
+
+			    return matchesPerStmtThreadLocal;
 			}
         }
 
@@ -98,6 +102,8 @@ namespace net.esper.core
 				{
 					schedulePerStmtThreadLocal = new EHashDictionary<EPStatementHandle, Object>(10000);
 				}
+
+			    return schedulePerStmtThreadLocal;
 			}
         }
 		
@@ -120,7 +126,7 @@ namespace net.esper.core
         {
             if (log.IsDebugEnabled)
             {
-                log.Debug(".timerCallback Evaluating scheduled callbacks");
+                log.Debug(".TimerCallback Evaluating scheduled callbacks");
             }
 
             long msec = DateTimeHelper.TimeInMillis( DateTime.Now ) ;
@@ -136,13 +142,13 @@ namespace net.esper.core
         {
             if (_event == null)
             {
-                log.Fatal(".sendEvent Null object supplied");
+                log.Fatal(".SendEvent Null object supplied");
                 return;
             }
 
             if (log.IsDebugEnabled)
             {
-                log.Debug(".sendEvent Processing event " + _event);
+                log.Debug(".SendEvent Processing event " + _event);
             }
 
             // Process event
@@ -157,13 +163,13 @@ namespace net.esper.core
         {
             if (document == null)
             {
-                log.Fatal(".sendEvent Null object supplied");
+                log.Fatal(".SendEvent Null object supplied");
                 return;
             }
 
             if (log.IsDebugEnabled)
             {
-                log.Debug(".sendEvent Processing DOM node event " + document);
+                log.Debug(".SendEvent Processing DOM node event " + document);
             }
 
             // Get it wrapped up, process event
@@ -188,7 +194,7 @@ namespace net.esper.core
 
             if (log.IsDebugEnabled)
             {
-            	log.Debug(".sendMap Processing event " + map.ToString()) ;
+                log.Debug(string.Format(".SendEvent Processing event {0}", map));
             }
 
             // Process event
@@ -207,7 +213,7 @@ namespace net.esper.core
         /// <param name="_event"></param>
         public virtual void Route(Object _event)
         {
-            threadWorkQueue.Add(_event);
+            ThreadWorkQueue.Add(_event);
         }
 
         /// <summary>
@@ -216,7 +222,7 @@ namespace net.esper.core
         /// <param name="_event"></param>
         public virtual void Route(EventBean _event)
         {
-            threadWorkQueue.Add(_event);
+            ThreadWorkQueue.Add(_event);
         }
 
         /// <summary>
@@ -284,11 +290,11 @@ namespace net.esper.core
                 eventBean = services.EventAdapterService.AdapterForBean(_event);
             }
 
-			ReaderWriterLock lockObj = services.EventProcessingRWLock;
-			
-	        // Acquire main processing lock which locks out statement management
-	        lockObj.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
-	        try
+            ManagedReadWriteLock lockObj = services.EventProcessingRWLock;
+            
+            // Acquire main processing lock which locks out statement management
+            lockObj.AcquireReadLock();
+            try
 	        {
 	            ProcessMatches(eventBean);
             }
@@ -298,7 +304,7 @@ namespace net.esper.core
             }
             finally
             {
-                lockObj.ReleaseReaderLock();
+                lockObj.ReleaseReadLock();
             }
 			
 		    // Dispatch results to listeners
@@ -359,25 +365,25 @@ namespace net.esper.core
 	        // We want to stay in this order for allowing the engine lock as a second-order lock to the
 	        // services own lock, if it has one.
 	        services.SchedulingService.EvaluateLock();
-	        services.EventProcessingRWLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
+	        services.EventProcessingRWLock.AcquireReadLock();
 	        try
 	        {
 	            services.SchedulingService.Evaluate(handles);
 	        }
 	        finally
 	        {
-	            services.EventProcessingRWLock.ReleaseReaderLock();
+	            services.EventProcessingRWLock.ReleaseReadLock();
 	            services.SchedulingService.EvaluateUnLock();
 	        }
 
-	        services.EventProcessingRWLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
+	        services.EventProcessingRWLock.AcquireReadLock();
 	        try
 	        {
-	            processScheduleHandles(handles);
+	            ProcessScheduleHandles(handles);
 	        }
 	        finally
 	        {
-				services.EventProcessingRWLock.ReleaseReaderLock();
+				services.EventProcessingRWLock.ReleaseReadLock();
 	        }
 	    }
 
@@ -385,7 +391,7 @@ namespace net.esper.core
 	    {
 	        if (ThreadLogUtil.ENABLED_TRACE)
 	        {
-	            ThreadLogUtil.trace("Found schedules for", handles.size());
+	            ThreadLogUtil.Trace("Found schedules for", handles.Count);
 	        }
 
 	        if (handles.Count == 0)
@@ -439,15 +445,15 @@ namespace net.esper.core
 	            {
 	                ScheduleHandleCallback existingCallback = (ScheduleHandleCallback) entry;
 	                LinkedList<ScheduleHandleCallback> entries = new LinkedList<ScheduleHandleCallback>();
-	                entries.Add(existingCallback);
-	                entries.Add(callback);
+	                entries.AddLast(existingCallback);
+	                entries.AddLast(callback);
 	                stmtCallbacks[handle] = entries;
 	                continue;
 	            }
 
 	            // This statement has been encountered more then once before
 	            LinkedList<ScheduleHandleCallback> _entries = (LinkedList<ScheduleHandleCallback>) entry;
-	            _entries.Add(callback);
+	            _entries.AddLast(callback);
 	        }
 	        handles.Clear();
 
@@ -485,7 +491,7 @@ namespace net.esper.core
         private void ProcessThreadWorkQueue()
         {
             Object _event;
-            while ((_event = threadWorkQueue.Next()) != null)
+            while ((_event = ThreadWorkQueue.Next()) != null)
             {
                 EventBean eventBean;
                 if (_event is EventBean)
@@ -497,21 +503,21 @@ namespace net.esper.core
                     eventBean = services.EventAdapterService.AdapterForBean(_event);
                 }
 
-                services.EventProcessingRWLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
+                services.EventProcessingRWLock.AcquireReadLock();
 	            try
 	            {
 	                ProcessMatches(eventBean);
 	            }
 	            finally
 	            {
-	                services.EventProcessingRWLock.ReleaseReaderLock();
+	                services.EventProcessingRWLock.ReleaseReadLock();
 	            }
 
                 Dispatch();
             }
         }
 		
-	    private void processMatches(EventBean _event)
+	    private void ProcessMatches(EventBean _event)
 	    {
 	        // get matching filters
 	        ArrayBackedCollection<FilterHandle> matches = MatchesArray;
@@ -519,7 +525,7 @@ namespace net.esper.core
 
 	        if (ThreadLogUtil.ENABLED_TRACE)
 	        {
-	            ThreadLogUtil.trace("Found matches for underlying ", matches.Count, _event.Underlying);
+	            ThreadLogUtil.Trace("Found matches for underlying ", matches.Count, _event.Underlying);
 	        }
 
 	        if (matches.Count == 0)

@@ -36,18 +36,12 @@ namespace net.esper.view.window
 	        }
 
 	        Object parameter = viewParameters[0];
-	        if (!(parameter is Number))
-	        {
-	            throw new ViewParameterException(errorMessage);
-	        }
-	        Number numParam = (Number) parameter;
-	        if ( (TypeHelper.IsFloatingPointNumber(numParam)) ||
-	             (numParam is Long))
+            if (!TypeHelper.IsIntegralNumber( parameter ))
 	        {
 	            throw new ViewParameterException(errorMessage);
 	        }
 
-	        size =  numParam.IntValue();
+	        size = Convert.ToInt32(parameter);
 	        if (size <= 0)
 	        {
 	            throw new ViewParameterException("Length window requires a positive number");
@@ -73,15 +67,15 @@ namespace net.esper.view.window
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        if (!canProvideCapability(viewCapability))
+	        if (!CanProvideCapability(viewCapability))
 	        {
-	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	            throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	        }
 	        if (randomAccessGetterImpl == null)
 	        {
 	            randomAccessGetterImpl = new RandomAccessByIndexGetter();
 	        }
-	        resourceCallbackViewResource = randomAccessGetterImpl;
+	        resourceCallback.ViewResource = randomAccessGetterImpl;
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -114,7 +108,7 @@ namespace net.esper.view.window
 	        {
 	            return false;
 	        }
-	        return myView.IsEmpty();
+	        return myView.IsEmpty;
 	    }
 	}
 } // End of namespace

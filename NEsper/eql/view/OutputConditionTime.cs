@@ -110,7 +110,7 @@ namespace net.esper.eql.view
 		{
 			isCallbackScheduled = true;
 			long current = context.SchedulingService.Time;
-			long afterMSec = computeWaitMSec(current, currentReferencePoint.Value, this.msecIntervalSize);
+			long afterMSec = ComputeWaitMSec(current, currentReferencePoint.Value, this.msecIntervalSize);
 			
 			if (log.IsDebugEnabled)
 			{

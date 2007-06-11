@@ -65,12 +65,12 @@ namespace net.esper.pattern
 	            {
 	                type = Type.GetType(entry.FactoryClassName);
 	            }
-	            catch (TypeLoadException ex)
+	            catch (TypeLoadException)
 	            {
 	                throw new ConfigurationException("Pattern object factory class " + entry.FactoryClassName + " could not be loaded");
 	            }
 
-	            EDictionary<String, Pair<Type, TypeEnum>> namespaceMap = nameToFactoryMap.Fetch(entry.Namespace);
+	            IDictionary<String, Pair<Type, TypeEnum>> namespaceMap = nameToFactoryMap.Fetch(entry.Namespace);
 	            if (namespaceMap == null)
 	            {
 	                namespaceMap = new EHashDictionary<String, Pair<Type, TypeEnum>>();
@@ -100,7 +100,7 @@ namespace net.esper.pattern
 	        if ( factory == null )
 	        {
 	            String message = "Error casting observer factory instance to " + typeof(ObserverFactory).FullName + " interface for observer '" + spec.ObjectName + "'";
-	            throw new PatternObjectException(message, e);
+	            throw new PatternObjectException(message);
 	        }
 
             if (log.IsDebugEnabled)
@@ -133,17 +133,17 @@ namespace net.esper.pattern
 	    {
 	        if (log.IsDebugEnabled)
 	        {
-	            log.Debug(".create Creating observer factory, spec=" + spec.ToString());
+	            log.Debug(string.Format(".create Creating observer factory, spec={0}", spec));
 	        }
 
 	        Type factoryClass = null;
 
 	        // Pre-configured objects override build-in
-	        EDictionary<String, Pair<Type, TypeEnum>> namespaceMap = nameToFactoryMap.Fetch(spec.ObjectNamespace);
+	        IDictionary<String, Pair<Type, TypeEnum>> namespaceMap = nameToFactoryMap.Fetch(spec.ObjectNamespace);
 	        if (namespaceMap != null)
 	        {
-	            Pair<Type, TypeEnum> pair = namespaceMap.Fetch(spec.ObjectName);
-	            if (pair != null)
+	            Pair<Type, TypeEnum> pair ;
+                if (namespaceMap.TryGetValue(spec.ObjectName, out pair))
 	            {
 	                if (pair.Second == type)
 	                {
@@ -164,7 +164,7 @@ namespace net.esper.pattern
 	            }
 	        }
 
-	        String message = null;
+	        String message;
 	        
 	        // if not found in the plugins, try o resolve as a builtin
 	        if (factoryClass == null)
@@ -203,7 +203,7 @@ namespace net.esper.pattern
 	                    throw new PatternObjectException(message);
 	                }
 
-	                factoryClass = observerEnum.Clazz;
+	                factoryClass = observerEnum.Type;
 	            }
 	            else
 	            {
@@ -211,21 +211,21 @@ namespace net.esper.pattern
 	            }
 	        }
 
-	        Object result = null;
+	        Object result;
 	        try
 	        {
-	        	result = Activator.CreateInstance(factoryType);
+	        	result = Activator.CreateInstance(factoryClass);
 	        }
-	        catch (IllegalAccessException e)
+	        catch (MethodAccessException e)
 	        {
 	            message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
-	            message += "', no invocation access for Class.newInstance";
+	            message += "', no invocation access for Activator.CreateInstance";
 	            throw new PatternObjectException(message, e);
 	        }
-	        catch (InstantiationException e)
+	        catch (Exception e)
 	        {
 	            message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
-	            message += "' using Class.newInstance";
+                message += "' using Activator.CreateInstance";
 	            throw new PatternObjectException(message, e);
 	        }
 

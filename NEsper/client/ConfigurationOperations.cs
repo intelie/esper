@@ -22,8 +22,10 @@ namespace net.esper.client
         /// Adds a plug-in aggregation function given a function name and an aggregation class name.
         /// <p>
         /// The aggregation class must : the base class {@link net.esper.eql.agg.AggregationSupport}.
+        /// </p>
         /// <p>
         /// The same function name cannot be added twice.
+        /// </p>
         /// </summary>
         /// <param name="functionName">is the new aggregation function name</param>
         /// <param name="aggregationClassName">
@@ -39,9 +41,11 @@ namespace net.esper.client
         /// <p>
         /// To import a single class offering a static method, simply supply the fully-qualified name of the class
         /// and use the syntax <code>classname.Methodname(...)</code>
+        /// </p>
         /// <p>
         /// To import a whole package and use the <code>classname.Methodname(...)</code> syntax, specifiy a package
         /// with wildcard, such as <code>com.mycompany.staticlib.*</code>.
+        /// </p>
         /// </summary>
         /// <param name="importName">
         /// is a fully-qualified class name or a package name with wildcard
@@ -56,6 +60,7 @@ namespace net.esper.client
         /// <p>
         /// Allows a second alias to be added for the same type.
         /// Does not allow the same alias to be used for different types.
+        /// </p>
         /// </summary>
         /// <param name="eventTypeAlias">is the alias for the event type</param>
         /// <param name="typeEventName">fully-qualified class name of the event type</param>
@@ -69,6 +74,7 @@ namespace net.esper.client
         /// <p>
         /// Allows a second alias to be added for the same type.
         /// Does not allow the same alias to be used for different types.
+        /// </p>
         /// </summary>
         /// <param name="eventTypeAlias">is the alias for the event type</param>
         /// <param name="eventType">
@@ -84,6 +90,7 @@ namespace net.esper.client
         /// <p>
         /// Allows a second alias to be added for the same type.
         /// Does not allow the same alias to be used for different types.
+        /// </p>
         /// </summary>
         /// <param name="eventTypeAlias">is the alias for the event type</param>
         /// <param name="typeMap">
@@ -101,9 +108,11 @@ namespace net.esper.client
         /// <p>
         /// This method is provided for convenience and is same in function to method
         /// taking a Properties object that contain fully qualified class name as values.
+        /// </p>
         /// <p>
         /// Allows a second alias to be added for the same type.
         /// Does not allow the same alias to be used for different types.
+        /// </p>
         /// </summary>
         /// <param name="eventTypeAlias">is the alias for the event type</param>
         /// <param name="typeMap">

@@ -162,7 +162,7 @@ namespace net.esper.eql.core
 			try
 			{
 				// first try to resolve as a property name
-				desc = findByPropertyName(streamAndPropertyName);
+				desc = FindByPropertyName(streamAndPropertyName);
 			}
 			catch (PropertyNotFoundException ex)
 			{

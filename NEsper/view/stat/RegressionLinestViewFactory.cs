@@ -60,7 +60,7 @@ namespace net.esper.view.stat
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	        throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	    }
 
 	    public View MakeView(StatementContext statementContext)

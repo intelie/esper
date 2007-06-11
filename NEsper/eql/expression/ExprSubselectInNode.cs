@@ -89,9 +89,9 @@ namespace net.esper.eql.expression
 	        catch (ArgumentException ex)
 	        {
 	            throw new ExprValidationException("Implicit conversion from datatype '" +
-	                    typeTwo.SimpleName +
+	                    typeTwo.FullName +
 	                    "' to '" +
-	                    typeOne.SimpleName +
+	                    typeOne.FullName +
 	                    "' is not allowed");
 	        }
 
@@ -184,8 +184,8 @@ namespace net.esper.eql.expression
 	            }
 	            else
 	            {
-	                Object left = TypeHelper.CoerceBoxed((Number) leftResult, coercionType);
-	                Object right = TypeHelper.CoerceBoxed((Number) rightResult, coercionType);
+	                Object left = TypeHelper.CoerceBoxed(leftResult, coercionType);
+	                Object right = TypeHelper.CoerceBoxed(rightResult, coercionType);
 	                if (Object.Equals( left, right ))
 	                {
 	                    return !isNotIn;

@@ -48,7 +48,7 @@ namespace net.esper.pattern
 	     */
 	    public SchedulingService SchedulingService
 	    {
-	        get { return statementContext.getSchedulingService; }
+	        get { return statementContext.SchedulingService; }
 	    }
 
 	    /**

@@ -3,6 +3,7 @@ using System;
 using net.esper.compat;
 using net.esper.collection;
 using net.esper.events;
+using net.esper.util;
 
 using org.apache.commons.logging;
 
@@ -71,7 +72,7 @@ namespace net.esper.eql.join.plan
         /// </summary>
         /// <param name="queryGraph">navigation info between streams</param>
         /// <returns>query plan</returns>
-		public static QueryPlan Build(QueryGraph queryGraphqueryGraph, EventType[] typesPerStream)
+		public static QueryPlan Build(QueryGraph queryGraph, EventType[] typesPerStream)
 		{
 			log.Debug(".build queryGraph=" + queryGraph);
 			

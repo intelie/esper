@@ -99,7 +99,7 @@ namespace net.esper.eql.core
             }
 
             // Create the multikeys of sort values
-            MultiKeyUntyped[] sortValuesMultiKeys = CreateSortProperties(generatingEvents, groupByKeys);
+            MultiKeyUntyped[] sortValuesMultiKeys = CreateSortProperties(generatingEvents, groupByKeys, isNewData);
 
             // Map the sort values to the corresponding outgoing events
             IDictionary<MultiKeyUntyped, IList<EventBean>> sortToOutgoing = new Dictionary<MultiKeyUntyped, IList<EventBean>>();
@@ -230,7 +230,7 @@ namespace net.esper.eql.core
             int count = 0;
             foreach (EventBean[] eventsPerStream in generatingEvents)
             {
-                keys[count++] = generateGroupKey(eventsPerStream, isNewData);
+                keys[count++] = GenerateGroupKey(eventsPerStream, isNewData);
             }
 
             return keys;

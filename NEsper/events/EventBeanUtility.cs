@@ -29,21 +29,13 @@ namespace net.esper.events
             	return eventVector[0];
             }
 
-            int totalElements = 0;
-			foreach( EventBean[] array in eventVector )
+            List<EventBean> tempList = new List<EventBean>();
+            foreach( EventBean[] array in eventVector )
             {
-                totalElements += array.Length;
+                tempList.AddRange(array);
             }
 
-            EventBean[] result = new EventBean[totalElements];
-            int destPos = 0;
-			foreach( EventBean[] array in eventVector )
-            {
-                Array.Copy(src, 0, result, destPos, array.Length);
-                destPos += eventVector[i].Length;
-            }
-
-            return result;
+            return tempList.ToArray();
         }
 
         /// <summary>Append arrays.</summary>

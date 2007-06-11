@@ -110,7 +110,7 @@ namespace net.esper.core
                 // In a join statements if the same event type or it's deep super types are used in the join more then once,
                 // then this is a self-join and the statement handle must know to dispatch the results together
                 bool canSelfJoin = IsPotentialSelfJoin(compiledSpec.StreamSpecs);
-                statementContext.EpStatementHandleCanSelfJoin = canSelfJoin;
+                statementContext.EpStatementHandle.CanSelfJoin = canSelfJoin;
 
                 eventProcessingRWLock.AcquireWriteLock();
                 try
@@ -190,8 +190,8 @@ namespace net.esper.core
             {
                 for (int j = i + 1; j < filteredTypes.Count; j++)
                 {
-                    EventType typeOne = filteredTypes.Get(i);
-                    EventType typeTwo = filteredTypes.Get(j);
+                    EventType typeOne = filteredTypes[i];
+                    EventType typeTwo = filteredTypes[j];
                     if (typeOne == typeTwo)
                     {
                         return true;
@@ -309,9 +309,9 @@ namespace net.esper.core
 
             Viewable parentView = pair.First;
             EPStatementStopMethod stopMethod = pair.Second;
-            descStopMethod = stopMethod;
-            statementParentView = parentView;
-            statementCurrentState = EPStatementState.STARTED;
+            desc.StopMethod = stopMethod;
+            statement.ParentView = parentView;
+            statement.CurrentState = EPStatementState.STARTED;
         }
 
         public void Stop(String statementId)
@@ -341,11 +341,11 @@ namespace net.esper.core
                         throw new IllegalStateException("Statement already stopped");
                     }
 
-                    statementParentView = null;
-                    stopMethod.Stop();
-                    descStopMethod = null;
+                    statement.ParentView = null;
+                    stopMethod();
+                    desc.StopMethod = null;
 
-                    statementCurrentState = EPStatementState.STOPPED;
+                    statement.CurrentState = EPStatementState.STOPPED;
                 }
                 finally
                 {
@@ -373,11 +373,11 @@ namespace net.esper.core
                     if (statement.State == EPStatementState.STARTED)
                     {
                         EPStatementStopMethod stopMethod = desc.StopMethod;
-                        statementParentView = null;
+                        statement.ParentView = null;
                         stopMethod() ;
                     }
 
-                    statementCurrentState = EPStatementState.DESTROYED;
+                    statement.CurrentState = EPStatementState.DESTROYED;
 
                     stmtNameToStmtMap.Remove(statement.Name);
                     stmtNameToIdMap.Remove(statement.Name);
@@ -592,15 +592,15 @@ namespace net.esper.core
             {
                 raw.SelectExpression.Accept(visitor);
             }
-            if (spec.FilterRootNode != null)
+            if (spec.FilterExprRootNode != null)
             {
-                spec.FilterRootNode.Accept(visitor);
+                spec.FilterExprRootNode.Accept(visitor);
             }
             foreach (ExprSubselectNode subselect in visitor.Subselects)
             {
                 StatementSpecRaw raw = subselect.StatementSpecRaw;
                 StatementSpecCompiled compiled = Compile(raw, eqlStatement, statementContext);
-                subselectStatementSpecCompiled = compiled;
+                subselect.StatementSpecCompiled = compiled;
             }
 
             return new StatementSpecCompiled(
@@ -609,7 +609,7 @@ namespace net.esper.core
                     spec.SelectClauseSpec,
                     compiledStreams,
                     spec.OuterJoinDescList,
-                    spec.FilterRootNode,
+                    spec.FilterExprRootNode,
                     spec.GroupByExpressions,
                     spec.HavingExprRootNode,
                     spec.OutputLimitSpec,

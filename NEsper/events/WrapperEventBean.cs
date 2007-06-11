@@ -50,7 +50,7 @@ namespace net.esper.events
 		        {
 		            throw new ArgumentException("Property named '" + property + "' is not a valid property name for this type");
 		        }
-		        return eventType.GetGetter(property).Get(this);
+                return eventType.GetGetter(property).GetValue(this);
 	    	}
 		}
 
@@ -133,7 +133,7 @@ namespace net.esper.events
 	        {
 	            String name = entry.Key;
 	            Object value = entry.Value;
-	            Object otherValue = other.Get(name);
+	            Object otherValue = other[name];
 
 	            if ((otherValue == null) && (value == null))
 	            {

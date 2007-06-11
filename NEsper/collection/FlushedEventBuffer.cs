@@ -12,10 +12,13 @@ using net.esper.events;
 
 namespace net.esper.collection
 {
-	/// <summary>Buffer for events - accumulates events until flushed.</summary>
-	public class FlushedEventBuffer
+	/// <summary>
+	/// Buffer for events - accumulates events until flushed.
+	/// </summary>
+
+    public class FlushedEventBuffer
 	{
-	    private LinkedList<EventBean[]> remainEvents = new LinkedList<EventBean[]>();
+	    private List<EventBean[]> remainEvents = new List<EventBean[]>();
 
 	    /// <summary>Add an event array to buffer.</summary>
 	    /// <param name="events">to add</param>

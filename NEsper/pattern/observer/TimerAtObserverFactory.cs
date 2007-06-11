@@ -44,7 +44,7 @@ namespace net.esper.pattern.observer
 		        unitMap[ScheduleUnit.DAYS_OF_WEEK] = ComputeValues(value[2], ScheduleUnit.DAYS_OF_WEEK);
 		        unitMap[ScheduleUnit.DAYS_OF_MONTH] = ComputeValues(value[3], ScheduleUnit.DAYS_OF_MONTH);
 		        unitMap[ScheduleUnit.MONTHS] = ComputeValues(value[4], ScheduleUnit.MONTHS);
-		        if (observerParameters.Count > 5)
+		        if (value.Count > 5)
 		        {
 		            unitMap[ScheduleUnit.SECONDS] = ComputeValues(value[5], ScheduleUnit.SECONDS);
 		        }

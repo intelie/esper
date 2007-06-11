@@ -100,7 +100,7 @@ namespace net.esper.eql.core
 
             // Validate selection expressions, if any (could be wildcard i.e. empty list)
             IList<SelectExprElementCompiledSpec> namedSelectionList = new List<SelectExprElementCompiledSpec>();
-            for (int i = 0; i < selectionClauseSpec.SelectList.Count; i++)
+            for (int i = 0; i < selectClauseSpec.SelectList.Count; i++)
             {
                 // validate element
                 SelectExprElementRawSpec element = selectionList.SelectList[i];

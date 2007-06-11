@@ -936,11 +936,11 @@ IDENT
 // a numeric literal
 NUM_INT
 	options {paraphrase = "a numeric literal";}		   
-	{boolean isDecimal=false; Token t=null;}
+	{boolean isDecimal=false; IToken t=null;}
     :   '.' {_ttype = DOT;}
             (	('0'..'9')+ (EXPONENT)? (f1:FLOAT_SUFFIX {t=f1;})?
                 {
-				if (t != null && t.getText().toUpperCase().indexOf('F')>=0) {
+				if (t != null && t.getText().ToUpper().IndexOf('F')>=0) {
                 	_ttype = NUM_FLOAT;
 				}
 				else {
@@ -979,7 +979,7 @@ NUM_INT
             |   f4:FLOAT_SUFFIX {t=f4;}
             )
             {
-			if (t != null && t.getText().toUpperCase() .indexOf('F') >= 0) {
+			if (t != null && t.getText().ToUpper() .IndexOf('F') >= 0) {
                 _ttype = NUM_FLOAT;
 			}
             else {

@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading;
 
+using net.esper.adapter;
 using net.esper.client;
-using net.esper.compat;
-using net.esper.eql.core;
-using net.esper.eql.db;
 using net.esper.events;
 using net.esper.filter;
 using net.esper.schedule;
-using net.esper.util;
 
 namespace net.esper.core
 {
@@ -41,22 +37,43 @@ namespace net.esper.core
 		{
 			set { configSnapshot = new ConfigurationSnapshot( value ) ; }
 		}
-		
+
+        /// <summary>
+        /// Get the EventAdapterService for this engine.
+        /// </summary>
+        /// <value></value>
+        /// <returns>the EventAdapterService</returns>
 		public EventAdapterService EventAdapterService
 	    {
 	        get { return engine.Services.EventAdapterService; }
 	    }
 
+        /// <summary>
+        /// Get the SchedulingService for this engine.
+        /// </summary>
+        /// <value></value>
+        /// <returns>the SchedulingService</returns>
 	    public SchedulingService SchedulingService
 	    {
 	        get { return engine.Services.SchedulingService; }
 	    }
 
+        /// <summary>
+        /// Returns the filter service.
+        /// </summary>
+        /// <value></value>
+        /// <returns>filter service</returns>
 	    public FilterService FilterService
 	    {
 	        get { return engine.Services.FilterService; }
 	    }
 
+        /// <summary>
+        /// Returns the engine environment directory for engine-external
+        /// resources such as adapters.
+        /// </summary>
+        /// <value></value>
+        /// <returns>engine environment directory</returns>
 	    public Directory EnvDirectory
 	    {
 	        get { return engine.Services.EngineDirectory; }
@@ -86,7 +103,7 @@ namespace net.esper.core
 
         /// <summary> Constructor - initializes services.</summary>
         /// <param name="configuration">is the engine configuration</param>
-		/// <param name="engineURI">is the engine URI or null if this is the default provider
+		/// <param name="engineURI">is the engine URI or null if this is the default provider</param>
         /// <throws>  ConfigurationException is thrown to indicate a configuraton error </throws>
 
         public EPServiceProviderImpl(Configuration configuration, String engineURI)
@@ -100,7 +117,7 @@ namespace net.esper.core
         /// Frees any resources associated with this runtime instance.
         /// Stops and destroys any event filters, patterns, expressions, views.
         /// </summary>
-        public virtual void Initialize()
+        public void Initialize()
         {
             if (engine != null)
             {
@@ -137,7 +154,7 @@ namespace net.esper.core
 	            {
 	                type = Type.GetType(epServicesContextFactoryClassName);
 	            }
-	            catch (TypeLoadException e)
+	            catch (TypeLoadException)
 	            {
 	                throw new ConfigurationException("Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
 	            }
@@ -145,13 +162,13 @@ namespace net.esper.core
 	            Object obj;
 	            try
 	            {
-	                obj = Activator.CreateType(type);
+	                obj = Activator.CreateInstance(type);
 	            }
 	            catch (InstantiationException e)
 	            {
 	                throw new ConfigurationException("Type '" + type + "' cannot be instantiated");
 	            }
-	            catch (IllegalAccessException e)
+	            catch (MethodAccessException e)
 	            {
 	                throw new ConfigurationException("Illegal access instantiating type '" + type);
 	            }
@@ -189,11 +206,11 @@ namespace net.esper.core
             engine = new EPServiceEngine(services, runtime, admin);
         }
 
-		/**
-		 * Loads and initializes adapter loaders.
-		 * @param configuration is the engine configs
-		 * @param services is the engine instance services
-		 */
+		/// <summary>
+		/// Loads and initializes adapter loaders. 
+		/// </summary>
+        /// <param name="configuration">the engine configs</param>
+        /// <param name="services">the engine instance services</param>
 	    private void LoadAdapters(ConfigurationSnapshot configuration, EPServicesContext services)
 	    {
 	        IList<ConfigurationAdapterLoader> adapterLoaders = configuration.AdapterLoaders;
@@ -209,7 +226,7 @@ namespace net.esper.core
 	            {
 	                adapterLoaderClass = Type.GetType(typeName);
 	            }
-	            catch (ClassNotFoundException ex)
+	            catch (TypeLoadException ex)
 	            {
 	                throw new ConfigurationException("Failed to load adapter loader class '" + typeName + "'", ex);
 	            }
@@ -217,13 +234,9 @@ namespace net.esper.core
 	            Object adapterLoaderObj = null;
 	            try
 	            {
-	                adapterLoaderObj = Activator.CreateType(adapterLoaderClass);
+	                adapterLoaderObj = Activator.CreateInstance(adapterLoaderClass);
 	            }
-	            catch (InstantiationException ex)
-	            {
-	                throw new ConfigurationException("Failed to instantiate adapter loader class '" + typeName + "' via default constructor", ex);
-	            }
-	            catch (IllegalAccessException ex)
+	            catch (MethodAccessException ex)
 	            {
 	                throw new ConfigurationException("Illegal access to instantiate adapter loader class '" + typeName + "' via default constructor", ex);
 	            }
@@ -234,7 +247,7 @@ namespace net.esper.core
 	            // register adapter loader in JNDI context tree
 	            try
 	            {
-	                services.EngineEnvContext.Bind("adapter-loader/" + config.LoaderName, adapterLoader);
+	                services.EngineDirectory.Bind("adapter-loader/" + config.LoaderName, adapterLoader);
 	            }
 	            catch (DirectoryException e)
 	            {

@@ -5,7 +5,7 @@ using net.esper.events;
 namespace net.esper.filter
 {
 	/// <summary>
-	/// Factory for <seealso cref="FilterParamIndex" /> instances based on
+	/// Factory for <seealso cref="FilterParamIndexBase" /> instances based on
 	/// event property name and filter operator type.
 	/// </summary>
 
@@ -54,12 +54,12 @@ namespace net.esper.filter
 			}
 			
 	        // Handle all normal and inverted RANGE comparisons
-	        if (filterOperator.IsRangeOperator)
+	        if (FilterOperatorHelper.IsRangeOperator(filterOperator))
 	        {
 	            index = new FilterParamIndexRange(propertyName, filterOperator, eventType);
 	            return index;
 	        }
-	        if (filterOperator.IsInvertedRangeOperator)
+	        if (FilterOperatorHelper.IsInvertedRangeOperator(filterOperator))
 	        {
 	            index = new FilterParamIndexNotRange(propertyName, filterOperator, eventType);
 	            return index;

@@ -46,13 +46,13 @@ namespace net.esper.eql.join.table
 	        Object[] keyValues = new Object[propertyGetters.Length];
 	        for (int i = 0; i < propertyGetters.Length; i++)
 	        {
-	            Object value = propertyGetters[i].Get(_event);
+                Object value = propertyGetters[i].GetValue(_event);
                 Type coercionType = coercionTypes[i];
-	            if ((value != null) && (!value.Class.Equals(coercionType)))
+	            if ((value != null) && (value.GetType() != coercionType))
 	            {
-	                if (value is Number)
+	                if (TypeHelper.IsNumericValue(value))
 	                {
-	                    value = TypeHelper.CoerceBoxed((Number) value, coercionTypes[i]);
+	                    value = TypeHelper.CoerceBoxed(value, coercionTypes[i]);
 	                }
 	            }
 	            keyValues[i] = value;

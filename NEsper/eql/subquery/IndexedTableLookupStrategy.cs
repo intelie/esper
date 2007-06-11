@@ -85,15 +85,14 @@ namespace net.esper.eql.subquery
             {
                 int streamNum = streamNumbers[i];
                 EventBean _event = eventsPerStream[streamNum];
-                keyValues[i] = propertyGetters[i].Get(_event);
+                keyValues[i] = propertyGetters[i].GetValue(_event);
             }
             return keyValues;
         }
 
         public override String ToString()
         {
-            return "IndexedTableLookupStrategy indexProps=" + Arrays.ToString(properties) +
-                    " index=(" + index + ')';
+            return string.Format("IndexedTableLookupStrategy indexProps={0} index=({1})", CollectionHelper.Render(properties), index);
         }
     }
 } // End of namespace

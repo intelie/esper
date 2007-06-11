@@ -3,6 +3,7 @@ using System;
 using net.esper.compat;
 using net.esper.events;
 using net.esper.type;
+using net.esper.util;
 
 namespace net.esper.eql.join.plan
 {

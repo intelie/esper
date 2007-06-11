@@ -179,7 +179,7 @@ namespace net.esper.view.std
             // If there are child views, fireStatementStopped update method
             if (this.HasViews)
             {
-                if (postOldData.IsEmpty)
+                if (postOldData.Count == 0)
                 {
                     UpdateChildren(newData, null);
                 }

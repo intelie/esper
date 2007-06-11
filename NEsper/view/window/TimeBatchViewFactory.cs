@@ -43,9 +43,9 @@ namespace net.esper.view.window
 	        }
 	        else if (TypeHelper.IsFloatingPointNumber(parameter))
             {
-            	millisecondsBeforeExpiry = Math.Round(1000d * Convert.ToDouble(parameter));
+            	millisecondsBeforeExpiry = (long) Math.Round(1000d * Convert.ToDouble(parameter));
             }
-            else if (TypeHelper.IsIntegral(parameter))
+            else if (TypeHelper.IsIntegralNumber(parameter))
             {
             	millisecondsBeforeExpiry = 1000 * Convert.ToInt64(parameter);
             }
@@ -62,7 +62,7 @@ namespace net.esper.view.window
 	        if (viewParameters.Count == 2)
 	        {
 	        	Object paramRef = viewParameters[1];
-	        	if (!TypeHelper.IsIntegral( paramRef ))
+	        	if (!TypeHelper.IsIntegralNumber( paramRef ))
 	        	{
 	                throw new ViewParameterException("Time batch view requires a Long-typed reference point in msec as a second parameter");
 	            }
@@ -90,7 +90,7 @@ namespace net.esper.view.window
 	        {
 	            relativeAccessGetterImpl = new RelativeAccessByEventNIndexGetter();
 	        }
-	        resourceCallbackViewResource = relativeAccessGetterImpl;
+	        resourceCallback.ViewResource = relativeAccessGetterImpl;
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -137,7 +137,7 @@ namespace net.esper.view.window
 	            return false;
 	        }
 
-	        return myView.Count == 0;
+	        return myView.IsEmpty;
 	    }
 	}
 } // End of namespace

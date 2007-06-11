@@ -33,7 +33,7 @@ namespace net.esper.pattern
 	    /// <summary>Constructor.</summary>
 	    /// <param name="cause">is the inner exception</param>
 	    public PatternObjectException(Exception cause)
-	        : base(cause)
+	        : base("", cause)
 	    {
 	    }
 	}

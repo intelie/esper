@@ -138,7 +138,7 @@ namespace net.esper.view.window
 	        {
 	            log.Debug(".Expire Expiring messages before " +
 	                    "msec=" + expireBeforeTimestamp +
-	                    "  date=" + dateFormat.format(expireBeforeTimestamp));
+	                    "  date=" + dateFormat.Format(expireBeforeTimestamp));
 	        }
 
 	        // Remove from the timeWindow any events that have an older or timestamp then the given timestamp
@@ -148,7 +148,7 @@ namespace net.esper.view.window
 	        // If there are child views, fireStatementStopped update method
 	        if (this.HasViews)
 	        {
-	            if ((expired != null) && (!expired.IsEmpty))
+	            if ((expired != null) && (expired.Count != 0))
 	            {
 	                EventBean[] oldEvents = expired.ToArray();
 	                if (viewUpdatedCollection != null)
@@ -186,14 +186,13 @@ namespace net.esper.view.window
 
 	    private void ScheduleCallback(long msecAfterCurrentTime)
 	    {
-	        ScheduleHandleCallback callback = new ScheduleHandleCallback(
-	            delegate(ExtensionServicesContext extensionServicesContext)
-	            {
-	                this.expire();
-	            });
+	        ScheduleHandleCallback callback =
+	            new ScheduleHandleCallbackImpl(
+	                new ScheduleHandleDelegate(
+	                    delegate(ExtensionServicesContext extensionServicesContext) { Expire(); }));
 
-			EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
-	        statementContext.getSchedulingService().add(msecAfterCurrentTime, handle, scheduleSlot);
+			EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.EpStatementHandle, callback);
+	        statementContext.SchedulingService.Add(msecAfterCurrentTime, handle, scheduleSlot);
 	    }
 
         /// <summary>

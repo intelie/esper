@@ -69,7 +69,7 @@ namespace net.esper.view.std
 
                 base.Parent = value;
 
-		        if (parent.getEventType() != eventType)
+		        if (parent.EventType != eventType)
 		        {
 		            mustAddProperty = true;
 		        }

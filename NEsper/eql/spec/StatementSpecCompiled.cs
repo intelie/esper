@@ -83,7 +83,7 @@ namespace net.esper.eql.spec
 
 	    /// <summary>Gets or sets the WHERE-clause root node of filter expression.</summary>
 	    /// <returns>filter expression root node</returns>
-	    public ExprNode FilterRootNode
+	    public ExprNode FilterExprRootNode
 	    {
 	    	get { return filterExprRootNode; }
 	    	set { filterExprRootNode = value ; }

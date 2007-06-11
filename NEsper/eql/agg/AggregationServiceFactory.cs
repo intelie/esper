@@ -87,7 +87,7 @@ namespace net.esper.eql.agg
 	            }
 
 	            // Use the evaluation node under the aggregation node to obtain the aggregation value
-	            if (!aggregateNode.ChildNodes.Count == 0)
+	            if (aggregateNode.ChildNodes.Count != 0)
 	            {
 	            	evaluators[index] = aggregateNode.ChildNodes[0];
 	            }
@@ -126,7 +126,7 @@ namespace net.esper.eql.agg
 	            aggregateNode.SetAggregationResultFuture(service, column);
 
 	            // hand to all equivalent-to
-	            List<ExprAggregateNode> equivalentAggregators = equivalencyList.Fetch(aggregateNode);
+	            IList<ExprAggregateNode> equivalentAggregators = equivalencyList.Fetch(aggregateNode);
 	            if (equivalentAggregators != null)
 	            {
 	                foreach (ExprAggregateNode equivalentAggNode in equivalentAggregators)

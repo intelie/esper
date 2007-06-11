@@ -14,7 +14,6 @@ namespace net.esper.eql.core
 	public interface ViewResourceCallback
 	{
 	    /// <summary>Supplies view resource.</summary>
-	    /// <param name="resource">supplied</param>
-	    void SetViewResource(Object resource);
+	    Object ViewResource { set; }
 	}
 } // End of namespace

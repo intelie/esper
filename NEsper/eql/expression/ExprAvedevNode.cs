@@ -14,18 +14,6 @@ namespace net.esper.eql.expression
     public class ExprAvedevNode : ExprAggregateNode
     {
         /// <summary>
-        /// Returns the type that the node's evaluate method returns an instance of.
-        /// </summary>
-        /// <value>The type.</value>
-        /// <returns> type returned when evaluated
-        /// </returns>
-        /// <throws>ExprValidationException thrown when validation failed </throws>
-        public override Type ReturnType
-        {
-            get { return computer.ValueType; }
-        }
-
-        /// <summary>
         /// Returns the aggregation function name for representation in a generate expression string.
         /// </summary>
         /// <value></value>

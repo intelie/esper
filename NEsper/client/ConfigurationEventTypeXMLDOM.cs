@@ -7,8 +7,6 @@
 // ************************************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Xml;
 using System.Xml.XPath;
 
 using net.esper.compat;
@@ -77,8 +75,8 @@ namespace net.esper.client
         }
 
         /// <summary>
-	/// Gets or sets  the schema resource.
-	/// </summary>
+        /// Gets or sets  the schema resource.
+        /// </summary>
 
         virtual public String SchemaResource
         {
@@ -112,7 +110,7 @@ namespace net.esper.client
         /// <param name="name">name of the event property</param>
         /// <param name="xpath">is an arbitrary xpath expression</param>
         /// <param name="type">is the return type of the expression</param>
-        
+
         public virtual void AddXPathProperty(String name, String xpath, XPathResultType type)
         {
             XPathPropertyDesc desc = new XPathPropertyDesc(name, xpath, type);
@@ -136,6 +134,27 @@ namespace net.esper.client
         public virtual void AddNamespacePrefix(String prefix, String namespace_)
         {
             namespacePrefixes[prefix] = namespace_;
+        }
+
+        public override bool Equals(Object otherObj)
+        {
+            ConfigurationEventTypeXMLDOM other = otherObj as ConfigurationEventTypeXMLDOM;
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (other.rootElementNamespace != this.rootElementName)
+            {
+                return false;
+            }
+
+            if (((other.rootElementNamespace == null) && (rootElementNamespace != null)) ||
+                ((other.rootElementNamespace != null) && (rootElementNamespace == null)))
+            {
+                return false;
+            }
+            return rootElementNamespace == other.rootElementNamespace;
         }
 
         /// <summary>
@@ -213,34 +232,13 @@ namespace net.esper.client
                         break;
                 }
             }
-			
-		    public override bool Equals(Object otherObj)
-		    {
-		        ConfigurationEventTypeXMLDOM other = otherObj as ConfigurationEventTypeXMLDOM;
-				if ( other == null )
-				{
-					return false ;
-				}
-				
-		        if (!(other.rootElementName.Equals(rootElementName)))
-		        {
-		            return false;
-		        }
 
-		        if (((other.rootElementNamespace == null) && (rootElementNamespace != null)) ||
-		            ((other.rootElementNamespace != null) && (rootElementNamespace == null)))
-		        {
-		            return false;
-		        }
-	            return rootElementNamespace == other.rootElementNamespace;
-		    }
-		    
-			public override int GetHashCode()
-			{
-				return
-					this.name.GetHashCode() * 31 +
-					this.xpath.GetHashCode() ;
-			}			
+            public override int GetHashCode()
+            {
+                return
+                    name.GetHashCode() * 31 +
+                    xpath.GetHashCode();
+            }
         }
     }
 }

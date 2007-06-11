@@ -43,15 +43,15 @@ namespace net.esper.core
 	    {
 	        typeAliases.PutAll(configuration.EventTypeAliases);
 	        xmlDOMAliases.PutAll(configuration.EventTypesXMLDOM);
-	        autoImports = configuration.Imports.ToArray(new String[0]);
+	        autoImports = CollectionHelper.ToArray(configuration.Imports);
 	        mapAliases.PutAll(configuration.EventTypesMapEvents);
 	        legacyAliases.PutAll(configuration.EventTypesLegacy);
 	        databaseRefs.PutAll(configuration.DatabaseReferences);
 	        epServicesContextFactoryClassName = configuration.EPServicesContextFactoryClassName;
-	        plugInViews.AddAll(configuration.PlugInViews);
-	        adapterLoaders.AddAll(configuration.AdapterLoaders);
-	        plugInAggregation.AddAll(configuration.PlugInAggregationFunctions);
-	        plugInPatternObjects.AddAll(configuration.PlugInPatternObjects);
+	        plugInViews.AddRange(configuration.PlugInViews);
+            adapterLoaders.AddRange(configuration.AdapterLoaders);
+            plugInAggregation.AddRange(configuration.PlugInAggregationFunctions);
+            plugInPatternObjects.AddRange(configuration.PlugInPatternObjects);
 	    }
 
 	    /// <summary>Gets event type alias to type name mapping.</summary>
@@ -99,7 +99,7 @@ namespace net.esper.core
 
 	    /// <summary>Returns the services context factory class name</summary>
 	    /// <returns>class name</returns>
-	    public String GetEPServicesContextFactoryClassName
+	    public String EPServicesContextFactoryClassName
 	    {
 	        get { return epServicesContextFactoryClassName; }
 	    }

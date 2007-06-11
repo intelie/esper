@@ -31,7 +31,7 @@ namespace net.esper.eql.join.plan
             for (int streamIndexed = 0; streamIndexed < numStreams; streamIndexed++)
             {
                 Set<MultiKey<String>> indexesSet = new EHashSet<MultiKey<String>>();
-                IList<String[]> indexesList = new List<String[]>();
+                List<String[]> indexesList = new List<String[]>();
 
                 // Look at the index from the viewpoint of the stream looking up in the index
                 for (int streamLookup = 0; streamLookup < numStreams; streamLookup++)
@@ -56,32 +56,29 @@ namespace net.esper.eql.join.plan
                 }
 
                 // Copy the index properties for the stream to a QueryPlanIndex instance
-                String[][] indexProps2 = null;
-                if (indexesSet.Count > 0)
                 {
-                    indexProps2 = new String[indexesSet.Count][];
-                    int count = 0;
-                    foreach (String[] entry in indexesList)
+                    String[][] indexProps = null;
+                    if (indexesSet.Count != 0)
                     {
-                        indexProps2[count] = entry;
-                        count++;
+                        indexProps = new String[indexesSet.Count][];
+                        int count = 0;
+                        foreach (String[] entry in indexesList)
+                        {
+                            indexProps[count] = entry;
+                            count++;
+                        }
                     }
-                }
-                else
-                {
-                    // There are no indexes, create a default table for the event set
-                    String[][] tmpArray = new String[1][];
-                    for (int i = 0; i < 1; i++)
+                    else
                     {
-                        tmpArray[i] = new String[0];
+                        // There are no indexes, create a default table for the event set
+                        indexProps = new String[1][];
+                        indexProps[0] = new String[0];
                     }
-                    indexProps2 = tmpArray;
-                    indexProps2[0] = new String[0];
+                    indexSpecs[streamIndexed] = new QueryPlanIndex(indexProps, new Type[indexProps.Length][]);
                 }
-                indexSpecs[streamIndexed] = new QueryPlanIndex(indexProps2, new Type[indexProps.Length][]);
-            }
 
-            return indexSpecs;
+                return indexSpecs;
+            }
         }
     }
 }

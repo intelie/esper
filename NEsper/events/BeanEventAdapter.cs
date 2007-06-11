@@ -36,6 +36,10 @@ namespace net.esper.events
 		
 		public EDictionary<String, ConfigurationEventTypeLegacy> TypeToLegacyConfigs
 		{
+            get
+            {
+                throw new NotSupportedException();
+            }
 			set
 			{
 				typeToLegacyConfigs.PutAll( value ) ;
@@ -90,14 +94,14 @@ namespace net.esper.events
 			// Check if we have a legacy type definition for this class
 			using( WriterLock writerLock = new WriterLock( typesPerBeanLock ) )
 			{
-	            eventType = typesPerBean.Fetch(type);
+	            BeanEventType eventType = typesPerBean.Fetch(type);
 	            if (eventType != null)
 	            {
 	                return eventType;
 	            }
 
 	            // Check if we have a legacy type definition for this class
-	            ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(type.FullName);
+	            ConfigurationEventTypeLegacy legacyDef = typeToLegacyConfigs.Fetch(type.FullName);
 
 	            String eventTypeId = "TYPE_" + type.FullName;
 	            eventType = new BeanEventType(type, this, legacyDef, eventTypeId);

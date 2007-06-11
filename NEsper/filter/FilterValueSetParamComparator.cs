@@ -47,10 +47,12 @@ namespace net.esper.filter
 
 	    static FilterValueSetParamComparator()
 	    {
-	        filterSortOrder = new int[FilterOperator.Values().Length];
+	        Array enumValues = Enum.GetValues(typeof (FilterOperator));
+
+	        filterSortOrder = new int[enumValues.Length];
 	        for (int i = 0; i < filterSortOrder.Length ; i++)
 	        {
-	            filterSortOrder[i] = IndexOf(FilterOperator.Values()[i]);
+	            filterSortOrder[i] = IndexOf((FilterOperator) enumValues.GetValue(i));
 	        }
 	    }
 
@@ -63,8 +65,8 @@ namespace net.esper.filter
 	        }
 
 	        // Within different filter operator types sort by the table above
-	        int opIndex1 = filterSortOrder[param1.FilterOperator.Ordinal()];
-	        int opIndex2 = filterSortOrder[param2.FilterOperator.Ordinal()];
+	        int opIndex1 = filterSortOrder[(int)param1.FilterOperator];
+            int opIndex2 = filterSortOrder[(int)param2.FilterOperator];
 
 	        if (opIndex1 < opIndex2)
 	        {

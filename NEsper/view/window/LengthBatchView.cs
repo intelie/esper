@@ -41,8 +41,8 @@ namespace net.esper.view.window
 	    private readonly ViewUpdatedCollection viewUpdatedCollection;
 
 	    // Current running windows
-	    private LinkedList<EventBean> lastBatch = null;
-	    private LinkedList<EventBean> currentBatch = new LinkedList<EventBean>();
+	    private List<EventBean> lastBatch = null;
+	    private List<EventBean> currentBatch = new List<EventBean>();
 
 	    /// <summary>Constructor.</summary>
 	    /// <param name="size">is the number of events to batch</param>
@@ -51,10 +51,10 @@ namespace net.esper.view.window
 	    /// </param>
 	    /// <param name="lengthBatchViewFactory">for copying this view in a group-by</param>
 	    public LengthBatchView(LengthBatchViewFactory lengthBatchViewFactory,
-	                         int size,
-	                         ViewUpdatedCollection viewUpdatedCollection)
+	                           int size,
+	                            ViewUpdatedCollection viewUpdatedCollection)
 	    {
-	        this.LengthBatchViewFactory = lengthBatchViewFactory;
+	        this.lengthBatchViewFactory = lengthBatchViewFactory;
 	        this.size = size;
 	        this.viewUpdatedCollection = viewUpdatedCollection;
 
@@ -76,6 +76,13 @@ namespace net.esper.view.window
             get { return size; }
 	    }
 
+        /// <summary>
+        /// Provides metadata information about the type of object the event collection contains.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// metadata for the objects in the collection
+        /// </returns>
 	    public override EventType EventType
 	    {
             get { return parent.EventType; }
@@ -112,7 +119,9 @@ namespace net.esper.view.window
 	        SendBatch();
 	    }
 
-	    /// <summary>This method updates child views and clears the batch of events.</summary>
+        /// <summary>
+        /// This method updates child views and clears the batch of events.
+        /// </summary>
 	    internal void SendBatch()
 	    {
 	        if (log.IsDebugEnabled)
@@ -121,18 +130,18 @@ namespace net.esper.view.window
 	        }
 
 	        // If there are child views and the batch was filled, fireStatementStopped update method
-	        if (this.HasViews())
+	        if (this.HasViews)
 	        {
 	            // Convert to object arrays
 	            EventBean[] newData = null;
 	            EventBean[] oldData = null;
-	            if (!currentBatch.IsEmpty())
+	            if (currentBatch.Count != 0)
 	            {
-	                newData = currentBatch.ToArray(new EventBean[0]);
+	                newData = currentBatch.ToArray();
 	            }
-	            if ((lastBatch != null) && (!lastBatch.IsEmpty()))
+	            if ((lastBatch != null) && (lastBatch.Count != 0))
 	            {
-	                oldData = lastBatch.ToArray(new EventBean[0]);
+	                oldData = lastBatch.ToArray();
 	            }
 
 	            // Post new data (current batch) and old data (prior batch)
@@ -149,14 +158,14 @@ namespace net.esper.view.window
 	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".sendBatch Published updated data, ....newData size=" + currentBatch.Count);
-	            foreach (Object item in currentBatch)
+	            foreach (EventBean item in currentBatch)
 	            {
 	                log.Debug(".sendBatch object=" + item);
 	            }
 	        }
 
 	        lastBatch = currentBatch;
-	        currentBatch = new LinkedList<EventBean>();
+	        currentBatch = new List<EventBean>();
 	    }
 
 	    /// <summary>Returns true if the window is empty, or false if not empty.</summary>
@@ -167,23 +176,35 @@ namespace net.esper.view.window
             {
                 if (lastBatch != null)
                 {
-                    if (!lastBatch.IsEmpty())
+                    if (lastBatch.Count != 0)
                     {
                         return false;
                     }
                 }
-                return currentBatch.IsEmpty();
+                return (currentBatch.Count == 0);
             }
 	    }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
 	    public override IEnumerator<EventBean> GetEnumerator()
 	    {
 	        return currentBatch.GetEnumerator();
 	    }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override String ToString()
 	    {
-	        return this.Class.Name +
+	        return this.GetType().FullName +
 	                " size=" + size;
 	    }
 

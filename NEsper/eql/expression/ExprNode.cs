@@ -7,6 +7,7 @@ using Log = org.apache.commons.logging.Log;
 using LogFactory = org.apache.commons.logging.LogFactory;
 
 using net.esper.compat;
+using net.esper.eql.agg;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.util;
@@ -273,7 +274,7 @@ namespace net.esper.eql.expression
 	        }
 	        catch (EngineImportException e)
 	        {
-	            throw new IllegalStateException("Error resolving aggregation: " + e.getMessage(), e);
+	            throw new IllegalStateException("Error resolving aggregation: " + e.Message, e);
 	        }
 
 	        // absolutly cannot be resolved
@@ -345,7 +346,8 @@ namespace net.esper.eql.expression
 	        String argument = property.Substring(startArg + 1, endArg);
 
 	        // get method
-	        String[] splitDots = property.ToString().Split("[\\.]");
+	        //String[] splitDots = property.ToString().Split("[\\.]");
+            String[] splitDots = property.ToString().Split('.');
 	        if (splitDots.Length == 0)
 	        {
 	            return null;

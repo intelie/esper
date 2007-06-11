@@ -92,7 +92,7 @@ namespace net.esper.view.stream
 	        }
 	        else
 	        {
-	            pair = eventStreamsRefCounted.Fetch(filterSpec);
+	            pair = eventStreamsRefCounted[filterSpec];
 	        }
 
 	        // If pair exists, either reference count or illegal state

@@ -45,23 +45,19 @@ namespace net.esper.view.window
 	        if (parameter is TimePeriodParameter)
 	        {
 	            TimePeriodParameter param = (TimePeriodParameter) parameter;
-	            millisecondsBeforeExpiry = Math.Round(1000d * param.NumSeconds);
+                millisecondsBeforeExpiry = (long)Math.Round(1000d * param.NumSeconds);
 	        }
-	        else if (!(parameter is Number))
-	        {
-	            throw new ViewParameterException(errorMessage);
-	        }
+            else if (TypeHelper.IsFloatingPointNumber(parameter))
+            {
+                millisecondsBeforeExpiry = (long)Math.Round(1000d * Convert.ToDouble(parameter));
+            }
+            else if (TypeHelper.IsIntegralNumber(parameter))
+            {
+                millisecondsBeforeExpiry = 1000 * Convert.ToInt64(parameter);
+            }
 	        else
 	        {
-	            Number param = (Number) parameter;
-	            if (TypeHelper.IsFloatingPointNumber(param))
-	            {
-	                millisecondsBeforeExpiry = Math.Round(1000d * param.DoubleValue());
-	            }
-	            else
-	            {
-	                millisecondsBeforeExpiry = 1000 * param.LongValue();
-	            }
+	            throw new ViewParameterException(errorMessage);
 	        }
 	    }
 
@@ -89,15 +85,15 @@ namespace net.esper.view.window
 
 	    public void SetProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
 	    {
-	        if (!canProvideCapability(viewCapability))
+	        if (!CanProvideCapability(viewCapability))
 	        {
-	            throw new UnsupportedOperationException("View capability " + viewCapability.Class.SimpleName + " not supported");
+	            throw new UnsupportedOperationException("View capability " + viewCapability.GetType().FullName + " not supported");
 	        }
 	        if (randomAccessGetterImpl == null)
 	        {
 	            randomAccessGetterImpl = new RandomAccessByIndexGetter();
 	        }
-	        resourceCallbackViewResource = randomAccessGetterImpl;
+	        resourceCallback.ViewResource = randomAccessGetterImpl;
 	    }
 
 	    public View MakeView(StatementContext statementContext)
@@ -131,7 +127,7 @@ namespace net.esper.view.window
 	        {
 	            return false;
 	        }
-	        return myView.IsEmpty();
+	        return myView.IsEmpty;
 	    }
 	}
 } // End of namespace

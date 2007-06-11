@@ -63,7 +63,7 @@ namespace net.esper.util
 
 	    /// <summary>Logs the lock and action.</summary>
 	    /// <param name="lockAction">is the action towards the lock</param>
-	    /// <param name="lock">is the lock instance</param>
+	    /// <param name="lockObj">is the lock instance</param>
 	    public static void TraceLock(String lockAction, Object lockObj)
 	    {
 	        if (!ENABLED_TRACE)
@@ -75,7 +75,7 @@ namespace net.esper.util
 
 	    /// <summary>Logs the lock and action.</summary>
 	    /// <param name="lockAction">is the action towards the lock</param>
-	    /// <param name="lock">is the lock instance</param>
+        /// <param name="lockObj">is the lock instance</param>
 	    public static void TraceLock(String lockAction, ReaderWriterLock lockObj)
 	    {
 	        if (!ENABLED_TRACE)
@@ -108,7 +108,7 @@ namespace net.esper.util
 	        buf.Append(' ');
 	        foreach (Object obj in objects)
 	        {
-	            if ((obj is String) || (obj is Number))
+	            if ((obj is String) || (obj is ValueType))
 	            {
 	                buf.Append(obj.ToString());
 	            }

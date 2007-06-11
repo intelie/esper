@@ -73,8 +73,27 @@ namespace net.esper.compat
 		public virtual V Fetch( K key ) {
 			return Fetch( key, default(V) );			
 		}
-		
-		/// <summary>
+
+        /// <summary>
+        /// Removes the item from the dictionary that is associated with
+        /// the specified key.  Returns the value that was found at that
+        /// location and removed or the defaultValue.
+        /// </summary>
+        /// <param name="key">Search key into the dictionary</param>
+        /// <param name="value">The value removed from the dictionary (if found).</param>
+        /// <returns></returns>
+
+        public bool Remove(K key, out V value)
+        {
+            if (!m_subDictionary.TryGetValue(key, out value))
+            {
+                return false;
+            }
+
+            return m_subDictionary.Remove(key);
+        }
+
+        /// <summary>
 		/// Sets the given key in the dictionary.  If the key
 		/// already exists, then it is remapped to thenew value.
 		/// </summary>

@@ -57,11 +57,11 @@ namespace net.esper.events
             beanEventAdapter = new BeanEventAdapter();
         }
 
-        /// <summary>Set the legacy class type information.</summary>
-        /// <param name="classToLegacyConfigs">is the legacy class configs</param>
-        public void SetClassLegacyConfigs(EDictionary<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
+        /// <summary>Gets or sets the legacy class type information.</summary>
+        public EDictionary<String, ConfigurationEventTypeLegacy> TypeLegacyConfigs
         {
-            beanEventAdapterClassToLegacyConfigs = classToLegacyConfigs;
+            get { return beanEventAdapter.TypeToLegacyConfigs; }
+            set { beanEventAdapter.TypeToLegacyConfigs = value;}
         }
 
         public String GetIdByAlias(String eventTypeAlias)
@@ -281,12 +281,10 @@ namespace net.esper.events
                 throw new EventAdapterException("Event type alias '" + eventTypeAlias + "' has not been defined");
             }
 
-            EDictionary<String, Object> eventMap = (EDictionary<String, Object>)_event;
-
-            return CreateMapFromValues(eventMap, existingType);
+            return CreateMapFromValues(_event, existingType);
         }
 
-        public EventBean CreateMapFromValues(IDataDictionary properties, EventType eventType)
+        public EventBean CreateMapFromValues(EDictionary<String, Object> properties, EventType eventType)
         {
             return new MapEventBean(properties, eventType);
         }
@@ -326,7 +324,7 @@ namespace net.esper.events
             rootElementName = namedNode.LocalName;
             if (rootElementName == null)
             {
-                rootElementName = namedNode.NodeName;
+                rootElementName = namedNode.Name;
             }
 
             EventType eventType = xmldomRootElementNames.Fetch(rootElementName);

@@ -26,7 +26,7 @@ namespace net.esper.view
 	        this.optionalIndexConstant = optionalIndexConstant;
 	    }
 
-	    public bool Inspect(List<ViewFactory> viewFactories)
+	    public bool Inspect(IList<ViewFactory> viewFactories)
 	    {
 	        // We allow the capability only if
 	        //  - 1 view

@@ -40,7 +40,7 @@ namespace net.esper.core
 	        PatternObjectResolutionService patternObjectResolutionService = new PatternObjectResolutionServiceImpl(configSnapshot.PlugInPatternObjects);
 
 	        // Directory for binding resources
-	        EngineEnvContext resourceDirectory = new EngineEnvContext();
+	        Directory resourceDirectory = new SimpleServiceDirectory();
 
 	        // Statement context factory
 	        StatementContextFactory statementContextFactory = new StatementContextFactoryDefault();
@@ -53,7 +53,7 @@ namespace net.esper.core
 
 	        // Circular dependency
 	        StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(services);
-	        servicesStatementLifecycleSvc = statementLifecycleSvc;
+	        services.StatementLifecycleSvc = statementLifecycleSvc;
 
 	        return services;
 	    }
@@ -68,7 +68,7 @@ namespace net.esper.core
 	        // We supply this information as setup information to the event adapter service
 	        // to allow discovery of superclasses and interfaces during event type construction for bean events,
 	        // such that superclasses and interfaces can use the legacy type definitions.
-	        IDictionary<String, ConfigurationEventTypeLegacy> classLegacyInfo = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
+	        EDictionary<String, ConfigurationEventTypeLegacy> classLegacyInfo = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
 	        foreach (KeyValuePair<String, String> entry in configSnapshot.TypeAliases)
 	        {
 	            String aliasName = entry.Key;
@@ -76,14 +76,14 @@ namespace net.esper.core
 	            ConfigurationEventTypeLegacy legacyDef = configSnapshot.LegacyAliases.Fetch(aliasName);
 	            if (legacyDef != null)
 	            {
-	                classLegacyInfo.Put(className, legacyDef);
+	                classLegacyInfo[className] = legacyDef;
 	            }
 	        }
-	        eventAdapterServiceClassLegacyConfigs = classLegacyInfo;
+	        eventAdapterService.TypeLegacyConfigs = classLegacyInfo;
 
-	        // Add from the configuration the Java event class aliases
-	        IDictionary<String, String> javaClassAliases = configSnapshot.TypeAliases;
-	        foreach (KeyValuePair<String, String> entry in javaClassAliases)
+	        // Add from the configuration the event class aliases
+	        IDictionary<String, String> typeAliases = configSnapshot.TypeAliases;
+	        foreach (KeyValuePair<String, String> entry in typeAliases)
 	        {
 	            // Add type alias
 	            try

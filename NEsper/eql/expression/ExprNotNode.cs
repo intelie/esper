@@ -59,7 +59,7 @@ namespace net.esper.eql.expression
         /// </returns>
         public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
         {
-            Boolean evaluated = (Boolean)this.ChildNodes[0].Evaluate(eventsPerStream);
+            bool evaluated = (bool)this.ChildNodes[0].Evaluate(eventsPerStream, isNewData);
             return !evaluated;
         }
 

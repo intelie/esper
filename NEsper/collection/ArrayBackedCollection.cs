@@ -33,7 +33,7 @@ namespace net.esper.collection
 	{
 	    private int lastIndex;
 	    private int currentIndex;
-	    private Object[] handles;
+	    private T[] handles;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="currentSize">is the initial size of the backing array.</param>
@@ -41,7 +41,7 @@ namespace net.esper.collection
 	    {
 	        this.lastIndex = currentSize - 1;
 	        this.currentIndex = 0;
-	        this.handles = new Object[currentSize];
+	        this.handles = new T[currentSize];
 	    }
 
         /// <summary>
@@ -54,19 +54,20 @@ namespace net.esper.collection
 	        if (currentIndex <= lastIndex)
 	        {
 	            handles[currentIndex++] = item;
-	            return true;
+	            return;
 	        }
 
 	        // allocate more by duplicating the current size
 	        int newSize = lastIndex * 2 + 2;
-	        Object[] newHandles = new Object[newSize];
-            Array.Copy(handles, 0, newHandles, 0, handles.Length);
+	        T[] newHandles = new T[newSize];
+            
+            handles.CopyTo(newHandles, 0);
 	        handles = newHandles;
 	        lastIndex = newSize - 1;
 
 	        // add
 	        handles[currentIndex++] = item;
-	        return true;
+	        return;
 	    }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace net.esper.collection
 	    /// </summary>
 	    /// <returns>backing array</returns>
 	    
-        public Object[] Array
+        public T[] Array
 	    {
 	        get { return handles; }
 	    }

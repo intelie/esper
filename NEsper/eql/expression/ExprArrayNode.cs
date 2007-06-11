@@ -124,7 +124,8 @@ namespace net.esper.eql.expression
 	    {
 	    	get
 	    	{
-	        	return Array.NewInstance(coercionType, 0).Class;
+                //return Array.CreateInstance(coercionType, 0).GetType();
+                return Type.GetType(coercionType.FullName + "[]");
 	    	}
 	    }
 
@@ -135,7 +136,7 @@ namespace net.esper.eql.expression
 	            return constantResult;
 	        }
 
-	        Object array = Array.NewInstance(coercionType, length);
+	        Array array = Array.CreateInstance(coercionType, length);
 
 	        if (length == 0)
 	        {
@@ -150,13 +151,12 @@ namespace net.esper.eql.expression
 	            {
 	                if (mustCoerce)
 	                {
-	                    Number boxed = (Number) result;
-	                    Object coercedResult = TypeHelper.CoerceBoxed(boxed, coercionType);
-	                    Array.Set(array, index, coercedResult);
+	                    Object coercedResult = TypeHelper.CoerceBoxed(result, coercionType);
+	                    array.SetValue(coercedResult, index);
 	                }
 	                else
 	                {
-	                    Array.Set(array, index, result);
+                        array.SetValue(result, index);
 	                }
 	            }
 	            index++;

@@ -53,7 +53,7 @@ namespace net.esper.eql.join
             {
                 EventBean[] eventArr = key.Array;
 
-                bool? matched = (bool?)filterExprNode.Evaluate(eventArr);
+                bool? matched = (bool?)filterExprNode.Evaluate(eventArr, isNewData);
 
                 if (!(matched ?? false))
                 {

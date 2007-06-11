@@ -65,7 +65,8 @@ namespace net.esper.view.internals
 	        {
 	            priorToIndexes[count++] = priorIndex;
 	        }
-	        Arrays.Sort(priorToIndexes);
+
+            Array.Sort(priorToIndexes);
 
 	        // Construct a rolling buffer of new data for holding max index + 1 (position 1 requires 2 events to keep)
 	        newEvents = new RollingEventBuffer(maxPriorIndex + 1);

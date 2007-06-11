@@ -9,6 +9,8 @@
 using System;
 using System.Threading;
 
+using net.esper.compat;
+
 namespace net.esper.util
 {
 	/// <summary>
@@ -18,16 +20,16 @@ namespace net.esper.util
 	public class ManagedReadWriteLock
 	{
 	    /// <summary>Acquire text.</summary>
-	    protected readonly static String ACQUIRE_TEXT  = "Acquire ";
+	    internal const string ACQUIRE_TEXT  = "Acquire ";
 
 	    /// <summary>Acquired text.</summary>
-	    protected readonly static String ACQUIRED_TEXT = "Got     ";
+        internal const string ACQUIRED_TEXT = "Got     ";
 
 	    /// <summary>Release text.</summary>
-	    protected readonly static String RELEASE_TEXT  = "Release ";
+        internal const string RELEASE_TEXT = "Release ";
 
 	    /// <summary>Released text.</summary>
-	    protected readonly static String RELEASED_TEXT = "Freed   ";
+        internal const string RELEASED_TEXT = "Freed   ";
 
 	    private readonly ReaderWriterLock lockObj;
 	    private readonly String name;

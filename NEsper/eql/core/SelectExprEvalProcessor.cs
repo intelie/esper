@@ -165,7 +165,8 @@ namespace net.esper.eql.core
         /// Computes the select-clause results and returns an event of the result event type that contains, in it's
         /// properties, the selected items.
         /// </summary>
-        /// <param name="eventsPerStream"></param>
+        /// <param name="eventsPerStream">is per stream the event</param>
+        /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>
         /// event with properties containing selected items
         /// </returns>
@@ -237,7 +238,7 @@ namespace net.esper.eql.core
             }
         }
 
-	    private EventBean getEvent(EventBean[] eventsPerStream, bool isNewData)
+	    private EventBean GetEvent(EventBean[] eventsPerStream, bool isNewData)
 	    {
 	        if(joinWildcardProcessor != null)
 	    	{

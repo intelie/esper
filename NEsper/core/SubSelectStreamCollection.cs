@@ -18,7 +18,7 @@ namespace net.esper.core
 	/// <summary>Holds stream information for subqueries.</summary>
 	public class SubSelectStreamCollection
 	{
-	    private IDictionary<ExprSubselectNode, SubSelectHolder> subqueries;
+	    private EDictionary<ExprSubselectNode, SubSelectHolder> subqueries;
 
 	    /// <summary>Ctor.</summary>
 	    public SubSelectStreamCollection()
@@ -33,7 +33,7 @@ namespace net.esper.core
 	    /// <param name="viewFactoryChain">is the chain of view factories</param>
 	    public void Add(ExprSubselectNode subselectNode, int streamNumber, Viewable viewable, ViewFactoryChain viewFactoryChain)
 	    {
-	        subqueries.Put(subselectNode, new SubSelectHolder(streamNumber, viewable, viewFactoryChain));
+	        subqueries[subselectNode] = new SubSelectHolder(streamNumber, viewable, viewFactoryChain);
 	    }
 
 	    /// <summary>Returns stream number.</summary>
@@ -41,7 +41,7 @@ namespace net.esper.core
 	    /// <returns>number of stream</returns>
 	    public int GetStreamNumber(ExprSubselectNode subqueryNode)
 	    {
-	        return subqueries.Get(subqueryNode).StreamNumber;
+	        return subqueries[subqueryNode].StreamNumber;
 	    }
 
 	    /// <summary>Returns the subquery viewable, child-most view.</summary>
@@ -49,7 +49,7 @@ namespace net.esper.core
 	    /// <returns>child viewable</returns>
 	    public Viewable GetRootViewable(ExprSubselectNode subqueryNode)
 	    {
-	        return subqueries.Get(subqueryNode).Viewable;
+	        return subqueries[subqueryNode].Viewable;
 	    }
 
 	    /// <summary>Returns the subquery's view factory chain.</summary>
@@ -57,7 +57,7 @@ namespace net.esper.core
 	    /// <returns>view factory chain</returns>
 	    public ViewFactoryChain GetViewFactoryChain(ExprSubselectNode subqueryNode)
 	    {
-	        return subqueries.Get(subqueryNode).ViewFactoryChain;
+	        return subqueries[subqueryNode].ViewFactoryChain;
 	    }
 
 	    /// <summary>Entry holding subquery resource references.</summary>
@@ -80,23 +80,23 @@ namespace net.esper.core
 
 	        /// <summary>Returns subquery stream number.</summary>
 	        /// <returns>stream num</returns>
-	        public int GetStreamNumber()
+	        public int StreamNumber
 	        {
-	            return streamNumber;
+	            get { return streamNumber; }
 	        }
 
 	        /// <summary>Returns the subquery child viewable.</summary>
 	        /// <returns>child-most viewable</returns>
-	        public Viewable GetViewable()
+	        public Viewable Viewable
 	        {
-	            return viewable;
+                get { return viewable; }
 	        }
 
 	        /// <summary>Returns the subquery view factory chain</summary>
 	        /// <returns>view factory chain</returns>
-	        public ViewFactoryChain GetViewFactoryChain()
+	        public ViewFactoryChain ViewFactoryChain
 	        {
-	            return viewFactoryChain;
+                get { return viewFactoryChain; }
 	        }
 	    }
 	}

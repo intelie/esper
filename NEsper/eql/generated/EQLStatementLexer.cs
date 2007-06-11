@@ -1833,7 +1833,7 @@ _loop323_breakloop:			;
 		IToken f2 = null;
 		IToken f3 = null;
 		IToken f4 = null;
-		bool isDecimal=false; Token t=null;
+		bool isDecimal=false; IToken t=null;
 		
 		switch ( cached_LA1 )
 		{
@@ -1890,7 +1890,7 @@ _loop327_breakloop:						;
 					if (0==inputState.guessing)
 					{
 						
-										if (t != null && t.getText().toUpperCase().indexOf('F')>=0) {
+										if (t != null && t.getText().ToUpper().IndexOf('F')>=0) {
 							_ttype = NUM_FLOAT;
 										}
 										else {
@@ -2177,7 +2177,7 @@ _loop351_breakloop:									;
 						if (0==inputState.guessing)
 						{
 							
-										if (t != null && t.getText().toUpperCase() .indexOf('F') >= 0) {
+										if (t != null && t.getText().ToUpper() .IndexOf('F') >= 0) {
 							_ttype = NUM_FLOAT;
 										}
 							else {

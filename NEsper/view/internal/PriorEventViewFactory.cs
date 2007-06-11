@@ -127,11 +127,11 @@ namespace net.esper.view.internals
 	                if (viewUpdatedCollection is RelativeAccessByEventNIndex)
 	                {
 	                    RelativeAccessByEventNIndex relativeAccess = (RelativeAccessByEventNIndex) viewUpdatedCollection;
-	                    callbackViewResource = new RelativeAccessImpl(relativeAccess, relativeIndex);
+	                    callback.ViewResource = new RelativeAccessImpl(relativeAccess, relativeIndex);
 	                }
 	                else
 	                {
-	                    callbackViewResource = viewUpdatedCollection;
+	                    callback.ViewResource = viewUpdatedCollection;
 	                }
 	            }
 	            relativeIndex++;

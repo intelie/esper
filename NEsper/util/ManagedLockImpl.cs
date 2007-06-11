@@ -53,7 +53,7 @@ namespace net.esper.util
 	            ThreadLogUtil.TraceLock(ManagedReadWriteLock.RELEASE_TEXT + name, lockObj);
 	        }
 
-	        Monitor.Exit();
+	        Monitor.Exit(lockObj);
 
 	        if (ThreadLogUtil.ENABLED_TRACE)
 	        {

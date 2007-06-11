@@ -31,8 +31,8 @@ namespace net.esper.eql.view
 	{
 	    private readonly bool outputLastOnly;
 	    private readonly OutputCondition outputCondition;
-	    private List<EventBean> newEventsList = new LinkedList<EventBean>();
-		private List<EventBean> oldEventsList = new LinkedList<EventBean>();
+	    private List<EventBean> newEventsList = new List<EventBean>();
+		private List<EventBean> oldEventsList = new List<EventBean>();
 		private Set<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
 		private Set<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
 
@@ -65,8 +65,8 @@ namespace net.esper.eql.view
 	    	}
 
 	    	OutputCallback outputCallback = GetCallbackToLocal(streamCount);
-	    	this.outputCondition = OutputConditionFactory.CreateCondition(outputLimitSpec, statementContext, outputCallback);
-	        this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.IsDisplayLastOnly());
+	    	outputCondition = OutputConditionFactory.CreateCondition(outputLimitSpec, statementContext, outputCallback);
+	        outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.IsDisplayLastOnly);
 	    }
 
 	    /// <summary>
@@ -114,21 +114,30 @@ namespace net.esper.eql.view
 	        if (log.IsDebugEnabled)
 	        {
 	            log.Debug(".process Received update, " +
-	                    "  newData.Length==" + ((newEvents == null) ? 0 : newEvents.Count) +
-	                    "  oldData.Length==" + ((oldEvents == null) ? 0 : oldEvents.Count));
+	                      "  newData.Length==" + ((newEvents == null) ? 0 : newEvents.Count) +
+	                      "  oldData.Length==" + ((oldEvents == null) ? 0 : oldEvents.Count));
 	        }
 
-			// add the incoming events to the event batches
-			foreach (MultiKey<EventBean> _event in newEvents)
-			{
-				newEventsSet.Add(_event);
-			}
-			foreach (MultiKey<EventBean> _event in oldEvents)
-			{
-				oldEventsSet.Add(_event);
-			}
+	        // add the incoming events to the event batches
+	        if (newEvents != null)
+            {
+	            foreach (MultiKey<EventBean> _event in newEvents)
+	            {
+	                newEventsSet.Add(_event);
+	            }
+    	    }
 
-			outputCondition.UpdateOutputCondition(newEvents.Count, oldEvents.Count);
+            if (oldEvents != null)
+            {
+                foreach (MultiKey<EventBean> _event in oldEvents)
+                {
+                    oldEventsSet.Add(_event);
+                }
+            }
+
+	        outputCondition.UpdateOutputCondition(
+	            newEvents != null ? newEvents.Count : 0,
+	            oldEvents != null ? oldEvents.Count : 0);
 	    }
 
 		/// <summary>
@@ -147,8 +156,8 @@ namespace net.esper.eql.view
 			log.Debug(".continueOutputProcessingView");
 
 			// Get the arrays of new and old events, or null if none
-			EventBean[] newEvents = !newEventsList.IsEmpty() ? newEventsList.ToArray(new EventBean[0]) : null;
-			EventBean[] oldEvents = !oldEventsList.IsEmpty() ? oldEventsList.ToArray(new EventBean[0]) : null;
+			EventBean[] newEvents = (newEventsList.Count != 0) ? newEventsList.ToArray() : null;
+			EventBean[] oldEvents = (oldEventsList.Count != 0) ? oldEventsList.ToArray() : null;
 
 			if(resultSetProcessor != null)
 			{
@@ -166,20 +175,20 @@ namespace net.esper.eql.view
 
 			if(doOutput)
 			{
-				output(forceUpdate, newEvents, oldEvents);
+				Output(forceUpdate, newEvents, oldEvents);
 			}
-			resetEventBatches();
+			ResetEventBatches();
 		}
 
 		private void Output(bool forceUpdate, EventBean[] newEvents, EventBean[] oldEvents)
 		{
 			if (newEvents != null || oldEvents != null)
 			{
-				updateChildren(newEvents, oldEvents);
+				UpdateChildren(newEvents, oldEvents);
 			}
 			else if (forceUpdate)
 			{
-				updateChildren(null, null);
+				UpdateChildren(null, null);
 			}
 		}
 
@@ -218,9 +227,9 @@ namespace net.esper.eql.view
 
 			if(doOutput)
 			{
-				output(forceUpdate, newEvents, oldEvents);
+				Output(forceUpdate, newEvents, oldEvents);
 			}
-			resetEventBatches();
+			ResetEventBatches();
 		}
 
 	    private OutputCallback GetCallbackToLocal(int streamCount)

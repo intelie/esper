@@ -20,7 +20,7 @@ namespace net.esper.filter
 	/// <summary>Index that simply maintains a list of bool expressions.</summary>
 	public sealed class FilterParamIndexBooleanExpr : FilterParamIndexBase
 	{
-	    private readonly IDictionary<ExprNodeAdapter, EventEvaluator> evaluatorsMap;
+	    private readonly EDictionary<ExprNodeAdapter, EventEvaluator> evaluatorsMap;
 	    private readonly ReaderWriterLock constantsMapRWLock;
 
 	    /// <summary>Constructs the index for multiple-exact matches.</summary>
@@ -39,12 +39,12 @@ namespace net.esper.filter
 	    	get
 	    	{
 		        ExprNodeAdapter keyValues = (ExprNodeAdapter) filterConstant;
-		        return evaluatorsMap.Get(keyValues);
+		        return evaluatorsMap.Fetch(keyValues);
 	    	}
 			set
 		    {
 		        ExprNodeAdapter keys = (ExprNodeAdapter) filterConstant;
-	    	    evaluatorsMap.Put(keys, value);
+		        evaluatorsMap[keys] = value;
 		    }
 	    }
 
@@ -68,19 +68,21 @@ namespace net.esper.filter
 	    {
 	        if (log.IsDebugEnabled)
 	        {
-	            log.Debug(".match (" + Thread.CurrentThread().Id + ")");
+	            log.Debug(".match (" + Thread.CurrentThread.ManagedThreadId + ")");
 	        }
 
 	        List<EventEvaluator> evaluators = new List<EventEvaluator>();
-	        constantsMapRWLock.ReadLock().Lock();
-	        foreach (ExprNodeAdapter exprNodeAdapter in evaluatorsMap.Keys)
-	        {
-	            if (exprNodeAdapter.Evaluate(eventBean))
-	            {
-	                evaluators.Add(evaluatorsMap.Get(exprNodeAdapter));
-	            }
-	        }
-	        constantsMapRWLock.ReadLock().Unlock();
+            using (new ReaderLock(constantsMapRWLock))
+            {
+                foreach (KeyValuePair<ExprNodeAdapter, EventEvaluator> pair in evaluatorsMap)
+                {
+                    ExprNodeAdapter exprNodeAdapter = pair.Key;
+                    if (exprNodeAdapter.Evaluate(eventBean))
+                    {
+                        evaluators.Add(pair.Value);
+                    }
+                }
+            }
 
 	        foreach (EventEvaluator evaluator in evaluators)
 	        {

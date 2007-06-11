@@ -90,7 +90,7 @@ namespace net.esper.eql.spec
 
 	            List<ExprNode> exprNodes = filterNode.RawFilterSpec.FilterExpressions;
 	            FilterSpecCompiled spec = FilterSpecCompiler.MakeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService);
-	            filterNodeFilterSpec = spec;
+	            filterNode.FilterSpec = spec;
 	        }
 
 	        return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, this.ViewSpecs, this.OptionalStreamName);

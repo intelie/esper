@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using net.esper.compat;
 using net.esper.collection;
 using net.esper.pattern;
 
@@ -90,7 +92,7 @@ namespace net.esper.filter
 
 	    public override String ToString()
 	    {
-	        return baseToString() + "  in=(listOfValues=" + listOfValues.ToString() + ')';
+	        return base.ToString() + "  in=(listOfValues=" + listOfValues.ToString() + ')';
 	    }
 
 	    public override bool Equals(Object obj)
@@ -116,7 +118,7 @@ namespace net.esper.filter
 	            return false;
 	        }
 
-	        if (!(Arrays.DeepEquals(listOfValues.ToArray(), other.listOfValues.ToArray())))
+	        if (!(CollectionHelper.AreEqual(listOfValues.ToArray(), other.listOfValues.ToArray())))
 	        {
 	            return false;
 	        }

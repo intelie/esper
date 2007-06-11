@@ -37,31 +37,34 @@ namespace net.esper.pattern
 
 	    /// <summary>Returns the child number.</summary>
 	    /// <returns>child number</returns>
-	    public short GetChildNumber()
+	    public short ChildNumber
 	    {
-	        return number[number.Length - 1];
+            get { return number[number.Length - 1]; }
 	    }
 
 	    /// <summary>Returns true for a root node, false for child nodes.</summary>
 	    /// <returns>true if root, false if child node</returns>
-	    public bool IsRoot()
+	    public bool IsRoot
 	    {
-	        return number.Length == 0;
+            get { return number.Length == 0; }
 	    }
 
 	    /// <summary>
 	    /// Returns the parent's node number, of null if this is the root node number.
 	    /// </summary>
 	    /// <returns>parent node number</returns>
-	    public EvalNodeNumber GetParentNumber()
+	    public EvalNodeNumber ParentNumber
 	    {
-	        if (isRoot())
-	        {
-	            return null;
-	        }
-	        short[] num = new short[number.Length - 1];
-            Array.Copy(number, 0, num, 0, number.Length - 1);
-	        return new EvalNodeNumber(num);
+            get
+            {
+                if (IsRoot)
+                {
+                    return null;
+                }
+                short[] num = new short[number.Length - 1];
+                Array.Copy(number, 0, num, 0, number.Length - 1);
+                return new EvalNodeNumber(num);
+            }
 	    }
 
 	    /// <summary>Returns a new child node number.</summary>
@@ -95,14 +98,14 @@ namespace net.esper.pattern
 
 	    public override String ToString()
 	    {
-	        return Arrays.ToString(number);
+	        return CollectionHelper.Render(number);
 	    }
 
 	    /// <summary>Returns the node number representation in an array of short.</summary>
 	    /// <returns>node number as short array</returns>
-	    public short[] GetNumber()
+	    public short[] Number
 	    {
-	        return number;
+            get { return number; }
 	    }
 
 	    public override bool Equals(Object o)
@@ -118,7 +121,7 @@ namespace net.esper.pattern
 
 	        EvalNodeNumber that = (EvalNodeNumber) o;
 
-	        if (!Arrays.Equals(number, that.number))
+	        if (!CollectionHelper.AreEqual(number, that.number))
 	        {
 	            return false;
 	        }

@@ -99,7 +99,7 @@ namespace net.esper.view.stat
             EventBean oldDataMap = null;
             if (this.HasViews)
             {
-                oldDataMap = populateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
+                oldDataMap = PopulateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
             }
 
             // add data points to the bean
@@ -125,7 +125,7 @@ namespace net.esper.view.stat
             // If there are child view, fireStatementStopped update method
             if (this.HasViews)
             {
-                EventBean newDataMap = populateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
+                EventBean newDataMap = PopulateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
                 UpdateChildren(new EventBean[] { newDataMap }, new EventBean[] { oldDataMap });
             }
         }
@@ -151,7 +151,7 @@ namespace net.esper.view.stat
         
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            yield return populateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
+            yield return PopulateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
         }
 
         /// <summary>

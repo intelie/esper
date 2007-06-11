@@ -159,7 +159,7 @@ namespace net.esper.view.window
             {
                 for (int i = 0; i < newData.Length; i++)
                 {
-                    timestamp = getLongValue(newData[i]);
+                    timestamp = GetLongValue(newData[i]);
                     timeWindow.Add(timestamp, newData[i]);
                 }
             }
@@ -172,7 +172,7 @@ namespace net.esper.view.window
 	        }
 
 	        EventBean[] oldDataUpdate = null;
-	        if ((expired != null) && (!expired.IsEmpty))
+	        if ((expired != null) && (expired.Count != 0))
 	        {
 	            oldDataUpdate = expired.ToArray();
 	        }

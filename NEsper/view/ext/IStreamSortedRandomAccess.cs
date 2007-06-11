@@ -81,11 +81,11 @@ namespace net.esper.view.ext
 				{
 					break;
 				}
-				if (!iterator.HasNext())
+				if (!enumerator.MoveNext())
 				{
 					break;
 				}
-				LinkedList<EventBean> events = iterator.Next();
+				LinkedList<EventBean> events = enumerator.Current;
 				foreach (EventBean _event in events)
 				{
 					cache[cacheFilledTo] = _event;

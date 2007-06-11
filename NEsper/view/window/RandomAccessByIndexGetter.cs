@@ -13,15 +13,17 @@ using net.esper.view.ext;
 namespace net.esper.view.window
 {
 	/// <summary>Getter that provides an index at runtime.</summary>
-	public class RandomAccessByIndexGetter : IStreamRandomAccess.IStreamRandomAccessUpdateObserver, IStreamSortedRandomAccess.IStreamRandomAccessUpdateObserver
+	public class RandomAccessByIndexGetter 
+        : IStreamRandomAccess.IStreamRandomAccessUpdateObserver
+        , IStreamSortedRandomAccess.IStreamRandomAccessUpdateObserver
 	{
 	    private RandomAccessByIndex randomAccessByIndex;
 
 	    /// <summary>Returns the index for access.</summary>
 	    /// <returns>index</returns>
-	    public RandomAccessByIndex GetAccessor()
+	    public RandomAccessByIndex Accessor
 	    {
-	        return randomAccessByIndex;
+	        get { return randomAccessByIndex; }
 	    }
 
 	    public void Updated(IStreamRandomAccess iStreamRandomAccess)

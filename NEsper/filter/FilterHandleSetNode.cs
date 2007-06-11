@@ -94,28 +94,28 @@ namespace net.esper.filter
 	    /// </param>
 	    public void MatchEvent(EventBean eventBean, IList<FilterHandle> matches)
 	    {
-	        nodeRWLock.ReadLock().Lock();
+            using (new ReaderLock(nodeRWLock))
+            {
+                // Ask each of the indizes to match against the attribute values
+                foreach (FilterParamIndexBase index in indizes)
+                {
+                    index.MatchEvent(eventBean, matches);
+                }
 
-	        // Ask each of the indizes to match against the attribute values
-	        foreach (FilterParamIndexBase index in indizes)
-	        {
-	            index.MatchEvent(eventBean, matches);
-	        }
+                // Add each filter callback stored in this node to the matching list
+                foreach (FilterHandle filterCallback in callbackSet)
+                {
+                    if (log.IsDebugEnabled)
+                    {
+                        log.Debug(".match (" + Thread.CurrentThread.ManagedThreadId +
+                                  ") Found a match, filterCallbackHash=" + filterCallback.GetHashCode() +
+                                  "  me=" + this +
+                                  "  filterCallback=" + filterCallback);
+                    }
 
-	        // Add each filter callback stored in this node to the matching list
-	        foreach (FilterHandle filterCallback in callbackSet)
-	        {
-	            if (log.IsDebugEnabled)
-	            {
-	                log.Debug(".match (" + Thread.CurrentThread.ManagedThreadId + ") Found a match, filterCallbackHash=" + filterCallback.GetHashCode() +
-	                        "  me=" + this +
-	                        "  filterCallback=" + filterCallback);
-	            }
-
-	            matches.Add(filterCallback);
-	        }
-
-	        nodeRWLock.ReadLock().Unlock();
+                    matches.Add(filterCallback);
+                }
+            }
 	    }
 
 	    /// <summary>

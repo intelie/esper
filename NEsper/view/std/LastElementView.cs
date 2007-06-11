@@ -100,7 +100,7 @@ namespace net.esper.view.std
             // If there are child views, fireStatementStopped update method
             if (this.HasViews)
             {
-                if (!oldDataToPost.IsEmpty)
+                if (oldDataToPost.Count != 0)
                 {
                 	UpdateChildren(newData, oldDataToPost.ToArray());
                 }

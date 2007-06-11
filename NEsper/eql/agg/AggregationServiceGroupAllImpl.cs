@@ -27,8 +27,8 @@ namespace net.esper.eql.agg
 	    /// collect the aggregation state that evaluators evaluate to
 	    /// </param>
 	    public AggregationServiceGroupAllImpl(ExprEvaluator[] evaluators, AggregationMethod[] aggregators)
+            : base(evaluators, aggregators)
 	    {
-	        Super(evaluators, aggregators);
 	    }
 
 	    public override void ApplyEnter(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
@@ -56,7 +56,7 @@ namespace net.esper.eql.agg
 
 	    public override Object GetValue(int column)
 	    {
-	        return aggregators[column].GetValue();
+	        return aggregators[column].Value;
 	    }
 	}
 } // End of namespace

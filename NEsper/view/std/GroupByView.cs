@@ -265,11 +265,11 @@ namespace net.esper.view.std
 				CloneableView cloneableView = originalChildView as CloneableView;
 				if ( cloneableView == null )
 				{
-					throw new EPException("Unexpected error copying subview " + originalChildView.getClass().getName());
+					throw new EPException("Unexpected error copying subview " + originalChildView.GetType().FullName);
 				}
 
 				// Copy child node
-				View copyChildView = cloneableView.cloneView(statementContext);
+				View copyChildView = cloneableView.CloneView(statementContext);
                 copyChildView.Parent = groupView;
                 subViewList.Add(copyChildView);
 
@@ -312,7 +312,7 @@ namespace net.esper.view.std
 	                throw new EPException("Unexpected error copying subview");
 	            }
 
-	            View copiedChild = cloneableView.cloneView(statementContext);
+                View copiedChild = cloneableView.CloneView(statementContext);
                 copyView.AddView(copiedChild);
 
                 // Make the sub views for child
