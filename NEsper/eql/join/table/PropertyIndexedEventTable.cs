@@ -12,20 +12,20 @@ namespace net.esper.eql.join.table
 {
     /// <summary> Index that organizes events by the event property values into hash buckets. Based on a HashMap
     /// with <seealso cref="net.esper.collection.MultiKeyUntyped"/> keys that store the property values.
-    /// 
+    ///
     /// Takes a list of property names as parameter. Doesn't care which event type the events have as long as the properties
     /// exist. If the same event is added twice, the class throws an exception on add.
     /// </summary>
-    
+
     public class PropertyIndexedEventTable : EventTable
     {
         private readonly int streamNum;
         private readonly String[] propertyNames;
-		
+
 		/// <summary>
 		/// Getters for properties.
 		/// </summary>
-		
+
         protected readonly EventPropertyGetter[] propertyGetters;
 
 		/// <summary>
@@ -56,12 +56,12 @@ namespace net.esper.eql.join.table
 
             propertyIndex = new EHashDictionary<MultiKeyUntyped, Set<EventBean>>();
         }
-		
-	    /**
-	     * Determine multikey for index access.
-	     * @param event to get properties from for key
-	     * @return multi key
-	     */
+
+        /// <summary>
+        /// Determine multikey for index access.
+        /// </summary>
+        /// <param name="_event">to get properties from for key</param>
+        /// <returns>multi key</returns>
 	    protected virtual MultiKeyUntyped GetMultiKey(EventBean _event)
 	    {
 	        return EventBeanUtility.GetMultiKey(_event, propertyGetters);
@@ -171,7 +171,7 @@ namespace net.esper.eql.join.table
         {
             return
                 "PropertyIndexedEventTable" +
-                " streamNum=" + streamNum + 
+                " streamNum=" + streamNum +
                 " propertyNames=" + CollectionHelper.Render(propertyNames);
         }
 

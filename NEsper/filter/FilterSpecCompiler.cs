@@ -31,9 +31,10 @@ namespace net.esper.filter
 	    /// <summary>
 	    /// Assigned for filter parameters that are based on bool expression and not on
 	    /// any particular property name.
-	    /// <p>
+	    /// <para>
 	    /// Keeping this artificial property name is a simplification as optimized filter parameters
 	    /// generally keep a property name.
+	    /// </para>
 	    /// </summary>
 	    public readonly static String PROPERTY_NAME_BOOLEAN_EXPRESSION = ".boolean_expression";
 
@@ -53,14 +54,14 @@ namespace net.esper.filter
 	    /// <returns>compiled filter specification</returns>
 	    /// <throws>ExprValidationException if the expression or type validations failed</throws>
 	    public static FilterSpecCompiled MakeFilterSpec(EventType eventType,
-	                                                    List<ExprNode> filterExpessions,
+	                                                    IList<ExprNode> filterExpessions,
 	                                                    LinkedDictionary<String, EventType> taggedEventTypes,
 	                                                    StreamTypeService streamTypeService,
 	                                                    MethodResolutionService methodResolutionService)
 	    {
 	        // Validate all nodes, make sure each returns a bool and types are good;
 	        // Also decompose all AND super nodes into individual expressions
-	        List<ExprNode> constituents = FilterSpecCompiler.ValidateAndDecompose(filterExpessions, streamTypeService, methodResolutionService);
+	        List<ExprNode> constituents = ValidateAndDecompose(filterExpessions, streamTypeService, methodResolutionService);
 
 	        // From the constituents make a filter specification
 	        FilterSpecCompiled spec = MakeFilterSpec(eventType, constituents, taggedEventTypes);
@@ -184,7 +185,7 @@ namespace net.esper.filter
 	        while(haveConsolidated);
 	    }
 
-	    private static FilterSpecCompiled MakeFilterSpec(EventType eventType, List<ExprNode> constituents, LinkedDictionary<String, EventType> taggedEventTypes)
+	    private static FilterSpecCompiled MakeFilterSpec(EventType eventType, IList<ExprNode> constituents, EDictionary<String, EventType> taggedEventTypes)
 	    {
 	        FilterParamExprMap filterParamExprMap = new FilterParamExprMap();
 

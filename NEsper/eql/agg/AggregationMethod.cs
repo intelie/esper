@@ -14,21 +14,27 @@ namespace net.esper.eql.agg
 {
 	/// <summary>
 	/// Maintains aggregation state applying values as entering and leaving the state.
-	/// &lt;P&gt;Implementations must also act as a factory for further independent copies of aggregation states such that
-	/// new aggregation state holders and be created from a prototype.
+    /// <para>
+    /// Implementations must also act as a factory for further independent copies of aggregation
+    /// states such that new aggregation state holders and be created from a prototype.
+    /// </para>
 	/// </summary>
 	public interface AggregationMethod
 	{
 	    /// <summary>
 	    /// Apply the value as entering aggregation (entering window).
-	    /// &lt;p&gt;The value can be null since 'null' values may be counted as unique separate values.
+	    /// <para>
+	    /// The value can be null since 'null' values may be counted as unique separate values.
+        /// </para>
 	    /// </summary>
 	    /// <param name="value">to add to aggregate</param>
 	    void Enter(Object value);
 
 	    /// <summary>
 	    /// Apply the value as leaving aggregation (leaving window).
-	    /// &lt;p&gt;The value can be null since 'null' values may be counted as unique separate values.
+	    /// <para>
+	    /// The value can be null since 'null' values may be counted as unique separate values.
+        /// </para>
 	    /// </summary>
 	    /// <param name="value">to remove from aggregate</param>
 	    void Leave(Object value);

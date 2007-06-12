@@ -16,11 +16,13 @@ namespace net.esper.eql.spec
 {
 	/// <summary>
 	/// Encapsulates the information required to specify an object identification and construction.
-	/// <p>
+	/// <para>
 	/// Abstract class for use with any object, such as views, pattern guards or pattern observers.
-	/// <p>
+	/// </para>
+	/// <para>
 	/// A object construction specification can be equal to another specification. This information can be
 	/// important to determine reuse of any object.
+	/// </para>
 	/// </summary>
 	public abstract class ObjectSpec : MetaDefItem
 	{
@@ -105,7 +107,13 @@ namespace net.esper.eql.spec
 
 	        return true;
 	    }
-	    
+
+        /// <summary>
+        /// Serves as a hash function for a particular type. <see cref="M:System.Object.GetHashCode"></see> is suitable for use in hashing algorithms and data structures like a hash table.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override int GetHashCode()
 		{
 			return
@@ -113,6 +121,12 @@ namespace net.esper.eql.spec
 				(this.objectNamespace.GetHashCode()) ;
 		}
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override String ToString()
 	    {
 	        StringBuilder buffer = new StringBuilder();

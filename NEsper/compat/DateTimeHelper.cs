@@ -38,6 +38,16 @@ namespace net.esper.compat
         }
 
         /// <summary>
+        /// Converts milliseconds to DateTime 
+        /// </summary>
+        /// <param name="millis">The millis.</param>
+        /// <returns></returns>
+        public static DateTime MillisToDateTime(long millis)
+        {
+            return new DateTime(MillisToTicks(millis));
+        }
+
+        /// <summary>
         /// Gets the number of milliseconds needed to represent
         /// the datetime.  This is needed to convert from Java
         /// datetime granularity (milliseconds) to CLR datetimes.

@@ -28,12 +28,10 @@ namespace net.esper.eql.expression
 	    public override bool IsConstantResult
 	    {
 	        get { return false; }
-	    } 
-	
-	    /**
-	     * Returns the type of relational op used.
-	     * @return enum with relational op type
-	     */
+	    }
+
+	    /// <summary>Returns the type of relational op used.</summary>
+	    /// <returns>enum with relational op type</returns>
 	    public RelationalOpEnum RelationalOpEnum
 	    {
 	        get { return relationalOpEnum; }
@@ -54,7 +52,8 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
+        /// <param name="viewResourceDelegate">The view resource delegate.</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
@@ -88,6 +87,7 @@ namespace net.esper.eql.expression
         /// Evaluate event tuple and return result.
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
+        /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>

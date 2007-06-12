@@ -15,10 +15,21 @@ namespace net.esper.pattern.guard
 	/// </summary>
 	public abstract class GuardSupport : Guard
 	{
+        /// <summary>
+        /// Start the guard operation.
+        /// </summary>
 		abstract public void StartGuard();
-		
+
+        /// <summary>
+        /// Called when sub-expression quits, or when the pattern Stopped.
+        /// </summary>
 		abstract public void StopGuard();
-		
+
+        /// <summary>
+        /// Returns true if inspection shows that the match events can pass, or false to not pass.
+        /// </summary>
+        /// <param name="matchEvent">is the map of matching events</param>
+        /// <returns>true to pass, false to not pass</returns>
 		abstract public bool Inspect(MatchedEventMap matchEvent);
 	}
 } // End of namespace

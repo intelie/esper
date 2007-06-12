@@ -24,6 +24,12 @@ namespace net.esper.pattern.observer
 	    /// <summary>Number of milliseconds after which the interval should fire.</summary>
 	    protected long milliseconds;
 
+        /// <summary>
+        /// </summary>
+        /// <value></value>
+        /// Sets the observer object parameters.
+        /// @param observerParameters is a list of parameters
+        /// @throws ObserverParameterException thrown to indicate a parameter problem
 	    public IList<Object> ObserverParameters
 	    {
             set
@@ -54,7 +60,22 @@ namespace net.esper.pattern.observer
                 }
             }
 	    }
-	    
+
+        /// <summary>
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="beginState"></param>
+        /// <param name="observerEventEvaluator"></param>
+        /// <param name="stateNodeId"></param>
+        /// <param name="observerState"></param>
+        /// <returns></returns>
+        /// Make an observer instance.
+        /// @param context - services that may be required by observer implementation
+        /// @param beginState - start state for observer
+        /// @param observerEventEvaluator - receiver for events observed
+        /// @param stateNodeId - optional id for the associated pattern state node
+        /// @param observerState - state node for observer
+        /// @return observer instance
 	    public EventObserver MakeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
 	    {
 	        return new TimerIntervalObserver(milliseconds, context, beginState, observerEventEvaluator);

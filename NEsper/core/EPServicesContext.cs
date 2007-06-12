@@ -227,22 +227,34 @@ namespace net.esper.core
             get { return patternObjectResolutionService; }
         }
 
-       /**
-         * Constructor - sets up new set of services.
-         * @param engineURI is the engine URI
-         * @param engineInstanceId is the name of the engine instance
-         * @param schedulingService service to get time and schedule callbacks
-         * @param eventAdapterService service to resolve event types
-         * @param databaseConfigService service to resolve a database name to database connection factory and configs
-         * @param viewResolutionService resolves view namespace and name to view factory class
-         * @param statementLockFactory creates statement-level locks
-         * @param eventProcessingRWLock is the engine lock for statement management
-         * @param extensionServicesContext marker interface allows adding additional services
-         * @param engineImportService is engine imported static func packages and aggregation functions
-         * @param statementContextFactory is the factory to use to create statement context objects
-         * @param engineEnvContext is engine environment/directory information for use with adapters and external env
-         * @param patternObjectResolutionService resolves plug-in pattern objects 
-         */
+       /// <summary>Constructor - sets up new set of services.</summary>
+       /// <param name="engineURI">is the engine URI</param>
+       /// <param name="engineInstanceId">is the name of the engine instance</param>
+       /// <param name="schedulingService">service to get time and schedule callbacks</param>
+       /// <param name="eventAdapterService">service to resolve event types</param>
+       /// <param name="databaseConfigService">
+       /// service to resolve a database name to database connection factory and configs
+       /// </param>
+       /// <param name="viewResolutionService">
+       /// resolves view namespace and name to view factory class
+       /// </param>
+       /// <param name="statementLockFactory">creates statement-level locks</param>
+       /// <param name="eventProcessingRWLock">
+       /// is the engine lock for statement management
+       /// </param>
+       /// <param name="extensionServicesContext">
+       /// marker interface allows adding additional services
+       /// </param>
+       /// <param name="engineImportService">
+       /// is engine imported static func packages and aggregation functions
+       /// </param>
+       /// <param name="statementContextFactory">
+       /// is the factory to use to create statement context objects
+       /// </param>
+       /// <param name="engineEnvContext">
+       /// is engine environment/directory information for use with adapters and external env
+       /// </param>
+       /// <param name="patternObjectResolutionService">resolves plug-in pattern objects</param>
         public EPServicesContext(String engineURI,
                                  String engineInstanceId,
                                  SchedulingService schedulingService,

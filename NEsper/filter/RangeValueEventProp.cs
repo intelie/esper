@@ -29,6 +29,11 @@ namespace net.esper.filter
             this.resultEventProperty = resultEventProperty;
         }
 
+        /// <summary>
+        /// Returns the filter value representing the endpoint.
+        /// </summary>
+        /// <param name="matchedEvents">is the prior results</param>
+        /// <returns>filter value</returns>
         public double? GetFilterValue(MatchedEventMap matchedEvents)
         {
             EventBean _event = matchedEvents.GetMatchingEvent(resultEventAsName);
@@ -46,19 +51,15 @@ namespace net.esper.filter
             return Convert.ToDouble(value);
         }
 
-        /**
-	     * Returns the tag name or stream name to use for the event property.
-	     * @return tag name
-	     */
+        /// <summary>Returns the tag name or stream name to use for the event property.</summary>
+        /// <returns>tag name</returns>
 	    public String ResultEventAsName
 	    {
 	        get { return resultEventAsName; }
 	    }
 
-	    /**
-	     * Returns the name of the event property.
-	     * @return event property name
-	     */
+	    /// <summary>Returns the name of the event property.</summary>
+	    /// <returns>event property name</returns>
 	    public String ResultEventProperty
 	    {
 	        get { return resultEventProperty; }

@@ -30,6 +30,13 @@ namespace net.esper.eql.expression
 		{
 		}
 
+        /// <summary>
+        /// Gives the aggregation node a chance to validate the sub-expression types.
+        /// </summary>
+        /// <param name="streamTypeService">is the types per stream</param>
+        /// <param name="methodResolutionService">used for resolving method and function names</param>
+        /// <returns>aggregation function use</returns>
+        /// <throws>ExprValidationException when expression validation failed</throws>
 	    protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
 	    {
 	        // Empty child node list signals count(*), does not ignore nulls

@@ -11,14 +11,12 @@ namespace net.esper.filter
 	/// <summary> Interface for range-type filter parameters for type checking and to obtain the filter values for endpoints based
 	/// on prior results.
 	/// </summary>
-    
+
     public interface FilterSpecParamRangeValue : MetaDefItem
     {
-	    /**
-	     * Returns the filter value representing the endpoint.
-	     * @param matchedEvents is the prior results
-	     * @return filter value
-	     */
+	    /// <summary>Returns the filter value representing the endpoint.</summary>
+	    /// <param name="matchedEvents">is the prior results</param>
+	    /// <returns>filter value</returns>
 	    double? GetFilterValue(MatchedEventMap matchedEvents);
     }
 }

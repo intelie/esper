@@ -20,7 +20,7 @@ namespace net.esper.eql.core
 		{
 			get { return eventTypes; }
 		}
-		
+
         /// <summary>
         /// Returns an array of event stream names in the order declared.
         /// </summary>
@@ -31,12 +31,12 @@ namespace net.esper.eql.core
 		{
 			get { return streamNames; }
 		}
-		
+
 	    private readonly EventType[] eventTypes;
 	    private readonly String[] streamNames;
 	    private bool isStreamZeroUnambigous;
 	    private bool requireStreamNames;
-		
+
 		/// <summary> Ctor.</summary>
 		/// <param name="eventTypes">array of event types, one for each stream
 		/// </param>
@@ -46,20 +46,24 @@ namespace net.esper.eql.core
 		{
 			this.eventTypes = eventTypes;
 			this.streamNames = streamNames;
-			
+
 			if (eventTypes.Length != streamNames.Length)
 			{
 				throw new ArgumentException("Number of entries for event types and stream names differs");
 			}
 		}
 
-	    /**
-	     * Ctor.
-	     * @param namesAndTypes is the ordered list of stream names and event types available (stream zero to N)
-	     * @param isStreamZeroUnambigous indicates whether when a property is found in stream zero and another stream an exception should be
-	     * thrown or the stream zero should be assumed
-	     * @param requireStreamNames is true to indicate that stream names are required for any non-zero streams (for subqueries)
-	     */
+	    /// <summary>Ctor.</summary>
+	    /// <param name="namesAndTypes">
+	    /// is the ordered list of stream names and event types available (stream zero to N)
+	    /// </param>
+	    /// <param name="isStreamZeroUnambigous">
+	    /// indicates whether when a property is found in stream zero and another stream an exception should be
+	    /// thrown or the stream zero should be assumed
+	    /// </param>
+	    /// <param name="requireStreamNames">
+	    /// is true to indicate that stream names are required for any non-zero streams (for subqueries)
+	    /// </param>
 	    public StreamTypeServiceImpl(LinkedDictionary<string, EventType> namesAndTypes, bool isStreamZeroUnambigous, bool requireStreamNames)
 	    {
 	        this.isStreamZeroUnambigous = isStreamZeroUnambigous;
@@ -73,7 +77,7 @@ namespace net.esper.eql.core
 	            eventTypes[count] = namesAndTypes.Fetch(streamName);
 	            count++;
 	        }
-	    }		
+	    }
 
         /// <summary>
         /// Returns the offset of the stream and the type of the property for the given property name,
@@ -157,7 +161,7 @@ namespace net.esper.eql.core
 			{
 				throw new ArgumentException("Null stream and property name");
 			}
-			
+
 			PropertyResolutionDescriptor desc = null;
 			try
 			{
@@ -185,17 +189,17 @@ namespace net.esper.eql.core
 				}
 				return desc;
 			}
-			
+
 			return desc;
 		}
-		
+
 		private PropertyResolutionDescriptor FindByPropertyName(String propertyName)
 		{
 			int index = 0;
 			int foundIndex = 0;
 			int foundCount = 0;
 			EventType streamType = null;
-			
+
 			for (int i = 0; i < eventTypes.Length; i++)
 			{
 				if (eventTypes[i].IsProperty(propertyName))
@@ -203,7 +207,7 @@ namespace net.esper.eql.core
 					streamType = eventTypes[i];
 					foundCount++;
 					foundIndex = index;
-					
+
 					// If the property could be resolved from stream 0 then we don't need to look further
 	                if ((i == 0) && isStreamZeroUnambigous)
 	                {
@@ -212,25 +216,25 @@ namespace net.esper.eql.core
 				}
 				index++;
 			}
-			
+
 			if (foundCount > 1)
 			{
 				throw new DuplicatePropertyException("Property named '" + propertyName + "' is ambigous as is valid for more then one stream");
 			}
-			
+
 			if (streamType == null)
 			{
 				throw new PropertyNotFoundException("Property named '" + propertyName + "' is not valid in any stream");
 			}
-			
+
 			return new PropertyResolutionDescriptor(streamNames[foundIndex], eventTypes[foundIndex], propertyName, foundIndex, streamType.GetPropertyType(propertyName));
 		}
-		
+
 		private PropertyResolutionDescriptor FindByStreamName(String propertyName, String streamName)
 		{
 			int index = 0;
 			EventType streamType = null;
-			
+
 			for (int i = 0; i < eventTypes.Length; i++)
 			{
 				if ((streamNames[i] != null) && (streamNames[i].Equals(streamName)))
@@ -240,19 +244,19 @@ namespace net.esper.eql.core
 				}
 				index++;
 			}
-			
+
 			// Stream name not found
 			if (streamType == null)
 			{
 				throw new StreamNotFoundException("Stream named " + streamName + " is not defined");
 			}
-			
+
 			Type propertyType = streamType.GetPropertyType(propertyName);
 			if (propertyType == null)
 			{
 				throw new PropertyNotFoundException("Property named '" + propertyName + "' is not valid in stream " + streamName);
 			}
-			
+
 			return new PropertyResolutionDescriptor(streamName, streamType, propertyName, index, propertyType);
 		}
 	}

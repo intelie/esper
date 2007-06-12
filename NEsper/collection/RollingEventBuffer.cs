@@ -15,9 +15,10 @@ namespace net.esper.collection
 	/// <summary>
 	/// Event buffer of a given size provides a random access API into the most current event to prior events
 	/// up to the given size. Oldest events roll out of the buffer first.
-	/// &lt;p&gt;
+    /// <para>
 	/// Backed by a fixed-size array that is filled forward, then rolls back to the beginning
 	/// keeping track of the current position.
+	/// </para>
 	/// </summary>
 	public class RollingEventBuffer
 	{
@@ -55,7 +56,7 @@ namespace net.esper.collection
 	    }
 
 	    /// <summary>Add an event to the buffer.</summary>
-	    /// <param name="event">to add</param>
+	    /// <param name="_event">to add</param>
 	    public void Add(EventBean _event)
 	    {
 	        buffer[nextFreeIndex] = _event;
@@ -69,9 +70,10 @@ namespace net.esper.collection
 
 	    /// <summary>
 	    /// Get an event prior to the last event posted given a number of events before the last.
-	    /// &lt;p&gt;
+        /// <para>
 	    /// Thus index 0 returns the last event added, index 1 returns the prior to the last event added
 	    /// up to the maximum buffer size.
+	    /// </para>
 	    /// </summary>
 	    /// <param name="index">prior event index from zero to max size</param>
 	    /// <returns>prior event at given index</returns>

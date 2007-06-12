@@ -28,7 +28,7 @@ namespace net.esper.pattern
 			get { return nodeNumber; }
 			set { nodeNumber = value ; }
 		}
-		
+
         /// <summary> Create the evaluation state node containing the truth value state for each operator in an
         /// event expression.
         /// </summary>
@@ -80,12 +80,10 @@ namespace net.esper.pattern
                 node.DumpDebug(prefix + "  ");
             }
         }
-		
-		/**
-	     * Searched recursivly for pattern evaluation filter nodes.
-	     * @param currentNode is the root node
-	     * @return list of filter nodes
-	     */
+
+		/// <summary>Searched recursivly for pattern evaluation filter nodes.</summary>
+		/// <param name="currentNode">is the root node</param>
+		/// <returns>list of filter nodes</returns>
 	    public static List<EvalFilterNode> RecusiveFilterChildNodes(EvalNode currentNode)
 	    {
 	        List<EvalFilterNode> nodeList = new List<EvalFilterNode>();

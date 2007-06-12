@@ -36,6 +36,14 @@ namespace net.esper.view
 	    	get { return indexConstant; }
 	    }
 
+        /// <summary>
+        /// Inspect view factories returning false to indicate that view factories do not meet
+        /// view resource requirements, or true to indicate view capability and view factories can be compatible.
+        /// </summary>
+        /// <param name="viewFactories">is a list of view factories that originate the final views</param>
+        /// <returns>
+        /// true to indicate inspection success, or false to indicate inspection failure
+        /// </returns>
 	    public bool Inspect(IList<ViewFactory> viewFactories)
 	    {
 	        bool unboundStream = viewFactories.Count == 0;

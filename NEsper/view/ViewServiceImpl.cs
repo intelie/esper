@@ -22,6 +22,14 @@ namespace net.esper.view
         {
         }
 
+        /// <summary>
+        /// Creates the factories.
+        /// </summary>
+        /// <param name="streamNum">The stream num.</param>
+        /// <param name="parentEventType">Type of the parent event.</param>
+        /// <param name="viewSpecDefinitions">The view spec definitions.</param>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
 	    public ViewFactoryChain CreateFactories(int streamNum,
 	                                            EventType parentEventType,
 	                                            IList<ViewSpec> viewSpecDefinitions,
@@ -61,6 +69,13 @@ namespace net.esper.view
 	        return new ViewFactoryChain(parentEventType, viewFactories);
 	    }
 
+        /// <summary>
+        /// Creates the views.
+        /// </summary>
+        /// <param name="eventStreamViewable">The event stream viewable.</param>
+        /// <param name="viewFactories">The view factories.</param>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
 	    public Viewable CreateViews(Viewable eventStreamViewable,
 	                                IList<ViewFactory> viewFactories,
 	                                StatementContext context)
@@ -97,6 +112,11 @@ namespace net.esper.view
 	        return lastView;
 	    }
 
+        /// <summary>
+        /// Removes the specified event stream.
+        /// </summary>
+        /// <param name="eventStream">The event stream.</param>
+        /// <param name="viewToRemove">The view to remove.</param>
 	    public void Remove(EventStream eventStream, Viewable viewToRemove)
 	    {
 	        // If the viewToRemove to remove has child viewToRemove, don't disconnect - the child viewToRemove(s) need this

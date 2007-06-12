@@ -14,7 +14,7 @@ using net.esper.events;
 namespace net.esper.collection
 {
     /// <summary>Transform event returning the transformed event.</summary>
-    /// <param name="event">to transform</param>
+    /// <param name="_event">event to transform</param>
     /// <returns>transformed event</returns>
 	public delegate EventBean TransformEventMethod( EventBean _event ) ;
 } // End of namespace

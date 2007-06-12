@@ -106,6 +106,7 @@ namespace net.esper.core
             }
             if (newData != null)
             {
+                lastIterableEvent = newData[0];
                 LastNewEvents.Add(newData);
             }
             if (oldData != null)
@@ -139,7 +140,9 @@ namespace net.esper.core
         /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return null;
+            // Iterates over the last new event. For Pattern statements
+            // to allow polling the last event that fired.
+            yield return lastIterableEvent;
         }
 
         /// <summary>
@@ -163,6 +166,14 @@ namespace net.esper.core
 
             LastNewEvents.Clear();
             LastOldEvents.Clear();
+        }
+
+        /// <summary>
+        /// Remove event reference to last event.
+        /// </summary>
+        public void Clear()
+        {
+            lastIterableEvent = null;
         }
 
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

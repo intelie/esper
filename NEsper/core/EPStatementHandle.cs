@@ -13,9 +13,10 @@ namespace net.esper.core
 {
 	/// <summary>
 	/// Class exists once per statement and hold statement resource Lock(s).
-	/// <p>
+	/// <para>
 	/// Use by {@link EPRuntimeImpl} for determining callback-statement affinity and locking of statement
 	/// resources.
+	/// </para>
 	/// </summary>
 	public class EPStatementHandle : MetaDefItem
 	{
@@ -95,6 +96,11 @@ namespace net.esper.core
 	        }
 	    }
 
+        /// <summary>
+        /// Equalses the specified other obj.
+        /// </summary>
+        /// <param name="otherObj">The other obj.</param>
+        /// <returns></returns>
 	    public override bool Equals(Object otherObj)
 	    {
 	        EPStatementHandle other = otherObj as EPStatementHandle;
@@ -110,6 +116,12 @@ namespace net.esper.core
 	        return false;
 	    }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type. <see cref="M:System.Object.GetHashCode"></see> is suitable for use in hashing algorithms and data structures like a hash table.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override int GetHashCode()
 	    {
 	        return hashCode;

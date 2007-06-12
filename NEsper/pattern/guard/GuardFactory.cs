@@ -8,16 +8,13 @@ namespace net.esper.pattern.guard
 	/// <summary>
 	/// Interface for a factory for <seealso cref="Guard"/> instances.
 	/// </summary>
-	
+
 	public interface GuardFactory
 	{
-	    /**
-	     * Sets the guard object parameters.
-	     * @param guardParameters is a list of parameters
-	     * @throws GuardParameterException thrown to indicate a parameter problem
-	     */
+	    /// <summary>Sets the guard object parameters.</summary>
+	    /// <throws>GuardParameterException thrown to indicate a parameter problem</throws>
 	    IList<Object> GuardParameters { set ; }
-	
+
 		/// <summary> Constructs a guard instance.</summary>
 		/// <param name="context">services for use by guard</param>
 		/// <param name="quitable">to use for indicating the guard has quit</param>

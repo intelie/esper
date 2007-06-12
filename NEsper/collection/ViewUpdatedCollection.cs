@@ -12,13 +12,12 @@ using net.esper.events;
 
 namespace net.esper.collection
 {
-
-
 	/// <summary>
 	/// A general-purpose collection interface for collections updated by view data.
-	/// &lt;p&gt;
+    /// <para>
 	/// Views post delta-data in terms of new data (insert stream) events and old data (remove stream) event that
 	/// leave a window.
+	/// </para>
 	/// </summary>
 	public interface ViewUpdatedCollection
 	{

@@ -16,13 +16,13 @@ namespace net.esper.pattern
 		private readonly Dictionary<EvalStateNode, Int32> nodes;
 		private readonly PatternContext context;
 
-	    /**
-	     * Constructor.
-	     * @param parentNode is the parent evaluator to call to indicate truth value
-	     * @param beginState contains the events that make up prior matches
-	     * @param context contains handles to services required
-	     * @param evalFollowedByNode is the factory node associated to the state
-	     */
+	    /// <summary>Constructor.</summary>
+	    /// <param name="parentNode">
+	    /// is the parent evaluator to call to indicate truth value
+	    /// </param>
+	    /// <param name="beginState">contains the events that make up prior matches</param>
+	    /// <param name="context">contains handles to services required</param>
+	    /// <param name="evalFollowedByNode">is the factory node associated to the state</param>
 	    public EvalFollowedByStateNode(Evaluator parentNode,
 	                                         EvalFollowedByNode evalFollowedByNode,
 	                                         MatchedEventMap beginState,
@@ -41,7 +41,7 @@ namespace net.esper.pattern
 	        EvalStateNode childState = child.NewState(this, beginState, context, null);
 	        nodes[childState] = 0;
 	    }
-		
+
         /// <summary>
         /// Starts the event expression or an instance of it.
         /// Child classes are expected to initialize and Start any event listeners

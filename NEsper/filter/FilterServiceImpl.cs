@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
-using net.esper.compat;
 using net.esper.events;
 
 namespace net.esper.filter
@@ -62,7 +60,8 @@ namespace net.esper.filter
         /// Evaluates the specified event bean.
         /// </summary>
         /// <param name="eventBean">The event bean.</param>
-        public void Evaluate(EventBean eventBean, ICollection<FilterHandle> matches)
+        /// <param name="matches">The matches.</param>
+        public void Evaluate(EventBean eventBean, IList<FilterHandle> matches)
         {
             Interlocked.Increment(ref numEventsEvaluated);
 

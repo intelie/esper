@@ -51,28 +51,17 @@ namespace net.esper.eql.core
         /// Returns the result set process for the given select expression, group-by clause and
         /// having clause given a set of types describing each stream in the from-clause.
         /// </summary>
-        /// <param name="selectClauseSpec">represents select clause and thus the expression nodes listed in the select, or empty if wildcard
-        /// </param>
-        /// <param name="groupByNodes">represents the expressions to group-by events based on event properties, or empty if no group-by was specified
-        /// </param>
-        /// <param name="optionalHavingNode">represents the having-clause bool filter criteria
-        /// </param>
-        /// <param name="outputLimitSpec">indicates whether to output all or only the last event
-        /// </param>
-        /// <param name="orderByList">represent the expressions in the order-by clause
-        /// </param>
-        /// <param name="typeService">for information about the streams in the from clause
-        /// </param>
-        /// <param name="insertIntoDesc">descriptor for insert-into clause information
-        /// </param>
-        /// <param name="eventAdapterService">wrapping service for events
-        /// </param>
-        /// <param name="methodResolutionService">for resolving class names
-        /// </param>
-		/// <param name="viewResourceDelegate">delegates views resource factory to expression resources requirements
-        /// </param>
-        /// <returns> result set processor instance
-        /// </returns>
+        /// <param name="selectClauseSpec">represents select clause and thus the expression nodes listed in the select, or empty if wildcard</param>
+        /// <param name="insertIntoDesc">descriptor for insert-into clause information</param>
+        /// <param name="groupByNodes">represents the expressions to group-by events based on event properties, or empty if no group-by was specified</param>
+        /// <param name="optionalHavingNode">represents the having-clause bool filter criteria</param>
+        /// <param name="outputLimitSpec">indicates whether to output all or only the last event</param>
+        /// <param name="orderByList">represent the expressions in the order-by clause</param>
+        /// <param name="typeService">for information about the streams in the from clause</param>
+        /// <param name="eventAdapterService">wrapping service for events</param>
+        /// <param name="methodResolutionService">for resolving class names</param>
+        /// <param name="viewResourceDelegate">delegates views resource factory to expression resources requirements</param>
+        /// <returns>result set processor instance</returns>
         /// <throws>  net.esper.eql.expression.ExprValidationException </throws>
         public static ResultSetProcessor GetProcessor(SelectClauseSpec selectClauseSpec,
                                                       InsertIntoDesc insertIntoDesc,
@@ -96,14 +85,14 @@ namespace net.esper.eql.core
 
             // Expand any instances of select-clause aliases in the
             // order-by clause with the full expression
-            ExpandAliases(selectionList.SelectList, orderByList);
+            ExpandAliases(selectClauseSpec.SelectList, orderByList);
 
             // Validate selection expressions, if any (could be wildcard i.e. empty list)
             IList<SelectExprElementCompiledSpec> namedSelectionList = new List<SelectExprElementCompiledSpec>();
             for (int i = 0; i < selectClauseSpec.SelectList.Count; i++)
             {
                 // validate element
-                SelectExprElementRawSpec element = selectionList.SelectList[i];
+                SelectExprElementRawSpec element = selectClauseSpec.SelectList[i];
                 ExprNode validatedExpression = element.SelectExpression.GetValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
 
                 // determine an element name if none assigned

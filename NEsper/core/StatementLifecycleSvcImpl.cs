@@ -49,6 +49,15 @@ namespace net.esper.core
             this.stmtNameToIdMap = new EHashDictionary<String, String>();
         }
 
+        /// <summary>
+        /// Create and start the statement.
+        /// </summary>
+        /// <param name="statementSpec">is the statement definition in bean object form, raw unvalidated and unoptimized.</param>
+        /// <param name="expression">is the expression text</param>
+        /// <param name="isPattern">is an indicator on whether this is a pattern statement and thus the iterator must return the last result,
+        /// versus for non-pattern statements the iterator returns view content.</param>
+        /// <param name="optStatementName">is an optional statement name, null if none was supplied</param>
+        /// <returns>started statement</returns>
         public EPStatement CreateAndStart(StatementSpecRaw statementSpec, String expression, bool isPattern, String optStatementName)
         {
             lock (this)
@@ -102,7 +111,6 @@ namespace net.esper.core
             lock (this)
             {
                 EPStatementDesc statementDesc;
-                EPStatementStartMethod startMethod;
 
                 StatementContext statementContext = services.StatementContextFactory.MakeContext(statementId, statementName, expression, services);
                 StatementSpecCompiled compiledSpec = Compile(statementSpec, expression, statementContext);
@@ -119,6 +127,7 @@ namespace net.esper.core
                     EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern, services.DispatchService, this);
 
                     // create start method
+                    EPStatementStartMethod startMethod;
                     startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
 
                     statementDesc = new EPStatementDesc(statement, startMethod, null);
@@ -126,7 +135,7 @@ namespace net.esper.core
                     stmtNameToStmtMap[statementName] = statement;
                     stmtNameToIdMap[statementName] = statementId;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     stmtIdToDescMap.Remove(statementId);
                     stmtNameToIdMap.Remove(statementName);
@@ -142,7 +151,7 @@ namespace net.esper.core
             }
         }
 
-        private bool IsPotentialSelfJoin(IList<StreamSpecCompiled> streamSpecs)
+        private static bool IsPotentialSelfJoin(IList<StreamSpecCompiled> streamSpecs)
         {
             // not a join (pattern doesn't count)
             if (streamSpecs.Count == 1)
@@ -216,6 +225,10 @@ namespace net.esper.core
             return false;
         }
 
+        /// <summary>
+        /// Start statement by statement id.
+        /// </summary>
+        /// <param name="statementId">of the statement to start.</param>
         public void Start(String statementId)
         {
             lock (this)
@@ -267,6 +280,11 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Internal start mechanism.
+        /// </summary>
+        /// <param name="statementId">The statement id.</param>
+        /// <param name="desc">The desc.</param>
         private void StartInternal(String statementId, EPStatementDesc desc)
         {
             if (log.IsDebugEnabled)
@@ -314,6 +332,10 @@ namespace net.esper.core
             statement.CurrentState = EPStatementState.STARTED;
         }
 
+        /// <summary>
+        /// Stop statement by statement id.
+        /// </summary>
+        /// <param name="statementId">of the statement to stop.</param>
         public void Stop(String statementId)
         {
             lock (this)
@@ -354,6 +376,10 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Destroy statement by statement id.
+        /// </summary>
+        /// <param name="statementId">statementId of the statement to destroy</param>
         public void Destroy(String statementId)
         {
             lock (this)
@@ -394,6 +420,13 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Returns the statement by the given name, or null if no such statement exists.
+        /// </summary>
+        /// <param name="name">is the statement name</param>
+        /// <returns>
+        /// statement for the given name, or null if no such statement existed
+        /// </returns>
         public EPStatement GetStatementByName(String name)
         {
             lock (this)
@@ -410,6 +443,14 @@ namespace net.esper.core
         	return this.stmtIdToDescMap[id].EpStatement;
         }
 
+        /// <summary>
+        /// Returns an array of statement names. If no statement has been created, an empty array is returned.
+        /// <para>
+        /// Only returns started and stopped statements.
+        /// </para>
+        /// </summary>
+        /// <value>The statement names.</value>
+        /// <returns>statement names</returns>
         public IList<string> StatementNames
         {
         	get
@@ -427,6 +468,10 @@ namespace net.esper.core
         	}
         }
 
+        /// <summary>
+        /// Starts all stopped statements. First statement to fail supplies the exception.
+        /// </summary>
+        /// <throws>EPException to indicate a start error.</throws>
         public void StartAllStatements()
         {
             lock (this)
@@ -443,6 +488,10 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Stops all started statements. First statement to fail supplies the exception.
+        /// </summary>
+        /// <throws>EPException to indicate a start error.</throws>
         public void StopAllStatements()
         {
             lock (this)
@@ -459,6 +508,10 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Destroys all started statements. First statement to fail supplies the exception.
+        /// </summary>
+        /// <throws>EPException to indicate a start error.</throws>
         public void DestroyAllStatements()
         {
             lock (this)
@@ -471,6 +524,10 @@ namespace net.esper.core
             }
         }
 
+        /// <summary>
+        /// Gets the statement ids.
+        /// </summary>
+        /// <value>The statement ids.</value>
         private IList<string> StatementIds
         {
         	get
@@ -485,6 +542,12 @@ namespace net.esper.core
         	}
         }
 
+        /// <summary>
+        /// Gets the name of the unique statement.
+        /// </summary>
+        /// <param name="statementName">Name of the statement.</param>
+        /// <param name="statementId">The statement id.</param>
+        /// <returns></returns>
         private string GetUniqueStatementName(string statementName, string statementId)
 	    {
 	        string finalStatementName;
@@ -515,6 +578,11 @@ namespace net.esper.core
 	        return finalStatementName;
 	    }
 
+        /// <summary>
+        /// Statements indicate that listeners have been added through this method.
+        /// </summary>
+        /// <param name="statementId">is the statement id for which listeners were added</param>
+        /// <param name="listeners">is the set of listeners after adding the new listener</param>
         public void UpdatedListeners(string statementId, Set<UpdateListener> listeners)
         {
             log.Debug(".updatedListeners No action for base implementation");

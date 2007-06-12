@@ -15,8 +15,9 @@ namespace net.esper.eql.spec
 	/// <summary>
 	/// Represents a single item in a SELECT-clause, potentially unnamed
 	/// as no "as" tag may have been supplied in the syntax.
-	/// <p>
+	/// <para>
 	/// Compare to {@link SelectExprElementCompiledSpec} which carries a determined name.
+	/// </para>
 	/// </summary>
 	public class SelectExprElementRawSpec : MetaDefItem
 	{

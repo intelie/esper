@@ -9,11 +9,11 @@ namespace net.esper.filter
 	/// <summary>
     /// This class represents a single, constant value filter parameter in an <seealso cref="FilterSpecCompiled"/> filter specification.
     /// </summary>
-	
+
     public sealed class FilterSpecParamConstant : FilterSpecParam
 	{
 		private readonly Object filterConstant;
-		
+
 		/// <summary> Constructor.</summary>
 		/// <param name="propertyName">is the event property name
 		/// </param>
@@ -22,22 +22,20 @@ namespace net.esper.filter
 		/// <param name="filterConstant">contains the value to match against the event's property value
 		/// </param>
 		/// <throws>  ArgumentException if an operator was supplied that does not take a single constant value </throws>
-		
+
         public FilterSpecParamConstant(String propertyName, FilterOperator filterOperator, Object filterConstant) :
             base(propertyName, filterOperator)
 		{
 			this.filterConstant = filterConstant;
-			
+
 			if (FilterOperatorHelper.IsRangeOperator( filterOperator ))
 			{
 				throw new ArgumentException("Illegal filter operator " + filterOperator + " supplied to " + "constant filter parameter");
 			}
 		}
 
-	    /**
-	     * Returns the constant value.
-	     * @return constant value
-	     */
+	    /// <summary>Returns the constant value.</summary>
+	    /// <returns>constant value</returns>
 	    public Object FilterConstant
 	    {
 	        get { return filterConstant; }
@@ -77,12 +75,12 @@ namespace net.esper.filter
 			{
 				return true;
 			}
-			
+
 			if (!(obj is FilterSpecParamConstant))
 			{
 				return false;
 			}
-			
+
 			FilterSpecParamConstant other = (FilterSpecParamConstant) obj;
 			if (!base.Equals(other))
 			{

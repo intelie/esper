@@ -37,7 +37,7 @@ namespace net.esper.filter
         public EventBean[] Prototype
 	    {
             get { return this.prototype; }
-	        set { this.prototype = prototype; }
+	        set { this.prototype = value; }
 	    }
 
 	    /// <summary>

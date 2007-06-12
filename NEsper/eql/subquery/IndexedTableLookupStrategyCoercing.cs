@@ -33,6 +33,11 @@ namespace net.esper.eql.subquery
             this.coercionTypes = coercionTypes;
         }
 
+        /// <summary>
+        /// Get the index lookup keys.
+        /// </summary>
+        /// <param name="eventsPerStream">is the events for each stream</param>
+        /// <returns>key object</returns>
         protected override Object[] GetKeys(EventBean[] eventsPerStream)
         {
             Object[] keyValues = new Object[propertyGetters.Length];

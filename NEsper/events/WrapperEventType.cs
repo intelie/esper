@@ -16,15 +16,18 @@ namespace net.esper.events
 {
 	/// <summary>
 	/// An event type that adds zero or more fields to an existing event type.
-	/// <p>
+	/// <para>
 	/// The additional fields are represented as a Map. Any queries to event properties are first
 	/// held against the additional fields, and secondly are handed through to the underlying event.
-	/// <p>
+	/// </para>
+	/// <para>
 	/// If this event type is to add information to another wrapper event type (wrapper to wrapper), then it is the
 	/// responsibility of the creating logic to use the existing event type and add to it.
-	/// <p>
+    /// </para>
+	/// <para>
 	/// Uses a the map event type {@link net.esper.events.MapEventType} to represent the mapped properties. This is because the additional properties
 	/// can also be beans or complex types and the Map event type handles these nicely.
+    /// </para>
 	/// </summary>
 	public class WrapperEventType : EventType
 	{
@@ -174,15 +177,15 @@ namespace net.esper.events
         {
             get
             {
-                // If the additional properties are empty, such as when wrapping a native event by means of wildcard-only select
-                // then the underlying type is simply the wrapped type.
+                // If the additional properties are empty, such as when wrapping a native event by
+                // means of wildcard-only select then the underlying type is simply the wrapped type.
                 if (isNoMapProperties)
                 {
                     return underlyingEventType.UnderlyingType;
                 }
                 else
                 {
-                    return typeof(Pair);
+                    return typeof(Pair<Object, IDictionary<string,object>>);
                 }
             }
         }
@@ -258,7 +261,7 @@ namespace net.esper.events
         /// </summary>
         /// <param name="eventType">Type of the event.</param>
         /// <param name="properties">The properties.</param>
-	    private void CheckForRepeatedPropertyNames(EventType eventType, IDictionary<String, Type> properties)
+	    private static void CheckForRepeatedPropertyNames(EventType eventType, IDictionary<String, Type> properties)
 		{
 			foreach (String property in eventType.PropertyNames)
 			{

@@ -13,14 +13,14 @@ namespace net.esper.eql.join.plan
 	
     public class TwoStreamQueryPlanBuilder
 	{
-	    /**
-	     * Build query plan.
-	     * @param queryGraph - navigability info
-	     * @param optionalOuterJoinType - outer join type, null if not an outer join
-	     * @param typesPerStream - event types for each stream
-	     * @return query plan
-	     */
-		public static QueryPlan Build(EventType[] typesPerStream, QueryGraph queryGraph, OuterJoinType optionalOuterJoinType)
+		///<summary>
+        /// Build query plan.
+		///</summary>
+        ///<param name="typesPerStream">event types for each stream</param>
+        ///<param name="queryGraph">navigability info</param>
+        ///<param name="optionalOuterJoinType">outer join type, null if not an outer join</param>
+		///<returns></returns>
+		public static QueryPlan Build(EventType[] typesPerStream, QueryGraph queryGraph, OuterJoinType? optionalOuterJoinType)
 		{
 			QueryPlanIndex[] indexSpecs = new QueryPlanIndex[2];
 			QueryPlanNode[] execNodeSpecs = new QueryPlanNode[2];
@@ -54,16 +54,14 @@ namespace net.esper.eql.join.plan
 			
 			if (optionalOuterJoinType != null)
 			{
-                OuterJoinType _optionalOuterJoinType = optionalOuterJoinType.Value;
-
-				if ((_optionalOuterJoinType == OuterJoinType.LEFT) ||
-                    (_optionalOuterJoinType == OuterJoinType.FULL))
+				if ((optionalOuterJoinType == OuterJoinType.LEFT) ||
+                    (optionalOuterJoinType == OuterJoinType.FULL))
 				{
 					execNodeSpecs[0] = new TableOuterLookupNode(lookupPlans[0]);
 				}
 				
-                if ((_optionalOuterJoinType == OuterJoinType.RIGHT) ||
-                    (_optionalOuterJoinType == OuterJoinType.FULL))
+                if ((optionalOuterJoinType == OuterJoinType.RIGHT) ||
+                    (optionalOuterJoinType == OuterJoinType.FULL))
 				{
 					execNodeSpecs[1] = new TableOuterLookupNode(lookupPlans[1]);
 				}
@@ -72,21 +70,22 @@ namespace net.esper.eql.join.plan
 			return new QueryPlan(indexSpecs, execNodeSpecs);
 		}
 		
-	    /**
-	     * Returns null if no coercion is required, or an array of classes for use in coercing the
-	     * lookup keys and index keys into a common type.
-	     * @param typesPerStream is the event types for each stream
-	     * @param lookupStream is the stream looked up from
-	     * @param indexedStream is the indexed stream
-	     * @param keyProps is the properties to use to look up
-	     * @param indexProps is the properties to index on
-	     * @return coercion types, or null if none required
-	     */
-	    protected static Type[] getCoercionTypes(EventType[] typesPerStream,
-												 int lookupStream,
-	                                             int indexedStream,
-	                                             String[] keyProps,
-	                                             String[] indexProps)
+	    ///<summary>
+        /// Returns null if no coercion is required, or an array of classes for use in coercing the
+        /// lookup keys and index keys into a common type.
+	    ///</summary>
+        ///<param name="typesPerStream">the event types for each stream</param>
+        ///<param name="lookupStream">the stream looked up from</param>
+        ///<param name="indexedStream">the indexed stream</param>
+        ///<param name="keyProps">the properties to use to look up</param>
+        ///<param name="indexProps">the properties to index on</param>
+        ///<returns>coercion types, or null if none required</returns>
+	    ///<exception cref="IllegalStateException"></exception>
+	    public static Type[] GetCoercionTypes(EventType[] typesPerStream,
+											  int lookupStream,
+	                                          int indexedStream,
+	                                          String[] keyProps,
+	                                          String[] indexProps)
 	    {
 	        // Determine if any coercion is required
 	        if (indexProps.Length != keyProps.Length)

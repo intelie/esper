@@ -86,8 +86,9 @@ namespace net.esper.client
 
 		/// <summary>List of adapter loaders.</summary>
 		protected IList<ConfigurationAdapterLoader> adapterLoaders;
-		
-        /// <summary> Constructs an empty configuration. The auto import values
+
+        /// <summary>
+        /// Constructs an empty configuration. The auto import values
         /// are set to System, System.Collections and System.Text
         /// </summary>
 
@@ -106,6 +107,20 @@ namespace net.esper.client
 			set { epServicesContextFactoryClassName = value ; }
 	    }
 
+        /// <summary>
+        /// Adds a plug-in aggregation function given a function name and an aggregation class name.
+        /// <p>
+        /// The aggregation class must : the base class {@link net.esper.eql.agg.AggregationSupport}.
+        /// </p>
+        /// 	<p>
+        /// The same function name cannot be added twice.
+        /// </p>
+        /// </summary>
+        /// <param name="functionName">is the new aggregation function name</param>
+        /// <param name="aggregationClassName">is the fully-qualified class name of the class implementing the aggregation function</param>
+        /// <throws>
+        /// ConfigurationException is thrown to indicate a problem adding aggregation function
+        /// </throws>
 	    public void AddPlugInAggregationFunction(String functionName, String aggregationClassName)
 	    {
 	        ConfigurationPlugInAggregationFunction entry = new ConfigurationPlugInAggregationFunction();
@@ -201,8 +216,10 @@ namespace net.esper.client
         /// <summary>
         /// Add a namespace. Adding will suppress the use of the default namespaces.
         /// </summary>
-        /// <param name="autoImport">the import to add
-        /// </param>
+        /// <param name="importName">is a fully-qualified class name or a package name with wildcard</param>
+        /// <throws>
+        /// ConfigurationException if incorrect package or class names are encountered
+        /// </throws>
         public virtual void AddImport(String importName)
         {
             if (isUsingDefaultImports)
@@ -513,7 +530,7 @@ namespace net.esper.client
         }
 
         /// <summary> Reset to an empty configuration.</summary>
-        internal virtual void Reset()
+        internal void Reset()
         {
             eventClasses = new EHashDictionary<String, String>();
             mapAliases = new EHashDictionary<String, Properties>();

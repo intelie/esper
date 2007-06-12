@@ -20,30 +20,32 @@ namespace net.esper.core
     /// </summary>
     public interface StatementLifecycleSvc
     {
-        /// <summary>Create and start the statement.</summary>
-        /// <param name="statementSpec">
-        /// is the statement definition in bean object form, raw unvalidated and unoptimized.
-        /// </param>
+        /// <summary>
+        /// Create and start the statement.
+        /// </summary>
+        /// <param name="statementSpec">is the statement definition in bean object form, raw unvalidated and unoptimized.</param>
         /// <param name="expression">is the expression text</param>
-        /// <param name="isPattern">
-        /// is an indicator on whether this is a pattern statement and thus the iterator must return the last result,
-        /// versus for non-pattern statements the iterator returns view content.
-        /// </param>
-        /// <param name="optStatementName">
-        /// is an optional statement name, null if none was supplied
-        /// </param>
+        /// <param name="isPattern">is an indicator on whether this is a pattern statement and thus the iterator must return the last result,
+        /// versus for non-pattern statements the iterator returns view content.</param>
+        /// <param name="optStatementName">is an optional statement name, null if none was supplied</param>
         /// <returns>started statement</returns>
         EPStatement CreateAndStart(StatementSpecRaw statementSpec, String expression, bool isPattern, String optStatementName);
 
-        /// <summary>Start statement by statement id.</summary>
+        /// <summary>
+        /// Start statement by statement id.
+        /// </summary>
         /// <param name="statementId">of the statement to start.</param>
         void Start(String statementId);
 
-        /// <summary>Stop statement by statement id.</summary>
+        /// <summary>
+        /// Stop statement by statement id.
+        /// </summary>
         /// <param name="statementId">of the statement to stop.</param>
         void Stop(String statementId);
 
-        /// <summary>Destroy statement by statement id.</summary>
+        /// <summary>
+        /// Destroy statement by statement id.
+        /// </summary>
         /// <param name="statementId">statementId of the statement to destroy</param>
         void Destroy(String statementId);
 
@@ -51,14 +53,18 @@ namespace net.esper.core
         /// Returns the statement by the given name, or null if no such statement exists.
         /// </summary>
         /// <param name="name">is the statement name</param>
-        /// <returns>statement for the given name, or null if no such statement existed</returns>
+        /// <returns>
+        /// statement for the given name, or null if no such statement existed
+        /// </returns>
         EPStatement GetStatementByName(String name);
 
         /// <summary>
         /// Returns an array of statement names. If no statement has been created, an empty array is returned.
-        /// <p>
+        /// <para>
         /// Only returns started and stopped statements.
+        /// </para>
         /// </summary>
+        /// <value>The statement names.</value>
         /// <returns>statement names</returns>
         IList<string> StatementNames { get; }
 

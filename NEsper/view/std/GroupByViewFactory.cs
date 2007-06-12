@@ -77,7 +77,7 @@ namespace net.esper.view.std
 	    /// <param name="viewName">is the name of the view</param>
 	    /// <returns>field names</returns>
 	    /// <throws>ViewParameterException thrown to indicate a parameter problem</throws>
-	    protected static String[] GetFieldNameParams(IList<Object> viewParameters, String viewName)
+	    internal static String[] GetFieldNameParams(IList<Object> viewParameters, String viewName)
 	    {
 	        String[] fieldNames;
 

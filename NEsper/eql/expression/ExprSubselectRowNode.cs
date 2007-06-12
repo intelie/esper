@@ -34,20 +34,46 @@ namespace net.esper.eql.expression
 	    {
 	    }
 
+        /// <summary>
+        /// Return true to indicate that wildcard selects are acceptable, or false to indicate wildcard is not acceptable
+        /// </summary>
+        /// <value></value>
+        /// <returns>true for yes-wildcards, false for no-wildcards</returns>
 	    public override bool IsAllowWildcardSelect
 	    {
             get { return false; }
 	    }
 
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
 	    public override Type ReturnType
 	    {
             get { return selectClause.GetType(); }
 	    }
 
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
+        /// <param name="viewResourceDelegate"></param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
 	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
 	    }
 
+        /// <summary>
+        /// Evaluate the subquery expression returning an evaluation result object.
+        /// </summary>
+        /// <param name="eventsPerStream">is the events for each stream in a join</param>
+        /// <param name="isNewData">is true for new data, or false for old data</param>
+        /// <param name="matchingEvents">is filtered results from the table of stored subquery events</param>
+        /// <returns>evaluation result</returns>
 	    public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData, Set<EventBean> matchingEvents)
 	    {
 	        if (matchingEvents == null)

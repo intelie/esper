@@ -19,14 +19,10 @@ namespace net.esper.pattern
         private readonly IList<EvalStateNode> childNodes;
 
         /// <summary> Constructor.</summary>
-        /// <param name="parentNode">is the parent evaluator to call to indicate truth value
-        /// </param>
-        /// <param name="evalOrdNode">the factory node associated to the state
-        /// </param>
-        /// <param name="beginState">contains the events that make up prior matches
-        /// </param>
-        /// <param name="context">contains handles to services required
-        /// </param>
+        /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
+        /// <param name="evalOrNode">the factory node associated to the state</param>
+        /// <param name="beginState">contains the events that make up prior matches</param>
+        /// <param name="context">contains handles to services required</param>
         public EvalOrStateNode( Evaluator parentNode,
 								EvalOrNode evalOrNode,
 								MatchedEventMap beginState,
@@ -61,7 +57,7 @@ namespace net.esper.pattern
                 log.Debug(".Start Starting or-expression all children, size=" + FactoryNode.ChildNodes.Count);
             }
 
-            if (childNodes.Count != orNodeChildNodes.Count)
+            if (childNodes.Count != FactoryNode.ChildNodes.Count)
             {
                 throw new SystemException("OR state node does not have the required child state nodes");
             }

@@ -521,7 +521,7 @@ namespace net.esper.core
 	    {
 	        // get matching filters
 	        ArrayBackedCollection<FilterHandle> matches = MatchesArray;
-	        services.FilterService.Evaluate(_event, matches);
+	        services.FilterService.Evaluate(_event, matches.Array);
 
 	        if (ThreadLogUtil.ENABLED_TRACE)
 	        {

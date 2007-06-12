@@ -30,20 +30,16 @@ namespace net.esper.filter
         {
             get { return resultEventProperty; }
         }
-		
-	    /**
-	     * Returns true if numeric coercion is required, or false if not
-	     * @return true to coerce at runtime
-	     */
+
+	    /// <summary>Returns true if numeric coercion is required, or false if not</summary>
+	    /// <returns>true to coerce at runtime</returns>
 	    public bool IsMustCoerce
 	    {
 	        get { return isMustCoerce; }
 	    }
 
-	    /**
-	     * Returns the numeric coercion type.
-	     * @return type to coerce to
-	     */
+	    /// <summary>Returns the numeric coercion type.</summary>
+	    /// <returns>type to coerce to</returns>
 	    public Type CoercionType
 	    {
 	        get { return coercionType; }
@@ -54,15 +50,15 @@ namespace net.esper.filter
 		private readonly bool isMustCoerce;
 		private readonly Type coercionType;
 
-        /// <summary> Constructor.</summary>
-        /// <param name="propertyName">is the event property name
-        /// </param>
-        /// <param name="filterOperator">is the type of compare
-        /// </param>
-        /// <param name="resultEventAsName">is the name of the result event from which to get a property value to compare
-        /// </param>
-        /// <param name="resultEventProperty">is the name of the property to get from the named result event
-        /// </param>
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="propertyName">is the event property name</param>
+        /// <param name="filterOperator">is the type of compare</param>
+        /// <param name="resultEventAsName">is the name of the result event from which to get a property value to compare</param>
+        /// <param name="resultEventProperty">is the name of the property to get from the named result event</param>
+        /// <param name="isMustCoerce">if set to <c>true</c> [is must coerce].</param>
+        /// <param name="coercionType">Type of the coercion.</param>
         /// <throws>  ArgumentException if an operator was supplied that does not take a single constant value </throws>
 
         public FilterSpecParamEventProp(String propertyName,
@@ -98,7 +94,7 @@ namespace net.esper.filter
             }
 
             Object value = _event[resultEventProperty];
-			
+
 		    // Coerce if necessary
 	        if (isMustCoerce)
 	        {

@@ -11,19 +11,17 @@ namespace net.esper.pattern
 	/// Contains handles to implementations of services needed by
 	/// evaluation nodes.
 	/// </summary>
-	
+
 	public sealed class PatternContext
 	{
 	    private readonly int streamNumber;
 	    private readonly StatementContext statementContext;
 	    private readonly PatternStateFactory patternStateFactory;
 
-	    /**
-	     * Constructor.
-	     * @param patternStateFactory is the state node factory for the pattern
-	     * @param statementContext is the statement context
-	     * @param streamNumber is the stream number
-	     */
+	    /// <summary>Constructor.</summary>
+	    /// <param name="patternStateFactory">is the state node factory for the pattern</param>
+	    /// <param name="statementContext">is the statement context</param>
+	    /// <param name="streamNumber">is the stream number</param>
 	    public PatternContext(StatementContext statementContext,
 	                          int streamNumber,
 	                          PatternStateFactory patternStateFactory)
@@ -33,109 +31,87 @@ namespace net.esper.pattern
 	        this.patternStateFactory = patternStateFactory;
 	    }
 
-	    /**
-	     * Gets the service to use for filter evaluation.
-	     * @return filter evaluation service implemetation
-	     */
+	    /// <summary>Gets the service to use for filter evaluation.</summary>
+	    /// <returns>filter evaluation service implemetation</returns>
 	    public FilterService FilterService
 	    {
 	        get { return statementContext.FilterService; }
 	    }
 
-	    /**
-	     * Gets the service to use for schedule evaluation.
-	     * @return schedule evaluation service implemetation
-	     */
+	    /// <summary>Gets the service to use for schedule evaluation.</summary>
+	    /// <returns>schedule evaluation service implemetation</returns>
 	    public SchedulingService SchedulingService
 	    {
 	        get { return statementContext.SchedulingService; }
 	    }
 
-	    /**
-	     * Gets the schedule bucket for ordering schedule callbacks within this pattern.
-	     * @return schedule bucket
-	     */
+	    /// <summary>
+	    /// Gets the schedule bucket for ordering schedule callbacks within this pattern.
+	    /// </summary>
+	    /// <returns>schedule bucket</returns>
 	    public ScheduleBucket ScheduleBucket
 	    {
 	        get { return statementContext.ScheduleBucket; }
 	    }
 
-	    /**
-	     * Gets the service providing event adaptering or wrapping.
-	     * @return event adapter service
-	     */
+	    /// <summary>Gets the service providing event adaptering or wrapping.</summary>
+	    /// <returns>event adapter service</returns>
 	    public EventAdapterService EventAdapterService
 	    {
 	        get { return statementContext.EventAdapterService; }
 	    }
 
-	    /**
-	     * Gets the statement's resource handle for locking.
-	     * @return handle of statement
-	     */
+	    /// <summary>Gets the statement's resource handle for locking.</summary>
+	    /// <returns>handle of statement</returns>
 	    public EPStatementHandle EpStatementHandle
 	    {
 	        get { return statementContext.EpStatementHandle; }
 	    }
 
-	    /**
-	     * Gets the pattern state node factory to use.
-	     * @return factory for pattern state
-	     */
+	    /// <summary>Gets the pattern state node factory to use.</summary>
+	    /// <returns>factory for pattern state</returns>
 	    public PatternStateFactory PatternStateFactory
 	    {
 	        get { return patternStateFactory; }
 	    }
 
-	    /**
-	     * Gets the statement id.
-	     * @return statement id
-	     */
+	    /// <summary>Gets the statement id.</summary>
+	    /// <returns>statement id</returns>
 	    public String StatementId
 	    {
 	        get { return statementContext.StatementId; }
 	    }
 
-	    /**
-	     * Gets the statement name.
-	     * @return statement name
-	     */
+	    /// <summary>Gets the statement name.</summary>
+	    /// <returns>statement name</returns>
 	    public String StatementName
 	    {
 	        get { return statementContext.StatementName; }
 	    }
 
-	    /**
-	     * Gets the stream number.
-	     * @return stream number
-	     */
+	    /// <summary>Gets the stream number.</summary>
+	    /// <returns>stream number</returns>
 	    public int StreamNumber
 	    {
 	        get { return streamNumber; }
 	    }
 
-	    /**
-	     * Gets the engine URI.
-	     * @return engine URI
-	     */
+	    /// <summary>Gets the engine URI.</summary>
+	    /// <returns>engine URI</returns>
 	    public String EngineURI
 	    {
 	        get { return statementContext.EngineURI; }
 	    }
 
-	    /**
-	     * Gets the engine instance id.
-	     * @return engine instance id
-	     */
+	    /// <summary>Gets the engine instance id.</summary>
+	    /// <returns>engine instance id</returns>
 	    public String EngineInstanceId
 	    {
 	        get { return statementContext.EngineInstanceId; }
 	    }
 
-	    /**
-	     * Gets extension services context.
-	     * @return extension services
-	     */
+	    /// <summary>Gets extension services context.</summary>
+	    /// <returns>extension services</returns>
 	    public ExtensionServicesContext ExtensionServicesContext
 	    {
 	        get { return statementContext.ExtensionServicesContext; }

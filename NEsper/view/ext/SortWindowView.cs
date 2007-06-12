@@ -18,12 +18,12 @@ namespace net.esper.view.ext
     /// The view accepts 3 parameters. The first parameter is the field name to get the values to sort for,
     /// the second parameter defines whether to sort ascending or descending, the third parameter
     /// is the number of elements to keep in the sorted list.
-    /// 
+    ///
     /// The type of the field to be sorted in the event must implement the Comparable interface.
-    /// 
+    ///
     /// The natural order in which events arrived is used as the second sorting criteria. Thus should events arrive
     /// with equal sort values the oldest event leaves the sort window first.
-    /// 
+    ///
     /// Old values removed from a prior view are removed from the sort view.
     /// </summary>
 
@@ -76,24 +76,26 @@ namespace net.esper.view.ext
             get { return sortWindowSize; }
         }
 
-	    /**
-	     * Returns the friend handling the random access, cal be null if not required.
-	     * @return random accessor to sort window contents
-	     */
+	    /// <summary>
+	    /// Returns the friend handling the random access, cal be null if not required.
+	    /// </summary>
+	    /// <returns>random accessor to sort window contents</returns>
 	    public IStreamSortedRandomAccess OptionalSortedRandomAccess
 	    {
 	        get { return optionalSortedRandomAccess; }
 	    }
-	
-	    /**
-	     * Ctor.
-	     * @param sortFieldNames is the event property names to sort
-	     * @param descendingValues indicates whether to sort ascending or descending for each field
-	     * @param sortWindowSize is the window size
-	     * @param optionalSortedRandomAccess is the friend class handling the random access, if required by
-	     * expressions
-	     * @param sortWindowViewFactory for copying this view in a group-by
-	     */
+
+	    /// <summary>Ctor.</summary>
+	    /// <param name="sortFieldNames">is the event property names to sort</param>
+	    /// <param name="descendingValues">
+	    /// indicates whether to sort ascending or descending for each field
+	    /// </param>
+	    /// <param name="sortWindowSize">is the window size</param>
+	    /// <param name="optionalSortedRandomAccess">
+	    /// is the friend class handling the random access, if required by
+	    /// expressions
+	    /// </param>
+	    /// <param name="sortWindowViewFactory">for copying this view in a group-by</param>
 	    public SortWindowView(SortWindowViewFactory sortWindowViewFactory,
 	                          String[] sortFieldNames,
 	                          Boolean[] descendingValues,
@@ -110,6 +112,11 @@ namespace net.esper.view.ext
             sortedEvents = new ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
 	    }
 
+        /// <summary>
+        /// Clones the view.
+        /// </summary>
+        /// <param name="statementContext">The statement context.</param>
+        /// <returns></returns>
 	    public View CloneView(StatementContext statementContext)
 		{
 			return sortWindowViewFactory.MakeView(statementContext);

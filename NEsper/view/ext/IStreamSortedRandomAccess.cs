@@ -55,6 +55,11 @@ namespace net.esper.view.ext
 			}
 		}
 
+        /// <summary>
+        /// Returns an new data event given an index.
+        /// </summary>
+        /// <param name="index">to return new data for</param>
+        /// <returns>new data event</returns>
 		public EventBean GetNewData(int index)
 		{
 			if (enumerator == null)
@@ -107,6 +112,11 @@ namespace net.esper.view.ext
 			return null;
 		}
 
+        /// <summary>
+        /// Returns an old data event given an index.
+        /// </summary>
+        /// <param name="index">to return old data for</param>
+        /// <returns>old data event</returns>
 		public EventBean GetOldData(int index)
 		{
 			return null;

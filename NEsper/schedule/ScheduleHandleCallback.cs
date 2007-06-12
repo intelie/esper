@@ -25,6 +25,11 @@ namespace net.esper.schedule
 	    void ScheduledTrigger(ExtensionServicesContext extensionServicesContext);
 	}
 
+    /// <summary>
+    /// Delegate that is invoked as indicated by a schedule added to the scheduling service.
+    /// </summary>
+    /// <param name="extensionServicesContext"></param>
+
     public delegate void ScheduleHandleDelegate(ExtensionServicesContext extensionServicesContext);
 
     /// <summary>
@@ -36,11 +41,20 @@ namespace net.esper.schedule
     {
         private ScheduleHandleDelegate m_delegate;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScheduleHandleCallbackImpl"/> class.
+        /// </summary>
+        /// <param name="dg">The dg.</param>
         public ScheduleHandleCallbackImpl( ScheduleHandleDelegate dg )
         {
             m_delegate = dg;
         }
 
+        /// <summary>
+        /// Callback that is invoked as indicated by a schedule added to the scheduling service.
+        /// </summary>
+        /// <param name="extensionServicesContext">is a marker interface for providing custom extension services
+        /// passed to the triggered class</param>
         public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
         {
             m_delegate(extensionServicesContext);

@@ -12,7 +12,7 @@ namespace net.esper.eql.core
     /// <summary>
     /// Processor for select-clause expressions that handles wildcards. Computes results based on matching events.
     /// </summary>
-    
+
     public class SelectExprJoinWildcardProcessor : SelectExprProcessor
     {
         /// <summary>
@@ -30,18 +30,18 @@ namespace net.esper.eql.core
         private readonly EventType resultEventType;
         private readonly EventAdapterService eventAdapterService;
 
-	    /**
-	     * Ctor.
-	     * @param streamNames - name of each stream
-	     * @param streamTypes - type of each stream
-	     * @param eventAdapterService - service for generating events and handling event types
-	     * @param insertIntoDesc - describes the insert-into clause
-	     * @throws ExprValidationException if the expression validation failed 
-	     */
+	    /// <summary>Ctor.</summary>
+	    /// <param name="streamNames">name of each stream</param>
+	    /// <param name="streamTypes">type of each stream</param>
+	    /// <param name="eventAdapterService">
+	    /// service for generating events and handling event types
+	    /// </param>
+	    /// <param name="insertIntoDesc">describes the insert-into clause</param>
+	    /// <throws>ExprValidationException if the expression validation failed</throws>
 	    public SelectExprJoinWildcardProcessor(
-			String[] streamNames, 
-			EventType[] streamTypes, 
-			EventAdapterService eventAdapterService, 
+			String[] streamNames,
+			EventType[] streamTypes,
+			EventAdapterService eventAdapterService,
 			InsertIntoDesc insertIntoDesc)
         {
             if ((streamNames.Length < 2) || (streamTypes.Length < 2) || (streamNames.Length != streamTypes.Length))

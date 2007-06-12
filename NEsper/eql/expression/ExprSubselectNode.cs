@@ -62,6 +62,15 @@ namespace net.esper.eql.expression
 	        this.statementSpecRaw = statementSpec;
 	    }
 
+        /// <summary>
+        /// Returns true if the expression node's evaluation value doesn't depend on any events data,
+        /// as must be determined at validation time, which is bottom-up and therefore
+        /// reliably allows each node to determine constant value.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// true for constant evaluation value, false for non-constant evaluation value
+        /// </returns>
 	    public override bool IsConstantResult
 	    {
 	    	get
@@ -74,35 +83,53 @@ namespace net.esper.eql.expression
 	    	}
 	    }
 
-	    /// <summary>Gets or sets the compiled statement spec.</summary>
+        /// <summary>
+        /// Gets or sets the compiled statement spec.
+        /// </summary>
+        /// <value>The statement spec compiled.</value>
 	    public StatementSpecCompiled StatementSpecCompiled
 	    {
 	    	get { return this.statementSpecCompiled; }
 	    	set { this.statementSpecCompiled = value ; }
 	    }
 
-	    /// <summary>Gets or sets the validate select clause</summary>
+        /// <summary>
+        /// Gets or sets the validate select clause
+        /// </summary>
+        /// <value>The select clause.</value>
 	    public ExprNode SelectClause
 	    {
 	    	get { return this.selectClause ; }
 	    	set { this.selectClause = value ; }
 	    }
 
+        /// <summary>
+        /// Evaluate event tuple and return result.
+        /// </summary>
+        /// <param name="eventsPerStream">event tuple</param>
+        /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
+        /// <returns>
+        /// evaluation result, a bool value for OR/AND-type evalution nodes.
+        /// </returns>
 	    public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData)
 	    {
 	        Set<EventBean> matchingEvents = strategy.Lookup(eventsPerStream);
 	        return Evaluate(eventsPerStream, isNewData, matchingEvents);
 	    }
 
-	    /// <summary>Returns the uncompiled statement spec.</summary>
+        /// <summary>
+        /// Returns the uncompiled statement spec.
+        /// </summary>
+        /// <value>The statement spec raw.</value>
 	    public StatementSpecRaw StatementSpecRaw
 	    {
 	    	get { return statementSpecRaw; }
 	    }
 
-	    /// <summary>
-	    /// Gets or sets the name of the select expression as-tag
-	    /// </summary>
+        /// <summary>
+        /// Gets or sets the name of the select expression as-tag
+        /// </summary>
+        /// <value>The name of the select as.</value>
 	    public string SelectAsName
 	    {
 	    	get { return this.selectAsName; }
@@ -115,9 +142,15 @@ namespace net.esper.eql.expression
 	    public ExprNode FilterExpr
 	    {
 	    	get { return this.filterExpr; }
-	    	set { this.filterExpr = filterExpr; }
+	    	set { this.filterExpr = value; }
 	    }
 
+        /// <summary>
+        /// Returns the expression node rendered as a string.
+        /// </summary>
+        /// <value></value>
+        /// <returns> string rendering of expression
+        /// </returns>
 	    public override string ExpressionString
 	    {
 	    	get
@@ -130,6 +163,15 @@ namespace net.esper.eql.expression
 	    	}
 	    }
 
+        /// <summary>
+        /// Return true if a expression node semantically equals the current node, or false if not.
+        /// Concrete implementations should compare the type and any additional information
+        /// that impact the evaluation of a node.
+        /// </summary>
+        /// <param name="node">to compare to</param>
+        /// <returns>
+        /// true if semantically equal, or false if not equals
+        /// </returns>
 	    public override bool EqualsNode(ExprNode node)
 	    {
 	        return false;   // 2 subselects are never equivalent
@@ -142,7 +184,7 @@ namespace net.esper.eql.expression
 	    public SubqueryTableLookupStrategy Strategy
 	    {
 	    	get { return this.strategy ; }
-	    	set { this.strategy = strategy; }
+	    	set { this.strategy = value; }
 	    }
 	}
 } // End of namespace

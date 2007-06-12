@@ -5,9 +5,9 @@
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
-
 using System;
 using System.Collections.Generic;
+
 using net.esper.eql.core;
 using net.esper.eql.expression;
 using net.esper.eql.spec;
@@ -17,11 +17,15 @@ using net.esper.util;
 
 namespace net.esper.eql.spec
 {
-	/// <summary>Unvalided filter-based stream specification.</summary>
-	public class FilterStreamSpecRaw : StreamSpecBase, StreamSpecRaw, MetaDefItem
+	/// <summary>
+	/// Unvalided filter-based stream specification.
+	/// </summary>
+	public class FilterStreamSpecRaw
+        : StreamSpecBase
+        , StreamSpecRaw
+        , MetaDefItem
 	{
 	    private FilterSpecRaw rawFilterSpec;
-
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="rawFilterSpec">is unvalidated filter specification</param>
@@ -29,7 +33,7 @@ namespace net.esper.eql.spec
 	    /// <param name="optionalStreamName">
 	    /// is the stream name if supplied, or null if not supplied
 	    /// </param>
-	    public FilterStreamSpecRaw(FilterSpecRaw rawFilterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
+	    public FilterStreamSpecRaw(FilterSpecRaw rawFilterSpec, IList<ViewSpec> viewSpecs, String optionalStreamName)
 	        : base(optionalStreamName, viewSpecs)
 	    {
 	        this.rawFilterSpec = rawFilterSpec;
@@ -42,11 +46,19 @@ namespace net.esper.eql.spec
 
 	    /// <summary>Returns the unvalided filter spec.</summary>
 	    /// <returns>filter def</returns>
-	    public FilterSpecRaw GetRawFilterSpec()
+	    public FilterSpecRaw RawFilterSpec
 	    {
-	        return rawFilterSpec;
+            get { return rawFilterSpec; }
 	    }
 
+        /// <summary>
+        /// Compiles a raw stream specification consisting event type information and filter expressions
+        /// to an validated, optimized form for use with filter service
+        /// </summary>
+        /// <param name="eventAdapterService">supplies type information</param>
+        /// <param name="methodResolutionService">for resolving imports</param>
+        /// <returns>compiled stream</returns>
+        /// <throws>ExprValidationException to indicate validation errors</throws>
 	    public StreamSpecCompiled Compile(EventAdapterService eventAdapterService,
 	                                      MethodResolutionService methodResolutionService)
 	    {
@@ -69,9 +81,9 @@ namespace net.esper.eql.spec
 	    /// <param name="eventAdapterService">for resolving event types</param>
 	    /// <returns>event type</returns>
 	    /// <throws>ExprValidationException if the info cannot be resolved</throws>
-	    protected static EventType ResolveType(String eventName, EventAdapterService eventAdapterService)
+	    internal static EventType ResolveType(String eventName, EventAdapterService eventAdapterService)
 	    {
-	        EventType eventType = eventAdapterService.GetExistsTypeByAlias(eventName);
+	        EventType eventType = eventAdapterService.GetEventTypeByAlias(eventName);
 
 	        // The type is not known yet, attempt to add as a JavaBean type with the same alias
 	        if (eventType == null)

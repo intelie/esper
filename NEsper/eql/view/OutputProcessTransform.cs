@@ -22,6 +22,11 @@ namespace net.esper.eql.view
             newData = new EventBean[1];
         }
 
+        /// <summary>
+        /// Transforms the specified _event.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
+        /// <returns></returns>
         public EventBean Transform(EventBean _event)
         {
             newData[0] = _event;

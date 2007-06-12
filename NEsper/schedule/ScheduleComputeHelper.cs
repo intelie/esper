@@ -162,7 +162,7 @@ namespace net.esper.schedule
 				int year = after.Year;
 	            if (!CheckDayValidInMonth(result.DayOfMonth, result.Month, year))
 				{
-					afterTimeInMillis = after.getTimeInMillis();
+				    afterTimeInMillis = DateTimeHelper.TimeInMillis(after);
 					continue;
 				}
 				

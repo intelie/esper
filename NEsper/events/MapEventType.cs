@@ -43,14 +43,16 @@ namespace net.esper.events
         private int hashCode;
         private EventAdapterService eventAdapterService;
 
-		/**
-		 * Constructor takes a type name, map of property names and types.
-		 * @param typeName is the event type name used to distinquish map types that have the same property types,
-		 * empty string for anonymous maps, or for insert-into statements generating map events
-		 * the stream name
-		 * @param propertyTypes is pairs of property name and type
-		 * @param eventAdapterService is required for access to objects properties within map values
-		 */
+		/// <summary>Constructor takes a type name, map of property names and types.</summary>
+		/// <param name="typeName">
+		/// is the event type name used to distinquish map types that have the same property types,
+		/// empty string for anonymous maps, or for insert-into statements generating map events
+		/// the stream name
+		/// </param>
+		/// <param name="propertyTypes">is pairs of property name and type</param>
+		/// <param name="eventAdapterService">
+		/// is required for access to objects properties within map values
+		/// </param>
 
         public MapEventType(String typeName,
 							IDictionary<String, Type> propertyTypes,
@@ -82,12 +84,12 @@ namespace net.esper.events
         /// a DataDictionary.  This method was originally implemented
         /// as an anonymous innerclass in Java.
         /// </summary>
-        
+
         internal class SimpleEventPropertyGetter : EventPropertyGetter
         {
         	private string name ;
-        	
-        	internal SimpleEventPropertyGetter( string name ) 
+
+        	internal SimpleEventPropertyGetter( string name )
         	{
         		this.name = name ;
         	}
@@ -122,7 +124,13 @@ namespace net.esper.events
 	            }
 			}
         }
-        
+
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
 		public Object GetValue(String propertyName, IDictionary<String, Object> values)
 	    {
 	        // if a known type, return value
@@ -169,13 +177,13 @@ namespace net.esper.events
 	        EventBean _event = this.eventAdapterService.AdapterForBean(value);
 	        return nestedGetter.GetValue(_event);
 	    }
-		
+
         /// <summary>
         /// Gets the type of property associated with the property name.
         /// </summary>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        
+
         public Type GetPropertyType(String propertyName)
         {
             Type result = types.Fetch(propertyName, null);
@@ -204,7 +212,7 @@ namespace net.esper.events
             EventType nestedType = eventAdapterService.AddBeanType(result.FullName, result);
             return nestedType.GetPropertyType(propertyNested);
         }
-        
+
         /// <summary>
         /// Gets the getter for the property name.
         /// </summary>
@@ -249,19 +257,19 @@ namespace net.esper.events
 
             return getter;
         }
-        
+
         /// <summary>
         /// An EventProperty designed to extract the named property from
         /// a DataDictionary.  This method was originally implemented
         /// as an anonymous innerclass in Java.
         /// </summary>
-        
+
         internal class NestedEventPropertyGetter : EventPropertyGetter
         {
         	private EventAdapterService eventAdapterService;
         	private EventPropertyGetter nestedGetter ;
         	private string propertyMap ;
-        	
+
         	internal NestedEventPropertyGetter(
         		EventAdapterService eventAdapterService,
         		EventPropertyGetter nestedGetter,
@@ -304,7 +312,7 @@ namespace net.esper.events
                 {
                     return null;
                 }
-                
+
                 // Wrap object
                 EventBean _event = eventAdapterService.AdapterForBean(value);
                 return nestedGetter.GetValue(_event);
@@ -393,7 +401,7 @@ namespace net.esper.events
             {
                 return false;
             }
-		
+
 			// Should have the same type name
 		    if (other.typeName != this.typeName)
 	        {

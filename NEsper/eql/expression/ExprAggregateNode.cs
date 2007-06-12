@@ -36,29 +36,47 @@ namespace net.esper.eql.expression
 
         protected internal bool isDistinct;
 
-	    /**
-	     * Returns the aggregation function name for representation in a generate expression string.
-	     * @return aggregation function name
-	     */
+	    /// <summary>
+	    /// Returns the aggregation function name for representation in a generate expression string.
+	    /// </summary>
+	    /// <returns>aggregation function name</returns>
 	    protected abstract String AggregationFunctionName
 		{
 			get ;
 		}
 
-	    /**
-	     * Gives the aggregation node a chance to validate the sub-expression types.
-	     * @param streamTypeService is the types per stream
-	     * @param methodResolutionService used for resolving method and function names
-	     * @return aggregation function use
-	     * @throws ExprValidationException when expression validation failed
-	     */
+	    /// <summary>
+	    /// Gives the aggregation node a chance to validate the sub-expression types.
+	    /// </summary>
+	    /// <param name="streamTypeService">is the types per stream</param>
+	    /// <param name="methodResolutionService">
+	    /// used for resolving method and function names
+	    /// </param>
+	    /// <returns>aggregation function use</returns>
+	    /// <throws>ExprValidationException when expression validation failed</throws>
 	    protected abstract AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService);
 
+        /// <summary>
+        /// Returns true if the expression node's evaluation value doesn't depend on any events data,
+        /// as must be determined at validation time, which is bottom-up and therefore
+        /// reliably allows each node to determine constant value.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// true for constant evaluation value, false for non-constant evaluation value
+        /// </returns>
 	    public override bool IsConstantResult
 	    {
 	        get { return false; }
 	    }
 
+        /// <summary>
+        /// Validate node.
+        /// </summary>
+        /// <param name="streamTypeService">serves stream event type info</param>
+        /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
+        /// <param name="viewResourceDelegate"></param>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
 	    public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
 	    {
 	        this.aggregationMethod = ValidateAggregationChild(streamTypeService, methodResolutionService);
@@ -68,6 +86,13 @@ namespace net.esper.eql.expression
 	        }
 	    }
 
+        /// <summary>
+        /// Returns the type that the node's evaluate method returns an instance of.
+        /// </summary>
+        /// <value>The type.</value>
+        /// <returns> type returned when evaluated
+        /// </returns>
+        /// <throws>ExprValidationException thrown when validation failed </throws>
 	    public override Type ReturnType
 	    {
 			get
@@ -80,10 +105,12 @@ namespace net.esper.eql.expression
 			}
 	    }
 
-	    /**
-	     * Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
-	     * @return prototype aggregation state as a factory for aggregation states per group-by key value
-	     */
+	    /// <summary>
+	    /// Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
+	    /// </summary>
+	    /// <returns>
+	    /// prototype aggregation state as a factory for aggregation states per group-by key value
+	    /// </returns>
 	    public AggregationMethod PrototypeAggregator
 	    {
 			get
@@ -126,7 +153,9 @@ namespace net.esper.eql.expression
 
         public abstract bool EqualsNodeAggregate(ExprAggregateNode node);
 
-        /// <summary> Assigns to the node the future which can be queried for the current aggregation state at evaluation time.</summary>
+        /// <summary>
+        /// Assigns to the node the future which can be queried for the current aggregation state at evaluation time.
+        /// </summary>
         /// <param name="aggregationResultFuture">future containing state</param>
         /// <param name="column">column to hand to future for easy access</param>
 
@@ -140,6 +169,7 @@ namespace net.esper.eql.expression
         /// Evaluates the specified events.
         /// </summary>
         /// <param name="events">The events.</param>
+        /// <param name="isNewData">if set to <c>true</c> [is new data].</param>
         /// <returns></returns>
         public override Object Evaluate(EventBean[] events, bool isNewData)
         {

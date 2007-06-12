@@ -162,7 +162,7 @@ namespace net.esper.collection
         /// <exception cref="T:System.ArgumentException">array is multidimensional.-or-arrayIndex is equal to or greater than the length of array.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"></see> is greater than the available space from arrayIndex to the end of the destination array.-or-Type T cannot be cast automatically to the type of the destination array.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new Exception("The method or operation is not implemented.");
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -185,7 +185,63 @@ namespace net.esper.collection
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
         public bool Remove(T item)
         {
-            throw new Exception("The method or operation is not implemented.");
+            throw new NotImplementedException();
         }
-    }
+
+	    ///<summary>
+	    ///Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+	    ///</summary>
+	    ///
+	    ///<returns>
+	    ///The index of item if found in the list; otherwise, -1.
+	    ///</returns>
+	    ///
+	    ///<param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+	    public int IndexOf(T item)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    ///<summary>
+	    ///Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
+	    ///</summary>
+	    ///
+	    ///<param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+	    ///<param name="index">The zero-based index at which item should be inserted.</param>
+	    ///<exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
+	    ///<exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
+	    public void Insert(int index, T item)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    ///<summary>
+	    ///Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
+	    ///</summary>
+	    ///
+	    ///<param name="index">The zero-based index of the item to remove.</param>
+	    ///<exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
+	    ///<exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
+	    public void RemoveAt(int index)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    ///<summary>
+	    ///Gets or sets the element at the specified index.
+	    ///</summary>
+	    ///
+	    ///<returns>
+	    ///The element at the specified index.
+	    ///</returns>
+	    ///
+	    ///<param name="index">The zero-based index of the element to get or set.</param>
+	    ///<exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
+	    ///<exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
+	    public T this[int index]
+	    {
+	        get { throw new NotImplementedException(); }
+	        set { throw new NotImplementedException(); }
+	    }
+	}
 } // End of namespace

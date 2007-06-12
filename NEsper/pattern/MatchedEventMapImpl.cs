@@ -37,9 +37,11 @@ namespace net.esper.pattern
 	        this.events = events;
 	    }
 
-	    /// <summary>Add an event to the collection identified by the given tag.</summary>
-	    /// <param name="tag">is an identifier to retrieve the event from</param>
-	    /// <param name="event">is the event object to be added</param>
+        /// <summary>
+        /// Add an event to the collection identified by the given tag.
+        /// </summary>
+        /// <param name="tag">is an identifier to retrieve the event from</param>
+        /// <param name="_event">is the event object to be added</param>
 	    public void Add(String tag, EventBean _event)
 	    {
 	    	events[tag] = _event;
@@ -104,6 +106,12 @@ namespace net.esper.pattern
 	        return true;
 	    }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override String ToString()
 	    {
 	        StringBuilder buffer = new StringBuilder();
@@ -119,6 +127,12 @@ namespace net.esper.pattern
 	        return buffer.ToString();
 	    }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type. <see cref="M:System.Object.GetHashCode"></see> is suitable for use in hashing algorithms and data structures like a hash table.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override int GetHashCode()
 	    {
 	        return events.GetHashCode();

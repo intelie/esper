@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using net.esper.view.ext;
 
 namespace net.esper.view.window
@@ -26,11 +24,20 @@ namespace net.esper.view.window
 	        get { return randomAccessByIndex; }
 	    }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="iStreamRandomAccess"></param>
+        /// Callback to indicate an update
+        /// @param iStreamRandomAccess is the collection
 	    public void Updated(IStreamRandomAccess iStreamRandomAccess)
 	    {
 	        this.randomAccessByIndex = iStreamRandomAccess;
 	    }
 
+        /// <summary>
+        /// Callback to indicate an update
+        /// </summary>
+        /// <param name="iStreamSortedRandomAccess">is the collection</param>
 	    public void Updated(IStreamSortedRandomAccess iStreamSortedRandomAccess)
 	    {
 	        this.randomAccessByIndex = iStreamSortedRandomAccess;

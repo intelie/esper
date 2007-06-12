@@ -17,17 +17,24 @@ namespace net.esper.view.stat
 	{
 		private EventType eventType;
 
-	   /**
-	     * Constructor.
-	     * @param xFieldName is the field name of the field providing X data points
-	     * @param yFieldName is the field name of the field providing X data points
-	     * @param statementContext contains required view services
-	     */
+	   /// <summary>Constructor.</summary>
+	   /// <param name="xFieldName">
+	   /// is the field name of the field providing X data points
+	   /// </param>
+	   /// <param name="yFieldName">
+	   /// is the field name of the field providing X data points
+	   /// </param>
+	   /// <param name="statementContext">contains required view services</param>
 	    public RegressionLinestView(StatementContext statementContext, String xFieldName, String yFieldName)
 	        : base(statementContext, new RegressionBean(), xFieldName, yFieldName)
 	    {
 	    }
 
+        /// <summary>
+        /// Clones the view.
+        /// </summary>
+        /// <param name="statementContext">The statement context.</param>
+        /// <returns></returns>
 	    public override View CloneView(StatementContext statementContext)
 	    {
 	        return new RegressionLinestView(statementContext, this.FieldNameX, this.FieldNameY);
@@ -62,12 +69,10 @@ namespace net.esper.view.stat
 		{
 			return this.GetType().FullName + " fieldX=" + this.FieldNameX + " fieldY=" + this.FieldNameY;
 		}
-		
-		/**
-	     * Creates the event type for this view.
-	     * @param statementContext is the event adapter service
-	     * @return event type of view
-	     */
+
+		/// <summary>Creates the event type for this view.</summary>
+		/// <param name="statementContext">is the event adapter service</param>
+		/// <returns>event type of view</returns>
 	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
 	        return statementContext.EventAdapterService.AddBeanType(typeof(RegressionBean).FullName, typeof(RegressionBean));

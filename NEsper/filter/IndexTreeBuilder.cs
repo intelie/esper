@@ -432,7 +432,7 @@ namespace net.esper.filter
 
         public static ETreeSet<FilterValueSetParam> CopySortParameters(IList<FilterValueSetParam> parameters)
         {
-            ETreeSet<FilterValueSetParam> copy = new ETreeSet<FilterValueSetParam>(new FilterSpecParamComparator());
+            ETreeSet<FilterValueSetParam> copy = new ETreeSet<FilterValueSetParam>(new FilterValueSetParamComparator());
 
             foreach (FilterValueSetParam parameter in parameters)
             {

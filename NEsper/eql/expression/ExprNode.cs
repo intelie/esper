@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 
 using Log = org.apache.commons.logging.Log;
 using LogFactory = org.apache.commons.logging.LogFactory;
@@ -47,17 +46,19 @@ namespace net.esper.eql.expression
             get;
         }
 
-	    /**
-	     * Returns true if the expression node's evaluation value doesn't depend on any events data,
-	     * as must be determined at validation time, which is bottom-up and therefore
-	     * reliably allows each node to determine constant value.
-	     * @return true for constant evaluation value, false for non-constant evaluation value
-	     */
+	    /// <summary>
+	    /// Returns true if the expression node's evaluation value doesn't depend on any events data,
+	    /// as must be determined at validation time, which is bottom-up and therefore
+	    /// reliably allows each node to determine constant value.
+	    /// </summary>
+	    /// <returns>
+	    /// true for constant evaluation value, false for non-constant evaluation value
+	    /// </returns>
 	    public abstract bool IsConstantResult
 		{
 			get;
 		}
-		
+
 		/// <summary> Returns list of child nodes.</summary>
 		/// <returns> list of child nodes
 		/// </returns>
@@ -88,17 +89,23 @@ namespace net.esper.eql.expression
             childNodes = new List<ExprNode>();
         }
 
-	    /**
-	     * Validates the expression node subtree that has this
-	     * node as root. Some of the nodes of the tree, including the
-	     * root, might be replaced in the process.
-	     * @param streamTypeService - serves stream type information
-	     * @param methodResolutionService - for resolving class names in library method invocations
-	     * @param viewResourceDelegate - delegates for view resources to expression nodes
-	     * @throws ExprValidationException when the validation fails
-	     * @return the root node of the validated subtree, possibly
-	     *         different than the root node of the unvalidated subtree
-	     */
+	    /// <summary>
+	    /// Validates the expression node subtree that has this
+	    /// node as root. Some of the nodes of the tree, including the
+	    /// root, might be replaced in the process.
+	    /// </summary>
+	    /// <param name="streamTypeService">serves stream type information</param>
+	    /// <param name="methodResolutionService">
+	    /// for resolving class names in library method invocations
+	    /// </param>
+	    /// <param name="viewResourceDelegate">
+	    /// delegates for view resources to expression nodes
+	    /// </param>
+	    /// <throws>ExprValidationException when the validation fails</throws>
+	    /// <returns>
+	    /// the root node of the validated subtree, possibly
+	    /// different than the root node of the unvalidated subtree
+	    /// </returns>
 		public ExprNode GetValidatedSubtree(
 			StreamTypeService streamTypeService,
 			MethodResolutionService methodResolutionService,
@@ -281,12 +288,14 @@ namespace net.esper.eql.expression
 	        throw propertyException;
 	    }
 
-	    /**
-	     * Parse the mapped property into classname, method and string argument.
-	     * Mind this has been parsed already and is a valid mapped property.
-	     * @param property is the string property to be passed as a static method invocation
-	     * @return descriptor object
-	     */
+	    /// <summary>
+	    /// Parse the mapped property into classname, method and string argument.
+	    /// Mind this has been parsed already and is a valid mapped property.
+	    /// </summary>
+	    /// <param name="property">
+	    /// is the string property to be passed as a static method invocation
+	    /// </param>
+	    /// <returns>descriptor object</returns>
 	    protected static MappedPropertyParseResult ParseMappedProperty(String property)
 	    {
 	        // get argument
@@ -385,48 +394,40 @@ namespace net.esper.eql.expression
 	        return new MappedPropertyParseResult(type.ToString(), method, argument);
 	    }
 
-	    /**
-	     * Encapsulates the parse result parsing a mapped property as a type and method name with args.
-	     */
+	    /// <summary>
+	    /// Encapsulates the parse result parsing a mapped property as a type and method name with args.
+	    /// </summary>
 	    protected class MappedPropertyParseResult
 	    {
 	        private String typeName;
 	        private String methodName;
 	        private String argString;
 
-	        /**
-	         * Returns class name.
-	         * @return name of class
-	         */
+	        /// <summary>Returns class name.</summary>
+	        /// <returns>name of class</returns>
 	        public String TypeName
 	        {
 	            get { return typeName; }
 	        }
 
-	        /**
-	         * Returns the method name.
-	         * @return method name
-	         */
+	        /// <summary>Returns the method name.</summary>
+	        /// <returns>method name</returns>
 	        public String MethodName
 	        {
 	            get { return methodName; }
 	        }
 
-	        /**
-	         * Returns the method argument.
-	         * @return arg
-	         */
+	        /// <summary>Returns the method argument.</summary>
+	        /// <returns>arg</returns>
 	        public String ArgString
 	        {
 	            get { return argString; }
 	        }
 
-	        /**
-	         * Returns the parse result of the mapped property.
-	         * @param typeName is the type name, or null if there isn't one
-	         * @param methodName is the method name
-	         * @param argString is the argument
-	         */
+	        /// <summary>Returns the parse result of the mapped property.</summary>
+	        /// <param name="typeName">is the type name, or null if there isn't one</param>
+	        /// <param name="methodName">is the method name</param>
+	        /// <param name="argString">is the argument</param>
 	        public MappedPropertyParseResult(String typeName, String methodName, String argString)
 	        {
 	            this.typeName = typeName;
@@ -439,7 +440,10 @@ namespace net.esper.eql.expression
         /// Evaluate event tuple and return result.
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
-        /// <returns>evaluation result, a bool value for OR/AND-type evalution nodes.</returns>
+        /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
+        /// <returns>
+        /// evaluation result, a bool value for OR/AND-type evalution nodes.
+        /// </returns>
 
         public abstract Object Evaluate(EventBean[] eventsPerStream, bool isNewData);
 
@@ -448,6 +452,7 @@ namespace net.esper.eql.expression
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
         /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
+        /// <param name="viewResourceDelegate">The view resource delegate.</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 
         public abstract void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate);

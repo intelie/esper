@@ -34,9 +34,10 @@ namespace net.esper.core
 
 	    /// <summary>
 	    /// Ctor.
-	    /// <p>
+	    /// <para>
 	    /// Copies information out of configuration performing a deep copy
 	    /// to preserve configs.
+	    /// </para>
 	    /// </summary>
 	    /// <param name="configuration">is the client configuration holder</param>
 	    public ConfigurationSnapshot(Configuration configuration)

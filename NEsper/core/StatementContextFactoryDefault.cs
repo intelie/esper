@@ -20,6 +20,14 @@ namespace net.esper.core
 	/// </summary>
 	public class StatementContextFactoryDefault : StatementContextFactory
 	{
+        /// <summary>
+        /// Create a new statement context consisting of statement-level services.
+        /// </summary>
+        /// <param name="statementId">is the statement is</param>
+        /// <param name="statementName">is the statement name</param>
+        /// <param name="expression">is the statement expression</param>
+        /// <param name="engineServices">is engine services</param>
+        /// <returns>statement context</returns>
 	    public StatementContext MakeContext(String statementId,
 	                                    String statementName,
 	                                    String expression,

@@ -38,7 +38,6 @@ namespace net.esper.pattern
                 log.Debug(".constructor");
             }
 
-            this.childNodes = childNodes;
             this.activeChildNodes = new List<EvalStateNode>();
             this.eventsPerChild = new EHashDictionary<EvalStateNode, IList<MatchedEventMap>>();
 

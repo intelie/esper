@@ -131,7 +131,8 @@ namespace net.esper.pattern
 
 	    public override int GetHashCode()
 	    {
-	        return Arrays.HashCode(number);
+	        return number.GetHashCode();
+            //Arrays.HashCode(number);
 	    }
 	}
 } // End of namespace

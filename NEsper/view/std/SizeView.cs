@@ -31,7 +31,15 @@ namespace net.esper.view.std
 	        this.statementContext = statementContext;
 	        this.eventType = CreateEventType(statementContext);
 	    }
-    	
+
+        /// <summary>
+        /// Duplicates the view.
+        /// <p>
+        /// Expected to return a same view in initialized state for grouping.
+        /// </p>
+        /// </summary>
+        /// <param name="statementContext">is services for the view</param>
+        /// <returns>duplicated view</returns>
 		public View CloneView(StatementContext statementContext)
 		{
 			return new SizeView(statementContext);

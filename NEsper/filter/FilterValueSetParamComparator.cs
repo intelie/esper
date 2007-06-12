@@ -56,6 +56,12 @@ namespace net.esper.filter
 	        }
 	    }
 
+        /// <summary>
+        /// Compares the specified param1.
+        /// </summary>
+        /// <param name="param1">The param1.</param>
+        /// <param name="param2">The param2.</param>
+        /// <returns></returns>
 	    public override int Compare(FilterValueSetParam param1, FilterValueSetParam param2)
 	    {
 	        // Within the same filter operator type sort by attribute name

@@ -13,7 +13,7 @@ namespace net.esper.view.stat
     /// for sample and for population and variance.
     /// </summary>
 
-    public sealed class UnivariateStatisticsView 
+    public sealed class UnivariateStatisticsView
 		: ViewSupport
 		, CloneableView
     {
@@ -33,13 +33,13 @@ namespace net.esper.view.stat
         private readonly String fieldName;
         private EventPropertyGetter fieldGetter;
         private readonly BaseStatisticsBean baseStatisticsBean = new BaseStatisticsBean();
-        
-	   /**
-	     * Constructor requires the name of the field to use in the parent view to compute the statistics.
-	     * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view to
-	     * compute the statistics on.
-	     * @param statementContext contains required view services
-	     */
+
+        /// <summary>
+        /// Constructor requires the name of the field to use in the parent view to compute the statistics.
+        /// </summary>
+        /// <param name="statementContext">contains required view services</param>
+        /// <param name="fieldName">is the name of the field within the parent view to use to get numeric data points for this view to
+        /// compute the statistics on.</param>
 	    public UnivariateStatisticsView(StatementContext statementContext, String fieldName)
 	    {
 	        this.statementContext = statementContext;
@@ -47,6 +47,14 @@ namespace net.esper.view.stat
 	        eventType = CreateEventType(statementContext);
 	    }
 
+        /// <summary>
+        /// Duplicates the view.
+        /// <p>
+        /// Expected to return a same view in initialized state for grouping.
+        /// </p>
+        /// </summary>
+        /// <param name="statementContext">is services for the view</param>
+        /// <returns>duplicated view</returns>
 	    public View CloneView(StatementContext statementContext)
 	    {
 	        return new UnivariateStatisticsView(statementContext, fieldName);
@@ -148,7 +156,7 @@ namespace net.esper.view.stat
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
         /// </returns>
-        
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             yield return PopulateMap(baseStatisticsBean, statementContext.EventAdapterService, eventType);
@@ -160,7 +168,7 @@ namespace net.esper.view.stat
         /// <returns>
         /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
         /// </returns>
-        
+
         public override String ToString()
         {
             return this.GetType().FullName + " fieldName=" + fieldName;
@@ -180,13 +188,11 @@ namespace net.esper.view.stat
             result[ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.Name]  = baseStatisticsBean.XAverage;
             return eventAdapterService.CreateMapFromValues(result, eventType);
         }
-		
-		
-	    /**
-	     * Creates the event type for this view.
-	     * @param statementContext is the event adapter service
-	     * @return event type of view
-	     */
+
+
+	    /// <summary>Creates the event type for this view.</summary>
+	    /// <param name="statementContext">is the event adapter service</param>
+	    /// <returns>event type of view</returns>
 	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
 	        EDictionary<String, Type> eventTypeMap = new EHashDictionary<String, Type>();
@@ -197,6 +203,6 @@ namespace net.esper.view.stat
 	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.Name, typeof(double));
 	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.Name, typeof(double));
 	        return statementContext.EventAdapterService.CreateAnonymousMapType(eventTypeMap);
-	    } 
+	    }
     }
 }

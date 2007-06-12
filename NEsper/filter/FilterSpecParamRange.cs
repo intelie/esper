@@ -10,7 +10,7 @@ namespace net.esper.filter
 	/// <summary>
 	/// This class represents a range filter parameter in an {@link FilterSpecCompiled} filter specification.
 	/// </summary>
-	
+
 	public sealed class FilterSpecParamRange : FilterSpecParam
 	{
 		private readonly FilterSpecParamRangeValue min;
@@ -26,12 +26,12 @@ namespace net.esper.filter
 		/// <param name="max">is the end point of the range
 		/// </param>
 		/// <throws>  ArgumentException if an operator was supplied that does not take a double range value </throws>
-		
+
 		public FilterSpecParamRange(String propertyName, FilterOperator filterOperator, FilterSpecParamRangeValue min, FilterSpecParamRangeValue max):base(propertyName, filterOperator)
 		{
 			this.min = min;
 			this.max = max;
-			
+
 			if ((! FilterOperatorHelper.IsRangeOperator( filterOperator )) &&
 			    (! FilterOperatorHelper.IsInvertedRangeOperator( filterOperator )))
 			{
@@ -39,6 +39,11 @@ namespace net.esper.filter
 			}
 		}
 
+        /// <summary>
+        /// Return the filter parameter constant to filter for.
+        /// </summary>
+        /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters</param>
+        /// <returns>filter parameter constant's value</returns>
 	    public override Object GetFilterValue(MatchedEventMap matchedEvents)
 	    {
 	        double? begin = min.GetFilterValue(matchedEvents);
@@ -46,19 +51,15 @@ namespace net.esper.filter
 	        return new DoubleRange(begin, end);
 	    }
 
-	    /**
-	     * Returns the lower endpoint.
-	     * @return lower endpoint
-	     */
+	    /// <summary>Returns the lower endpoint.</summary>
+	    /// <returns>lower endpoint</returns>
 	    public FilterSpecParamRangeValue Min
 	    {
 	        get { return min; }
 	    }
 
-	    /**
-	     * Returns the upper endpoint.
-	     * @return upper endpoint
-	     */
+	    /// <summary>Returns the upper endpoint.</summary>
+	    /// <returns>upper endpoint</returns>
 	    public FilterSpecParamRangeValue Max
 	    {
 	        get { return max; }
@@ -88,18 +89,18 @@ namespace net.esper.filter
 			{
 				return true;
 			}
-			
+
 			if (!(obj is FilterSpecParamRange))
 			{
 				return false;
 			}
-			
+
 			FilterSpecParamRange other = (FilterSpecParamRange) obj;
 			if (!base.Equals(other))
 			{
 				return false;
 			}
-			
+
 			if ((this.min.Equals(other.min) && (this.max.Equals(other.max))))
 			{
 				return true;

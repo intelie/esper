@@ -17,8 +17,9 @@ namespace net.esper.filter
 {
     /// <summary>
 	/// This class represents a 'in' filter parameter in an {@link net.esper.filter.FilterSpecCompiled} filter specification.
-	/// &lt;p&gt;
+    /// <para>
 	/// The 'in' checks for a list of values.
+	/// </para>
 	/// </summary>
 	public sealed class FilterSpecParamIn : FilterSpecParam
 	{
@@ -65,6 +66,11 @@ namespace net.esper.filter
 	        }
 	    }
 
+        /// <summary>
+        /// Return the filter parameter constant to filter for.
+        /// </summary>
+        /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters</param>
+        /// <returns>filter parameter constant's value</returns>
 	    public override Object GetFilterValue(MatchedEventMap matchedEvents)
 	    {
 	        // If the list of values consists of all-constants and no event properties, then use cached version
@@ -83,18 +89,33 @@ namespace net.esper.filter
 	        return new MultiKeyUntyped(actualValues);
 	    }
 
-	    /// <summary>Returns the list of values we are asking to match.</summary>
-	    /// <returns>list of filter values</returns>
+        /// <summary>
+        /// Returns the list of values we are asking to match.
+        /// </summary>
+        /// <returns>list of filter values</returns>
 	    public List<FilterSpecParamInValue> GetListOfValues()
 	    {
 	        return listOfValues;
 	    }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override String ToString()
 	    {
 	        return base.ToString() + "  in=(listOfValues=" + listOfValues.ToString() + ')';
 	    }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <param name="obj">The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>.</param>
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
+        /// </returns>
 	    public override bool Equals(Object obj)
 	    {
 	        if (this == obj)
@@ -124,7 +145,13 @@ namespace net.esper.filter
 	        }
 	        return true;
 	    }
-	    
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override int GetHashCode()
 		{
 			return base.GetHashCode();

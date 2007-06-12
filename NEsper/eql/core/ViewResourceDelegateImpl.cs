@@ -26,6 +26,15 @@ namespace net.esper.eql.core
 	        this.viewFactories = viewFactories;
 	    }
 
+        /// <summary>
+        /// Request a view resource.
+        /// </summary>
+        /// <param name="streamNumber">is the stream number to provide the resource</param>
+        /// <param name="requestedCabability">describes the view capability required</param>
+        /// <param name="resourceCallback">for the delegate to supply the resource</param>
+        /// <returns>
+        /// true to indicate the resource can be granted
+        /// </returns>
 	    public bool RequestCapability(int streamNumber, ViewCapability requestedCabability, ViewResourceCallback resourceCallback)
 	    {
 	        ViewFactoryChain factories = viewFactories[streamNumber];

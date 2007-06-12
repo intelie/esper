@@ -9,12 +9,12 @@ using org.apache.commons.logging;
 
 namespace net.esper.eql.join.plan
 {
-	/// <summary> 
+	/// <summary>
 	/// 2 Stream query strategy/execution tree
 	/// (stream 0)         Lookup in stream 1
 	/// (stream 1)         Lookup in stream 0
 	/// ------ Example 1   a 3 table join
-	/// 
+	///
 	/// " where streamA.id = streamB.id " +
 	/// "   and streamB.id = streamC.id";
 	/// => Index propery names for each stream
@@ -32,7 +32,7 @@ namespace net.esper.eql.join.plan
 	/// (stream 2)         Nested iteration
 	/// Lookup in stream 1        Lookup in stream 0
 	/// ------ Example 2  a 4 table join
-	/// 
+	///
 	/// " where streamA.id = streamB.id " +
 	/// "   and streamB.id = streamC.id";
 	/// "   and streamC.id = streamD.id";
@@ -54,11 +54,11 @@ namespace net.esper.eql.join.plan
 	/// (stream 3)              Nested iteration
 	/// Lookup in stream 2        Lookup in stream 1        Lookup in stream 0
 	/// ------ Example 4  a 4 table join, orphan table
-	/// 
+	///
 	/// " where streamA.id = streamB.id " +
 	/// "   and streamB.id = streamC.id"; (no table D join criteria)
 	/// ------ Example 5  a 3 table join with 2 indexes for stream B
-	/// 
+	///
 	/// " where streamA.A1 = streamB.B1 " +
 	/// "   and streamB.B2 = streamC.C1"; (no table D join criteria)
     /// <para>
@@ -71,39 +71,42 @@ namespace net.esper.eql.join.plan
         /// Build a query plan based on the stream property relationships indicated in queryGraph.
         /// </summary>
         /// <param name="queryGraph">navigation info between streams</param>
+        /// <param name="typesPerStream">The types per stream.</param>
         /// <returns>query plan</returns>
 		public static QueryPlan Build(QueryGraph queryGraph, EventType[] typesPerStream)
 		{
 			log.Debug(".build queryGraph=" + queryGraph);
-			
+
 			int numStreams = queryGraph.NumStreams;
 			QueryPlanIndex[] indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
 			log.Debug(".build Index build completed, indexes=" + QueryPlanIndex.Print(indexSpecs));
-			
+
 			QueryPlanNode[] planNodeSpecs = new QueryPlanNode[numStreams];
 			for (int streamNo = 0; streamNo < numStreams; streamNo++)
 			{
 				BestChainResult bestChainResult = ComputeBestPath(streamNo, queryGraph);
 				int[] bestChain = bestChainResult.Chain;
 				log.Debug(".build For stream " + streamNo + " bestChain=" + CollectionHelper.Render(bestChain));
-				
+
 				planNodeSpecs[streamNo] = CreateStreamPlan(streamNo, bestChain, queryGraph, indexSpecs, typesPerStream);
 				log.Debug(".build spec=" + planNodeSpecs[streamNo]);
 			}
-			
+
 			return new QueryPlan(indexSpecs, planNodeSpecs);
 		}
 
-	    /**
-	     * Walks the chain of lookups and constructs lookup strategy and plan specification based
-	     * on the index specifications.
-	     * @param lookupStream - the stream to construct the query plan for
-	     * @param bestChain - the chain that the lookup follows to make best use of indexes
-	     * @param queryGraph - the repository for key properties to indexes
-	     * @param indexSpecsPerStream - specifications of indexes
-	     * @param typesPerStream - event types for each stream
-	     * @return NestedIterationNode with lookups attached underneath
-	     */
+	    /// <summary>
+	    /// Walks the chain of lookups and constructs lookup strategy and plan specification based
+	    /// on the index specifications.
+	    /// </summary>
+	    /// <param name="lookupStream">the stream to construct the query plan for</param>
+	    /// <param name="bestChain">
+	    /// the chain that the lookup follows to make best use of indexes
+	    /// </param>
+	    /// <param name="queryGraph">the repository for key properties to indexes</param>
+	    /// <param name="indexSpecsPerStream">specifications of indexes</param>
+	    /// <param name="typesPerStream">event types for each stream</param>
+	    /// <returns>NestedIterationNode with lookups attached underneath</returns>
 	    protected static QueryPlanNode CreateStreamPlan(
 			int lookupStream,
 			int[] bestChain,
@@ -113,7 +116,7 @@ namespace net.esper.eql.join.plan
 	    {
 			NestedIterationNode nestedIterNode = new NestedIterationNode(bestChain);
 			int currentLookupStream = lookupStream;
-			
+
 			// Walk through each successive lookup
 			for (int i = 0; i < bestChain.Length; i++)
 			{
@@ -122,42 +125,47 @@ namespace net.esper.eql.join.plan
 				TableLookupPlan tableLookupPlan = CreateLookupPlan(queryGraph, currentLookupStream, indexedStream, indexSpecsPerStream[indexedStream], typesPerStream);
 				TableLookupNode tableLookupNode = new TableLookupNode(tableLookupPlan);
 				nestedIterNode.AddChildNode(tableLookupNode);
-				
+
 				currentLookupStream = bestChain[i];
 			}
-			
+
 			return nestedIterNode;
 		}
 
-	    /**
-	     * Create the table lookup plan for a from-stream to look up in an indexed stream
-	     * using the columns supplied in the query graph and looking at the actual indexes available
-	     * and their index number.
-	     * @param queryGraph - contains properties joining the 2 streams
-	     * @param currentLookupStream - stream to use key values from
-	     * @param indexedStream - stream to look up in
-	     * @param indexSpecs - index specification defining indexes to be created for stream
-	     * @param typesPerStream - event types for each stream
-	     * @return plan for performing a lookup in a given table using one of the indexes supplied
-	     */
-	    protected static TableLookupPlan CreateLookupPlan(
+	    /// <summary>
+	    /// Create the table lookup plan for a from-stream to look up in an indexed stream
+	    /// using the columns supplied in the query graph and looking at the actual indexes available
+	    /// and their index number.
+	    /// </summary>
+	    /// <param name="queryGraph">contains properties joining the 2 streams</param>
+	    /// <param name="currentLookupStream">stream to use key values from</param>
+	    /// <param name="indexedStream">stream to look up in</param>
+	    /// <param name="indexSpecs">
+	    /// index specification defining indexes to be created for stream
+	    /// </param>
+	    /// <param name="typesPerStream">event types for each stream</param>
+	    /// <returns>
+	    /// plan for performing a lookup in a given table using one of the indexes supplied
+	    /// </returns>
+
+	    internal static TableLookupPlan CreateLookupPlan(
 			QueryGraph queryGraph,
 			int currentLookupStream,
 			int indexedStream,
-			QueryPlanIndex indexSpecs, 
+			QueryPlanIndex indexSpecs,
 			EventType[] typesPerStream)
 	    {
 			String[] indexedStreamIndexProps = queryGraph.GetIndexProperties(currentLookupStream, indexedStream);
-			int indexNum = - 1;
-			
+	        int indexNum;
+
 			// We use an index if there are index properties for the 2 streams
 			TableLookupPlan tableLookupPlan ;
-			
+
 			if (indexedStreamIndexProps != null)
 			{
 				// Determine the index number assigned by looking at the index specifications
 				indexNum = indexSpecs.GetIndexNum(indexedStreamIndexProps);
-				
+
 				// Constructed keyed lookup strategy
 				String[] keyGenFields = queryGraph.GetKeyProperties(currentLookupStream, indexedStream);
 				tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
@@ -182,16 +190,16 @@ namespace net.esper.eql.join.plan
 			{
 				// We don't use a keyed index but use the full stream set as the stream does not have any indexes
 				indexNum = indexSpecs.GetIndexNum(new String[0]);
-				
+
 				// If no such full set index exists yet, add to specs
 				if (indexNum == - 1)
 				{
 					indexNum = indexSpecs.AddIndex(new String[0], null);
 				}
-				
+
 				tableLookupPlan = new FullTableScanLookupPlan(currentLookupStream, indexedStream, indexNum);
 			}
-			
+
 			return tableLookupPlan;
 		}
 
@@ -214,25 +222,25 @@ namespace net.esper.eql.join.plan
 			NumberSetPermutationEnumeration permutations = new NumberSetPermutationEnumeration(defNestingorder);
 			int[] bestPermutation = null;
 			int bestDepth = - 1;
-			
+
 			while (permutations.MoveNext())
 			{
 				int[] permutation = permutations.Current;
 				int permutationDepth = ComputeNavigableDepth(lookupStream, permutation, queryGraph);
-				
+
 				if (permutationDepth > bestDepth)
 				{
 					bestPermutation = permutation;
 					bestDepth = permutationDepth;
 				}
-				
+
 				// Stop when the permutation yielding the full depth (length of stream chain) was hit
 				if (permutationDepth == queryGraph.NumStreams - 1)
 				{
 					break;
 				}
 			}
-			
+
 			return new BestChainResult(bestDepth, bestPermutation);
 		}
 
@@ -250,7 +258,7 @@ namespace net.esper.eql.join.plan
 		{
 			int currentStream = lookupStream;
 			int currentDepth = 0;
-			
+
 			for (int i = 0; i < nextStreams.Length; i++)
 			{
 				int nextStream = nextStreams[i];
@@ -261,7 +269,7 @@ namespace net.esper.eql.join.plan
 				currentStream = nextStream;
 				currentDepth++;
 			}
-			
+
 			return currentDepth;
 		}
 
@@ -275,13 +283,13 @@ namespace net.esper.eql.join.plan
 		{
 			QueryPlanIndex[] indexSpecs = new QueryPlanIndex[eventTypes.Length];
 			QueryPlanNode[] execNodeSpecs = new QueryPlanNode[eventTypes.Length];
-			
+
 			// Build indexes without key properties
 			for (int i = 0; i < indexSpecs.Length; i++)
 			{
 				indexSpecs[i] = new QueryPlanIndex(null, null);
 			}
-			
+
 			// Handle N-stream queries
 			for (int streamNo = 0; streamNo < eventTypes.Length; streamNo++)
 			{
@@ -289,7 +297,7 @@ namespace net.esper.eql.join.plan
 				NestedIterationNode nestedNode = new NestedIterationNode(nestingOrder);
 				execNodeSpecs[streamNo] = nestedNode;
 				int lookupStream = streamNo;
-				
+
 				for (int j = 0; j < nestingOrder.Length; j++)
 				{
 					int indexedStream = nestingOrder[j];
@@ -298,7 +306,7 @@ namespace net.esper.eql.join.plan
 					lookupStream = indexedStream;
 				}
 			}
-			
+
 			return new QueryPlan(indexSpecs, execNodeSpecs);
 		}
 
@@ -335,7 +343,7 @@ namespace net.esper.eql.join.plan
 	        }
 	        return coercionTypes;
 	    }
-		
+
         /// <summary>
         /// Returns default nesting order for a given number of streams for a certain stream.
         /// Example: numStreams = 5, forStream = 2, result = {0, 1, 3, 4}
@@ -350,7 +358,7 @@ namespace net.esper.eql.join.plan
 		public static int[] BuildDefaultNestingOrder(int numStreams, int forStream)
 		{
 			int[] nestingOrder = new int[numStreams - 1];
-			
+
 			int count = 0;
 			for (int i = 0; i < numStreams; i++)
 			{
@@ -360,10 +368,10 @@ namespace net.esper.eql.join.plan
 				}
 				nestingOrder[count++] = i;
 			}
-			
+
 			return nestingOrder;
 		}
-		
+
 		/// <summary> Encapsulates the chain information.</summary>
 		public class BestChainResult
 		{
@@ -378,7 +386,7 @@ namespace net.esper.eql.join.plan
 				get
 				{
 					return depth;
-				}				
+				}
 			}
             /// <summary>
             /// Returns chain of stream numbers.
@@ -392,11 +400,11 @@ namespace net.esper.eql.join.plan
 				{
 					return chain;
 				}
-				
+
 			}
 			private int depth;
 			private int[] chain;
-			
+
 			/// <summary> Ctor.</summary>
 			/// <param name="depth">depth this chain resolves into a indexed lookup
 			/// </param>
@@ -419,7 +427,7 @@ namespace net.esper.eql.join.plan
 				return "depth=" + depth + " chain=" + CollectionHelper.Render(chain);
 			}
 		}
-		
+
 		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

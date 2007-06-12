@@ -86,11 +86,23 @@ namespace net.esper.filter
             get { return filterOperator; }
 	    }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override String ToString()
 	    {
 	        return "filterOperator=" + filterOperator;
 	    }
-		
+
+        /// <summary>
+        /// Perform the matching of an event based on the event property values,
+        /// adding any callbacks for matches found to the matches list.
+        /// </summary>
+        /// <param name="_event">is the event object wrapper to obtain event property values from</param>
+        /// <param name="matches">accumulates the matching filter callbacks</param>
 		abstract public void MatchEvent(net.esper.events.EventBean _event, IList<FilterHandle> matches);
 	}
 } // End of namespace

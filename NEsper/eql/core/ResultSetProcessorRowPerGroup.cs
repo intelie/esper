@@ -194,13 +194,14 @@ namespace net.esper.eql.core
         /// <param name="optionalHavingExpr">The optional having expr.</param>
         /// <param name="groupReps">The group reps.</param>
         /// <param name="generators">The generators.</param>
+        /// <param name="isNewData">if set to <c>true</c> [is new data].</param>
         /// <returns></returns>
-        
+
         private EventBean[] GenerateOutputEventsView(
             IDictionary<MultiKeyUntyped, EventBean> keysAndEvents, ExprNode optionalHavingExpr,
             IDictionary<MultiKeyUntyped, EventBean> groupReps,
             IDictionary<MultiKeyUntyped, EventBean[]> generators,
-			bool isNewData)
+            bool isNewData)
         {
             EventBean[] eventsPerStream = new EventBean[1];
             EventBean[] events = new EventBean[keysAndEvents.Count];
@@ -222,18 +223,18 @@ namespace net.esper.eql.core
                 // Filter the having clause
                 if (optionalHavingExpr != null)
                 {
-                    bool result = (bool)optionalHavingExpr.Evaluate(eventsPerStream, isNewData);
+                    bool result = (bool) optionalHavingExpr.Evaluate(eventsPerStream, isNewData);
                     if (!result)
                     {
                         continue;
                     }
                 }
 
-                events[count] = selectExprProcessor.Process(eventsPerStream);
+                events[count] = selectExprProcessor.Process(eventsPerStream, isNewData);
                 keys[count] = entry.Key;
                 if (isSorting)
                 {
-                    EventBean[] currentEventsPerStream = new EventBean[] { entry.Value };
+                    EventBean[] currentEventsPerStream = new EventBean[] {entry.Value};
                     generators[keys[count]] = currentEventsPerStream;
                     currentGenerators[count] = currentEventsPerStream;
                 }
@@ -248,9 +249,9 @@ namespace net.esper.eql.core
                 {
                     return null;
                 }
-                EventBean[] _out = new EventBean[count];
-                Array.Copy(events, 0, _out, 0, count);
-                events = _out;
+                EventBean[] outList = new EventBean[count];
+                Array.Copy(events, 0, outList, 0, count);
+                events = outList;
 
                 if (isSorting || (isOutputLimiting && !isOutputLimitLastOnly))
                 {

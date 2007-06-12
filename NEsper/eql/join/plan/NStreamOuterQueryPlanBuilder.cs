@@ -19,15 +19,16 @@ namespace net.esper.eql.join.plan
 
 	public class NStreamOuterQueryPlanBuilder
 	{
-	    /**
-	     * Build a query plan based on the stream property relationships indicated in queryGraph.
-	     * @param queryGraph - navigation info between streams
-	     * @param streamNames - stream names or aliases
-	     * @param outerJoinDescList - descriptors for all outer joins
-	     * @param typesPerStream - event types for each stream
-	     * @return query plan
-	     */
-	    protected static QueryPlan Build(QueryGraph queryGraph,
+	    /// <summary>
+	    /// Build a query plan based on the stream property relationships indicated in queryGraph.
+	    /// </summary>
+	    /// <param name="queryGraph">navigation info between streams</param>
+	    /// <param name="streamNames">stream names or aliases</param>
+	    /// <param name="outerJoinDescList">descriptors for all outer joins</param>
+	    /// <param name="typesPerStream">event types for each stream</param>
+	    /// <returns>query plan</returns>
+
+	    internal static QueryPlan Build(QueryGraph queryGraph,
 	                                     IList<OuterJoinDesc> outerJoinDescList,
 	                                     String[] streamNames,
 	                                     EventType[] typesPerStream)
@@ -60,7 +61,7 @@ namespace net.esper.eql.join.plan
 			}
 
 			QueryPlan queryPlan = new QueryPlan( indexSpecs, planNodeSpecs );
-            log.Debug(".Build query plan=" + queryPlan.ToString());
+            log.Debug(".Build query plan=" + queryPlan);
 
 			return queryPlan;
 		}
@@ -74,6 +75,7 @@ namespace net.esper.eql.join.plan
         /// <param name="queryGraph">The query graph.</param>
         /// <param name="outerInnerGraph">The outer inner graph.</param>
         /// <param name="indexSpecs">The index specs.</param>
+        /// <param name="typesPerStream">The types per stream.</param>
         /// <returns></returns>
         public static QueryPlanNode Build(
 			int numStreams,
@@ -119,6 +121,7 @@ namespace net.esper.eql.join.plan
         /// <param name="streamNames">The stream names.</param>
         /// <param name="queryGraph">The query graph.</param>
         /// <param name="indexSpecs">The index specs.</param>
+        /// <param name="typesPerStream">The types per stream.</param>
         /// <returns></returns>
 		public static IList<LookupInstructionPlan> BuildLookupInstructions(
 					LinkedDictionary<Int32, int[]> substreamsPerStream,
@@ -157,26 +160,21 @@ namespace net.esper.eql.join.plan
 			return result;
 		}
 
-		/// <summary> Recusivly builds a substream-per-stream ordered tree graph using the
-		/// join information supplied for outer joins and from the query graph (where clause).
-		/// <para>
-		/// Required streams are considered first and their lookup is placed first in the list
-		/// to gain performance.
+        /// <summary>
+        /// Recusivly builds a substream-per-stream ordered tree graph using the
+        /// join information supplied for outer joins and from the query graph (where clause).
+        /// <para>
+        /// Required streams are considered first and their lookup is placed first in the list
+        /// to gain performance.
         /// </para>
-		/// </summary>
-		/// <param name="streamNum">is the root stream number that supplies the incoming event to build the tree for
-		/// </param>
-		/// <param name="queryGraph">contains where-clause stream relationship info
-		/// </param>
-		/// <param name="outerInnerGraph">contains the outer join stream relationship info
-		/// </param>
-		/// <param name="completedStreams">is a temporary holder for streams already considered
-		/// </param>
-		/// <param name="substreamsPerStream">is the ordered, tree-like structure to be filled
-		/// </param>
-		/// <param name="requiredPerStream">indicates which streams are required and which are optional
-		/// </param>
-		
+        /// </summary>
+        /// <param name="streamNum">is the root stream number that supplies the incoming event to build the tree for</param>
+        /// <param name="queryGraph">contains where-clause stream relationship info</param>
+        /// <param name="outerInnerGraph">contains the outer join stream relationship info</param>
+        /// <param name="completedStreams">is a temporary holder for streams already considered</param>
+        /// <param name="substreamsPerStream">is the ordered, tree-like structure to be filled</param>
+        /// <param name="requiredPerStream">indicates which streams are required and which are optional</param>
+
         public static void RecursiveBuild( int streamNum,
 			QueryGraph queryGraph,
 			OuterInnerDirectionalGraph outerInnerGraph,
@@ -278,15 +276,13 @@ namespace net.esper.eql.join.plan
 			return outerStreams;
 		}
 
-		/// <summary> Builds a graph of outer joins given the outer join information from the statement.
-		/// Eliminates right and left joins and full joins by placing the information in a graph object.
-		/// </summary>
-		/// <param name="numStreams">is the number of streams
-		/// </param>
-		/// <param name="outerJoinDescList">list of outer join stream numbers and property names
-		/// </param>
-		/// <returns> graph object
-		/// </returns>
+        /// <summary>
+        /// Builds a graph of outer joins given the outer join information from the statement.
+        /// Eliminates right and left joins and full joins by placing the information in a graph object.
+        /// </summary>
+        /// <param name="numStreams">is the number of streams</param>
+        /// <param name="outerJoinDescList">list of outer join stream numbers and property names</param>
+        /// <returns>graph object</returns>
 
 		public static OuterInnerDirectionalGraph GraphOuterJoins( int numStreams, IList<OuterJoinDesc> outerJoinDescList )
 		{
@@ -344,14 +340,13 @@ namespace net.esper.eql.join.plan
 			return graph;
 		}
 
-		/// <summary> Verifies that the tree-like structure representing which streams join (lookup) into which sub-streams
-		/// is correct, ie. all streams are included and none are listed twice.
-		/// </summary>
-		/// <param name="rootStream">is the stream supplying the incoming event
-		/// </param>
-		/// <param name="streamsJoinedPerStream">is keyed by the from-stream number and contains as values all
-		/// stream numbers of lookup into to-streams. 
-		/// </param>
+        /// <summary>
+        /// Verifies that the tree-like structure representing which streams join (lookup) into which sub-streams
+        /// is correct, ie. all streams are included and none are listed twice.
+        /// </summary>
+        /// <param name="rootStream">is the stream supplying the incoming event</param>
+        /// <param name="streamsJoinedPerStream">is keyed by the from-stream number and contains as values all
+        /// stream numbers of lookup into to-streams.</param>
 		public static void VerifyJoinedPerStream( int rootStream, IDictionary<Int32, int[]> streamsJoinedPerStream )
 		{
 			Set<Int32> streams = new EHashSet<Int32>();
@@ -386,11 +381,11 @@ namespace net.esper.eql.join.plan
 			}
 		}
 
-		/// <summary> Returns textual presentation of stream-substream relationships.</summary>
-		/// <param name="streamsJoinedPerStream">is the tree-like structure of stream-substream
-		/// </param>
-		/// <returns> textual presentation
-		/// </returns>
+        /// <summary>
+        /// Returns textual presentation of stream-substream relationships.
+        /// </summary>
+        /// <param name="streamsJoinedPerStream">is the tree-like structure of stream-substream</param>
+        /// <returns>textual presentation</returns>
 		public static String Print( IDictionary<Int32, int[]> streamsJoinedPerStream )
 		{
 			StringWriter writer = new StringWriter();

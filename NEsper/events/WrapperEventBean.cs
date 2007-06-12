@@ -15,18 +15,20 @@ namespace net.esper.events
 {
 	/// <summary>
 	/// Event bean that wraps another event bean adding additional properties.
-	/// <p>
+	/// <para>
 	/// This can be useful for classes for which the statement adds derived values retaining the original class.
-	/// <p>
+	/// </para>
+	/// <para>
 	/// The event type of such events is always {@link WrapperEventType}. Additional properties are stored in a
 	/// Map.
+	/// </para>
 	/// </summary>
 	public class WrapperEventBean : EventBean
 	{
 		private readonly EventBean _event;
 		private readonly IDictionary<string, object> map;
 		private readonly EventType eventType;
-	    private int hashCode;
+	    private int? hashCode;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="_event">is the wrapped event</param>
@@ -39,8 +41,16 @@ namespace net.esper.events
 			this._event = _event;
 			this.map = properties;
 			this.eventType = eventType;
+	        this.hashCode = null;
 		}
 
+        /// <summary>
+        /// Returns the value of an event property.
+        /// </summary>
+        /// <value></value>
+        /// <returns> the value of a simple property with the specified name.
+        /// </returns>
+        /// <throws>  PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed </throws>
 	    public Object this[String property]
 		{
 	    	get
@@ -54,11 +64,23 @@ namespace net.esper.events
 	    	}
 		}
 
+        /// <summary>
+        /// Return the <seealso cref="EventType"/> instance that describes the set of properties available for this event.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type
+        /// </returns>
 		public EventType EventType
 		{
 			get { return eventType; }
 		}
 
+        /// <summary>
+        /// Get the underlying data object to this event wrapper.
+        /// </summary>
+        /// <value></value>
+        /// <returns> underlying data object, usually either a Map or a bean instance.
+        /// </returns>
 		public Object Underlying
 		{
 			get
@@ -91,6 +113,12 @@ namespace net.esper.events
 	        get { return _event; }
 	    }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override String ToString()
 		{
 	        return
@@ -99,6 +127,11 @@ namespace net.esper.events
 	            "[properties=" + map + "]";
 		}
 
+        /// <summary>
+        /// Equalses the specified other object.
+        /// </summary>
+        /// <param name="otherObject">The other object.</param>
+        /// <returns></returns>
 	    public override bool Equals(Object otherObject)
 	    {
 	        if (otherObject == this)
@@ -140,7 +173,7 @@ namespace net.esper.events
 	                continue;
 	            }
 
-	            if ((otherValue == null) && (value != null))
+	            if (otherValue == null)
 	            {
 	                return false;
 	            }
@@ -151,9 +184,15 @@ namespace net.esper.events
 	            }
 	        }
 
-	        return other._event.Equals(this._event);
+	        return other._event.Equals(_event);
 	    }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type. <see cref="M:System.Object.GetHashCode"></see> is suitable for use in hashing algorithms and data structures like a hash table.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override int GetHashCode()
 	    {
 	        if (hashCode == null)
@@ -171,7 +210,7 @@ namespace net.esper.events
 	            }
 	            hashCode = hashCodeVal ^ _event.GetHashCode();
 	        }
-	        return hashCode;
+	        return hashCode.Value;
 	    }
 	}
 } // End of namespace

@@ -4,7 +4,7 @@ using net.esper.core;
 using net.esper.events;
 
 namespace net.esper.view.stat
-{	
+{
 	/// <summary>
     /// A view that calculates correlation on two fields. The view uses internally a <seealso cref="CorrelationBean"/>
 	/// instance for the calculations, it also returns this bean as the result.
@@ -17,17 +17,24 @@ namespace net.esper.view.stat
 	{
 		private EventType eventType;
 
-	    /**
-	     * Constructor.
-	     * @param xFieldName is the field name of the field providing X data points
-	     * @param yFieldName is the field name of the field providing X data points
-	     * @param statementContext contains required view services
-	     */
+	    /// <summary>Constructor.</summary>
+	    /// <param name="xFieldName">
+	    /// is the field name of the field providing X data points
+	    /// </param>
+	    /// <param name="yFieldName">
+	    /// is the field name of the field providing X data points
+	    /// </param>
+	    /// <param name="statementContext">contains required view services</param>
 	    public CorrelationView(StatementContext statementContext, String xFieldName, String yFieldName)
 	        : base(statementContext, new CorrelationBean(), xFieldName, yFieldName)
 	    {
 	    }
 
+        /// <summary>
+        /// Clones the view.
+        /// </summary>
+        /// <param name="statementContext">The statement context.</param>
+        /// <returns></returns>
 	    public override View CloneView(StatementContext statementContext)
 	    {
 	        return new CorrelationView(statementContext, this.FieldNameX, this.FieldNameY);
@@ -62,12 +69,10 @@ namespace net.esper.view.stat
 		{
 			return this.GetType().FullName + " fieldX=" + this.FieldNameX + " fieldY=" + this.FieldNameY;
 		}
-		
-	    /**
-	     * Creates the event type for this view.
-	     * @param statementContext is the event adapter service
-	     * @return event type of view
-	     */
+
+	    /// <summary>Creates the event type for this view.</summary>
+	    /// <param name="statementContext">is the event adapter service</param>
+	    /// <returns>event type of view</returns>
 	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
 	        return statementContext.EventAdapterService.AddBeanType(typeof(CorrelationBean).FullName, typeof(CorrelationBean));

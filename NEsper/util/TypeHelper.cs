@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using net.esper.compat;
-
 namespace net.esper.util
 {
     /// <summary> Helper for questions about types.
@@ -71,14 +69,16 @@ namespace net.esper.util
             }
             return type;
         }
-		
-	    /**
-	     * Returns the un-boxed class for the given class, or the class itself if already un-boxed or not a primitive type.
-	     * For primitive boxed types returns the unboxed primitive type, e.g. returns typeof(int) for passing typeof(Integer).
-	     * For any other class, returns the class passed.
-	     * @param type is the class to return the unboxed (or primitive) class for
-	     * @return primitive variant of the same class
-	     */
+
+	    /// <summary>
+	    /// Returns the un-boxed class for the given class, or the class itself if already un-boxed or not a primitive type.
+	    /// For primitive boxed types returns the unboxed primitive type, e.g. returns typeof(int) for passing typeof(Integer).
+	    /// For any other class, returns the class passed.
+	    /// </summary>
+	    /// <param name="type">
+	    /// is the class to return the unboxed (or primitive) class for
+	    /// </param>
+	    /// <returns>primitive variant of the same class</returns>
 	    public static Type GetPrimitiveType(Type type)
 	    {
 	        if (type == typeof(bool?))
@@ -245,7 +245,7 @@ namespace net.esper.util
         }
 
         /// <summary> Determines if the type passed in is one of the integral numeric types.</summary>
-        /// <param name="type">to check</param>
+        /// <param name="value">to check</param>
         public static bool IsIntegralNumber(Object value)
         {
         	return
@@ -284,7 +284,7 @@ namespace net.esper.util
         }
 
         /// <summary> Determines if the value passed in is one of the numeric types.</summary>
-        /// <param name="type">to check</param>
+        /// <param name="value">to check</param>
         /// <returns> true if numeric, false if not</returns>
 
         public static bool IsNumericValue(Object value)
@@ -486,18 +486,20 @@ namespace net.esper.util
             return typeof(long?);
         }
 
-		/**
-	     * Determines if a number can be coerced upwards to another number class without loss.
-	     * <p>
-	     * Clients must pass in two classes that are numeric types.
-	     * <p>
-	     * Any number class can be coerced to double, while only double cannot be coerced to float.
-	     * Any non-floating point number can be coerced to long.
-	     * Integer can be coerced to Byte and Short even though loss is possible, for convenience.
-	     * @param numberClassToBeCoerced the number class to be coerced
-	     * @param numberClassToCoerceTo the number class to coerce to
-	     * @return true if numbers can be coerced without loss, false if not
-	     */
+		/// <summary>
+		/// Determines if a number can be coerced upwards to another number class without loss.
+		/// <para>
+		/// Clients must pass in two classes that are numeric types.
+        /// </para>
+		/// <para>
+		/// Any number class can be coerced to double, while only double cannot be coerced to float.
+		/// Any non-floating point number can be coerced to long.
+		/// Integer can be coerced to Byte and Short even though loss is possible, for convenience.
+        /// </para>
+		/// </summary>
+		/// <param name="numberClassToBeCoerced">the number class to be coerced</param>
+		/// <param name="numberClassToCoerceTo">the number class to coerce to</param>
+		/// <returns>true if numbers can be coerced without loss, false if not</returns>
 	    public static bool CanCoerce(Type numberClassToBeCoerced, Type numberClassToCoerceTo)
 	    {
 	        Type boxedFrom = GetBoxedType(numberClassToBeCoerced);
@@ -533,7 +535,7 @@ namespace net.esper.util
 	                    (boxedFrom == typeof(float?)) ||
 	                    (boxedFrom == typeof(double?)));
 	        }
-	        else if (boxedTo == typeof(Long))
+	        else if (boxedTo == typeof(long?))
 	        {
 	            return ((boxedFrom == typeof(byte?)) ||
 	                    (boxedFrom == typeof(sbyte?)) ||

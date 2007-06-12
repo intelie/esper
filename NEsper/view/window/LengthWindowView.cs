@@ -49,11 +49,19 @@ namespace net.esper.view.window
 	            throw new ArgumentException("Illegal argument for size of length window");
 	        }
 
-	        this.LengthWindowViewFactory = lengthWindowViewFactory;
+	        this.lengthWindowViewFactory = lengthWindowViewFactory;
 	        this.size = size;
 	        this.viewUpdatedCollection = viewUpdatedCollection;
 	    }
 
+        /// <summary>
+        /// Duplicates the view.
+        /// <p>
+        /// Expected to return a same view in initialized state for grouping.
+        /// </p>
+        /// </summary>
+        /// <param name="statementContext">is services for the view</param>
+        /// <returns>duplicated view</returns>
 	    public View CloneView(StatementContext statementContext)
 	    {
 	        return lengthWindowViewFactory.MakeView(statementContext);

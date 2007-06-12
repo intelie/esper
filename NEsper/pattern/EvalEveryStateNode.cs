@@ -50,13 +50,13 @@ namespace net.esper.pattern
         private readonly MatchedEventMap beginState;
         private readonly PatternContext context;
 
-	    /**
-	     * Constructor.
-	     * @param parentNode is the parent evaluator to call to indicate truth value
-	     * @param beginState contains the events that make up prior matches
-	     * @param context contains handles to services required
-	     * @param everyNode is the factory node associated to the state
-	     */
+	    /// <summary>Constructor.</summary>
+	    /// <param name="parentNode">
+	    /// is the parent evaluator to call to indicate truth value
+	    /// </param>
+	    /// <param name="beginState">contains the events that make up prior matches</param>
+	    /// <param name="context">contains handles to services required</param>
+	    /// <param name="everyNode">is the factory node associated to the state</param>
 	    public EvalEveryStateNode(Evaluator parentNode,
 	                              EvalEveryNode everyNode,
 	                              MatchedEventMap beginState,

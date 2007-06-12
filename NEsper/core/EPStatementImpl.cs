@@ -17,7 +17,9 @@ using net.esper.view;
 
 namespace net.esper.core
 {
-	/// <summary>Statement implementation for EQL statements.</summary>
+	/// <summary>
+	/// Statement implementation for EQL statements.
+	/// </summary>
 	public class EPStatementImpl : EPStatementSPI
 	{
 		/// <summary>
@@ -26,7 +28,7 @@ namespace net.esper.core
 		/// may be listeners added or removed (the listener may remove itself).
 		/// Additionally, events may be dispatched by multiple threads to the same listener.
 		/// </summary>
-		private Set<UpdateListener> listeners = new CopyOnWriteArraySet<UpdateListener>();
+		private Set<UpdateListener> listeners = new EHashSet<UpdateListener>();
 
 		private readonly String statementId;
 		private readonly String statementName;
@@ -70,11 +72,19 @@ namespace net.esper.core
 			this.currentState = EPStatementState.STOPPED;
 		}
 
+        /// <summary>
+        /// Returns the statement id.
+        /// </summary>
+        /// <value></value>
+        /// <returns>statement id</returns>
 		public String StatementId
 		{
 			get { return statementId; }
 		}
 
+        /// <summary>
+        /// Start the statement.
+        /// </summary>
 		public void Start()
 		{
 			if (statementLifecycleSvc == null)
@@ -84,6 +94,9 @@ namespace net.esper.core
 			statementLifecycleSvc.Start(statementId);
 		}
 
+        /// <summary>
+        /// Stop the statement.
+        /// </summary>
 		public void Stop()
 		{
 			if (statementLifecycleSvc == null)
@@ -94,6 +107,10 @@ namespace net.esper.core
 			dispatchChildView.Clear();
 		}
 
+        /// <summary>
+        /// Destroy the statement releasing all statement resources.
+        /// <p>A destroyed statement cannot be started again.</p>
+        /// </summary>
 		public void Destroy()
 		{
 			if (currentState == EPStatementState.DESTROYED)
@@ -107,16 +124,28 @@ namespace net.esper.core
 			statementLifecycleSvc = null;
 		}
 
+        /// <summary>
+        /// Gets the statement's current state
+        /// </summary>
+        /// <value></value>
 		public EPStatementState State
 		{
 			get { return currentState; }
 		}
-		
+
+        /// <summary>
+        /// Set statement state.
+        /// </summary>
+        /// <value></value>
 		public EPStatementState CurrentState
 		{
 			set { this.currentState = value; }
 		}
 
+        /// <summary>
+        /// Sets the parent view.
+        /// </summary>
+        /// <value></value>
 		public Viewable ParentView
 		{
 			set
@@ -135,16 +164,32 @@ namespace net.esper.core
 			}
 		}
 
+        /// <summary>
+        /// Returns the underlying expression text or XML.
+        /// </summary>
+        /// <value></value>
+        /// <returns> expression text</returns>
 		public String Text
 		{
 			get { return expressionText; }
 		}
 
+        /// <summary>
+        /// Returns the statement name.
+        /// </summary>
+        /// <value></value>
+        /// <returns> statement name</returns>
 		public String Name
 		{
 			get { return statementName; }
 		}
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+        /// </returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			// Return null if not started
@@ -163,6 +208,12 @@ namespace net.esper.core
 			}
 		}
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+        /// </returns>
 		public IEnumerator<EventBean> GetEnumerator()
 		{
 			// Return null if not started
@@ -181,6 +232,12 @@ namespace net.esper.core
 			}
 		}
 
+        /// <summary>
+        /// Returns the type of events the iterable returns.
+        /// </summary>
+        /// <value></value>
+        /// <returns> event type of events the iterator returns
+        /// </returns>
 		public EventType EventType
 		{
 			get { return eventType; }

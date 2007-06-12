@@ -22,8 +22,10 @@ namespace net.esper.eql.agg
 	    private readonly AggregationMethod inner;
 	    private readonly RefCountedSet<Object> valueSet;
 
-	    /// <summary>Ctor.</summary>
-	    /// <param name="inner">is the aggregator function computing aggregation values</param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="inner">is the aggregator function computing aggregation values</param>
 	    public DistinctValueAggregator(AggregationMethod inner)
 	    {
 	        this.inner = inner;

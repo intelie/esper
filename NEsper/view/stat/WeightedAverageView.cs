@@ -55,14 +55,18 @@ namespace net.esper.view.stat
         private double sumW = Double.NaN;
         private double currentValue = Double.NaN;
 
-	   /**
-	     * Constructor requires the name of the field to use in the parent view to compute the weighted average on,
-	     * as well as the name of the field in the parent view to get the weight from.
-	     * @param fieldNameX is the name of the field within the parent view to use to get numeric data points for this view to
-	     * compute the average for.
-	     * @param fieldNameWeight is the field name for the weight to apply to each data point
-	     * @param statementContext contains required view services
-	     */
+	   /// <summary>
+	   /// Constructor requires the name of the field to use in the parent view to compute the weighted average on,
+	   /// as well as the name of the field in the parent view to get the weight from.
+	   /// </summary>
+	   /// <param name="fieldNameX">
+	   /// is the name of the field within the parent view to use to get numeric data points for this view to
+	   /// compute the average for.
+	   /// </param>
+	   /// <param name="fieldNameWeight">
+	   /// is the field name for the weight to apply to each data point
+	   /// </param>
+	   /// <param name="statementContext">contains required view services</param>
 	    public WeightedAverageView(StatementContext statementContext, String fieldNameX, String fieldNameWeight)
 	    {
 	        this.fieldNameX = fieldNameX;
@@ -71,6 +75,14 @@ namespace net.esper.view.stat
 	        eventType = CreateEventType(statementContext);
 	    }
 
+        /// <summary>
+        /// Duplicates the view.
+        /// <p>
+        /// Expected to return a same view in initialized state for grouping.
+        /// </p>
+        /// </summary>
+        /// <param name="statementContext">is services for the view</param>
+        /// <returns>duplicated view</returns>
 	    public View CloneView(StatementContext statementContext)
 	    {
 	        return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight);
@@ -212,17 +224,15 @@ namespace net.esper.view.stat
         /// </returns>
         public override String ToString()
         {
-            return this.GetType().FullName + 
+            return this.GetType().FullName +
                 " fieldName=" + fieldNameX +
                 " fieldNameWeight=" + fieldNameWeight;
         }
 
-        /**
-         * Creates the event type for this view.
-         * @param statementContext is the event adapter service
-         * @return event type of view
-         */
-        protected static EventType CreateEventType(StatementContext statementContext)
+        /// <summary>Creates the event type for this view.</summary>
+        /// <param name="statementContext">is the event adapter service</param>
+        /// <returns>event type of view</returns>
+        internal static EventType CreateEventType(StatementContext statementContext)
         {
             EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
             schemaMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = typeof (double);

@@ -11,11 +11,11 @@ namespace net.esper.events.xml
 {
     /// <summary> Base class for XMLEventTypes.
     /// Using this class as EventType only allow preconfigured properties 
-    /// (normally via <seealso cref="net.esper.events.xml.XPathPropertyGetter XPathPropertyGetter"/> ).
+    /// (normally via <seealso cref="net.esper.events.xml.XPathPropertyGetter"/> ).
     /// 
     /// For "on the fly" property resolvers, use either
-    /// <seealso cref="net.esper.events.xml.SimpleXMLEventType SimpleXMLEventType"/> or
-    /// <seealso cref="net.esper.events.xml.SchemaXMLEventType SchemaXMLEventType"/>
+    /// <seealso cref="net.esper.events.xml.SimpleXMLEventType"/> or
+    /// <seealso cref="net.esper.events.xml.SchemaXMLEventType"/>
     /// 
     /// </summary>
     /// <author>  pablo
@@ -23,7 +23,10 @@ namespace net.esper.events.xml
 
     public abstract class BaseXMLEventType : BaseConfigurableEventType
     {
-        /// <summary> Returns the name of the root element.</summary>
+        /// <summary>
+        /// Returns the name of the root element.
+        /// </summary>
+        /// <value>The name of the root element.</value>
         /// <returns> root element name
         /// </returns>
 
@@ -35,6 +38,7 @@ namespace net.esper.events.xml
         /// <summary>
         /// Sets the namespace context for use in XPath expression resolution.
         /// </summary>
+        /// <value>The namespace manager.</value>
 
         virtual internal XmlNamespaceManager NamespaceManager
         {
@@ -127,7 +131,13 @@ namespace net.esper.events.xml
 		
 			return (configurationEventTypeXMLDOM.Equals(other.configurationEventTypeXMLDOM));
 		}
-		
+
+        /// <summary>
+        /// Serves as a hash function for a particular type. <see cref="M:System.Object.GetHashCode"></see> is suitable for use in hashing algorithms and data structures like a hash table.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override int GetHashCode()
 		{
 			return configurationEventTypeXMLDOM.GetHashCode();

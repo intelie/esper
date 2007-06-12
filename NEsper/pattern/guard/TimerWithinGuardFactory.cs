@@ -16,7 +16,13 @@ namespace net.esper.pattern.guard
 		, MetaDefItem
 	{
 		private long milliseconds;
-		
+
+        /// <summary>
+        /// </summary>
+        /// <value></value>
+        /// Sets the guard object parameters.
+        /// @param guardParameters is a list of parameters
+        /// @throws GuardParameterException thrown to indicate a parameter problem
 		public IList<Object> GuardParameters
 		{
             set
@@ -49,12 +55,14 @@ namespace net.esper.pattern.guard
                 }
             }
 		}
-		
+
         /// <summary>
         /// Constructs a guard instance.
         /// </summary>
         /// <param name="context">services for use by guard</param>
         /// <param name="quitable">to use for indicating the guard has quit</param>
+        /// <param name="stateNodeId">a node id for the state object</param>
+        /// <param name="guardState">state node for guard</param>
         /// <returns>guard instance</returns>
 		public virtual Guard MakeGuard(PatternContext context,
 									   Quitable quitable,

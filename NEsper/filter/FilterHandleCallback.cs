@@ -26,4 +26,26 @@ namespace net.esper.filter
 	    /// <param name="_event">the event received that matches the filter specification</param>
 	    void MatchFound(EventBean _event);
 	}
+
+    /// <summary>
+    /// Indicate that an event was evaluated by the {@link net.esper.filter.FilterService}
+    /// which matches the filter specification {@link net.esper.filter.FilterSpecCompiled} associated with this callback.
+    /// </summary>
+    /// <param name="_event">the event received that matches the filter specification</param>
+    public delegate void FilterHandleCallbackDelegate(EventBean _event);
+
+    public class FilterHandleCallbackImpl : FilterHandleCallback
+    {
+        private FilterHandleCallbackDelegate m_delegate;
+
+        public FilterHandleCallbackImpl( FilterHandleCallbackDelegate dg )
+        {
+            m_delegate = dg;
+        }
+
+        public void MatchFound(EventBean _event)
+        {
+            m_delegate(_event);
+        }
+    }
 } // End of namespace

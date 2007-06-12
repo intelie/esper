@@ -47,6 +47,14 @@ namespace net.esper.eql.spec
 	        return evalNode;
 	    }
 
+        /// <summary>
+        /// Compiles a raw stream specification consisting event type information and filter expressions
+        /// to an validated, optimized form for use with filter service
+        /// </summary>
+        /// <param name="eventAdapterService">supplies type information</param>
+        /// <param name="methodResolutionService">for resolving imports</param>
+        /// <returns>compiled stream</returns>
+        /// <throws>ExprValidationException to indicate validation errors</throws>
 	    public StreamSpecCompiled Compile(EventAdapterService eventAdapterService,
 	                                      MethodResolutionService methodResolutionService)
 	    {
@@ -88,7 +96,7 @@ namespace net.esper.eql.spec
 	            filterTypes.PutAll(taggedEventTypes);
 	            StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
 
-	            List<ExprNode> exprNodes = filterNode.RawFilterSpec.FilterExpressions;
+	            IList<ExprNode> exprNodes = filterNode.RawFilterSpec.FilterExpressions;
 	            FilterSpecCompiled spec = FilterSpecCompiler.MakeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService);
 	            filterNode.FilterSpec = spec;
 	        }

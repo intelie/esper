@@ -15,9 +15,10 @@ namespace net.esper.eql.spec
 {
 	/// <summary>
 	/// Filter definition in an un-validated and un-resolved form.
-	/// <p>
+	/// <para>
 	/// Event type and expression nodes in this filter specification are not yet validated, optimized for resolved
 	/// against actual streams.
+	/// </para>
 	/// </summary>
 	public class FilterSpecRaw : MetaDefItem
 	{
@@ -42,16 +43,16 @@ namespace net.esper.eql.spec
 
 	    /// <summary>Returns the event type alias of the events we are looking for.</summary>
 	    /// <returns>event name</returns>
-	    public String GetEventTypeAlias()
+	    public String EventTypeAlias
 	    {
-	        return eventTypeAlias;
+            get { return eventTypeAlias; }
 	    }
 
 	    /// <summary>Returns the list of filter expressions.</summary>
 	    /// <returns>filter expression list</returns>
-	    public List<ExprNode> GetFilterExpressions()
+	    public IList<ExprNode> FilterExpressions
 	    {
-	        return filterExpressions;
+            get { return filterExpressions; }
 	    }
 	}
 } // End of namespace

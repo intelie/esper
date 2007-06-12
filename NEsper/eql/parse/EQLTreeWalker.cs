@@ -54,11 +54,13 @@ namespace net.esper.eql.parse
 	    private readonly EngineImportService engineImportService;
 	    private readonly PatternObjectResolutionService patternObjectResolutionService;
 
-	    /**
-	     * Ctor.
-	     * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
-	     * @param  patternObjectResolutionService resolves plug-in pattern object names (guards and observers)
-	     */
+	    /// <summary>Ctor.</summary>
+	    /// <param name="engineImportService">
+	    /// is required to resolve lib-calls into static methods or configured aggregation functions
+	    /// </param>
+	    /// <param name="patternObjectResolutionService">
+	    /// resolves plug-in pattern object names (guards and observers)
+	    /// </param>
 	    public EQLTreeWalker(EngineImportService engineImportService,
 	                         PatternObjectResolutionService patternObjectResolutionService)
 	    {
@@ -69,11 +71,11 @@ namespace net.esper.eql.parse
 	        astExprNodeMapStack = new Stack<EDictionary<AST, ExprNode>>();
 	    }
 
-	    /**
-	     * Pushes a statement into the stack, creating a new empty statement to fill in.
-	     * The leave node method for subquery statements pops from the stack.
-	     * @throws SemanticException is a standard parser exception
-	     */
+	    /// <summary>
+	    /// Pushes a statement into the stack, creating a new empty statement to fill in.
+	    /// The leave node method for subquery statements pops from the stack.
+	    /// </summary>
+	    /// <throws>SemanticException is a standard parser exception</throws>
 	    protected void PushStmtContext()
 		{
 	        if (log.IsDebugEnabled)
@@ -135,7 +137,7 @@ namespace net.esper.eql.parse
 				case EqlEvalTokenTypes.WILDCARD_SELECT:
 					leaveWildcardSelect();
 					break;
-				
+
                 case EqlEvalTokenTypes.SELECTION_ELEMENT_EXPR:
                     leaveSelectionElement(node);
                     break;
@@ -290,7 +292,7 @@ namespace net.esper.eql.parse
 	            case EqlEvalTokenTypes.NOT_IN_RANGE:
 	                leaveInRange(node);
 	                break;
- 
+
 
                 case EqlEvalTokenTypes.BETWEEN:
                 case EqlEvalTokenTypes.NOT_BETWEEN:
@@ -335,7 +337,7 @@ namespace net.esper.eql.parse
 				case EqlEvalTokenTypes.IN_SUBSELECT_QUERY_EXPR:
 	                leaveSubselectQueryIn(node);
 	                break;
-	
+
                 default:
                     throw new ASTWalkException("Unhandled node type encountered, type '" + node.Type + "' with text '" + node.getText() + "'");
 
@@ -417,7 +419,7 @@ namespace net.esper.eql.parse
 	    private void leaveSubselectRow(AST node)
 	    {
 	        log.Debug(".leaveSubselectRow");
-	       
+
 	        StatementSpecRaw currentSpec = popStacks();
 	        ExprSubselectRowNode subselectNode = new ExprSubselectRowNode(currentSpec);
 	        astExprNodeMap[node] = subselectNode;
@@ -444,7 +446,7 @@ namespace net.esper.eql.parse
 	        {
 	            isNot = true;
 	        }
-	        
+
             ExprNode tempOut;
 	        astExprNodeMap.Remove(nodeSubquery, out tempOut);
 
@@ -579,7 +581,7 @@ namespace net.esper.eql.parse
 
                 // Get expression node sub-tree from the AST nodes placed so far
                 EvalNode evalNode = astPatternNodeMap.FirstValue;
-				
+
 				streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamName);
                 astPatternNodeMap.Clear();
             }
@@ -1166,7 +1168,7 @@ namespace net.esper.eql.parse
             ExprInNode inNode = new ExprInNode(node.Type == EqlEvalTokenTypes.NOT_IN_SET);
             astExprNodeMap[node] = inNode;
         }
-		
+
 		private void leaveInRange(AST node)
 	    {
 	        log.Debug(".leaveInRange");
@@ -1328,7 +1330,7 @@ namespace net.esper.eql.parse
 	            throw new ASTWalkException(e.Message, e);
 	        }
 
-	        EvalObserverNode observerNode = new EvalObserverNode(factory);	 
+	        EvalObserverNode observerNode = new EvalObserverNode(factory);
             astPatternNodeMap[node] = observerNode;
         }
 

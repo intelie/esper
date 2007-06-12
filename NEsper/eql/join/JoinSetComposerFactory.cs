@@ -21,24 +21,17 @@ namespace net.esper.eql.join
 
     public class JoinSetComposerFactory
 	{
-		/// <summary> Builds join tuple composer.</summary>
-		/// <param name="outerJoinDescList">list of descriptors for outer join criteria
-		/// </param>
-		/// <param name="optionalFilterNode">filter tree for analysis to build indexes for fast access
-		/// </param>
-		/// <param name="streamTypes">types of streams
-		/// </param>
-		/// <param name="streamNames">names of streams
-		/// </param>
-		/// <param name="streamViews">leaf view per stream
-		/// </param>
-		/// <param name="selectStreamSelectorEnum">indicator for rstream or istream-only, for optimization
-		/// </param>
-		/// <returns> composer implementation
-		/// </returns>
-		/// <throws>  ExprValidationException is thrown to indicate that </throws>
-		/// <summary> validation of view use in joins failed.
-		/// </summary>
+        /// <summary>
+        /// Builds join tuple composer.
+        /// </summary>
+        /// <param name="outerJoinDescList">list of descriptors for outer join criteria</param>
+        /// <param name="optionalFilterNode">filter tree for analysis to build indexes for fast access</param>
+        /// <param name="streamTypes">types of streams</param>
+        /// <param name="streamNames">names of streams</param>
+        /// <param name="streamViews">leaf view per stream</param>
+        /// <param name="selectStreamSelectorEnum">indicator for rstream or istream-only, for optimization</param>
+        /// <returns>composer implementation</returns>
+        /// <throws>  ExprValidationException is thrown to indicate that </throws>
         public static JoinSetComposer MakeComposer(IList<OuterJoinDesc> outerJoinDescList, ExprNode optionalFilterNode, EventType[] streamTypes, String[] streamNames, Viewable[] streamViews, SelectClauseStreamSelectorEnum selectStreamSelectorEnum)
         {
             // Determine if there is a historical
@@ -121,7 +114,7 @@ namespace net.esper.eql.join
                     indexes[streamNo] = new EventTable[indexProps.Length];
                     for (int indexNo = 0; indexNo < indexProps.Length; indexNo++)
                     {
-                        indexes[streamNo][indexNo] = BuildIndex(streamNo, indexProps[indexNo], streamTypes[streamNo]);
+                        indexes[streamNo][indexNo] = BuildIndex(streamNo, indexProps[indexNo], coercionTypes[indexNo], streamTypes[streamNo]);
                     }
                 }
 
@@ -144,15 +137,15 @@ namespace net.esper.eql.join
 
             return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
         }
-		
-	    /**
-	     * Build an index/table instance using the event properties for the event type.
-	     * @param indexedStreamNum - number of stream indexed
-	     * @param indexProps - properties to index
-	     * @param optCoercionTypes - optional array of coercion types, or null if no coercion is required
-	     * @param eventType - type of event to expect
-	     * @return table build
-	     */
+
+        /// <summary>
+        /// Build an index/table instance using the event properties for the event type.
+        /// </summary>
+        /// <param name="indexedStreamNum">number of stream indexed</param>
+        /// <param name="indexProps">properties to index</param>
+        /// <param name="optCoercionTypes">optional array of coercion types, or null if no coercion is required</param>
+        /// <param name="eventType">type of event to expect</param>
+        /// <returns>table build</returns>
 	    protected static EventTable BuildIndex(int indexedStreamNum, String[] indexProps, Type[] optCoercionTypes, EventType eventType)
 		{
 			EventTable table = null;
@@ -173,7 +166,7 @@ namespace net.esper.eql.join
 			}
 			return table;
 		}
-		
+
 		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

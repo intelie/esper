@@ -137,12 +137,18 @@ namespace net.esper.schedule
 	            handleSetMap.Remove(handle);
 			}
         }
-	
+
+        /// <summary>
+        /// Scheduling service evaluation lock to synchronize evaluation with engine locks.
+        /// </summary>
 	    public void EvaluateLock()
 	    {
 	        // no additional locking before evaluation required
 	    }
 
+        /// <summary>
+        /// Scheduling service evaluation unlock to synchronize evaluation with engine locks.
+        /// </summary>
 	    public void EvaluateUnLock()
 	    {
 	        // no additional locking before evaluation required

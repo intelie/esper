@@ -16,12 +16,12 @@ using LogFactory = org.apache.commons.logging.LogFactory;
 
 namespace net.esper.eql.view
 {
-	/**
-	 * Base output processing view that has the responsibility to serve up event type and
-	 * statement iterator.
-	 * <p>
-	 * Implementation classes may enforce an output rate stabilizing or limiting policy.
-	 */
+	/// <summary>
+	/// Base output processing view that has the responsibility to serve up event type and
+	/// statement iterator.
+	/// &lt;p&gt;
+	/// Implementation classes may enforce an output rate stabilizing or limiting policy.
+	/// </summary>
 	public abstract class OutputProcessView
 		: ViewSupport
 		, JoinSetIndicator
@@ -29,15 +29,15 @@ namespace net.esper.eql.view
 	{
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-	    /**
-	     * Processes the parent views result set generating events for pushing out to child view.
-	     */
+	    /// <summary>
+	    /// Processes the parent views result set generating events for pushing out to child view.
+	    /// </summary>
 	    protected readonly ResultSetProcessor resultSetProcessor;
 
-	    /**
-	     * Ctor.
-	     * @param resultSetProcessor processes the results posted by parent view or joins
-	     */
+	    /// <summary>Ctor.</summary>
+	    /// <param name="resultSetProcessor">
+	    /// processes the results posted by parent view or joins
+	    /// </param>
 	    protected OutputProcessView(ResultSetProcessor resultSetProcessor)
 	    {
 	        this.resultSetProcessor = resultSetProcessor;
@@ -77,8 +77,8 @@ namespace net.esper.eql.view
 	    	{
 	    		return parent.GetEnumerator();
 	    	}
-	    }    
-		
+	    }
+
 		abstract public void Process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents);
     }
 }

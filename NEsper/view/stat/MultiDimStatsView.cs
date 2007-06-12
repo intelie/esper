@@ -22,7 +22,7 @@ namespace net.esper.view.stat
 	/// A mandatory column field name. This field supplies the members of dimension zero (column, 1-dim).
 	/// An optional row field name. This field supplies the members of dimension one (row, 2-dim).
 	/// An optional page field name. This field supplies the members of dimension two (page, 3-dim).
-	/// 
+	///
 	/// The view post new data to child views that contains a Map with the Cube (see Cube). It does not post old data.
 	/// </summary>
 
@@ -66,15 +66,21 @@ namespace net.esper.view.stat
 
 		private MultidimCube<BaseStatisticsBean> multidimCube;
 
-		/**
-	     * Constructor.
-	     * @param derivedMeasures is an array of ViewFieldEnum names defining the measures to derive
-	     * @param measureField defines the field supplying measures
-	     * @param columnField defines the field supplying column dimension members
-	     * @param rowField defines an optional field supplying row dimension members
-	     * @param pageField defines an optional field supplying page dimension members
-	     * @param statementContext contains required view services
-	     */
+		/// <summary>Constructor.</summary>
+		/// <param name="derivedMeasures">
+		/// is an array of ViewFieldEnum names defining the measures to derive
+		/// </param>
+		/// <param name="measureField">defines the field supplying measures</param>
+		/// <param name="columnField">
+		/// defines the field supplying column dimension members
+		/// </param>
+		/// <param name="rowField">
+		/// defines an optional field supplying row dimension members
+		/// </param>
+		/// <param name="pageField">
+		/// defines an optional field supplying page dimension members
+		/// </param>
+		/// <param name="statementContext">contains required view services</param>
 	    public MultiDimStatsView(StatementContext statementContext,
 	                             String[] derivedMeasures,
 								 String measureField,
@@ -91,6 +97,14 @@ namespace net.esper.view.stat
 	        eventType = CreateEventType(statementContext);
 	    }
 
+        /// <summary>
+        /// Duplicates the view.
+        /// <p>
+        /// Expected to return a same view in initialized state for grouping.
+        /// </p>
+        /// </summary>
+        /// <param name="statementContext">is services for the view</param>
+        /// <returns>duplicated view</returns>
 	    public View CloneView(StatementContext statementContext)
 	    {
 	        return new MultiDimStatsView(statementContext, derivedMeasures, measureField, columnField, rowField, pageField);
@@ -333,11 +347,9 @@ namespace net.esper.view.stat
 			return eventBean;
 		}
 
-	    /**
-	     * Creates the event type for this view.
-	     * @param statementContext is the event adapter service
-	     * @return event type of view
-	     */
+	    /// <summary>Creates the event type for this view.</summary>
+	    /// <param name="statementContext">is the event adapter service</param>
+	    /// <returns>event type of view</returns>
 	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
 	        EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();

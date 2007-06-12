@@ -20,6 +20,10 @@ namespace net.esper.eql.agg
         private double sum;
         private long numDataPoints;
 
+        /// <summary>
+        /// Enters the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
         public void Enter(Object item)
         {
             if (item == null)
@@ -30,6 +34,10 @@ namespace net.esper.eql.agg
             sum += (double)item;
         }
 
+        /// <summary>
+        /// Leaves the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
         public void Leave(Object item)
         {
             if (item == null)
@@ -40,6 +48,11 @@ namespace net.esper.eql.agg
             sum -= (double) item;
         }
 
+        /// <summary>
+        /// Returns the current value held.
+        /// </summary>
+        /// <value></value>
+        /// <returns>current value</returns>
         public Object Value
         {
             get
@@ -52,6 +65,11 @@ namespace net.esper.eql.agg
             }
         }
 
+        /// <summary>
+        /// Returns the type of the current value.
+        /// </summary>
+        /// <value></value>
+        /// <returns>type of values held</returns>
         public Type ValueType
         {
             get
@@ -60,6 +78,11 @@ namespace net.esper.eql.agg
             }
         }
 
+        /// <summary>
+        /// Make a new, initalized aggregation state.
+        /// </summary>
+        /// <param name="methodResolutionService">for use in creating new aggregation method instances as a factory</param>
+        /// <returns>initialized copy of the aggregator</returns>
         public AggregationMethod NewAggregator(MethodResolutionService methodResolutionService)
         {
             return methodResolutionService.MakeAvgAggregator();

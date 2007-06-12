@@ -36,7 +36,7 @@ namespace net.esper.pattern.observer
         /// Constructor
         /// </summary>
         
-        ObserverEnum(String nspace, String name, Type clazz)
+        ObserverEnum(String nspace, String name, Type type)
         {
             this.nspace = nspace;
             this.name = name;

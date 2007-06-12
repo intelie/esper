@@ -18,8 +18,8 @@ namespace net.esper.util
 	/// </summary>
 	public class ManagedLockImpl : ManagedLock
 	{
-	    private readonly ReaderWriterLock lockObj;
-	    private readonly String name;
+        private readonly String name;
+        private readonly Object lockObj;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="name">of lock</param>

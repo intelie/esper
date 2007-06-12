@@ -49,7 +49,7 @@ namespace net.esper.eql.parse
 	        {
 	            return Int32.Parse(arg);
 	        }
-	        catch (FormatException ex)
+	        catch (FormatException)
 	        {
                 return Int64.Parse(arg);
 	        }

@@ -68,15 +68,18 @@ namespace net.esper.view.stream
 	        this.eventAdapterService = eventAdapterService;
 	    }
 
-	    /// <summary>
-	    /// See the method of the same name in {@link net.esper.view.stream.StreamFactoryService}. Always attempts to reuse an existing event stream.
-	    /// May thus return a new event stream or an existing event stream depending on whether filter criteria match.
-	    /// </summary>
-	    /// <param name="filterSpec">is the filter definition</param>
-	    /// <param name="epStatementHandle">is the statement resource lock</param>
-	    /// <returns>
-	    /// newly createdStatement event stream, not reusing existing instances
-	    /// </returns>
+        /// <summary>
+        /// See the method of the same name in {@link net.esper.view.stream.StreamFactoryService}. Always attempts to reuse an existing event stream.
+        /// May thus return a new event stream or an existing event stream depending on whether filter criteria match.
+        /// </summary>
+        /// <param name="filterSpec">is the filter definition</param>
+        /// <param name="filterService">filter service to activate filter if not already active</param>
+        /// <param name="epStatementHandle">is the statement resource lock</param>
+        /// <param name="isJoin">is indicatng whether the stream will participate in a join statement, information
+        /// necessary for stream reuse and multithreading concerns</param>
+        /// <returns>
+        /// newly createdStatement event stream, not reusing existing instances
+        /// </returns>
 	    public EventStream CreateStream(FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, bool isJoin)
 	    {
 	        if (log.IsDebugEnabled)
@@ -114,13 +117,12 @@ namespace net.esper.view.stream
 	        EventType eventType = filterSpec.EventType;
 	        EventStream eventStream = new ZeroDepthStream(eventType);
 
-            FilterEventHandler filterEventHandler = new FilterEventHandler(
-                delegate(EventBean _event)
-                {
-	                eventStream.Insert(_event);
-	            });
+	        FilterHandleCallback filterCallback =
+	            new FilterHandleCallbackImpl(
+	                new FilterHandleCallbackDelegate(
+	                    delegate(EventBean _event) { eventStream.Insert(_event); }));
 
-	        EPStatementHandleCallback handle = new EPStatementHandleCallback(epStatementHandle, filterEventHandler);
+	        EPStatementHandleCallback handle = new EPStatementHandleCallback(epStatementHandle, filterCallback);
 
 	        // Store stream for reuse
 	        pair = new Pair<EventStream, EPStatementHandleCallback>(eventStream, handle);
@@ -140,10 +142,13 @@ namespace net.esper.view.stream
 	        return eventStream;
 	    }
 
-	    /// <summary>
-	    /// See the method of the same name in {@link net.esper.view.stream.StreamFactoryService}.
-	    /// </summary>
-	    /// <param name="filterSpec">is the filter definition</param>
+        /// <summary>
+        /// See the method of the same name in {@link net.esper.view.stream.StreamFactoryService}.
+        /// </summary>
+        /// <param name="filterSpec">is the filter definition</param>
+        /// <param name="filterService">to be used to deactivate filter when the last event stream is dropped</param>
+        /// <param name="isJoin">is indicatng whether the stream will participate in a join statement, information
+        /// necessary for stream reuse and multithreading concerns</param>
 	    public void DropStream(FilterSpecCompiled filterSpec, FilterService filterService, bool isJoin)
 	    {
 	        Pair<EventStream, EPStatementHandleCallback> pair = null;

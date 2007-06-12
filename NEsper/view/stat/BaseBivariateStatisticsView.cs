@@ -12,7 +12,7 @@ namespace net.esper.view.stat
 	/// Subclasses compute correlation or regression values, for instance.
 	/// </summary>
 
-	public abstract class BaseBivariateStatisticsView 
+	public abstract class BaseBivariateStatisticsView
 		: ViewSupport
 		, CloneableView
 	{
@@ -53,13 +53,19 @@ namespace net.esper.view.stat
 			get { return fieldNameY; }
 		}
 
-	    /**
-	     * Constructor requires the name of the two fields to use in the parent view to compute the statistics.
-	     * @param statisticsBean is the base class prodiving sum of X and Y and squares for use by subclasses
-	     * @param fieldNameX is the name of the field within the parent view to get the X values from
-	     * @param fieldNameY is the name of the field within the parent view to get the Y values from
-	     * @param statementContext contains required view services
-	     */
+	    /// <summary>
+	    /// Constructor requires the name of the two fields to use in the parent view to compute the statistics.
+	    /// </summary>
+	    /// <param name="statisticsBean">
+	    /// is the base class prodiving sum of X and Y and squares for use by subclasses
+	    /// </param>
+	    /// <param name="fieldNameX">
+	    /// is the name of the field within the parent view to get the X values from
+	    /// </param>
+	    /// <param name="fieldNameY">
+	    /// is the name of the field within the parent view to get the Y values from
+	    /// </param>
+	    /// <param name="statementContext">contains required view services</param>
 	    public BaseBivariateStatisticsView(StatementContext statementContext,
 	                                       BaseStatisticsBean statisticsBean,
 	                                       String fieldNameX,
@@ -71,8 +77,16 @@ namespace net.esper.view.stat
 	        this.fieldNameY = fieldNameY;
 	    }
 
+        /// <summary>
+        /// Duplicates the view.
+        /// <p>
+        /// Expected to return a same view in initialized state for grouping.
+        /// </p>
+        /// </summary>
+        /// <param name="statementContext">is services for the view</param>
+        /// <returns>duplicated view</returns>
 	    abstract public View CloneView(StatementContext statementContext);
-	    	    
+
         /// <summary>
         /// Gets or sets the view's parent viewable.
         /// </summary>

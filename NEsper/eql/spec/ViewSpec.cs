@@ -17,7 +17,7 @@ namespace net.esper.eql.spec
 	public sealed class ViewSpec : ObjectSpec
 	{
 	    /// <summary>Constructor.</summary>
-	    /// <param name="namespace">if the namespace the object is in</param>
+	    /// <param name="_namespace">if the namespace the object is in</param>
 	    /// <param name="objectName">is the name of the object</param>
 	    /// <param name="objectParameters">
 	    /// is a list of values representing the object parameters

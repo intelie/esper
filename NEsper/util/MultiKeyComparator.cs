@@ -93,7 +93,7 @@ namespace net.esper.util
 	        }
 	        else
 	        {
-	            throw new InvalidCastException("Cannot sort objects of type " + valueOne.getClass());
+	            throw new InvalidCastException("Cannot sort objects of type " + valueOne.GetType());
 	        }
 
 	        return comparable1.CompareTo(valueTwo);

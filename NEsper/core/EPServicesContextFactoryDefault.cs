@@ -24,6 +24,12 @@ namespace net.esper.core
 	/// <summary>Factory for services context.</summary>
 	public class EPServicesContextFactoryDefault : EPServicesContextFactory
 	{
+        /// <summary>
+        /// Creates the services context.
+        /// </summary>
+        /// <param name="engineURI">The engine URI.</param>
+        /// <param name="configSnapshot">The config snapshot.</param>
+        /// <returns></returns>
 	    public EPServicesContext CreateServicesContext(String engineURI, ConfigurationSnapshot configSnapshot)
 	    {
 	        // Make services that depend on snapshot config entries

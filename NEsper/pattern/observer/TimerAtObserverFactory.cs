@@ -19,11 +19,17 @@ namespace net.esper.pattern.observer
 		: ObserverFactory
 		, MetaDefItem
 	{
-	    /**
-	     * The specification of the crontab schedule.
-	     */
+	    /// <summary>
+	    /// The specification of the crontab schedule.
+	    /// </summary>
 	    protected ScheduleSpec spec = null;
 
+        /// <summary>
+        /// </summary>
+        /// <value></value>
+        /// Sets the observer object parameters.
+        /// @param observerParameters is a list of parameters
+        /// @throws ObserverParameterException thrown to indicate a parameter problem
 	    public IList<Object> ObserverParameters
 	    {
 			set
@@ -52,6 +58,12 @@ namespace net.esper.pattern.observer
 			}
 		}
 
+        /// <summary>
+        /// Computes the values.
+        /// </summary>
+        /// <param name="unitParameter">The unit parameter.</param>
+        /// <param name="unit">The unit.</param>
+        /// <returns></returns>
         private static ETreeSet<Int32> ComputeValues(Object unitParameter, ScheduleUnit unit)
         {
             if (unitParameter is Int32)
@@ -80,6 +92,8 @@ namespace net.esper.pattern.observer
         /// <param name="context">services that may be required by observer implementation</param>
         /// <param name="beginState">Start state for observer</param>
         /// <param name="observerEventEvaluator">receiver for events observed</param>
+        /// <param name="stateNodeId">optional id for the associated pattern state node</param>
+        /// <param name="observerState">state node for observer</param>
         /// <returns>observer instance</returns>
 		public virtual EventObserver MakeObserver(PatternContext context,
 												  MatchedEventMap beginState,

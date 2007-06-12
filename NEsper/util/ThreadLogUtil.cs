@@ -20,8 +20,9 @@ namespace net.esper.util
 {
 	/// <summary>
 	/// Utility class for logging threading-related messages.
-	/// <p>
+	/// <para>
 	/// Prints thread information and lock-specific info.
+	/// </para>
 	/// </summary>
 	public class ThreadLogUtil
 	{

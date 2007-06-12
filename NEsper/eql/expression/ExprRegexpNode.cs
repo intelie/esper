@@ -28,6 +28,13 @@ namespace net.esper.eql.expression
             get { return typeof(bool?); }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <value></value>
+        /// Returns true if the expression node's evaluation value doesn't depend on any events data,
+        /// as must be determined at validation time, which is bottom-up and therefore
+        /// reliably allows each node to determine constant value.
+        /// @return true for constant evaluation value, false for non-constant evaluation value
 	    public override bool IsConstantResult
 	    {
 	        get { return false; }
@@ -51,7 +58,8 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
+        /// <param name="viewResourceDelegate"></param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
@@ -85,6 +93,7 @@ namespace net.esper.eql.expression
         /// Evaluate event tuple and return result.
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
+        /// <param name="isNewData"></param>
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>

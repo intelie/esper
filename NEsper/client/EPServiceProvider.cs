@@ -13,7 +13,7 @@ namespace net.esper.client
 	/// <summary>
     /// This class provides access to the EPRuntime and EPAdministrator implementations.
     /// </summary>
-	
+
     public interface EPServiceProvider
 	{
 		/// <summary> Returns a class instance of EPRuntime.</summary>
@@ -25,19 +25,17 @@ namespace net.esper.client
 		/// <summary> Returns a class instance of EPAdministrator.</summary>
 		/// <returns> an instance of EPAdministrator
 		/// </returns>
-		
+
         EPAdministrator EPAdministrator { get; }
-		
+
 		/// <summary> Frees any resources associated with this runtime instance.
 		/// Stops and destroys any event filters, patterns, expressions, views.
 		/// </summary>
 
         void Initialize();
-		
-		/**
-		* Returns the provider URI, or null if this is the default provider.
-		* @return provider URI
-		*/
+
+		/// <summary>Returns the provider URI, or null if this is the default provider.</summary>
+		/// <returns>provider URI</returns>
 		String URI { get ; }
 	}
 }

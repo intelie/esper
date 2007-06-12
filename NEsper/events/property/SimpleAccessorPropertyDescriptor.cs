@@ -65,7 +65,7 @@ namespace net.esper.events.property
             {
                 return accessorMethod.Invoke(component, null);
             }
-            catch (TargetException e)
+            catch (TargetException)
             {
                 throw new ArgumentException("component");
             }

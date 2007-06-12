@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.util;
@@ -26,34 +25,32 @@ namespace net.esper.eql.expression
         {
             get { return typeof(bool?); }
         }
-		
-	    /**
-	     * Returns the coercion type to use if coercion is required.
-	     * @return coercion type
-	     */
+
+	    /// <summary>Returns the coercion type to use if coercion is required.</summary>
+	    /// <returns>coercion type</returns>
 	    public Type CoercionType
 	    {
 	        get { return coercionType; }
 	    }
-		
+
         private readonly bool isNotIn;
 
         private Type coercionType;
 
-	    /**
-	     * Returns true for not-in, false for regular in
-	     * @return false for "val in (a,b,c)" or true for "val not in (a,b,c)"
-	     */
+	    /// <summary>Returns true for not-in, false for regular in</summary>
+	    /// <returns>
+	    /// false for &quot;val in (a,b,c)&quot; or true for &quot;val not in (a,b,c)&quot;
+	    /// </returns>
 	    public bool IsNotIn
 	    {
 	        get { return isNotIn; }
 	    }
-		
+
 	    public override bool IsConstantResult
 	    {
 	        get { return false; }
-	    } 
-		
+	    }
+
         /// <summary> Ctor.</summary>
         /// <param name="isNotIn">is true for "not in" and false for "in"
         /// </param>
@@ -98,6 +95,7 @@ namespace net.esper.eql.expression
         /// Evaluate event tuple and return result.
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
+        /// <param name="isNewData">is the data new</param>
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>
@@ -115,7 +113,7 @@ namespace net.esper.eql.expression
                 ExprNode inSetValueExpr = it.Current;
                 Object subExprResult = inSetValueExpr.Evaluate(eventsPerStream, isNewData);
 
-                if (compare(inPropResult, subExprResult))
+                if (Compare(inPropResult, subExprResult))
                 {
                     matched = true;
                     break;
@@ -191,7 +189,7 @@ namespace net.esper.eql.expression
         /// <param name="leftResult">The left result.</param>
         /// <param name="rightResult">The right result.</param>
         /// <returns></returns>
-        private bool compare(Object leftResult, Object rightResult)
+        private bool Compare(Object leftResult, Object rightResult)
         {
         	if ((leftResult == null) && (rightResult == null)) {
         		return true ;

@@ -12,7 +12,7 @@ namespace net.esper.pattern
 	/// have one child node.
 	/// </summary>
 
-    public sealed class EvalGuardStateNode 
+    public sealed class EvalGuardStateNode
 		: EvalStateNode
 		, Evaluator
 		, Quitable
@@ -20,14 +20,14 @@ namespace net.esper.pattern
         private EvalStateNode activeChildNode;
         private readonly Guard guard;
 
-	    /**
-	     * Constructor.
-	     * @param parentNode is the parent evaluator to call to indicate truth value
-	     * @param beginState contains the events that make up prior matches
-	     * @param context contains handles to services required
-	     * @param evalGuardNode is the factory node associated to the state
-	     * @param stateObjectId is the state object's id value
-	     */
+	    /// <summary>Constructor.</summary>
+	    /// <param name="parentNode">
+	    /// is the parent evaluator to call to indicate truth value
+	    /// </param>
+	    /// <param name="beginState">contains the events that make up prior matches</param>
+	    /// <param name="context">contains handles to services required</param>
+	    /// <param name="evalGuardNode">is the factory node associated to the state</param>
+	    /// <param name="stateObjectId">is the state object's id value</param>
 	    public EvalGuardStateNode(Evaluator parentNode,
 	                              EvalGuardNode evalGuardNode,
 								  MatchedEventMap beginState,
@@ -44,7 +44,7 @@ namespace net.esper.pattern
 
 	        this.activeChildNode = evalGuardNode.ChildNodes[0].NewState(this, beginState, context, null);
 	    }
-		
+
         /// <summary>
         /// Starts the event expression or an instance of it.
         /// Child classes are expected to initialize and Start any event listeners
@@ -180,7 +180,7 @@ namespace net.esper.pattern
         /// <summary>
         /// Indicate guard quitted.
         /// </summary>
-        
+
         public void GuardQuit()
         {
             if (log.IsDebugEnabled)

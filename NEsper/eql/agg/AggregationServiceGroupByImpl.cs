@@ -50,6 +50,11 @@ namespace net.esper.eql.agg
 	        this.aggregatorsPerGroup = new EHashDictionary<MultiKeyUntyped, AggregationMethod[]>();
 	    }
 
+        /// <summary>
+        /// Applies the enter.
+        /// </summary>
+        /// <param name="eventsPerStream">The events per stream.</param>
+        /// <param name="groupByKey">The group by key.</param>
 	    public override void ApplyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
 	    {
 	        AggregationMethod[] groupAggregators = aggregatorsPerGroup.Fetch(groupByKey);
@@ -69,6 +74,11 @@ namespace net.esper.eql.agg
 	        }
 	    }
 
+        /// <summary>
+        /// Applies the leave.
+        /// </summary>
+        /// <param name="eventsPerStream">The events per stream.</param>
+        /// <param name="groupByKey">The group by key.</param>
 	    public override void ApplyLeave(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
 	    {
 	        AggregationMethod[] groupAggregators = aggregatorsPerGroup.Fetch(groupByKey);
@@ -88,6 +98,10 @@ namespace net.esper.eql.agg
 	        }
 	    }
 
+        /// <summary>
+        /// Sets the current row.
+        /// </summary>
+        /// <param name="groupByKey">The group by key.</param>
 	    public override void SetCurrentRow(MultiKeyUntyped groupByKey)
 	    {
 	        currentAggregatorRow = aggregatorsPerGroup.Fetch(groupByKey);
@@ -99,6 +113,11 @@ namespace net.esper.eql.agg
 	        }
 	    }
 
+        /// <summary>
+        /// Returns current aggregation state, for use by expression node representing an aggregation function.
+        /// </summary>
+        /// <param name="column">is assigned to the aggregation expression node and passed as an column (index) into a row</param>
+        /// <returns>current aggragation state</returns>
 	    public override Object GetValue(int column)
 	    {
 	        return currentAggregatorRow[column].Value;

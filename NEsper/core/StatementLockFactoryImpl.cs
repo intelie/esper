@@ -14,6 +14,12 @@ namespace net.esper.core
 	/// <summary>Provides statement-level locks.</summary>
 	public class StatementLockFactoryImpl : StatementLockFactory
 	{
+        /// <summary>
+        /// Create lock for statement
+        /// </summary>
+        /// <param name="statementName">is the statement name</param>
+        /// <param name="expressionText">is the statement expression text</param>
+        /// <returns>lock</returns>
 	    public ManagedLock GetStatementLock(String statementName, String expressionText)
 	    {
 	        return new ManagedLockImpl(statementName);

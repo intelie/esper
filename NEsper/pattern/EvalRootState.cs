@@ -20,7 +20,6 @@ namespace net.esper.pattern
 	public interface EvalRootState : PatternStopCallback
 	{
 	    /// <summary>Accept callback to indicate pattern results.</summary>
-	    /// <param name="callback">is a pattern result call</param>
 	    PatternMatchCallback Callback
 	    {
 	    	get ;

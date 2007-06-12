@@ -23,7 +23,7 @@ namespace net.esper.filter
 	{
 	    private readonly ExprNode exprNode;
 	    private readonly ExprNodeAdapter adapter;
-	    private readonly LinkedDictionary<String, EventType> taggedEventTypes;
+	    private readonly EDictionary<String, EventType> taggedEventTypes;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="propertyName">is the event property name</param>
@@ -36,7 +36,7 @@ namespace net.esper.filter
 	    public FilterSpecParamExprNode(String propertyName,
 	                             FilterOperator filterOperator,
 	                             ExprNode exprNode,
-	                             LinkedDictionary<String, EventType> taggedEventTypes)
+	                             EDictionary<String, EventType> taggedEventTypes)
 	        : base(propertyName, filterOperator)
 	    {
 	        if (filterOperator != FilterOperator.BOOLEAN_EXPRESSION)
@@ -62,11 +62,16 @@ namespace net.esper.filter
 	    /// Returns the map of tag/stream names to event types that the filter expressions map use (for patterns)
 	    /// </summary>
 	    /// <returns>IDictionary</returns>
-	    public LinkedDictionary<String, EventType> GetTaggedEventTypes()
+	    public EDictionary<String, EventType> TaggedEventTypes
 	    {
-	        return taggedEventTypes;
+            get { return taggedEventTypes; }
 	    }
 
+        /// <summary>
+        /// Return the filter parameter constant to filter for.
+        /// </summary>
+        /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters</param>
+        /// <returns>filter parameter constant's value</returns>
 	    public override Object GetFilterValue(MatchedEventMap matchedEvents)
 	    {
 	        if (taggedEventTypes != null)
@@ -83,11 +88,24 @@ namespace net.esper.filter
 	        return adapter;
 	    }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override String ToString()
 	    {
 	        return base.ToString() + "  exprNode=" + exprNode.ToString();
 	    }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <param name="obj">The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>.</param>
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
+        /// </returns>
 	    public override bool Equals(Object obj)
 	    {
 	        if (this == obj)
@@ -113,7 +131,13 @@ namespace net.esper.filter
 
 	        return true;
 	    }
-	    
+
+        /// <summary>
+        /// Serves as a hash function for a particular type.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 		public override int GetHashCode()
 		{
 			return

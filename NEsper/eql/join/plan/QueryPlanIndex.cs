@@ -19,24 +19,24 @@ namespace net.esper.eql.join.plan
 			get { return indexProps; }
 		}
 
-	    /**
-	     * Returns property names of all indexes.
-	     * @return property names array
-	     */
+	    /// <summary>Returns property names of all indexes.</summary>
+	    /// <returns>property names array</returns>
 	    virtual public Type[][] CoercionTypesPerIndex
 	    {
 	        get { return optCoercionTypes; }
 	    }
-		
+
 		private String[][] indexProps;
 		private Type[][] optCoercionTypes;
 
-	    /**
-	     * Ctor.
-	     * @param indexProps - array of property names with the first dimension suplying the number of
-	     * distinct indexes. The second dimension can be empty and indicates a full table scan.
-	     * @param optCoercionTypes - array of coercion types for each index, or null entry for no coercion required
-	     */
+	    /// <summary>Ctor.</summary>
+	    /// <param name="indexProps">
+	    /// array of property names with the first dimension suplying the number of
+	    /// distinct indexes. The second dimension can be empty and indicates a full table scan.
+	    /// </param>
+	    /// <param name="optCoercionTypes">
+	    /// array of coercion types for each index, or null entry for no coercion required
+	    /// </param>
 	    public QueryPlanIndex(String[][] indexProps, Type[][] optCoercionTypes)
 	    {
 	        if ((indexProps == null) || (indexProps.Length == 0) || (optCoercionTypes == null))
@@ -52,7 +52,7 @@ namespace net.esper.eql.join.plan
 		/// </param>
 		/// <returns> -1 if not found, or offset within indexes if found
 		/// </returns>
-		
+
 		public virtual int GetIndexNum( String[] indexFields )
 		{
 			for ( int i = 0 ; i < indexProps.Length ; i++ )
@@ -65,12 +65,12 @@ namespace net.esper.eql.join.plan
 			return -1;
 		}
 
-	    /**
-	     * Add an index specification element.
-	     * @param indexProperties - list of property names to index
-	     * @param coercionTypes - list of coercion types if required, or null if no coercion required
-	     * @return number indicating position of index that was added
-	     */
+	    /// <summary>Add an index specification element.</summary>
+	    /// <param name="indexProperties">list of property names to index</param>
+	    /// <param name="coercionTypes">
+	    /// list of coercion types if required, or null if no coercion required
+	    /// </param>
+	    /// <returns>number indicating position of index that was added</returns>
 	    public int AddIndex(String[] indexProperties, Type[] coercionTypes)
 	    {
 	        int numElements = indexProps.Length;
@@ -87,11 +87,9 @@ namespace net.esper.eql.join.plan
 	        return numElements;
 	    }
 
-	    /**
-	     * Returns a list of coercion types for a given index.
-	     * @param indexProperties is the index field names
-	     * @return coercion types, or null if no coercion is required
-	     */
+	    /// <summary>Returns a list of coercion types for a given index.</summary>
+	    /// <param name="indexProperties">is the index field names</param>
+	    /// <returns>coercion types, or null if no coercion is required</returns>
 	    public Type[] GetCoercionTypes(String[] indexProperties)
 	    {
 	        for (int i = 0; i < indexProps.Length; i++)
@@ -104,11 +102,9 @@ namespace net.esper.eql.join.plan
 	        throw new ArgumentException("Index properties not found");
 	    }
 
-	    /**
-	     * Sets the coercion types for a given index.
-	     * @param indexProperties is the index property names
-	     * @param coercionTypes is the coercion types
-	     */
+	    /// <summary>Sets the coercion types for a given index.</summary>
+	    /// <param name="indexProperties">is the index property names</param>
+	    /// <param name="coercionTypes">is the coercion types</param>
 	    public void SetCoercionTypes(String[] indexProperties, Type[] coercionTypes)
 	    {
 	        bool found = false;
@@ -125,7 +121,7 @@ namespace net.esper.eql.join.plan
 	            throw new ArgumentException("Index properties not found");
 	        }
 	    }
-	
+
         /// <summary>
         /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
         /// </summary>

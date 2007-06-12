@@ -25,7 +25,7 @@ namespace net.esper.client
 		EPStatement CreatePattern(String onExpression);
 
 		/// <summary> Create and starts an EQL statement.
-		/// <p>The engine assigns a unique name to the statement.  The returned statement is in started state.</p>
+		/// <para>The engine assigns a unique name to the statement.  The returned statement is in started state.</para>
 		/// </summary>
 		/// <param name="eqlStatement">is the query language statement
 		/// </param>
@@ -36,9 +36,10 @@ namespace net.esper.client
 
 		/// <summary>
 		/// Create and starts an event pattern statement for the expressing string passed and assign the name passed.
-		/// &lt;p&gt;
+		/// <para>
 		/// The statement name is optimally a unique name. If a statement of the same name
 		/// has already been created, the engine assigns a postfix to create a unique statement name.
+        /// </para>
 		/// </summary>
 		/// <param name="onExpression">
 		/// must follow the documented syntax for pattern statements
@@ -52,9 +53,10 @@ namespace net.esper.client
 
 		/// <summary>
 		/// Create and starts an EQL statement.
-		/// &lt;p&gt;
+        /// <para>
 		/// The statement name is optimally a unique name. If a statement of the same name
 		/// has already been created, the engine assigns a postfix to create a unique statement name.
+		/// </para>
 		/// </summary>
 		/// <param name="eqlStatement">is the query language statement</param>
 		/// <param name="statementName">
@@ -76,8 +78,9 @@ namespace net.esper.client
 
 		/// <summary>
 		/// Returns the statement names of all started and stopped statements.
-		/// &lt;p&gt;
+        /// <para>
 		/// This excludes the name of destroyed statements.
+		/// </para>
 		/// </summary>
 		/// <returns>statement names</returns>
 		IList<String> StatementNames { get ; }

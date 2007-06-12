@@ -80,7 +80,7 @@ namespace net.esper.eql.db
             {
                 result = Execute(resources.Second, lookupValues);
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 connectionCache.DoneWith(resources);
                 throw;

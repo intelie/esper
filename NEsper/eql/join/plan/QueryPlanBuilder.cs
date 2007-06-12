@@ -18,8 +18,10 @@ namespace net.esper.eql.join.plan
     
     public class QueryPlanBuilder
     {
-        /// <summary>Build query plan using the filter.</summary>
-        /// <param name="numStreams">number of streams</param>
+        /// <summary>
+        /// Build query plan using the filter.
+        /// </summary>
+        /// <param name="typesPerStream">The types per stream.</param>
         /// <param name="outerJoinDescList">list of outer join criteria, or null if there are no outer joins</param>
         /// <param name="optionalFilterNode">filter tree</param>
         /// <param name="streamNames">names of streams</param>

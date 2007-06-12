@@ -15,9 +15,9 @@ using net.esper.events;
 
 namespace net.esper.view.window
 {
-	/**
-	 * Provides relative access to insert stream events for certain window.
-	 */
+	/// <summary>
+	/// Provides relative access to insert stream events for certain window.
+	/// </summary>
 	public class IStreamRelativeAccess
 		: RelativeAccessByEventNIndex
 		, ViewUpdatedCollection
@@ -26,16 +26,19 @@ namespace net.esper.view.window
 	    private EventBean[] lastNewData;
 	    private readonly IStreamRelativeAccessUpdateObserver updateObserver;
 
-	    /**
-	     * Ctor.
-	     * @param updateObserver is invoked when updates are received
-	     */
+	    /// <summary>Ctor.</summary>
+	    /// <param name="updateObserver">is invoked when updates are received</param>
 	    public IStreamRelativeAccess(IStreamRelativeAccessUpdateObserver updateObserver)
 	    {
 	        this.updateObserver = updateObserver;
 	        indexPerEvent = new EHashDictionary<EventBean, int>();
 	    }
 
+        /// <summary>
+        /// Accepts view insert and remove stream.
+        /// </summary>
+        /// <param name="newData">is the insert stream events or null if no data</param>
+        /// <param name="oldData">is the remove stream events or null if no data</param>
 	    public void Update(EventBean[] newData, EventBean[] oldData)
 	    {
 	        updateObserver.Updated(this, newData);
@@ -51,6 +54,12 @@ namespace net.esper.view.window
 	        }
 	    }
 
+        /// <summary>
+        /// Gets the relative to event.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
+        /// <param name="prevIndex">Index of the prev.</param>
+        /// <returns></returns>
 	    public EventBean GetRelativeToEvent(EventBean _event, int prevIndex)
 	    {
 	        if (lastNewData == null)
@@ -82,16 +91,14 @@ namespace net.esper.view.window
 	        return null;
 	    }
 
-	    /**
-	     * For indicating that the collection has been updated.
-	     */
+	    /// <summary>For indicating that the collection has been updated.</summary>
 	    public interface IStreamRelativeAccessUpdateObserver
 	    {
-	        /**
-	         * Callback to indicate an update.
-	         * @param iStreamRelativeAccess is the collection
-	         * @param newData is the new data available
-	         */
+            /// <summary>
+            /// Callback to indicate an update.
+            /// </summary>
+            /// <param name="iStreamRelativeAccess">is the collection</param>
+            /// <param name="newData">is the new data available</param>
 	        void Updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData);
 	    }
 	}

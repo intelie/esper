@@ -15,7 +15,7 @@ namespace net.esper.eql.core
     /// Processor for select-clause expressions that handles a list of selection items
     /// represented by expression nodes. Computes results based on matching events.
 	/// </summary>
-    
+
     public class SelectExprEvalProcessor : SelectExprProcessor
     {
         private ExprNode[] expressionNodes;
@@ -26,19 +26,25 @@ namespace net.esper.eql.core
 		private bool singleStreamWrapper;
 		private SelectExprJoinWildcardProcessor joinWildcardProcessor;
 
-	    /**
-	     * Ctor.
-	     * @param selectionList - list of select-clause items
-	     * @param insertIntoDesc - descriptor for insert-into clause contains column names overriding select clause names
-	     * @param isUsingWildcard - true if the wildcard (*) appears in the select clause
-	     * @param typeService -service for information about streams
-	     * @param eventAdapterService - service for generating events and handling event types
-	     * @throws net.esper.eql.expression.ExprValidationException thrown if any of the expressions don't validate
-	     */
+	    /// <summary>Ctor.</summary>
+	    /// <param name="selectionList">list of select-clause items</param>
+	    /// <param name="insertIntoDesc">
+	    /// descriptor for insert-into clause contains column names overriding select clause names
+	    /// </param>
+	    /// <param name="isUsingWildcard">
+	    /// true if the wildcard (*) appears in the select clause
+	    /// </param>
+	    /// <param name="typeService">service for information about streams</param>
+	    /// <param name="eventAdapterService">
+	    /// service for generating events and handling event types
+	    /// </param>
+	    /// <throws>
+	    /// net.esper.eql.expression.ExprValidationException thrown if any of the expressions don't validate
+	    /// </throws>
 	    public SelectExprEvalProcessor(IList<SelectExprElementCompiledSpec> selectionList,
 	                                   InsertIntoDesc insertIntoDesc,
-	                                   bool isUsingWildcard, 
-	                                   StreamTypeService typeService, 
+	                                   bool isUsingWildcard,
+	                                   StreamTypeService typeService,
 	                                   EventAdapterService eventAdapterService)
 	    {
 	        this.eventAdapterService = eventAdapterService;
@@ -62,13 +68,13 @@ namespace net.esper.eql.core
 	        {
 	            VerifyInsertInto(insertIntoDesc, selectionList);
 	        }
-	        
+
 	        // Build a subordinate wildcard processor for joins
 	        if(typeService.StreamNames.Length > 1 && isUsingWildcard)
 	        {
 	        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(typeService.StreamNames, typeService.EventTypes, eventAdapterService, null);
 	        }
-	        
+
 	        // Resolve underlying event type in the case of wildcard select
 	        EventType underlyingType = null;
 	        if(isUsingWildcard)
@@ -88,14 +94,14 @@ namespace net.esper.eql.core
 	        	log.Debug(".ctor underlyingType==" + underlyingType);
 	        }
 	        log.Debug(".ctor singleStreamWrapper=" + singleStreamWrapper);
-	        
+
 	        // This function may modify
 	        Init(selectionList, insertIntoDesc, underlyingType, eventAdapterService);
 	    }
 
 	    private void Init(IList<SelectExprElementCompiledSpec> selectionList,
 	                      InsertIntoDesc insertIntoDesc,
-	                      EventType eventType, 
+	                      EventType eventType,
 	                      EventAdapterService eventAdapterService)
         {
             // Get expression nodes
@@ -182,7 +188,7 @@ namespace net.esper.eql.core
 
 	        if(isUsingWildcard)
 	        {
-	        	// In case of a wildcard and single stream that is itself a 
+	        	// In case of a wildcard and single stream that is itself a
 	        	// wrapper bean, we also need to add the map properties
 	        	if(singleStreamWrapper)
 	        	{
@@ -248,8 +254,8 @@ namespace net.esper.eql.core
 	    	{
 	    		return eventsPerStream[0];
 	    	}
-	    }		
-		
+	    }
+
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

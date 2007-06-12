@@ -17,6 +17,7 @@ namespace net.esper.pattern
         /// <param name="parentNode">is the parent evaluator node that this node indicates a change in truth value to</param>
         /// <param name="beginState">is the container for events that makes up the Start state</param>
         /// <param name="context">is the handle to services required for evaluation</param>
+        /// <param name="stateNodeId">is the new state object's identifier</param>
         /// <returns>
         /// state node containing the truth value state for the operator
         /// </returns>

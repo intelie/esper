@@ -14,6 +14,14 @@ namespace net.esper.pattern
     /// </summary>
 	public sealed class EvalFilterNode : EvalNode
 	{
+        /// <summary>
+        /// Returns the raw (unoptimized/validated) filter definition.
+        /// </summary>
+        public FilterSpecRaw RawFilterSpec
+        {
+            get { return rawFilterSpec; }
+        }
+
 		/// <summary> Returns filter specification.</summary>
 		/// <returns> filter definition
 		/// </returns>

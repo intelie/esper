@@ -12,8 +12,9 @@ namespace net.esper.core
 {
 	/// <summary>
 	/// Interface for statement-level dispatch.
-	/// <p>
+	/// <para>
 	/// Relevant when a statements callbacks have completed and the join processing must take place.
+	/// </para>
 	/// </summary>
 	public interface EPStatementDispatch
 	{

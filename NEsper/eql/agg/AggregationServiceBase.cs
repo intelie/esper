@@ -39,10 +39,31 @@ namespace net.esper.eql.agg
 	            throw new ArgumentException("Expected the same number of evaluates as computer prototypes");
 	        }
 	    }
-		
+
+        /// <summary>
+        /// Apply events as entering a window (new events).
+        /// </summary>
+        /// <param name="eventsPerStream">events for each stream entering window</param>
+        /// <param name="optionalGroupKeyPerRow">can be null if grouping without keys is desired, else the keys
+        /// to use for grouping, each distinct key value results in a new row of aggregation state.</param>
 		public abstract void ApplyEnter(net.esper.events.EventBean[] eventsPerStream, net.esper.collection.MultiKeyUntyped optionalGroupKeyPerRow);
+        /// <summary>
+        /// Apply events as leaving a window (old events).
+        /// </summary>
+        /// <param name="eventsPerStream">events for each stream entering window</param>
+        /// <param name="optionalGroupKeyPerRow">can be null if grouping without keys is desired, else the keys
+        /// to use for grouping, each distinct key value results in a new row of aggregation state.</param>
 		public abstract void ApplyLeave(net.esper.events.EventBean[] eventsPerStream, net.esper.collection.MultiKeyUntyped optionalGroupKeyPerRow);
+        /// <summary>
+        /// Set the current aggregation state row - for use when evaluation nodes are asked to evaluate.
+        /// </summary>
+        /// <param name="groupKey">key identify the row of aggregation states</param>
 		public abstract void SetCurrentRow(net.esper.collection.MultiKeyUntyped groupKey);
+        /// <summary>
+        /// Returns current aggregation state, for use by expression node representing an aggregation function.
+        /// </summary>
+        /// <param name="column">is assigned to the aggregation expression node and passed as an column (index) into a row</param>
+        /// <returns>current aggragation state</returns>
 		public abstract object GetValue(int column);
 	}
 } // End of namespace

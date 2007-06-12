@@ -83,6 +83,9 @@ namespace net.esper.filter
 	            index = new FilterParamIndexBooleanExpr(eventType);
 	            return index;
 	        }
+
+            throw new ArgumentException("Cannot create filter index instance for filter operator " + filterOperator);
+
 		}
 	}
 }

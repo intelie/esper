@@ -24,6 +24,11 @@ namespace net.esper.filter
             this.doubleValue = doubleValue;
         }
 
+        /// <summary>
+        /// Returns the filter value representing the endpoint.
+        /// </summary>
+        /// <param name="matchedEvents">is the prior results</param>
+        /// <returns>filter value</returns>
 	    public double? GetFilterValue(MatchedEventMap matchedEvents)
 	    {
 	        return doubleValue;

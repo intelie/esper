@@ -73,7 +73,7 @@ namespace net.esper.eql.parse
 	        {
 	            if(mte.token.getText() == null)
 	            {
-	                throw EPStatementSyntaxException.ConvertEndOfInput(mte, EQLStatementParser._tokenNames[mte.expecting], expression);
+	                throw EPStatementSyntaxException.ConvertEndOfInput(mte, EQLStatementParser.tokenNames_[mte.expecting], expression);
 	            }
 	            else
 	            {

@@ -25,41 +25,45 @@ namespace net.esper.filter
 	    private readonly EventType eventType;
 	    private readonly List<FilterSpecParam> parameters;
 
-	    /// <summary>
-	    /// Constructor - validates parameter list against event type, throws exception if invalid
-	    /// property names or mismatcing filter operators are found.
-	    /// </summary>
-	    /// <param name="eventType">is the event type</param>
-	    /// <param name="parameters">is a list of filter parameters</param>
-	    /// <throws>ArgumentException if validation invalid</throws>
+        /// <summary>
+        /// Constructor - validates parameter list against event type, throws exception if invalid
+        /// property names or mismatcing filter operators are found.
+        /// </summary>
+        /// <param name="eventType">is the event type</param>
+        /// <param name="parameters">is a list of filter parameters</param>
+        /// <throws>ArgumentException if validation invalid</throws>
 	    public FilterSpecCompiled(EventType eventType, List<FilterSpecParam> parameters)
 	    {
 	        this.eventType = eventType;
 	        this.parameters = parameters;
 	    }
 
-	    /// <summary>Returns type of event to filter for.</summary>
-	    /// <returns>event type</returns>
+        /// <summary>
+        /// Returns type of event to filter for.
+        /// </summary>
+        /// <value>The type of the event.</value>
+        /// <returns>event type</returns>
 	    public EventType EventType
 	    {
             get { return eventType; }
 	    }
 
-	    /// <summary>Returns list of filter parameters.</summary>
-	    /// <returns>list of filter params</returns>
+        /// <summary>
+        /// Returns list of filter parameters.
+        /// </summary>
+        /// <value>The parameters.</value>
+        /// <returns>list of filter params</returns>
 	    public List<FilterSpecParam> Parameters
 	    {
             get { return parameters; }
 	    }
 
-	    /// <summary>
-	    /// Returns the values for the filter, using the supplied result events to ask filter parameters
-	    /// for the value to filter for.
-	    /// </summary>
-	    /// <param name="matchedEvents">
-	    /// contains the result events to use for determining filter values
-	    /// </param>
-	    /// <returns>filter values</returns>
+        /// <summary>
+        /// Returns the values for the filter, using the supplied result events to ask filter parameters
+        /// for the value to filter for.
+        /// </summary>
+        /// <param name="matchedEvents">contains the result events to use for determining filter values</param>
+        /// <returns>filter values</returns>
 	    public FilterValueSet GetValueSet(MatchedEventMap matchedEvents)
 	    {
 	        List<FilterValueSetParam> valueList = new List<FilterValueSetParam>();
@@ -76,6 +80,12 @@ namespace net.esper.filter
 	        return new FilterValueSetImpl(eventType, valueList);
 	    }
 
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override String ToString()
 	    {
 	        StringBuilder buffer = new StringBuilder();
@@ -84,6 +94,13 @@ namespace net.esper.filter
 	        return buffer.ToString();
 	    }
 
+        /// <summary>
+        /// Determines whether the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <param name="obj">The <see cref="T:System.Object"></see> to compare with the current <see cref="T:System.Object"></see>.</param>
+        /// <returns>
+        /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
+        /// </returns>
 	    public override bool Equals(Object obj)
 	    {
 	        if (this == obj)
@@ -124,6 +141,12 @@ namespace net.esper.filter
 	        return true;
 	    }
 
+        /// <summary>
+        /// Serves as a hash function for a particular type. <see cref="M:System.Object.GetHashCode"></see> is suitable for use in hashing algorithms and data structures like a hash table.
+        /// </summary>
+        /// <returns>
+        /// A hash code for the current <see cref="T:System.Object"></see>.
+        /// </returns>
 	    public override int GetHashCode()
 	    {
 	        int hashCode = eventType.GetHashCode();

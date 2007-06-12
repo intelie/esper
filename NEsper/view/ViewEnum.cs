@@ -12,89 +12,83 @@ namespace net.esper.view
 
     public class ViewEnum
     {
-        /// <summary> Length window.</summary>
-        public static readonly ViewEnum LENGTH_WINDOW = new ViewEnum("win", "length", typeof(LengthWindowViewFactory), true, null);
+        /// <summary>Length batch window.</summary>
+        public static readonly ViewEnum LENGTH_BATCH = new ViewEnum("win", "length_batch", typeof(LengthBatchViewFactory), null);
 
-		/// <summary>Length batch window.</summary>
-		public static readonly ViewEnum LENGTH_BATCH = new ViewEnum("win", "length_batch", typeof(LengthBatchViewFactory), null);
+        /// <summary>Time window.</summary>
+        public static readonly ViewEnum TIME_WINDOW = new ViewEnum("win", "time", typeof(TimeWindowViewFactory), null);
 
-        /// <summary> Time window.</summary>
-        public static readonly ViewEnum TIME_WINDOW = new ViewEnum("win", "time", typeof(TimeWindowViewFactory), true, null);
+        /// <summary>Time batch.</summary>
+        public static readonly ViewEnum TIME_BATCH = new ViewEnum("win", "time_batch", typeof(TimeBatchViewFactory), null);
 
-        /// <summary> Time batch.</summary>
-        public static readonly ViewEnum TIME_BATCH = new ViewEnum("win", "time_batch", typeof(TimeBatchViewFactory), true, null);
+        /// <summary>Externally timed window.</summary>
+        public static readonly ViewEnum EXT_TIMED_WINDOW = new ViewEnum("win", "ext_timed", typeof(ExternallyTimedWindowViewFactory), null);
 
-        /// <summary> Externally timed window.</summary>
-        public static readonly ViewEnum EXT_TIMED_WINDOW = new ViewEnum("win", "ext_timed", typeof(ExternallyTimedWindowViewFactory), true, null);
+        /// <summary>Size view.</summary>
+        public static readonly ViewEnum SIZE = new ViewEnum("std", "size", typeof(SizeViewFactory), null);
 
-        /// <summary> Size view.</summary>
-        public static readonly ViewEnum SIZE = new ViewEnum("std", "size", typeof(SizeViewFactory), false, null);
+        /// <summary>Last event.</summary>
+        public static readonly ViewEnum LAST_EVENT = new ViewEnum("std", "lastevent", typeof(LastElementViewFactory), null);
 
-        /// <summary> Last event.</summary>
-        public static readonly ViewEnum LAST_EVENT = new ViewEnum("std", "lastevent", typeof(LastElementViewFactory), false, null);
+        /// <summary>Unique.</summary>
+        public static readonly ViewEnum UNIQUE_BY_PROPERTY = new ViewEnum("std", "unique", typeof(UniqueByPropertyViewFactory), null);
 
-        /// <summary> Unique.</summary>
-        public static readonly ViewEnum UNIQUE_BY_PROPERTY = new ViewEnum("std", "unique", typeof(UniqueByPropertyViewFactory), true, null);
+        /// <summary>Group-by merge.</summary>
+        public static readonly ViewEnum GROUP_MERGE = new ViewEnum("std", "merge", typeof(MergeViewFactory), null);
 
-        /// <summary> Group-by "merge".</summary>
-        public static readonly ViewEnum GROUP_MERGE = new ViewEnum("std", "merge", typeof(MergeViewFactory), true, null);
+        /// <summary>Group-by.</summary>
+        public static readonly ViewEnum GROUP_PROPERTY = new ViewEnum("std", "groupby", typeof(GroupByViewFactory), GROUP_MERGE);
 
-        /// <summary> Group-by.</summary>
-        public static readonly ViewEnum GROUP_PROPERTY = new ViewEnum("std", "groupby", typeof(GroupByViewFactory), true, GROUP_MERGE);
+        /// <summary>Univariate statistics.</summary>
+        public static readonly ViewEnum UNIVARIATE_STATISTICS = new ViewEnum("stat", "uni", typeof(UnivariateStatisticsViewFactory), null);
 
-        /// <summary> Univariate statistics.</summary>
-        public static readonly ViewEnum UNIVARIATE_STATISTICS = new ViewEnum("stat", "uni", typeof(UnivariateStatisticsViewFactory), true, null);
+        /// <summary>Weighted avg.</summary>
+        public static readonly ViewEnum WEIGHTED_AVERAGE = new ViewEnum("stat", "weighted_avg", typeof(WeightedAverageViewFactory), null);
 
-        /// <summary> Weighted avg.</summary>
-        public static readonly ViewEnum WEIGHTED_AVERAGE = new ViewEnum("stat", "weighted_avg", typeof(WeightedAverageViewFactory), true, null);
+        /// <summary>Correlation.</summary>
+        public static readonly ViewEnum CORRELATION = new ViewEnum("stat", "correl", typeof(CorrelationViewFactory), null);
 
-        /// <summary> Correlation.</summary>
-        public static readonly ViewEnum CORRELATION = new ViewEnum("stat", "correl", typeof(CorrelationViewFactory), true, null);
+        /// <summary>Linest.</summary>
+        public static readonly ViewEnum REGRESSION_LINEST = new ViewEnum("stat", "linest", typeof(RegressionLinestViewFactory), null);
 
-        /// <summary> Linest.</summary>
-        public static readonly ViewEnum REGRESSION_LINEST = new ViewEnum("stat", "linest", typeof(RegressionLinestViewFactory), true, null);
+        /// <summary>Cubes.</summary>
+        public static readonly ViewEnum MULTIDIM_VIEW = new ViewEnum("stat", "cube", typeof(MultiDimStatsViewFactory), null);
 
-        /// <summary> Cubes.</summary>
-        public static readonly ViewEnum MULTIDIM_VIEW = new ViewEnum("stat", "cube", typeof(MultiDimStatsViewFactory), true, null);
-
-        /// <summary> Sorted window.</summary>
-        public static readonly ViewEnum SORT_WINDOW = new ViewEnum("ext", "sort", typeof(SortWindowViewFactory), true, null);
+        /// <summary>Sorted window.</summary>
+        public static readonly ViewEnum SORT_WINDOW = new ViewEnum("ext", "sort", typeof(SortWindowViewFactory), null);
 
         /// <summary>
         /// All of the "values" in the pseudo-enum ViewEnum.
         /// </summary>
-
         public static readonly ViewEnum[] Values = new ViewEnum[]
-        {
-            LENGTH_WINDOW,
-            TIME_WINDOW,
-            TIME_BATCH,
-            EXT_TIMED_WINDOW,
-            SIZE,
-            LAST_EVENT,
-            UNIQUE_BY_PROPERTY,
-            GROUP_MERGE,
-            GROUP_PROPERTY,
-            UNIVARIATE_STATISTICS,
-            WEIGHTED_AVERAGE,
-            CORRELATION,
-            REGRESSION_LINEST,
-            MULTIDIM_VIEW,
-            SORT_WINDOW,
-        };
+            {
+                LENGTH_BATCH,
+                TIME_WINDOW,
+                TIME_BATCH,
+                EXT_TIMED_WINDOW,
+                SIZE,
+                LAST_EVENT,
+                UNIQUE_BY_PROPERTY,
+                GROUP_MERGE,
+                GROUP_PROPERTY,
+                UNIVARIATE_STATISTICS,
+                WEIGHTED_AVERAGE,
+                CORRELATION,
+                REGRESSION_LINEST,
+                MULTIDIM_VIEW,
+                SORT_WINDOW,
+            };
 
         private readonly String nspace;
         private readonly String name;
         private readonly Type factoryType;
-        private readonly Boolean isRequiresParameters;
         private readonly ViewEnum mergeView;
 
-        ViewEnum(String nspace, String name, Type factoryType, Boolean isRequiresParameters, ViewEnum mergeView)
+        ViewEnum(String nspace, String name, Type factoryType, ViewEnum mergeView)
         {
             this.nspace = nspace;
             this.name = name;
             this.factoryType = factoryType;
-            this.isRequiresParameters = isRequiresParameters;
             this.mergeView = mergeView;
         }
 

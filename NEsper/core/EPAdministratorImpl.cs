@@ -242,8 +242,9 @@ namespace net.esper.core
 
         /// <summary>
         /// Returns the statement names of all started and stopped statements.
-        /// &lt;p&gt;
+        /// <para>
         /// This excludes the name of destroyed statements.
+        /// </para>
         /// </summary>
         /// <value></value>
         /// <returns>statement names</returns>

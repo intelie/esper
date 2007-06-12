@@ -54,7 +54,7 @@ namespace net.esper.filter
     /// <summary>
     /// Contains static methods useful for help with FilterOperators.
     /// </summary>
-    
+
     public class FilterOperatorHelper
     {
         private const String EQUAL_OP = "=";
@@ -78,11 +78,11 @@ namespace net.esper.filter
             }
             return false;
         }
-		
-	    /**
-	     * Returns true for inverted range operators, false if not an inverted range operator.
-	     * @return true for inverted ranges, false for anyting else
-	     */
+
+	    /// <summary>
+	    /// Returns true for inverted range operators, false if not an inverted range operator.
+	    /// </summary>
+	    /// <returns>true for inverted ranges, false for anyting else</returns>
 	    public static bool IsInvertedRangeOperator( FilterOperator op )
 	    {
 	        if ((op == FilterOperator.NOT_RANGE_CLOSED) ||
@@ -142,12 +142,14 @@ namespace net.esper.filter
             }
         }
 
-        /// <summary> Parse the range operator from booleans describing whether the Start or end values are exclusive.</summary>
-        /// <param name="isInclusiveFirst">true if low endpoint is inclusive, false if not
-        /// </param>
-        /// <param name="isInclusiveLast">true if high endpoint is inclusive, false if not
-        /// </param>
-        /// <returns> FilterOperator for the combination inclusive or exclusive
+        /// <summary>
+        /// Parse the range operator from booleans describing whether the Start or end values are exclusive.
+        /// </summary>
+        /// <param name="isInclusiveFirst">true if low endpoint is inclusive, false if not</param>
+        /// <param name="isInclusiveLast">true if high endpoint is inclusive, false if not</param>
+        /// <param name="isNot">if set to <c>true</c> [is not].</param>
+        /// <returns>
+        /// FilterOperator for the combination inclusive or exclusive
         /// </returns>
         public static FilterOperator ParseRangeOperator(bool isInclusiveFirst, bool isInclusiveLast, bool isNot)
         {

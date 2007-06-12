@@ -17,26 +17,49 @@ namespace net.esper.eql.agg
     {
         private long numDataPoints;
 
+        /// <summary>
+        /// Enters the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
         public void Enter(Object item)
         {
             numDataPoints++;
         }
 
+        /// <summary>
+        /// Leaves the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
         public void Leave(Object item)
         {
             numDataPoints--;
         }
 
+        /// <summary>
+        /// Returns the current value held.
+        /// </summary>
+        /// <value></value>
+        /// <returns>current value</returns>
         public Object Value
         {
             get { return numDataPoints; }
         }
 
+        /// <summary>
+        /// Returns the type of the current value.
+        /// </summary>
+        /// <value></value>
+        /// <returns>type of values held</returns>
         public Type ValueType
         {
             get { return typeof(long?); }
         }
 
+        /// <summary>
+        /// Make a new, initalized aggregation state.
+        /// </summary>
+        /// <param name="methodResolutionService">for use in creating new aggregation method instances as a factory</param>
+        /// <returns>initialized copy of the aggregator</returns>
         public AggregationMethod NewAggregator(MethodResolutionService methodResolutionService)
         {
             return methodResolutionService.MakeCountAggregator(false);

@@ -70,43 +70,38 @@ namespace net.esper.events
 		
 		public BeanEventType CreateOrGetBeanType(Type type)
 		{
-			if (type == null)
-			{
-				throw new ArgumentException("Null value passed as class");
-			}
-			
-			// Check if its already there
-			typesPerBeanLock.AcquireReaderLock( LockConstants.ReaderTimeout ) ;
-			
-			try
-			{
-				BeanEventType eventType = typesPerBean.Fetch(type, null);
-				if (eventType != null)
-				{
-					return eventType;
-				}
-			}
-			finally
-			{
-				typesPerBeanLock.ReleaseReaderLock() ;
-			}
-			
-			// Check if we have a legacy type definition for this class
-			using( WriterLock writerLock = new WriterLock( typesPerBeanLock ) )
-			{
-	            BeanEventType eventType = typesPerBean.Fetch(type);
-	            if (eventType != null)
-	            {
-	                return eventType;
-	            }
+		    if (type == null)
+		    {
+		        throw new ArgumentException("Null value passed as type");
+		    }
 
-	            // Check if we have a legacy type definition for this class
-	            ConfigurationEventTypeLegacy legacyDef = typeToLegacyConfigs.Fetch(type.FullName);
+		    // Check if its already there
+		    typesPerBeanLock.AcquireReaderLock(LockConstants.ReaderTimeout);
+		    BeanEventType eventType = typesPerBean.Fetch(type);
+		    typesPerBeanLock.ReleaseReaderLock();
+		    if (eventType != null)
+		    {
+		        return eventType;
+		    }
 
-	            String eventTypeId = "TYPE_" + type.FullName;
-	            eventType = new BeanEventType(type, this, legacyDef, eventTypeId);
-			    typesPerBean[type] = eventType;
-	        }
+		    // not created yet, thread-safe create
+		    using(new WriterLock(typesPerBeanLock))
+		    {
+		        eventType = typesPerBean.Fetch(type);
+		        if (eventType != null)
+		        {
+		            return eventType;
+		        }
+
+		        // Check if we have a legacy type definition for this class
+		        ConfigurationEventTypeLegacy legacyDef = typeToLegacyConfigs.Fetch(type.FullName);
+
+		        string eventTypeId = "TYPE_" + type.FullName;
+		        eventType = new BeanEventType(type, this, legacyDef, eventTypeId);
+		        typesPerBean[type] = eventType;
+		    }
+
+		    return eventType;
 		}
 	}
 }

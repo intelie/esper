@@ -44,7 +44,7 @@ namespace net.esper.eql.parse
                 case EqlEvalTokenTypes.BOOL_TYPE:
                 case EqlEvalTokenTypes.FLOAT_TYPE:
                 case EqlEvalTokenTypes.DOUBLE_TYPE:
-                case EqlEvalTokenTypes.STRING_TYPE: return ASTConstantHelper.parse(node);
+                case EqlEvalTokenTypes.STRING_TYPE: return ASTConstantHelper.Parse(node);
 
                 case EqlEvalTokenTypes.NUMERIC_PARAM_FREQUENCY: return makeFrequency(node);
 

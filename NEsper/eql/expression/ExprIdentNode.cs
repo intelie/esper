@@ -84,7 +84,8 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
+        /// <param name="viewResourceDelegate">The view resource delegate.</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
@@ -115,6 +116,15 @@ namespace net.esper.eql.expression
             }
         }
 
+        /// <summary>
+        /// Returns true if the expression node's evaluation value doesn't depend on any events data,
+        /// as must be determined at validation time, which is bottom-up and therefore
+        /// reliably allows each node to determine constant value.
+        /// </summary>
+        /// <value></value>
+        /// <returns>
+        /// true for constant evaluation value, false for non-constant evaluation value
+        /// </returns>
 		public override bool IsConstantResult
 	    {
 	        get { return false; }
@@ -168,7 +178,13 @@ namespace net.esper.eql.expression
             }
         }
 
-        /// <summary>Determine stream id and property type given an unresolved property name anda stream name that may also be part of the property name.&lt;p&gt;For example: select s0.p1 from...    p1 is the property name, s0 the stream name, however this could also be a nested property</summary>
+        /// <summary>
+        /// Determine stream id and property type given an unresolved property name and a
+        /// stream name that may also be part of the property name.
+        /// <para>
+        /// For example: select s0.p1 from...    p1 is the property name, s0 the stream name, however this could also be a nested property
+        /// </para>
+        /// </summary>
         /// <param name="streamTypeService">service for type infos</param>
         /// <param name="unresolvedPropertyName">property name</param>
         /// <param name="streamOrPropertyName">stream name, this can also be the first part of the property name</param>

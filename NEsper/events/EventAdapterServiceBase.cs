@@ -57,13 +57,23 @@ namespace net.esper.events
             beanEventAdapter = new BeanEventAdapter();
         }
 
-        /// <summary>Gets or sets the legacy class type information.</summary>
+        /// <summary>
+        /// Gets or sets the legacy class type information.
+        /// </summary>
+        /// <value>The type legacy configs.</value>
         public EDictionary<String, ConfigurationEventTypeLegacy> TypeLegacyConfigs
         {
             get { return beanEventAdapter.TypeToLegacyConfigs; }
             set { beanEventAdapter.TypeToLegacyConfigs = value;}
         }
 
+        /// <summary>
+        /// Returns the event type id given an event type alias. The alias is expected to exist.
+        /// <para>Use getExistsTypeByAlias to check if an alias exists.</para>
+        /// </summary>
+        /// <param name="eventTypeAlias">is the event name</param>
+        /// <returns>event type id</returns>
+        /// <throws>IllegalStateException to indicate that the alias does not exist.</throws>
         public String GetIdByAlias(String eventTypeAlias)
         {
             if (eventTypeAlias == null)
@@ -83,6 +93,12 @@ namespace net.esper.events
             return id;
         }
 
+        /// <summary>
+        /// Returns the event type given an event type id. The id is expected to exist.
+        /// </summary>
+        /// <param name="eventTypeID">is the tyoe id</param>
+        /// <returns>event type</returns>
+        /// <throws>IllegalStateException to indicate that the id does not exist.</throws>
         public EventType GetTypeById(String eventTypeID)
         {
             if (eventTypeID == null)
@@ -97,6 +113,13 @@ namespace net.esper.events
             return eventType;
         }
 
+        /// <summary>
+        /// Return the event type for a given event name, or null if none is registered for that name.
+        /// </summary>
+        /// <param name="eventTypeAlias">is the event type alias name to return type for</param>
+        /// <returns>
+        /// event type for named event, or null if unknown/unnamed type
+        /// </returns>
         public EventType GetEventTypeByAlias(String eventTypeAlias)
         {
             if (eventTypeAlias == null)
@@ -106,6 +129,12 @@ namespace net.esper.events
             return aliasToTypeMap.Fetch(eventTypeAlias);
         }
 
+        /// <summary>
+        /// Returns the event type id given the event type, with the type expected to exist.
+        /// </summary>
+        /// <param name="eventType">to return the id for</param>
+        /// <returns>event type id</returns>
+        /// <throws>IllegalStateException to indicate that the type does not exist.</throws>
         public String GetIdByType(EventType eventType)
         {
             if (eventType == null)
@@ -120,6 +149,13 @@ namespace net.esper.events
             return id;
         }
 
+        /// <summary>
+        /// Returns the first event type alias for a given event type id.
+        /// </summary>
+        /// <param name="eventTypeID">is the type id</param>
+        /// <returns>
+        /// the very first alias registered for an event type
+        /// </returns>
         public String GetAliasById(String eventTypeID)
         {
             if (eventTypeID == null)
@@ -134,7 +170,9 @@ namespace net.esper.events
             return alias;
         }
 
-        /// <summary>Add an alias and class as an event type.</summary>
+        /// <summary>
+        /// Add an alias and class as an event type.
+        /// </summary>
         /// <param name="eventTypeAlias">is the alias</param>
         /// <param name="type">is the type to add</param>
         /// <returns>event type</returns>
@@ -171,8 +209,10 @@ namespace net.esper.events
             }
         }
 
-        /// <summary>Create an event bean given an event of object id.</summary>
-        /// <param name="event">is the event class</param>
+        /// <summary>
+        /// Create an event bean given an event of object id.
+        /// </summary>
+        /// <param name="_event">is the event class</param>
         /// <param name="eventId">is the event id</param>
         /// <returns>event</returns>
         public EventBean AdapterForBean(Object _event, Object eventId)
@@ -180,7 +220,9 @@ namespace net.esper.events
             return beanEventAdapter.AdapterForBean(_event, eventId);
         }
 
-        /// <summary>Add an event type for the given Java class name.</summary>
+        /// <summary>
+        /// Add an event type for the given Java class name.
+        /// </summary>
         /// <param name="eventTypeAlias">is the alias</param>
         /// <param name="fullyQualClassName">is the Java class name</param>
         /// <returns>event type</returns>
@@ -233,6 +275,17 @@ namespace net.esper.events
             }
         }
 
+        /// <summary>
+        /// Add an event type with the given alias and a given set of properties.
+        /// If the alias already exists with the same event property information, returns the
+        /// existing EventType instance.
+        /// If the alias already exists with different event property information, throws an exception.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.events.MapEventType"/>.
+        /// </summary>
+        /// <param name="eventTypeAlias">is the alias name for the event type</param>
+        /// <param name="propertyTypes">is the names and types of event properties</param>
+        /// <returns>event type is the type added</returns>
+        /// <throws>  EventAdapterException if alias already exists and doesn't match property type info </throws>
         public EventType AddMapType(String eventTypeAlias, EDictionary<String, Type> propertyTypes)
         {
             lock (this)
@@ -263,16 +316,45 @@ namespace net.esper.events
             }
         }
 
+        /// <summary>
+        /// Creates a new anonymous EventType instance for an event type that contains a map of name value pairs.
+        /// The method accepts a Map that contains the property names as keys and Class objects as the values.
+        /// The Class instances represent the property types.
+        /// <p>
+        /// New instances are created by this method on every invocation. Clients to this method need to
+        /// cache the returned EventType instance to reuse EventType's for same-typed events.
+        /// </p>
+        /// </summary>
+        /// <param name="propertyTypes">is a map of String to Class objects</param>
+        /// <returns>
+        /// EventType implementation for map field names and value types
+        /// </returns>
         public EventType CreateAnonymousMapType(EDictionary<String, Type> propertyTypes)
         {
             return new MapEventType("", propertyTypes, this);
         }
 
+        /// <summary>
+        /// Create a new anonymous event type with the given underlying event type,
+        /// as well as the additional given properties.
+        /// </summary>
+        /// <param name="underlyingEventType">is the event type for the event type that this wrapper wraps</param>
+        /// <param name="propertyTypes">is the names and types of any additional properties</param>
+        /// <returns>eventType is the type createdStatement</returns>
+        /// <throws>
+        /// EventAdapterException if alias already exists and doesn't match this type's info
+        /// </throws>
         public EventType CreateAnonymousWrapperType(EventType underlyingEventType, EDictionary<String, Type> propertyTypes)
         {
             return new WrapperEventType("", underlyingEventType, propertyTypes, this);
         }
 
+        /// <summary>
+        /// Adapters for map.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
+        /// <param name="eventTypeAlias">The event type alias.</param>
+        /// <returns></returns>
         public EventBean AdapterForMap(EDictionary<String, Object> _event, String eventTypeAlias)
         {
             EventType existingType = aliasToTypeMap.Fetch(eventTypeAlias);
@@ -284,16 +366,35 @@ namespace net.esper.events
             return CreateMapFromValues(_event, existingType);
         }
 
+        /// <summary>
+        /// Create an event wrapper bean from a set of event properties (name and value objectes) stored in a Map.
+        /// </summary>
+        /// <param name="properties">is key-value pairs for the event properties</param>
+        /// <param name="eventType">is the type metadata for any maps of that type</param>
+        /// <returns>EventBean instance</returns>
         public EventBean CreateMapFromValues(EDictionary<String, Object> properties, EventType eventType)
         {
             return new MapEventBean(properties, eventType);
         }
 
+        /// <summary>
+        /// Create an aggregate event wrapper bean from a set of named events stored in a Map.
+        /// </summary>
+        /// <param name="events">is key-value pairs where the key is the event name and the value is the event</param>
+        /// <param name="eventType">is the type metadata for any maps of that type</param>
+        /// <returns>EventBean instance</returns>
         public EventBean CreateMapFromUnderlying(EDictionary<String, EventBean> events, EventType eventType)
         {
             return new MapEventBean(eventType, events);
         }
 
+        /// <summary>
+        /// Create an event type based on the original type passed in adding one or more properties.
+        /// </summary>
+        /// <param name="originalType">event type to add property to</param>
+        /// <param name="fieldNames">names of properties</param>
+        /// <param name="fieldTypes">types of properties</param>
+        /// <returns>new event type</returns>
         public EventType CreateAddToEventType(EventType originalType, String[] fieldNames, Type[] fieldTypes)
         {
             EDictionary<String, Type> types = new EHashDictionary<String, Type>();
@@ -313,6 +414,11 @@ namespace net.esper.events
             return CreateAnonymousMapType(types);
         }
 
+        /// <summary>
+        /// Returns an adapter for the XML DOM document that exposes it's data as event properties for use in statements.
+        /// </summary>
+        /// <param name="node">is the node to wrap</param>
+        /// <returns>event wrapper for document</returns>
         public EventBean AdapterForDOM(XmlNode node)
         {
             String rootElementName = null;
@@ -337,22 +443,38 @@ namespace net.esper.events
             return new XMLEventBean(node, eventType);
         }
 
+        /// <summary>
+        /// Creates an unnamed composite event type with event properties that are name-value pairs
+        /// with values being other event types. Pattern statement generate events of such type.
+        /// </summary>
+        /// <param name="taggedEventTypes">is a map of name keys and event type values</param>
+        /// <returns>
+        /// event type representing a composite event
+        /// </returns>
         public EventType CreateAnonymousCompositeType(EDictionary<String, EventType> taggedEventTypes)
         {
             return new CompositeEventType(taggedEventTypes);
         }
 
+        /// <summary>
+        /// Creates a wrapper for a composite event type. The wrapper wraps an event that
+        /// consists of name-value pairs in which the values are other already-wrapped events.
+        /// </summary>
+        /// <param name="eventType">is the composite event type</param>
+        /// <param name="taggedEvents">is the name-event map</param>
+        /// <returns>wrapper for composite event</returns>
         public EventBean AdapterForCompositeEvent(EventType eventType, EDictionary<String, EventBean> taggedEvents)
         {
             return new CompositeEventBean(taggedEvents, eventType);
         }
 
-        /// <summary>Add a configured XML DOM event type.</summary>
+        /// <summary>
+        /// Add a configured XML DOM event type.
+        /// </summary>
         /// <param name="eventTypeAlias">is the alias name of the event type</param>
-        /// <param name="configurationEventTypeXMLDOM">
-        /// configures the event type schema and namespace and XPath
-        /// property information.
-        /// </param>
+        /// <param name="configurationEventTypeXMLDOM">configures the event type schema and namespace and XPath
+        /// property information.</param>
+        /// <returns>event type</returns>
         public EventType AddXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
         {
             lock (this)
@@ -397,6 +519,17 @@ namespace net.esper.events
             }
         }
 
+        /// <summary>
+        /// Add an event type with the given alias and the given underlying event type,
+        /// as well as the additional given properties.
+        /// </summary>
+        /// <param name="eventTypeAlias">is the alias name for the event type</param>
+        /// <param name="underlyingEventType">is the event type for the event type that this wrapper wraps</param>
+        /// <param name="propertyTypes">is the names and types of any additional properties</param>
+        /// <returns>eventType is the type added</returns>
+        /// <throws>
+        /// EventAdapterException if alias already exists and doesn't match this type's info
+        /// </throws>
         public EventType AddWrapperType(String eventTypeAlias, EventType underlyingEventType, EDictionary<String, Type> propertyTypes)
         {
             lock (this)
@@ -427,11 +560,28 @@ namespace net.esper.events
             }
         }
 
+        /// <summary>
+        /// Create a wrapper around an event and some additional properties
+        /// </summary>
+        /// <param name="_event">is the wrapped event</param>
+        /// <param name="properties">are the additional properties</param>
+        /// <param name="eventType">os the type metadata for any wrappers of this type</param>
+        /// <returns>wrapper event bean</returns>
         public EventBean CreateWrapper(EventBean _event, EDictionary<String, Object> properties, EventType eventType)
         {
             return new WrapperEventBean(_event, properties, eventType);
         }
 
+        /// <summary>
+        /// Creates a new anonymous EventType instance for an event type that contains a map of name value pairs.
+        /// The method accepts a Map that contains the property names as keys and EventType objects as the values.
+        /// The EventType instances represent the property types whose underlying class is used to set the type,
+        /// via method CreateAnonymousMapType.
+        /// </summary>
+        /// <param name="propertyTypes">is a map of String to EventType objects</param>
+        /// <returns>
+        /// EventType implementation for map field names and value types which are the underlying types to the event type passed in
+        /// </returns>
         public EventType CreateAnonymousMapTypeUnd(EDictionary<String, EventType> propertyTypes)
         {
             EDictionary<String, Type> underlyingTypes = GetUnderlyingTypes(propertyTypes);
@@ -455,11 +605,38 @@ namespace net.esper.events
 
             return classes;
         }
-    	
+
+        /// <summary>
+        /// Add an event type with the given alias and Java fully-qualified class name.
+        /// If the alias already exists with the same class name, returns the existing EventType instance.
+        /// If the alias already exists with different class name, throws an exception.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.events.BeanEventType"/>.
+        /// </summary>
+        /// <param name="eventTypeAlias">is the alias name for the event type</param>
+        /// <param name="fullyQualClassName">is the fully qualified class name</param>
+        /// <returns>event type is the type added</returns>
+        /// <throws>  EventAdapterException if alias already exists and doesn't match class names </throws>
 		abstract public EventType AddBeanType(string eventTypeAlias, string fullyQualClassName);
-    	
+
+        /// <summary>
+        /// Add an event type with the given alias and Java class.
+        /// If the alias already exists with the same Class, returns the existing EventType instance.
+        /// If the alias already exists with different Class name, throws an exception.
+        /// If the alias does not already exists, adds the alias and constructs a new <seealso cref="net.esper.events.BeanEventType"/>.
+        /// </summary>
+        /// <param name="eventTypeAlias">is the alias name for the event type</param>
+        /// <param name="type">is the type</param>
+        /// <returns>event type is the type added</returns>
+        /// <throws>  EventAdapterException if alias already exists and doesn't match class names </throws>
 		abstract public EventType AddBeanType(string eventTypeAlias, Type type);
-    	
+
+        /// <summary>
+        /// Wrap the native event returning an <seealso cref="EventBean"/>.
+        /// </summary>
+        /// <param name="ev">event to be wrapped</param>
+        /// <returns>
+        /// event bean wrapping native underlying event
+        /// </returns>
 		abstract public EventBean AdapterForBean(object ev);
     }
 } // End of namespace

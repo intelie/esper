@@ -21,16 +21,14 @@ namespace net.esper.filter
     /// The class performs all the locking required for multithreaded access.
     /// </para>
     /// </summary>
-    
+
     public class EventTypeIndex : EventEvaluator
     {
         private IDictionary<EventType, FilterHandleSetNode> eventTypes;
         private ReaderWriterLock eventTypesRWLock;
 
-	    /**
-	     * Returns the current size of the known event types.
-	     * @return collection size
-	     */
+	    /// <summary>Returns the current size of the known event types.</summary>
+	    /// <returns>collection size</returns>
 	    protected int Count
 	    {
 	        get { return eventTypes.Count ; }
@@ -45,14 +43,14 @@ namespace net.esper.filter
             eventTypes = new Dictionary<EventType, FilterHandleSetNode>();
             eventTypesRWLock = new ReaderWriterLock();
         }
-        
+
         /// <summary>
         /// Add a new event type to the index and use the specified node for the root node of its subtree.
         /// If the event type already existed, the method will throw an IllegalStateException.
         /// </summary>
         /// <param name="eventType">the event type to be added to the index</param>
         /// <param name="rootNode">the root node of the subtree for filter constant indizes and callbacks</param>
-        
+
         public void Add(EventType eventType, FilterHandleSetNode rootNode)
         {
             using (WriterLock writeLock = new WriterLock(eventTypesRWLock))
@@ -119,7 +117,7 @@ namespace net.esper.filter
         private void MatchType(EventType eventType, EventBean eventBean, IList<FilterHandle> matches)
         {
             FilterHandleSetNode rootNode = null ;
-            
+
             try
             {
                 eventTypesRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);

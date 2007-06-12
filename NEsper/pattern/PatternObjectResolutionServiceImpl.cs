@@ -29,9 +29,11 @@ namespace net.esper.pattern
 	    // Map of namespace, name, factory class and bool (true=guard, false=observer)
 	    private readonly EDictionary<String, IDictionary<String, Pair<Type, TypeEnum>>> nameToFactoryMap;
 
-	    /// <summary>Ctor.</summary>
-	    /// <param name="configEntries">is the pattern plug-in objects configured</param>
-	    /// <throws>ConfigurationException if the configs are invalid</throws>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="configEntries">is the pattern plug-in objects configured</param>
+        /// <throws>ConfigurationException if the configs are invalid</throws>
 	    public PatternObjectResolutionServiceImpl(IList<ConfigurationPlugInPatternObject> configEntries)
 	    {
 	        nameToFactoryMap = new EHashDictionary<String, IDictionary<String, Pair<Type, TypeEnum>>>();
@@ -93,6 +95,12 @@ namespace net.esper.pattern
 	        }
 	    }
 
+        /// <summary>
+        /// Creates an observer factory considering configured plugged-in resources.
+        /// </summary>
+        /// <param name="spec">is the namespace, name and parameters for the observer</param>
+        /// <returns>observer factory</returns>
+        /// <throws>PatternObjectException if the observer cannot be resolved</throws>
 	    public ObserverFactory Create(PatternObserverSpec spec)
 	    {
 	        Object result = CreateFactory(spec, TypeEnum.OBSERVER);
@@ -111,6 +119,12 @@ namespace net.esper.pattern
             return factory;
 	    }
 
+        /// <summary>
+        /// Creates a guard factory considering configured plugged-in resources.
+        /// </summary>
+        /// <param name="spec">is the namespace, name and parameters for the guard</param>
+        /// <returns>guard factory</returns>
+        /// <throws>PatternObjectException if the guard cannot be resolved</throws>
 	    public GuardFactory Create(PatternGuardSpec spec)
 	    {
 	        Object result = CreateFactory(spec, TypeEnum.GUARD);
@@ -129,6 +143,12 @@ namespace net.esper.pattern
             return factory;
 	    }
 
+        /// <summary>
+        /// Creates the factory.
+        /// </summary>
+        /// <param name="spec">The spec.</param>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
 	    private Object CreateFactory(ObjectSpec spec, TypeEnum type)
 	    {
 	        if (log.IsDebugEnabled)

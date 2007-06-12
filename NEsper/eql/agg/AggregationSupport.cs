@@ -36,25 +36,56 @@ namespace net.esper.eql.agg
 	    {
 	    }
 
-	    /// <summary>Gets or sets the aggregation function name.</summary>
-	    /// <param name="functionName">is the name of the aggregation function</param>
+        /// <summary>
+        /// Gets or sets the aggregation function name.
+        /// </summary>
+        /// <value>The name of the function.</value>
 	    public String FunctionName
 	    {
             get { return this.functionName; }
             set { this.functionName = value; }
 	    }
 
+        /// <summary>
+        /// Make a new, initalized aggregation state.
+        /// </summary>
+        /// <param name="methodResolutionService">for use in creating new aggregation method instances as a factory</param>
+        /// <returns>initialized copy of the aggregator</returns>
 	    public AggregationMethod NewAggregator(MethodResolutionService methodResolutionService)
 	    {
 	        return methodResolutionService.MakePlugInAggregator(functionName);
 	    }
-		
+
+        /// <summary>
+        /// Returns the current value held.
+        /// </summary>
+        /// <value></value>
+        /// <returns>current value</returns>
 	    abstract public object Value { get ; }
-	
+
+        /// <summary>
+        /// Returns the type of the current value.
+        /// </summary>
+        /// <value></value>
+        /// <returns>type of values held</returns>
 	    abstract public Type ValueType { get ; }
-		
+
+        /// <summary>
+        /// Apply the value as entering aggregation (entering window).
+        /// <para>
+        /// The value can be null since 'null' values may be counted as unique separate values.
+        /// </para>
+        /// </summary>
+        /// <param name="value">to add to aggregate</param>
 		abstract public void Enter(object value);
-		
+
+        /// <summary>
+        /// Apply the value as leaving aggregation (leaving window).
+        /// <para>
+        /// The value can be null since 'null' values may be counted as unique separate values.
+        /// </para>
+        /// </summary>
+        /// <param name="value">to remove from aggregate</param>
 		abstract public void Leave(object value);
 	}
 } // End of namespace

@@ -164,7 +164,7 @@ namespace net.esper.core
 	            {
 	                obj = Activator.CreateInstance(type);
 	            }
-	            catch (InstantiationException e)
+	            catch (TypeLoadException e)
 	            {
 	                throw new ConfigurationException("Type '" + type + "' cannot be instantiated");
 	            }

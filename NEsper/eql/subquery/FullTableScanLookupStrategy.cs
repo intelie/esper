@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using net.esper.compat;
-using net.esper.eql.join.exec;
 using net.esper.eql.join.table;
 using net.esper.events;
 
@@ -30,6 +26,11 @@ namespace net.esper.eql.subquery
             this.eventIndex = eventIndex;
         }
 
+        /// <summary>
+        /// Lookups the specified event per stream.
+        /// </summary>
+        /// <param name="eventPerStream">The event per stream.</param>
+        /// <returns></returns>
         public Set<EventBean> Lookup(EventBean[] eventPerStream)
         {
             Set<EventBean> result = eventIndex.EventSet;

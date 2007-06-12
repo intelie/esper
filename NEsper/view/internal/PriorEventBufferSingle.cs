@@ -19,17 +19,20 @@ namespace net.esper.view.internals
 	/// <summary>
 	/// Buffers view-posted insert stream (new data) and remove stream (old data) events for
 	/// use with serving prior results in these streams, for a single prior event.
-	/// &lt;p&gt;
+    /// <para>
 	/// Buffers only exactly those events in new data and old data that are being asked for via the
 	/// 2 or more 'prior' functions that specify different indexes. For example &quot;select Prior(2, price), Prior(1, price)&quot;
 	/// results in on buffer instance handling both the need to the immediatly prior (1) and the 2-events-ago
 	/// event (2).
-	/// &lt;p&gt;
-	/// As all views are required to post new data and post old data that removes the new data to subsequent views,
+    /// </para>
+    /// <para>
+    /// As all views are required to post new data and post old data that removes the new data to subsequent views,
 	/// this buffer can be attached to all views and should not result in a memory leak.
-	/// &lt;p&gt;
+	/// </para>
+    /// <para>
 	/// When the buffer receives old data (rstream) events it removes the prior events to the rstream events
 	/// from the buffer the next time it receives a post (not immediatly) to allow queries to the buffer.
+	/// </para>
 	/// </summary>
 	public class PriorEventBufferSingle : ViewUpdatedCollection, RelativeAccessByEventNIndex
 	{
@@ -50,6 +53,11 @@ namespace net.esper.view.internals
 	        priorEventMap = new EHashDictionary<EventBean, EventBean>();
 	    }
 
+        /// <summary>
+        /// Accepts view insert and remove stream.
+        /// </summary>
+        /// <param name="newData">is the insert stream events or null if no data</param>
+        /// <param name="oldData">is the remove stream events or null if no data</param>
 	    public void Update(EventBean[] newData, EventBean[] oldData)
 	    {
 	        // Remove last old data posted in previous post
@@ -80,10 +88,16 @@ namespace net.esper.view.internals
 	        lastOldData = oldData;
 	    }
 
-	    // Users are assigned an index
+        /// <summary>
+        /// Gets the relative to event.
+        /// </summary>
+        /// <param name="_event">The _event.</param>
+        /// <param name="priorToIndex">Index of the prior to.</param>
+        /// <returns></returns>
 	    public EventBean GetRelativeToEvent(EventBean _event, int priorToIndex)
 	    {
-	        if (priorToIndex != 0)
+            // Users are assigned an index
+            if (priorToIndex != 0)
 	        {
 	            throw new ArgumentException("Single prior event buffer takes only a given index of zero");
 	        }

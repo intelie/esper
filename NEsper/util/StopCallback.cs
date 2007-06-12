@@ -13,17 +13,32 @@ namespace net.esper.util
         void Stop();
     }
 
+    /// <summary>
+    /// Delegate that is used for wrapping the StopCallback interface.
+    /// </summary>
+
     public delegate void StopCallbackDelegate() ;
+
+    /// <summary>
+    /// Proxy implementation for StopCallback
+    /// </summary>
 
     public class StopCallbackImpl : StopCallback
     {
         private StopCallbackDelegate stopDelegate;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StopCallbackImpl"/> class.
+        /// </summary>
+        /// <param name="stopDelegate">The stop delegate.</param>
         public StopCallbackImpl(StopCallbackDelegate stopDelegate)
         {
             this.stopDelegate = stopDelegate;
         }
 
+        /// <summary>
+        /// Stops the underlying resources.
+        /// </summary>
         public void Stop()
         {
             stopDelegate();

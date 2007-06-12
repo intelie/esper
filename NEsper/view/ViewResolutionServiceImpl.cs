@@ -26,9 +26,11 @@ namespace net.esper.view
 	    
 	    private readonly EDictionary<String, EDictionary<String, Type>> nameToFactoryMap;
 
-	    /// <summary>Ctor.</summary>
-	    /// <param name="configurationPlugInViews">is the configured plug-in views</param>
-	    /// <throws>ConfigurationException when plug-in views cannot be solved</throws>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="configurationPlugInViews">is the configured plug-in views</param>
+        /// <throws>ConfigurationException when plug-in views cannot be solved</throws>
 	    public ViewResolutionServiceImpl(IList<ConfigurationPlugInView> configurationPlugInViews)
 	    {
 	        nameToFactoryMap = new EHashDictionary<String, EDictionary<String, Type>>();
@@ -58,7 +60,7 @@ namespace net.esper.view
 	            {
 	                type = Type.GetType(entry.FactoryClassName);
 	            }
-	            catch (TypeLoadException ex)
+	            catch (TypeLoadException)
 	            {
 	                throw new ConfigurationException("View factory class " + entry.FactoryClassName + " could not be loaded");
 	            }
@@ -73,6 +75,15 @@ namespace net.esper.view
 	        }
 	    }
 
+        /// <summary>
+        /// Instantiates a {@link ViewFactory} based on the view namespace and name stored in the view spec.
+        /// <para>
+        /// Does not actually use the view factory object created.
+        /// </para>
+        /// </summary>
+        /// <param name="spec">contains view name and namespace</param>
+        /// <returns>{@link ViewFactory} instance</returns>
+        /// <throws>ViewProcessingException if the view namespace or name cannot resolve</throws>
 	    public ViewFactory Create(ViewSpec spec)
 	    {
 	    	if (log.IsDebugEnabled)

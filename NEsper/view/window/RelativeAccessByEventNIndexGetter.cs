@@ -22,6 +22,13 @@ namespace net.esper.view.window
 	    private readonly EDictionary<EventBean, IStreamRelativeAccess> accessorByEvent = new EHashDictionary<EventBean, IStreamRelativeAccess>();
 	    private readonly EDictionary<IStreamRelativeAccess, EventBean[]> eventsByAccessor  = new EHashDictionary<IStreamRelativeAccess, EventBean[]>();
 
+        /// <summary>
+        /// </summary>
+        /// <param name="iStreamRelativeAccess"></param>
+        /// <param name="newData"></param>
+        /// Callback to indicate an update.
+        /// @param iStreamRelativeAccess is the collection
+        /// @param newData is the new data available
 	    public void Updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData)
 	    {
 	        // remove data posted from the last update
@@ -50,7 +57,7 @@ namespace net.esper.view.window
 	    }
 
 	    /// <summary>Returns the access into window contents given an event.</summary>
-	    /// <param name="event">to which the method returns relative access from</param>
+	    /// <param name="_event">to which the method returns relative access from</param>
 	    /// <returns>buffer</returns>
 	    public IStreamRelativeAccess GetAccessor(EventBean _event)
 	    {

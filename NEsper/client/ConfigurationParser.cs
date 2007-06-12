@@ -129,20 +129,20 @@ namespace net.esper.client
 
         private static void HandleMap(String aliasName, Configuration configuration, XmlElement eventTypeElement)
         {
-            EDictionary<string,string> propertyTypeNames = new EHashDictionary<string,string>();
+            Properties propertyTypeNames = new Properties();
             XmlNodeList propertyList = eventTypeElement.GetElementsByTagName("map-property");
-            for (int i = 0; i < propertyList.Count; i++)
+            foreach( XmlNode propertyNode in propertyList )
             {
-                String name = ((XmlAttributeCollection)propertyList.Item(i).Attributes).GetNamedItem("name").InnerText;
-                String clazz = ((XmlAttributeCollection)propertyList.Item(i).Attributes).GetNamedItem("class").InnerText;
-                propertyTypeNames[name] = clazz;
+                String name = propertyNode.Attributes.GetNamedItem("name").InnerText;
+                String type = propertyNode.Attributes.GetNamedItem("class").InnerText;
+                propertyTypeNames[name] = type;
             }
             configuration.AddEventTypeAlias(aliasName, propertyTypeNames);
         }
 
         private static void HandleXMLDOM(String aliasName, Configuration configuration, XmlElement xmldomElement)
         {
-            String rootElementName = ((XmlAttributeCollection)xmldomElement.Attributes).GetNamedItem("root-element-name").InnerText;
+            String rootElementName = xmldomElement.Attributes.GetNamedItem("root-element-name").InnerText;
             String rootElementNamespace = GetOptionalAttribute(xmldomElement, "root-element-namespace");
             String schemaResource = GetOptionalAttribute(xmldomElement, "schema-resource");
             String defaultNamespace = GetOptionalAttribute(xmldomElement, "default-namespace");
@@ -160,15 +160,15 @@ namespace net.esper.client
                 XmlElement propertyElement = propertyNodeEnumerator.Current;
                 if (propertyElement.Name.Equals("namespace-prefix"))
                 {
-                    String prefix = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("prefix").InnerText;
-                    String namespace_ = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("namespace").InnerText;
+                    String prefix = propertyElement.Attributes.GetNamedItem("prefix").InnerText;
+                    String namespace_ = propertyElement.Attributes.GetNamedItem("namespace").InnerText;
                     xmlDOMEventTypeDesc.AddNamespacePrefix(prefix, namespace_);
                 }
                 if (propertyElement.Name.Equals("xpath-property"))
                 {
-                    String propertyName = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("property-name").InnerText;
-                    String xPath = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("xpath").InnerText;
-                    String propertyType = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("type").InnerText;
+                    String propertyName = propertyElement.Attributes.GetNamedItem("property-name").InnerText;
+                    String xPath = propertyElement.Attributes.GetNamedItem("xpath").InnerText;
+                    String propertyType = propertyElement.Attributes.GetNamedItem("type").InnerText;
 
                     XPathResultType xpathConstantType = XPathResultType.Any;
                     if (propertyType.Equals("NUMBER", StringComparison.InvariantCultureIgnoreCase))
@@ -201,8 +201,8 @@ namespace net.esper.client
                 throw new ConfigurationException("Required class name not supplied for legacy type definition");
             }
 
-            String accessorStyle = ((XmlAttributeCollection)xmldomElement.Attributes).GetNamedItem("accessor-style").InnerText;
-            String codeGeneration = ((XmlAttributeCollection)xmldomElement.Attributes).GetNamedItem("code-generation").InnerText;
+            String accessorStyle = xmldomElement.Attributes.GetNamedItem("accessor-style").InnerText;
+            String codeGeneration = xmldomElement.Attributes.GetNamedItem("code-generation").InnerText;
 
             ConfigurationEventTypeLegacy legacyDesc = new ConfigurationEventTypeLegacy();
             legacyDesc.AccessorStyle = (ConfigurationEventTypeLegacy.AccessorStyleEnum) Enum.Parse( typeof( ConfigurationEventTypeLegacy.AccessorStyleEnum ), accessorStyle, true ) ;
@@ -215,14 +215,14 @@ namespace net.esper.client
                 XmlElement propertyElement = propertyNodeEnumerator.Current;
                 if (propertyElement.Name.Equals("method-property"))
                 {
-                    String name = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("name").InnerText;
-                    String method = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("accessor-method").InnerText;
+                    String name = propertyElement.Attributes.GetNamedItem("name").InnerText;
+                    String method = propertyElement.Attributes.GetNamedItem("accessor-method").InnerText;
                     legacyDesc.AddMethodProperty(name, method);
                 }
                 else if (propertyElement.Name.Equals("field-property"))
                 {
-                    String name = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("name").InnerText;
-                    String field = ((XmlAttributeCollection)propertyElement.Attributes).GetNamedItem("accessor-field").InnerText;
+                    String name = propertyElement.Attributes.GetNamedItem("name").InnerText;
+                    String field = propertyElement.Attributes.GetNamedItem("accessor-field").InnerText;
                     legacyDesc.AddFieldProperty(name, field);
                 }
                 else
@@ -237,7 +237,7 @@ namespace net.esper.client
             XmlNodeList importNodes = parentNode.GetElementsByTagName("auto-import");
             for (int i = 0; i < importNodes.Count; i++)
             {
-                String name = ((XmlAttributeCollection)importNodes.Item(i).Attributes).GetNamedItem("import-name").InnerText;
+                String name = importNodes.Item(i).Attributes.GetNamedItem("import-name").InnerText;
                 configuration.AddImport(name);
             }
         }
@@ -247,7 +247,7 @@ namespace net.esper.client
             XmlNodeList dbRefNodes = parentNode.GetElementsByTagName("database-reference");
             for (int i = 0; i < dbRefNodes.Count; i++)
             {
-                String name = ((XmlAttributeCollection)dbRefNodes.Item(i).Attributes).GetNamedItem("name").InnerText;
+                String name = dbRefNodes.Item(i).Attributes.GetNamedItem("name").InnerText;
                 ConfigurationDBRef configDBRef = new ConfigurationDBRef();
                 configuration.AddDatabaseReference(name, configDBRef);
 
@@ -258,7 +258,7 @@ namespace net.esper.client
                     if (subElement.Name.Equals("provider-connection"))
                     {
                         ConnectionStringSettings settings = new ConnectionStringSettings() ;
-                        settings.Name = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("provider").InnerText;
+                        settings.Name = subElement.Attributes.GetNamedItem("provider").InnerText;
                         settings.ProviderName = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("provider").InnerText;
                         settings.ConnectionString = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("connection-string").InnerText;
                         configDBRef.SetDatabaseProviderConnection(settings);
