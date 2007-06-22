@@ -1,49 +1,58 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
 using net.esper.collection;
+using net.esper.compat;
 using net.esper.events;
 using net.esper.filter;
 
 namespace net.esper.support.filter
 {
+	public class SupportFilterServiceImpl : FilterService
+	{
+	    private IList<Pair<FilterValueSet, FilterHandle>> added = new List<Pair<FilterValueSet, FilterHandle>>();
+	    private IList<FilterHandle> removed = new List<FilterHandle>();
 
-    public class SupportFilterServiceImpl : FilterService
-    {
-        virtual public long NumEventsEvaluated
+	    public void Add(FilterValueSet filterValueSet, FilterHandle callback)
+	    {
+	        added.Add(new Pair<FilterValueSet, FilterHandle>(filterValueSet, callback));
+	    }
+
+	    public void Remove(FilterHandle callback)
+	    {
+	        removed.Add(callback);
+	    }
+
+	    public IList<Pair<FilterValueSet, FilterHandle>> GetAdded()
+	    {
+	        return added;
+	    }
+
+	    public IList<FilterHandle> GetRemoved()
+	    {
+	        return removed;
+	    }
+
+        #region FilterService Members
+
+        public long NumEventsEvaluated
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
-
-        }
-        private IList<Pair<FilterValueSet, FilterCallback>> added = new List<Pair<FilterValueSet, FilterCallback>>();
-        private IList<FilterCallback> removed = new List<FilterCallback>();
-
-        public virtual void Evaluate(EventBean _event)
-        {
-            throw new System.NotSupportedException();
-        }
-
-        public virtual void Add(FilterValueSet filterValueSet, FilterCallback callback)
-        {
-            added.Add(new Pair<FilterValueSet, FilterCallback>(filterValueSet, callback));
-        }
-
-        public virtual void Remove(FilterCallback callback)
-        {
-            removed.Add(callback);
-        }
-
-        public IList<Pair<FilterValueSet, FilterCallback>> getAdded()
-        {
-            return added;
+            get { throw new UnsupportedOperationException(); }
         }
 
-        public IList<FilterCallback> getRemoved()
+        public void Evaluate(EventBean _event, IList<FilterHandle> matches)
         {
-            return removed;
+            throw new UnsupportedOperationException();
         }
+
+        #endregion
     }
-}
+} // End of namespace

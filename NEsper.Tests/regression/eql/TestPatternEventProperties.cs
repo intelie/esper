@@ -10,13 +10,13 @@ using NUnit.Framework;
 
 namespace net.esper.regression.eql
 {
-	
+
 	[TestFixture]
-	public class TestPatternEventProperties 
+	public class TestPatternEventProperties
 	{
 		private EPServiceProvider epService;
 		private SupportUpdateListener updateListener;
-		
+
 		[SetUp]
 		public virtual void  setUp()
 		{
@@ -24,93 +24,93 @@ namespace net.esper.regression.eql
 			epService.Initialize();
 			updateListener = new SupportUpdateListener();
 		}
-		
+
 		[Test]
 		public virtual void  testWildcardSimplePattern()
 		{
 			setupSimplePattern("*");
-			
+
 			Object _event = new SupportBean();
 			epService.EPRuntime.SendEvent(_event);
-			EventBean eventBean = updateListener.assertOneGetNewAndReset();
-			Assert.AreSame(_event, eventBean["a"]);
+			EventBean _eventBean = updateListener.AssertOneGetNewAndReset();
+			Assert.AreSame(_event, _eventBean["a"]);
 		}
-		
+
 		[Test]
 		public virtual void  testWildcardOrPattern()
 		{
 			setupOrPattern("*");
-			
+
 			Object _event = new SupportBean();
 			epService.EPRuntime.SendEvent(_event);
-			EventBean eventBean = updateListener.assertOneGetNewAndReset();
-			Assert.AreSame(_event, eventBean["a"]);
-			Assert.IsNull(eventBean["b"]);
-			
-			_event = SupportBeanComplexProps.makeDefaultBean();
+			EventBean _eventBean = updateListener.AssertOneGetNewAndReset();
+			Assert.AreSame(_event, _eventBean["a"]);
+			Assert.IsNull(_eventBean["b"]);
+
+			_event = SupportBeanComplexProps.MakeDefaultBean();
 			epService.EPRuntime.SendEvent(_event);
-			eventBean = updateListener.assertOneGetNewAndReset();
-			Assert.AreSame(_event, eventBean["b"]);
-			Assert.IsNull(eventBean["a"]);
+			_eventBean = updateListener.AssertOneGetNewAndReset();
+			Assert.AreSame(_event, _eventBean["b"]);
+			Assert.IsNull(_eventBean["a"]);
 		}
-		
+
 		[Test]
 		public virtual void  testPropertiesSimplePattern()
 		{
 			setupSimplePattern("a, a as myEvent, a.intPrimitive as myInt, a.str");
-			
+
 			SupportBean _event = new SupportBean();
-			_event.intPrimitive = 1;
-            _event.str = "test";
+			_event.SetIntPrimitive(1);
+            _event.SetString("test");
 			epService.EPRuntime.SendEvent(_event);
-			
-			EventBean eventBean = updateListener.assertOneGetNewAndReset();
-			Assert.AreSame(_event, eventBean["a"]);
-			Assert.AreSame(_event, eventBean["myEvent"]);
-			Assert.AreEqual(1, eventBean["myInt"]);
-			Assert.AreEqual("test", eventBean["a.str"]);
+
+			EventBean _eventBean = updateListener.AssertOneGetNewAndReset();
+			Assert.AreSame(_event, _eventBean["a"]);
+			Assert.AreSame(_event, _eventBean["myEvent"]);
+			Assert.AreEqual(1, _eventBean["myInt"]);
+			Assert.AreEqual("test", _eventBean["a.str"]);
 		}
-		
+
 		[Test]
 		public virtual void  testPropertiesOrPattern()
 		{
 			setupOrPattern("a, a as myAEvent, b, b as myBEvent, a.intPrimitive as myInt, " + "a.str, b.simpleProperty as simple, b.indexed[0] as indexed, b.nested.nestedValue as nestedVal");
-			
-			Object _event = SupportBeanComplexProps.makeDefaultBean();
+
+			Object _event = SupportBeanComplexProps.MakeDefaultBean();
 			epService.EPRuntime.SendEvent(_event);
-			EventBean eventBean = updateListener.assertOneGetNewAndReset();
-			Assert.AreSame(_event, eventBean["b"]);
-			Assert.AreEqual("simple", eventBean["simple"]);
-			Assert.AreEqual(1, eventBean["indexed"]);
-			Assert.AreEqual("nestedValue", eventBean["nestedVal"]);
-			Assert.IsNull(eventBean["a"]);
-			Assert.IsNull(eventBean["myAEvent"]);
-			Assert.IsNull(eventBean["myInt"]);
-			Assert.IsNull(eventBean["a.str"]);
-			
+			EventBean _eventBean = updateListener.AssertOneGetNewAndReset();
+			Assert.AreSame(_event, _eventBean["b"]);
+			Assert.AreEqual("simple", _eventBean["simple"]);
+			Assert.AreEqual(1, _eventBean["indexed"]);
+			Assert.AreEqual("nestedValue", _eventBean["nestedVal"]);
+			Assert.IsNull(_eventBean["a"]);
+			Assert.IsNull(_eventBean["myAEvent"]);
+			Assert.IsNull(_eventBean["myInt"]);
+			Assert.IsNull(_eventBean["a.str"]);
+
 			SupportBean eventTwo = new SupportBean();
-			eventTwo.intPrimitive = 2;
-            eventTwo.str = "test2";
+			eventTwo.SetIntPrimitive(2);
+            eventTwo.SetString("test2");
 			epService.EPRuntime.SendEvent(eventTwo);
-			eventBean = updateListener.assertOneGetNewAndReset();
-			Assert.AreEqual(2, eventBean["myInt"]);
-			Assert.AreEqual("test2", eventBean["a.str"]);
-			Assert.IsNull(eventBean["b"]);
-			Assert.IsNull(eventBean["myBEvent"]);
-			Assert.IsNull(eventBean["simple"]);
-			Assert.IsNull(eventBean["indexed"]);
-			Assert.IsNull(eventBean["nestedVal"]);
+			_eventBean = updateListener.AssertOneGetNewAndReset();
+			Assert.AreEqual(2, _eventBean["myInt"]);
+			Assert.AreEqual("test2", _eventBean["a.str"]);
+			Assert.IsNull(_eventBean["b"]);
+			Assert.IsNull(_eventBean["myBEvent"]);
+			Assert.IsNull(_eventBean["simple"]);
+			Assert.IsNull(_eventBean["indexed"]);
+			Assert.IsNull(_eventBean["nestedVal"]);
 		}
-		
+
 		private void  setupSimplePattern(String selectCriteria)
 		{
 			String stmtText =
 				"select " + selectCriteria +
 				" from pattern [a=" + typeof(SupportBean).FullName + "]";
 			EPStatement stmt = epService.EPAdministrator.CreateEQL(stmtText);
-            stmt.AddListener(updateListener.Update);
+            stmt.AddListener(updateListener);
 		}
-		
+
 		private void  setupOrPattern(String selectCriteria)
 		{
 			String stmtText =
@@ -118,7 +118,7 @@ namespace net.esper.regression.eql
 				" from pattern [every(a=" + typeof(SupportBean).FullName +
 				" or b=" + typeof(SupportBeanComplexProps).FullName + ")]";
 			EPStatement stmt = epService.EPAdministrator.CreateEQL(stmtText);
-            stmt.AddListener(updateListener.Update);
+            stmt.AddListener(updateListener);
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace net.esper.filter
 	    /// <returns>
 	    /// true if there are neither indizes nor filter callbacks stored, false if either exist.
 	    /// </returns>
-	    internal bool IsEmpty
+        public bool IsEmpty
 	    {
             get { return ((callbackSet.Count == 0) && (indizes.Count == 0)); }
 	    }
@@ -58,7 +58,7 @@ namespace net.esper.filter
 	    /// code.
 	    /// </summary>
 	    /// <returns>number of filter callbacks stored</returns>
-	    internal int FilterCallbackCount
+        public int FilterCallbackCount
 	    {
             get { return callbackSet.Count; }
 	    }
@@ -67,7 +67,7 @@ namespace net.esper.filter
 	    /// Returns to lock to use for making changes to the filter callback or inzides collections stored by this node.
 	    /// </summary>
 	    /// <returns>lock to use in multithreaded environment</returns>
-	    internal ReaderWriterLock NodeRWLock
+        public ReaderWriterLock NodeRWLock
 	    {
             get { return nodeRWLock; }
 	    }
@@ -76,7 +76,7 @@ namespace net.esper.filter
 	    /// Returns list of indexes - not returning an iterator. Client classes should not change this collection.
 	    /// </summary>
 	    /// <returns>list of indizes</returns>
-	    internal IList<FilterParamIndexBase> Indizes
+	    public IList<FilterParamIndexBase> Indizes
 	    {
             get { return indizes; }
 	    }
@@ -125,7 +125,7 @@ namespace net.esper.filter
 	    /// </summary>
 	    /// <param name="filterCallback">is the filter callback to check for</param>
 	    /// <returns>true if callback found, false if not</returns>
-	    internal bool Contains(FilterHandle filterCallback)
+        public bool Contains(FilterHandle filterCallback)
 	    {
 	        return callbackSet.Contains(filterCallback);
 	    }
@@ -136,7 +136,7 @@ namespace net.esper.filter
 	    /// code.
 	    /// </summary>
 	    /// <param name="index">index to add</param>
-	    internal void Add(FilterParamIndexBase index)
+	    public void Add(FilterParamIndexBase index)
 	    {
 	        indizes.Add(index);
 	    }
@@ -148,7 +148,7 @@ namespace net.esper.filter
 	    /// </summary>
 	    /// <param name="index">is the index to remove</param>
 	    /// <returns>true if found, false if not existing</returns>
-	    internal bool Remove(FilterParamIndexBase index)
+        public bool Remove(FilterParamIndexBase index)
 	    {
 	        return indizes.Remove(index);
 	    }
@@ -160,7 +160,7 @@ namespace net.esper.filter
 	    /// code.
 	    /// </summary>
 	    /// <param name="filterCallback">is the callback to add</param>
-	    internal void Add(FilterHandle filterCallback)
+        public void Add(FilterHandle filterCallback)
 	    {
 	        callbackSet.Add(filterCallback);
 	    }
@@ -172,7 +172,7 @@ namespace net.esper.filter
 	    /// </summary>
 	    /// <param name="filterCallback">is the callback to remove</param>
 	    /// <returns>true if found, false if not existing</returns>
-	    internal bool Remove(FilterHandle filterCallback)
+        public bool Remove(FilterHandle filterCallback)
 	    {
 	        return callbackSet.Remove(filterCallback);
 	    }

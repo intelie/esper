@@ -203,10 +203,12 @@ namespace net.esper.client
 
             String accessorStyle = xmldomElement.Attributes.GetNamedItem("accessor-style").InnerText;
             String codeGeneration = xmldomElement.Attributes.GetNamedItem("code-generation").InnerText;
+            String propertyResolutionStyle = xmldomElement.Attributes.GetNamedItem("property-resolution-style").InnerText;
 
             ConfigurationEventTypeLegacy legacyDesc = new ConfigurationEventTypeLegacy();
             legacyDesc.AccessorStyle = (ConfigurationEventTypeLegacy.AccessorStyleEnum) Enum.Parse( typeof( ConfigurationEventTypeLegacy.AccessorStyleEnum ), accessorStyle, true ) ;
             legacyDesc.CodeGeneration = (ConfigurationEventTypeLegacy.CodeGenerationEnum) Enum.Parse( typeof( ConfigurationEventTypeLegacy.CodeGenerationEnum ), codeGeneration, true ) ;
+            legacyDesc.PropertyResolutionStyle = (PropertyResolutionStyle) Enum.Parse(typeof(PropertyResolutionStyle), propertyResolutionStyle, true);
             configuration.AddEventTypeAlias(aliasName, className, legacyDesc);
 
             IEnumerator<XmlElement> propertyNodeEnumerator = CreateElementEnumerator(xmldomElement.ChildNodes);

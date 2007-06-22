@@ -47,7 +47,7 @@ namespace net.esper.events
 
         /// <summary>
         /// Get the type of an event property as returned by the "getter" method for that property. Returns
-        /// unboxed (such as 'int.class') as well as boxed (java.lang.Integer) type.
+        /// unboxed (such as 'typeof(int)') as well as boxed (typeof(int?)) type.
         /// Returns null if the property name is not valid.
         /// </summary>
         /// <param name="property">is the property name</param>

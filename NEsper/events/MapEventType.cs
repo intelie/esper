@@ -61,12 +61,12 @@ namespace net.esper.events
 			this.typeName = typeName;
             this.eventAdapterService = eventAdapterService;
             // copy the property names and types
-            this.types = new EHashDictionary<String, Type>() ;
+            this.types = new HashDictionary<String, Type>() ;
             this.types.PutAll( propertyTypes ) ;
 
             hashCode = typeName.GetHashCode();
             propertyNames = new String[types.Count];
-            propertyGetters = new EHashDictionary<String, EventPropertyGetter>();
+            propertyGetters = new HashDictionary<String, EventPropertyGetter>();
 
             // Initialize getters and names array
             int index = 0;

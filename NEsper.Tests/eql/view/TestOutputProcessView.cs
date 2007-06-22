@@ -15,7 +15,7 @@ namespace net.esper.eql.view
 {
 
 	[TestFixture]
-    public class TestOutputProcessView 
+    public class TestOutputProcessView
     {
         private OutputProcessView outputProcessViewUpdate;
         private OutputProcessView outputProcessViewProcess;
@@ -54,8 +54,8 @@ namespace net.esper.eql.view
         {
             EventBean[] oldData = new EventBean[1];
             EventBean[] newData = new EventBean[1];
-            oldData[0] = SupportEventBeanFactory.createObject(new SupportBean());
-            newData[0] = SupportEventBeanFactory.createObject(new SupportBean());
+            oldData[0] = SupportEventBeanFactory.CreateObject(new SupportBean());
+            newData[0] = SupportEventBeanFactory.CreateObject(new SupportBean());
 
             outputProcessViewUpdate.Update(newData, oldData);
 
@@ -82,16 +82,16 @@ namespace net.esper.eql.view
         {
             EventBean[] oldData = new EventBean[1];
             EventBean[] newData = new EventBean[1];
-            oldData[0] = SupportEventBeanFactory.createObject(new SupportBean());
-            newData[0] = SupportEventBeanFactory.createObject(new SupportBean());
+            oldData[0] = SupportEventBeanFactory.CreateObject(new SupportBean());
+            newData[0] = SupportEventBeanFactory.CreateObject(new SupportBean());
 
-            outputProcessViewProcess.Process(makeEventSet(newData[0]), makeEventSet(oldData[0]));
+            outputProcessViewProcess.Process(MakeEventSet(newData[0]), MakeEventSet(oldData[0]));
 
             Assert.AreSame(newData[0], childViewJoin.LastNewData[0]);
             Assert.AreSame(oldData[0], childViewJoin.LastOldData[0]);
         }
 
-        private ISet<MultiKey<EventBean>> makeEventSet(EventBean _event)
+        private ISet<MultiKey<EventBean>> MakeEventSet(EventBean _event)
         {
             ISet<MultiKey<EventBean>> result = new EHashSet<MultiKey<EventBean>>();
             result.Add(new MultiKey<EventBean>(new EventBean[] { _event }));

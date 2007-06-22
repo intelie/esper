@@ -19,7 +19,7 @@ namespace net.esper.eql.core
 	public interface EngineImportService
 	{
 	    /// <summary>
-	    /// Add an import, such as "com.mypackage.*" or "com.mypackage.MyClass".
+	    /// Add an import, such as "com.mypackage" or "com.mypackage.MyClass".
 	    /// </summary>
 	    /// <param name="importName">is the import to add</param>
 	    /// <throws>EngineImportException if the information or format is invalid</throws>

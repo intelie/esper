@@ -1,30 +1,29 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 
-using net.esper.eql.core;
+using net.esper.eql.agg;
 
 namespace net.esper.support.eql
 {
 	public class SupportAggregationResultFuture : AggregationResultFuture
 	{
-		private Object[] values;
+	    private Object[] values;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SupportAggregationResultFuture"/> class.
-        /// </summary>
-        /// <param name="values">The values.</param>
-		public SupportAggregationResultFuture(Object[] values)
-		{
-			this.values = values;
-		}
+	    public SupportAggregationResultFuture(Object[] values)
+	    {
+	        this.values = values;
+	    }
 
-        /// <summary>
-        /// Returns current aggregation state, for use by expression node representing an aggregation function.
-        /// </summary>
-        /// <param name="column">is assigned to the aggregation expression node and passed as an column (index) into a row</param>
-        /// <returns>current aggragation state</returns>
-		public virtual Object GetValue(int column)
-		{
-			return values[column];
-		}
+	    public Object GetValue(int column)
+	    {
+	        return values[column];
+	    }
 	}
-}
+} // End of namespace

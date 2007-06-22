@@ -107,7 +107,7 @@ namespace net.esper.eql.join.plan
 	    /// <param name="indexSpecsPerStream">specifications of indexes</param>
 	    /// <param name="typesPerStream">event types for each stream</param>
 	    /// <returns>NestedIterationNode with lookups attached underneath</returns>
-	    protected static QueryPlanNode CreateStreamPlan(
+	    public static QueryPlanNode CreateStreamPlan(
 			int lookupStream,
 			int[] bestChain,
 			QueryGraph queryGraph,

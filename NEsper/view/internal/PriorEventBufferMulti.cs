@@ -75,7 +75,7 @@ namespace net.esper.view.internals
 
 	        // Construct a rolling buffer of new data for holding max index + 1 (position 1 requires 2 events to keep)
 	        newEvents = new RollingEventBuffer(maxPriorIndex + 1);
-	        priorEventMap = new EHashDictionary<EventBean, EventBean[]>();
+	        priorEventMap = new HashDictionary<EventBean, EventBean[]>();
 	    }
 
         /// <summary>

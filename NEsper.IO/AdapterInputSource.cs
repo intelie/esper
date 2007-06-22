@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 
 using net.esper.adapter.csv;
 using net.esper.client;
@@ -15,9 +16,9 @@ namespace net.esper.adapter
 	{
 		private readonly Uri url;
 		private readonly String classpathResource;
-		private readonly File file;
+		private readonly FileInfo file;
 		private readonly Stream inputStream;
-		private readonly Reader reader;
+		private readonly TextReader reader;
 		
 		/// <summary>
 		/// Ctor.
@@ -28,13 +29,13 @@ namespace net.esper.adapter
 		{
 			if(classpathResource == null)
 			{
-				throw new NullPointerException("Cannot create AdapterInputStream from a null classpathResource");
+                throw new ArgumentException("Cannot create AdapterInputStream from a null classpathResource");
 			}
 			this.classpathResource = classpathResource;
 			this.url = null;
 			this.file = null;
 			this.inputStream = null;
-			this.Reader = null;
+			this.reader = null;
 		}
 		
 		/// <summary>
@@ -45,30 +46,30 @@ namespace net.esper.adapter
 		{
 			if(url == null)
 			{
-				throw new NullPointerException("Cannot create AdapterInputStream from a null URL");
+                throw new ArgumentException("Cannot create AdapterInputStream from a null URL");
 			}
 			this.url = url;
 			this.classpathResource = null;
 			this.file = null;
 			this.inputStream = null;
-			this.Reader = null;
+			this.reader = null;
 		}
 		
 		/// <summary>
 		/// Ctor.
 		/// </summary>
 		/// <param name="file">the file to use as a source</param>
-		public AdapterInputSource(File file)
+		public AdapterInputSource(FileInfo file)
 		{
 			if(file == null)
 			{
-				throw new NullPointerException("file cannot be null");
+				throw new ArgumentException("file cannot be null");
 			}
 			this.file = file;
 			this.url = null;
 			this.classpathResource = null;
 			this.inputStream = null;
-			this.Reader = null;
+			this.reader = null;
 		}
 		
 		/// <summary>
@@ -79,26 +80,26 @@ namespace net.esper.adapter
 		{
 			if(inputStream == null)
 			{
-				throw new NullPointerException("stream cannot be null");
+                throw new ArgumentException("stream cannot be null");
 			}
 			this.inputStream = inputStream;
 			this.file = null;
 			this.url = null;
 			this.classpathResource = null;
-			this.Reader = null;
+			this.reader = null;
 		}
 
 	    /// <summary>
 	    /// Ctor.
 	    /// </summary>
 	    /// <param name="reader">reader is any reader for reading a file or string</param>
-	    public AdapterInputSource(Reader reader)
+	    public AdapterInputSource(TextReader reader)
 		{
 			if(reader == null)
 			{
-				throw new NullPointerException("reader cannot be null");
+                throw new ArgumentException("reader cannot be null");
 			}
-			this.Reader = reader;
+			this.reader = reader;
 			this.url = null;
 			this.classpathResource = null;
 			this.file = null;
@@ -125,7 +126,7 @@ namespace net.esper.adapter
 			{
 				try
 				{
-					return file.toURL().openStream();
+					return file.OpenRead() ;
 				} 
 				catch (IOException e)
 				{
@@ -136,7 +137,8 @@ namespace net.esper.adapter
 			{
 				try
 				{
-					return url.openStream();
+					WebClient webClient = new WebClient() ;
+					return webClient.OpenRead(url) ;
 				} 
 				catch (IOException e)
 				{
@@ -153,7 +155,7 @@ namespace net.esper.adapter
 		/// Return the reader if it was set, null otherwise.
 		/// </summary>
 		/// <returns>the Reader</returns>
-		public Reader GetAsReader()
+		public TextReader GetAsReader()
 		{
 			return reader;
 		}
@@ -175,22 +177,7 @@ namespace net.esper.adapter
 		
 		private Stream ResolvePathAsStream(String path)
 	    {
-	    	Stream stream = null;
-	    	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-	    	if (classLoader!=null) {
-	    		stream = classLoader.getResourceAsStream( path );
-	    	}
-	    	if ( stream == null ) {
-	    		stream = typeof(CSVReader).getResourceAsStream( path );
-	    	}
-	    	if ( stream == null ) {
-	    		stream = typeof(CSVReader).getClassLoader().getResourceAsStream( path );
-	    	}
-	    	if ( stream == null ) {
-	    		throw new EPException( path + " not found" );
-	    	}
-	    	
-	    	return stream;
+			return ResourceManager.GetResourceAsStream(path ) ;
 	    }
 	}
 }

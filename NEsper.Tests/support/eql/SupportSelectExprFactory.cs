@@ -1,3 +1,11 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
@@ -7,107 +15,107 @@ using net.esper.type;
 
 namespace net.esper.support.eql
 {
-    public class SupportSelectExprFactory
-    {
-        public static IList<SelectExprElementUnnamedSpec> makeInvalidSelectList()
-        {
-            IList<SelectExprElementUnnamedSpec> selectionList = new List<SelectExprElementUnnamedSpec>();
-            ExprIdentNode node = new ExprIdentNode("xxxx", "s0");
-            selectionList.Add(new SelectExprElementUnnamedSpec(node, null));
-            return selectionList;
-        }
+	public class SupportSelectExprFactory
+	{
+	    public static IList<SelectExprElementRawSpec> MakeInvalidSelectList()
+	    {
+	        IList<SelectExprElementRawSpec> selectionList = new List<SelectExprElementRawSpec>();
+	        ExprIdentNode node = new ExprIdentNode("xxxx", "s0");
+	        selectionList.Add(new SelectExprElementRawSpec(node, null));
+	        return selectionList;
+	    }
 
-        public static IList<SelectExprElementNamedSpec> makeSelectListFromIdent(String propertyName, String streamName)
-        {
-            IList<SelectExprElementNamedSpec> selectionList = new List<SelectExprElementNamedSpec>();
-            ExprNode identNode = SupportExprNodeFactory.makeIdentNode(propertyName, streamName);
-            selectionList.Add(new SelectExprElementNamedSpec(identNode, "propertyName"));
-            return selectionList;
-        }
+	    public static IList<SelectExprElementCompiledSpec> MakeSelectListFromIdent(String propertyName, String streamName)
+	    {
+	        IList<SelectExprElementCompiledSpec> selectionList = new List<SelectExprElementCompiledSpec>();
+	        ExprNode identNode = SupportExprNodeFactory.MakeIdentNode(propertyName, streamName);
+	        selectionList.Add(new SelectExprElementCompiledSpec(identNode, "propertyName"));
+	        return selectionList;
+	    }
 
-        public static IList<SelectExprElementNamedSpec> makeNoAggregateSelectList()
-        {
-            IList<SelectExprElementNamedSpec> selectionList = new List<SelectExprElementNamedSpec>();
-            ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
-            ExprNode mathNode = SupportExprNodeFactory.makeMathNode();
-            selectionList.Add(new SelectExprElementNamedSpec(identNode, "resultOne"));
-            selectionList.Add(new SelectExprElementNamedSpec(mathNode, "resultTwo"));
-            return selectionList;
-        }
+	    public static IList<SelectExprElementCompiledSpec> MakeNoAggregateSelectList()
+	    {
+	        IList<SelectExprElementCompiledSpec> selectionList = new List<SelectExprElementCompiledSpec>();
+	        ExprNode identNode = SupportExprNodeFactory.MakeIdentNode("doubleBoxed", "s0");
+	        ExprNode mathNode = SupportExprNodeFactory.MakeMathNode();
+	        selectionList.Add(new SelectExprElementCompiledSpec(identNode, "resultOne"));
+	        selectionList.Add(new SelectExprElementCompiledSpec(mathNode, "resultTwo"));
+	        return selectionList;
+	    }
 
-        public static IList<SelectExprElementUnnamedSpec> makeNoAggregateSelectListUnnamed()
-        {
-            IList<SelectExprElementUnnamedSpec> selectionList = new List<SelectExprElementUnnamedSpec>();
-            ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
-            ExprNode mathNode = SupportExprNodeFactory.makeMathNode();
-            selectionList.Add(new SelectExprElementUnnamedSpec(identNode, null));
-            selectionList.Add(new SelectExprElementUnnamedSpec(mathNode, "result"));
-            return selectionList;
-        }
+        public static IList<SelectExprElementRawSpec> MakeNoAggregateSelectListUnnamed()
+	    {
+	        IList<SelectExprElementRawSpec> selectionList = new List<SelectExprElementRawSpec>();
+	        ExprNode identNode = SupportExprNodeFactory.MakeIdentNode("doubleBoxed", "s0");
+	        ExprNode mathNode = SupportExprNodeFactory.MakeMathNode();
+	        selectionList.Add(new SelectExprElementRawSpec(identNode, null));
+	        selectionList.Add(new SelectExprElementRawSpec(mathNode, "result"));
+	        return selectionList;
+	    }
 
-        public static IList<SelectExprElementUnnamedSpec> makeAggregateSelectListWithProps()
-        {
-            ExprNode top = new ExprSumNode(false);
-            ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
-            top.AddChildNode(identNode);
+        public static IList<SelectExprElementRawSpec> MakeAggregateSelectListWithProps()
+	    {
+	        ExprNode top = new ExprSumNode(false);
+	        ExprNode identNode = SupportExprNodeFactory.MakeIdentNode("doubleBoxed", "s0");
+	        top.AddChildNode(identNode);
 
-            IList<SelectExprElementUnnamedSpec> selectionList = new List<SelectExprElementUnnamedSpec>();
-            selectionList.Add(new SelectExprElementUnnamedSpec(top, null));
-            return selectionList;
-        }
+            IList<SelectExprElementRawSpec> selectionList = new List<SelectExprElementRawSpec>();
+	        selectionList.Add(new SelectExprElementRawSpec(top, null));
+	        return selectionList;
+	    }
 
-        public static IList<SelectExprElementUnnamedSpec> makeAggregatePlusNoAggregate()
-        {
-            ExprNode top = new ExprSumNode(false);
-            ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
-            top.AddChildNode(identNode);
+        public static IList<SelectExprElementRawSpec> MakeAggregatePlusNoAggregate()
+	    {
+	        ExprNode top = new ExprSumNode(false);
+	        ExprNode identNode = SupportExprNodeFactory.MakeIdentNode("doubleBoxed", "s0");
+	        top.AddChildNode(identNode);
 
-            ExprNode identNode2 = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
+	        ExprNode identNode2 = SupportExprNodeFactory.MakeIdentNode("doubleBoxed", "s0");
 
-            IList<SelectExprElementUnnamedSpec> selectionList = new List<SelectExprElementUnnamedSpec>();
-            selectionList.Add(new SelectExprElementUnnamedSpec(top, null));
-            selectionList.Add(new SelectExprElementUnnamedSpec(identNode2, null));
-            return selectionList;
-        }
+            IList<SelectExprElementRawSpec> selectionList = new List<SelectExprElementRawSpec>();
+	        selectionList.Add(new SelectExprElementRawSpec(top, null));
+	        selectionList.Add(new SelectExprElementRawSpec(identNode2, null));
+	        return selectionList;
+	    }
 
-        public static IList<SelectExprElementUnnamedSpec> makeAggregateMixed()
-        {
-            // make a "select doubleBoxed, sum(intPrimitive)" -equivalent
-            IList<SelectExprElementUnnamedSpec> selectionList = new List<SelectExprElementUnnamedSpec>();
+        public static IList<SelectExprElementRawSpec> MakeAggregateMixed()
+	    {
+	        // make a "select doubleBoxed, Sum(intPrimitive)" -equivalent
+            IList<SelectExprElementRawSpec> selectionList = new List<SelectExprElementRawSpec>();
 
-            ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
-            selectionList.Add(new SelectExprElementUnnamedSpec(identNode, null));
+	        ExprNode identNode = SupportExprNodeFactory.MakeIdentNode("doubleBoxed", "s0");
+	        selectionList.Add(new SelectExprElementRawSpec(identNode, null));
 
-            ExprNode top = new ExprSumNode(false);
-            identNode = SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0");
-            top.AddChildNode(identNode);
-            selectionList.Add(new SelectExprElementUnnamedSpec(top, null));
+	        ExprNode top = new ExprSumNode(false);
+	        identNode = SupportExprNodeFactory.MakeIdentNode("intPrimitive", "s0");
+	        top.AddChildNode(identNode);
+	        selectionList.Add(new SelectExprElementRawSpec(top, null));
 
-            return selectionList;
-        }
+	        return selectionList;
+	    }
 
-        public static IList<SelectExprElementUnnamedSpec> makeAggregateSelectListNoProps()
-        {
-            /*
-                                        top (*)
-                      c1 (sum)                            c2 (10)
-                      c1_1 (5)
-            */
+        public static IList<SelectExprElementRawSpec> MakeAggregateSelectListNoProps()
+	    {
+	        /*
+	                                    top (*)
+	                  c1 (sum)                            c2 (10)
+	                  c1_1 (5)
+	        */
 
-            ExprNode top = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
-            ExprNode c1 = new ExprSumNode(false);
-            ExprNode c1_1 = new SupportExprNode(5);
-            ExprNode c2 = new SupportExprNode(10);
+	        ExprNode top = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
+	        ExprNode c1 = new ExprSumNode(false);
+	        ExprNode c1_1 = new SupportExprNode(5);
+	        ExprNode c2 = new SupportExprNode(10);
 
-            top.AddChildNode(c1);
-            top.AddChildNode(c2);
-            c1.AddChildNode(c1_1);
+	        top.AddChildNode(c1);
+	        top.AddChildNode(c2);
+	        c1.AddChildNode(c1_1);
 
-            top.GetValidatedSubtree(null, null);
+	        top.GetValidatedSubtree(null, null, null);
 
-            IList<SelectExprElementUnnamedSpec> selectionList = new List<SelectExprElementUnnamedSpec>();
-            selectionList.Add(new SelectExprElementUnnamedSpec(top, null));
-            return selectionList;
-        }
-    }
-}
+            IList<SelectExprElementRawSpec> selectionList = new List<SelectExprElementRawSpec>();
+	        selectionList.Add(new SelectExprElementRawSpec(top, null));
+	        return selectionList;
+	    }
+	}
+} // End of namespace

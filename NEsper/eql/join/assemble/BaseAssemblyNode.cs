@@ -157,7 +157,7 @@ namespace net.esper.eql.join.assemble
 
 			// Map to hold per level of the node (1 to N depth) of node a list of nodes, if any
 			// exist at that level
-            ETreeDictionary<Int32, IList<BaseAssemblyNode>> nodesPerLevel = new ETreeDictionary<Int32, IList<BaseAssemblyNode>>();
+            TreeDictionary<Int32, IList<BaseAssemblyNode>> nodesPerLevel = new TreeDictionary<Int32, IList<BaseAssemblyNode>>();
 
 			// Recursively enter all aggregate functions and their level into map
 			RecursiveAggregateEnter( topNode, nodesPerLevel, 1 );

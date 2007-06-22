@@ -61,16 +61,16 @@ namespace net.esper.filter
 
 	    /// <summary>Returns the tag used for the event property.</summary>
 	    /// <returns>tag</returns>
-	    public String GetResultEventAsName()
+	    public String ResultEventAsName
 	    {
-	        return resultEventAsName;
+            get { return resultEventAsName; }
 	    }
 
 	    /// <summary>Returns the event property name.</summary>
 	    /// <returns>property name</returns>
-	    public String GetResultEventProperty()
+	    public String ResultEventProperty
 	    {
-	        return resultEventProperty;
+            get { return resultEventProperty; }
 	    }
 
 	    public override String ToString()
@@ -99,10 +99,5 @@ namespace net.esper.filter
 
 	        return false;
 	    }
-	    
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
 	}
 } // End of namespace

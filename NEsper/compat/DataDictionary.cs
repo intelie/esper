@@ -6,7 +6,7 @@ namespace net.esper.compat
     /// An extended hash dictionary that maps a string to an object.
     /// </summary>
 
-	public class EDataDictionary : EHashDictionary<String,Object>, IDataDictionary
+	public class DataDictionary : HashDictionary<String,Object>, IDataDictionary
 	{
 	}
 }

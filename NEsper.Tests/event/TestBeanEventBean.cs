@@ -1,107 +1,106 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
+
+using NUnit.Framework;
 
 using net.esper.support.bean;
 using net.esper.support.events;
-
-using NUnit.Core;
-using NUnit.Framework;
 
 using org.apache.commons.logging;
 
 namespace net.esper.events
 {
-    [TestFixture]
-    public class TestBeanEventBean
-    {
-        internal SupportBean testEvent;
+	[TestFixture]
+	public class TestBeanEventBean
+	{
+	    SupportBean testEvent;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            testEvent = new SupportBean();
-            testEvent.intPrimitive = 10;
-        }
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        testEvent = new SupportBean();
+	        testEvent.SetIntPrimitive(10);
+	    }
 
-        [Test]
-        public virtual void testGet()
-        {
-            EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
-            BeanEventBean eventBean = new MyBeanEventBean(testEvent, eventType);
+	    [Test]
+	    public void TestGet()
+	    {
+	        EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
+	        BeanEventBean _eventBean = new BeanEventBean(testEvent, eventType, 0);
 
-            Assert.AreEqual(eventType, eventBean.EventType);
-            Assert.AreEqual(testEvent, eventBean.Underlying);
+	        Assert.AreEqual(eventType, _eventBean.EventType);
+	        Assert.AreEqual(testEvent, _eventBean.Underlying);
 
-            Assert.AreEqual(10, eventBean["intPrimitive"]);
+	        Assert.AreEqual(10, _eventBean["intPrimitive"]);
 
-            // Test wrong property name
-            try
-            {
-                Object temp = eventBean["dummy"];
-                Assert.IsTrue(false);
-            }
-            catch (PropertyAccessException ex)
-            {
-                // Expected
-                log.Debug(".testGetter Expected exception, msg=" + ex.Message);
-            }
+	        // Test wrong property name
+	        try
+	        {
+                Object theVoid = _eventBean["dummy"];
+	            Assert.IsTrue(false);
+	        }
+	        catch (PropertyAccessException ex)
+	        {
+	            // Expected
+	            log.Debug(".testGetter Expected exception, msg=" + ex.Message);
+	        }
 
-            // Test wrong event type - not possible to happen under normal use
-            try
-            {
-                eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
-                eventBean = new MyBeanEventBean(testEvent, eventType);
-                Object temp = eventBean["myString"];
-                Assert.IsTrue(false);
-            }
-            catch (PropertyAccessException ex)
-            {
-                // Expected
-                log.Debug(".testGetter Expected exception, msg=" + ex.Message);
-            }
-        }
+	        // Test wrong event type - not possible to happen under normal use
+	        try
+	        {
+	            eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
+	            _eventBean = new BeanEventBean(testEvent, eventType, 1);
+                Object theVoid = _eventBean["myString"];
+	            Assert.IsTrue(false);
+	        }
+	        catch (PropertyAccessException ex)
+	        {
+	            // Expected
+	            log.Debug(".testGetter Expected exception, msg=" + ex.Message);
+	        }
+	    }
 
-        [Test]
-        public virtual void testGetComplexProperty()
-        {
-            SupportBeanCombinedProps _event = SupportBeanCombinedProps.makeDefaultBean();
-            EventBean eventBean = SupportEventBeanFactory.createObject(_event);
+	    [Test]
+	    public void TestGetComplexProperty()
+	    {
+	        SupportBeanCombinedProps _event = SupportBeanCombinedProps.MakeDefaultBean();
+	        EventBean _eventBean = SupportEventBeanFactory.CreateObject(_event);
 
-            Assert.AreEqual("0ma0", eventBean["indexed[0].mapped('0ma').value"]);
-            Assert.AreEqual("0ma1", eventBean["indexed[0].mapped('0mb').value"]);
-            Assert.AreEqual("1ma0", eventBean["indexed[1].mapped('1ma').value"]);
-            Assert.AreEqual("1ma1", eventBean["indexed[1].mapped('1mb').value"]);
+	        Assert.AreEqual("0ma0", _eventBean["indexed[0].Mapped('0ma').value"]);
+	        Assert.AreEqual("0ma1", _eventBean["indexed[0].Mapped('0mb').value"]);
+	        Assert.AreEqual("1ma0", _eventBean["indexed[1].Mapped('1ma').value"]);
+	        Assert.AreEqual("1ma1", _eventBean["indexed[1].Mapped('1mb').value"]);
 
-            Assert.AreEqual("0ma0", eventBean["array[0].mapped('0ma').value"]);
-            Assert.AreEqual("1ma1", eventBean["array[1].mapped('1mb').value"]);
+	        Assert.AreEqual("0ma0", _eventBean["array[0].Mapped('0ma').value"]);
+	        Assert.AreEqual("1ma1", _eventBean["array[1].Mapped('1mb').value"]);
 
-            tryInvalid(eventBean, "array[0].mapprop('0ma').value");
-            tryInvalid(eventBean, "dummy");
-            tryInvalid(eventBean, "dummy[1]");
-            tryInvalid(eventBean, "dummy('dd')");
-            tryInvalid(eventBean, "dummy.dummy1");
-        }
+	        TryInvalid(_eventBean, "array[0].Mapprop('0ma').value");
+	        TryInvalid(_eventBean, "dummy");
+	        TryInvalid(_eventBean, "dummy[1]");
+	        TryInvalid(_eventBean, "dummy('dd')");
+	        TryInvalid(_eventBean, "dummy.dummy1");
+	    }
 
-        private static void tryInvalid(EventBean eventBean, String propName)
-        {
-            try
-            {
-                Object temp = eventBean[propName];
-                Assert.Fail();
-            }
-            catch (PropertyAccessException ex)
-            {
-                // expected
-            }
-        }
+	    private static void TryInvalid(EventBean _eventBean, String propName)
+	    {
+	        try
+	        {
+	            Object theVoid = _eventBean[propName];
+	            Assert.Fail();
+	        }
+	        catch (PropertyAccessException)
+	        {
+	            // expected
+	        }
+	    }
 
-        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        public class MyBeanEventBean : BeanEventBean
-        {
-            public MyBeanEventBean(Object _event, EventType eventType)
-                : base(_event, eventType)
-            {
-            }
-        }
-    }
-}
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	}
+} // End of namespace

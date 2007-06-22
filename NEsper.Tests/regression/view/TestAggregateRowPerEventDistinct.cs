@@ -37,7 +37,7 @@ namespace net.esper.regression.view
             String viewExpr = "select symbol, sum(distinct volume) as volSum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) ";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             // assert select result type
             Assert.AreEqual(typeof(String), selectTestView.EventType.GetPropertyType("symbol"));
@@ -73,8 +73,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(symbol, newData[0]["symbol"]);
             Assert.AreEqual(volSum, newData[0]["volSum"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void assertEvents(String symbolOld, long volSumOld, String symbolNew, long volSumNew)
@@ -91,8 +91,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(symbolNew, newData[0]["symbol"]);
             Assert.AreEqual(volSumNew, newData[0]["volSum"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void SendEvent(String symbol, long volume)

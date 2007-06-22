@@ -224,7 +224,7 @@ namespace net.esper.view.std
             EventType targetEventType,
             EventAdapterService eventAdapterService)
         {
-            EDataDictionary values = new EDataDictionary();
+            DataDictionary values = new DataDictionary();
 
             // Copy properties of original event, add property value
             foreach (String property in originalEvent.EventType.PropertyNames)

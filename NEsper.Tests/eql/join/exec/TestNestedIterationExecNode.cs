@@ -14,7 +14,7 @@ namespace net.esper.eql.join.exec
 {
 
 	[TestFixture]
-    public class TestNestedIterationExecNode 
+    public class TestNestedIterationExecNode
     {
         private NestedIterationExecNode exec;
         private EventBean[][] streamEvents;
@@ -39,10 +39,10 @@ namespace net.esper.eql.join.exec
                 tmpArray[i2] = new EventBean[2];
             }
             streamEvents = tmpArray;
-            streamEvents[0] = SupportEventBeanFactory.makeEvents_A(new String[] { "a1", "a2" });
-            streamEvents[1] = SupportEventBeanFactory.makeEvents_B(new String[] { "b1", "b2" });
-            streamEvents[2] = SupportEventBeanFactory.makeEvents_C(new String[] { "c1", "c2" });
-            streamEvents[3] = SupportEventBeanFactory.makeEvents_D(new String[] { "d1", "d2" });
+            streamEvents[0] = SupportEventBeanFactory.MakeEvents_A(new String[] { "a1", "a2" });
+            streamEvents[1] = SupportEventBeanFactory.MakeEvents_B(new String[] { "b1", "b2" });
+            streamEvents[2] = SupportEventBeanFactory.MakeEvents_C(new String[] { "c1", "c2" });
+            streamEvents[3] = SupportEventBeanFactory.MakeEvents_D(new String[] { "d1", "d2" });
 
             // Fill with data
             indexes[0].Add(streamEvents[0]);
@@ -62,9 +62,9 @@ namespace net.esper.eql.join.exec
 
             Assert.AreEqual(8, result.Count);
 
-            EventBean[][] received = makeArray(result);
+            EventBean[][] received = MakeArray(result);
             EventBean[][] expected = makeExpected();
-            ArrayAssertionUtil.assertEqualsAnyOrder(expected, received);
+            ArrayAssertionUtil.AreEqualAnyOrder(expected, received);
         }
 
         private EventBean[][] makeExpected()
@@ -93,7 +93,7 @@ namespace net.esper.eql.join.exec
             return expected;
         }
 
-        private EventBean[][] makeArray(IList<EventBean[]> eventArrList)
+        private EventBean[][] MakeArray(IList<EventBean[]> eventArrList)
         {
             EventBean[][] result = new EventBean[eventArrList.Count][];
             for (int i = 0; i < eventArrList.Count; i++)

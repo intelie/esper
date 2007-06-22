@@ -15,7 +15,7 @@ namespace net.esper.events
     public class MapEventBean : EventBean
     {
         private EventType eventType;
-        private EDataDictionary properties;
+        private DataDictionary properties;
         private Int32 hashCode = 0;
         private bool hasHashCode = false;
 
@@ -51,7 +51,7 @@ namespace net.esper.events
 
         public MapEventBean(EDictionary<string,object> properties, EventType eventType)
         {
-        	this.properties = new EDataDictionary() ;
+        	this.properties = new DataDictionary() ;
             this.properties.PutAll(properties);
             this.eventType = eventType;
         }
@@ -66,7 +66,7 @@ namespace net.esper.events
 
         public MapEventBean(EventType eventType, IDictionary<String, EventBean> events)
         {
-            this.properties = new EDataDictionary();
+            this.properties = new DataDictionary();
 
             foreach (KeyValuePair<String, EventBean> entry in events)
             {
@@ -82,7 +82,7 @@ namespace net.esper.events
 
         public MapEventBean(EventType eventType)
         {
-            this.properties = new EDataDictionary();
+            this.properties = new DataDictionary();
             this.eventType = eventType;
         }
 

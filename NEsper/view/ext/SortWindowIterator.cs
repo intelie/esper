@@ -7,7 +7,7 @@ using net.esper.events;
 
 namespace net.esper.view.ext
 {
-    using _WindowList = ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>>;
+    using _WindowList = TreeDictionary<MultiKeyUntyped, LinkedList<EventBean>>;
     using _WindowListEnum = IEnumerator<KeyValuePair<MultiKeyUntyped, LinkedList<EventBean>>>;
 
     /// <summary>
@@ -43,7 +43,7 @@ namespace net.esper.view.ext
         /// <param name="window">sorted map with events
         /// </param>
 
-        public SortWindowIterator(ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> window)
+        public SortWindowIterator(TreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> window)
         {
             this.window = window;
             this.windowIterator = window.GetEnumerator();

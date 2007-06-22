@@ -1,102 +1,85 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
-using net.esper.compat;
-using net.esper.support.bean;
-using net.esper.support.view;
-
-using NUnit.Core;
 using NUnit.Framework;
+
+using net.esper.support.view;
 
 namespace net.esper.view
 {
 	[TestFixture]
 	public class TestViewSupport
 	{
-		private SupportSchemaNeutralView top;
+	    private SupportSchemaNeutralView top;
 
-		private SupportSchemaNeutralView child_1;
-		private SupportSchemaNeutralView child_2;
+	    private SupportSchemaNeutralView child_1;
+	    private SupportSchemaNeutralView child_2;
 
-		private SupportSchemaNeutralView child_2_1;
-		private SupportSchemaNeutralView child_2_2;
+	    private SupportSchemaNeutralView child_2_1;
+	    private SupportSchemaNeutralView child_2_2;
 
-		private SupportSchemaNeutralView child_2_1_1;
-		private SupportSchemaNeutralView child_2_2_1;
-		private SupportSchemaNeutralView child_2_2_2;
+	    private SupportSchemaNeutralView child_2_1_1;
+	    private SupportSchemaNeutralView child_2_2_1;
+	    private SupportSchemaNeutralView child_2_2_2;
 
-		[SetUp]
-		public virtual void setUp()
-		{
-			top = new SupportSchemaNeutralView( "top" );
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        top = new SupportSchemaNeutralView("top");
 
-			child_1 = new SupportSchemaNeutralView( "1" );
-			child_2 = new SupportSchemaNeutralView( "2" );
-			top.AddView( child_1 );
-			top.AddView( child_2 );
+	        child_1 = new SupportSchemaNeutralView("1");
+	        child_2 = new SupportSchemaNeutralView("2");
+	        top.AddView(child_1);
+	        top.AddView(child_2);
 
-			child_2_1 = new SupportSchemaNeutralView( "2_1" );
-			child_2_2 = new SupportSchemaNeutralView( "2_2" );
-			child_2.AddView( child_2_1 );
-			child_2.AddView( child_2_2 );
+	        child_2_1 = new SupportSchemaNeutralView("2_1");
+	        child_2_2 = new SupportSchemaNeutralView("2_2");
+	        child_2.AddView(child_2_1);
+	        child_2.AddView(child_2_2);
 
-			child_2_1_1 = new SupportSchemaNeutralView( "2_1_1" );
-			child_2_2_1 = new SupportSchemaNeutralView( "2_2_1" );
-			child_2_2_2 = new SupportSchemaNeutralView( "2_2_2" );
-			child_2_1.AddView( child_2_1_1 );
-			child_2_2.AddView( child_2_2_1 );
-			child_2_2.AddView( child_2_2_2 );
-		}
+	        child_2_1_1 = new SupportSchemaNeutralView("2_1_1");
+	        child_2_2_1 = new SupportSchemaNeutralView("2_2_1");
+	        child_2_2_2 = new SupportSchemaNeutralView("2_2_2");
+	        child_2_1.AddView(child_2_1_1);
+	        child_2_2.AddView(child_2_2_1);
+	        child_2_2.AddView(child_2_2_2);
+	    }
 
-		[Test]
-		public virtual void testShallowCopyView()
-		{
-			// Copy a view based on a class
-			SupportBeanClassView viewOne = new SupportBeanClassView( typeof( SupportMarketDataBean ) );
-			SupportBeanClassView copyOne = (SupportBeanClassView) ViewSupport.ShallowCopyView( viewOne );
-			Assert.AreEqual( viewOne.EventType, copyOne.EventType );
+	    [Test]
+	    public void TestFindDescendent()
+	    {
+	        // Test a deep find
+            IList<View> descendents = ViewSupport.FindDescendent(top, child_2_2_1);
+	        Assert.AreEqual(2, descendents.Count);
+	        Assert.AreEqual(child_2, descendents[0]);
+	        Assert.AreEqual(child_2_2, descendents[1]);
 
-			// Copy a view based on a map
-			SupportMapView viewTwo = new SupportMapView( new EHashDictionary<String, Type>() );
-            viewTwo.Parent = viewOne;
-			View copyTwo = ViewSupport.ShallowCopyView( viewTwo );
-			Assert.IsTrue( copyTwo.Parent == null );
-			Assert.AreEqual( viewTwo.EventType, copyTwo.EventType );
+	        descendents = ViewSupport.FindDescendent(top, child_2_1_1);
+	        Assert.AreEqual(2, descendents.Count);
+	        Assert.AreEqual(child_2, descendents[0]);
+	        Assert.AreEqual(child_2_1, descendents[1]);
 
-			// Copy a view with read/write property access
-			SupportShallowCopyView viewThree = new SupportShallowCopyView( "avalue" );
-			SupportShallowCopyView copyThree = (SupportShallowCopyView) ViewSupport.ShallowCopyView( viewThree );
+	        descendents = ViewSupport.FindDescendent(top, child_2_1);
+	        Assert.AreEqual(1, descendents.Count);
+	        Assert.AreEqual(child_2, descendents[0]);
 
-			Assert.AreEqual( "avalue", copyThree.SomeReadWriteValue );
-			Assert.AreEqual( null, copyThree.SomeReadOnlyValue );
-			Assert.IsTrue( copyThree.NullWriteOnlyValue );
-		}
+	        // Test a shallow find
+	        descendents = ViewSupport.FindDescendent(top, child_2);
+	        Assert.AreEqual(0, descendents.Count);
 
-		[Test]
-		public virtual void testFindDescendent()
-		{
-			// Test a deep find
-			IList<View> descendents = ViewSupport.FindDescendent( top, child_2_2_1 );
-			Assert.AreEqual( 2, descendents.Count );
-			Assert.AreEqual( child_2, descendents[0] );
-			Assert.AreEqual( child_2_2, descendents[1] );
+	        // Test a no find
+	        descendents = ViewSupport.FindDescendent(top, new SupportSchemaNeutralView());
+	        Assert.AreEqual(null, descendents);
+	    }
 
-			descendents = ViewSupport.FindDescendent( top, child_2_1_1 );
-			Assert.AreEqual( 2, descendents.Count );
-			Assert.AreEqual( child_2, descendents[0] );
-			Assert.AreEqual( child_2_1, descendents[1] );
 
-			descendents = ViewSupport.FindDescendent( top, child_2_1 );
-			Assert.AreEqual( 1, descendents.Count );
-			Assert.AreEqual( child_2, descendents[0] );
-
-			// Test a shallow find
-			descendents = ViewSupport.FindDescendent( top, child_2 );
-			Assert.AreEqual( 0, descendents.Count );
-
-			// Test a no find
-			descendents = ViewSupport.FindDescendent( top, new SupportSchemaNeutralView() );
-			Assert.AreEqual( null, descendents );
-		}
 	}
-}
+} // End of namespace

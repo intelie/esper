@@ -26,9 +26,9 @@ namespace net.esper.core
             listenerOne = new SupportUpdateListener();
             listenerTwo = new SupportUpdateListener();
 
-            ISet<UpdateListener> listeners = new EHashSet<UpdateListener>();
-            listeners.Add(listenerOne.Update);
-            listeners.Add(listenerTwo.Update);
+            UpdateEventHandlerSet listeners = new UpdateEventHandlerSet();
+            listeners.AddListener(listenerOne);
+            listeners.AddListener(listenerTwo);
 
             dispatchService = new DispatchServiceImpl();
             updateDispatchView = new UpdateDispatchView(listeners, dispatchService);
@@ -41,9 +41,9 @@ namespace net.esper.core
             EventBean[] newData = MakeEvents("new");
             updateDispatchView.Update(newData, oldData);
 
-            Assert.IsFalse(listenerOne.Invoked || listenerTwo.Invoked);
+            Assert.IsFalse(listenerOne.IsInvoked || listenerTwo.IsInvoked);
             dispatchService.Dispatch();
-            Assert.IsTrue(listenerOne.Invoked && listenerTwo.Invoked);
+            Assert.IsTrue(listenerOne.IsInvoked && listenerTwo.IsInvoked);
             Assert.AreSame(listenerOne.LastNewData[0], newData[0]);
             Assert.AreSame(listenerTwo.LastOldData[0], oldData[0]);
         }
@@ -59,16 +59,16 @@ namespace net.esper.core
             EventBean[] newDataTwo = MakeEvents("new2");
             updateDispatchView.Update(newDataTwo, oldDataTwo);
 
-            Assert.IsFalse(listenerOne.Invoked || listenerTwo.Invoked);
+            Assert.IsFalse(listenerOne.IsInvoked || listenerTwo.IsInvoked);
             dispatchService.Dispatch();
-            Assert.IsTrue(listenerOne.Invoked && listenerTwo.Invoked);
+            Assert.IsTrue(listenerOne.IsInvoked && listenerTwo.IsInvoked);
             Assert.IsTrue(listenerOne.LastNewData[1] == newDataTwo[0]);
             Assert.IsTrue(listenerTwo.LastOldData[1] == oldDataTwo[0]);
         }
 
         private EventBean[] MakeEvents(String text)
         {
-            return new EventBean[] { SupportEventBeanFactory.createObject(text) };
+            return new EventBean[] { SupportEventBeanFactory.CreateObject(text) };
         }
     }
 }

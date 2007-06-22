@@ -29,7 +29,7 @@ using net.esper.view.internals;
 
 using org.apache.commons.logging;
 
-using Properties = net.esper.compat.EDataDictionary;
+using Properties = net.esper.compat.DataDictionary;
 
 namespace net.esper.core
 {

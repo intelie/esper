@@ -38,7 +38,7 @@ namespace net.esper.view.internals
 
 	    /// <summary>Returns the underlying buffer used for access to prior events.</summary>
 	    /// <returns>buffer</returns>
-	    protected ViewUpdatedCollection Buffer
+	    public ViewUpdatedCollection Buffer
 	    {
 	    	get { return buffer; }
 	    }

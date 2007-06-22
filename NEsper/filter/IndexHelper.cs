@@ -30,7 +30,7 @@ namespace net.esper.filter
         /// </returns>
 
         public static Pair<FilterValueSetParam, FilterParamIndexBase> FindIndex(
-        	ETreeSet<FilterValueSetParam> parameters,
+        	TreeSet<FilterValueSetParam> parameters,
         	IList<FilterParamIndexBase> indizes)
         {
 	        foreach (FilterValueSetParam parameter in parameters)
@@ -67,7 +67,7 @@ namespace net.esper.filter
         /// </returns>
         
         public static FilterValueSetParam FindParameter(
-        	ETreeSet<FilterValueSetParam> parameters,
+        	TreeSet<FilterValueSetParam> parameters,
         	FilterParamIndexBase index)
         {
 	        if (index is FilterParamIndexPropBase)

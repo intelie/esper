@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace net.esper.adapter
 {
@@ -7,7 +8,7 @@ namespace net.esper.adapter
 	/// then on schedule slot.
 	/// </summary>
 
-    public class SendableEventComparator : Comparator<SendableEvent>
+    public class SendableEventComparator : IComparer<SendableEvent>
 	{
 		public int Compare(SendableEvent one, SendableEvent two)
 		{

@@ -19,7 +19,7 @@ namespace net.esper.support.bean
 			get { return _doublePrimitive; }
 		}
 
-		virtual public Double doubleBoxed
+		virtual public double? doubleBoxed
 		{
 			get { return _doubleBoxed; }
 		}
@@ -37,11 +37,11 @@ namespace net.esper.support.bean
 		private int _intPrimitive;
 		private Int32 _intBoxed;
 		private double _doublePrimitive;
-		private Double _doubleBoxed;
+		private double? _doubleBoxed;
 		private bool _boolPrimitive;
 		private bool _boolBoxed;
 		
-		public SupportBean_N(int intPrimitive, Int32 intBoxed, double doublePrimitive, Double doubleBoxed, bool boolPrimitive, bool boolBoxed)
+		public SupportBean_N(int intPrimitive, Int32 intBoxed, double doublePrimitive, double? doubleBoxed, bool boolPrimitive, bool boolBoxed)
 		{
 			this._intPrimitive = intPrimitive;
 			this._intBoxed = intBoxed;

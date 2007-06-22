@@ -26,20 +26,20 @@ namespace net.esper.eql.parse
         public virtual void testGetValues()
         {
             IntParameter intParam = new IntParameter(3);
-            ISet<int> result = intParam.GetValuesInRange(1, 8);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3 }, result);
+            Set<int> result = intParam.GetValuesInRange(1, 8);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3 }, result);
 
             result = intParam.GetValuesInRange(1, 2);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { }, result);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { }, result);
 
             result = intParam.GetValuesInRange(4, 10);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { }, result);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { }, result);
 
             result = intParam.GetValuesInRange(1, 3);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3 }, result);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3 }, result);
 
             result = intParam.GetValuesInRange(3, 5);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3 }, result);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3 }, result);
         }
     }
 }

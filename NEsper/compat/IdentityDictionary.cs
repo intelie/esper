@@ -11,7 +11,7 @@ namespace net.esper.compat
     /// <typeparam name="V"></typeparam>
 
 	public class IdentityDictionary<K,V>
-		: EHashDictionary<K,V>
+		: HashDictionary<K,V>
         where K : class
 	{
         /// <summary>

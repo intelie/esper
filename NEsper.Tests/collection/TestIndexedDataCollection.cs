@@ -38,43 +38,43 @@ namespace net.esper.collection
             index.Add("d", "d3");
 
             // Check all values
-            ArrayAssertionUtil.assertEqualsExactOrder(index["a"].ToArray(), new Object[] { "a1" });
-            ArrayAssertionUtil.assertEqualsExactOrder(index["b"].ToArray(), new Object[] { "b1", "b2" });
-            ArrayAssertionUtil.assertEqualsExactOrder(index["c"].ToArray(), new Object[] { "c1", "c2", "c3" });
-            ArrayAssertionUtil.assertEqualsExactOrder(index["d"].ToArray(), new Object[] { "d1", "d2", "d3" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["a"].ToArray(), new Object[] { "a1" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["b"].ToArray(), new Object[] { "b1", "b2" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["c"].ToArray(), new Object[] { "c1", "c2", "c3" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["d"].ToArray(), new Object[] { "d1", "d2", "d3" });
 
             // Remove and check some
             Assert.IsTrue(index.Remove("a", "a1"));
             Assert.AreEqual(null, index["a"]);
 
             Assert.IsTrue(index.Remove("c", "c1"));
-            ArrayAssertionUtil.assertEqualsExactOrder(index["c"].ToArray(), new Object[] { "c2", "c3" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["c"].ToArray(), new Object[] { "c2", "c3" });
             Assert.IsTrue(index.Remove("c", "c3"));
-            ArrayAssertionUtil.assertEqualsExactOrder(index["c"].ToArray(), new Object[] { "c2" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["c"].ToArray(), new Object[] { "c2" });
             Assert.IsFalse(index.Remove("c", "c1"));
             Assert.IsTrue(index.Remove("c", "c2"));
             Assert.IsFalse(index.Remove("c", "c2"));
             Assert.AreEqual(null, index["c"]);
 
             Assert.IsTrue(index.Remove("d", "d3"));
-            ArrayAssertionUtil.assertEqualsExactOrder(index["d"].ToArray(), new Object[] { "d1", "d2" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["d"].ToArray(), new Object[] { "d1", "d2" });
 
             // Add some more
             index.Add("d", "d1");
             index.Add("d", "d2");
             index.Add("d", "d3");
-            ArrayAssertionUtil.assertEqualsExactOrder(index["d"].ToArray(), new Object[] { "d1", "d2", "d1", "d2", "d3" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["d"].ToArray(), new Object[] { "d1", "d2", "d1", "d2", "d3" });
             Assert.IsTrue(index.Remove("d", "d1"));
 
             // Remove again
-            ArrayAssertionUtil.assertEqualsExactOrder(index["d"].ToArray(), new Object[] { "d2", "d1", "d2", "d3" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["d"].ToArray(), new Object[] { "d2", "d1", "d2", "d3" });
             Assert.IsTrue(index.Remove("d", "d1"));
-            ArrayAssertionUtil.assertEqualsExactOrder(index["d"].ToArray(), new Object[] { "d2", "d2", "d3" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["d"].ToArray(), new Object[] { "d2", "d2", "d3" });
             Assert.IsFalse(index.Remove("d", "d1"));
             Assert.IsTrue(index.Remove("d", "d2"));
-            ArrayAssertionUtil.assertEqualsExactOrder(index["d"].ToArray(), new Object[] { "d2", "d3" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["d"].ToArray(), new Object[] { "d2", "d3" });
             Assert.IsTrue(index.Remove("d", "d3"));
-            ArrayAssertionUtil.assertEqualsExactOrder(index["d"].ToArray(), new Object[] { "d2" });
+            ArrayAssertionUtil.AreEqualExactOrder(index["d"].ToArray(), new Object[] { "d2" });
             Assert.IsTrue(index.Remove("d", "d2"));
             Assert.AreEqual(null, index["d"]);
 

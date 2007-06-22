@@ -1,116 +1,147 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
-using System.Collections.Generic;
+
+using NUnit.Framework;
 
 using net.esper.client;
 using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.regression.view
 {
 	[TestFixture]
 	public class TestViewStartStop
 	{
-		private EPServiceProvider epService;
-		private SupportUpdateListener testListener;
-		private EPStatement sizeView;
+	    private EPServiceProvider epService;
+	    private SupportUpdateListener testListener;
+	    private EPStatement sizeView;
 
-		[SetUp]
-		public virtual void setUp()
-		{
-			testListener = new SupportUpdateListener();
-			epService = EPServiceProviderManager.GetDefaultProvider();
-			epService.Initialize();
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        testListener = new SupportUpdateListener();
+	        epService = EPServiceProviderManager.GetDefaultProvider();
+	        epService.Initialize();
 
-			String viewExpr = "select * from " + typeof( SupportBean ).FullName + ".std:size()";
+	        String viewExpr = "select * from " + typeof(SupportBean).FullName + ".std:size()";
 
-			sizeView = epService.EPAdministrator.CreateEQL( viewExpr );
-		}
+	        sizeView = epService.EPAdministrator.CreateEQL(viewExpr);
+	    }
 
-        public virtual T First<T>(IEnumerable<T> item)
-        {
-            return CollectionHelper.First(item);
-        }
+	    [Test]
+	    public void TestSameWindowReuse()
+	    {
+	        String viewExpr = "select * from " + typeof(SupportBean).FullName + ".win:length(3)";
+	        EPStatement stmtOne = epService.EPAdministrator.CreateEQL(viewExpr);
+	        stmtOne.AddListener(testListener);
 
-		[Test]
-		public virtual void testStartStop()
-		{
-			// View created is automatically Started
-            Assert.AreEqual(0L, First(sizeView)["size"]);
-			sizeView.Stop();
+	        // send a couple of events
+	        SendEvent(1);
+	        SendEvent(2);
+	        SendEvent(3);
+	        SendEvent(4);
 
-			// Send an event, view Stopped
-			SendEvent();
-			Assert.IsNull( sizeView.GetEnumerator() );
+	        // create same statement again
+	        SupportUpdateListener testListenerTwo = new SupportUpdateListener();
+	        EPStatement stmtTwo = epService.EPAdministrator.CreateEQL(viewExpr);
+            stmtTwo.AddListener(testListenerTwo);
 
-			// Start view
-			sizeView.Start();
-            Assert.AreEqual(0L, First(sizeView)["size"]);
+	        // Send event, no old data should be received
+	        SendEvent(5);
+	        Assert.IsNull(testListenerTwo.LastOldData);
+	    }
 
-			// Send event
-			SendEvent();
-            Assert.AreEqual(1L, First(sizeView)["size"]);
+	    [Test]
+	    public void TestStartStop()
+	    {
+	        // View created is automatically started
+	        Assert.AreEqual(0l, CollectionHelper.First(sizeView)["size"]);
+	        sizeView.Stop();
 
-			// Stop view
-			sizeView.Stop();
-			Assert.IsNull( sizeView.GetEnumerator() );
+	        // Send an event, view stopped
+	        SendEvent();
+	        Assert.IsNull(sizeView.GetEnumerator());
 
-			// Start again, iterator is zero
-			sizeView.Start();
-            Assert.AreEqual(0L, First(sizeView)["size"]);
-		}
+	        // Start view
+	        sizeView.Start();
+	        Assert.AreEqual(0l, CollectionHelper.First(sizeView)["size"]);
 
-		[Test]
-		public virtual void testAddRemoveListener()
-		{
-			// View is Started when created
+	        // Send event
+	        SendEvent();
+	        Assert.AreEqual(1l, CollectionHelper.First(sizeView)["size"]);
 
-			// Add listener send event
-            sizeView.AddListener(testListener.Update);
-			Assert.IsNull( testListener.LastNewData );
-            Assert.AreEqual(0L, First(sizeView)["size"]);
-			SendEvent();
-			Assert.AreEqual( 1L, testListener.getAndResetLastNewData()[0]["size"] );
-            Assert.AreEqual(1L, First(sizeView)["size"]);
+	        // Stop view
+	        sizeView.Stop();
+            Assert.IsNull(sizeView.GetEnumerator());
 
-			// Stop view, send event, view
-			sizeView.Stop();
-			SendEvent();
-			Assert.IsNull( sizeView.GetEnumerator() );
-			Assert.IsNull( testListener.LastNewData );
+	        // Start again, iterator is zero
+	        sizeView.Start();
+            Assert.AreEqual(0l, CollectionHelper.First(sizeView)["size"]);
+	    }
 
-			// Start again
-            sizeView.RemoveListener(testListener.Update);
-            sizeView.AddListener(testListener.Update);
-			sizeView.Start();
+	    [Test]
+	    public void TestAddRemoveListener()
+	    {
+	        // View is started when created
 
-			SendEvent();
-			Assert.AreEqual( 1L, testListener.getAndResetLastNewData()[0]["size"] );
-            Assert.AreEqual(1L, First(sizeView)["size"]);
+	        // Add listener send event
+	        sizeView.AddListener(testListener);
+	        Assert.IsNull(testListener.LastNewData);
+            Assert.AreEqual(0l, CollectionHelper.First(sizeView)["size"]);
+	        SendEvent();
+	        Assert.AreEqual(1l, testListener.GetAndResetLastNewData()[0]["size"]);
+            Assert.AreEqual(1l, CollectionHelper.First(sizeView)["size"]);
 
-			// Stop again, leave listeners
-			sizeView.Stop();
-			sizeView.Start();
-			SendEvent();
-			Assert.AreEqual( 1L, testListener.getAndResetLastNewData()[0]["size"] );
+	        // Stop view, send event, view
+	        sizeView.Stop();
+	        SendEvent();
+            Assert.IsNull(sizeView.GetEnumerator());
+	        Assert.IsNull(testListener.LastNewData);
 
-			// Remove listener, send event
-            sizeView.RemoveListener(testListener.Update);
-			SendEvent();
-			Assert.IsNull( testListener.LastNewData );
+	        // Start again
+            sizeView.RemoveListener(testListener);
+	        sizeView.AddListener(testListener);
+	        sizeView.Start();
 
-			// Add listener back, send event
-            sizeView.AddListener(testListener.Update);
-			SendEvent();
-			Assert.AreEqual( 3L, testListener.getAndResetLastNewData()[0]["size"] );
-		}
+	        SendEvent();
+	        Assert.AreEqual(1l, testListener.GetAndResetLastNewData()[0]["size"]);
+            Assert.AreEqual(1l, CollectionHelper.First(sizeView)["size"]);
 
-		private void SendEvent()
-		{
-			epService.EPRuntime.SendEvent( new SupportBean() );
-		}
+	        // Stop again, leave listeners
+	        sizeView.Stop();
+	        sizeView.Start();
+	        SendEvent();
+	        Assert.AreEqual(1l, testListener.GetAndResetLastNewData()[0]["size"]);
+
+	        // Remove listener, send event
+            sizeView.RemoveListener(testListener);
+	        SendEvent();
+	        Assert.IsNull(testListener.LastNewData);
+
+	        // Add listener back, send event
+	        sizeView.AddListener(testListener);
+	        SendEvent();
+	        Assert.AreEqual(3l, testListener.GetAndResetLastNewData()[0]["size"]);
+	    }
+
+	    private void SendEvent()
+	    {
+	        SendEvent(-1);
+	    }
+
+	    private void SendEvent(int intPrimitive)
+	    {
+	        SupportBean bean = new SupportBean();
+	        bean.SetIntPrimitive(intPrimitive);
+	        epService.EPRuntime.SendEvent(bean);
+	    }
 	}
-}
+} // End of namespace

@@ -23,7 +23,7 @@ namespace net.esper.pattern
 	/// </summary>
 	public sealed class MatchedEventMapImpl : MatchedEventMap
 	{
-	    private EDictionary<String, EventBean> events = new EHashDictionary<String, EventBean>();
+	    private EDictionary<String, EventBean> events = new HashDictionary<String, EventBean>();
 
 	    /// <summary>
         /// Constructor creates an empty collection of events.
@@ -142,7 +142,7 @@ namespace net.esper.pattern
 	    /// <returns>shallow copy</returns>
 	    public MatchedEventMap ShallowCopy()
 	    {
-	        EDictionary<String, EventBean> copy = new EHashDictionary<String, EventBean>();
+	        EDictionary<String, EventBean> copy = new HashDictionary<String, EventBean>();
 	        copy.PutAll(events);
 	        return new MatchedEventMapImpl(copy);
 	    }

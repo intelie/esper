@@ -1,148 +1,155 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
+
+using NUnit.Framework;
 
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.events;
 using net.esper.support.filter;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.filter
 {
-    [TestFixture]
-    public class TestFilterParamIndexEquals
-    {
-        private SupportEventEvaluator testEvaluator;
-        private SupportBean testBean;
-        private EventBean testEventBean;
-        private EventType testEventType;
-        private IList<FilterCallback> matchesList;
+	[TestFixture]
+	public class TestFilterParamIndexEquals
+	{
+	    private SupportEventEvaluator testEvaluator;
+	    private SupportBean testBean;
+	    private EventBean testEventBean;
+	    private EventType testEventType;
+	    private IList<FilterHandle> matchesList;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            testEvaluator = new SupportEventEvaluator();
-            testBean = new SupportBean();
-            testEventBean = SupportEventBeanFactory.createObject(testBean);
-            testEventType = testEventBean.EventType;
-            matchesList = new List<FilterCallback>();
-        }
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        testEvaluator = new SupportEventEvaluator();
+	        testBean = new SupportBean();
+	        testEventBean = SupportEventBeanFactory.CreateObject(testBean);
+	        testEventType = testEventBean.EventType;
+	        matchesList = new List<FilterHandle>();
+	    }
 
-        [Test]
-        public virtual void testLong()
-        {
-            FilterParamIndexEquals index = new FilterParamIndexEquals("shortBoxed", testEventType);
+	    [Test]
+	    public void TestLong()
+	    {
+	        FilterParamIndexEquals index = new FilterParamIndexEquals("shortBoxed", testEventType);
 
-            index.Put((short) 1, testEvaluator);
-            index.Put((short) 20, testEvaluator);
+	        index[(short) 1] = testEvaluator;
+	        index[(short) 20] = testEvaluator;
 
-            verifyShortBoxed(index, (short)10, 0);
-            verifyShortBoxed(index, (short)1, 1);
-            verifyShortBoxed(index, (short)20, 1);
-            verifyShortBoxed(index, null, 0);
+	        VerifyShortBoxed(index, (short) 10, 0);
+	        VerifyShortBoxed(index, (short) 1, 1);
+	        VerifyShortBoxed(index, (short) 20, 1);
+	        VerifyShortBoxed(index, null, 0);
 
-            Assert.AreEqual(testEvaluator, index[(short)1]);
-            Assert.IsTrue(index.ReadWriteLock != null);
-            Assert.IsTrue(index.Remove((short)1));
-            Assert.IsFalse(index.Remove((short)1));
+	        Assert.AreEqual(testEvaluator, index[(short) 1]);
+	        Assert.IsTrue(index.ReadWriteLock != null);
+	        Assert.IsTrue(index.Remove((short) 1));
+	        Assert.IsFalse(index.Remove((short) 1));
             Assert.AreEqual(null, index[(short)1]);
 
-            try
-            {
-                index.Put("a", testEvaluator);
-                Assert.IsTrue(false);
-            }
-            catch (ArgumentException ex)
-            {
-                // Expected
-            }
-        }
+	        try
+	        {
+	            index["a"] = testEvaluator;
+	            Assert.IsTrue(false);
+	        }
+	        catch (ArgumentException ex)
+	        {
+	            // Expected
+	        }
+	    }
 
-        [Test]
-        public virtual void testBoolean()
-        {
-            FilterParamIndexEquals index = new FilterParamIndexEquals("boolPrimitive", testEventType);
+	    [Test]
+	    public void TestBoolean()
+	    {
+	        FilterParamIndexEquals index = new FilterParamIndexEquals("boolPrimitive", testEventType);
 
-            index.Put(false, testEvaluator);
+	        index[false] = testEvaluator;
 
-            verifyBooleanPrimitive(index, false, 1);
-            verifyBooleanPrimitive(index, true, 0);
-        }
+	        VerifyBooleanPrimitive(index, false, 1);
+	        VerifyBooleanPrimitive(index, true, 0);
+	    }
 
-        [Test]
-        public virtual void testString()
-        {
-            FilterParamIndexEquals index = new FilterParamIndexEquals("str", testEventType);
+	    [Test]
+	    public void TestString()
+	    {
+	        FilterParamIndexEquals index = new FilterParamIndexEquals("string", testEventType);
 
-            index.Put("hello", testEvaluator);
-            index.Put("test", testEvaluator);
+	        index["hello"] = testEvaluator;
+	        index["test"] = testEvaluator;
 
-            verifyString(index, null, 0);
-            verifyString(index, "dudu", 0);
-            verifyString(index, "hello", 1);
-            verifyString(index, "test", 1);
+	        VerifyString(index, null, 0);
+	        VerifyString(index, "dudu", 0);
+	        VerifyString(index, "hello", 1);
+	        VerifyString(index, "test", 1);
 
-            try
-            {
-                index.Put(10, testEvaluator);
-                Assert.IsTrue(false);
-            }
-            catch (ArgumentException ex)
-            {
-                // Expected
-            }
-        }
+	        try
+	        {
+	            index[10] = testEvaluator;
+	            Assert.IsTrue(false);
+	        }
+	        catch (ArgumentException ex)
+	        {
+	            // Expected
+	        }
+	    }
 
-        [Test]
-        public virtual void testFloatPrimitive()
-        {
-            FilterParamIndexEquals index = new FilterParamIndexEquals("floatPrimitive", testEventType);
+	    [Test]
+	    public void TestFloatPrimitive()
+	    {
+	        FilterParamIndexEquals index = new FilterParamIndexEquals("floatPrimitive", testEventType);
 
-            index.Put(1.5f, testEvaluator);
+	        index[1.5f] = testEvaluator;
 
-            verifyfloatPrimitive(index, 1.5f, 1);
-            verifyfloatPrimitive(index, 2.2f, 0);
-            verifyfloatPrimitive(index, 0, 0);
+	        VerifyFloatPrimitive(index, 1.5f, 1);
+	        VerifyFloatPrimitive(index, 2.2f, 0);
+	        VerifyFloatPrimitive(index, 0, 0);
 
-            try
-            {
-                index.Put((double)20, testEvaluator);
-                Assert.IsTrue(false);
-            }
-            catch (ArgumentException ex)
-            {
-                // Expected
-            }
-        }
+	        try
+	        {
+	            index[20] = testEvaluator;
+	            Assert.IsTrue(false);
+	        }
+	        catch (ArgumentException ex)
+	        {
+	            // Expected
+	        }
+	    }
 
-        private void verifyShortBoxed(FilterParamIndex index, short? testValue, int numExpected)
-        {
-            testBean.shortBoxed = testValue;
-            index.MatchEvent(testEventBean, matchesList);
-            Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
-        }
+	    private void VerifyShortBoxed(FilterParamIndexBase index, short? testValue, int numExpected)
+	    {
+	        testBean.SetShortBoxed(testValue);
+	        index.MatchEvent(testEventBean, matchesList);
+	        Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+	    }
 
-        private void verifyBooleanPrimitive(FilterParamIndex index, bool testValue, int numExpected)
-        {
-            testBean.boolPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList);
-            Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
-        }
+	    private void VerifyBooleanPrimitive(FilterParamIndexBase index, bool testValue, int numExpected)
+	    {
+	        testBean.SetBoolPrimitive(testValue);
+	        index.MatchEvent(testEventBean, matchesList);
+	        Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+	    }
 
-        private void verifyString(FilterParamIndex index, String testValue, int numExpected)
-        {
-            testBean.str = testValue;
-            index.MatchEvent(testEventBean, matchesList);
-            Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
-        }
+	    private void VerifyString(FilterParamIndexBase index, String testValue, int numExpected)
+	    {
+	        testBean.SetString(testValue);
+	        index.MatchEvent(testEventBean, matchesList);
+	        Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+	    }
 
-        private void verifyfloatPrimitive(FilterParamIndex index, float testValue, int numExpected)
-        {
-            testBean.floatPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList);
-            Assert.AreEqual(numExpected, testEvaluator.AndResetCountInvoked);
-        }
-    }
-}
+	    private void VerifyFloatPrimitive(FilterParamIndexBase index, float testValue, int numExpected)
+	    {
+	        testBean.SetFloatPrimitive(testValue);
+	        index.MatchEvent(testEventBean, matchesList);
+	        Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+	    }
+	}
+} // End of namespace

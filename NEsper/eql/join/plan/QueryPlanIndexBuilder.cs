@@ -30,7 +30,7 @@ namespace net.esper.eql.join.plan
             // For each stream compile a list of index property sets.
             for (int streamIndexed = 0; streamIndexed < numStreams; streamIndexed++)
             {
-                Set<MultiKey<String>> indexesSet = new EHashSet<MultiKey<String>>();
+                Set<MultiKey<String>> indexesSet = new HashSet<MultiKey<String>>();
                 List<String[]> indexesList = new List<String[]>();
 
                 // Look at the index from the viewpoint of the stream looking up in the index

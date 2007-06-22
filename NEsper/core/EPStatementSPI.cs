@@ -29,20 +29,6 @@ namespace net.esper.core
 			get;
 		}
 
-	    /// <summary>
-		/// Gets or sets the current set of listeners for read-only operations.
-	    /// <p>
-	    /// Care must be taken in the use of this method as unsynchronized modification to the
-	    /// listeners of a statement can yield problems.
-		/// </p>
-		/// </summary>
-	    /// <returns>listener set</returns>
-        Set<UpdateListener> Listeners
-		{
-			get;
-			set;
-		}
-
 	    /// <summary>Set statement state.</summary>
 	    EPStatementState CurrentState
 		{

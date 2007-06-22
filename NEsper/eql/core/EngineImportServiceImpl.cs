@@ -28,7 +28,7 @@ namespace net.esper.eql.core
 		public EngineImportServiceImpl()
 	    {
 	        imports = new List<String>();
-	        aggregationFunctions = new EHashDictionary<String, String>();
+	        aggregationFunctions = new HashDictionary<String, String>();
 	    }
 
 	    public void AddImport(String importName)
@@ -134,7 +134,7 @@ namespace net.esper.eql.core
 	    /// <param name="className">is the class name to find</param>
 	    /// <returns>class</returns>
 	    /// <throws>ClassNotFoundException if the class cannot be loaded</throws>
-	    protected Type ResolveType(String className)
+	    public Type ResolveType(String className)
 	    {
 			// Attempt to retrieve the class with the name as-is
 			try
@@ -174,9 +174,9 @@ namespace net.esper.eql.core
 
 	    /// <summary>For testing, returns imports.</summary>
 	    /// <returns>returns auto-import list as array</returns>
-	    protected String[] GetImports()
+	    public String[] Imports
 		{
-			return imports.ToArray();
+	    	get { return imports.ToArray(); }
 		}
 
 	    private static bool IsFunctionName(String functionName)

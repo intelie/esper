@@ -53,7 +53,7 @@ namespace net.esper.regression.eql
 			String stmt = "select * from " + typeof(SupportBean_A).FullName + "().win:length(1000000) s1," + typeof(SupportBean_B).FullName + "().win:length(1000000) s2," + typeof(SupportBean_C).FullName + "().win:length(1000000) s3" + " where s1.id=s2.id"; // ==> stream s3 no properties supplied, full s3 scan
 			
 			joinView = epService.EPAdministrator.CreateEQL(stmt);
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 			
 			// preload s3 with just 1 event
 			SendEvent(new SupportBean_C("GE_0"));
@@ -80,7 +80,7 @@ namespace net.esper.regression.eql
 			String methodName = ".tryJoinPerf3Streams";
 			
 			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 			
 			// Send events for each stream
 			log.Info(methodName + " Preloading events");

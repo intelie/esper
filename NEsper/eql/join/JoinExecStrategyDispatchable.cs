@@ -36,8 +36,8 @@ namespace net.esper.eql.join
             this.joinExecutionStrategy = joinExecutionStrategy;
             this.numStreams = numStreams;
 
-            oldStreamBuffer = new EHashDictionary<Int32, FlushedEventBuffer>();
-            newStreamBuffer = new EHashDictionary<Int32, FlushedEventBuffer>();
+            oldStreamBuffer = new HashDictionary<Int32, FlushedEventBuffer>();
+            newStreamBuffer = new HashDictionary<Int32, FlushedEventBuffer>();
         }
 
         /// <summary>

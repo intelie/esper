@@ -15,7 +15,7 @@ namespace net.esper.events
 		{
 			base.setUp();
 		}
-		
+
 		[Test]
 		public virtual void testGetPropertyType()
 		{
@@ -32,15 +32,15 @@ namespace net.esper.events
 		[Test]
 		public virtual void testGetGetter()
 		{
-            Assert.AreEqual(_event, eventType.GetGetter("a").GetValue(eventBeanComplete));
-            Assert.AreEqual(1, eventType.GetGetter("a.intPrimitive").GetValue(eventBeanComplete));
-            Assert.AreEqual("nestedValue", eventType.GetGetter("b.nested.nestedValue").GetValue(eventBeanComplete));
+            Assert.AreEqual(_event, eventType.GetGetter("a").GetValue(_eventBeanComplete));
+            Assert.AreEqual(1, eventType.GetGetter("a.intPrimitive").GetValue(_eventBeanComplete));
+            Assert.AreEqual("nestedValue", eventType.GetGetter("b.nested.nestedValue").GetValue(_eventBeanComplete));
 
-            Assert.AreEqual(_event, eventType.GetGetter("a").GetValue(eventBeanInComplete));
-            Assert.AreEqual(1, eventType.GetGetter("a.intPrimitive").GetValue(eventBeanInComplete));
-            Assert.AreEqual(null, eventType.GetGetter("b.nested.nestedValue").GetValue(eventBeanInComplete));
-            Assert.AreEqual(null, eventType.GetGetter("b.nested").GetValue(eventBeanInComplete));
-            Assert.AreEqual(null, eventType.GetGetter("b").GetValue(eventBeanInComplete));
+            Assert.AreEqual(_event, eventType.GetGetter("a").GetValue(_eventBeanInComplete));
+            Assert.AreEqual(1, eventType.GetGetter("a.intPrimitive").GetValue(_eventBeanInComplete));
+            Assert.AreEqual(null, eventType.GetGetter("b.nested.nestedValue").GetValue(_eventBeanInComplete));
+            Assert.AreEqual(null, eventType.GetGetter("b.nested").GetValue(_eventBeanInComplete));
+            Assert.AreEqual(null, eventType.GetGetter("b").GetValue(_eventBeanInComplete));
 
 			Assert.AreEqual( null, eventType.GetGetter( "b.nested.xxx" ) );
 			Assert.AreEqual( null, eventType.GetGetter( "b.xxx" ) );
@@ -49,15 +49,15 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public virtual void testGetPropertyNames()
+		public virtual void TestPropertyNames()
 		{
-			ArrayAssertionUtil.assertEqualsAnyOrder(
-                (ICollection<string>) new String[] { "a", "b" }, 
+			ArrayAssertionUtil.AreEqualAnyOrder(
+                (ICollection<string>) new String[] { "a", "b" },
                 (ICollection<string>) eventType.PropertyNames );
 		}
 
 		[Test]
-		public virtual void testIsProperty()
+		public virtual void TestIsProperty()
 		{
 			Assert.IsTrue( eventType.IsProperty( "b.nested.nestedValue" ) );
 			Assert.IsFalse( eventType.IsProperty( "b.nested.xxx" ) );

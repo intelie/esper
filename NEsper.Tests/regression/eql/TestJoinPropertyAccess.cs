@@ -26,52 +26,52 @@ namespace net.esper.regression.eql
 		[Test]
 		public virtual void testRegularJoin()
 		{
-			SupportBeanCombinedProps combined = SupportBeanCombinedProps.makeDefaultBean();
-			SupportBeanComplexProps complex = SupportBeanComplexProps.makeDefaultBean();
-			Assert.AreEqual( "0ma0", combined.getIndexed( 0 ).getMapped( "0ma" ).Value );
+			SupportBeanCombinedProps combined = SupportBeanCombinedProps.MakeDefaultBean();
+			SupportBeanComplexProps complex = SupportBeanComplexProps.MakeDefaultBean();
+			Assert.AreEqual( "0ma0", combined.GetIndexed( 0 ).GetMapped( "0ma" ).Value );
 
 			String viewExpr =
 				"select nested.nested, s1.indexed[0], nested.indexed[1] from " +
-				typeof( SupportBeanComplexProps ).FullName + ".win:length(3) nested, " + 
-				typeof( SupportBeanCombinedProps ).FullName + ".win:length(3) s1" + 
+                typeof(SupportBeanComplexProps).FullName + ".win:length(3) nested, " +
+                typeof(SupportBeanCombinedProps).FullName + ".win:length(3) s1" +
 				" where mapped('keyOne') = indexed[2].mapped('2ma').value and" +
 				" indexed[0].mapped('0ma').value = '0ma0'";
 
 			EPStatement testView = epService.EPAdministrator.CreateEQL( viewExpr );
 			testListener = new SupportUpdateListener();
-            testView.AddListener(testListener.Update);
+            testView.AddListener(testListener);
 
 			epService.EPRuntime.SendEvent( combined );
 			epService.EPRuntime.SendEvent( complex );
 
-			EventBean _event = testListener.getAndResetLastNewData()[0];
-			Assert.AreSame( complex.nested, _event["nested.nested"] );
-			Assert.AreSame( combined.getIndexed( 0 ), _event["s1.indexed[0]"] );
-			Assert.AreEqual( complex.getIndexed( 1 ), _event["nested.indexed[1]"] );
+			EventBean _event = testListener.GetAndResetLastNewData()[0];
+			Assert.AreSame( complex.Nested, _event["nested.nested"] );
+			Assert.AreSame( combined.GetIndexed( 0 ), _event["s1.indexed[0]"] );
+			Assert.AreEqual( complex.GetIndexed( 1 ), _event["nested.indexed[1]"] );
 		}
 
 		[Test]
 		public virtual void testOuterJoin()
 		{
-			String viewExpr = 
-				"select * from " + 
-				typeof( SupportBeanComplexProps ).FullName + ".win:length(3) s0" + " left outer join " + 
-				typeof( SupportBeanCombinedProps ).FullName + ".win:length(3) s1" + 
+			String viewExpr =
+				"select * from " +
+                typeof(SupportBeanComplexProps).FullName + ".win:length(3) s0" + " left outer join " +
+                typeof(SupportBeanCombinedProps).FullName + ".win:length(3) s1" +
 				" on mapped('keyOne') = indexed[2].mapped('2ma').value";
 
 			EPStatement testView = epService.EPAdministrator.CreateEQL( viewExpr );
 			testListener = new SupportUpdateListener();
-            testView.AddListener(testListener.Update);
+            testView.AddListener(testListener);
 
-			SupportBeanCombinedProps combined = SupportBeanCombinedProps.makeDefaultBean();
+            SupportBeanCombinedProps combined = SupportBeanCombinedProps.MakeDefaultBean();
 			epService.EPRuntime.SendEvent( combined );
-			SupportBeanComplexProps complex = SupportBeanComplexProps.makeDefaultBean();
+			SupportBeanComplexProps complex = SupportBeanComplexProps.MakeDefaultBean();
 			epService.EPRuntime.SendEvent( complex );
 
 			// double check that outer join criteria match
-			Assert.AreEqual( complex.getMapped( "keyOne" ), combined.getIndexed( 2 ).getMapped( "2ma" ).Value );
+			Assert.AreEqual( complex.GetMapped( "keyOne" ), combined.GetIndexed( 2 ).GetMapped( "2ma" ).Value );
 
-			EventBean _event = testListener.getAndResetLastNewData()[0];
+			EventBean _event = testListener.GetAndResetLastNewData()[0];
 			Assert.AreSame( complex, _event["s0"] );
 			Assert.AreSame( combined, _event["s1"] );
 		}

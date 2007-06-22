@@ -12,7 +12,7 @@ namespace net.esper.regression.support
 
     public class EventCollection : IEnumerable<KeyValuePair<String, Object>>
     {
-        public const String ON_START_EVENT_ID = "ON_START_ID";
+        public const String ON_START__event_ID = "ON_START_ID";
 
         // Ordered map of string event id and event object
         // Events will be sent in the ordering maintained.
@@ -27,7 +27,7 @@ namespace net.esper.regression.support
             this.testEventTimes = testEventTimes;
         }
 
-        public virtual Object getEvent(String eventId)
+        public virtual Object GetEvent(String eventId)
         {
             if (!testEvents.ContainsKey(eventId))
             {

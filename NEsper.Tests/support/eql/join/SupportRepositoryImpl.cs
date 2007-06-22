@@ -10,7 +10,7 @@ namespace net.esper.support.eql.join
     public class SupportRepositoryImpl : Repository
     {
         private IList<Cursor> cursorList = new List<Cursor>();
-        private IList<ISet<EventBean>> lookupResultsList = new List<ISet<EventBean>>();
+        private IList<Set<EventBean>> lookupResultsList = new List<Set<EventBean>>();
         private IList<int> resultStreamList = new List<int>();
 
         public IEnumerator<Cursor> GetCursors(int lookupStream)
@@ -18,7 +18,7 @@ namespace net.esper.support.eql.join
             return new SingleCursorIterator(new Cursor(SupportJoinResultNodeFactory.MakeEvent(), 0, null));
         }
 
-        public void AddResult(Cursor cursor, ISet<EventBean> lookupResults, int resultStream)
+        public void AddResult(Cursor cursor, Set<EventBean> lookupResults, int resultStream)
         {
             cursorList.Add(cursor);
             lookupResultsList.Add(lookupResults);
@@ -30,7 +30,7 @@ namespace net.esper.support.eql.join
             return cursorList;
         }
 
-        public IList<ISet<EventBean>> getLookupResultsList()
+        public IList<Set<EventBean>> getLookupResultsList()
         {
             return lookupResultsList;
         }

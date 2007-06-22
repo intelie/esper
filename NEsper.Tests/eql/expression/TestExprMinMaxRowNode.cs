@@ -1,134 +1,144 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
+
+using NUnit.Framework;
 
 using net.esper.support.eql;
 using net.esper.type;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.eql.expression
-{	
+{
 	[TestFixture]
-	public class TestExprMinMaxRowNode 
+	public class TestExprMinMaxRowNode
 	{
-		private ExprMinMaxRowNode minMaxNode;
-		
-		[SetUp]
-		public virtual void  setUp()
-		{
-			minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
-		}
-		
-		[Test]
-		public virtual void  testGetType()
-		{
-			minMaxNode.AddChildNode(new SupportExprNode(typeof(Double)));
-			minMaxNode.AddChildNode(new SupportExprNode(typeof(Int32)));
-			minMaxNode.Validate(null, null);
-			Assert.AreEqual( typeof( double? ), minMaxNode.ReturnType );
-			
-			minMaxNode.AddChildNode(new SupportExprNode(typeof(Double)));
-			minMaxNode.Validate(null, null);
-			Assert.AreEqual( typeof( double? ), minMaxNode.ReturnType );
-		}
-		
-		[Test]
-		public virtual void  testToExpressionString()
-		{
-			minMaxNode.AddChildNode(new SupportExprNode(9d));
-			minMaxNode.AddChildNode(new SupportExprNode(6));
-			Assert.AreEqual("max(9,6)", minMaxNode.ExpressionString);
-			minMaxNode.AddChildNode(new SupportExprNode(0.5d));
-			Assert.AreEqual("max(9,6,0.5)", minMaxNode.ExpressionString);
-		}
-		
-		[Test]
-		public virtual void  testValidate()
-		{
-			// Must have 2 or more subnodes
-			try
-			{
-				minMaxNode.Validate(null, null);
-				Assert.Fail();
-			}
-			catch (ExprValidationException ex)
-			{
-				// Expected
-			}
-			
-			// Must have only number-type subnodes
-			minMaxNode.AddChildNode(new SupportExprNode(typeof(String)));
-			minMaxNode.AddChildNode(new SupportExprNode(typeof(Int32)));
-			try
-			{
-				minMaxNode.Validate(null, null);
-				Assert.Fail();
-			}
-			catch (ExprValidationException ex)
-			{
-				// Expected
-			}
-		}
-		
-		[Test]
-		public virtual void  testEvaluate()
-		{
-			minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
-			setupNode(minMaxNode, 10, 1.5, null);
-			Assert.AreEqual(10d, minMaxNode.Evaluate(null));
-			
-			minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
-			setupNode(minMaxNode, 1, 1.5, null);
-			Assert.AreEqual(1.5d, minMaxNode.Evaluate(null));
-			
-			minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
-			setupNode(minMaxNode, 1, 1.5, null);
-			Assert.AreEqual(1d, minMaxNode.Evaluate(null));
-			
-			minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
-			setupNode(minMaxNode, 1, 1.5, 2.0f);
-			Assert.AreEqual(2.0d, minMaxNode.Evaluate(null));
-			
-			minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
-			setupNode(minMaxNode, 6, 3.5, 2.0f);
-			Assert.AreEqual(2.0d, minMaxNode.Evaluate(null));
-			
-			minMaxNode = makeNode(null, typeof(Int32), 5, typeof(Int32), 6, typeof(Int32));
-			Assert.IsNull(minMaxNode.Evaluate(null));
-			minMaxNode = makeNode(7, typeof(Int32), null, typeof(Int32), 6, typeof(Int32));
-			Assert.IsNull(minMaxNode.Evaluate(null));
-			minMaxNode = makeNode(3, typeof(Int32), 5, typeof(Int32), null, typeof(Int32));
-			Assert.IsNull(minMaxNode.Evaluate(null));
-			minMaxNode = makeNode((Object) null, typeof(Int32), (Object) null, typeof(Int32), (Object) null, typeof(Int32));
-			Assert.IsNull(minMaxNode.Evaluate(null));
-		}
-		
-		[Test]
-		public virtual void  testEqualsNode()
-		{
-			Assert.IsTrue(minMaxNode.EqualsNode(minMaxNode));
-			Assert.IsFalse(minMaxNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
-			Assert.IsFalse(minMaxNode.EqualsNode(new ExprOrNode()));
-		}
-		
-		private static void  setupNode(ExprMinMaxRowNode nodeMin, int intValue, double doubleValue, float? floatValue)
-		{
-			nodeMin.AddChildNode(new SupportExprNode(intValue));
-			nodeMin.AddChildNode(new SupportExprNode(doubleValue));
-			if (floatValue != null)
-			{
-				nodeMin.AddChildNode(new SupportExprNode( floatValue.Value ));
-			}
-			nodeMin.GetValidatedSubtree(null, null);
-		}
-		
-		private ExprMinMaxRowNode makeNode(Object valueOne, Type typeOne, Object valueTwo, Type typeTwo, Object valueThree, Type typeThree)
-		{
-			ExprMinMaxRowNode maxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
-			maxNode.AddChildNode(new SupportExprNode(valueOne, typeOne));
-			maxNode.AddChildNode(new SupportExprNode(valueTwo, typeTwo));
-			maxNode.AddChildNode(new SupportExprNode(valueThree, typeThree));
-			return maxNode;
-		}
+	    private ExprMinMaxRowNode minMaxNode;
+
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
+	    }
+
+	    [Test]
+	    public void TestGetType()
+	    {
+	        minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
+	        minMaxNode.AddChildNode(new SupportExprNode(typeof(int?)));
+	        minMaxNode.Validate(null, null, null);
+	        Assert.AreEqual(typeof(double?), minMaxNode.GetType());
+
+	        minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
+	        minMaxNode.Validate(null, null, null);
+	        Assert.AreEqual(typeof(double?), minMaxNode.GetType());
+	    }
+
+	    [Test]
+	    public void TestToExpressionString()
+	    {
+	        minMaxNode.AddChildNode(new SupportExprNode(9d));
+	        minMaxNode.AddChildNode(new SupportExprNode(6));
+	        Assert.AreEqual("max(9.0,6)", minMaxNode.ExpressionString);
+	        minMaxNode.AddChildNode(new SupportExprNode(0.5d));
+	        Assert.AreEqual("max(9.0,6,0.5)", minMaxNode.ExpressionString);
+	    }
+
+	    [Test]
+	    public void TestValidate()
+	    {
+	        // Must have 2 or more subnodes
+	        try
+	        {
+	            minMaxNode.Validate(null, null, null);
+	            Assert.Fail();
+	        }
+	        catch (ExprValidationException ex)
+	        {
+	            // Expected
+	        }
+
+	        // Must have only number-type subnodes
+	        minMaxNode.AddChildNode(new SupportExprNode(typeof(String)));
+	        minMaxNode.AddChildNode(new SupportExprNode(typeof(int?)));
+	        try
+	        {
+	            minMaxNode.Validate(null, null, null);
+	            Assert.Fail();
+	        }
+	        catch (ExprValidationException ex)
+	        {
+	            // Expected
+	        }
+	    }
+
+	    [Test]
+	    public void TestEvaluate()
+	    {
+	        minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
+	        SetupNode(minMaxNode, 10, 1.5, null);
+	        Assert.AreEqual(10d, minMaxNode.Evaluate(null, false));
+
+	        minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
+	        SetupNode(minMaxNode, 1, 1.5, null);
+	        Assert.AreEqual(1.5d, minMaxNode.Evaluate(null, false));
+
+	        minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
+	        SetupNode(minMaxNode, 1, 1.5, null);
+	        Assert.AreEqual(1d, minMaxNode.Evaluate(null, false));
+
+	        minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
+	        SetupNode(minMaxNode, 1, 1.5, 2.0f);
+	        Assert.AreEqual(2.0d, minMaxNode.Evaluate(null, false));
+
+	        minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
+	        SetupNode(minMaxNode, 6, 3.5, 2.0f);
+	        Assert.AreEqual(2.0d, minMaxNode.Evaluate(null, false));
+
+	        minMaxNode = MakeNode(null, typeof(int?), 5, typeof(int?), 6, typeof(int?));
+	        Assert.IsNull(minMaxNode.Evaluate(null, false));
+	        minMaxNode = MakeNode(7, typeof(int?), null, typeof(int?), 6, typeof(int?));
+	        Assert.IsNull(minMaxNode.Evaluate(null, false));
+	        minMaxNode = MakeNode(3, typeof(int?), 5, typeof(int?), null, typeof(int?));
+	        Assert.IsNull(minMaxNode.Evaluate(null, false));
+	        minMaxNode = MakeNode(null, typeof(int?), null, typeof(int?), null, typeof(int?));
+	        Assert.IsNull(minMaxNode.Evaluate(null, false));
+	    }
+
+	    [Test]
+	    public void TestEqualsNode()
+	    {
+	        Assert.IsTrue(minMaxNode.EqualsNode(minMaxNode));
+	        Assert.IsFalse(minMaxNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
+	        Assert.IsFalse(minMaxNode.EqualsNode(new ExprOrNode()));
+	    }
+
+	    private static void SetupNode(ExprMinMaxRowNode nodeMin, int intValue, double doubleValue, float? floatValue)
+	    {
+	        nodeMin.AddChildNode(new SupportExprNode(intValue));
+	        nodeMin.AddChildNode(new SupportExprNode(doubleValue));
+	        if (floatValue != null)
+	        {
+	            nodeMin.AddChildNode(new SupportExprNode(floatValue));
+	        }
+	        nodeMin.GetValidatedSubtree(null, null, null);
+	    }
+
+	    private ExprMinMaxRowNode MakeNode(Object valueOne, Type typeOne,
+	                                       Object valueTwo, Type typeTwo,
+	                                       Object valueThree, Type typeThree)
+	    {
+	        ExprMinMaxRowNode maxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
+	        maxNode.AddChildNode(new SupportExprNode(valueOne, typeOne));
+	        maxNode.AddChildNode(new SupportExprNode(valueTwo, typeTwo));
+	        maxNode.AddChildNode(new SupportExprNode(valueThree, typeThree));
+	        return maxNode;
+	    }
+
 	}
-}
+} // End of namespace

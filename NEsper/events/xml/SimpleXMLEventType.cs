@@ -34,7 +34,7 @@ namespace net.esper.events.xml
             : base(configurationEventTypeXMLDOM)
         {
             base.SetExplicitProperties(configurationEventTypeXMLDOM.XPathProperties.Values);
-            propertyGetterCache = new EHashDictionary<String, TypedEventPropertyGetter>();
+            propertyGetterCache = new HashDictionary<String, TypedEventPropertyGetter>();
         }
 
         internal override Type DoResolvePropertyType(String property)

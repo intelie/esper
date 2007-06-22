@@ -39,7 +39,7 @@ namespace net.esper.regression.view
                 ".std:size()");
 
             // Counts per symbol, feed and volume the events
-            viewGrouped.AddListener(listener.Update);
+            viewGrouped.AddListener(listener);
         }
 
         [Test]
@@ -49,21 +49,21 @@ namespace net.esper.regression.view
 
             // Set up a map of expected values
 
-            EDictionary<String, Object>[] expectedValues = new EHashDictionary<String, Object>[10];
+            EDictionary<String, Object>[] expectedValues = new HashDictionary<String, Object>[10];
             for (int i = 0; i < expectedValues.Length; i++)
             {
-                expectedValues[i] = new EHashDictionary<String, Object>();
+                expectedValues[i] = new HashDictionary<String, Object>();
             }
 
-            // Send one event, check results
+            // Send one _event, check results
             SendEvent(SYMBOL_GE, FEED_INFO, 1);
 
             populateMap(expectedValues[0], SYMBOL_GE, FEED_INFO, 1L, 0);
             mapList.Add(expectedValues[0]);
-            EventPropertyAssertionUtil.compare(listener.LastOldData, mapList);
+            EventPropertyAssertionUtil.Compare(listener.LastOldData, mapList);
             populateMap(expectedValues[0], SYMBOL_GE, FEED_INFO, 1L, 1);
-            EventPropertyAssertionUtil.compare(listener.LastNewData, mapList);
-            EventPropertyAssertionUtil.compare(viewGrouped.GetEnumerator(), mapList);
+            EventPropertyAssertionUtil.Compare(listener.LastNewData, mapList);
+            EventPropertyAssertionUtil.Compare(viewGrouped.GetEnumerator(), mapList);
 
             // Send a couple of events
             SendEvent(SYMBOL_GE, FEED_INFO, 1);
@@ -75,9 +75,9 @@ namespace net.esper.regression.view
             populateMap(expectedValues[1], SYMBOL_MSFT, FEED_INFO, 100, 0);
             mapList.Clear();
             mapList.Add(expectedValues[1]);
-            EventPropertyAssertionUtil.compare(listener.LastOldData, mapList);
+            EventPropertyAssertionUtil.Compare(listener.LastOldData, mapList);
             populateMap(expectedValues[1], SYMBOL_MSFT, FEED_INFO, 100, 1);
-            EventPropertyAssertionUtil.compare(listener.LastNewData, mapList);
+            EventPropertyAssertionUtil.Compare(listener.LastNewData, mapList);
 
             populateMap(expectedValues[0], SYMBOL_GE, FEED_INFO, 1, 3);
             populateMap(expectedValues[2], SYMBOL_GE, FEED_INFO, 2, 1);
@@ -87,7 +87,7 @@ namespace net.esper.regression.view
             mapList.Add(expectedValues[2]);
             mapList.Add(expectedValues[3]);
             mapList.Add(expectedValues[1]);
-            EventPropertyAssertionUtil.compare(viewGrouped.GetEnumerator(), mapList);
+            EventPropertyAssertionUtil.Compare(viewGrouped.GetEnumerator(), mapList);
         }
 
         private void populateMap(EDictionary<String, Object> map, String symbol, String feed, long volume, long size)

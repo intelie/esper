@@ -37,9 +37,9 @@ namespace net.esper.filter
 	    public FilterParamIndexNotIn(String propertyName, EventType eventType)
 	        : base(propertyName, FilterOperator.NOT_IN_LIST_OF_VALUES, eventType)
 	    {
-	        constantsMap = new EHashDictionary<Object, Set<EventEvaluator>>();
-	        filterValueEvaluators = new EHashDictionary<MultiKeyUntyped, EventEvaluator>();
-	        evaluatorsSet = new EHashSet<EventEvaluator>();
+	        constantsMap = new HashDictionary<Object, Set<EventEvaluator>>();
+	        filterValueEvaluators = new HashDictionary<MultiKeyUntyped, EventEvaluator>();
+	        evaluatorsSet = new HashSet<EventEvaluator>();
 	        constantsMapRWLock = new ReaderWriterLock();
 	    }
 
@@ -77,7 +77,7 @@ namespace net.esper.filter
 		            Set<EventEvaluator> evaluators = constantsMap.Fetch(keyValue);
 		            if (evaluators == null)
 		            {
-		                evaluators = new EHashSet<EventEvaluator>();
+		                evaluators = new HashSet<EventEvaluator>();
 		                constantsMap.Put(keyValue, evaluators);
 		            }
 		            evaluators.Add(value);

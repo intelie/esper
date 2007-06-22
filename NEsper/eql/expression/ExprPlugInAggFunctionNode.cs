@@ -54,7 +54,7 @@ namespace net.esper.eql.expression
 	        return aggregationSupport;
 	    }
 
-	    protected override string AggregationFunctionName
+	    public override string AggregationFunctionName
 	    {
 	    	get { return aggregationSupport.FunctionName; }
 	    }

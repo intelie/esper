@@ -8,12 +8,12 @@ namespace net.esper.regression.support
     public class EventExpressionCase
     {
         private String expressionText;
-        private LinkedDictionary<String, List<EventDescriptor>> expectedResults;
+        private LinkedDictionary<String, IList<EventDescriptor>> expectedResults;
 
         public EventExpressionCase(String expressionText)
         {
             this.expressionText = expressionText;
-            this.expectedResults = new LinkedDictionary<String, List<EventDescriptor>>();
+            this.expectedResults = new LinkedDictionary<String, IList<EventDescriptor>>();
         }
 
         public String ExpressionText
@@ -21,9 +21,9 @@ namespace net.esper.regression.support
             get { return expressionText; }
         }
 
-        public LinkedDictionary<String, List<EventDescriptor>> getExpectedResults()
+        public LinkedDictionary<String, IList<EventDescriptor>> ExpectedResults
         {
-            return expectedResults;
+            get { return expectedResults; }
         }
 
         public void Add(String expectedOnEventId)
@@ -69,7 +69,7 @@ namespace net.esper.regression.support
 
         private EventDescriptor AddDesc(String expectedOnEventId)
         {
-			List<EventDescriptor> resultList = expectedResults.Fetch( expectedOnEventId );
+			IList<EventDescriptor> resultList = expectedResults.Fetch( expectedOnEventId );
 
             if (resultList == null)
             {

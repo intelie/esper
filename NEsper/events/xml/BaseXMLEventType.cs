@@ -71,7 +71,7 @@ namespace net.esper.events.xml
         protected void SetExplicitProperties(ICollection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitProperties)
         {
             // Convert explicit properties to XPath expressions
-            EDictionary<String, TypedEventPropertyGetter> getters = new EHashDictionary<String, TypedEventPropertyGetter>();
+            EDictionary<String, TypedEventPropertyGetter> getters = new HashDictionary<String, TypedEventPropertyGetter>();
 
             String xpathExpression = null;
             try

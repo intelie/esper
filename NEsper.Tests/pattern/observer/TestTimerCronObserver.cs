@@ -1,101 +1,110 @@
-using System;
-using System.Collections.Generic;
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
+using NUnit.Framework;
+
+using net.esper.core;
+using net.esper.compat;
 using net.esper.pattern;
 using net.esper.schedule;
 using net.esper.support.events;
 using net.esper.support.guard;
-
-using NUnit.Core;
-using NUnit.Framework;
+using net.esper.support.schedule;
+using net.esper.support.view;
 
 namespace net.esper.pattern.observer
 {
-    [TestFixture]
-    public class TestTimerCronObserver
-    {
-        private TimerAtObserver observer;
-        private SchedulingServiceImpl scheduleService;
-        private SupportObserverEvaluator evaluator;
-        private MatchedEventMap beginState;
+	[TestFixture]
+	public class TestTimerCronObserver
+	{
+	    private TimerAtObserver observer;
+	    private SchedulingServiceImpl scheduleService;
+	    private SupportObserverEvaluator evaluator;
+	    private MatchedEventMap beginState;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            beginState = new MatchedEventMap();
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        beginState = new MatchedEventMapImpl();
 
-            scheduleService = new SchedulingServiceImpl();
-            PatternContext context = new PatternContext(null, scheduleService, scheduleService.AllocateBucket(), SupportEventAdapterService.Service);
+	        scheduleService = new SchedulingServiceImpl();
+	        StatementContext stmtContext = SupportStatementContextFactory.MakeContext(scheduleService);
+	        PatternContext context = new PatternContext(stmtContext, 1, null);
 
-            ScheduleSpec scheduleSpec = new ScheduleSpec();
-            scheduleSpec.AddValue(ScheduleUnit.SECONDS, 1);
+	        ScheduleSpec scheduleSpec = new ScheduleSpec();
+	        scheduleSpec.AddValue(ScheduleUnit.SECONDS, 1);
 
-            evaluator = new SupportObserverEvaluator();
+	        evaluator = new SupportObserverEvaluator();
 
-            observer = new TimerAtObserver(scheduleSpec, context, beginState, evaluator);
-        }
+	        observer =  new TimerAtObserver(scheduleSpec, context, beginState, evaluator);
+	    }
 
-        [Test]
-        public virtual void testStartAndObserve()
-        {
-            scheduleService.Time = 0;
-            observer.StartObserve();
-            scheduleService.Time = 1000;
-            scheduleService.Evaluate();
+	    [Test]
+	    public void TestStartAndObserve()
+	    {
+	        scheduleService.Time = (0);
+	        observer.StartObserve();
+	        scheduleService.Time = (1000);
+	        SupportSchedulingServiceImpl.EvaluateSchedule(scheduleService);
+	        Assert.AreEqual(beginState, evaluator.GetAndClearMatchEvents()[0]);
 
-            IList<MatchedEventMap> tempList = evaluator.getAndClearMatchEvents();
-            MatchedEventMap postEvaluateMap = tempList[0];
-            Assert.AreEqual(beginState, tempList[0]);
+	        // Test start again
+	        observer.StartObserve();
+	        scheduleService.Time = (60999);
+	        SupportSchedulingServiceImpl.EvaluateSchedule(scheduleService);
+	        Assert.AreEqual(0, evaluator.GetMatchEvents().Count);
 
-            // Test Start again
-            observer.StartObserve();
-            scheduleService.Time = 60999;
-            scheduleService.Evaluate();
-            Assert.AreEqual(0, evaluator.getMatchEvents().Count);
+	        scheduleService.Time = (61000); // 1 minute plus 1 second
+	        SupportSchedulingServiceImpl.EvaluateSchedule(scheduleService);
+	        Assert.AreEqual(beginState, evaluator.GetAndClearMatchEvents()[0]);
+	    }
 
-            scheduleService.Time = 61000; // 1 minute plus 1 second
-            scheduleService.Evaluate();
-            Assert.AreEqual(beginState, evaluator.getAndClearMatchEvents()[0]);
-        }
+	    [Test]
+	    public void TestStartAndStop()
+	    {
+	        // Start then stop
+	        scheduleService.Time = (0);
+	        observer.StartObserve();
+	        observer.StopObserve();
+	        scheduleService.Time = (1000);
+	        SupportSchedulingServiceImpl.EvaluateSchedule(scheduleService);
+	        Assert.AreEqual(0, evaluator.GetAndClearMatchEvents().Count);
 
-        [Test]
-        public virtual void testStartAndStop()
-        {
-            // Start then Stop
-            scheduleService.Time = 0;
-            observer.StartObserve();
-            observer.StopObserve();
-            scheduleService.Time = 1000;
-            scheduleService.Evaluate();
-            Assert.AreEqual(0, evaluator.getAndClearMatchEvents().Count);
+	        // Test start again
+	        observer.StartObserve();
+	        scheduleService.Time = (61000);
+	        SupportSchedulingServiceImpl.EvaluateSchedule(scheduleService);
+	        Assert.AreEqual(beginState, evaluator.GetAndClearMatchEvents()[0]);
 
-            // Test Start again
-            observer.StartObserve();
-            scheduleService.Time = 61000;
-            scheduleService.Evaluate();
-            Assert.AreEqual(beginState, evaluator.getAndClearMatchEvents()[0]);
+	        observer.StopObserve();
+	        observer.StartObserve();
 
-            observer.StopObserve();
-            observer.StartObserve();
+	        scheduleService.Time = (150000);
+	        SupportSchedulingServiceImpl.EvaluateSchedule(scheduleService);
+	        Assert.AreEqual(beginState, evaluator.GetAndClearMatchEvents()[0]);
+	    }
 
-            scheduleService.Time = 150000;
-            scheduleService.Evaluate();
-            Assert.AreEqual(beginState, evaluator.getAndClearMatchEvents()[0]);
-        }
+	    [Test]
+	    public void TestInvalid()
+	    {
+	        try
+	        {
+	            observer.StartObserve();
+	            observer.StartObserve();
+	            Assert.Fail();
+	        }
+	        catch (IllegalStateException ex)
+	        {
+	            // Expected exception
+	        }
+	    }
 
-        [Test]
-        public virtual void testInvalid()
-        {
-            try
-            {
-                observer.StartObserve();
-                observer.StartObserve();
-                Assert.Fail();
-            }
-            catch (System.SystemException ex)
-            {
-                // Expected exception
-            }
-        }
-    }
-}
+	}
+} // End of namespace

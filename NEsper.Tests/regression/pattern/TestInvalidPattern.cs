@@ -1,186 +1,193 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
+
+using NUnit.Framework;
 
 using net.esper.client;
 using net.esper.eql.parse;
 using net.esper.support.bean;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 using org.apache.commons.logging;
 
 namespace net.esper.regression.pattern
 {
-    [TestFixture]
-    public class TestInvalidPattern
-    {
-        public TestInvalidPattern()
-        {
-            EVENT_NUM = typeof(SupportBean_N).FullName;
-            EVENT_COMPLEX = typeof(SupportBeanComplexProps).FullName;
-            EVENT_ALLTYPES = typeof(SupportBean).FullName;
-        }
+	[TestFixture]
+	public class TestInvalidPattern
+	{
+	    private EPServiceProvider epService;
+	    private readonly String _event_NUM = typeof(SupportBean_N).FullName;
+	    private readonly String _event_COMPLEX = typeof(SupportBeanComplexProps).FullName;
+	    private readonly String _event_ALLTYPES = typeof(SupportBean).FullName;
 
-        private EPServiceProvider epService;
-        private readonly String EVENT_NUM;
-        private readonly String EVENT_COMPLEX;
-        private readonly String EVENT_ALLTYPES;
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        epService = EPServiceProviderManager.GetDefaultProvider();
+	    }
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            epService = EPServiceProviderManager.GetDefaultProvider();
-        }
+	    [Test]
+	    public void TestSyntaxException()
+	    {
+	        String exceptionText = GetSyntaxExceptionPattern(_event_NUM + "(doublePrimitive='ss'");
+	        Assert.AreEqual("end of input when expecting a closing parenthesis ')' near line 1, column 58 [net.esper.support.bean.SupportBean_N(doublePrimitive='ss']", exceptionText);
+	    }
 
-        [Test]
-        public virtual void testSyntaxException()
-        {
-            String exceptionText = getSyntaxExceptionPattern(EVENT_NUM + "(doublePrimitive='ss'");
-            Assert.AreEqual("expecting \"RPAREN\", found '' near line 1, column 58 [net.esper.support.bean.SupportBean_N(doublePrimitive='ss']", exceptionText);
-        }
+	    [Test]
+	    public void TestStatementException()
+	    {
+	        String exceptionText = null;
 
-        [Test]
-        public virtual void testStatementException()
-        {
-            String exceptionText = null;
+	        exceptionText = GetStatementExceptionPattern(_event_ALLTYPES + " -> timer:within()");
+	        Assert.AreEqual("Invalid use for pattern guard named 'within' outside of where-clause [net.esper.support.bean.SupportBean -> timer:within()]", exceptionText);
 
-            // class not found
-            exceptionText = getStatementExceptionPattern("dummypkg.dummy()");
-            Assert.AreEqual("Failed to resolve event type: Failed to load class dummypkg.dummy [dummypkg.dummy()]", exceptionText);
+	        exceptionText = GetStatementExceptionPattern(_event_ALLTYPES + " where timer:interval(100)");
+	        Assert.AreEqual("Invalid use for pattern observer named 'interval' [net.esper.support.bean.SupportBean where timer:interval(100)]", exceptionText);
 
-            // simple property not found
-            exceptionText = getStatementExceptionPattern(EVENT_NUM + "(dummy=1)");
-            Assert.AreEqual("Property named 'dummy' not found in class net.esper.support.bean.SupportBean_N [net.esper.support.bean.SupportBean_N(dummy=1)]", exceptionText);
+	        exceptionText = GetStatementExceptionPattern(_event_ALLTYPES + " -> timer:interval()");
+	        Assert.AreEqual("Timer-interval observer requires a single numeric or time period parameter [net.esper.support.bean.SupportBean -> timer:interval()]", exceptionText);
 
-            // nested property not found
-            exceptionText = getStatementExceptionPattern(EVENT_NUM + "(dummy.nested=1)");
-            Assert.AreEqual("Property named 'dummy.nested' not found in class net.esper.support.bean.SupportBean_N [net.esper.support.bean.SupportBean_N(dummy.nested=1)]", exceptionText);
+	        exceptionText = GetStatementExceptionPattern(_event_ALLTYPES + " where timer:within()");
+	        Assert.AreEqual("Timer-within guard requires a single numeric or time period parameter [net.esper.support.bean.SupportBean where timer:within()]", exceptionText);
 
-            // property wrong type
-            exceptionText = getStatementExceptionPattern(EVENT_NUM + "(intPrimitive='s')");
-            Assert.AreEqual("Implicit conversion from datatype 'String' to 'Int' for property 'intPrimitive' is not allowed [net.esper.support.bean.SupportBean_N(intPrimitive='s')]", exceptionText);
+	        // class not found
+	        exceptionText = GetStatementExceptionPattern("dummypkg.Dummy()");
+	        Assert.AreEqual("Failed to resolve event type: Failed to load class dummypkg.dummy [dummypkg.Dummy()]", exceptionText);
 
-            // property not a primitive type
-            exceptionText = getStatementExceptionPattern(EVENT_COMPLEX + "(nested=1)");
-            Assert.AreEqual("Property named 'nested' of type 'net.esper.support.bean.SupportBeanComplexProps+SupportBeanSpecialGetterNested' is not supported type [net.esper.support.bean.SupportBeanComplexProps(nested=1)]", exceptionText);
+	        // simple property not found
+	        exceptionText = GetStatementExceptionPattern(_event_NUM + "(dummy=1)");
+	        Assert.AreEqual("Property named 'dummy' is not valid in any stream [net.esper.support.bean.SupportBean_N(dummy=1)]", exceptionText);
 
-            // no tag matches prior use
-            exceptionText = getStatementExceptionPattern(EVENT_NUM + "(doublePrimitive=x.abc)");
-            Assert.AreEqual("Event named ''x' not found in event pattern result set [net.esper.support.bean.SupportBean_N(doublePrimitive=x.abc)]", exceptionText);
+	        // nested property not found
+	        exceptionText = GetStatementExceptionPattern(_event_NUM + "(dummy.nested=1)");
+	        Assert.AreEqual("Failed to resolve property 'dummy.nested' to a stream or nested property in a stream [net.esper.support.bean.SupportBean_N(dummy.nested=1)]", exceptionText);
 
-            // duplicate property in filter
-            exceptionText = getStatementExceptionPattern(EVENT_NUM + "(doublePrimitive=1, doublePrimitive=1)");
-            Assert.AreEqual("Property named 'doublePrimitive' has been listed more than once as a filter parameter [net.esper.support.bean.SupportBean_N(doublePrimitive=1, doublePrimitive=1)]", exceptionText);
+	        // property wrong type
+	        exceptionText = GetStatementExceptionPattern(_event_NUM + "(intPrimitive='s')");
+	        Assert.AreEqual("Implicit conversion from datatype 'String' to 'Int32' is not allowed [net.esper.support.bean.SupportBean_N(intPrimitive='s')]", exceptionText);
 
-            // range not valid on string
-            exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + "(string in [1:2])");
-            Assert.AreEqual("Property named 'string' of type 'System.String' not numeric as required for ranges [net.esper.support.bean.SupportBean(string in [1:2])]", exceptionText);
+	        // property not a primitive type
+	        exceptionText = GetStatementExceptionPattern(_event_COMPLEX + "(nested=1)");
+	        Assert.AreEqual("Implicit conversion from datatype 'Int32' to 'SupportBeanSpecialGetterNested' is not allowed [net.esper.support.bean.SupportBeanComplexProps(nested=1)]", exceptionText);
 
-            // range does not allow string params
-            exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + "(doubleBoxed in ['a':2])");
-            Assert.AreEqual("Implicit conversion from datatype 'String' to 'Double' for property 'doubleBoxed' is not allowed [net.esper.support.bean.SupportBean(doubleBoxed in ['a':2])]", exceptionText);
+	        // no tag matches prior use
+	        exceptionText = GetStatementExceptionPattern(_event_NUM + "(doublePrimitive=x.abc)");
+	        Assert.AreEqual("Failed to resolve property 'x.abc' to a stream or nested property in a stream [net.esper.support.bean.SupportBean_N(doublePrimitive=x.abc)]", exceptionText);
 
-            // invalid observer arg
-            exceptionText = getStatementExceptionPattern("timer:at(9l)");
-            Assert.AreEqual("Error invoking constructor for observer 'timer:at', invalid parameter list for the object [timer:at(9l)]", exceptionText);
+	        // range not valid on string
+	        exceptionText = GetStatementExceptionPattern(_event_ALLTYPES + "(string in [1:2])");
+	        Assert.AreEqual("Implicit conversion from datatype 'String' to numeric is not allowed [net.esper.support.bean.SupportBean(string in [1:2])]", exceptionText);
 
-            // invalid guard arg
-            exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " where timer:within('s')");
-            Assert.AreEqual("Error invoking constructor for guard 'within', invalid parameter list for the object [net.esper.support.bean.SupportBean where timer:within('s')]", exceptionText);
+	        // range does not allow string params
+	        exceptionText = GetStatementExceptionPattern(_event_ALLTYPES + "(doubleBoxed in ['a':2])");
+	        Assert.AreEqual("Implicit conversion from datatype 'String' to numeric is not allowed [net.esper.support.bean.SupportBean(doubleBoxed in ['a':2])]", exceptionText);
 
-            // use-result property is wrong type
-            exceptionText = getStatementExceptionPattern("x=" + EVENT_ALLTYPES + " -> " + EVENT_ALLTYPES + "(doublePrimitive=x.boolBoxed)");
-            Assert.AreEqual("Type mismatch for property named 'doublePrimitive', supplied type of 'Nullable`1' does not match property type '" + typeof(Nullable<Double>).FullName + "' [x=net.esper.support.bean.SupportBean -> net.esper.support.bean.SupportBean(doublePrimitive=x.boolBoxed)]", exceptionText);
-        }
+	        // invalid observer arg
+	        exceptionText = GetStatementExceptionPattern("timer:at(9l)");
+	        Assert.AreEqual("Invalid number of parameters for timer:at [timer:at(9l)]", exceptionText);
 
-        [Test]
-        public virtual void testUseResult()
-        {
-            String EVENT = typeof(SupportBean_N).FullName;
+	        // invalid guard arg
+	        exceptionText = GetStatementExceptionPattern(_event_ALLTYPES + " where timer:within('s')");
+	        Assert.AreEqual("Timer-within guard requires a single numeric or time period parameter [net.esper.support.bean.SupportBean where timer:within('s')]", exceptionText);
 
-            tryValid("na=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = na.doublePrimitive)");
-            tryInvalid("xx=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = na.doublePrimitive)");
-            tryInvalid("na=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = xx.doublePrimitive)");
-            tryInvalid("na=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = na.xx)");
-            tryInvalid("xx=" + EVENT + " -> nb=" + EVENT + "(xx = na.doublePrimitive)");
-            tryInvalid("na=" + EVENT + " -> nb=" + EVENT + "(xx = na.xx)");
-            tryValid("na=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = na.doublePrimitive, intBoxed=na.intBoxed)");
-            tryInvalid("xx=" + EVENT + " -> nb=" + EVENT + "(doublePrimitive = nb.doublePrimitive)");
-            tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in (na.doublePrimitive:na.doubleBoxed))");
-            tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.doublePrimitive:na.doubleBoxed])");
-            tryValid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.intBoxed:na.intPrimitive])");
-            tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.intBoxed:na.xx])");
-            tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.intBoxed:na.boolBoxed])");
-            tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.xx:na.intPrimitive])");
-            tryInvalid("na=" + EVENT + "() -> nb=" + EVENT + "(doublePrimitive in [na.boolBoxed:na.intPrimitive])");
-        }
+	        // use-result property is wrong type
+	        exceptionText = GetStatementExceptionPattern("x=" + _event_ALLTYPES + " -> " + _event_ALLTYPES + "(doublePrimitive=x.boolBoxed)");
+	        Assert.AreEqual("Implicit conversion from datatype 'Boolean' to 'double?' is not allowed [x=net.esper.support.bean.SupportBean -> net.esper.support.bean.SupportBean(doublePrimitive=x.boolBoxed)]", exceptionText);
+	    }
 
-        private void tryInvalid(String eqlInvalidPattern)
-        {
-            try
-            {
-                epService.EPAdministrator.CreatePattern(eqlInvalidPattern);
-                Assert.Fail();
-            }
-            catch (EPException ex)
-            {
-                // Expected exception
-            }
-        }
+	    [Test]
+	    public void TestUseResult()
+	    {
+	        String _event = typeof(SupportBean_N).FullName;
 
-        private String getSyntaxExceptionPattern(String expression)
-        {
-            String exceptionText = null;
-            try
-            {
-                epService.EPAdministrator.CreatePattern(expression);
-                Assert.Fail();
-            }
-            catch (EPStatementSyntaxException ex)
-            {
-                exceptionText = ex.Message;
-                log.Debug(".getSyntaxExceptionPattern pattern=" + expression, ex);
-                // Expected exception
-            }
+	        TryValid("na=" + _event + " -> nb=" + _event + "(doublePrimitive = na.doublePrimitive)");
+	        TryInvalid("xx=" + _event + " -> nb=" + _event + "(doublePrimitive = na.doublePrimitive)");
+	        TryInvalid("na=" + _event + " -> nb=" + _event + "(doublePrimitive = xx.doublePrimitive)");
+	        TryInvalid("na=" + _event + " -> nb=" + _event + "(doublePrimitive = na.xx)");
+	        TryInvalid("xx=" + _event + " -> nb=" + _event + "(xx = na.doublePrimitive)");
+	        TryInvalid("na=" + _event + " -> nb=" + _event + "(xx = na.xx)");
+	        TryValid("na=" + _event + " -> nb=" + _event + "(doublePrimitive = na.doublePrimitive, intBoxed=na.intBoxed)");
+	        TryValid("na=" + _event + "() -> nb=" + _event + "(doublePrimitive in (na.doublePrimitive:na.doubleBoxed))");
+	        TryValid("na=" + _event + "() -> nb=" + _event + "(doublePrimitive in [na.doublePrimitive:na.doubleBoxed])");
+	        TryValid("na=" + _event + "() -> nb=" + _event + "(doublePrimitive in [na.intBoxed:na.intPrimitive])");
+	        TryInvalid("na=" + _event + "() -> nb=" + _event + "(doublePrimitive in [na.intBoxed:na.xx])");
+	        TryInvalid("na=" + _event + "() -> nb=" + _event + "(doublePrimitive in [na.intBoxed:na.boolBoxed])");
+	        TryInvalid("na=" + _event + "() -> nb=" + _event + "(doublePrimitive in [na.xx:na.intPrimitive])");
+	        TryInvalid("na=" + _event + "() -> nb=" + _event + "(doublePrimitive in [na.boolBoxed:na.intPrimitive])");
+	    }
 
-            return exceptionText;
-        }
+	    private void TryInvalid(String eqlInvalidPattern)
+	    {
+	        try
+	        {
+	            epService.EPAdministrator.CreatePattern(eqlInvalidPattern);
+	            Assert.Fail();
+	        }
+	        catch (EPException ex)
+	        {
+	            // Expected exception
+	        }
+	    }
 
-        private String getStatementExceptionPattern(String expression)
-        {
-            return getStatementExceptionPattern(expression, false);
-        }
+	    private String GetSyntaxExceptionPattern(String expression)
+	    {
+	        String exceptionText = null;
+	        try
+	        {
+	            epService.EPAdministrator.CreatePattern(expression);
+	            Assert.Fail();
+	        }
+	        catch (EPStatementSyntaxException ex)
+	        {
+	            exceptionText = ex.Message;
+	            log.Debug(".getSyntaxExceptionPattern pattern=" + expression, ex);
+	            // Expected exception
+	        }
 
-        private String getStatementExceptionPattern(String expression, bool isLogException)
-        {
-            String exceptionText = null;
-            try
-            {
-                epService.EPAdministrator.CreatePattern(expression);
-                Assert.Fail();
-            }
-            catch (EPStatementSyntaxException es)
-            {
-                throw es;
-            }
-            catch (EPStatementException ex)
-            {
-                // Expected exception
-                exceptionText = ex.Message;
-                if (isLogException)
-                {
-                    log.Debug(".getSyntaxExceptionPattern pattern=" + expression, ex);
-                }
-            }
+	        return exceptionText;
+	    }
 
-            return exceptionText;
-        }
+	    private String GetStatementExceptionPattern(String expression)
+	    {
+	        return GetStatementExceptionPattern(expression, false);
+	    }
 
-        private void tryValid(String eqlInvalidPattern)
-        {
-            epService.EPAdministrator.CreatePattern(eqlInvalidPattern);
-        }
+	    private String GetStatementExceptionPattern(String expression, bool isLogException)
+	    {
+	        String exceptionText = null;
+	        try
+	        {
+	            epService.EPAdministrator.CreatePattern(expression);
+	            Assert.Fail();
+	        }
+	        catch (EPStatementSyntaxException es)
+	        {
+	            throw es;
+	        }
+	        catch (EPStatementException ex)
+	        {
+	            // Expected exception
+	            exceptionText = ex.Message;
+	            if (isLogException)
+	            {
+	                log.Debug(".getSyntaxExceptionPattern pattern=" + expression, ex);
+	            }
+	        }
+
+	        return exceptionText;
+	    }
+
+	    private void TryValid(String eqlInvalidPattern)
+	    {
+	        epService.EPAdministrator.CreatePattern(eqlInvalidPattern);
+	    }
 
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    }
-}
+	}
+} // End of namespace

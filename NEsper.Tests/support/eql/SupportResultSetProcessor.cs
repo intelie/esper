@@ -46,7 +46,7 @@ namespace net.esper.support.eql
         /// <param name="newEvents">new events posted by join</param>
         /// <param name="oldEvents">old events posted by join</param>
         /// <returns>pair of new events and old events</returns>
-        public Pair<EventBean[], EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        public Pair<EventBean[], EventBean[]> ProcessJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
         {
             return new Pair<EventBean[], EventBean[]>(
                 CollectionHelper.First( newEvents ).Array,

@@ -341,7 +341,7 @@ namespace net.esper.view.stat
 		{
 			CubeImpl cube = new CubeImpl( multidimCube, derivedMeasures );
 
-			EDataDictionary result = new EDataDictionary();
+			DataDictionary result = new DataDictionary();
 			result[ViewFieldEnum.MULTIDIM_OLAP__CUBE.Name] = cube ;
 			EventBean eventBean = statementContext.EventAdapterService.CreateMapFromValues( result, eventType );
 			return eventBean;
@@ -352,7 +352,7 @@ namespace net.esper.view.stat
 	    /// <returns>event type of view</returns>
 	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
-	        EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
+	        EDictionary<String, Type> schemaMap = new HashDictionary<String, Type>();
 	        schemaMap.Put(ViewFieldEnum.MULTIDIM_OLAP__CUBE.Name, typeof(Cube));
 	        EventType eventType = statementContext.EventAdapterService.CreateAnonymousMapType(schemaMap);
 	        return eventType;

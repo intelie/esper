@@ -179,7 +179,7 @@ namespace net.esper.view.stat
         	EventAdapterService eventAdapterService,
         	EventType eventType)
         {
-        	EDataDictionary result = new EDataDictionary() ;
+        	DataDictionary result = new DataDictionary() ;
             result[ViewFieldEnum.UNIVARIATE_STATISTICS__COUNT.Name]    = baseStatisticsBean.N;
             result[ViewFieldEnum.UNIVARIATE_STATISTICS__SUM.Name]      = baseStatisticsBean.XSum;
             result[ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.Name]   = baseStatisticsBean.XStandardDeviationSample;
@@ -195,7 +195,7 @@ namespace net.esper.view.stat
 	    /// <returns>event type of view</returns>
 	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
-	        EDictionary<String, Type> eventTypeMap = new EHashDictionary<String, Type>();
+	        EDictionary<String, Type> eventTypeMap = new HashDictionary<String, Type>();
 	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__COUNT.Name, typeof(long));
 	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__SUM.Name, typeof(double));
 	        eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.Name, typeof(double));

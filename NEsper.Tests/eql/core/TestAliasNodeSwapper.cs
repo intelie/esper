@@ -36,7 +36,7 @@ namespace net.esper.eql.core
 		[Test]
 		public virtual void  testPartReplaced()
 		{
-			exprTree = SupportExprNodeFactory.makeEqualsNode();
+			exprTree = SupportExprNodeFactory.MakeEqualsNode();
 			alias = "intPrimitive";
             resultingTree = AliasNodeSwapper.Swap(exprTree, alias, fullExpr);
 			

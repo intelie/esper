@@ -11,7 +11,7 @@ namespace net.esper.support.util
 {
     public class EventPropertyAssertionUtil
     {
-        public static void compare(EventBean[] events, IList<EDictionary<String, Object>> expectedValues)
+        public static void Compare(EventBean[] events, IList<EDictionary<String, Object>> expectedValues)
         {
             if ((expectedValues == null) && (events == null))
             {
@@ -27,11 +27,11 @@ namespace net.esper.support.util
 
             for (int i = 0; i < expectedValues.Count; i++)
             {
-                compare(events[i], expectedValues[i]);
+                Compare(events[i], expectedValues[i]);
             }
         }
 
-        public static void compare(IEnumerator<EventBean> iterator, IList<EDictionary<String, Object>> expectedValues)
+        public static void Compare(IEnumerator<EventBean> iterator, IList<EDictionary<String, Object>> expectedValues)
         {
             List<EventBean> values = new List<EventBean>();
             while (iterator.MoveNext())
@@ -56,11 +56,11 @@ namespace net.esper.support.util
                 data = values.ToArray();
             }
 
-            compare(data, expectedValues);
+            Compare(data, expectedValues);
         }
 
 
-        private static void compare(EventBean _event, EDictionary<String, Object> expected)
+        private static void Compare(EventBean _event, EDictionary<String, Object> expected)
         {
             foreach (KeyValuePair<String, Object> entry in expected)
             {

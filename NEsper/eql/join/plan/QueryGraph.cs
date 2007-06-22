@@ -98,7 +98,7 @@ namespace net.esper.eql.join.plan
 
 		public Set<Int32> GetNavigableStreams( int streamFrom )
 		{
-			Set<Int32> result = new EHashSet<Int32>();
+			Set<Int32> result = new HashSet<Int32>();
 			for ( int i = 0 ; i < numStreams ; i++ )
 			{
 				if ( IsNavigable( streamFrom, i ) )

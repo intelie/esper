@@ -1,125 +1,98 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
+using NUnit.Framework;
+
+using net.esper.compat;
 using net.esper.events;
 using net.esper.filter;
 using net.esper.support.util;
-
-using NUnit.Core;
-using NUnit.Framework;
 
 using org.apache.commons.logging;
 
 namespace net.esper.support.filter
 {
-    public class IndexTreeBuilderRunnable
-    {
-        protected internal static readonly Random random = new Random();
+	public class IndexTreeBuilderRunnable : Runnable
+	{
+		protected readonly static Random random = new Random((int) DateTimeHelper.CurrentTimeMillis);
 
-        private FilterCallbackSetNode topNode;
-        private List<FilterSpec> testFilterSpecs;
-        private List<EventBean> matchedEvents;
-        private List<EventBean> unmatchedEvents;
-        private bool isCompleted;
-        private ManualResetEvent joinEvent;
-        private Exception caughtException;
+	    private FilterHandleSetNode topNode;
+        private IList<FilterSpecCompiled> testFilterSpecs;
+        private IList<EventBean> matchedEvents;
+        private IList<EventBean> unmatchedEvents;
+	    private readonly EventType eventType;
 
-        /// <summary>
-        /// Gets an exception that may have occurred during the course of this
-        /// execution path.
-        /// </summary>
+        public IndexTreeBuilderRunnable(EventType eventType, FilterHandleSetNode topNode, IList<FilterSpecCompiled> testFilterSpecs, IList<EventBean> matchedEvents, IList<EventBean> unmatchedEvents)
+	    {
+	        this.eventType = eventType;
+	        this.topNode = topNode;
+	        this.testFilterSpecs = testFilterSpecs;
+	        this.matchedEvents = matchedEvents;
+	        this.unmatchedEvents = unmatchedEvents;
+	    }
 
-        public Exception CaughtException
-        {
-            get { return caughtException; }
-        }
+	    public void Run()
+	    {
+	        long currentThreadId = Thread.CurrentThread.ManagedThreadId;
 
+	        // Choose one of filter specifications, randomly, then reserve to make sure no one else has the same
+	        FilterSpecCompiled filterSpec = null;
+	        EventBean unmatchedEvent = null;
+	        EventBean matchedEvent = null;
 
-        public IndexTreeBuilderRunnable(FilterCallbackSetNode topNode, List<FilterSpec> testFilterSpecs, List<EventBean> matchedEvents, List<EventBean> unmatchedEvents)
-        {
-            this.topNode = topNode;
-            this.testFilterSpecs = testFilterSpecs;
-            this.matchedEvents = matchedEvents;
-            this.unmatchedEvents = unmatchedEvents;
-            this.isCompleted = false;
-            this.joinEvent = new ManualResetEvent(false);
-        }
+	        int index = 0;
+	        do
+	        {
+	            index = random.Next(testFilterSpecs.Count);
+	            filterSpec = testFilterSpecs[index];
+	            unmatchedEvent = unmatchedEvents[index];
+	            matchedEvent = matchedEvents[index];
+	        }
+	        while(!ObjectReservationSingleton.Instance.Reserve(filterSpec));
 
-        public bool IsCompleted
-        {
-            get { return isCompleted; }
-        }
+	        // Add expression
+	        FilterValueSet filterValues = filterSpec.GetValueSet(null);
+	        FilterHandle filterCallback = new SupportFilterHandle();
+	        IndexTreeBuilder treeBuilder = new IndexTreeBuilder();
+	        IndexTreePath pathAddedTo = treeBuilder.Add(filterValues, filterCallback, topNode);
 
-        public void Join()
-        {
-            joinEvent.WaitOne();
-        }
+	        // Fire a no-match
+	        List<FilterHandle> matches = new List<FilterHandle>();
+	        topNode.MatchEvent(unmatchedEvent, matches);
 
-        public virtual void Run( Object userData )
-        {
-            try
-            {
-                long currentThreadId = Thread.CurrentThread.ManagedThreadId;
+	        if (matches.Count != 0)
+	        {
+	            log.Fatal(".run (" + currentThreadId + ") Got a match but expected no-match, matchCount=" + matches.Count + "  bean=" + unmatchedEvent +
+	                      "  match=" + matches[0].GetHashCode());
+	            Assert.IsFalse(true);
+	        }
 
-                // Choose one of filter specifications, randomly, then reserve to make sure no one else has the same
-                FilterSpec filterSpec = null;
-                EventBean unmatchedEvent = null;
-                EventBean matchedEvent = null;
+	        // Fire a match
+	        topNode.MatchEvent(matchedEvent, matches);
 
-                int index = 0;
-                do
-                {
-                    index = random.Next(testFilterSpecs.Count);
-                    filterSpec = testFilterSpecs[index];
-                    unmatchedEvent = unmatchedEvents[index];
-                    matchedEvent = matchedEvents[index];
-                }
-                while (!ObjectReservationSingleton.Instance.reserve(filterSpec));
+	        if (matches.Count != 1)
+	        {
+	            log.Fatal(".run (" + currentThreadId + ") Got zero or two or more match but expected a match, count=" + matches.Count +
+	                    "  bean=" + matchedEvent);
+	            Assert.IsFalse(true);
+	        }
 
-                // Add expression
-                FilterValueSet filterValues = filterSpec.GetValueSet(null);
-                FilterCallback filterCallback = new SupportFilterCallback();
-                IndexTreeBuilder treeBuilder = new IndexTreeBuilder();
-                IndexTreePath pathAddedTo = treeBuilder.Add(filterValues, filterCallback, topNode);
+	        // Remove the same expression again
+	        treeBuilder.Remove(filterCallback, pathAddedTo, topNode);
+	        log.Debug(".run (" + Thread.CurrentThread.ManagedThreadId + ")" + " Completed");
 
-                // Fire a no-match
-                IList<FilterCallback> matches = new List<FilterCallback>();
-                topNode.MatchEvent(unmatchedEvent, matches);
+	        ObjectReservationSingleton.Instance.Unreserve(filterSpec);
+	    }
 
-                if (matches.Count != 0)
-                {
-                    log.Fatal(".run (" + currentThreadId + ") Got a match but expected no-match, matchCount=" + matches.Count + "  bean=" + unmatchedEvent + "  match=" + matches[0].GetHashCode());
-                    Assert.IsFalse(true);
-                }
-
-                // Fire a match
-                topNode.MatchEvent(matchedEvent, matches);
-
-                if (matches.Count != 1)
-                {
-                    log.Fatal(".run (" + currentThreadId + ") Got zero or two or more match but expected a match, count=" + matches.Count + "  bean=" + matchedEvent);
-                    Assert.IsFalse(true);
-                }
-
-                // Remove the same expression again
-                treeBuilder.Remove(filterCallback, pathAddedTo, topNode);
-                log.Debug(".run (" + Thread.CurrentThread.ManagedThreadId + ")" + " Completed");
-
-                ObjectReservationSingleton.Instance.unreserve(filterSpec);
-            }
-            catch( Exception ex )
-            {
-                caughtException = ex;
-                isCompleted = true;
-            }
-            finally
-            {
-                isCompleted = true;
-                joinEvent.Set();
-            }
-        }
-
-        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    }
-}
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	}
+} // End of namespace

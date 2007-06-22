@@ -19,8 +19,8 @@ namespace net.esper.eql.join.plan
         public virtual void testAnalyze()
         {
             IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT));
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.LEFT));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.LEFT));
             // simpleProperty in s2
 
             QueryGraph graph = new QueryGraph(3);

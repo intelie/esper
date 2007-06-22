@@ -1,5 +1,15 @@
-using System;
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+
+using net.esper.core;
 using net.esper.compat;
 using net.esper.schedule;
 
@@ -7,57 +17,84 @@ using org.apache.commons.logging;
 
 namespace net.esper.support.schedule
 {
-    public class SupportSchedulingServiceImpl : SchedulingService
-    {
-        private EDictionary<long, ScheduleCallback> added = new EHashDictionary<long, ScheduleCallback>();
-        private long currentTime;
+	public class SupportSchedulingServiceImpl : SchedulingService
+	{
+		private EDictionary<long, ScheduleHandle> added = new HashDictionary<long, ScheduleHandle>();
+		private long currentTime;
 
-        virtual public long Time
-        {
-            get
-            {
-                log.Debug(".getTime Time is " + currentTime);
-                return this.currentTime;
-            }
+		public EDictionary<long, ScheduleHandle> GetAdded()
+		{
+			return added;
+		}
 
-            set
-            {
-                log.Debug(".setTime Setting new time, currentTime=" + value);
-                this.currentTime = value;
-            }
-        }
+		public void EvaluateLock()
+		{
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
 
-        public EDictionary<long, ScheduleCallback> getAdded()
-        {
-            return added;
-        }
+		public void EvaluateUnLock()
+		{
+			//To change body of implemented methods use File | Settings | File Templates.
+		}
 
-        public virtual void Add(long afterMSec, ScheduleCallback callback, ScheduleSlot slot)
-        {
-            log.Debug(".Add Not implemented, afterMSec=" + afterMSec + " callback=" + callback.GetType().Name);
-            added.Put(afterMSec, callback);
-        }
+		public void Add(long afterMSec, ScheduleHandle callback, ScheduleSlot slot)
+		{
+			log.Debug(".add Not implemented, afterMSec=" + afterMSec + " callback=" + callback.GetType().FullName);
+			added.Put(afterMSec, callback);
+		}
 
-        public virtual void Add(ScheduleSpec scheduleSpecification, ScheduleCallback callback, ScheduleSlot slot)
-        {
-            log.Debug(".Add Not implemented, scheduleSpecification=" + scheduleSpecification + " callback=" + callback.GetType().Name);
-        }
+		public void Add(ScheduleSpec scheduleSpecification, ScheduleHandle callback, ScheduleSlot slot)
+		{
+			log.Debug(".add Not implemented, scheduleSpecification=" + scheduleSpecification +
+			          " callback=" + callback.GetType().FullName);
+		}
 
-        public virtual void Remove(ScheduleCallback callback, ScheduleSlot slot)
-        {
-            log.Debug(".Remove Not implemented, callback=" + callback.GetType().Name);
-        }
+		public void Remove(ScheduleHandle callback, ScheduleSlot slot)
+		{
+			log.Debug(".remove Not implemented, callback=" + callback.GetType().FullName);
+		}
 
-        public virtual void Evaluate()
-        {
-            log.Debug(".evaluate Not implemented");
-        }
+		public long Time {
+			get {
+				log.Debug(".getTime Time is " + currentTime);
+				return this.currentTime;
+			}
+			set {
+				log.Debug(".setTime Setting new time, currentTime=" + value);
+				this.currentTime = value;
+			}
+		}
 
-        public virtual ScheduleBucket AllocateBucket()
-        {
-            return new ScheduleBucket(0);
-        }
+		public void Evaluate(ICollection<ScheduleHandle> handles)
+		{
+			log.Debug(".evaluate Not implemented");
+		}
 
-        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    }
-}
+		public ScheduleBucket AllocateBucket()
+		{
+			return new ScheduleBucket(0);
+		}
+
+		public static void EvaluateSchedule(SchedulingService service)
+		{
+			IList<ScheduleHandle> handles = new List<ScheduleHandle>();
+			service.Evaluate(handles);
+
+			foreach (ScheduleHandle handle in handles)
+			{
+				if (handle is EPStatementHandleCallback)
+				{
+					EPStatementHandleCallback callback = (EPStatementHandleCallback) handle;
+					callback.ScheduleCallback.ScheduledTrigger(null);
+				}
+				else
+				{
+					ScheduleHandleCallback cb = (ScheduleHandleCallback) handle;
+					cb.ScheduledTrigger(null);
+				}
+			}
+		}
+
+		private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	}
+} // End of namespace

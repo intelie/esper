@@ -30,40 +30,40 @@ namespace net.esper.regression.eql
             EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
 
             SupportUpdateListener updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener.Update);
+            statement.AddListener(updateListener);
 
             sendEventS1(1, "s1A");
             sendEventS0(2, "a");
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             sendEventS0(1, "b");
-            EventBean _event = updateListener.assertOneGetNewAndReset();
+            EventBean _event = updateListener.AssertOneGetNewAndReset();
             assertEventData(_event, null, null, 1, "b", 1, "s1A");
 
             sendEventS1(2, "s2A");
-            _event = updateListener.assertOneGetNewAndReset();
+            _event = updateListener.AssertOneGetNewAndReset();
             assertEventData(_event, 2, "a", null, null, 2, "s2A");
 
             sendEventS1(20, "s20A");
             sendEventS1(30, "s30A");
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             sendEventS0(20, "a");
-            _event = updateListener.assertOneGetNewAndReset();
+            _event = updateListener.AssertOneGetNewAndReset();
             assertEventData(_event, 20, "a", null, null, 20, "s20A");
 
             sendEventS0(20, "b");
-            _event = updateListener.assertOneGetNewAndReset();
+            _event = updateListener.AssertOneGetNewAndReset();
             assertEventData(_event, null, null, 20, "b", 20, "s20A");
 
             sendEventS0(30, "c"); // filtered out
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             sendEventS0(40, "a"); // not matching id in s1
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             sendEventS0(50, "b"); // pushing an event s0(2, "a") out the window
-            _event = updateListener.assertOneGetOldAndReset();
+            _event = updateListener.AssertOneGetOldAndReset();
             assertEventData(_event, 2, "a", null, null, 2, "s2A");
 
             // Stop statement
@@ -72,7 +72,7 @@ namespace net.esper.regression.eql
             sendEventS1(60, "s20");
             sendEventS0(70, "a");
             sendEventS0(71, "b");
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             // Start statement
             statement.Start();
@@ -80,10 +80,10 @@ namespace net.esper.regression.eql
             sendEventS1(70, "s1-70");
             sendEventS0(60, "a");
             sendEventS1(20, "s1");
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             sendEventS0(70, "b");
-            _event = updateListener.assertOneGetNewAndReset();
+            _event = updateListener.AssertOneGetNewAndReset();
             assertEventData(_event, null, null, 70, "b", 70, "s1-70");
         }
 
@@ -108,41 +108,41 @@ namespace net.esper.regression.eql
             EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
 
             SupportUpdateListener updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener.Update);
+            statement.AddListener(updateListener);
 
             sendEventS3(2, "d");
             sendEventS0(3, "a");
             sendEventS2(3, "c");
             sendEventS1(1, "b");
-            EventBean _event = updateListener.assertOneGetNewAndReset();
+            EventBean _event = updateListener.AssertOneGetNewAndReset();
             assertEventData(_event, 3, 1, 3, 2, "a", "b", "c", "d");
 
             sendEventS0(11, "a1");
             sendEventS2(13, "c1");
             sendEventS1(12, "b1");
             sendEventS3(15, "d1");
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             sendEventS3(25, "d2");
             sendEventS0(21, "a2");
             sendEventS2(21, "c2");
             sendEventS1(26, "b2");
-            _event = updateListener.assertOneGetNewAndReset();
+            _event = updateListener.AssertOneGetNewAndReset();
             assertEventData(_event, 21, 26, 21, 25, "a2", "b2", "c2", "d2");
 
             sendEventS0(31, "a3");
             sendEventS1(32, "b3");
-            _event = updateListener.assertOneGetOldAndReset(); // event moving out of window
+            _event = updateListener.AssertOneGetOldAndReset(); // event moving out of window
             assertEventData(_event, 3, 1, 3, 2, "a", "b", "c", "d");
             sendEventS2(33, "c3");
             sendEventS3(35, "d3");
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             sendEventS0(41, "a4");
             sendEventS2(43, "c4");
             sendEventS1(42, "b4");
             sendEventS3(45, "d4");
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             // Stop statement
             statement.Stop();
@@ -151,7 +151,7 @@ namespace net.esper.regression.eql
             sendEventS0(53, "a5");
             sendEventS2(53, "c5");
             sendEventS1(51, "b5");
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             // Start statement
             statement.Start();
@@ -160,7 +160,7 @@ namespace net.esper.regression.eql
             sendEventS0(51, "a6");
             sendEventS2(51, "c6");
             sendEventS1(56, "b6");
-            _event = updateListener.assertOneGetNewAndReset();
+            _event = updateListener.AssertOneGetNewAndReset();
             assertEventData(_event, 51, 56, 51, 55, "a6", "b6", "c6", "d6");
         }
 
@@ -178,14 +178,14 @@ namespace net.esper.regression.eql
             EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
 
             SupportUpdateListener updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener.Update);
+            statement.AddListener(updateListener);
 
             SupportBean_S0 s0 = sendEventS0(100, "");
             SupportBean_S1 s1 = sendEventS1(1, "");
             SupportBean_S2 s2 = sendEventS2(100, "");
             SupportBean_S3 s3 = sendEventS3(2, "");
 
-            EventBean _event = updateListener.assertOneGetNewAndReset();
+            EventBean _event = updateListener.AssertOneGetNewAndReset();
 
             EDictionary<string, EventBean> result = (EDictionary<string, EventBean>)_event["s0"];
             Assert.AreSame(s0, result.Fetch("es0").Underlying);

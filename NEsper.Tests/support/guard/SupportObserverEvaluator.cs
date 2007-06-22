@@ -23,19 +23,19 @@ namespace net.esper.support.guard
             evaluateFalseCounter++;
         }
 
-        public IList<MatchedEventMap> getAndClearMatchEvents()
+        public IList<MatchedEventMap> GetAndClearMatchEvents()
         {
             IList<MatchedEventMap> original = matchEvents;
             matchEvents = new List<MatchedEventMap>();
             return original;
         }
 
-        public IList<MatchedEventMap> getMatchEvents()
+        public IList<MatchedEventMap> GetMatchEvents()
         {
             return matchEvents;
         }
 
-        public int getAndResetEvaluateFalseCounter()
+        public int GetAndResetEvaluateFalseCounter()
         {
             int value = evaluateFalseCounter;
             evaluateFalseCounter = 0;

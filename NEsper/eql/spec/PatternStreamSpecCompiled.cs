@@ -41,7 +41,7 @@ namespace net.esper.eql.spec
 	    {
 	        this.evalNode = evalNode;
 
-	        EDictionary<String, EventType> copy = new EHashDictionary<String, EventType>();
+	        EDictionary<String, EventType> copy = new HashDictionary<String, EventType>();
 	        copy.PutAll(taggedEventTypes);
 	        this.taggedEventTypes = copy;
 	    }

@@ -24,7 +24,9 @@ namespace net.esper.eql.spec
 	/// Pattern specification in unvalidated, unoptimized form.
 	/// </summary>
 	
-	public class PatternStreamSpecRaw : StreamSpecBase, StreamSpecRaw
+	public class PatternStreamSpecRaw
+        : StreamSpecBase
+        , StreamSpecRaw
 	{
 	    private readonly EvalNode evalNode;
 
@@ -42,9 +44,9 @@ namespace net.esper.eql.spec
 	    /// Returns the pattern expression evaluation node for the top pattern operator.
 	    /// </summary>
 	    /// <returns>parent pattern expression node</returns>
-	    public EvalNode GetEvalNode()
+	    public EvalNode EvalNode
 	    {
-	        return evalNode;
+            get { return evalNode; }
 	    }
 
         /// <summary>
@@ -59,7 +61,7 @@ namespace net.esper.eql.spec
 	                                      MethodResolutionService methodResolutionService)
 	    {
 	        // Determine al the filter nodes used in the pattern
-	        List<EvalFilterNode> filterNodes = EvalNode.RecusiveFilterChildNodes(evalNode);
+	        IList<EvalFilterNode> filterNodes = EvalNode.RecusiveFilterChildNodes(evalNode);
 
 	        // Resolve all event types; some filters are tagged and we keep the order in which they are specified
 	        LinkedDictionary<String, EventType> taggedEventTypes = new LinkedDictionary<String, EventType>();

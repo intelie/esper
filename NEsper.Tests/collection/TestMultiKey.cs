@@ -92,7 +92,7 @@ namespace net.esper.collection
 				SupportEventBeanFactory.MakeEvents( new String[] { "a", "b" } )
 			};
 
-			ISet<MultiKey<EventBean>> mapSet = new EHashSet<MultiKey<EventBean>>();
+			Set<MultiKey<EventBean>> mapSet = new HashSet<MultiKey<EventBean>>();
 
 			// Test contains
 			mapSet.Add( new MultiKey<EventBean>( testEvents[0] ) );

@@ -40,17 +40,17 @@ namespace net.esper.eql.view
 			viewIStream.Update(eventsNew, eventsOld);
 			Assert.AreSame(eventsNew, childView.LastNewData);
 			Assert.IsNull(childView.LastOldData);
-			childView.reset();
+			childView.Reset();
 			
 			viewRStream.Update(eventsNew, eventsOld);
 			Assert.AreSame(eventsOld, childView.LastNewData);
 			Assert.IsNull(childView.LastOldData);
-			childView.reset();
+			childView.Reset();
 			
 			viewBoth.Update(eventsNew, eventsOld);
 			Assert.AreSame(eventsOld, childView.LastOldData);
 			Assert.AreSame(eventsNew, childView.LastNewData);
-			childView.reset();
+			childView.Reset();
 		}
 	}
 }

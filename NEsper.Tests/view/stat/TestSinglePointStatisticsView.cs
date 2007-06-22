@@ -147,7 +147,7 @@ namespace net.esper.view.stat
         private EventBean makeBean(String symbol, double price, long volume)
         {
             SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, volume, "");
-            return SupportEventBeanFactory.createObject(bean);
+            return SupportEventBeanFactory.CreateObject(bean);
         }
     }
 }

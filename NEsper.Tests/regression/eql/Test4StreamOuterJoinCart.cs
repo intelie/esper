@@ -19,10 +19,10 @@ namespace net.esper.regression.eql
 		private EPStatement joinView;
 		private SupportUpdateListener updateListener;
 
-		private static readonly String EVENT_S0;
-		private static readonly String EVENT_S1;
-		private static readonly String EVENT_S2;
-		private static readonly String EVENT_S3;
+		private static readonly String _event_S0;
+		private static readonly String _event_S1;
+		private static readonly String _event_S2;
+		private static readonly String _event_S3;
 
 		[SetUp]
 		public virtual void setUp()
@@ -36,8 +36,8 @@ namespace net.esper.regression.eql
 		private Object[][] getAndResetNewEvents()
 		{
 			EventBean[] newEvents = updateListener.LastNewData;
-			updateListener.reset();
-			return ArrayHandlingUtil.getUnderlyingEvents( newEvents, new String[] { "s0", "s1", "s2", "s3" } );
+			updateListener.Reset();
+			return ArrayHandlingUtil.GetUnderlyingEvents( newEvents, new String[] { "s0", "s1", "s2", "s3" } );
 		}
 
 		[Test]
@@ -50,15 +50,15 @@ namespace net.esper.regression.eql
 			*     s0      -> s2
 			*             -> s3
 			*/
-			String joinStatement = 
+			String joinStatement =
 				"select * from " +
-				EVENT_S0 + ".win:length(1000) as s0 " + " left outer join " + 
-				EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 " + " left outer join " + 
-				EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 " + " left outer join " + 
-				EVENT_S3 + ".win:length(1000) as s3 on s0.p00 = s3.p30 ";
+				_event_S0 + ".win:length(1000) as s0 " + " left outer join " +
+				_event_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 " + " left outer join " +
+				_event_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 " + " left outer join " +
+				_event_S3 + ".win:length(1000) as s3 on s0.p00 = s3.p30 ";
 
 			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 
 			runAsserts();
 		}
@@ -73,15 +73,15 @@ namespace net.esper.regression.eql
 			*     s0      -> s2
 			*             -> s3
 			*/
-			String joinStatement = 
+			String joinStatement =
 				"select * from " +
-				EVENT_S1 + ".win:length(1000) as s1 " + " right outer join " + 
-				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s1.p10 " + " left outer join " + 
-				EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 " + " left outer join " + 
-				EVENT_S3 + ".win:length(1000) as s3 on s0.p00 = s3.p30 ";
+				_event_S1 + ".win:length(1000) as s1 " + " right outer join " +
+				_event_S0 + ".win:length(1000) as s0 on s0.p00 = s1.p10 " + " left outer join " +
+				_event_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 " + " left outer join " +
+				_event_S3 + ".win:length(1000) as s3 on s0.p00 = s3.p30 ";
 
 			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 
 			runAsserts();
 		}
@@ -98,13 +98,13 @@ namespace net.esper.regression.eql
 			*/
 			String joinStatement =
 				"select * from " +
-				EVENT_S2 + ".win:length(1000) as s2 " + " right outer join " + 
-				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s2.p20 " + " left outer join " +
-				EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 " + " left outer join " +
-				EVENT_S3 + ".win:length(1000) as s3 on s0.p00 = s3.p30 ";
+				_event_S2 + ".win:length(1000) as s2 " + " right outer join " +
+				_event_S0 + ".win:length(1000) as s0 on s0.p00 = s2.p20 " + " left outer join " +
+				_event_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 " + " left outer join " +
+				_event_S3 + ".win:length(1000) as s3 on s0.p00 = s3.p30 ";
 
 			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 
 			runAsserts();
 		}
@@ -119,15 +119,15 @@ namespace net.esper.regression.eql
 			*     s0      -> s2
 			*             -> s3
 			*/
-			String joinStatement = 
-				"select * from " + 
-				EVENT_S3 + ".win:length(1000) as s3 " + " right outer join " + 
-				EVENT_S0 + ".win:length(1000) as s0 on s0.p00 = s3.p30 " + " left outer join " + 
-				EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 " + " left outer join " + 
-				EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 ";
+			String joinStatement =
+				"select * from " +
+				_event_S3 + ".win:length(1000) as s3 " + " right outer join " +
+				_event_S0 + ".win:length(1000) as s0 on s0.p00 = s3.p30 " + " left outer join " +
+				_event_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 " + " left outer join " +
+				_event_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 ";
 
 			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 
 			runAsserts();
 		}
@@ -143,155 +143,155 @@ namespace net.esper.regression.eql
 			//
 			s1Events = SupportBean_S1.makeS1( "A", new String[] { "A-s1-1" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s2Events = SupportBean_S2.makeS2( "A", new String[] { "A-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s3Events = SupportBean_S3.makeS3( "A", new String[] { "A-s3-1" } );
 			SendEvent( s3Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s0Events = SupportBean_S0.makeS0( "A", new String[] { "A-s0-1" } );
 			SendEvent( s0Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] } }, getAndResetNewEvents() );
 
 			// Test s0 and s1=1, s2=0, s3=0
 			//
 			s1Events = SupportBean_S1.makeS1( "B", new String[] { "B-s1-1" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s0Events = SupportBean_S0.makeS0( "B", new String[] { "B-s0-1" } );
 			SendEvent( s0Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], null, null } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], null, null } }, getAndResetNewEvents() );
 
 			// Test s0 and s1=1, s2=1, s3=0
 			//
 			s1Events = SupportBean_S1.makeS1( "C", new String[] { "C-s1-1" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s2Events = SupportBean_S2.makeS2( "C", new String[] { "C-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s0Events = SupportBean_S0.makeS0( "C", new String[] { "C-s0-1" } );
 			SendEvent( s0Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null } }, getAndResetNewEvents() );
 
 			// Test s0 and s1=2, s2=0, s3=0
 			//
 			s1Events = SupportBean_S1.makeS1( "D", new String[] { "D-s1-1", "D-s1-2" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s2Events = SupportBean_S2.makeS2( "D", new String[] { "D-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s0Events = SupportBean_S0.makeS0( "D", new String[] { "D-s0-1" } );
 			SendEvent( s0Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null }, new Object[] { s0Events[0], s1Events[1], s2Events[0], null } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null }, new Object[] { s0Events[0], s1Events[1], s2Events[0], null } }, getAndResetNewEvents() );
 
 			// Test s0 and s1=2, s2=2, s3=0
 			//
 			s1Events = SupportBean_S1.makeS1( "E", new String[] { "E-s1-1", "E-s1-2" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s2Events = SupportBean_S2.makeS2( "E", new String[] { "E-s2-1", "E-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s0Events = SupportBean_S0.makeS0( "E", new String[] { "E-s0-1" } );
 			SendEvent( s0Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null }, new Object[] { s0Events[0], s1Events[1], s2Events[0], null }, new Object[] { s0Events[0], s1Events[0], s2Events[1], null }, new Object[] { s0Events[0], s1Events[1], s2Events[1], null } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null }, new Object[] { s0Events[0], s1Events[1], s2Events[0], null }, new Object[] { s0Events[0], s1Events[0], s2Events[1], null }, new Object[] { s0Events[0], s1Events[1], s2Events[1], null } }, getAndResetNewEvents() );
 
 			// Test s0 and s1=2, s2=2, s3=1
 			//
 			s1Events = SupportBean_S1.makeS1( "F", new String[] { "F-s1-1", "F-s1-2" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s2Events = SupportBean_S2.makeS2( "F", new String[] { "F-s2-1", "F-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s3Events = SupportBean_S3.makeS3( "F", new String[] { "F-s3-1" } );
 			SendEvent( s3Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s0Events = SupportBean_S0.makeS0( "F", new String[] { "F-s0-1" } );
 			SendEvent( s0Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[0] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[0] } }, getAndResetNewEvents() );
 
 			// Test s0 and s1=2, s2=2, s3=2
 			//
 			s1Events = SupportBean_S1.makeS1( "G", new String[] { "G-s1-1", "G-s1-2" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s2Events = SupportBean_S2.makeS2( "G", new String[] { "G-s2-1", "G-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s3Events = SupportBean_S3.makeS3( "G", new String[] { "G-s3-1", "G-s3-2" } );
 			SendEvent( s3Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s0Events = SupportBean_S0.makeS0( "G", new String[] { "G-s0-1" } );
 			SendEvent( s0Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[1] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[1] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[1] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[1] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[1] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[1] } }, getAndResetNewEvents() );
 
 			// Test s0 and s1=1, s2=1, s3=3
 			//
 			s1Events = SupportBean_S1.makeS1( "H", new String[] { "H-s1-1" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s2Events = SupportBean_S2.makeS2( "H", new String[] { "H-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s3Events = SupportBean_S3.makeS3( "H", new String[] { "H-s3-1", "H-s3-2", "H-s3-3" } );
 			SendEvent( s3Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s0Events = SupportBean_S0.makeS0( "H", new String[] { "H-s0-1" } );
 			SendEvent( s0Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[2] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[2] } }, getAndResetNewEvents() );
 
 			// Test s3 and s0=0, s1=0, s2=0
 			//
 			s3Events = SupportBean_S3.makeS3( "I", new String[] { "I-s3-1" } );
 			SendEvent( s3Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Test s3 and s0=0, s1=0, s2=1
 			//
 			s2Events = SupportBean_S2.makeS2( "J", new String[] { "J-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s3Events = SupportBean_S3.makeS3( "J", new String[] { "J-s3-1" } );
 			SendEvent( s3Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Test s3 and s0=0, s1=1, s2=1
 			//
 			s2Events = SupportBean_S2.makeS2( "K", new String[] { "K-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s1Events = SupportBean_S1.makeS1( "K", new String[] { "K-s1-1" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			s3Events = SupportBean_S3.makeS3( "K", new String[] { "K-s3-1" } );
 			SendEvent( s3Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Test s3 and s0=1, s1=1, s2=1
 			//
@@ -306,7 +306,7 @@ namespace net.esper.regression.eql
 
 			s3Events = SupportBean_S3.makeS3( "M", new String[] { "M-s3-1" } );
 			SendEvent( s3Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] } }, getAndResetNewEvents() );
 
 			// Test s3 and s0=1, s1=2, s2=1
 			//
@@ -321,7 +321,7 @@ namespace net.esper.regression.eql
 
 			s3Events = SupportBean_S3.makeS3( "N", new String[] { "N-s3-1" } );
 			SendEvent( s3Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] } }, getAndResetNewEvents() );
 
 			// Test s3 and s0=1, s1=2, s2=3
 			//
@@ -336,7 +336,7 @@ namespace net.esper.regression.eql
 
 			s3Events = SupportBean_S3.makeS3( "O", new String[] { "O-s3-1" } );
 			SendEvent( s3Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[2], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[2], s3Events[0] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[2], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[2], s3Events[0] } }, getAndResetNewEvents() );
 
 			// Test s3 and s0=2, s1=2, s2=3
 			//
@@ -351,7 +351,7 @@ namespace net.esper.regression.eql
 
 			s3Events = SupportBean_S3.makeS3( "P", new String[] { "P-s3-1" } );
 			SendEvent( s3Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[2], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[2], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[1], s1Events[1], s2Events[1], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[2], s3Events[0] }, new Object[] { s0Events[1], s1Events[1], s2Events[2], s3Events[0] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[1], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[2], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[2], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[1], s3Events[0] }, new Object[] { s0Events[1], s1Events[1], s2Events[1], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[2], s3Events[0] }, new Object[] { s0Events[1], s1Events[1], s2Events[2], s3Events[0] } }, getAndResetNewEvents() );
 
 			// Test s1 and s0=0, s2=1, s3=0
 			//
@@ -360,7 +360,7 @@ namespace net.esper.regression.eql
 
 			s1Events = SupportBean_S1.makeS1( "Q", new String[] { "Q-s1-1" } );
 			SendEvent( s1Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Test s1 and s0=2, s2=1, s3=0
 			//
@@ -372,7 +372,7 @@ namespace net.esper.regression.eql
 
 			s1Events = SupportBean_S1.makeS1( "R", new String[] { "R-s1-1" } );
 			SendEvent( s1Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null }, new Object[] { s0Events[1], s1Events[0], s2Events[0], null } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null }, new Object[] { s0Events[1], s1Events[0], s2Events[0], null } }, getAndResetNewEvents() );
 
 			// Test s1 and s0=2, s2=2, s3=2
 			//
@@ -387,7 +387,7 @@ namespace net.esper.regression.eql
 
 			s1Events = SupportBean_S1.makeS1( "S", new String[] { "S-s1-1" } );
 			SendEvent( s1Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[1] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[1] } }, getAndResetNewEvents() );
 
 			// Test s2 and s0=0, s1=0, s3=1
 			//
@@ -396,7 +396,7 @@ namespace net.esper.regression.eql
 
 			s2Events = SupportBean_S2.makeS2( "T", new String[] { "T-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Test s2 and s0=0, s1=1, s3=1
 			//
@@ -408,7 +408,7 @@ namespace net.esper.regression.eql
 
 			s2Events = SupportBean_S2.makeS2( "U", new String[] { "U-s2-1" } );
 			SendEvent( s2Events );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Test s2 and s0=1, s1=1, s3=1
 			//
@@ -423,7 +423,7 @@ namespace net.esper.regression.eql
 
 			s2Events = SupportBean_S2.makeS2( "V", new String[] { "V-s2-1" } );
 			SendEvent( s2Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] } }, getAndResetNewEvents() );
 
 			// Test s2 and s0=2, s1=2, s3=0
 			//
@@ -435,7 +435,7 @@ namespace net.esper.regression.eql
 
 			s2Events = SupportBean_S2.makeS2( "W", new String[] { "W-s2-1" } );
 			SendEvent( s2Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null }, new Object[] { s0Events[0], s1Events[1], s2Events[0], null }, new Object[] { s0Events[1], s1Events[0], s2Events[0], null }, new Object[] { s0Events[1], s1Events[1], s2Events[0], null } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], null }, new Object[] { s0Events[0], s1Events[1], s2Events[0], null }, new Object[] { s0Events[1], s1Events[0], s2Events[0], null }, new Object[] { s0Events[1], s1Events[1], s2Events[0], null } }, getAndResetNewEvents() );
 
 			// Test s2 and s0=2, s1=2, s3=2
 			//
@@ -450,7 +450,7 @@ namespace net.esper.regression.eql
 
 			s2Events = SupportBean_S2.makeS2( "X", new String[] { "X-s2-1" } );
 			SendEvent( s2Events );
-			ArrayAssertionUtil.assertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[1] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[1], s1Events[1], s2Events[0], s3Events[1] } }, getAndResetNewEvents() );
+			ArrayAssertionUtil.AssertRefAnyOrderArr( new Object[][] { new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[0] }, new Object[] { s0Events[1], s1Events[1], s2Events[0], s3Events[0] }, new Object[] { s0Events[0], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[0], s1Events[1], s2Events[0], s3Events[1] }, new Object[] { s0Events[1], s1Events[0], s2Events[0], s3Events[1] }, new Object[] { s0Events[1], s1Events[1], s2Events[0], s3Events[1] } }, getAndResetNewEvents() );
 		}
 
 		private void SendEvent( Object _event )
@@ -461,7 +461,7 @@ namespace net.esper.regression.eql
 		private void sendEventsAndReset( Object[] events )
 		{
 			SendEvent( events );
-			updateListener.reset();
+			updateListener.Reset();
 		}
 
 		private void SendEvent( Object[] events )
@@ -473,10 +473,10 @@ namespace net.esper.regression.eql
 		}
 		static Test4StreamOuterJoinCart()
 		{
-			EVENT_S0 = typeof( SupportBean_S0 ).FullName;
-			EVENT_S1 = typeof( SupportBean_S1 ).FullName;
-			EVENT_S2 = typeof( SupportBean_S2 ).FullName;
-			EVENT_S3 = typeof( SupportBean_S3 ).FullName;
+            _event_S0 = typeof(SupportBean_S0).FullName;
+            _event_S1 = typeof(SupportBean_S1).FullName;
+            _event_S2 = typeof(SupportBean_S2).FullName;
+            _event_S3 = typeof(SupportBean_S3).FullName;
 		}
 	}
 }

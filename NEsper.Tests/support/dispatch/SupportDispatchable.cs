@@ -16,14 +16,14 @@ namespace net.esper.support.dispatch
         instanceList.Add(this);
     }
 
-    public int getAndResetNumExecuted()
+    public int GetAndResetNumExecuted()
     {
         int val = numExecuted;
         numExecuted = 0;
         return val;
     }
 
-    public static IList<SupportDispatchable> getAndResetInstanceList()
+    public static IList<SupportDispatchable> GetAndResetInstanceList()
     {
         IList<SupportDispatchable> instances = instanceList;
         instanceList = new List<SupportDispatchable>();

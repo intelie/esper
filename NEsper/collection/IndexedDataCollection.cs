@@ -12,7 +12,7 @@ namespace net.esper.collection
 
     public sealed class IndexedDataCollection
     {
-        private readonly EDictionary<Object, List<Object>> eventIndex = new EHashDictionary<Object, List<Object>>();
+        private readonly EDictionary<Object, List<Object>> eventIndex = new HashDictionary<Object, List<Object>>();
 
         /// <summary> Add a value object to the index. If the value object already exists for the same key,
         /// no error is thrown and the object is still added (no set behavior).

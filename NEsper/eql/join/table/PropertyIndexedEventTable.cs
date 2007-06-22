@@ -54,7 +54,7 @@ namespace net.esper.eql.join.table
                 propertyGetters[i] = eventType.GetGetter(propertyNames[i]);
             }
 
-            propertyIndex = new EHashDictionary<MultiKeyUntyped, Set<EventBean>>();
+            propertyIndex = new HashDictionary<MultiKeyUntyped, Set<EventBean>>();
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace net.esper.eql.join.table
 
             if (events == null)
             {
-                events = new EHashSet<EventBean>();
+                events = new HashSet<EventBean>();
                 propertyIndex[key] = events;
             }
 

@@ -22,13 +22,24 @@ namespace net.esper.events
 		private readonly String eventTypeId;
 
         private String[] propertyNames;
-        private EDictionary<String, Type> simplePropertyTypes;
-        private EDictionary<String, EventPropertyGetter> simplePropertyGetters;
-        private EDictionary<String, EventPropertyDescriptor> simplePropertyDescriptors;
+
+        //private EDictionary<String, Type> simplePropertyTypes;
+        //private EDictionary<String, EventPropertyGetter> simplePropertyGetters;
+        //private EDictionary<String, EventPropertyDescriptor> simplePropertyDescriptors;
+        private EDictionary<string, SimplePropertyInfo> simplePropertyTable;
+        private EDictionary<string, IList<SimplePropertyInfo>> smartPropertyTable;
+
         private EDictionary<String, EventPropertyDescriptor> mappedPropertyDescriptors;
         private EDictionary<String, EventPropertyDescriptor> indexedPropertyDescriptors;
         private IList<EventType> superTypes;
         private ICollection<EventType> deepSuperTypes;
+
+        internal class SimplePropertyInfo
+        {
+            public Type type;
+            public EventPropertyGetter getter;
+            public EventPropertyDescriptor descriptor;
+        }
 
         /// <summary>Constructor takes a object type as an argument.</summary>
         /// <param name="type">the type of an object</param>
@@ -66,10 +77,10 @@ namespace net.esper.events
 
         public Type GetPropertyType(String propertyName)
         {
-            Type propertyType = simplePropertyTypes.Fetch(propertyName);
-            if (propertyType != null)
+            SimplePropertyInfo propertyInfo = GetSimplePropertyInfo(propertyName);
+            if (( propertyInfo != null ) && ( propertyInfo.type != null ))
             {
-                return propertyType;
+                return propertyInfo.type;
             }
 
             Property prop = PropertyParser.Parse(propertyName, beanEventAdapter);
@@ -119,10 +130,10 @@ namespace net.esper.events
 
         public EventPropertyGetter GetGetter(String propertyName)
         {
-            EventPropertyGetter getter = simplePropertyGetters.Fetch(propertyName);
-            if (getter != null)
+            SimplePropertyInfo propertyInfo = GetSimplePropertyInfo(propertyName);
+            if (( propertyInfo != null ) && ( propertyInfo.getter != null ))
             {
-                return getter;
+                return propertyInfo.getter;
             }
 
             Property prop = PropertyParser.Parse(propertyName, beanEventAdapter);
@@ -142,8 +153,75 @@ namespace net.esper.events
 
         public EventPropertyDescriptor GetSimpleProperty(String propertyName)
         {
-            EventPropertyDescriptor descriptor = simplePropertyDescriptors.Fetch(propertyName);
-            return descriptor;
+            SimplePropertyInfo propertyInfo = GetSimplePropertyInfo(propertyName);
+            return propertyInfo.descriptor;
+        }
+
+        /// <summary>
+        /// Gets the resolution style.
+        /// </summary>
+        /// <value>The resolution style.</value>
+        private PropertyResolutionStyle ResolutionStyle
+        {
+            get
+            {
+                return
+                    (optionalLegacyDef != null)
+                        ? optionalLegacyDef.PropertyResolutionStyle
+                        : PropertyResolutionStyle.CASE_SENSITIVE;
+            }
+        }
+
+        /// <summary>
+        /// Gets the simple property info.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns></returns>
+        private SimplePropertyInfo GetSimplePropertyInfo(String propertyName)
+        {
+            SimplePropertyInfo propertyInfo;
+            IList<SimplePropertyInfo> simplePropertyInfoList;
+
+            switch (ResolutionStyle)
+            {
+                case PropertyResolutionStyle.CASE_SENSITIVE:
+                    return simplePropertyTable.Fetch(propertyName);
+                    break;
+                
+                case PropertyResolutionStyle.CASE_INSENSITIVE:
+                    propertyInfo = simplePropertyTable.Fetch(propertyName);
+                    if ( propertyInfo != null )
+                    {
+                        return propertyInfo;
+                    }
+
+                    simplePropertyInfoList = smartPropertyTable.Fetch(propertyName.ToLowerInvariant());
+                    return
+                        simplePropertyInfoList != null
+                            ? simplePropertyInfoList[0]
+                            : null;
+
+                case PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE:
+                    propertyInfo = simplePropertyTable.Fetch(propertyName);
+                    if (propertyInfo != null)
+                    {
+                        return propertyInfo;
+                    }
+
+                    simplePropertyInfoList = smartPropertyTable.Fetch(propertyName.ToLowerInvariant());
+                    if ( simplePropertyInfoList != null )
+                    {
+                        if ( simplePropertyInfoList.Count != 1 )
+                        {
+                            throw new EPException( "Unable to determine which property to use for \"" + propertyName + "\" because more than one property matched");
+                        }
+
+                        return simplePropertyInfoList[0];
+                    }
+                    break;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -221,11 +299,15 @@ namespace net.esper.events
             IList<EventPropertyDescriptor> properties = propertyListBuilder.AssessProperties(type);
 
             this.propertyNames = new String[properties.Count];
-            this.simplePropertyTypes = new EHashDictionary<String, Type>();
-            this.simplePropertyGetters = new EHashDictionary<String, EventPropertyGetter>();
-            this.simplePropertyDescriptors = new EHashDictionary<String, EventPropertyDescriptor>();
-            this.mappedPropertyDescriptors = new EHashDictionary<String, EventPropertyDescriptor>();
-            this.indexedPropertyDescriptors = new EHashDictionary<String, EventPropertyDescriptor>();
+
+            this.simplePropertyTable = new HashDictionary<String, SimplePropertyInfo>(); 
+
+            //this.simplePropertyTypes = new HashDictionary<String, Type>();
+            //this.simplePropertyGetters = new HashDictionary<String, EventPropertyGetter>();
+            //this.simplePropertyDescriptors = new HashDictionary<String, EventPropertyDescriptor>();
+
+            this.mappedPropertyDescriptors = new HashDictionary<String, EventPropertyDescriptor>();
+            this.indexedPropertyDescriptors = new HashDictionary<String, EventPropertyDescriptor>();
 
             int count = 0;
             foreach (EventPropertyDescriptor desc in properties)
@@ -236,11 +318,32 @@ namespace net.esper.events
                 switch (desc.PropertyType)
                 {
                     case EventPropertyType.SIMPLE:
-                        EventPropertyGetter getter = null;
-                        getter = PropertyHelper.GetGetter(desc.Descriptor);
-                        simplePropertyTypes[propertyName] = desc.ReturnType;
-                        simplePropertyGetters[propertyName] = getter;
-                        simplePropertyDescriptors[propertyName] = desc;
+                        {
+                            EventPropertyGetter getter = null;
+                            getter = PropertyHelper.GetGetter(desc.Descriptor);
+                            SimplePropertyInfo propertyInfo = new SimplePropertyInfo();
+                            propertyInfo.type = desc.ReturnType;
+                            propertyInfo.getter = getter;
+                            propertyInfo.descriptor = desc;
+                            // Enter the property into the simple property table
+                            simplePropertyTable[propertyName] = propertyInfo;
+
+                            // Only map into the smart property table if the resolution style
+                            // would require it.  Otherwise its just a waste of time and memory.
+                            if (ResolutionStyle != PropertyResolutionStyle.CASE_INSENSITIVE)
+                            {
+                                // Find the property in the smart property table
+                                string smartPropertyName = propertyName.ToLowerInvariant();
+                                IList<SimplePropertyInfo> propertyInfoList = smartPropertyTable.Fetch(smartPropertyName);
+                                if (propertyInfoList == null)
+                                {
+                                    smartPropertyTable[smartPropertyName] =
+                                        propertyInfoList = new List<SimplePropertyInfo>();
+                                }
+                                // Enter the property into the smart property list
+                                propertyInfoList.Add(propertyInfo);
+                            }
+                        }
                         break;
                     case EventPropertyType.MAPPED:
                         mappedPropertyDescriptors[propertyName] = desc;
@@ -256,12 +359,12 @@ namespace net.esper.events
 
             // Determine deep supertypes
             // Get Java super types (superclasses and interfaces), deep get of all in the tree
-            Set<Type> supers = new EHashSet<Type>();
+            Set<Type> supers = new HashSet<Type>();
             GetSuper(type, supers);
             RemoveCoreLibInterfaces(supers);    // Remove core library super types
 
             // Cache the supertypes of this event type for later use
-            deepSuperTypes = new EHashSet<EventType>();
+            deepSuperTypes = new HashSet<EventType>();
             foreach (Type superClass in supers)
             {
                 EventType superType = beanEventAdapter.CreateOrGetBeanType(superClass);
@@ -296,7 +399,7 @@ namespace net.esper.events
                 superclasses.Add(interfaces[i]);
             }
 
-            // Build event types, ignoring java language types
+            // Build event types, ignoring language types
             IList<EventType> superTypes = new List<EventType>();
             foreach (Type superclass in superclasses)
             {
@@ -344,7 +447,7 @@ namespace net.esper.events
             GetSuper(superClass, result);
         }
 
-        private static void RemoveCoreLibInterfaces(Set<Type> classes)
+        private static void RemoveCoreLibInterfaces(ICollection<Type> classes)
         {
             IList<Type> deadList = new List<Type>();
 

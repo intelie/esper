@@ -1,82 +1,86 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
-using net.esper.collection;
-
-using NUnit.Core;
 using NUnit.Framework;
+
+using net.esper.collection;
 
 namespace net.esper.util
 {
 	[TestFixture]
-    public class TestMultiKeyComparator 
-    {
-        internal IComparer<MultiKey<Object>> comparator;
-        internal MultiKey<Object> firstValues;
-        internal MultiKey<Object> secondValues;
+	public class TestMultiKeyComparator
+	{
+		private IComparer<MultiKeyUntyped> comparator;
+		private MultiKeyUntyped firstValues;
+		private MultiKeyUntyped secondValues;
 
-        [Test]
-        public virtual void testCompareSingleProperty()
-        {
-            comparator = new MultiKeyComparator<Object>(new bool[] { false });
+		[Test]
+		public void TestCompareSingleProperty()
+		{
+			comparator = new MultiKeyComparator(new Boolean[] {false});
 
-            firstValues = new MultiKey<Object>(new Object[]{3d});
-            secondValues = new MultiKey<Object>(new Object[]{4d});
+			firstValues = new MultiKeyUntyped(new Object[] {3d});
+			secondValues = new MultiKeyUntyped(new Object[] {4d});
+			Assert.IsTrue(comparator.Compare(firstValues, secondValues) < 0);
 
-            Assert.IsTrue(comparator.Compare(firstValues, secondValues) < 0);
+			comparator = new MultiKeyComparator(new bool[] {true});
 
-            comparator = new MultiKeyComparator<Object>(new bool[] { true });
+			Assert.IsTrue(comparator.Compare(firstValues, secondValues) > 0);
+			Assert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
+		}
 
-            Assert.IsTrue(comparator.Compare(firstValues, secondValues) > 0);
-            Assert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
-        }
+		[Test]
+		public void TestCompareTwoProperties()
+		{
+			comparator = new MultiKeyComparator(new bool[] {false, false});
 
-        [Test]
-        public virtual void testCompareTwoProperties()
-        {
-            comparator = new MultiKeyComparator<Object>(new bool[] { false, false });
+			firstValues = new MultiKeyUntyped(new Object[] {3d, 3L});
+			secondValues = new MultiKeyUntyped(new Object[] {3d, 4L});
+			Assert.IsTrue(comparator.Compare(firstValues, secondValues) < 0);
 
-            firstValues = new MultiKey<Object>(new Object[]{3d, 3L});
-            secondValues = new MultiKey<Object>(new Object[]{3d, 4L});
+			comparator = new MultiKeyComparator(new bool[] {false, true});
 
-            Assert.IsTrue(comparator.Compare(firstValues, secondValues) < 0);
+			Assert.IsTrue(comparator.Compare(firstValues, secondValues) > 0);
+			Assert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
+		}
 
-            comparator = new MultiKeyComparator<Object>(new bool[] { false, true });
+		[Test]
+		public void TestInvalid()
+		{
+			comparator = new MultiKeyComparator(new bool[] {false, false});
 
-            Assert.IsTrue(comparator.Compare(firstValues, secondValues) > 0);
-            Assert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
-        }
+			firstValues = new MultiKeyUntyped(new Object[] {3d});
+			secondValues = new MultiKeyUntyped(new Object[] {3d, 4L});
+			try
+			{
+				comparator.Compare(firstValues, secondValues);
+				Assert.Fail();
+			}
+			catch(ArgumentException e)
+			{
+				// Expected
+			}
 
-        [Test]
-        public virtual void testInvalid()
-        {
-            comparator = new MultiKeyComparator<Object>(new bool[] { false, false });
+			firstValues = new MultiKeyUntyped(new Object[] {3d});
+			secondValues = new MultiKeyUntyped(new Object[] {3d});
+			try
+			{
+				comparator.Compare(firstValues, secondValues);
+				Assert.Fail();
+			}
+			catch(ArgumentException e)
+			{
+				// Expected
+			}
 
-            firstValues = new MultiKey<Object>(new Object[]{3d});
-            secondValues = new MultiKey<Object>(new Object[]{3d, 4L});
-
-            try
-            {
-                comparator.Compare(firstValues, secondValues);
-                Assert.Fail();
-            }
-            catch (ArgumentException e)
-            {
-                // Expected
-            }
-
-            firstValues = new MultiKey<Object>(new Object[]{3d});
-            secondValues = new MultiKey<Object>(new Object[]{3d});
-
-            try
-            {
-                comparator.Compare(firstValues, secondValues);
-                Assert.Fail();
-            }
-            catch (ArgumentException e)
-            {
-                // Expected
-            }
-        }
-    }
-}
+		}
+	}
+} // End of namespace

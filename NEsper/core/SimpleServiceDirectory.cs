@@ -17,7 +17,7 @@ namespace net.esper.core
         /// </summary>
 		public SimpleServiceDirectory()
 		{
-			m_dataTable = new EHashDictionary<string,object>() ;
+			m_dataTable = new HashDictionary<string,object>() ;
 		}
 
         /// <summary>

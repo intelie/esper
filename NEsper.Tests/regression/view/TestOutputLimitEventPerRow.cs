@@ -42,12 +42,12 @@ namespace net.esper.regression.view
                 "output last every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             runAssertionLast();
         }
 
-        private void assertEvent(String symbol, Double mySum, Int64 volume)
+        private void assertEvent(String symbol, double? mySum, Int64 volume)
         {
             EventBean[] newData = testListener.LastNewData;
 
@@ -57,8 +57,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(mySum, newData[0]["mySum"]);
             Assert.AreEqual(volume, newData[0]["volume"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void runAssertionSingle()
@@ -69,7 +69,7 @@ namespace net.esper.regression.view
             Assert.AreEqual(typeof(long?), selectTestView.EventType.GetPropertyType("volume"));
 
             SendEvent(SYMBOL_DELL, 10, 100);
-            Assert.IsTrue(testListener.Invoked);
+            Assert.IsTrue(testListener.IsInvoked);
             assertEvent(SYMBOL_DELL, 100d, 10L);
 
             SendEvent(SYMBOL_IBM, 15, 50);
@@ -86,7 +86,7 @@ namespace net.esper.regression.view
                 "group by symbol ";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             runAssertionSingle();
         }
@@ -103,7 +103,7 @@ namespace net.esper.regression.view
                 "output all every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             runAssertionAll();
         }
@@ -123,7 +123,7 @@ namespace net.esper.regression.view
                 "output all every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -146,7 +146,7 @@ namespace net.esper.regression.view
                 "output last every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -169,7 +169,7 @@ namespace net.esper.regression.view
                 "output last every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -185,13 +185,13 @@ namespace net.esper.regression.view
             Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("mySum"));
 
             SendEvent(SYMBOL_IBM, 10000, 20);
-            Assert.IsFalse(testListener.getAndClearIsInvoked());
+            Assert.IsFalse(testListener.GetAndClearIsInvoked());
 
             SendEvent(SYMBOL_DELL, 10000, 51);
             assertTwoEvents(SYMBOL_IBM, 10000, 20, SYMBOL_DELL, 10000, 51);
 
             SendEvent(SYMBOL_DELL, 20000, 52);
-            Assert.IsFalse(testListener.getAndClearIsInvoked());
+            Assert.IsFalse(testListener.GetAndClearIsInvoked());
 
             SendEvent(SYMBOL_DELL, 40000, 45);
             assertThreeEvents(SYMBOL_IBM, 10000, 20, SYMBOL_DELL, 20000, 51 + 52 + 45, SYMBOL_DELL, 40000, 51 + 52 + 45);
@@ -205,13 +205,13 @@ namespace net.esper.regression.view
             Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("mySum"));
 
             SendEvent(SYMBOL_DELL, 10000, 51);
-            Assert.IsFalse(testListener.getAndClearIsInvoked());
+            Assert.IsFalse(testListener.GetAndClearIsInvoked());
 
             SendEvent(SYMBOL_DELL, 20000, 52);
             assertTwoEvents(SYMBOL_DELL, 10000, 103, SYMBOL_DELL, 20000, 103);
 
             SendEvent(SYMBOL_DELL, 30000, 70);
-            Assert.IsFalse(testListener.getAndClearIsInvoked());
+            Assert.IsFalse(testListener.GetAndClearIsInvoked());
 
             SendEvent(SYMBOL_IBM, 10000, 20);
             assertTwoEvents(SYMBOL_DELL, 30000, 173, SYMBOL_IBM, 10000, 20);
@@ -235,8 +235,8 @@ namespace net.esper.regression.view
                 Assert.IsTrue(matchesEvent(newData[1], symbol1, volume1, sum1));
             }
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void assertThreeEvents(String symbol1, long volume1, double sum1, String symbol2, long volume2, double sum2, String symbol3, long volume3, double sum3)
@@ -285,8 +285,8 @@ namespace net.esper.regression.view
             }
 
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private bool matchesEvent(EventBean _event, String symbol, long volume, double sum)

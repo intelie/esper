@@ -15,18 +15,18 @@ namespace net.esper.adapter
 		/// Send the event into the runtime.
 		/// </summary>
 		/// <param name="runtime">the runtime to send the event into</param>
-		void send(EPRuntime runtime);
+		void Send(EPRuntime runtime);
 		
 		/// <summary>
 		/// Get the send time of this event, relative to all the other events sent or read by the same entity
 		/// </summary>
 		/// <returns>timestamp</returns>
-		long getSendTime();
+        long SendTime { get; }
 		
 		/// <summary>
 		/// Get the schedule slot for the entity that created this event
 		/// </summary>
 		/// <returns>schedule slot</returns>
-		ScheduleSlot getScheduleSlot();
+        ScheduleSlot ScheduleSlot { get; }
 	}
 }

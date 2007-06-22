@@ -58,7 +58,7 @@ namespace net.esper.type
 
         static MathArithTypeEnum()
         {
-            computers = new EHashDictionary<MultiKey<Object>, Computer>();
+            computers = new HashDictionary<MultiKey<Object>, Computer>();
             computers.Add(new MultiKey<Object>(new Object[] { typeof(double?), ADD }), AddDouble);
             computers.Add(new MultiKey<Object>(new Object[] { typeof(float?), ADD }), AddSingle);
             computers.Add(new MultiKey<Object>(new Object[] { typeof(long?), ADD }), AddInt64);

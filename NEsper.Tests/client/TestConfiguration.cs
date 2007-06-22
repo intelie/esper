@@ -25,7 +25,7 @@ namespace net.esper.client
 		public virtual void testString()
 		{
 			config.Configure( ESPER_TEST_CONFIG );
-			TestConfigurationParser.assertFileConfig( config );
+			TestConfigurationParser.AssertFileConfig( config );
 		}
 
 		[Test]
@@ -35,7 +35,7 @@ namespace net.esper.client
             Assert.IsNotNull(url);
 
 			config.Configure( url );
-			TestConfigurationParser.assertFileConfig( config );
+			TestConfigurationParser.AssertFileConfig( config );
 		}
 
 		[Test]
@@ -43,7 +43,7 @@ namespace net.esper.client
 		{
             FileInfo file = ResourceManager.ResolveResourceFile(ESPER_TEST_CONFIG);
 			config.Configure( file );
-			TestConfigurationParser.assertFileConfig( config );
+			TestConfigurationParser.AssertFileConfig( config );
 		}
 
 		[Test]

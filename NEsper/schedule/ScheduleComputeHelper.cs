@@ -80,10 +80,10 @@ namespace net.esper.schedule
 				ScheduleCalendar result = new ScheduleCalendar();
 				result.Milliseconds = after.Millisecond;
 
-	            ETreeSet<Int32> minutesSet = spec.UnitValues.Fetch(ScheduleUnit.MINUTES);
-	            ETreeSet<Int32> hoursSet = spec.UnitValues.Fetch(ScheduleUnit.HOURS);
-	            ETreeSet<Int32> monthsSet = spec.UnitValues.Fetch(ScheduleUnit.MONTHS);
-	            ETreeSet<Int32> secondsSet = null;
+	            TreeSet<Int32> minutesSet = spec.UnitValues.Fetch(ScheduleUnit.MINUTES);
+	            TreeSet<Int32> hoursSet = spec.UnitValues.Fetch(ScheduleUnit.HOURS);
+	            TreeSet<Int32> monthsSet = spec.UnitValues.Fetch(ScheduleUnit.MONTHS);
+	            TreeSet<Int32> secondsSet = null;
 	            
 				bool isSecondsSpecified = false;
 				
@@ -182,11 +182,11 @@ namespace net.esper.schedule
 		
 		private static int DetermineDayOfMonth(ScheduleSpec spec, ref DateTime after, ScheduleCalendar result)
 		{
-            ETreeSet<Int32> daysOfMonthSet = spec.UnitValues.Fetch(ScheduleUnit.DAYS_OF_MONTH);
-            ETreeSet<Int32> daysOfWeekSet = spec.UnitValues.Fetch(ScheduleUnit.DAYS_OF_WEEK);
-            ETreeSet<Int32> secondsSet = spec.UnitValues.Fetch(ScheduleUnit.SECONDS);
-            ETreeSet<Int32> minutesSet = spec.UnitValues.Fetch(ScheduleUnit.MINUTES);
-            ETreeSet<Int32> hoursSet = spec.UnitValues.Fetch(ScheduleUnit.HOURS);
+            TreeSet<Int32> daysOfMonthSet = spec.UnitValues.Fetch(ScheduleUnit.DAYS_OF_MONTH);
+            TreeSet<Int32> daysOfWeekSet = spec.UnitValues.Fetch(ScheduleUnit.DAYS_OF_WEEK);
+            TreeSet<Int32> secondsSet = spec.UnitValues.Fetch(ScheduleUnit.SECONDS);
+            TreeSet<Int32> minutesSet = spec.UnitValues.Fetch(ScheduleUnit.MINUTES);
+            TreeSet<Int32> hoursSet = spec.UnitValues.Fetch(ScheduleUnit.HOURS);
 			
 			int dayOfMonth;
 			
@@ -322,7 +322,7 @@ namespace net.esper.schedule
 		/// <param name="startValue"></param>
 		/// <returns></returns>
 
-		private static int NextValue(ETreeSet<Int32> valueSet, int startValue)
+		private static int NextValue(TreeSet<Int32> valueSet, int startValue)
         {
             if (valueSet == null)
             {
@@ -334,7 +334,7 @@ namespace net.esper.schedule
                 return startValue;
             }
 
-            ETreeSet<Int32> tailSet = valueSet.TailSet(startValue + 1);
+            TreeSet<Int32> tailSet = valueSet.TailSet(startValue + 1);
 
             if (tailSet.Count == 0)
             {

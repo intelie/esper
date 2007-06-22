@@ -31,18 +31,18 @@ namespace net.esper.regression.view
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select rstream * from " + typeof(SupportBean).FullName + ".win:length(3)");
-            statement.AddListener(testListener.Update);
+            statement.AddListener(testListener);
 
             Object _event = SendEvent("a");
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             sendEvents(new String[] { "a", "b" });
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent("d");
             Assert.AreSame(_event, testListener.LastNewData[0].Underlying); // receive 'a' as new data
             Assert.IsNull(testListener.LastOldData); // receive no more old data
-            testListener.reset();
+            testListener.Reset();
         }
 
         [Test]
@@ -52,26 +52,26 @@ namespace net.esper.regression.view
                 "insert into NextStream " +
                 "select rstream s0.str as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0"
                 );
-            statement.AddListener(testListener.Update);
+            statement.AddListener(testListener);
 
             statement = epService.EPAdministrator.CreateEQL("select * from NextStream");
-            statement.AddListener(testListenerInsertInto.Update);
+            statement.AddListener(testListenerInsertInto);
 
             SendEvent("a");
-            Assert.IsFalse(testListener.Invoked);
-            Assert.AreEqual("a", testListenerInsertInto.assertOneGetNewAndReset()["string"]); // insert into unchanged
+            Assert.IsFalse(testListener.IsInvoked);
+            Assert.AreEqual("a", testListenerInsertInto.AssertOneGetNewAndReset()["string"]); // insert into unchanged
 
             sendEvents(new String[] { "b", "c" });
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
             Assert.AreEqual(2, testListenerInsertInto.NewDataList.Count); // insert into unchanged
-            testListenerInsertInto.reset();
+            testListenerInsertInto.Reset();
 
             SendEvent("d");
             Assert.AreSame("a", testListener.LastNewData[0]["string"]); // receive 'a' as new data
             Assert.IsNull(testListener.LastOldData); // receive no more old data
             Assert.AreEqual("d", testListenerInsertInto.LastNewData[0]["string"]); // insert into unchanged
             Assert.IsNull(testListenerInsertInto.LastOldData); // receive no old data in insert into
-            testListener.reset();
+            testListener.Reset();
         }
 
         [Test]
@@ -81,25 +81,25 @@ namespace net.esper.regression.view
                 "insert rstream into NextStream " +
                 "select rstream s0.str as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0"
                 );
-            statement.AddListener(testListener.Update);
+            statement.AddListener(testListener);
 
             statement = epService.EPAdministrator.CreateEQL("select * from NextStream");
-            statement.AddListener(testListenerInsertInto.Update);
+            statement.AddListener(testListenerInsertInto);
 
             SendEvent("a");
-            Assert.IsFalse(testListener.Invoked);
-            Assert.IsFalse(testListenerInsertInto.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
+            Assert.IsFalse(testListenerInsertInto.IsInvoked);
 
             sendEvents(new String[] { "b", "c" });
-            Assert.IsFalse(testListener.Invoked);
-            Assert.IsFalse(testListenerInsertInto.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
+            Assert.IsFalse(testListenerInsertInto.IsInvoked);
 
             SendEvent("d");
             Assert.AreSame("a", testListener.LastNewData[0]["string"]); // receive 'a' as new data
             Assert.IsNull(testListener.LastOldData); // receive no more old data
             Assert.AreEqual("a", testListenerInsertInto.LastNewData[0]["string"]); // insert into unchanged
             Assert.IsNull(testListener.LastOldData); // receive no old data in insert into
-            testListener.reset();
+            testListener.Reset();
         }
 
         [Test]
@@ -112,20 +112,20 @@ namespace net.esper.regression.view
                 typeof(SupportBean).FullName + "(str='b') as s2" +
                 " where s1.intPrimitive = s2.intPrimitive"
                 );
-            statement.AddListener(testListener.Update);
+            statement.AddListener(testListener);
 
             SendEvent("a", 1);
             SendEvent("b", 1);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent("a", 2);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent("a", 3);
             Assert.AreEqual(1, testListener.LastNewData[0]["aID"]); // receive 'a' as new data
             Assert.AreEqual(1, testListener.LastNewData[0]["bID"]);
             Assert.IsNull(testListener.LastOldData); // receive no more old data
-            testListener.reset();
+            testListener.Reset();
         }
 
         [Test]
@@ -133,15 +133,15 @@ namespace net.esper.regression.view
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select istream * from " + typeof(SupportBean).FullName + ".win:length(1)");
-            statement.AddListener(testListener.Update);
+            statement.AddListener(testListener);
 
             Object _event = SendEvent("a");
-            Assert.AreSame(_event, testListener.assertOneGetNewAndReset().Underlying);
+            Assert.AreSame(_event, testListener.AssertOneGetNewAndReset().Underlying);
 
             _event = SendEvent("b");
             Assert.AreSame(_event, testListener.LastNewData[0].Underlying);
             Assert.IsNull(testListener.LastOldData); // receive no old data, just istream events
-            testListener.reset();
+            testListener.Reset();
         }
 
         [Test]
@@ -151,14 +151,14 @@ namespace net.esper.regression.view
                 "insert rstream into NextStream " +
                 "select istream a.str as string from " + typeof(SupportBean).FullName + ".win:length(1) as a"
                 );
-            statement.AddListener(testListener.Update);
+            statement.AddListener(testListener);
 
             statement = epService.EPAdministrator.CreateEQL("select * from NextStream");
-            statement.AddListener(testListenerInsertInto.Update);
+            statement.AddListener(testListenerInsertInto);
 
             SendEvent("a");
-            Assert.AreEqual("a", testListener.assertOneGetNewAndReset()["string"]);
-            Assert.IsFalse(testListenerInsertInto.Invoked);
+            Assert.AreEqual("a", testListener.AssertOneGetNewAndReset()["string"]);
+            Assert.IsFalse(testListenerInsertInto.IsInvoked);
 
             SendEvent("b");
             Assert.AreEqual("b", testListener.LastNewData[0]["string"]);
@@ -177,20 +177,20 @@ namespace net.esper.regression.view
                 typeof(SupportBean).FullName + "(str='b') as s2" +
                 " where s1.intPrimitive = s2.intPrimitive"
                 );
-            statement.AddListener(testListener.Update);
+            statement.AddListener(testListener);
 
             SendEvent("a", 1);
             SendEvent("b", 1);
             Assert.AreEqual(1, testListener.LastNewData[0]["aID"]); // receive 'a' as new data
             Assert.AreEqual(1, testListener.LastNewData[0]["bID"]);
             Assert.IsNull(testListener.LastOldData); // receive no more old data
-            testListener.reset();
+            testListener.Reset();
 
             SendEvent("a", 2);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent("a", 3);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void sendEvents(String[] stringValue)
@@ -209,8 +209,8 @@ namespace net.esper.regression.view
         private Object SendEvent(String stringValue, int intPrimitive)
         {
             SupportBean _event = new SupportBean();
-            _event.str = stringValue;
-            _event.intPrimitive = intPrimitive;
+            _event.SetString(stringValue);
+            _event.SetIntPrimitive(intPrimitive);
             epService.EPRuntime.SendEvent(_event);
             return _event;
         }

@@ -16,7 +16,13 @@ namespace net.esper.client
 
 	public interface EPListenable
 	{
-		/// <summary> Add an listener that observes events.</summary>
+        /// <summary>
+        /// Occurs when there are events to be observed.
+        /// </summary>
+
+        event UpdateEventHandler Update;
+
+        /// <summary> Add an listener that observes events.</summary>
 		/// <param name="listener">to add
 		/// </param>
 		void AddListener( UpdateListener listener );

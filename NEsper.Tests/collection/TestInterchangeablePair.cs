@@ -83,12 +83,12 @@ namespace net.esper.collection
 		[Test]
 		public virtual void testSetBehavior()
 		{
-			ISet<InterchangeablePair<EventBean, EventBean>> eventPairs = new EHashSet<InterchangeablePair<EventBean, EventBean>>();
+			Set<InterchangeablePair<EventBean, EventBean>> eventPairs = new HashSet<InterchangeablePair<EventBean, EventBean>>();
 
 			EventBean[] events = new EventBean[4];
 			for ( int i = 0 ; i < events.Length ; i++ )
 			{
-				events[i] = SupportEventBeanFactory.createObject( (Object) i );
+				events[i] = SupportEventBeanFactory.CreateObject( (Object) i );
 			}
 
 			eventPairs.Add( new InterchangeablePair<EventBean, EventBean>( events[0], events[1] ) );

@@ -54,108 +54,108 @@ namespace net.esper.eql.view
 		[Test]
 		public virtual void  testUpdateCondition()
 		{
-			// send 1 new event, 0 old events
+			// send 1 new _event, 0 old events
 			sendEventToAll(1, 0);
 			
-			Assert.IsTrue(listener1.getAndClearIsInvoked());
+			Assert.IsTrue(listener1.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery1.NewEventsCount);
 			Assert.AreEqual(0, fireEvery1.OldEventsCount);
 			
-			Assert.IsFalse(listener2.getAndClearIsInvoked());
+			Assert.IsFalse(listener2.GetAndClearIsInvoked());
 			Assert.AreEqual(1, fireEvery2.NewEventsCount);
 			Assert.AreEqual(0, fireEvery2.OldEventsCount);
 			
-			Assert.IsFalse(listener3.getAndClearIsInvoked());
+			Assert.IsFalse(listener3.GetAndClearIsInvoked());
 			Assert.AreEqual(1, fireEvery3.NewEventsCount);
 			Assert.AreEqual(0, fireEvery3.OldEventsCount);
 			
-			// send 1 new event, 0 old events
+			// send 1 new _event, 0 old events
 			sendEventToAll(1, 0);
 			
-			Assert.IsTrue(listener1.getAndClearIsInvoked());
+			Assert.IsTrue(listener1.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery1.NewEventsCount);
 			Assert.AreEqual(0, fireEvery1.OldEventsCount);
 			
-			Assert.IsTrue(listener2.getAndClearIsInvoked());
+			Assert.IsTrue(listener2.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery2.NewEventsCount);
 			Assert.AreEqual(0, fireEvery2.OldEventsCount);
 			
-			Assert.IsFalse(listener3.getAndClearIsInvoked());
+			Assert.IsFalse(listener3.GetAndClearIsInvoked());
 			Assert.AreEqual(2, fireEvery3.NewEventsCount);
 			Assert.AreEqual(0, fireEvery3.OldEventsCount);
 			
-			// send 1 new event, 0 old events
+			// send 1 new _event, 0 old events
 			sendEventToAll(1, 0);
 			
-			Assert.IsTrue(listener1.getAndClearIsInvoked());
+			Assert.IsTrue(listener1.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery1.NewEventsCount);
 			Assert.AreEqual(0, fireEvery1.OldEventsCount);
 			
-			Assert.IsFalse(listener2.getAndClearIsInvoked());
+			Assert.IsFalse(listener2.GetAndClearIsInvoked());
 			Assert.AreEqual(1, fireEvery2.NewEventsCount);
 			Assert.AreEqual(0, fireEvery2.OldEventsCount);
 			
-			Assert.IsTrue(listener3.getAndClearIsInvoked());
+			Assert.IsTrue(listener3.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery3.NewEventsCount);
 			Assert.AreEqual(0, fireEvery3.OldEventsCount);
 			
-			// send 0 new event, 1 old events
+			// send 0 new _event, 1 old events
 			sendEventToAll(0, 1);
 			
-			Assert.IsTrue(listener1.getAndClearIsInvoked());
+			Assert.IsTrue(listener1.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery1.NewEventsCount);
 			Assert.AreEqual(0, fireEvery1.OldEventsCount);
 			
-			Assert.IsFalse(listener2.getAndClearIsInvoked());
+			Assert.IsFalse(listener2.GetAndClearIsInvoked());
 			Assert.AreEqual(1, fireEvery2.NewEventsCount);
 			Assert.AreEqual(1, fireEvery2.OldEventsCount);
 			
-			Assert.IsFalse(listener3.getAndClearIsInvoked());
+			Assert.IsFalse(listener3.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery3.NewEventsCount);
 			Assert.AreEqual(1, fireEvery3.OldEventsCount);
 			
-			// send 0 new event, 1 old events
+			// send 0 new _event, 1 old events
 			sendEventToAll(0, 1);
 			
-			Assert.IsTrue(listener1.getAndClearIsInvoked());
+			Assert.IsTrue(listener1.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery1.NewEventsCount);
 			Assert.AreEqual(0, fireEvery1.OldEventsCount);
 			
-			Assert.IsTrue(listener2.getAndClearIsInvoked());
+			Assert.IsTrue(listener2.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery2.NewEventsCount);
 			Assert.AreEqual(0, fireEvery2.OldEventsCount);
 			
-			Assert.IsFalse(listener3.getAndClearIsInvoked());
+			Assert.IsFalse(listener3.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery3.NewEventsCount);
 			Assert.AreEqual(2, fireEvery3.OldEventsCount);
 			
-			// send 0 new event, 1 old events
+			// send 0 new _event, 1 old events
 			sendEventToAll(0, 1);
 			
-			Assert.IsTrue(listener1.getAndClearIsInvoked());
+			Assert.IsTrue(listener1.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery1.NewEventsCount);
 			Assert.AreEqual(0, fireEvery1.OldEventsCount);
 			
-			Assert.IsFalse(listener2.getAndClearIsInvoked());
+			Assert.IsFalse(listener2.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery2.NewEventsCount);
 			Assert.AreEqual(1, fireEvery2.OldEventsCount);
 			
-			Assert.IsTrue(listener3.getAndClearIsInvoked());
+			Assert.IsTrue(listener3.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery3.NewEventsCount);
 			Assert.AreEqual(0, fireEvery3.OldEventsCount);
 			
 			// send 5 new, 5 old events
 			sendEventToAll(5, 5);
 			
-			Assert.IsTrue(listener1.getAndClearIsInvoked());
+			Assert.IsTrue(listener1.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery1.NewEventsCount);
 			Assert.AreEqual(0, fireEvery1.OldEventsCount);
 			
-			Assert.IsTrue(listener2.getAndClearIsInvoked());
+			Assert.IsTrue(listener2.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery2.NewEventsCount);
 			Assert.AreEqual(0, fireEvery2.OldEventsCount);
 			
-			Assert.IsTrue(listener3.getAndClearIsInvoked());
+			Assert.IsTrue(listener3.GetAndClearIsInvoked());
 			Assert.AreEqual(0, fireEvery3.NewEventsCount);
 			Assert.AreEqual(0, fireEvery3.OldEventsCount);
 		}

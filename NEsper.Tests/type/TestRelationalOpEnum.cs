@@ -93,7 +93,7 @@ namespace net.esper.type
         [Test]
         public virtual void testInvalidGetComputer()
         {
-            // Since we only do Double, Long and String compares
+            // Since we only do double?, Long and String compares
             tryInvalid(typeof(bool));
             tryInvalid(typeof(long));
             tryInvalid(typeof(short));

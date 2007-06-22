@@ -167,7 +167,7 @@ namespace net.esper.view.window
 	    /// This method removes (expires) objects from the window and schedules a new callback for the
 	    /// time when the next oldest message would expire from the window.
 	    /// </summary>
-	    internal void Expire()
+	    public void Expire()
 	    {
 	        long expireBeforeTimestamp = statementContext.SchedulingService.Time - millisecondsBeforeExpiry + 1;
 

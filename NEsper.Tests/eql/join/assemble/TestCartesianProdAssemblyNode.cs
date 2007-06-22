@@ -46,27 +46,27 @@ namespace net.esper.eql.join.assemble
 			Node nodeOne = resultMultipleEvents[1][0];
 			IEnumerator<EventBean> enumOne = nodeOne.Events.GetEnumerator();
 			Assert.IsTrue( enumOne.MoveNext() );
-			EventBean eventOneStreamOne = enumOne.Current;
+			EventBean _eventOneStreamOne = enumOne.Current;
 			Node nodeTwo = resultMultipleEvents[1][1];
 			IEnumerator<EventBean> enumTwo = nodeTwo.Events.GetEnumerator();
 			Assert.IsTrue( enumTwo.MoveNext() );
-			EventBean eventTwoStreamOne = enumTwo.Current;
+			EventBean _eventTwoStreamOne = enumTwo.Current;
 
 			// generate an event row originating from child 1
 			EventBean[] childRow = new EventBean[4]; // new rows for each result
 			childRow[2] = stream2Events[0];
-			optCartNode.Result( childRow, 2, eventOneStreamOne, nodeOne ); // child is stream 2
+			optCartNode.Result( childRow, 2, _eventOneStreamOne, nodeOne ); // child is stream 2
 			childRow = new EventBean[4];
 			childRow[2] = stream2Events[1];
-            optCartNode.Result(childRow, 2, eventOneStreamOne, nodeOne); // child is stream 2
+            optCartNode.Result(childRow, 2, _eventOneStreamOne, nodeOne); // child is stream 2
 
 			// generate an event row originating from child 2
 			childRow = new EventBean[4];
 			childRow[3] = stream3Events[0];
-            optCartNode.Result(childRow, 3, eventOneStreamOne, nodeOne); // child is stream 3
+            optCartNode.Result(childRow, 3, _eventOneStreamOne, nodeOne); // child is stream 3
 			childRow = new EventBean[4];
 			childRow[3] = stream3Events[1];
-            optCartNode.Result(childRow, 3, eventOneStreamOne, nodeOne); // child is stream 3
+            optCartNode.Result(childRow, 3, _eventOneStreamOne, nodeOne); // child is stream 3
 
 			// process posted rows (child rows were stored and are compared to find other rows to generate)
 			optCartNode.Process( resultMultipleEvents );
@@ -75,7 +75,15 @@ namespace net.esper.eql.join.assemble
 			Assert.AreEqual( 5, parentNode.getRowsList().Count );
 
 			EventBean[][] rowArr = SupportJoinResultNodeFactory.convertTo2DimArr( parentNode.getRowsList() );
-			ArrayAssertionUtil.assertEqualsAnyOrder( new EventBean[][] { new EventBean[] { null, eventOneStreamOne, stream2Events[0], stream3Events[0] }, new EventBean[] { null, eventOneStreamOne, stream2Events[0], stream3Events[1] }, new EventBean[] { null, eventOneStreamOne, stream2Events[1], stream3Events[0] }, new EventBean[] { null, eventOneStreamOne, stream2Events[1], stream3Events[1] }, new EventBean[] { null, eventTwoStreamOne, null, null } }, rowArr );
+            ArrayAssertionUtil.AreEqualAnyOrder(
+                new EventBean[][] {
+                    new EventBean[] { null, _eventOneStreamOne, stream2Events[0], stream3Events[0] },
+                    new EventBean[] { null, _eventOneStreamOne, stream2Events[0], stream3Events[1] },
+                    new EventBean[] { null, _eventOneStreamOne, stream2Events[1], stream3Events[0] },
+                    new EventBean[] { null, _eventOneStreamOne, stream2Events[1], stream3Events[1] }, 
+                    new EventBean[] { null, _eventTwoStreamOne, null, null }
+                },
+                rowArr);
 		}
 
 		[Test]

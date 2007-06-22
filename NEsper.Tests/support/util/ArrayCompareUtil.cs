@@ -15,7 +15,7 @@ namespace net.esper.support.util
 		/// </param>
 		/// <param name="expectedValues">is the expected values
 		/// </param>
-		public static bool compareEqualsExactOrder(EventBean[] data, EventBean[] expectedValues)
+		public static bool CompareEqualsExactOrder(EventBean[] data, EventBean[] expectedValues)
 		{
 			if ((expectedValues == null) && (data == null))
 			{
@@ -51,7 +51,7 @@ namespace net.esper.support.util
 		/// </param>
 		/// <param name="expectedValues">is the expected values
 		/// </param>
-		public static bool compareRefExactOrder(Object[] data, Object[] expectedValues)
+		public static bool CompareRefExactOrder(Object[] data, Object[] expectedValues)
 		{
 			if ((expectedValues == null) && (data == null))
 			{

@@ -36,7 +36,7 @@ namespace net.esper.pattern
         /// <throws>ConfigurationException if the configs are invalid</throws>
 	    public PatternObjectResolutionServiceImpl(IList<ConfigurationPlugInPatternObject> configEntries)
 	    {
-	        nameToFactoryMap = new EHashDictionary<String, IDictionary<String, Pair<Type, TypeEnum>>>();
+	        nameToFactoryMap = new HashDictionary<String, IDictionary<String, Pair<Type, TypeEnum>>>();
 
 	        if (configEntries == null)
 	        {
@@ -75,7 +75,7 @@ namespace net.esper.pattern
 	            IDictionary<String, Pair<Type, TypeEnum>> namespaceMap = nameToFactoryMap.Fetch(entry.Namespace);
 	            if (namespaceMap == null)
 	            {
-	                namespaceMap = new EHashDictionary<String, Pair<Type, TypeEnum>>();
+	                namespaceMap = new HashDictionary<String, Pair<Type, TypeEnum>>();
 	                nameToFactoryMap[entry.Namespace] = namespaceMap;
 	            }
 	            TypeEnum typeEnum;

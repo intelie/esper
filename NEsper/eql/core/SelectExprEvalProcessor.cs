@@ -126,7 +126,7 @@ namespace net.esper.eql.core
             }
 
             // Build event type
-            EDictionary<String, Type> selPropertyTypes = new EHashDictionary<String, Type>();
+            EDictionary<String, Type> selPropertyTypes = new HashDictionary<String, Type>();
             for (int i = 0; i < expressionNodes.Length; i++)
             {
                 Type expressionReturnType = expressionNodes[i].ReturnType;
@@ -179,7 +179,7 @@ namespace net.esper.eql.core
         public EventBean Process(EventBean[] eventsPerStream, bool isNewData)
         {
 			// Evaluate all expressions and build a map of name-value pairs
-        	EDataDictionary props = new EDataDictionary() ;
+        	DataDictionary props = new DataDictionary() ;
             for (int i = 0; i < expressionNodes.Length; i++)
             {
                 Object evalResult = expressionNodes[i].Evaluate(eventsPerStream, isNewData);
@@ -226,7 +226,7 @@ namespace net.esper.eql.core
                                              IList<SelectExprElementCompiledSpec> selectionList)
         {
             // Verify all column names are unique
-            Set<String> names = new EHashSet<String>();
+            Set<String> names = new HashSet<String>();
             foreach (String element in insertIntoDesc.ColumnNames)
             {
                 if (names.Contains(element))

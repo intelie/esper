@@ -35,14 +35,14 @@ namespace net.esper.eql.view
 			
 			Assert.AreEqual(newEvents, childView.LastNewData);
 			Assert.AreEqual(oldEvents, childView.LastOldData);
-			childView.reset();
+			childView.Reset();
 			
 			// Test all evaluate to false (ie. none pass the filter)
 			oldEvents = SupportEventBeanFactory.MakeEvents(new bool[]{false, false});
 			newEvents = SupportEventBeanFactory.MakeEvents(new bool[]{false, false});
             filterExprViewAdapter.Update(newEvents, oldEvents);
 			
-			Assert.IsFalse(childView.getAndClearIsInvoked()); // Should not be invoked if no events
+			Assert.IsFalse(childView.GetAndClearIsInvoked()); // Should not be invoked if no events
 			Assert.IsNull(childView.LastNewData);
 			Assert.IsNull(childView.LastOldData);
 			

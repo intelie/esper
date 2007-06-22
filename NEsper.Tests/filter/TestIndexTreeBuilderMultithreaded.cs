@@ -1,215 +1,207 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
+
+using NUnit.Framework;
 
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.events;
 using net.esper.support.filter;
-
-using NUnit.Core;
-using NUnit.Framework;
+using net.esper.support.util;
 
 using org.apache.commons.logging;
 
 namespace net.esper.filter
 {
-
 	[TestFixture]
-    public class TestIndexTreeBuilderMultithreaded 
-    {
-        private List<FilterSpec> testFilterSpecs;
-        private List<EventBean> matchedEvents;
-        private List<EventBean> unmatchedEvents;
+	public class TestIndexTreeBuilderMultithreaded
+	{
+	    private IList<FilterSpecCompiled> testFilterSpecs;
+	    private IList<EventBean> matchedEvents;
+	    private IList<EventBean> unmatchedEvents;
 
-        private EventType eventType;
+	    private EventType eventType;
 
-        private FilterCallbackSetNode topNode;
-        private IndexTreeBuilder builder;
-        private IList<FilterCallback> filterCallbacks;
-        private IList<IndexTreePath> pathsAddedTo;
+	    private FilterHandleSetNode topNode;
+	    private IndexTreeBuilder builder;
+	    private IList<FilterHandle> filterCallbacks;
+	    private IList<IndexTreePath> pathsAddedTo;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            builder = new IndexTreeBuilder();
-            eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
-            topNode = new FilterCallbackSetNode();
-            filterCallbacks = new List<FilterCallback>();
-            pathsAddedTo = new List<IndexTreePath>();
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        builder = new IndexTreeBuilder();
+	        eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
+	        topNode = new FilterHandleSetNode();
+	        filterCallbacks = new List<FilterHandle>();
+	        pathsAddedTo = new List<IndexTreePath>();
 
-            testFilterSpecs = new List<FilterSpec>();
-            matchedEvents = new List<EventBean>();
-            unmatchedEvents = new List<EventBean>();
+	        testFilterSpecs = new List<FilterSpecCompiled>();
+	        matchedEvents = new List<EventBean>();
+	        unmatchedEvents = new List<EventBean>();
 
-            // Any int and double value specified here must match only the current filter spec not any other filter spec
-            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 100000 }));
-            matchedEvents.Add(MakeEvent(9999999, -1));
-            unmatchedEvents.Add(MakeEvent(0, -1));
+	        // Any int and double value specified here must match only the current filter spec not any other filter spec
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 100000 }));
+	        matchedEvents.Add(MakeEvent(9999999, -1));
+	        unmatchedEvents.Add(MakeEvent(0, -1));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 10, "doublePrimitive", FilterOperator.EQUAL, 0.5 }));
-            matchedEvents.Add(MakeEvent(10, 0.5));
-            unmatchedEvents.Add(MakeEvent(0, 0.5));
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 10,
+	                                          "doublePrimitive", FilterOperator.EQUAL, 0.5}));
+	        matchedEvents.Add(MakeEvent(10, 0.5));
+	        unmatchedEvents.Add(MakeEvent(0, 0.5));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "doublePrimitive", FilterOperator.EQUAL, 0.8 }));
-            matchedEvents.Add(MakeEvent(-1, 0.8));
-            unmatchedEvents.Add(MakeEvent(-1, 0.1));
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "doublePrimitive", FilterOperator.EQUAL, 0.8}));
+	        matchedEvents.Add(MakeEvent(-1, 0.8));
+	        unmatchedEvents.Add(MakeEvent(-1, 0.1));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "doublePrimitive", FilterOperator.EQUAL, 99.99, "intPrimitive", FilterOperator.LESS, 1 }));
-            matchedEvents.Add(MakeEvent(0, 99.99));
-            unmatchedEvents.Add(MakeEvent(2, 0.5));
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "doublePrimitive", FilterOperator.EQUAL, 99.99,
+	                                                     "intPrimitive", FilterOperator.LESS, 1}));
+	        matchedEvents.Add(MakeEvent(0, 99.99));
+	        unmatchedEvents.Add(MakeEvent(2, 0.5));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "doublePrimitive", FilterOperator.GREATER, .99, "intPrimitive", FilterOperator.EQUAL, 5001 }));
-            matchedEvents.Add(MakeEvent(5001, 1.1));
-            unmatchedEvents.Add(MakeEvent(5002, 0.98));
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "doublePrimitive", FilterOperator.GREATER, .99,
+	                                                     "intPrimitive", FilterOperator.EQUAL, 5001}));
+	        matchedEvents.Add(MakeEvent(5001, 1.1));
+	        unmatchedEvents.Add(MakeEvent(5002, 0.98));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.LESS, -99000 }));
-            matchedEvents.Add(MakeEvent(-99001, -1));
-            unmatchedEvents.Add(MakeEvent(-98999, -1));
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "intPrimitive", FilterOperator.LESS, -99000}));
+	        matchedEvents.Add(MakeEvent(-99001, -1));
+	        unmatchedEvents.Add(MakeEvent(-98999, -1));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 11, "doublePrimitive", FilterOperator.GREATER, 888.0 }));
-            matchedEvents.Add(MakeEvent(11, 888.001));
-            unmatchedEvents.Add(MakeEvent(10, 888));
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "intPrimitive", FilterOperator.GREATER_OR_EQUAL, 11,
+	                                          "doublePrimitive", FilterOperator.GREATER, 888.0}));
+	        matchedEvents.Add(MakeEvent(11, 888.001));
+	        unmatchedEvents.Add(MakeEvent(10, 888));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.EQUAL, 973, "doublePrimitive", FilterOperator.EQUAL, 709.0 }));
-            matchedEvents.Add(MakeEvent(973, 709));
-            unmatchedEvents.Add(MakeEvent(0, 0.5));
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "intPrimitive", FilterOperator.EQUAL, 973,
+	                                          "doublePrimitive", FilterOperator.EQUAL, 709.0}));
+	        matchedEvents.Add(MakeEvent(973, 709));
+	        unmatchedEvents.Add(MakeEvent(0, 0.5));
 
-            testFilterSpecs.Add(makeSpec(new Object[] { "intPrimitive", FilterOperator.EQUAL, 973, "doublePrimitive", FilterOperator.EQUAL, 655.0 }));
-            matchedEvents.Add(MakeEvent(973, 655));
-            unmatchedEvents.Add(MakeEvent(33838, 655.5));
-        }
+	        testFilterSpecs.Add(MakeSpec(new Object[] { "intPrimitive", FilterOperator.EQUAL, 973,
+	                                          "doublePrimitive", FilterOperator.EQUAL, 655.0}));
+	        matchedEvents.Add(MakeEvent(973, 655));
+	        unmatchedEvents.Add(MakeEvent(33838, 655.5));
+	    }
 
-        [Test]
-        public virtual void testVerifyFilterSpecSet()
-        {
-            // Add all the above filter definitions
-            foreach (FilterSpec filterSpec in testFilterSpecs)
-            {
-                FilterValueSet filterValues = filterSpec.GetValueSet(null);
-                FilterCallback callback = new SupportFilterCallback();
-                filterCallbacks.Add(callback);
-                pathsAddedTo.Add(builder.Add(filterValues, callback, topNode));
-            }
+	    [Test]
+	    public void TestVerifyFilterSpecSet()
+	    {
+	        // Add all the above filter definitions
+	        foreach (FilterSpecCompiled filterSpec in testFilterSpecs)
+	        {
+	            FilterValueSet filterValues = filterSpec.GetValueSet(null);
+	            FilterHandle callback = new SupportFilterHandle();
+	            filterCallbacks.Add(callback);
+	            pathsAddedTo.Add(builder.Add(filterValues, callback, topNode));
+	        }
 
-            // None of the not-matching events should cause any match
-            foreach (EventBean _event in unmatchedEvents)
-            {
-                IList<FilterCallback> matches = new List<FilterCallback>();
-                topNode.MatchEvent(_event, matches);
-                Assert.IsTrue(matches.Count == 0);
-            }
+	        // None of the not-matching events should cause any match
+	        foreach (EventBean _event in unmatchedEvents)
+	        {
+	            List<FilterHandle> matches = new List<FilterHandle>();
+	            topNode.MatchEvent(_event, matches);
+	            Assert.IsTrue(matches.Count == 0);
+	        }
 
-            // All of the matching events should cause exactly one match
-            foreach (EventBean _event in matchedEvents)
-            {
-                IList<FilterCallback> matches = new List<FilterCallback>();
-                topNode.MatchEvent(_event, matches);
-                Assert.IsTrue(matches.Count == 1);
-            }
+	        // All of the matching events should cause exactly one match
+	        foreach (EventBean _event in matchedEvents)
+	        {
+	            List<FilterHandle> matches = new List<FilterHandle>();
+	            topNode.MatchEvent(_event, matches);
+	            Assert.IsTrue(matches.Count == 1);
+	        }
 
-            // Remove all expressions previously added
-            int count = 0;
-            foreach (IndexTreePath treePath in pathsAddedTo)
-            {
-                FilterCallback callback = filterCallbacks[count++];
-                builder.Remove(callback, treePath, topNode);
-            }
+	        // Remove all expressions previously added
+	        int count = 0;
+	        foreach (IndexTreePath treePath in pathsAddedTo)
+	        {
+	            FilterHandle callback = filterCallbacks[count++];
+	            builder.Remove(callback, treePath, topNode);
+	        }
 
-            // After the remove no matches are expected
-            foreach (EventBean _event in matchedEvents)
-            {
-                IList<FilterCallback> matches = new List<FilterCallback>();
-                topNode.MatchEvent(_event, matches);
-                Assert.IsTrue(matches.Count == 0);
-            }
-        }
+	        // After the remove no matches are expected
+	        foreach (EventBean _event in matchedEvents)
+	        {
+	            List<FilterHandle> matches = new List<FilterHandle>();
+	            topNode.MatchEvent(_event, matches);
+	            Assert.IsTrue(matches.Count == 0);
+	        }
+	    }
 
-        [Test]
-        public virtual void testMultithreaded()
-        {
-            FilterCallbackSetNode topNode = new FilterCallbackSetNode();
+	    [Test]
+	    public void TestMultithreaded()
+	    {
+	        FilterHandleSetNode topNode = new FilterHandleSetNode();
 
-            performMultithreadedTest(topNode, 2, 1000, 1);
-            performMultithreadedTest(topNode, 3, 1000, 1);
-            performMultithreadedTest(topNode, 4, 1000, 1);
+	        PerformMultithreadedTest(topNode, 2, 1000, 1);
+	        PerformMultithreadedTest(topNode, 3, 1000, 1);
+	        PerformMultithreadedTest(topNode, 4, 1000, 1);
 
-            performMultithreadedTest(new FilterCallbackSetNode(), 2, 1000, 1);
-            performMultithreadedTest(new FilterCallbackSetNode(), 3, 1000, 1);
-            performMultithreadedTest(new FilterCallbackSetNode(), 4, 1000, 1);
-        }
+	        PerformMultithreadedTest(new FilterHandleSetNode(), 2, 1000, 1);
+	        PerformMultithreadedTest(new FilterHandleSetNode(), 3, 1000, 1);
+	        PerformMultithreadedTest(new FilterHandleSetNode(), 4, 1000, 1);
+	    }
 
-        private void performMultithreadedTest(FilterCallbackSetNode topNode, int numberOfThreads, int numberOfRunnables, int numberOfSecondsSleep)
-        {
-            log.Info(".performMultithreadedTest Loading thread pool work queue,numberOfRunnables=" + numberOfRunnables);
+	    private void PerformMultithreadedTest(FilterHandleSetNode topNode,
+	                             int numberOfThreads,
+	                             int numberOfRunnables,
+	                             int numberOfSecondsSleep)
+	    {
+	        log.Info(".performMultithreadedTest Loading thread pool work queue,numberOfRunnables=" + numberOfRunnables);
 
-            IndexTreeBuilderRunnable[] runnables = new IndexTreeBuilderRunnable[numberOfRunnables];
-            for (int i = 0; i < numberOfRunnables; i++)
-            {
-                runnables[i] = new IndexTreeBuilderRunnable(
-                    topNode, testFilterSpecs, matchedEvents, unmatchedEvents);
-            }
+	        ExecutorService pool = Executors.NewFixedThreadPool(numberOfThreads);
 
-            for (int i = 0; i < numberOfRunnables; i++)
-            {
-                ThreadPool.QueueUserWorkItem(runnables[i].Run);
-            }
+	        for (int i = 0; i < numberOfRunnables; i++)
+	        {
+	            IndexTreeBuilderRunnable runnable = new IndexTreeBuilderRunnable(eventType, topNode,
+	                    testFilterSpecs, matchedEvents, unmatchedEvents);
+	            pool.Submit(runnable);
+	        }
 
-            log.Info(".performMultithreadedTest Starting thread pool, threads=" + numberOfThreads);
+	        log.Info(".performMultithreadedTest Starting thread pool, threads=" + numberOfThreads);
+	        //pool.SetCorePoolSize(numberOfThreads);
 
-            // Sleep X seconds
-            sleep(numberOfSecondsSleep);
+	        // Sleep X seconds
+	        Sleep(numberOfSecondsSleep);
 
-            int numberCompleted = 0 ;
+	        log.Info(".performMultithreadedTest Completed, numberOfRunnables=" + numberOfRunnables +
+	                 "  numberOfThreads=" + numberOfThreads +
+	                 "  completed=" + pool.NumExecuted);
 
-            for (int i = 0; i < numberOfRunnables; i++)
-            {
-                if (runnables[i].IsCompleted)
-                {
-                    numberCompleted++;
-                }
-            }
+	        pool.Shutdown();
+	        pool.AwaitTermination(new TimeSpan(0, 0, 1));
 
-            log.Info(
-                ".performMultithreadedTest Completed," +
-                "  numberOfRunnables=" + numberOfRunnables +
-                "  numberOfThreads=" + numberOfThreads +
-                "  completed=" + numberCompleted);
+	        Assert.IsTrue(pool.NumExecuted == numberOfRunnables);
+	    }
 
-            for (int i = 0; i < numberOfRunnables; i++)
-            {
-                runnables[i].Join();
+	    private void Sleep(int sec)
+	    {
+            Thread.Sleep(sec*1000);
+	    }
 
-                Exception err = runnables[i].CaughtException;
-                Assert.IsNull(err, "Runnable thread terminated with exception");
-            }
-        }
+	    private FilterSpecCompiled MakeSpec(Object[] args)
+	    {
+	        return SupportFilterSpecBuilder.Build(eventType, args);
+	    }
 
-        private void sleep(int sec)
-        {
-            try
-            {
-                Thread.Sleep( sec * 1000 ) ;
-            }
-            catch (ThreadInterruptedException e)
-            {
-                log.Warn(e);
-            }
-        }
+	    private EventBean MakeEvent(int aInt, double aDouble)
+	    {
+	        SupportBean bean = new SupportBean();
+	        bean.SetIntPrimitive(aInt);
+	        bean.SetDoublePrimitive(aDouble);
+	        return SupportEventBeanFactory.CreateObject(bean);
+	    }
 
-        private FilterSpec makeSpec(Object[] args)
-        {
-            return SupportFilterSpecBuilder.Build(eventType, args);
-        }
-
-        private EventBean MakeEvent(int aInt, double aDouble)
-        {
-            SupportBean bean = new SupportBean();
-            bean.intPrimitive = aInt;
-            bean.doublePrimitive = aDouble;
-            return SupportEventBeanFactory.createObject(bean);
-        }
-
-        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    }
-}
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	}
+} // End of namespace

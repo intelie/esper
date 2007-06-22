@@ -1,363 +1,319 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
+using System.IO;
 
 namespace net.esper.support.bean
 {
+    [Serializable]
 	public class SupportBean
 	{
-		virtual public String Str
-		{
-            get { return m_stringValue; }
-            set { this.m_stringValue = value; }
-		}
+	    private string _string;
 
-        virtual public String str
+        public string @String
         {
-            get { return m_stringValue; }
-            set { this.m_stringValue = value; }
+            get { return _string; }
         }
 
-		#region "Primitives"
-
-		virtual public bool BoolPrimitive
-		{
-            get { return m_boolPrimitive; }
-            set { this.m_boolPrimitive = value; }
-		}
-
-		virtual public int IntPrimitive
-		{
-            get { return m_intPrimitive; }
-            set { this.m_intPrimitive = value; }
-		}
-
-		virtual public long LongPrimitive
-		{
-            get { return m_longPrimitive; }
-            set { this.m_longPrimitive = value; }
-		}
-
-		virtual public char CharPrimitive
-		{
-            get { return m_charPrimitive; }
-            set { this.m_charPrimitive = value; }
-		}
-
-		virtual public short ShortPrimitive
-		{
-            get { return m_shortPrimitive; }
-            set { this.m_shortPrimitive = value; }
-		}
-
-		virtual public sbyte BytePrimitive
-		{
-            get { return m_bytePrimitive; }
-            set { this.m_bytePrimitive = value; }
-		}
-
-		virtual public float FloatPrimitive
-		{
-            get { return m_floatPrimitive; }
-            set { this.m_floatPrimitive = value; }
-		}
-
-		virtual public double DoublePrimitive
-		{
-            get { return m_doublePrimitive; }
-            set { this.m_doublePrimitive = value; }
-		}
-
-		#endregion
-
-        #region "Primitives (LC)"
-
-        virtual public bool boolPrimitive
+        private SupportEnum EnumValue
         {
-            get { return m_boolPrimitive; }
-            set { this.m_boolPrimitive = value; }
+            get { return enumValue; }
         }
 
-        virtual public int intPrimitive
+        public bool BoolPrimitive
         {
-            get { return m_intPrimitive; }
-            set { this.m_intPrimitive = value; }
+            get { return boolPrimitive; }
         }
 
-        virtual public long longPrimitive
+        public int IntPrimitive
         {
-            get { return m_longPrimitive; }
-            set { this.m_longPrimitive = value; }
+            get { return intPrimitive; }
         }
 
-        virtual public char charPrimitive
+        public long LongPrimitive
         {
-            get { return m_charPrimitive; }
-            set { this.m_charPrimitive = value; }
+            get { return longPrimitive; }
         }
 
-        virtual public short shortPrimitive
+        public char CharPrimitive
         {
-            get { return m_shortPrimitive; }
-            set { this.m_shortPrimitive = value; }
+            get { return charPrimitive; }
         }
 
-        virtual public sbyte bytePrimitive
+        public short ShortPrimitive
         {
-            get { return m_bytePrimitive; }
-            set { this.m_bytePrimitive = value; }
+            get { return shortPrimitive; }
         }
 
-        virtual public float floatPrimitive
+        public sbyte BytePrimitive
         {
-            get { return m_floatPrimitive; }
-            set { this.m_floatPrimitive = value; }
+            get { return bytePrimitive; }
         }
 
-        virtual public double doublePrimitive
+        public float FloatPrimitive
         {
-            get { return m_doublePrimitive; }
-            set { this.m_doublePrimitive = value; }
+            get { return floatPrimitive; }
         }
 
-        #endregion
-
-		#region "Boxed"
-
-		virtual public bool? BoolBoxed
-		{
-            get { return m_boolBoxed; }
-            set { this.m_boolBoxed = value; }
-		}
-
-		virtual public int? IntBoxed
-		{
-            get { return m_intBoxed; }
-            set { this.m_intBoxed = value; }
-		}
-
-		virtual public long? LongBoxed
-		{
-            get { return m_longBoxed; }
-            set { this.m_longBoxed = value; }
-		}
-
-		virtual public char? CharBoxed
-		{
-            get { return m_charBoxed; }
-            set { this.m_charBoxed = value; }
-		}
-
-		virtual public short? ShortBoxed
-		{
-            get { return m_shortBoxed; }
-            set { this.m_shortBoxed = value; }
-		}
-
-		virtual public sbyte? ByteBoxed
-		{
-            get { return m_byteBoxed; }
-            set { this.m_byteBoxed = value; }
-		}
-
-		virtual public float? FloatBoxed
-		{
-            get { return m_floatBoxed; }
-            set { this.m_floatBoxed = value; }
-		}
-
-		virtual public double? DoubleBoxed
-		{
-            get { return m_doubleBoxed; }
-            set { this.m_doubleBoxed = value; }
-		}
-
-		#endregion
-
-        #region "Boxed (LC)"
-
-        virtual public bool? boolBoxed
+        public double DoublePrimitive
         {
-            get { return m_boolBoxed; }
-            set { this.m_boolBoxed = value; }
+            get { return doublePrimitive; }
         }
 
-        virtual public int? intBoxed
+        public bool? BoolBoxed
         {
-            get { return m_intBoxed; }
-            set { this.m_intBoxed = value; }
+            get { return boolBoxed; }
         }
 
-        virtual public long? longBoxed
+        public int? IntBoxed
         {
-            get { return m_longBoxed; }
-            set { this.m_longBoxed = value; }
+            get { return intBoxed; }
         }
 
-        virtual public char? charBoxed
+        public long? LongBoxed
         {
-            get { return m_charBoxed; }
-            set { this.m_charBoxed = value; }
+            get { return longBoxed; }
         }
 
-        virtual public short? shortBoxed
+        public char? CharBoxed
         {
-            get { return m_shortBoxed; }
-            set { this.m_shortBoxed = value; }
+            get { return charBoxed; }
         }
 
-        virtual public sbyte? byteBoxed
+        public short? ShortBoxed
         {
-            get { return m_byteBoxed; }
-            set { this.m_byteBoxed = value; }
+            get { return shortBoxed; }
         }
 
-        virtual public float? floatBoxed
+        public sbyte? ByteBoxed
         {
-            get { return m_floatBoxed; }
-            set { this.m_floatBoxed = value; }
+            get { return byteBoxed; }
         }
 
-        virtual public double? doubleBoxed
+        public float? FloatBoxed
         {
-            get { return m_doubleBoxed; }
-            set { this.m_doubleBoxed = value; }
+            get { return floatBoxed; }
         }
 
-        #endregion
-
-		virtual public SupportEnum EnumValue
-		{
-            get { return m_enumValue; }
-            set { this.m_enumValue = value; }
-		}
-
-        virtual public SupportEnum enumValue
+        public double? DoubleBoxed
         {
-            get { return m_enumValue; }
+            get { return doubleBoxed; }
         }
 
-        private String m_stringValue;
+        private bool boolPrimitive;
+	    private int intPrimitive;
+	    private long longPrimitive;
+	    private char charPrimitive;
+	    private short shortPrimitive;
+	    private sbyte bytePrimitive;
+	    private float floatPrimitive;
+	    private double doublePrimitive;
 
-        private bool m_boolPrimitive;
-        private int m_intPrimitive;
-        private long m_longPrimitive;
-        private char m_charPrimitive;
-        private short m_shortPrimitive;
-        private sbyte m_bytePrimitive;
-        private float m_floatPrimitive;
-        private double m_doublePrimitive;
+	    private bool? boolBoxed;
+	    private int? intBoxed;
+	    private long? longBoxed;
+	    private char? charBoxed;
+	    private short? shortBoxed;
+	    private sbyte? byteBoxed;
+        private float? floatBoxed;
+	    private double? doubleBoxed;
 
-        private bool? m_boolBoxed;
-        private int? m_intBoxed;
-        private long? m_longBoxed;
-        private char? m_charBoxed;
-        private short? m_shortBoxed;
-        private sbyte? m_byteBoxed;
-        private float? m_floatBoxed;
-		private double? m_doubleBoxed;
+	    private SupportEnum enumValue;
 
-        private SupportEnum m_enumValue;
+	    public SupportBean()
+	    {
+	    }
 
-        virtual public string getString()
-        {
-            return m_stringValue;
-        }
+	    public SupportBean(String _string, int intPrimitive)
+	    {
+	        this._string = _string;
+	        this.intPrimitive = intPrimitive;
+	    }
 
-        #region "Primitive Accessors"
+	    public String GetString()
+	    {
+	        return _string;
+	    }
 
-        virtual public bool getBoolPrimitive()
-        {
-            return m_boolPrimitive;
-        }
+	    public bool IsBoolPrimitive()
+	    {
+	        return boolPrimitive;
+	    }
 
-        virtual public int getIntPrimitive()
-        {
-            return m_intPrimitive;
-        }
+	    public int GetIntPrimitive()
+	    {
+	        return intPrimitive;
+	    }
 
-        virtual public long getLongPrimitive()
-        {
-            return m_longPrimitive;
-        }
+	    public long GetLongPrimitive()
+	    {
+	        return longPrimitive;
+	    }
 
-        virtual public char getCharPrimitive()
-        {
-            return m_charPrimitive;
-        }
+	    public char GetCharPrimitive()
+	    {
+	        return charPrimitive;
+	    }
 
-        virtual public short getShortPrimitive()
-        {
-            return m_shortPrimitive;
-        }
+	    public short GetShortPrimitive()
+	    {
+	        return shortPrimitive;
+	    }
 
-        virtual public sbyte getBytePrimitive()
-        {
-            return m_bytePrimitive;
-        }
+	    public sbyte GetBytePrimitive()
+	    {
+	        return bytePrimitive;
+	    }
 
-        virtual public float getFloatPrimitive()
-        {
-            return m_floatPrimitive;
-        }
+	    public float GetFloatPrimitive()
+	    {
+	        return floatPrimitive;
+	    }
 
-        virtual public double getDoublePrimitive()
-        {
-            return m_doublePrimitive;
-        }
+	    public double GetDoublePrimitive()
+	    {
+	        return doublePrimitive;
+	    }
 
-        #endregion
+	    public bool? GetBoolBoxed()
+	    {
+	        return boolBoxed;
+	    }
 
-        #region "Boxed Accessors"
+	    public int? GetIntBoxed()
+	    {
+	        return intBoxed;
+	    }
 
-        virtual public bool? getBoolBoxed()
-        {
-            return m_boolBoxed;
-        }
+	    public long? GetLongBoxed()
+	    {
+	        return longBoxed;
+	    }
 
-        virtual public int? getIntBoxed()
-        {
-            return m_intBoxed;
-        }
+	    public char? GetCharBoxed()
+	    {
+	        return charBoxed;
+	    }
 
-        virtual public long? getLongBoxed()
-        {
-            return m_longBoxed;
-        }
+	    public short? GetShortBoxed()
+	    {
+	        return shortBoxed;
+	    }
 
-        virtual public char? getCharBoxed()
-        {
-            return m_charBoxed;
-        }
+	    public sbyte? GetByteBoxed()
+	    {
+	        return byteBoxed;
+	    }
 
-        virtual public short? getShortBoxed()
-        {
-            return m_shortBoxed;
-        }
+	    public float? GetFloatBoxed()
+	    {
+	        return floatBoxed;
+	    }
 
-        virtual public sbyte? getByteBoxed()
-        {
-            return m_byteBoxed;
-        }
+	    public double? GetDoubleBoxed()
+	    {
+	        return doubleBoxed;
+	    }
 
-        virtual public float? getFloatBoxed()
-        {
-            return m_floatBoxed;
-        }
+	    public void SetString(String _string)
+	    {
+            this._string = _string;
+	    }
 
-        virtual public double? getDoubleBoxed()
-        {
-            return m_doubleBoxed;
-        }
+	    public void SetBoolPrimitive(bool boolPrimitive)
+	    {
+	        this.boolPrimitive = boolPrimitive;
+	    }
 
-        #endregion
+	    public void SetIntPrimitive(int intPrimitive)
+	    {
+	        this.intPrimitive = intPrimitive;
+	    }
 
-        public SupportBean()
-		{
-		}
-		
-		public SupportBean(String stringValue, int intPrimitive)
-		{
-            this.m_stringValue = stringValue;
-            this.m_intPrimitive = intPrimitive;
-		}
+	    public void SetLongPrimitive(long longPrimitive)
+	    {
+	        this.longPrimitive = longPrimitive;
+	    }
+
+	    public void SetCharPrimitive(char charPrimitive)
+	    {
+	        this.charPrimitive = charPrimitive;
+	    }
+
+	    public void SetShortPrimitive(short shortPrimitive)
+	    {
+	        this.shortPrimitive = shortPrimitive;
+	    }
+
+	    public void SetBytePrimitive(sbyte bytePrimitive)
+	    {
+	        this.bytePrimitive = bytePrimitive;
+	    }
+
+	    public void SetFloatPrimitive(float floatPrimitive)
+	    {
+	        this.floatPrimitive = floatPrimitive;
+	    }
+
+	    public void SetDoublePrimitive(double doublePrimitive)
+	    {
+	        this.doublePrimitive = doublePrimitive;
+	    }
+
+	    public void SetBoolBoxed(bool? boolBoxed)
+	    {
+	        this.boolBoxed = boolBoxed;
+	    }
+
+	    public void SetIntBoxed(int? intBoxed)
+	    {
+	        this.intBoxed = intBoxed;
+	    }
+
+	    public void SetLongBoxed(long? longBoxed)
+	    {
+	        this.longBoxed = longBoxed;
+	    }
+
+	    public void SetCharBoxed(char? charBoxed)
+	    {
+	        this.charBoxed = charBoxed;
+	    }
+
+	    public void SetShortBoxed(short? shortBoxed)
+	    {
+	        this.shortBoxed = shortBoxed;
+	    }
+
+	    public void SetByteBoxed(sbyte? byteBoxed)
+	    {
+	        this.byteBoxed = byteBoxed;
+	    }
+
+	    public void SetFloatBoxed(float? floatBoxed)
+	    {
+	        this.floatBoxed = floatBoxed;
+	    }
+
+	    public void SetDoubleBoxed(double? doubleBoxed)
+	    {
+	        this.doubleBoxed = doubleBoxed;
+	    }
+
+	    public SupportEnum GetEnumValue()
+	    {
+	        return enumValue;
+	    }
+
+	    public void SetEnumValue(SupportEnum enumValue)
+	    {
+	        this.enumValue = enumValue;
+	    }
 	}
-}
+} // End of namespace

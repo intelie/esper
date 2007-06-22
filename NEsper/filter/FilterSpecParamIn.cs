@@ -23,7 +23,7 @@ namespace net.esper.filter
 	/// </summary>
 	public sealed class FilterSpecParamIn : FilterSpecParam
 	{
-	    private readonly List<FilterSpecParamInValue> listOfValues;
+	    private readonly IList<FilterSpecParamInValue> listOfValues;
 	    private MultiKeyUntyped inListConstantsOnly;
 
 	    /// <summary>Ctor.</summary>
@@ -33,7 +33,7 @@ namespace net.esper.filter
 	    /// <throws>ArgumentException for illegal args</throws>
 	    public FilterSpecParamIn(String propertyName,
 	                             FilterOperator filterOperator,
-	                             List<FilterSpecParamInValue> listofValues)
+	                             IList<FilterSpecParamInValue> listofValues)
 	    	: base(propertyName, filterOperator)
 	    {
 	        this.listOfValues = listofValues;
@@ -93,9 +93,9 @@ namespace net.esper.filter
         /// Returns the list of values we are asking to match.
         /// </summary>
         /// <returns>list of filter values</returns>
-	    public List<FilterSpecParamInValue> GetListOfValues()
+	    public IList<FilterSpecParamInValue> ListOfValues
 	    {
-	        return listOfValues;
+            get { return listOfValues; }
 	    }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace net.esper.filter
 	            return false;
 	        }
 
-	        if (!(CollectionHelper.AreEqual(listOfValues.ToArray(), other.listOfValues.ToArray())))
+	        if (!CollectionHelper.AreEqual(listOfValues, other.listOfValues))
 	        {
 	            return false;
 	        }

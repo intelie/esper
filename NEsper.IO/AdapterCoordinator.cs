@@ -11,6 +11,6 @@ namespace net.esper.adapter
 		/// Coordinate an InputAdapter.
 		/// <param name="adapter">the InputAdapter to coordinate</param>
 		/// </summary>
-		void coordinate(InputAdapter adapter);
+		void Coordinate(InputAdapter adapter);
 	}
 }

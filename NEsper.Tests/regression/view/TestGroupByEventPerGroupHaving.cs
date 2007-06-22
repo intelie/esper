@@ -36,7 +36,7 @@ namespace net.esper.regression.view
             String viewExpr = "select symbol, sum(price) as mySum " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + " " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE')" + "       and one.str = two.symbol " + "group by symbol " + "having sum(price) >= 100";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -51,7 +51,7 @@ namespace net.esper.regression.view
             String viewExpr = "select symbol, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol " + "having sum(price) >= 100";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             runAssertion();
         }
@@ -59,10 +59,10 @@ namespace net.esper.regression.view
         private void runAssertion()
         {
             SendEvent(SYMBOL_DELL, 10);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent(SYMBOL_DELL, 60);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent(SYMBOL_DELL, 30);
             assertNewEvent(SYMBOL_DELL, 100);
@@ -85,8 +85,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(newSum, newData[0]["mySum"]);
             Assert.AreEqual(symbol, newData[0]["symbol"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void assertOldEvent(String symbol, double newSum)
@@ -100,8 +100,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(newSum, oldData[0]["mySum"]);
             Assert.AreEqual(symbol, oldData[0]["symbol"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void assertEvents(String symbol, double oldSum, double newSum)
@@ -118,8 +118,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(newSum, newData[0]["mySum"]);
             Assert.AreEqual(symbol, newData[0]["symbol"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void assertEvents(String symbolOne, double oldSumOne, double newSumOne, String symbolTwo, double oldSumTwo, double newSumTwo)
@@ -142,8 +142,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(oldSumOne, oldData[indexOne]["mySum"]);
             Assert.AreEqual(oldSumTwo, oldData[indexTwo]["mySum"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void SendEvent(String symbol, double price)

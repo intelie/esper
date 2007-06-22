@@ -37,21 +37,21 @@ namespace net.esper.eql.view
 			EventBean[] events = SupportEventBeanFactory.MakeEvents(new String[]{"a", "b"});
 
             viewIStream.Update(events, null);
-			Assert.AreEqual(2, supportRouter.getRouted().Count);
-			supportRouter.reset();
+			Assert.AreEqual(2, supportRouter.GetRouted().Count);
+			supportRouter.Reset();
 			Assert.AreEqual(events, childView.LastNewData);
 
             viewIStream.Update(null, events);
-			Assert.AreEqual(0, supportRouter.getRouted().Count);
-			supportRouter.reset();
+			Assert.AreEqual(0, supportRouter.GetRouted().Count);
+			supportRouter.Reset();
 
             viewRStream.Update(null, events);
-			Assert.AreEqual(2, supportRouter.getRouted().Count);
-			supportRouter.reset();
+			Assert.AreEqual(2, supportRouter.GetRouted().Count);
+			supportRouter.Reset();
 
             viewRStream.Update(events, null);
-			Assert.AreEqual(0, supportRouter.getRouted().Count);
-			supportRouter.reset();
+			Assert.AreEqual(0, supportRouter.GetRouted().Count);
+			supportRouter.Reset();
 		}
 	}
 }

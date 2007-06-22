@@ -47,7 +47,7 @@ namespace net.esper.eql.agg
             : base(evaluators, prototypes)
 	    {
 	        this.methodResolutionService = methodResolutionService;
-	        this.aggregatorsPerGroup = new EHashDictionary<MultiKeyUntyped, AggregationMethod[]>();
+	        this.aggregatorsPerGroup = new HashDictionary<MultiKeyUntyped, AggregationMethod[]>();
 	    }
 
         /// <summary>

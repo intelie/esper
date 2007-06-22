@@ -8,12 +8,12 @@ namespace net.esper.support.events
 {
     public class SupportEventBeanFactory
     {
-        public static EventBean createObject(Object _event)
+        public static EventBean CreateObject(Object _event)
         {
             return SupportEventAdapterService.Service.AdapterForBean(_event);
         }
 
-        public static EventBean CreateMapFromValues(EDataDictionary testValuesMap, EventType eventType)
+        public static EventBean CreateMapFromValues(DataDictionary testValuesMap, EventType eventType)
         {
             return SupportEventAdapterService.Service.CreateMapFromValues(testValuesMap, eventType);
         }
@@ -24,8 +24,8 @@ namespace net.esper.support.events
             for (int i = 0; i < events.Length; i++)
             {
                 SupportBean bean = new SupportBean();
-                bean.str = ids[i];
-                events[i] = createObject(bean);
+                bean.SetString(ids[i]);
+                events[i] = CreateObject(bean);
             }
             return events;
         }
@@ -36,63 +36,63 @@ namespace net.esper.support.events
             for (int i = 0; i < events.Length; i++)
             {
                 SupportBean bean = new SupportBean();
-                bean.boolPrimitive = boolPrimitiveValues[i];
-                events[i] = createObject(bean);
+                bean.SetBoolPrimitive(boolPrimitiveValues[i]);
+                events[i] = CreateObject(bean);
             }
             return events;
         }
 
-        public static EventBean[] makeMarketDataEvents(String[] ids)
+        public static EventBean[] MakeMarketDataEvents(String[] ids)
         {
             EventBean[] events = new EventBean[ids.Length];
             for (int i = 0; i < events.Length; i++)
             {
                 SupportMarketDataBean bean = new SupportMarketDataBean(ids[i], 0, 0L, null);
-                events[i] = createObject(bean);
+                events[i] = CreateObject(bean);
             }
             return events;
         }
 
-        public static EventBean[] makeEvents_A(String[] ids)
+        public static EventBean[] MakeEvents_A(String[] ids)
         {
             EventBean[] events = new EventBean[ids.Length];
             for (int i = 0; i < events.Length; i++)
             {
                 SupportBean_A bean = new SupportBean_A(ids[i]);
-                events[i] = createObject(bean);
+                events[i] = CreateObject(bean);
             }
             return events;
         }
 
-        public static EventBean[] makeEvents_B(String[] ids)
+        public static EventBean[] MakeEvents_B(String[] ids)
         {
             EventBean[] events = new EventBean[ids.Length];
             for (int i = 0; i < events.Length; i++)
             {
                 SupportBean_B bean = new SupportBean_B(ids[i]);
-                events[i] = createObject(bean);
+                events[i] = CreateObject(bean);
             }
             return events;
         }
 
-        public static EventBean[] makeEvents_C(String[] ids)
+        public static EventBean[] MakeEvents_C(String[] ids)
         {
             EventBean[] events = new EventBean[ids.Length];
             for (int i = 0; i < events.Length; i++)
             {
                 SupportBean_C bean = new SupportBean_C(ids[i]);
-                events[i] = createObject(bean);
+                events[i] = CreateObject(bean);
             }
             return events;
         }
 
-        public static EventBean[] makeEvents_D(String[] ids)
+        public static EventBean[] MakeEvents_D(String[] ids)
         {
             EventBean[] events = new EventBean[ids.Length];
             for (int i = 0; i < events.Length; i++)
             {
                 SupportBean_D bean = new SupportBean_D(ids[i]);
-                events[i] = createObject(bean);
+                events[i] = CreateObject(bean);
             }
             return events;
         }

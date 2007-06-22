@@ -27,7 +27,7 @@ namespace net.esper.regression.view
 			
 			// Set up a time window with a unique view attached
 			windowUniqueView = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportMarketDataBean).FullName + ".win:time(3.0).std:unique('symbol')");
-			windowUniqueView.AddListener(testListener.Update);
+			windowUniqueView.AddListener(testListener);
 			
 			// External clocking
 			epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));

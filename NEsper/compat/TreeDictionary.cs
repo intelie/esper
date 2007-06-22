@@ -10,30 +10,30 @@ namespace net.esper.compat
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="V"></typeparam>
 
-	public class ETreeDictionary<K,V> : EDictionary<K,V>
+	public class TreeDictionary<K,V> : EDictionary<K,V>
 	{
 		private C5.TreeDictionary<K, V> m_subDictionary;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ETreeDictionary&lt;K, V&gt;"/> class.
+        /// Initializes a new instance of the <see cref="TreeDictionary&lt;K, V&gt;"/> class.
         /// </summary>
-		public ETreeDictionary() {
+		public TreeDictionary() {
 			m_subDictionary = new C5.TreeDictionary<K, V>() ;
 		}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ETreeDictionary&lt;K, V&gt;"/> class.
+        /// Initializes a new instance of the <see cref="TreeDictionary&lt;K, V&gt;"/> class.
         /// </summary>
         /// <param name="subDictionary">The sub dictionary.</param>
-		public ETreeDictionary( C5.TreeDictionary<K, V> subDictionary ) {
+		public TreeDictionary( C5.TreeDictionary<K, V> subDictionary ) {
 			m_subDictionary = subDictionary ;
 		}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ETreeDictionary&lt;K, V&gt;"/> class.
+        /// Initializes a new instance of the <see cref="TreeDictionary&lt;K, V&gt;"/> class.
         /// </summary>
         /// <param name="comparer">The comparer.</param>
-		public ETreeDictionary( IComparer<K> comparer ) {
+		public TreeDictionary( IComparer<K> comparer ) {
 			m_subDictionary = new C5.TreeDictionary<K, V>( comparer ) ;
 		}
 		
@@ -45,10 +45,10 @@ namespace net.esper.compat
 		/// <param name="key"></param>
 		/// <returns></returns>
 
-		public virtual ETreeDictionary<K,V> Head( K key ) {
+		public virtual TreeDictionary<K,V> Head( K key ) {
             C5.TreeDictionary<K, V> child = new C5.TreeDictionary<K, V>(m_subDictionary.Comparer);
 			child.AddAll( m_subDictionary.RangeTo( key ) ) ;
-			return new ETreeDictionary<K, V>( child ) ;
+			return new TreeDictionary<K, V>( child ) ;
 		}
 
         /// <summary>
@@ -75,10 +75,10 @@ namespace net.esper.compat
 		/// <param name="key"></param>
 		/// <returns></returns>
 		
-		public virtual ETreeDictionary<K,V> Tail( K key ) {
+		public virtual TreeDictionary<K,V> Tail( K key ) {
             C5.TreeDictionary<K, V> child = new C5.TreeDictionary<K, V>(m_subDictionary.Comparer);
 			child.AddAll( m_subDictionary.RangeFrom( key ) ) ;
-			return new ETreeDictionary<K, V>( child ) ;
+			return new TreeDictionary<K, V>( child ) ;
 		}
 
 
@@ -107,10 +107,10 @@ namespace net.esper.compat
 		/// <param name="upperKey"></param>
 		/// <returns></returns>
 		
-		public virtual ETreeDictionary<K,V> Range( K lowerKey, K upperKey ) {
+		public virtual TreeDictionary<K,V> Range( K lowerKey, K upperKey ) {
             C5.TreeDictionary<K, V> child = new C5.TreeDictionary<K, V>(m_subDictionary.Comparer);
 			child.AddAll( m_subDictionary.RangeFromTo( lowerKey, upperKey ) ) ;
-			return new ETreeDictionary<K, V>( child ) ;
+			return new TreeDictionary<K, V>( child ) ;
 		}
 
 		/// <summary>
@@ -424,12 +424,12 @@ namespace net.esper.compat
 
         public override bool Equals(object obj)
         {
-            if ((obj == null) || !(obj is ETreeDictionary<K,V>))
+            if ((obj == null) || !(obj is TreeDictionary<K,V>))
             {
                 return false;
             }
 
-            ETreeDictionary<K, V> oDictionary = (ETreeDictionary<K,V>)obj;
+            TreeDictionary<K, V> oDictionary = (TreeDictionary<K,V>)obj;
             if (m_subDictionary.Count != oDictionary.Count)
             {
                 return false;

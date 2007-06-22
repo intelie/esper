@@ -57,15 +57,11 @@ namespace net.esper.client
 
         private EDictionary<String, Properties> mapAliases;
 
-        /// <summary> The java-style class and package name imports that
-        /// will be used to resolve partial class names.
+        /// <summary>
+        /// The class and namespace imports that will be used to resolve partial class names.
         /// </summary>
 
         private IList<String> imports;
-
-        /// <summary> The java-style class and package name imports that
-        /// will be used to resolve partial class names.
-        /// </summary>
 
         private EDictionary<String, ConfigurationDBRef> databaseReferences;
 
@@ -160,7 +156,7 @@ namespace net.esper.client
             AddEventTypeAlias(eventTypeAlias, eventType.FullName);
         }
 
-        /// <summary> Add an alias for an event type that represents java.util.Map events.</summary>
+        /// <summary> Add an alias for an event type that represents DataDictionary events.</summary>
         /// <param name="eventTypeAlias">is the alias for the event type
         /// </param>
         /// <param name="typeMap">maps the name of each property in the Map event to the type (as a string) of its value in the Map object
@@ -171,7 +167,7 @@ namespace net.esper.client
         }
         
         /// <summary>
-        /// Add an alias for an event type that represents java.util.Map events, taking a Map of
+        /// Add an alias for an event type that represents DataDictionary events, taking a DataDictionary of
         /// event property and class name as a parameter.
      	/// <p>
      	/// This method is provided for convenience and is same in function to method
@@ -258,8 +254,8 @@ namespace net.esper.client
         }
 
 
-        /// <summary> Returns the mapping of event type alias to legacy java event type information.</summary>
-        /// <returns> event type aliases mapping to legacy java class configs
+        /// <summary> Returns the mapping of event type alias to legacy event type information.</summary>
+        /// <returns> event type aliases mapping to legacy type configs
         /// </returns>
         public EDictionary<String, ConfigurationEventTypeLegacy> EventTypesLegacy
         {
@@ -532,11 +528,11 @@ namespace net.esper.client
         /// <summary> Reset to an empty configuration.</summary>
         internal void Reset()
         {
-            eventClasses = new EHashDictionary<String, String>();
-            mapAliases = new EHashDictionary<String, Properties>();
-            eventTypesXMLDOM = new EHashDictionary<String, ConfigurationEventTypeXMLDOM>();
-            eventTypesLegacy = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
-            databaseReferences = new EHashDictionary<String, ConfigurationDBRef>();
+            eventClasses = new HashDictionary<String, String>();
+            mapAliases = new HashDictionary<String, Properties>();
+            eventTypesXMLDOM = new HashDictionary<String, ConfigurationEventTypeXMLDOM>();
+            eventTypesLegacy = new HashDictionary<String, ConfigurationEventTypeLegacy>();
+            databaseReferences = new HashDictionary<String, ConfigurationDBRef>();
             imports = new List<String>();
             AddDefaultImports();
             isUsingDefaultImports = true;

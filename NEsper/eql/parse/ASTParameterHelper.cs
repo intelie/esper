@@ -147,7 +147,7 @@ namespace net.esper.eql.parse
         private static Object makeArray(AST node)
         {
             // Determine the distinct node types in the AST
-            Set<Int32> nodeTypes = new EHashSet<Int32>();
+            Set<Int32> nodeTypes = new HashSet<Int32>();
             AST child = node.getFirstChild();
 
             while (child != null)

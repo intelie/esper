@@ -20,11 +20,11 @@ namespace net.esper.indicator.pretty
 		{
 			Cube testCube = SupportCubeFactory.make2DimCube();
 
-			IDictionary<String, Double> result = CubeCellStringRenderer.RenderCube( testCube );
+			IDictionary<String, double> result = CubeCellStringRenderer.RenderCube( testCube );
 
 			Assert.IsTrue( result.Count == 12 * 3 ); // Times 3 because 3 derived values are part of the test cube
 
-			foreach ( KeyValuePair<String, Double> entry in result )
+			foreach ( KeyValuePair<String, double> entry in result )
 			{
 				log.Debug( ".testRender " + entry.Key + "=" + entry.Value );
 			}

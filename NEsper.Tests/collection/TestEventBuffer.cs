@@ -22,7 +22,7 @@ namespace net.esper.collection
 
 			for ( int i = 0 ; i < events.Length ; i++ )
 			{
-				events[i] = SupportEventBeanFactory.createObject( i );
+				events[i] = SupportEventBeanFactory.CreateObject( i );
 			}
 		}
 

@@ -71,10 +71,10 @@ namespace net.esper.filter
 
             SupportBean eventBean = new SupportBean();
             eventBean.doublePrimitive = 999.999;
-            EventBean _event = SupportEventBeanFactory.createObject(eventBean);
+            EventBean _event = SupportEventBeanFactory.CreateObject(eventBean);
             MatchedEventMap matchedEvents = new MatchedEventMap();
             matchedEvents.Add("asName", _event);
-            FilterValueSet valueSet = filterSpec.GetValueSet(matchedEvents);
+            FilterValueSet valueSet = filterSpec.ValueSet(matchedEvents);
 
             // Assert the generated filter value container
             Assert.AreSame(eventType, valueSet.EventType);

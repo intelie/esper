@@ -33,7 +33,7 @@ namespace net.esper.view
         /// <throws>ConfigurationException when plug-in views cannot be solved</throws>
 	    public ViewResolutionServiceImpl(IList<ConfigurationPlugInView> configurationPlugInViews)
 	    {
-	        nameToFactoryMap = new EHashDictionary<String, EDictionary<String, Type>>();
+	        nameToFactoryMap = new HashDictionary<String, EDictionary<String, Type>>();
 
 	        if (configurationPlugInViews == null)
 	        {
@@ -68,7 +68,7 @@ namespace net.esper.view
 	            EDictionary<String, Type> namespaceMap = nameToFactoryMap.Fetch(entry.Namespace);
 	            if (namespaceMap == null)
 	            {
-	                namespaceMap = new EHashDictionary<String, Type>();
+	                namespaceMap = new HashDictionary<String, Type>();
 	                nameToFactoryMap[entry.Namespace] = namespaceMap;
 	            }
 	            namespaceMap[entry.Name] = type;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using net.esper.client;
 using net.esper.compat;
@@ -27,7 +28,7 @@ namespace net.esper.adapter
 	    /// <summary>
 	    /// Sorted events to be sent.
 	    /// </summary>
-	    protected readonly ETreeSet<SendableEvent> eventsToSend = new ETreeSet<SendableEvent>(new SendableEventComparator());
+	    protected readonly TreeSet<SendableEvent> eventsToSend = new TreeSet<SendableEvent>(new SendableEventComparator());
 
 	    /// <summary>
 	    /// Slot for scheduling.
@@ -56,7 +57,7 @@ namespace net.esper.adapter
 			}
 			if(!(epService is EPServiceProviderSPI))
 			{
-				throw new IllegalArgumentException("Invalid epService provided");
+				throw new ArgumentException("Invalid epService provided");
 			}
 			this.runtime = ((EPServiceProviderSPI)epService).EPRuntime;
 			this.schedulingService = ((EPServiceProviderSPI)epService).SchedulingService;
@@ -66,7 +67,7 @@ namespace net.esper.adapter
         /// Get the state of this Adapter.
         /// </summary>
         /// <value></value>
-		public AdapterState State
+		public virtual AdapterState State
 		{
 			get { return stateManager.State; }
 		}
@@ -75,14 +76,14 @@ namespace net.esper.adapter
         /// Start the sending of events into the runtime egine.
         /// </summary>
         /// <throws>EPException in case of errors processing the events</throws>
-		public void Start()
+		public virtual void Start()
 		{
 			log.Debug(".Start");
 			if(runtime == null)
 			{
 				throw new EPException("Attempting to start an Adapter that hasn't had the epService provided");
 			}
-			startTime = getCurrentTime();
+			startTime = CurrentTime;
 			log.Debug(".start startTime==" + startTime);
 			stateManager.Start();
 			ContinueSendingEvents();
@@ -92,7 +93,7 @@ namespace net.esper.adapter
         /// Pause the sending of events after a Adapter has been started.
         /// </summary>
         /// <throws>EPException if this Adapter has already been stopped</throws>
-		public void Pause()
+		public virtual void Pause()
 		{
 			stateManager.Pause();
 		}
@@ -101,7 +102,7 @@ namespace net.esper.adapter
         /// Resume sending events after the Adapter has been paused.
         /// </summary>
         /// <throws>EPException in case of errors processing the events</throws>
-		public void Resume()
+		public virtual void Resume()
 		{
 			stateManager.Resume();
 			ContinueSendingEvents();
@@ -112,7 +113,7 @@ namespace net.esper.adapter
         /// the resources, and disallowing any further state changes on the Adapter.
         /// </summary>
         /// <throws>EPException to indicate errors during destroy</throws>
-		public void Destroy()
+		public virtual void Destroy()
 		{
 			stateManager.Destroy();
 			Close();
@@ -123,7 +124,7 @@ namespace net.esper.adapter
         /// started once again.
         /// </summary>
         /// <throws>EPException in case of errors releasing resources</throws>
-		public void Stop()
+		public virtual void Stop()
 		{
 			log.Debug(".stop");
 			stateManager.Stop();
@@ -136,7 +137,7 @@ namespace net.esper.adapter
         /// Disallow subsequent state changes and throw an IllegalStateTransitionException
         /// if they are attempted.
         /// </summary>
-		public void DisallowStateTransitions()
+		public virtual void DisallowStateTransitions()
 		{
 			stateManager.DisallowStateTransitions();
 		}
@@ -145,7 +146,7 @@ namespace net.esper.adapter
         /// Gets or sets the using engine thread.
         /// </summary>
         /// <value>The using engine thread.</value>
-		public bool UsingEngineThread
+		public virtual bool UsingEngineThread
 		{
 			get { return this.usingEngineThread ; }
 			set { this.usingEngineThread = value ; }
@@ -156,7 +157,7 @@ namespace net.esper.adapter
         /// </summary>
         /// <value>The schedule slot.</value>
 
-        public ScheduleSlot ScheduleSlot
+        public virtual ScheduleSlot ScheduleSlot
 		{
 			get { return this.scheduleSlot ; }
 			set { this.scheduleSlot = value ; }
@@ -166,19 +167,19 @@ namespace net.esper.adapter
         /// Sets the service.
         /// </summary>
 
-        public EPService EPService
+        public virtual EPServiceProvider EPService
 		{
 			set
 			{
 				if(value == null)
 				{
-					throw new NullPointerException("epService cannot be null");
+					throw new ArgumentException("epService cannot be null");
 				}
 				if(!(value is EPServiceProviderSPI))
 				{
-					throw new IllegalArgumentException("Invalid type of EPServiceProvider");
+					throw new ArgumentException("Invalid type of EPServiceProvider");
 				}
-				EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;
+				EPServiceProviderSPI spi = (EPServiceProviderSPI)value;
 				runtime = spi.EPRuntime;
 				schedulingService = spi.SchedulingService;
 			}
@@ -204,13 +205,13 @@ namespace net.esper.adapter
 
 		private void ContinueSendingEvents()
 		{
-			if(stateManager.getState() == AdapterState.STARTED)
+			if(stateManager.State == AdapterState.STARTED)
 			{
-				currentTime = getCurrentTime();
+				currentTime = CurrentTime;
 				log.Debug(".continueSendingEvents currentTime==" + currentTime);
-				fillEventsToSend();
-				sendSoonestEvents();
-				waitToSendEvents();
+				FillEventsToSend();
+				SendSoonestEvents();
+				WaitToSendEvents();
 			}
 		}
 
@@ -223,24 +224,18 @@ namespace net.esper.adapter
 			else
 			{
 				long sleepTime = 0;
-				if(eventsToSend.isEmpty())
+				if(eventsToSend.IsEmpty)
 				{
 					sleepTime = 100;
 				}
 				else
 				{
-					sleepTime = eventsToSend.first().getSendTime() - (currentTime - startTime);
+					sleepTime = eventsToSend.First.SendTime - (currentTime - startTime);
 				}
 
-				try
-				{
-					Thread.Sleep(sleepTime);
-				}
-				catch (InterruptedException ex)
-				{
-					throw new EPException(ex);
-				}
-				continueSendingEvents();
+				Thread.Sleep((int) sleepTime);
+				
+				ContinueSendingEvents();
 			}
 		}
 
@@ -248,59 +243,65 @@ namespace net.esper.adapter
 		{
 			get
 			{
-				return usingEngineThread ? schedulingService.getTime() : System.currentTimeMillis();
+			    return usingEngineThread
+                    ? schedulingService.Time
+			        : DateTimeHelper.CurrentTimeMillis;
 			}
 		}
 
 		private void FillEventsToSend()
 		{
-			if(eventsToSend.isEmpty())
+			if(eventsToSend.IsEmpty)
 			{
-				SendableEvent _event = read();
+				SendableEvent _event = Read();
 				if(_event != null)
 				{
-					eventsToSend.add(_event);
+					eventsToSend.Add(_event);
 				}
 			}
 		}
 
 		private void SendSoonestEvents()
 		{
-			while(!eventsToSend.isEmpty() && eventsToSend.first().getSendTime() <= currentTime - startTime)
+            while (!eventsToSend.IsEmpty && eventsToSend.First.SendTime <= (currentTime - startTime))
 			{
 				log.Debug(".sendSoonestEvents currentTime==" + currentTime);
-				log.Debug(".sendSoonestEvents sending event " + eventsToSend.first() + ", its sendTime==" + eventsToSend.first().getSendTime());
-				eventsToSend.first().send(runtime);
-				replaceFirstEventToSend();
+				log.Debug(".sendSoonestEvents sending event " + eventsToSend.First + ", its sendTime==" + eventsToSend.First.SendTime);
+				eventsToSend.First.Send(runtime);
+				ReplaceFirstEventToSend();
 			}
 		}
 
 		private void ScheduleNextCallback()
 		{
-			ScheduleHandleCallback nextScheduleCallback = new ScheduleHandleCallback(
-                delegate(ExtensionServicesContext extensionServicesContext)
-                {
-                    continueSendingEvents();
-                }) ;
+		    ScheduleHandleCallback nextScheduleCallback =
+		        new ScheduleHandleCallbackImpl(
+		            new ScheduleHandleDelegate(
+		                delegate(ExtensionServicesContext extensionServicesContext)
+		                { 
+		                	ContinueSendingEvents();
+		                }));
 
             EPStatementHandleCallback scheduleCSVHandle = new EPStatementHandleCallback(
 	            new EPStatementHandle("AbstractCoordinatedAdapter", new ManagedLockImpl("CSV"), "AbstractCoordinatedAdapter"),
 	            nextScheduleCallback);
 	        ScheduleSlot nextScheduleSlot;
 
-			if(eventsToSend.isEmpty())
+			if(eventsToSend.IsEmpty)
 			{
 				log.Debug(".scheduleNextCallback no events to send, scheduling callback in 100 ms");
 				nextScheduleSlot = new ScheduleSlot(0,0);
-				schedulingService.add(100, scheduleCSVHandle, nextScheduleSlot);
+				schedulingService.Add(100, scheduleCSVHandle, nextScheduleSlot);
 			}
 			else
 			{
-				long afterMsec = eventsToSend.first().getSendTime() - currentTime;
-				nextScheduleSlot = eventsToSend.first().getScheduleSlot();
+				long afterMsec = eventsToSend.First.SendTime - currentTime;
+				nextScheduleSlot = eventsToSend.First.ScheduleSlot;
 				log.Debug(".scheduleNextCallback schedulingCallback in " + afterMsec + " milliseconds");
-				schedulingService.add(afterMsec, scheduleCSVHandle, nextScheduleSlot);
+				schedulingService.Add(afterMsec, scheduleCSVHandle, nextScheduleSlot);
 			}
 		}
-	}
+		
+		abstract public SendableEvent Read();
+   }
 }

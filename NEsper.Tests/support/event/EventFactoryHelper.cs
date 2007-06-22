@@ -15,7 +15,7 @@ namespace net.esper.support.events
         public static EventBean MakeEvent(String id)
         {
             SupportBeanString bean = new SupportBeanString(id);
-            return SupportEventBeanFactory.createObject(bean);
+            return SupportEventBeanFactory.CreateObject(bean);
         }
 
         public static EventBean[] MakeEvents(String[] ids)
@@ -30,23 +30,23 @@ namespace net.esper.support.events
 
         public static EDictionary<String, EventBean> MakeEventMap(String[] ids)
         {
-            EDictionary<String, EventBean> events = new EHashDictionary<String, EventBean>();
+            EDictionary<String, EventBean> events = new HashDictionary<String, EventBean>();
             for (int i = 0; i < ids.Length; i++)
             {
                 String id = ids[i];
-                EventBean eventBean = MakeEvent(id);
-                events.Put(id, eventBean);
+                EventBean _eventBean = MakeEvent(id);
+                events.Put(id, _eventBean);
             }
             return events;
         }
 
-        public static IList<EventBean> makeEventList(String[] ids)
+        public static IList<EventBean> MakeEventList(String[] ids)
         {
             EventBean[] events = MakeEvents(ids);
             return events;
         }
 
-        public static EventBean[] makeArray(EDictionary<String, EventBean> events, String[] ids)
+        public static EventBean[] MakeArray(EDictionary<String, EventBean> events, String[] ids)
         {
             EventBean[] eventArr = new EventBean[ids.Length];
             for (int i = 0; i < eventArr.Length; i++)

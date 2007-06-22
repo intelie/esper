@@ -16,15 +16,15 @@ namespace net.esper.core
 	{
 		private PatternListenerDispatch dispatch;
 
-		private EventBean eventOne = SupportEventBeanFactory.createObject( "a" );
-		private EventBean eventTwo = SupportEventBeanFactory.createObject( "b" );
+		private EventBean _eventOne = SupportEventBeanFactory.CreateObject( "a" );
+		private EventBean _eventTwo = SupportEventBeanFactory.CreateObject( "b" );
 
 		private SupportUpdateListener listener = new SupportUpdateListener();
 
 		[SetUp]
 		public virtual void setUp()
 		{
-			ISet<UpdateListener> listeners = new EHashSet<UpdateListener>();
+            Set<UpdateEventHandler> listeners = new HashSet<UpdateEventHandler>();
             listeners.Add(listener.Update);
 			dispatch = new PatternListenerDispatch( listeners );
 		}
@@ -32,35 +32,35 @@ namespace net.esper.core
 		[Test]
 		public virtual void testSingle()
 		{
-			listener.reset();
+			listener.Reset();
 
 			Assert.IsFalse( dispatch.HasData );
-			dispatch.Add( eventOne );
+			dispatch.Add( _eventOne );
 			Assert.IsTrue( dispatch.HasData );
 
 			dispatch.Execute();
 
 			Assert.IsFalse( dispatch.HasData );
 			Assert.AreEqual( 1, listener.LastNewData.Length );
-			Assert.AreEqual( eventOne, listener.LastNewData[0] );
+            Assert.AreEqual(_eventOne, listener.LastNewData[0]);
 		}
 
-		[Test]
-		public virtual void testTwo()
-		{
-			listener.reset();
-			Assert.IsFalse( dispatch.HasData );
+        [Test]
+        public virtual void testTwo()
+        {
+            listener.Reset();
+            Assert.IsFalse(dispatch.HasData);
 
-			dispatch.Add( eventOne );
-			dispatch.Add( eventTwo );
-			Assert.IsTrue( dispatch.HasData );
+            dispatch.Add(_eventOne);
+            dispatch.Add(_eventTwo);
+            Assert.IsTrue(dispatch.HasData);
 
-			dispatch.Execute();
+            dispatch.Execute();
 
-			Assert.IsFalse( dispatch.HasData );
-			Assert.AreEqual( 2, listener.LastNewData.Length );
-			Assert.AreEqual( eventOne, listener.LastNewData[0] );
-			Assert.AreEqual( eventTwo, listener.LastNewData[1] );
-		}
+            Assert.IsFalse(dispatch.HasData);
+            Assert.AreEqual(2, listener.LastNewData.Length);
+            Assert.AreEqual(_eventOne, listener.LastNewData[0]);
+            Assert.AreEqual(_eventTwo, listener.LastNewData[1]);
+        }
 	}
 }

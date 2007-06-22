@@ -9,7 +9,7 @@ namespace net.esper.compat
     /// </summary>
     /// <typeparam name="T"></typeparam>
 
-	public sealed class EHashSet<T> : Set<T>
+	public class HashSet<T> : Set<T>
 	{
 		private Dictionary<T, T> m_dataTable = new Dictionary<T, T>() ;
 
@@ -17,7 +17,7 @@ namespace net.esper.compat
 		/// Constructor
 		/// </summary>
 		
-		public EHashSet() 
+		public HashSet() 
 		{
 		}
 		
@@ -26,7 +26,7 @@ namespace net.esper.compat
 		/// </summary>
 		/// <param name="sourceData"></param>
 		
-		public EHashSet( Set<T> sourceData )
+		public HashSet( IEnumerable<T> sourceData )
 		{
 			AddAll( sourceData ) ;
 		}
@@ -214,12 +214,12 @@ namespace net.esper.compat
 
         public override bool Equals(object obj)
         {
-            if ((obj == null) || !(obj is EHashSet<T>))
+            if ((obj == null) || !(obj is HashSet<T>))
             {
                 return false;
             }
 
-            EHashSet<T> oHashTable = (EHashSet<T>)obj;
+            HashSet<T> oHashTable = (HashSet<T>)obj;
             bool result = CollectionHelper.AreEqual(m_dataTable.Keys, oHashTable.m_dataTable.Keys);
             return result;
         }

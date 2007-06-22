@@ -24,7 +24,7 @@ namespace net.esper.filter
 	/// </summary>
 	public sealed class FilterParamIndexNotRange : FilterParamIndexPropBase
 	{
-	    private readonly ETreeDictionary<DoubleRange, EventEvaluator> ranges;
+	    private readonly TreeDictionary<DoubleRange, EventEvaluator> ranges;
 	    private readonly Set<EventEvaluator> evaluators;
 	    private readonly ReaderWriterLock rangesRWLock;
 
@@ -37,8 +37,8 @@ namespace net.esper.filter
 	    public FilterParamIndexNotRange(String attributeName, FilterOperator filterOperator, EventType eventType)
 	        : base(attributeName, filterOperator, eventType)
 	    {
-	        ranges = new ETreeDictionary<DoubleRange, EventEvaluator>(new DoubleRangeComparator());
-	        evaluators = new EHashSet<EventEvaluator>();
+	        ranges = new TreeDictionary<DoubleRange, EventEvaluator>(new DoubleRangeComparator());
+	        evaluators = new HashSet<EventEvaluator>();
 	        rangesRWLock = new ReaderWriterLock();
 
 	        if (!FilterOperatorHelper.IsInvertedRangeOperator(filterOperator))
@@ -172,7 +172,7 @@ namespace net.esper.filter
 	        // For not including either endpoint
 	        // A bit awkward to duplicate the loop code, however better than checking the bool many times over
 	        // This may be a bit of an early performance optimization - the optimizer after all may do this better
-	        Set<EventEvaluator> matchingEvals = new EHashSet<EventEvaluator>();
+	        Set<EventEvaluator> matchingEvals = new HashSet<EventEvaluator>();
 	        if (this.FilterOperator == FilterOperator.NOT_RANGE_OPEN)  // include neither endpoint
 	        {
 	        	while( subMapEnum.MoveNext() )	        		

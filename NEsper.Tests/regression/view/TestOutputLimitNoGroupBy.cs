@@ -1,232 +1,279 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
+
+using NUnit.Framework;
 
 using net.esper.client;
 using net.esper.support.bean;
 using net.esper.support.util;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.regression.view
 {
-    [TestFixture]
-    public class TestOutputLimitNoGroupBy
-    {
-        private const String JOIN_KEY = "KEY";
+	[TestFixture]
+	public class TestOutputLimitNoGroupBy
+	{
+	    private readonly static String JOIN_KEY = "KEY";
 
-        private EPServiceProvider epService;
+		private EPServiceProvider epService;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            epService = EPServiceProviderManager.GetDefaultProvider();
-            epService.Initialize();
-        }
 
-        [Test]
-        public virtual void testSimpleNoJoinAll()
-        {
-            String viewExpr = "select longBoxed " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "output all every 2 events";
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        epService = EPServiceProviderManager.GetDefaultProvider();
+	        epService.Initialize();
+	    }
 
-            runAssertAll(createStmtAndListenerNoJoin(viewExpr));
+	    [Test]
+	    public void TestSimpleNoJoinAll()
+		{
+		    String viewExpr = "select longBoxed " +
+		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+		    "output all every 2 events";
 
-            viewExpr = "select longBoxed " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "output every 2 events";
+            RunAssertAll(CreateStmtAndListenerNoJoin(viewExpr));
 
-            runAssertAll(createStmtAndListenerNoJoin(viewExpr));
+		    viewExpr = "select longBoxed " +
+		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+		    "output every 2 events";
 
-            viewExpr = "select * " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "output every 2 events";
+            RunAssertAll(CreateStmtAndListenerNoJoin(viewExpr));
 
-            runAssertAll(createStmtAndListenerNoJoin(viewExpr));
-        }
-        [Test]
-        public virtual void testAggregateAllNoJoinAll()
-        {
-            String viewExpr = "select longBoxed, sum(longBoxed) as result " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "having sum(longBoxed) > 0 " + "output all every 2 events";
+		    viewExpr = "select * " +
+		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+		    "output every 2 events";
 
-            runAssertAllSum(createStmtAndListenerNoJoin(viewExpr));
+            RunAssertAll(CreateStmtAndListenerNoJoin(viewExpr));
+		}
+		[Test]
+		public void TestAggregateAllNoJoinAll()
+		{
+		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+		    "having Sum(longBoxed) > 0 " +
+		    "output all every 2 events";
 
-            viewExpr = "select longBoxed, sum(longBoxed) as result " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "output every 2 events";
+            RunAssertAllSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-            runAssertAllSum(createStmtAndListenerNoJoin(viewExpr));
-        }
+		    viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+		    "output every 2 events";
 
-        [Test]
-        public virtual void testAggregateAllNoJoinLast()
-        {
-            String viewExpr = "select longBoxed, sum(longBoxed) as result " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "having sum(longBoxed) > 0 " + "output last every 2 events";
+		    RunAssertAllSum(CreateStmtAndListenerNoJoin(viewExpr));
+		}
 
-            runAssertLastSum(createStmtAndListenerNoJoin(viewExpr));
+		[Test]
+		public void TestAggregateAllNoJoinLast()
+		{
+		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+		    "having Sum(longBoxed) > 0 " +
+		    "output last every 2 events";
 
-            viewExpr = "select longBoxed, sum(longBoxed) as result " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "output last every 2 events";
+            RunAssertLastSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-            runAssertLastSum(createStmtAndListenerNoJoin(viewExpr));
-        }
+		    viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+		    "output last every 2 events";
 
-        [Test]
-        public virtual void testSimpleNoJoinLast()
-        {
-            String viewExpr = "select longBoxed " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "output last every 2 events";
+            RunAssertLastSum(CreateStmtAndListenerNoJoin(viewExpr));
+		}
 
-            runAssertLast(createStmtAndListenerNoJoin(viewExpr));
+		[Test]
+		public void TestSimpleNoJoinLast()
+	    {
+	        String viewExpr = "select longBoxed " +
+	        "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+	        "output last every 2 events";
 
-            viewExpr = "select * " + "from " + typeof(SupportBean).FullName + ".win:length(3) " + "output last every 2 events";
+            RunAssertLast(CreateStmtAndListenerNoJoin(viewExpr));
 
-            runAssertLast(createStmtAndListenerNoJoin(viewExpr));
-        }
+	        viewExpr = "select * " +
+	        "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+	        "output last every 2 events";
 
-        [Test]
-        public virtual void testSimpleJoinAll()
-        {
-            String viewExpr = "select longBoxed  " + "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " + typeof(SupportBean).FullName + ".win:length(3) as two " + "output all every 2 events";
+            RunAssertLast(CreateStmtAndListenerNoJoin(viewExpr));
+	    }
 
-            runAssertAll(createStmtAndListenerJoin(viewExpr));
-        }
+	    [Test]
+	    public void TestSimpleJoinAll()
+		{
+		    String viewExpr = "select longBoxed  " +
+		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
+		    typeof(SupportBean).FullName + ".win:length(3) as two " +
+		    "output all every 2 events";
 
-        private SupportUpdateListener createStmtAndListenerNoJoin(String viewExpr)
-        {
-            epService.Initialize();
-            SupportUpdateListener updateListener = new SupportUpdateListener();
-            EPStatement view = epService.EPAdministrator.CreateEQL(viewExpr);
-            view.AddListener(updateListener.Update);
+            RunAssertAll(CreateStmtAndListenerNoJoin(viewExpr));
+		}
 
-            return updateListener;
-        }
+	    private SupportUpdateListener CreateStmtAndListenerNoJoin(String viewExpr) {
+			epService.Initialize();
+			SupportUpdateListener updateListener = new SupportUpdateListener();
+			EPStatement view = epService.EPAdministrator.CreateEQL(viewExpr);
+            view.AddListener(updateListener);
 
-        [Test]
-        public virtual void testAggregateAllJoinAll()
-        {
-            String viewExpr = "select longBoxed, sum(longBoxed) as result " + "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " + typeof(SupportBean).FullName + ".win:length(3) as two " + "having sum(longBoxed) > 0 " + "output all every 2 events";
+		    return updateListener;
+		}
 
-            runAssertAllSum(createStmtAndListenerJoin(viewExpr));
+		[Test]
+		public void TestAggregateAllJoinAll()
+		{
+		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
+		    typeof(SupportBean).FullName + ".win:length(3) as two " +
+		    "having Sum(longBoxed) > 0 " +
+		    "output all every 2 events";
 
-            viewExpr = "select longBoxed, sum(longBoxed) as result " + "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " + typeof(SupportBean).FullName + ".win:length(3) as two " + "output every 2 events";
+            RunAssertAllSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-            runAssertAllSum(createStmtAndListenerJoin(viewExpr));
-        }
+		    viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
+		    typeof(SupportBean).FullName + ".win:length(3) as two " +
+		    "output every 2 events";
 
-        [Test]
-        public virtual void testAggregateAllJoinLast()
-        {
-            String viewExpr = "select longBoxed, sum(longBoxed) as result " + "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " + typeof(SupportBean).FullName + ".win:length(3) as two " + "having sum(longBoxed) > 0 " + "output last every 2 events";
+            RunAssertAllSum(CreateStmtAndListenerNoJoin(viewExpr));
+		}
 
-            runAssertLastSum(createStmtAndListenerJoin(viewExpr));
+		[Test]
+		public void TestAggregateAllJoinLast()
+	    {
+	        String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+	        "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
+	        typeof(SupportBean).FullName + ".win:length(3) as two " +
+	        "having Sum(longBoxed) > 0 " +
+	        "output last every 2 events";
 
-            viewExpr = "select longBoxed, sum(longBoxed) as result " + "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " + typeof(SupportBean).FullName + ".win:length(3) as two " + "output last every 2 events";
+            RunAssertLastSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-            runAssertLastSum(createStmtAndListenerJoin(viewExpr));
-        }
+	        viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+	        "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
+	        typeof(SupportBean).FullName + ".win:length(3) as two " +
+	        "output last every 2 events";
 
-        private void runAssertAll(SupportUpdateListener updateListener)
-        {
-            // send an event
-            SendEvent(1);
+            RunAssertLastSum(CreateStmtAndListenerNoJoin(viewExpr));
+	    }
 
-            // check no update
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+		private void RunAssertAll(SupportUpdateListener updateListener)
+		{
+			// send an event
+		    SendEvent(1);
 
-            // send another event
-            SendEvent(2);
+		    // check no update
+		    Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
-            // check update, all events present
-            Assert.IsTrue(updateListener.getAndClearIsInvoked());
-            Assert.AreEqual(2, updateListener.LastNewData.Length);
-            Assert.AreEqual(1L, updateListener.LastNewData[0]["longBoxed"]);
-            Assert.AreEqual(2L, updateListener.LastNewData[1]["longBoxed"]);
-            Assert.IsNull(updateListener.LastOldData);
-        }
+		    // send another event
+		    SendEvent(2);
 
-        private void runAssertAllSum(SupportUpdateListener updateListener)
-        {
-            // send an event
-            SendEvent(1);
+		    // check update, all events present
+		    Assert.IsTrue(updateListener.GetAndClearIsInvoked());
+		    Assert.AreEqual(2, updateListener.LastNewData.Length);
+		    Assert.AreEqual(1L, updateListener.LastNewData[0]["longBoxed"]);
+		    Assert.AreEqual(2L, updateListener.LastNewData[1]["longBoxed"]);
+		    Assert.IsNull(updateListener.LastOldData);
+		}
 
-            // check no update
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+		private void RunAssertAllSum(SupportUpdateListener updateListener)
+		{
+			// send an event
+		    SendEvent(1);
 
-            // send another event
-            SendEvent(2);
+		    // check no update
+		    Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
-            // check update, all events present
-            Assert.IsTrue(updateListener.getAndClearIsInvoked());
-            Assert.AreEqual(2, updateListener.LastNewData.Length);
-            Assert.AreEqual(1L, updateListener.LastNewData[0]["longBoxed"]);
-            Assert.AreEqual(3L, updateListener.LastNewData[0]["result"]);
-            Assert.AreEqual(2L, updateListener.LastNewData[1]["longBoxed"]);
-            Assert.AreEqual(3L, updateListener.LastNewData[1]["result"]);
-            Assert.IsNull(updateListener.LastOldData);
-        }
+		    // send another event
+		    SendEvent(2);
 
-        private void runAssertLastSum(SupportUpdateListener updateListener)
-        {
-            // send an event
-            SendEvent(1);
+		    // check update, all events present
+		    Assert.IsTrue(updateListener.GetAndClearIsInvoked());
+		    Assert.AreEqual(2, updateListener.LastNewData.Length);
+		    Assert.AreEqual(1L, updateListener.LastNewData[0]["longBoxed"]);
+		    Assert.AreEqual(3L, updateListener.LastNewData[0]["result"]);
+		    Assert.AreEqual(2L, updateListener.LastNewData[1]["longBoxed"]);
+		    Assert.AreEqual(3L, updateListener.LastNewData[1]["result"]);
+		    Assert.IsNull(updateListener.LastOldData);
+		}
 
-            // check no update
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+		private void RunAssertLastSum(SupportUpdateListener updateListener)
+		{
+			// send an event
+		    SendEvent(1);
 
-            // send another event
-            SendEvent(2);
+		    // check no update
+		    Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
-            // check update, all events present
-            Assert.IsTrue(updateListener.getAndClearIsInvoked());
-            Assert.AreEqual(1, updateListener.LastNewData.Length);
-            Assert.AreEqual(2L, updateListener.LastNewData[0]["longBoxed"]);
-            Assert.AreEqual(3L, updateListener.LastNewData[0]["result"]);
-            Assert.IsNull(updateListener.LastOldData);
-        }
+		    // send another event
+		    SendEvent(2);
 
-        private void SendEvent(long longBoxed, int intBoxed, short shortBoxed)
-        {
-            SupportBean bean = new SupportBean();
-            bean.str = JOIN_KEY;
-            bean.longBoxed = longBoxed;
-            bean.intBoxed = intBoxed;
-            bean.shortBoxed = shortBoxed;
-            epService.EPRuntime.SendEvent(bean);
-        }
+		    // check update, all events present
+		    Assert.IsTrue(updateListener.GetAndClearIsInvoked());
+		    Assert.AreEqual(1, updateListener.LastNewData.Length);
+		    Assert.AreEqual(2L, updateListener.LastNewData[0]["longBoxed"]);
+		    Assert.AreEqual(3L, updateListener.LastNewData[0]["result"]);
+		    Assert.IsNull(updateListener.LastOldData);
+		}
 
-        private void SendEvent(long longBoxed)
-        {
-            SendEvent(longBoxed, 0, (short)0);
-        }
+	    private void SendEvent(long longBoxed, int intBoxed, short shortBoxed)
+		{
+		    SupportBean bean = new SupportBean();
+		    bean.SetString(JOIN_KEY);
+		    bean.SetLongBoxed(longBoxed);
+		    bean.SetIntBoxed(intBoxed);
+		    bean.SetShortBoxed(shortBoxed);
+		    epService.EPRuntime.SendEvent(bean);
+		}
 
-        [Test]
-        public virtual void testSimpleJoinLast()
-        {
-            String viewExpr = "select longBoxed " + "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " + typeof(SupportBean).FullName + ".win:length(3) as two " + "output last every 2 events";
+		private void SendEvent(long longBoxed)
+		{
+		    SendEvent(longBoxed, 0, (short)0);
+		}
 
-            runAssertLast(createStmtAndListenerJoin(viewExpr));
-        }
+		[Test]
+		public void TestSimpleJoinLast()
+		{
+		    String viewExpr = "select longBoxed " +
+		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
+		    typeof(SupportBean).FullName + ".win:length(3) as two " +
+		    "output last every 2 events";
 
-        private SupportUpdateListener createStmtAndListenerJoin(String viewExpr)
-        {
-            epService.Initialize();
+			RunAssertLast(CreateStmtAndListenerJoin(viewExpr));
+		}
 
-            SupportUpdateListener updateListener = new SupportUpdateListener();
-            EPStatement view = epService.EPAdministrator.CreateEQL(viewExpr);
-            view.AddListener(updateListener.Update);
+		private SupportUpdateListener CreateStmtAndListenerJoin(String viewExpr) {
+			epService.Initialize();
 
-            epService.EPRuntime.SendEvent(new SupportBeanString(JOIN_KEY));
+			SupportUpdateListener updateListener = new SupportUpdateListener();
+			EPStatement view = epService.EPAdministrator.CreateEQL(viewExpr);
+            view.AddListener(updateListener);
 
-            return updateListener;
-        }
+		    epService.EPRuntime.SendEvent(new SupportBeanString(JOIN_KEY));
 
-        private void runAssertLast(SupportUpdateListener updateListener)
-        {
-            // send an event
-            SendEvent(1);
+		    return updateListener;
+		}
 
-            // check no update
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+		private void RunAssertLast(SupportUpdateListener updateListener)
+		{
+			// send an event
+		    SendEvent(1);
 
-            // send another event
-            SendEvent(2);
+		    // check no update
+		    Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
-            // check update, only the last event present
-            Assert.IsTrue(updateListener.getAndClearIsInvoked());
-            Assert.AreEqual(1, updateListener.LastNewData.Length);
-            Assert.AreEqual(2L, updateListener.LastNewData[0]["longBoxed"]);
-            Assert.IsNull(updateListener.LastOldData);
-        }
-    }
-}
+		    // send another event
+		    SendEvent(2);
+
+		    // check update, only the last event present
+		    Assert.IsTrue(updateListener.GetAndClearIsInvoked());
+		    Assert.AreEqual(1, updateListener.LastNewData.Length);
+		    Assert.AreEqual(2L, updateListener.LastNewData[0]["longBoxed"]);
+		    Assert.IsNull(updateListener.LastOldData);
+		}
+
+	}
+} // End of namespace

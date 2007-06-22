@@ -17,22 +17,22 @@ namespace net.esper.regression.events
 	[TestFixture]
     public class TestMapEvent 
     {
-        internal EDictionary<string,string> properties;
-        internal EDataDictionary map;
+        internal Properties properties;
+        internal DataDictionary map;
         internal EPServiceProvider epService;
 
 	    [SetUp]
         public virtual void setUp()
         {
-            properties = new EHashDictionary<string,string>();
+            properties = new Properties();
             properties[(String)"myInt"] = "int";
             properties[(String)"myString"] = "String";
             properties[(String)"beanA"] = typeof(SupportBeanComplexProps).FullName;
 
-            map = new EDataDictionary() ;
+            map = new DataDictionary() ;
             map.Put("myInt", 3);
             map.Put("myString", "some string");
-            map.Put("beanA", SupportBeanComplexProps.makeDefaultBean());
+            map.Put("beanA", SupportBeanComplexProps.MakeDefaultBean());
 
             Configuration configuration = new Configuration();
             configuration.AddEventTypeAlias("myMapEvent", properties);
@@ -46,7 +46,7 @@ namespace net.esper.regression.events
             String statementText = "select beanA.simpleProperty as simple," + "beanA.nested.nestedValue as nested," + "beanA.indexed[1] as indexed," + "beanA.nested.nestedNested.nestedNestedValue as nestednested " + "from myMapEvent.win:length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener.Update);
+            statement.AddListener(listener);
 
             epService.EPRuntime.SendEvent(map, "myMapEvent");
             Assert.AreEqual("nestedValue", listener.LastNewData[0]["nested"]);
@@ -61,7 +61,7 @@ namespace net.esper.regression.events
             String statementText = "select myInt + 2 as intVal, 'x' || myString || 'x' as stringVal from myMapEvent.win:length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener.Update);
+            statement.AddListener(listener);
 
             // send EDictionary<String, Object> event
             epService.EPRuntime.SendEvent(map, "myMapEvent");
@@ -69,7 +69,7 @@ namespace net.esper.regression.events
             Assert.AreEqual("xsome stringx", listener.LastNewData[0]["stringVal"]);
 
             // send Map base event
-            EDataDictionary mapNoType = new EDataDictionary();
+            DataDictionary mapNoType = new DataDictionary();
             mapNoType["myInt"] = 4;
             mapNoType["myString"] = "string2";
             epService.EPRuntime.SendEvent(mapNoType, "myMapEvent");
@@ -82,12 +82,12 @@ namespace net.esper.regression.events
         [Test]
         public virtual void testPrimitivesTypes()
         {
-            properties = new EHashDictionary<string, string>();
+            properties = new Properties();
             properties["myInt"] = typeof(int).FullName;
             properties["byteArr"] = typeof(sbyte[]).FullName;
             properties["myInt2"] = "int";
             properties["double"] = "double";
-            properties["boolean"] = "boolean";
+            properties["bool"] = "bool";
             properties["long"] = "long";
             properties["astring"] = "string";
 
@@ -100,7 +100,7 @@ namespace net.esper.regression.events
         [Test]
         public virtual void testInvalidConfig()
         {
-            properties = new EHashDictionary<string, string>();
+            properties = new Properties();
             properties[(String)"astring"] = (String)"XXXX";
 
             Configuration configuration = new Configuration();
@@ -132,36 +132,36 @@ namespace net.esper.regression.events
             String statementText = "select * from myMapEvent.win:length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener.Update);
+            statement.AddListener(listener);
 
             // send EDictionary<String, Object> event
             epService.EPRuntime.SendEvent(map, "myMapEvent");
 
-            Assert.IsTrue(listener.getAndClearIsInvoked());
+            Assert.IsTrue(listener.GetAndClearIsInvoked());
             Assert.AreEqual(1, listener.LastNewData.Length);
             Assert.AreEqual(map, listener.LastNewData[0].Underlying);
             Assert.AreEqual(3, listener.LastNewData[0]["myInt"]);
             Assert.AreEqual("some string", listener.LastNewData[0]["myString"]);
 
             // send Map base event
-            EDataDictionary mapNoType = new EDataDictionary();
+            DataDictionary mapNoType = new DataDictionary();
             mapNoType["myInt"] = 4;
             mapNoType["myString"] = "string2";
             epService.EPRuntime.SendEvent(mapNoType, "myMapEvent");
 
-            Assert.IsTrue(listener.getAndClearIsInvoked());
+            Assert.IsTrue(listener.GetAndClearIsInvoked());
             Assert.AreEqual(1, listener.LastNewData.Length);
             Assert.AreEqual(mapNoType, listener.LastNewData[0].Underlying);
             Assert.AreEqual(4, listener.LastNewData[0]["myInt"]);
             Assert.AreEqual("string2", listener.LastNewData[0]["myString"]);
 
-            // send EDataDictionary event, works too since not querying the fields
-            EDataDictionary mapStrings = new EDataDictionary();
+            // send DataDictionary _event, works too since not querying the fields
+            DataDictionary mapStrings = new DataDictionary();
             mapStrings.Put("myInt", "5");
             mapStrings.Put("myString", "string3");
             epService.EPRuntime.SendEvent(mapStrings, "myMapEvent");
 
-            Assert.IsTrue(listener.getAndClearIsInvoked());
+            Assert.IsTrue(listener.GetAndClearIsInvoked());
             Assert.AreEqual("5", listener.LastNewData[0]["myInt"]);
             Assert.AreEqual("string3", listener.LastNewData[0]["myString"]);
         }

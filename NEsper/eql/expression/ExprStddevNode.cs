@@ -17,7 +17,7 @@ namespace net.esper.eql.expression
         /// <value></value>
         /// <returns> aggregation function name
         /// </returns>
-		protected override string AggregationFunctionName
+        public override string AggregationFunctionName
 		{
 			get { return "stddev"; }
 		}

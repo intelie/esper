@@ -38,13 +38,13 @@ namespace net.esper.regression.view
 
             // Get the top 3 volumes for each symbol
             top3Prices = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportMarketDataBean).FullName + ".std:unique('symbol').ext:sort('price', true, 3)");
-            top3Prices.AddListener(testListener.Update);
+            top3Prices.AddListener(testListener);
         }
 
         [Test]
         public virtual void testWindowStats()
         {
-            testListener.reset();
+            testListener.Reset();
 
             Object[] beans = new Object[10];
 
@@ -52,11 +52,11 @@ namespace net.esper.regression.view
             epService.EPRuntime.SendEvent(beans[0]);
 
             Object[] result = toObjectArray(top3Prices.GetEnumerator());
-            ArrayAssertionUtil.assertEqualsExactOrder(result, new Object[] { beans[0] });
-            Assert.IsTrue(testListener.Invoked);
-            ArrayAssertionUtil.assertEqualsExactOrder(testListener.LastOldData, null);
-            ArrayAssertionUtil.assertEqualsExactOrder(new Object[] { testListener.LastNewData[0].Underlying }, new Object[] { beans[0] });
-            testListener.reset();
+            ArrayAssertionUtil.AreEqualExactOrder(result, new Object[] { beans[0] });
+            Assert.IsTrue(testListener.IsInvoked);
+            ArrayAssertionUtil.AreEqualExactOrder(testListener.LastOldData, null);
+            ArrayAssertionUtil.AreEqualExactOrder(new Object[] { testListener.LastNewData[0].Underlying }, new Object[] { beans[0] });
+            testListener.Reset();
 
             beans[1] = MakeEvent(SYMBOL_CSCO, 20);
             beans[2] = MakeEvent(SYMBOL_IBM, 50);
@@ -71,7 +71,7 @@ namespace net.esper.regression.view
             epService.EPRuntime.SendEvent(beans[5]);
 
             result = toObjectArray(top3Prices.GetEnumerator());
-            ArrayAssertionUtil.assertEqualsExactOrder(result, new Object[] { beans[4], beans[3], beans[5] });
+            ArrayAssertionUtil.AreEqualExactOrder(result, new Object[] { beans[4], beans[3], beans[5] });
 
             beans[6] = MakeEvent(SYMBOL_CSCO, 110);
             beans[7] = MakeEvent(SYMBOL_C, 30);
@@ -82,7 +82,7 @@ namespace net.esper.regression.view
             epService.EPRuntime.SendEvent(beans[8]);
 
             result = toObjectArray(top3Prices.GetEnumerator());
-            ArrayAssertionUtil.assertEqualsExactOrder(result, new Object[] { beans[3], beans[8], beans[7] });
+            ArrayAssertionUtil.AreEqualExactOrder(result, new Object[] { beans[3], beans[8], beans[7] });
         }
 
         private Object MakeEvent(String symbol, double price)

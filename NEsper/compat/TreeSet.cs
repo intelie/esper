@@ -9,22 +9,25 @@ namespace net.esper.compat
     /// </summary>
     /// <typeparam name="T"></typeparam>
     
-    public class ETreeSet<T> : C5.TreeSet<T>, Set<T>
+    public class TreeSet<T> : Set<T>
 	{
+    	private C5.TreeSet<T> m_store;
+    	
         /// <summary>
-        /// Initializes a new instance of the <see cref="ETreeSet&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="TreeSet&lt;T&gt;"/> class.
         /// </summary>
-        public ETreeSet()
+        public TreeSet()
         {
+        	m_store = new C5.TreeSet<T>() ;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ETreeSet&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="TreeSet&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="comparer">The comparer.</param>
-        public ETreeSet(IComparer<T> comparer)
-            : base(comparer)
+        public TreeSet(IComparer<T> comparer)
         {
+        	m_store = new C5.TreeSet<T>(comparer) ;
         }
 		
 		/// <summary>
@@ -34,7 +37,7 @@ namespace net.esper.compat
 
 		public T First
 		{
-			get { return this.FindMin(); }
+			get { return m_store.FindMin(); }
 		}
 
 		/// <summary>
@@ -43,7 +46,7 @@ namespace net.esper.compat
 
 		public T Last
 		{
-			get { return this.FindMax(); }
+			get { return m_store.FindMax(); }
 		}
 
 		/// <summary>
@@ -53,10 +56,10 @@ namespace net.esper.compat
 		/// <param name="from">Value to index from.</param>
 		/// <returns></returns>
 		
-		public ETreeSet<T> TailSet( T from )
+		public TreeSet<T> TailSet( T from )
 		{
-			ETreeSet<T> sortedSet = new ETreeSet<T>();
-			sortedSet.AddAll<T>( RangeFrom( from ) );
+			TreeSet<T> sortedSet = new TreeSet<T>();
+			sortedSet.AddAll( m_store.RangeFrom( from ) );
 			return sortedSet;
 		}
 
@@ -70,7 +73,7 @@ namespace net.esper.compat
 		
 		public new void Add( T item )
 		{
-			base.Add( item );
+			m_store.Add( item );
 		}
 
 		/// <summary>
@@ -80,7 +83,7 @@ namespace net.esper.compat
 
 		public void AddAll( IEnumerable<T> source )
 		{
-			base.AddAll<T>( source );
+			m_store.AddAll<T>( source );
 		}
 
         /// <summary>
@@ -92,10 +95,63 @@ namespace net.esper.compat
         {
             foreach (T item in items)
             {
-                Remove(item);
+                m_store.Remove(item);
             }
         }
 
 		#endregion
+    	
+		public bool IsEmpty {
+			get {
+				return m_store.IsEmpty;
+			}
+		}
+    	
+		public int Count {
+			get {
+				return m_store.Count;
+			}
+		}
+    	
+		public bool IsReadOnly {
+			get {
+				return m_store.IsReadOnly;
+			}
+		}
+    	
+		public T[] ToArray()
+		{
+			return m_store.ToArray();
+		}
+    	
+		public void Clear()
+		{
+			m_store.Clear();
+		}
+    	
+		public bool Contains(T item)
+		{
+			return m_store.Contains(item);
+		}
+    	
+		public void CopyTo(T[] array, int arrayIndex)
+		{
+			m_store.CopyTo(array, arrayIndex);
+		}
+    	
+		public bool Remove(T item)
+		{
+			return m_store.Remove(item);
+		}
+    	
+		public IEnumerator<T> GetEnumerator()
+		{
+			return m_store.GetEnumerator();
+		}
+    	
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return m_store.GetEnumerator();
+		}
 	}
 }

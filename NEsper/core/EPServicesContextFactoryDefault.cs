@@ -74,7 +74,7 @@ namespace net.esper.core
 	        // We supply this information as setup information to the event adapter service
 	        // to allow discovery of superclasses and interfaces during event type construction for bean events,
 	        // such that superclasses and interfaces can use the legacy type definitions.
-	        EDictionary<String, ConfigurationEventTypeLegacy> classLegacyInfo = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
+	        EDictionary<String, ConfigurationEventTypeLegacy> classLegacyInfo = new HashDictionary<String, ConfigurationEventTypeLegacy>();
 	        foreach (KeyValuePair<String, String> entry in configSnapshot.TypeAliases)
 	        {
 	            String aliasName = entry.Key;
@@ -187,7 +187,7 @@ namespace net.esper.core
 
 	    private static EDictionary<String, Type> CreatePropertyTypes(Properties properties)
 	    {
-	        EDictionary<string, Type> propertyTypes = new EHashDictionary<string, Type>();
+	        EDictionary<string, Type> propertyTypes = new HashDictionary<string, Type>();
 	        foreach (string property in properties.Keys)
 	        {
 	            string typeName = properties.Fetch(property);

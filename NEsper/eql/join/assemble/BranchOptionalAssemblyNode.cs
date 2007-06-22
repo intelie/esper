@@ -64,7 +64,7 @@ namespace net.esper.eql.join.assemble
 
                 if (singleResultNode == null)
                 {
-                    completedEvents = new EHashSet<EventBean>();
+                    completedEvents = new HashSet<EventBean>();
                 }
             }
         }

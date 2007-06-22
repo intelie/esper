@@ -12,7 +12,7 @@ namespace net.esper.util
     {
         /// <summary>
         /// Returns the boxed class for the given class, or the class itself if already boxed or not a primitive type.
-        /// For primitive unboxed types returns the boxed types, e.g. returns java.lang.Integer for passing typeof(int).
+        /// For primitive unboxed types returns the boxed types, e.g. returns typeof(int?) for passing typeof(int).
         /// For any other class, returns the class passed.
         /// </summary>
         /// <param name="type">is the type to return the boxed type for</param>

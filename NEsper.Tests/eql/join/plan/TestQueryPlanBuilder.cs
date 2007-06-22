@@ -1,44 +1,63 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
-using net.esper.compat;
-using net.esper.eql.spec;
-using net.esper.support.eql;
-using net.esper.type;
-
-using NUnit.Core;
 using NUnit.Framework;
+
+using net.esper.eql.spec;
+using net.esper.events;
+using net.esper.support.bean;
+using net.esper.support.eql;
+using net.esper.support.events;
+using net.esper.type;
 
 namespace net.esper.eql.join.plan
 {
-
 	[TestFixture]
-    public class TestQueryPlanBuilder 
-    {
-        [Test]
-        public virtual void testGetPlan()
-        {
-            IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
-            OuterJoinDesc joinDesc = SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT);
-            descList.Add(joinDesc);
+	public class TestQueryPlanBuilder
+	{
+	    private EventType[] typesPerStream;
 
-            QueryPlan plan = QueryPlanBuilder.GetPlan(2, new List<OuterJoinDesc>(), null, null);
-            assertPlan(plan);
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        typesPerStream = new EventType[] {
+	                SupportEventAdapterService.GetService().AddBeanType(typeof(SupportBean_S0).FullName, typeof(SupportBean_S0)),
+	                SupportEventAdapterService.GetService().AddBeanType(typeof(SupportBean_S1).FullName, typeof(SupportBean_S1))
+	        };
+	    }
 
-            plan = QueryPlanBuilder.GetPlan(2, descList, null, null);
-            assertPlan(plan);
+	    [Test]
+	    public void TestGetPlan()
+	    {
+	        IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
+	        OuterJoinDesc joinDesc = SupportOuterJoinDescFactory.MakeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT);
+	        descList.Add(joinDesc);
 
-            plan = QueryPlanBuilder.GetPlan(2, descList, SupportExprNodeFactory.makeEqualsNode(), null);
-            assertPlan(plan);
+	        QueryPlan plan = QueryPlanBuilder.GetPlan(typesPerStream, new List<OuterJoinDesc>(), null, null);
+	        AssertPlan(plan);
 
-            plan = QueryPlanBuilder.GetPlan(2, new List<OuterJoinDesc>(), SupportExprNodeFactory.makeEqualsNode(), null);
-            assertPlan(plan);
-        }
+	        plan = QueryPlanBuilder.GetPlan(typesPerStream, descList, null, null);
+	        AssertPlan(plan);
 
-        private void assertPlan(QueryPlan plan)
-        {
-            Assert.AreEqual(2, plan.ExecNodeSpecs.Length);
-            Assert.AreEqual(2, plan.ExecNodeSpecs.Length);
-        }
-    }
-}
+	        plan = QueryPlanBuilder.GetPlan(typesPerStream, descList, SupportExprNodeFactory.MakeEqualsNode(), null);
+	        AssertPlan(plan);
+
+	        plan = QueryPlanBuilder.GetPlan(typesPerStream, new List<OuterJoinDesc>(), SupportExprNodeFactory.MakeEqualsNode(), null);
+	        AssertPlan(plan);
+	    }
+
+	    private static void AssertPlan(QueryPlan plan)
+	    {
+	        Assert.AreEqual(2, plan.ExecNodeSpecs.Length);
+	        Assert.AreEqual(2, plan.ExecNodeSpecs.Length);
+	    }
+	}
+} // End of namespace

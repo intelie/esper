@@ -43,11 +43,11 @@ namespace net.esper.eql.core
 			service.ApplyEnter(new EventBean[1], groupTwoKey);
 			
 			service.CurrentRow = groupOneKey;
-            Assert.AreEqual(10, service.GetValue(0));
-            Assert.AreEqual(4, service.GetValue(1));
+            Assert.AreEqual(10, service.Value(0));
+            Assert.AreEqual(4, service.Value(1));
 			service.CurrentRow = groupTwoKey;
-            Assert.AreEqual(5, service.GetValue(0));
-            Assert.AreEqual(2, service.GetValue(1));
+            Assert.AreEqual(5, service.Value(0));
+            Assert.AreEqual(2, service.Value(1));
 			
 			service.ApplyLeave(new EventBean[1], groupTwoKey);
 			service.ApplyLeave(new EventBean[1], groupTwoKey);
@@ -55,11 +55,11 @@ namespace net.esper.eql.core
 			service.ApplyLeave(new EventBean[1], groupOneKey);
 			
 			service.CurrentRow = groupOneKey;
-            Assert.AreEqual(10 - 5, service.GetValue(0));
-            Assert.AreEqual(4 - 2, service.GetValue(1));
+            Assert.AreEqual(10 - 5, service.Value(0));
+            Assert.AreEqual(4 - 2, service.Value(1));
 			service.CurrentRow = groupTwoKey;
-            Assert.AreEqual(5 - 15, service.GetValue(0));
-            Assert.AreEqual(2 - 6, service.GetValue(1));
+            Assert.AreEqual(5 - 15, service.Value(0));
+            Assert.AreEqual(2 - 6, service.Value(1));
 		}
 	}
 }

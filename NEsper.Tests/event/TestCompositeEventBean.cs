@@ -17,15 +17,15 @@ namespace net.esper.events
         [Test]
         public virtual void testGet()
         {
-            Assert.AreEqual(_event, eventBeanComplete["a"]);
-            Assert.AreEqual(1, eventBeanComplete["a.intPrimitive"]);
-            Assert.AreEqual("nestedValue", eventBeanComplete["b.nested.nestedValue"]);
+            Assert.AreEqual(_event, _eventBeanComplete["a"]);
+            Assert.AreEqual(1, _eventBeanComplete["a.intPrimitive"]);
+            Assert.AreEqual("nestedValue", _eventBeanComplete["b.nested.nestedValue"]);
 
-            Assert.AreEqual(_event, eventBeanInComplete["a"]);
-            Assert.AreEqual(1, eventBeanInComplete["a.intPrimitive"]);
-            Assert.AreEqual(null, eventBeanInComplete["b.nested.nestedValue"]);
-            Assert.AreEqual(null, eventBeanInComplete["b.nested"]);
-            Assert.AreEqual(null, eventBeanInComplete["b"]);
+            Assert.AreEqual(_event, _eventBeanInComplete["a"]);
+            Assert.AreEqual(1, _eventBeanInComplete["a.intPrimitive"]);
+            Assert.AreEqual(null, _eventBeanInComplete["b.nested.nestedValue"]);
+            Assert.AreEqual(null, _eventBeanInComplete["b.nested"]);
+            Assert.AreEqual(null, _eventBeanInComplete["b"]);
         }
     }
 }

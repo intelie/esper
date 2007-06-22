@@ -16,7 +16,7 @@ namespace net.esper.eql.expression
 		[SetUp]
 		public virtual void  setUp()
 		{
-			exprNode = SupportExprNodeFactory.makeMathNode();
+			exprNode = SupportExprNodeFactory.MakeMathNode();
 		}
 		
 		[Test]
@@ -33,7 +33,7 @@ namespace net.esper.eql.expression
 			Assert.AreEqual("intPrimitive", (Object) visitor.ExprProperties[1].Second);
 			
 			// test with aggregation nodes, such as "intBoxed * sum(intPrimitive)"
-			exprNode = SupportExprNodeFactory.makeSumAndFactorNode();
+			exprNode = SupportExprNodeFactory.MakeSumAndFactorNode();
 			visitor = new ExprNodeIdentifierVisitor(true);
 			exprNode.Accept(visitor);
 			Assert.AreEqual(2, visitor.ExprProperties.Count);

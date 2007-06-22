@@ -24,7 +24,7 @@ namespace net.esper.eql.join.plan
         public OuterInnerDirectionalGraph(int numStreams)
         {
             this.numStreams = numStreams;
-            this.streamToInnerMap = new EHashDictionary<int, Set<int>>();
+            this.streamToInnerMap = new HashDictionary<int, Set<int>>();
         }
 
         /// <summary> Add an outer-to-inner join stream relationship.</summary>
@@ -42,7 +42,7 @@ namespace net.esper.eql.join.plan
             Set<int> innerSet = streamToInnerMap.Fetch( outerStream, null ) ;
             if ( innerSet == null )
             {
-                innerSet = new EHashSet<int>();
+                innerSet = new HashSet<int>();
                 streamToInnerMap[outerStream] = innerSet;
             }
 
@@ -78,7 +78,7 @@ namespace net.esper.eql.join.plan
         {
             CheckArgs(innerStream);
 
-            Set<int> result = new EHashSet<int>();
+            Set<int> result = new HashSet<int>();
             foreach( KeyValuePair<int, Set<int>> keyValuePair in streamToInnerMap )
             {
                 int key = keyValuePair.Key;

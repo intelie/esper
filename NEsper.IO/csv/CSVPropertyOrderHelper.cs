@@ -25,13 +25,13 @@ namespace net.esper.adapter.csv
 
         public static String[] ResolvePropertyOrder(String[] firstRow, IDictionary<String, Type> propertyTypes)
         {
-            log.debug(".ResolvePropertyOrder firstRow==" + Arrays.asList(firstRow));
+            log.Debug(".ResolvePropertyOrder firstRow==" + CollectionHelper.Render(firstRow));
             String[] result = null;
 
-            if (isValidTitleRow(firstRow, propertyTypes))
+            if (IsValidTitleRow(firstRow, propertyTypes))
             {
                 result = firstRow;
-                log.debug(".ResolvePropertyOrder using valid title row, propertyOrder==" + Arrays.asList(result));
+                log.Debug(".ResolvePropertyOrder using valid title row, propertyOrder==" + CollectionHelper.Render(result));
             }
             else
             {
@@ -49,19 +49,19 @@ namespace net.esper.adapter.csv
             }
             else
             {
-                return IsValidRowLength(row, propertyTypes) && eachPropertyNameRepresented(row, propertyTypes);
+                return IsValidRowLength(row, propertyTypes) && EachPropertyNameRepresented(row, propertyTypes);
             }
         }
 
         private static bool EachPropertyNameRepresented(String[] row, IDictionary<String, Type> propertyTypes)
         {
-            ISet<String> rowSet = new HashSet<String>(Arrays.asList(row));
-            return rowSet.ContainsAll(propertyTypes.Keys);
+            Set<String> rowSet = new HashSet<String>(row);
+            return CollectionHelper.ContainsAll(rowSet, propertyTypes.Keys);
         }
 
         private static bool IsValidRowLength(String[] row, IDictionary<String, Type> propertyTypes)
         {
-            log.debug(".IsValidRowLength");
+            log.Debug(".IsValidRowLength");
             if (row == null)
             {
                 return false;

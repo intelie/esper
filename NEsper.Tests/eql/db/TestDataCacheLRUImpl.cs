@@ -27,31 +27,31 @@ namespace net.esper.eql.db
         [Test]
         public virtual void testGet()
         {
-            Assert.IsNull(cache.GetCached(make("a")));
+            Assert.IsNull(cache.GetCached(Make("a")));
 
-            cache.PutCached(make("a"), lists[0]); // a
-            Assert.AreSame(lists[0], cache.GetCached(make("a")));
+            cache.PutCached(Make("a"), lists[0]); // a
+            Assert.AreSame(lists[0], cache.GetCached(Make("a")));
 
-            cache.PutCached(make("b"), lists[1]); // b, a
-            Assert.AreSame(lists[1], cache.GetCached(make("b"))); // b, a
+            cache.PutCached(Make("b"), lists[1]); // b, a
+            Assert.AreSame(lists[1], cache.GetCached(Make("b"))); // b, a
 
-            Assert.AreSame(lists[0], cache.GetCached(make("a"))); // a, b
+            Assert.AreSame(lists[0], cache.GetCached(Make("a"))); // a, b
 
-            cache.PutCached(make("c"), lists[2]); // c, a, b
-            cache.PutCached(make("d"), lists[3]); // d, c, a  (b gone)
+            cache.PutCached(Make("c"), lists[2]); // c, a, b
+            cache.PutCached(Make("d"), lists[3]); // d, c, a  (b gone)
 
-            Assert.IsNull(cache.GetCached(make("b")));
+            Assert.IsNull(cache.GetCached(Make("b")));
 
-            Assert.AreEqual(lists[2], cache.GetCached(make("c"))); // c, d, a
-            Assert.AreEqual(lists[0], cache.GetCached(make("a"))); // a, c, d
+            Assert.AreEqual(lists[2], cache.GetCached(Make("c"))); // c, d, a
+            Assert.AreEqual(lists[0], cache.GetCached(Make("a"))); // a, c, d
 
-            cache.PutCached(make("e"), lists[4]); // e, a, c (d and b gone)
+            cache.PutCached(Make("e"), lists[4]); // e, a, c (d and b gone)
 
-            Assert.IsNull(cache.GetCached(make("d")));
-            Assert.IsNull(cache.GetCached(make("b")));
+            Assert.IsNull(cache.GetCached(Make("d")));
+            Assert.IsNull(cache.GetCached(Make("b")));
         }
 
-        private Object[] make(String key)
+        private Object[] Make(String key)
         {
             return new Object[] { key };
         }

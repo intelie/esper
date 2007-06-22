@@ -1,4 +1,15 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
+using System.Collections.Generic;
+
+using NUnit.Framework;
 
 using net.esper.client;
 using net.esper.compat;
@@ -6,286 +17,275 @@ using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.util;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 using org.apache.commons.logging;
 
 namespace net.esper.regression.view
 {
-    [TestFixture]
-    public class TestPerRowFunc
-    {
-        private EPServiceProvider epService;
-        private SupportUpdateListener testListener;
-        private EPStatement selectTestView;
+	[TestFixture]
+	public class TestPerRowFunc
+	{
+	    private EPServiceProvider epService;
+	    private SupportUpdateListener testListener;
+	    private EPStatement selectTestView;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            testListener = new SupportUpdateListener();
-            epService = EPServiceProviderManager.GetDefaultProvider();
-            epService.Initialize();
-        }
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        testListener = new SupportUpdateListener();
+	        epService = EPServiceProviderManager.GetDefaultProvider();
+	        epService.Initialize();
+	    }
 
-        [Test]
-        public virtual void testCoalesceBeans()
-        {
-            epService.Initialize();
-            String viewExpr =
-		         "select coalesce(a.str, b.str) as myString, coalesce(a, b) as myBean" +
-		         " from pattern [every (a=" + typeof(SupportBean).FullName +
-		         "(string='s0') or b=" + typeof(SupportBean).FullName +
-		         "(string='s1'))]";
-            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+	    [Test]
+	    public void TestCoalesceBeans()
+	    {
+	        TryCoalesceBeans("select Coalesce(a.string, b.string) as myString, Coalesce(a, b) as myBean" +
+	                          " from pattern [every (a=" + typeof(SupportBean).FullName + "(string='s0') or b=" + typeof(SupportBean).FullName + "(string='s1'))]");
 
-            SupportBean _event = SendEvent("s0");
-            EventBean eventReceived = testListener.assertOneGetNewAndReset();
-            Assert.AreEqual("s0", eventReceived["myString"]);
-            Assert.AreSame(_event, eventReceived["myBean"]);
+	        TryCoalesceBeans("SELECT COALESCE(a.string, b.string) AS myString, COALESCE(a, b) AS myBean" +
+	                          " FROM PATTERN [EVERY (a=" + typeof(SupportBean).FullName + "(string='s0') OR b=" + typeof(SupportBean).FullName + "(string='s1'))]");
+	    }
 
-            _event = SendEvent("s1");
-            eventReceived = testListener.assertOneGetNewAndReset();
-            Assert.AreEqual("s1", eventReceived["myString"]);
-            Assert.AreSame(_event, eventReceived["myBean"]);
-        }
+	    private void TryCoalesceBeans(String viewExpr)
+	    {
+	        epService.Initialize();
+	        selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+	        selectTestView.AddListener(testListener);
 
-        [Test]
-        public virtual void testCoalesceLong()
-        {
-            setupCoalesce("coalesce(longBoxed, intBoxed, shortBoxed)");
-            Assert.AreEqual(typeof(long?), selectTestView.EventType.GetPropertyType("result"));
+	        SupportBean _event = SendEvent("s0");
+	        EventBean eventReceived = testListener.AssertOneGetNewAndReset();
+	        Assert.AreEqual("s0", eventReceived["myString"]);
+	        Assert.AreSame(_event, eventReceived["myBean"]);
 
-            SendEvent(1L, 2, (short)3);
-            Assert.AreEqual(1L, testListener.assertOneGetNewAndReset()["result"]);
+	        _event = SendEvent("s1");
+	        eventReceived = testListener.AssertOneGetNewAndReset();
+	        Assert.AreEqual("s1", eventReceived["myString"]);
+	        Assert.AreSame(_event, eventReceived["myBean"]);
+	    }
 
-            sendBoxedEvent(null, 2, null);
-            Assert.AreEqual(2L, testListener.assertOneGetNewAndReset()["result"]);
+	    [Test]
+	    public void TestCoalesceLong()
+	    {
+	        SetupCoalesce("coalesce(longBoxed, intBoxed, shortBoxed)");
+	        Assert.AreEqual(typeof(long?), selectTestView.EventType.GetPropertyType("result"));
 
-            sendBoxedEvent(null, null, Int16.Parse("3"));
-            Assert.AreEqual(3L, testListener.assertOneGetNewAndReset()["result"]);
+	        SendEvent(1L, 2, (short) 3);
+	        Assert.AreEqual(1L, testListener.AssertOneGetNewAndReset()["result"]);
 
-            sendBoxedEvent(null, null, null);
-            Assert.AreEqual(null, testListener.assertOneGetNewAndReset()["result"]);
-        }
+	        SendBoxedEvent(null, 2, null);
+	        Assert.AreEqual(2L, testListener.AssertOneGetNewAndReset()["result"]);
 
-        [Test]
-        public virtual void testCoalesceDouble()
-        {
-            setupCoalesce("coalesce(null, byteBoxed, shortBoxed, intBoxed, longBoxed, floatBoxed, doubleBoxed)");
-            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("result"));
+	        SendBoxedEvent(null, null, Int16.Parse("3"));
+	        Assert.AreEqual(3L, testListener.AssertOneGetNewAndReset()["result"]);
 
-            sendEventWithDouble(null, null, null, null, null, null);
-            Assert.AreEqual(null, testListener.assertOneGetNewAndReset()["result"]);
+	        SendBoxedEvent(null, null, null);
+	        Assert.AreEqual(null, testListener.AssertOneGetNewAndReset()["result"]);
+	    }
 
-            sendEventWithDouble(null, Int16.Parse("2"), null, null, null, 1d);
-            Assert.AreEqual(2d, testListener.assertOneGetNewAndReset()["result"]);
+	    [Test]
+	    public void TestCoalesceDouble()
+	    {
+	        SetupCoalesce("coalesce(null, byteBoxed, shortBoxed, intBoxed, longBoxed, floatBoxed, doubleBoxed)");
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("result"));
 
-            sendEventWithDouble(null, null, null, null, null, 100d);
-            Assert.AreEqual(100d, testListener.assertOneGetNewAndReset()["result"]);
+	        SendEventWithDouble(null, null, null, null, null, null);
+	        Assert.AreEqual(null, testListener.AssertOneGetNewAndReset()["result"]);
 
-            sendEventWithDouble(null, null, null, null, 10f, 100d);
-            Assert.AreEqual(10d, testListener.assertOneGetNewAndReset()["result"]);
+	        SendEventWithDouble(null, Int16.Parse("2"), null, null, null, 1d);
+	        Assert.AreEqual(2d, testListener.AssertOneGetNewAndReset()["result"]);
 
-            sendEventWithDouble(null, null, 1, 5L, 10f, 100d);
-            Assert.AreEqual(1d, testListener.assertOneGetNewAndReset()["result"]);
+	        SendEventWithDouble(null, null, null, null, null, 100d);
+	        Assert.AreEqual(100d, testListener.AssertOneGetNewAndReset()["result"]);
 
-            sendEventWithDouble((sbyte)SByte.Parse("3"), null, null, null, null, null);
-            Assert.AreEqual(3d, testListener.assertOneGetNewAndReset()["result"]);
+	        SendEventWithDouble(null, null, null, null, 10f, 100d);
+	        Assert.AreEqual(10d, testListener.AssertOneGetNewAndReset()["result"]);
 
-            sendEventWithDouble(null, null, null, 5L, 10f, 100d);
-            Assert.AreEqual(5d, testListener.assertOneGetNewAndReset()["result"]);
-        }
+	        SendEventWithDouble(null, null, 1, 5l, 10f, 100d);
+	        Assert.AreEqual(1d, testListener.AssertOneGetNewAndReset()["result"]);
 
-        private void setupCoalesce(String coalesceExpr)
-        {
-            epService.Initialize();
-            String viewExpr = "select " + coalesceExpr + " as result" + " from " + typeof(SupportBean).FullName + ".win:length(1000) ";
-            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
-        }
+	        SendEventWithDouble(SByte.Parse("3"), null, null, null, null, null);
+	        Assert.AreEqual(3d, testListener.AssertOneGetNewAndReset()["result"]);
 
-        [Test]
-        public virtual void testCoalesceInvalid()
-        {
-            String viewExpr =
-                "select coalesce(null, null) as result" +
-                " from " + typeof(SupportBean).FullName + ".win:length(3) ";
-            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            Assert.AreEqual(null, selectTestView.EventType.GetPropertyType("result"));
+	        SendEventWithDouble(null, null, null, 5l, 10f, 100d);
+	        Assert.AreEqual(5d, testListener.AssertOneGetNewAndReset()["result"]);
+	    }
 
-            tryCoalesceInvalid("coalesce(intPrimitive)");
-            tryCoalesceInvalid("coalesce(intPrimitive, str)");
-            tryCoalesceInvalid("coalesce(intPrimitive, xxx)");
-            tryCoalesceInvalid("coalesce(intPrimitive, boolBoxed)");
-            tryCoalesceInvalid("coalesce(charPrimitive, longBoxed)");
-            tryCoalesceInvalid("coalesce(charPrimitive, str, str)");
-            tryCoalesceInvalid("coalesce(str, longBoxed)");
-            tryCoalesceInvalid("coalesce(null, longBoxed, string)");
-            tryCoalesceInvalid("coalesce(null, null, boolBoxed, 1l)");
-        }
+	    private void SetupCoalesce(String coalesceExpr)
+	    {
+	        epService.Initialize();
+	        String viewExpr = "select " + coalesceExpr + " as result" +
+	                          " from " + typeof(SupportBean).FullName + ".win:length(1000) ";
+	        selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+	        selectTestView.AddListener(testListener);
+	    }
 
-        private void tryCoalesceInvalid(String coalesceExpr)
-        {
-            String viewExpr = "select " + coalesceExpr + " as result" + " from " + typeof(SupportBean).FullName + ".win:length(3) ";
+	    [Test]
+	    public void TestCoalesceInvalid()
+	    {
+	        String viewExpr = "select Coalesce(null, null) as result" +
+	                          " from " + typeof(SupportBean).FullName + ".win:length(3) ";
+	        selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+	        Assert.AreEqual(null, selectTestView.EventType.GetPropertyType("result"));
 
-            try
-            {
-                selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            }
-            catch (EPStatementException ex)
-            {
-                // expected
-            }
-        }
+	        TryCoalesceInvalid("coalesce(intPrimitive)");
+	        TryCoalesceInvalid("coalesce(intPrimitive, string)");
+	        TryCoalesceInvalid("coalesce(intPrimitive, xxx)");
+	        TryCoalesceInvalid("coalesce(intPrimitive, boolBoxed)");
+	        TryCoalesceInvalid("coalesce(charPrimitive, longBoxed)");
+	        TryCoalesceInvalid("coalesce(charPrimitive, string, string)");
+	        TryCoalesceInvalid("coalesce(string, longBoxed)");
+	        TryCoalesceInvalid("coalesce(null, longBoxed, string)");
+	        TryCoalesceInvalid("coalesce(null, null, boolBoxed, 1l)");
+	    }
 
-        [Test]
-        public virtual void testMinMaxEventType()
-        {
-            setUpMinMax();
-            EventType type = selectTestView.EventType;
-            log.Debug(".testGetEventType properties=" + CollectionHelper.Render(type.PropertyNames));
-            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMax"));
-            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMin"));
-            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMinEx"));
-            Assert.AreEqual(typeof(long?), type.GetPropertyType("myMaxEx"));
-        }
+	    private void TryCoalesceInvalid(String coalesceExpr)
+	    {
+	        String viewExpr = "select " + coalesceExpr + " as result" +
+	                          " from " + typeof(SupportBean).FullName + ".win:length(3) ";
 
-        [Test]
-        public virtual void testMinMaxWindowStats()
-        {
-            setUpMinMax();
-            testListener.reset();
+	        try {
+	            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+	        }
+	        catch (EPStatementException ex)
+	        {
+	            // expected
+	        }
+	    }
 
-            SendEvent(10, 20, (short)4);
-            EventBean received = testListener.getAndResetLastNewData()[0];
-            Assert.AreEqual(20L, received["myMax"]);
-            Assert.AreEqual(10L, received["myMin"]);
-            Assert.AreEqual(4L, received["myMinEx"]);
-            Assert.AreEqual(20L, received["myMaxEx"]);
+	    [Test]
+	    public void TestMinMaxEventType()
+	    {
+	        SetUpMinMax();
+	        EventType type = selectTestView.EventType;
+	        log.Debug(".testGetEventType properties=" + CollectionHelper.Render(type.PropertyNames));
+	        Assert.AreEqual(typeof(long?), type.GetPropertyType("myMax"));
+	        Assert.AreEqual(typeof(long?), type.GetPropertyType("myMin"));
+	        Assert.AreEqual(typeof(long?), type.GetPropertyType("myMinEx"));
+	        Assert.AreEqual(typeof(long?), type.GetPropertyType("myMaxEx"));
+	    }
 
-            SendEvent(-10, -20, (short)(-30));
-            received = testListener.getAndResetLastNewData()[0];
-            Assert.AreEqual(-10L, received["myMax"]);
-            Assert.AreEqual(-20L, received["myMin"]);
-            Assert.AreEqual(-30L, received["myMinEx"]);
-            Assert.AreEqual(-10L, received["myMaxEx"]);
-        }
+	    [Test]
+	    public void TestMinMaxWindowStats()
+	    {
+	        SetUpMinMax();
+	        testListener.Reset();
 
-        [Test]
-        public virtual void testOperators()
-        {
-            String viewExpr =
-                "select longBoxed % intBoxed as myMod " + 
-                " from " + typeof(SupportBean).FullName + ".win:length(3) where not(longBoxed > intBoxed)";
-            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+	        SendEvent(10, 20, (short)4);
+	        EventBean received = testListener.GetAndResetLastNewData()[0];
+	        Assert.AreEqual(20L, received["myMax"]);
+	        Assert.AreEqual(10L, received["myMin"]);
+	        Assert.AreEqual(4L, received["myMinEx"]);
+	        Assert.AreEqual(20L, received["myMaxEx"]);
 
-            SendEvent(1, 1, (short)0);
-            Assert.AreEqual(0L, testListener.LastNewData[0]["myMod"]);
-            testListener.reset();
+	        SendEvent(-10, -20, (short)-30);
+	        received = testListener.GetAndResetLastNewData()[0];
+	        Assert.AreEqual(-10L, received["myMax"]);
+	        Assert.AreEqual(-20L, received["myMin"]);
+	        Assert.AreEqual(-30L, received["myMinEx"]);
+	        Assert.AreEqual(-10L, received["myMaxEx"]);
+	    }
 
-            SendEvent(2, 1, (short)0);
-            Assert.IsFalse(testListener.getAndClearIsInvoked());
+	    [Test]
+	    public void TestOperators()
+	    {
+	        String viewExpr = "select longBoxed % intBoxed as myMod " +
+	                          " from " + typeof(SupportBean).FullName + ".win:length(3) where Not(longBoxed > intBoxed)";
+	        selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+	        selectTestView.AddListener(testListener);
 
-            SendEvent(2, 3, (short)0);
-            Assert.AreEqual(2L, testListener.LastNewData[0]["myMod"]);
-            testListener.reset();
-        }
+	        SendEvent(1, 1, (short)0);
+	        Assert.AreEqual(0l, testListener.LastNewData[0]["myMod"]);
+	        testListener.Reset();
 
-        [Test]
-        public virtual void testConcat()
-        {
-            String viewExpr =
-                "select p00 || p01 as c1, p00 || p01 || p02 as c2, p00 || '|' || p01 as c3" + 
-                " from " + typeof(SupportBean_S0).FullName + ".win:length(10)";
-            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+	        SendEvent(2, 1, (short)0);
+	        Assert.IsFalse(testListener.GetAndClearIsInvoked());
 
-            epService.EPRuntime.SendEvent(new SupportBean_S0(1, "a", "b", "c"));
-            assertConcat("ab", "abc", "a|b");
+	        SendEvent(2, 3, (short)0);
+	        Assert.AreEqual(2l, testListener.LastNewData[0]["myMod"]);
+	        testListener.Reset();
+	    }
 
-            epService.EPRuntime.SendEvent(new SupportBean_S0(1, null, "b", "c"));
-            assertConcat(null, null, null);
+	    [Test]
+	    public void TestConcat()
+	    {
+	        String viewExpr = "select p00 || p01 as c1, p00 || p01 || p02 as c2, p00 || '|' || p01 as c3" +
+	                          " from " + typeof(SupportBean_S0).FullName + ".win:length(10)";
+	        selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+	        selectTestView.AddListener(testListener);
 
-            epService.EPRuntime.SendEvent(new SupportBean_S0(1, "", "b", "c"));
-            assertConcat("b", "bc", "|b");
+	        epService.EPRuntime.SendEvent(new SupportBean_S0(1, "a", "b", "c"));
+	        AssertConcat("ab", "abc", "a|b");
 
-            epService.EPRuntime.SendEvent(new SupportBean_S0(1, "123", null, "c"));
-            assertConcat(null, null, null);
+	        epService.EPRuntime.SendEvent(new SupportBean_S0(1, null, "b", "c"));
+	        AssertConcat(null, null, null);
 
-            epService.EPRuntime.SendEvent(new SupportBean_S0(1, "123", "456", "c"));
-            assertConcat("123456", "123456c", "123|456");
+	        epService.EPRuntime.SendEvent(new SupportBean_S0(1, "", "b", "c"));
+	        AssertConcat("b", "bc", "|b");
 
-            epService.EPRuntime.SendEvent(new SupportBean_S0(1, "123", "456", null));
-            assertConcat("123456", null, "123|456");
-        }
+	        epService.EPRuntime.SendEvent(new SupportBean_S0(1, "123", null, "c"));
+	        AssertConcat(null, null, null);
 
-        private void setUpMinMax()
-        {
-            String viewExpr = 
-                "select max(longBoxed, intBoxed) as myMax, " +
-                "max(longBoxed, intBoxed, shortBoxed) as myMaxEx," +
-                "min(longBoxed, intBoxed) as myMin," +
-                "min(longBoxed, intBoxed, shortBoxed) as myMinEx" + 
-                " from " + typeof(SupportBean).FullName + ".win:length(3) ";
-            selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
-        }
+	        epService.EPRuntime.SendEvent(new SupportBean_S0(1, "123", "456", "c"));
+	        AssertConcat("123456", "123456c", "123|456");
 
-        private SupportBean SendEvent(String stringValue)
-        {
-            SupportBean bean = new SupportBean();
-            bean.str = stringValue;
-            epService.EPRuntime.SendEvent(bean);
-            return bean;
-        }
+	        epService.EPRuntime.SendEvent(new SupportBean_S0(1, "123", "456", null));
+	        AssertConcat("123456", null, "123|456");
+	    }
 
-        private void SendEvent(long longBoxed, int intBoxed, short shortBoxed)
-        {
-            sendBoxedEvent(longBoxed, intBoxed, shortBoxed);
-        }
+	    private void SetUpMinMax()
+	    {
+	        String viewExpr = "select Max(longBoxed, intBoxed) as myMax, " +
+	                                 "max(longBoxed, intBoxed, shortBoxed) as myMaxEx," +
+	                                 "min(longBoxed, intBoxed) as myMin," +
+	                                 "min(longBoxed, intBoxed, shortBoxed) as myMinEx" +
+	                          " from " + typeof(SupportBean).FullName + ".win:length(3) ";
+	        selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
+	        selectTestView.AddListener(testListener);
+	    }
 
-        private void sendBoxedEvent(
-            long? longBoxed,
-            int? intBoxed,
-            short? shortBoxed)
-        {
-            SupportBean bean = new SupportBean();
-            bean.longBoxed = longBoxed;
-            bean.intBoxed = intBoxed;
-            bean.shortBoxed = shortBoxed;
-            epService.EPRuntime.SendEvent(bean);
-        }
+	    private SupportBean SendEvent(String _string)
+	    {
+	        SupportBean bean = new SupportBean();
+            bean.SetString(_string);
+	        epService.EPRuntime.SendEvent(bean);
+	        return bean;
+	    }
 
-        private void sendEventWithDouble(
-            sbyte? byteBoxed,
-            short? shortBoxed,
-            int? intBoxed,
-            long? longBoxed, 
-            Single? floatBoxed, 
-            Double? doubleBoxed)
-        {
-            SupportBean bean = new SupportBean();
-            bean.byteBoxed = byteBoxed;
-            bean.shortBoxed = shortBoxed;
-            bean.intBoxed = intBoxed;
-            bean.longBoxed = longBoxed;
-            bean.floatBoxed = floatBoxed;
-            bean.doubleBoxed = doubleBoxed;
-            epService.EPRuntime.SendEvent(bean);
-        }
+	    private void SendEvent(long longBoxed, int intBoxed, short shortBoxed)
+	    {
+	        SendBoxedEvent(longBoxed, intBoxed, shortBoxed);
+	    }
 
-        private void assertConcat(String c1, String c2, String c3)
-        {
-            EventBean _event = testListener.LastNewData[0];
-            Assert.AreEqual(c1, _event["c1"]);
-            Assert.AreEqual(c2, _event["c2"]);
-            Assert.AreEqual(c3, _event["c3"]);
-            testListener.reset();
-        }
+	    private void SendBoxedEvent(long? longBoxed, int? intBoxed, short? shortBoxed)
+	    {
+	        SupportBean bean = new SupportBean();
+	        bean.SetLongBoxed(longBoxed);
+	        bean.SetIntBoxed(intBoxed);
+	        bean.SetShortBoxed(shortBoxed);
+	        epService.EPRuntime.SendEvent(bean);
+	    }
 
-        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    }
-}
+        private void SendEventWithDouble(sbyte? byteBoxed, short? shortBoxed, int? intBoxed, long? longBoxed, float? floatBoxed, double? doubleBoxed)
+	    {
+	        SupportBean bean = new SupportBean();
+	        bean.SetByteBoxed(byteBoxed);
+	        bean.SetShortBoxed(shortBoxed);
+	        bean.SetIntBoxed(intBoxed);
+	        bean.SetLongBoxed(longBoxed);
+	        bean.SetFloatBoxed(floatBoxed);
+	        bean.SetDoubleBoxed(doubleBoxed);
+	        epService.EPRuntime.SendEvent(bean);
+	    }
+
+	    private void AssertConcat(String c1, String c2, String c3)
+	    {
+	        EventBean _event = testListener.LastNewData[0];
+	        Assert.AreEqual(c1, _event["c1"]);
+	        Assert.AreEqual(c2, _event["c2"]);
+	        Assert.AreEqual(c3, _event["c3"]);
+	        testListener.Reset();
+	    }
+
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	}
+} // End of namespace

@@ -32,7 +32,7 @@ namespace net.esper.regression.eql
 			log.Info(".setUp statement=" + joinStatement);
 			
 			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 			
 			long[] volumesOne = new long[]{10, 20, 20, 40, 50};
 			long[] volumesTwo = new long[]{10, 20, 30, 40, 50};
@@ -50,16 +50,16 @@ namespace net.esper.regression.eql
 			SendEvent(setOne[0]);
 			SendEvent(setTwo[0]);
 			Assert.IsNotNull(updateListener.LastNewData);
-			updateListener.reset();
+			updateListener.Reset();
 			
 			joinView.Stop();
 			SendEvent(setOne[1]);
 			SendEvent(setTwo[1]);
-			Assert.IsFalse(updateListener.Invoked);
+			Assert.IsFalse(updateListener.IsInvoked);
 			
 			joinView.Start();
 			SendEvent(setOne[2]);
-			Assert.IsFalse(updateListener.Invoked);
+			Assert.IsFalse(updateListener.IsInvoked);
 			
 			joinView.Stop();
 			SendEvent(setOne[3]);
@@ -68,7 +68,7 @@ namespace net.esper.regression.eql
 			
 			joinView.Start();
 			SendEvent(setTwo[4]);
-			Assert.IsFalse(updateListener.Invoked);
+			Assert.IsFalse(updateListener.IsInvoked);
 		}
 		
 		private void  SendEvent(Object _event)

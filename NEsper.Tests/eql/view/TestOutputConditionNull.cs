@@ -32,13 +32,13 @@ namespace net.esper.eql.view
 		{
 			// the callback should be made regardles of the update
             condition.UpdateOutputCondition(1, 1);
-			Assert.IsTrue(listener.getAndClearIsInvoked());
+			Assert.IsTrue(listener.GetAndClearIsInvoked());
             condition.UpdateOutputCondition(1, 0);
-			Assert.IsTrue(listener.getAndClearIsInvoked());
+			Assert.IsTrue(listener.GetAndClearIsInvoked());
             condition.UpdateOutputCondition(0, 1);
-			Assert.IsTrue(listener.getAndClearIsInvoked());
+			Assert.IsTrue(listener.GetAndClearIsInvoked());
             condition.UpdateOutputCondition(0, 0);
-			Assert.IsTrue(listener.getAndClearIsInvoked());
+			Assert.IsTrue(listener.GetAndClearIsInvoked());
 		}
 		
 		

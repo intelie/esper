@@ -28,10 +28,10 @@ namespace net.esper.view.stat.olap
 		private readonly MultidimCubeCellFactory<V> multidimCubeCellFactory;
 
 		// Store for each coordinate the ordinal index into the fact array
-		private readonly EDictionary<MultiKeyUntyped, Int32> ordinals = new EHashDictionary<MultiKeyUntyped, Int32>();
+		private readonly EDictionary<MultiKeyUntyped, Int32> ordinals = new HashDictionary<MultiKeyUntyped, Int32>();
 
 		// Store for each dimension the list of members
-		private readonly EDictionary<Int32, IList<Object>> dimensionMembers = new EHashDictionary<Int32, IList<Object>>();
+		private readonly EDictionary<Int32, IList<Object>> dimensionMembers = new HashDictionary<Int32, IList<Object>>();
 
 		private String[] dimensionNames;
 

@@ -13,7 +13,7 @@ namespace net.esper.eql.join.assemble
 {
 
 	[TestFixture]
-    public class TestCartesianUtil 
+    public class TestCartesianUtil
     {
         private const int NUM_COL = 4;
 
@@ -54,21 +54,21 @@ namespace net.esper.eql.join.assemble
             rowsB = null;
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(1, results.Count);
-            ArrayAssertionUtil.assertEqualsExactOrder(rowsA[0], results[0]);
+            ArrayAssertionUtil.AreEqualExactOrder(rowsA[0], results[0]);
 
             // test side B one row, A empty
             rowsA = null;
             rowsB = makeRowsB(1);
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(1, results.Count);
-            ArrayAssertionUtil.assertEqualsExactOrder(rowsB[0], results[0]);
+            ArrayAssertionUtil.AreEqualExactOrder(rowsB[0], results[0]);
 
             // test A and B one row
             rowsA = makeRowsA(1);
             rowsB = makeRowsB(1);
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(1, results.Count);
-            ArrayAssertionUtil.assertEqualsExactOrder(
+            ArrayAssertionUtil.AreEqualExactOrder(
 				new EventBean[] {
 					rowsA[0][0],
 					rowsB[0][1],
@@ -82,7 +82,7 @@ namespace net.esper.eql.join.assemble
             rowsB = makeRowsB(1);
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(2, results.Count);
-            ArrayAssertionUtil.assertEqualsAnyOrder(
+            ArrayAssertionUtil.AreEqualAnyOrder(
 				new EventBean[][] {
 					new EventBean[] {
 						rowsA[0][0],
@@ -104,18 +104,18 @@ namespace net.esper.eql.join.assemble
             rowsB = makeRowsB(2);
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(2, results.Count);
-            ArrayAssertionUtil.assertEqualsAnyOrder(
+            ArrayAssertionUtil.AreEqualAnyOrder(
 				new EventBean[][] {
 					new EventBean[] {
-						rowsA[0][0], 
-						rowsB[0][1], 
-						null, 
+						rowsA[0][0],
+						rowsB[0][1],
+						null,
 						rowsA[0][3]
 					},
 					new EventBean[] {
-						rowsA[0][0], 
-						rowsB[1][1], 
-						null, 
+						rowsA[0][0],
+						rowsB[1][1],
+						null,
 						rowsA[0][3]
 					}
 				},
@@ -126,29 +126,29 @@ namespace net.esper.eql.join.assemble
             rowsB = makeRowsB(2);
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(4, results.Count);
-            ArrayAssertionUtil.assertEqualsAnyOrder(
-				new EventBean[][] { 
+            ArrayAssertionUtil.AreEqualAnyOrder(
+				new EventBean[][] {
 					new EventBean[] {
-						rowsA[0][0], 
-						rowsB[0][1], 
-						null, 
-						rowsA[0][3]
-					},
-					new EventBean[] {
-						rowsA[0][0], 
-						rowsB[1][1], 
+						rowsA[0][0],
+						rowsB[0][1],
 						null,
 						rowsA[0][3]
 					},
 					new EventBean[] {
-						rowsA[1][0], 
-						rowsB[0][1], 
+						rowsA[0][0],
+						rowsB[1][1],
+						null,
+						rowsA[0][3]
+					},
+					new EventBean[] {
+						rowsA[1][0],
+						rowsB[0][1],
 						null,
 						rowsA[1][3]
 					},
 					new EventBean[] {
-						rowsA[1][0], 
-						rowsB[1][1], 
+						rowsA[1][0],
+						rowsB[1][1],
 						null,
 						rowsA[1][3]
 					}
@@ -160,41 +160,41 @@ namespace net.esper.eql.join.assemble
             rowsB = makeRowsB(3);
             tryCompute(rowsA, rowsB);
             Assert.AreEqual(6, results.Count);
-            ArrayAssertionUtil.assertEqualsAnyOrder(
+            ArrayAssertionUtil.AreEqualAnyOrder(
 				new EventBean[][] {
 					new EventBean[] {
-						rowsA[0][0], 
-						rowsB[0][1], 
+						rowsA[0][0],
+						rowsB[0][1],
 						null,
 						rowsA[0][3]
 					},
 					new EventBean[] {
-						rowsA[0][0], 
-						rowsB[1][1], 
+						rowsA[0][0],
+						rowsB[1][1],
 						null,
 						rowsA[0][3]
 					},
 					new EventBean[] {
-						rowsA[0][0], 
-						rowsB[2][1], 
+						rowsA[0][0],
+						rowsB[2][1],
 						null,
 						rowsA[0][3]
 					},
 					new EventBean[] {
-						rowsA[1][0], 
-						rowsB[0][1], 
+						rowsA[1][0],
+						rowsB[0][1],
 						null,
 						rowsA[1][3]
 					},
 					new EventBean[] {
-						rowsA[1][0], 
-						rowsB[1][1], 
+						rowsA[1][0],
+						rowsB[1][1],
 						null,
 						rowsA[1][3]
 					},
 					new EventBean[] {
-						rowsA[1][0], 
-						rowsB[2][1], 
+						rowsA[1][0],
+						rowsB[2][1],
 						null,
 						rowsA[1][3]
 					}

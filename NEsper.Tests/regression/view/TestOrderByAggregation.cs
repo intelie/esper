@@ -20,7 +20,7 @@ namespace net.esper.regression.view
     {
         private EPServiceProvider epService;
         private IList<String> symbols;
-        private IList<Double> prices;
+        private IList<double?> prices;
         private IList<long> volumes;
         private SupportUpdateListener testListener;
 
@@ -597,7 +597,7 @@ namespace net.esper.regression.view
         {
             testListener = new SupportUpdateListener();
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementString);
-            statement.AddListener(testListener.Update);
+            statement.AddListener(testListener);
             SendEvent("IBM", 3);
             SendEvent("IBM", 4);
             SendEvent("CMU", 1);
@@ -612,7 +612,7 @@ namespace net.esper.regression.view
             epService = EPServiceProviderManager.GetDefaultProvider();
             epService.Initialize();
             symbols = new List<String>();
-            prices = new List<Double>();
+            prices = new List<double?>();
             volumes = new List<long>();
         }
 

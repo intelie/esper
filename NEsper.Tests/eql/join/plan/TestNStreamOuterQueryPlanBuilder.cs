@@ -14,14 +14,14 @@ namespace net.esper.eql.join.plan
 {
 
 	[TestFixture]
-    public class TestNStreamOuterQueryPlanBuilder 
+    public class TestNStreamOuterQueryPlanBuilder
     {
         [Test]
         public virtual void testGraphOuterJoins()
         {
             IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.RIGHT));
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.FULL));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.RIGHT));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.FULL));
 
             OuterInnerDirectionalGraph graph = NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 
@@ -30,8 +30,8 @@ namespace net.esper.eql.join.plan
             assertOuters(new int[][] { new int[] { 1 }, new int[] { 2 }, new int[] { 1 } }, graph);
 
             descList.Clear();
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s1", "intBoxed", "s0", OuterJoinType.LEFT));
-            descList.Add(SupportOuterJoinDescFactory.makeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.RIGHT));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("intPrimitive", "s1", "intBoxed", "s0", OuterJoinType.LEFT));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.RIGHT));
 
             graph = NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 
@@ -57,7 +57,7 @@ namespace net.esper.eql.join.plan
             int streamNum = 2;
             QueryGraph queryGraph = new QueryGraph(6);
             OuterInnerDirectionalGraph outerInnerGraph = new OuterInnerDirectionalGraph(6);
-            ISet<int> completedStreams = new EHashSet<int>();
+            Set<int> completedStreams = new HashSet<int>();
             LinkedDictionary<int, int[]> substreamsPerStream = new LinkedDictionary<int, int[]>();
             bool[] requiredPerStream = new bool[6];
 
@@ -79,15 +79,15 @@ namespace net.esper.eql.join.plan
             NStreamOuterQueryPlanBuilder.RecursiveBuild(streamNum, queryGraph, outerInnerGraph, completedStreams, substreamsPerStream, requiredPerStream);
 
             Assert.AreEqual(6, substreamsPerStream.Count);
-            ArrayAssertionUtil.assertEqualsExactOrder(new int[] { 3, 1 }, substreamsPerStream[2]);
-            ArrayAssertionUtil.assertEqualsExactOrder(new int[] { 4, 5 }, substreamsPerStream[3]);
-            ArrayAssertionUtil.assertEqualsExactOrder(new int[] { 0 }, substreamsPerStream[1]);
-            ArrayAssertionUtil.assertEqualsExactOrder(new int[] { }, substreamsPerStream[4]);
-            ArrayAssertionUtil.assertEqualsExactOrder(new int[] { }, substreamsPerStream[5]);
-            ArrayAssertionUtil.assertEqualsExactOrder(new int[] { }, substreamsPerStream[0]);
+            ArrayAssertionUtil.AreEqualExactOrder(new int[] { 3, 1 }, substreamsPerStream[2]);
+            ArrayAssertionUtil.AreEqualExactOrder(new int[] { 4, 5 }, substreamsPerStream[3]);
+            ArrayAssertionUtil.AreEqualExactOrder(new int[] { 0 }, substreamsPerStream[1]);
+            ArrayAssertionUtil.AreEqualExactOrder(new int[] { }, substreamsPerStream[4]);
+            ArrayAssertionUtil.AreEqualExactOrder(new int[] { }, substreamsPerStream[5]);
+            ArrayAssertionUtil.AreEqualExactOrder(new int[] { }, substreamsPerStream[0]);
 
             NStreamOuterQueryPlanBuilder.VerifyJoinedPerStream(2, substreamsPerStream);
-            ArrayAssertionUtil.assertEqualsExactOrder(new bool[] { false, false, false, true, true, false }, requiredPerStream);
+            ArrayAssertionUtil.AreEqualExactOrder(new bool[] { false, false, false, true, true, false }, requiredPerStream);
         }
 
         [Test]
@@ -124,20 +124,20 @@ namespace net.esper.eql.join.plan
         {
             for (int i = 0; i < innersPerStream.Length; i++)
             {
-                ArrayAssertionUtil.assertEqualsAnyOrder(innersPerStream[i], graph.GetInner(i));
+                ArrayAssertionUtil.AreEqualAnyOrder(innersPerStream[i], graph.GetInner(i));
             }
         }
         private void assertOuters(int[][] outersPerStream, OuterInnerDirectionalGraph graph)
         {
             for (int i = 0; i < outersPerStream.Length; i++)
             {
-                ArrayAssertionUtil.assertEqualsAnyOrder(outersPerStream[i], graph.GetOuter(i));
+                ArrayAssertionUtil.AreEqualAnyOrder(outersPerStream[i], graph.GetOuter(i));
             }
         }
 
         private EDictionary<int, int[]> convert(int[][] array)
         {
-            EDictionary<int, int[]> result = new EHashDictionary<int, int[]>();
+            EDictionary<int, int[]> result = new HashDictionary<int, int[]>();
             for (int i = 0; i < array.Length; i++)
             {
                 result.Put(i, array[i]);

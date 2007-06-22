@@ -26,7 +26,7 @@ namespace net.esper.regression.eql
 
             String stmtText = "select * from pattern [every(a=" + typeof(SupportBean).FullName + " or b=" + typeof(SupportBeanComplexProps).FullName + ")]";
             statement = epService.EPAdministrator.CreateEQL(stmtText);
-            statement.AddListener(updateListener.Update);
+            statement.AddListener(updateListener);
         }
 
         [Test]
@@ -39,8 +39,8 @@ namespace net.esper.regression.eql
                 statement.Stop();
 
                 epService.EPRuntime.SendEvent(new SupportBean());
-                epService.EPRuntime.SendEvent(SupportBeanComplexProps.makeDefaultBean());
-                Assert.IsFalse(updateListener.Invoked);
+                epService.EPRuntime.SendEvent(SupportBeanComplexProps.MakeDefaultBean());
+                Assert.IsFalse(updateListener.IsInvoked);
 
                 statement.Start();
             }
@@ -57,21 +57,21 @@ namespace net.esper.regression.eql
                 }
                 else
                 {
-                    _event = SupportBeanComplexProps.makeDefaultBean();
+                    _event = SupportBeanComplexProps.MakeDefaultBean();
                 }
 
                 epService.EPRuntime.SendEvent(_event);
 
-                EventBean eventBean = updateListener.assertOneGetNewAndReset();
+                EventBean _eventBean = updateListener.AssertOneGetNewAndReset();
                 if (_event is SupportBean)
                 {
-                    Assert.AreSame(_event, eventBean["a"]);
-                    Assert.IsNull(eventBean["b"]);
+                    Assert.AreSame(_event, _eventBean["a"]);
+                    Assert.IsNull(_eventBean["b"]);
                 }
                 else
                 {
-                    Assert.AreSame(_event, eventBean["b"]);
-                    Assert.IsNull(eventBean["a"]);
+                    Assert.AreSame(_event, _eventBean["b"]);
+                    Assert.IsNull(_eventBean["a"]);
                 }
             }
         }

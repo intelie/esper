@@ -27,7 +27,7 @@ namespace net.esper.eql.parse
 		[Test]
 		public virtual void testGetValuesInRange()
 		{
-			ISet<int> result = wildcard.GetValuesInRange( 1, 10 );
+			Set<int> result = wildcard.GetValuesInRange( 1, 10 );
 			for ( int i = 1 ; i <= 10 ; i++ )
 			{
 				Assert.IsTrue( result.Contains( i ) );

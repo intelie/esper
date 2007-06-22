@@ -31,7 +31,7 @@ namespace net.esper.view.window
 	    public IStreamRelativeAccess(IStreamRelativeAccessUpdateObserver updateObserver)
 	    {
 	        this.updateObserver = updateObserver;
-	        indexPerEvent = new EHashDictionary<EventBean, int>();
+	        indexPerEvent = new HashDictionary<EventBean, int>();
 	    }
 
         /// <summary>

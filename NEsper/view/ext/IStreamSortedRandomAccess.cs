@@ -23,7 +23,7 @@ namespace net.esper.view.ext
 	{
 		private readonly IStreamRandomAccessUpdateObserver updateObserver;
 
-		private ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
+		private TreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
 		private int currentSize;
 
 		private IEnumerator<LinkedList<EventBean>> enumerator;
@@ -41,7 +41,7 @@ namespace net.esper.view.ext
 		/// <param name="sortedEvents">is the sorted window contents</param>
 		/// <param name="currentSize">is the current size of the window</param>
 		/// <param name="maxSize">is the maximum size of the window</param>
-		public void Refresh(ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents, int currentSize, int maxSize)
+		public void Refresh(TreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents, int currentSize, int maxSize)
 		{
 			updateObserver.Updated(this);
 			this.sortedEvents = sortedEvents;

@@ -10,23 +10,19 @@ namespace net.esper.support.bean
     
     public class SupportBeanCombinedProps
     {
-        public NestedLevOne[] array
-        {
-            get { return indexed; }
-        }
-        
         public NestedLevOne[] Array
         {
             get { return indexed; }
         }
 
-        public static String[] PROPERTIES = new String[] {
+        public static String[] PROPERTIES = new String[]
+        {
         	"indexed[]",
         	"array",
         	"Array"
         };
 
-        public static SupportBeanCombinedProps makeDefaultBean()
+        public static SupportBeanCombinedProps MakeDefaultBean()
         {
             NestedLevOne[] nested = new NestedLevOne[4]; // [3] left empty on purpose
             nested[0] = new NestedLevOne(new String[][] {
@@ -52,14 +48,14 @@ namespace net.esper.support.bean
             this.indexed = indexed;
         }
 
-        public virtual NestedLevOne getIndexed(int index)
+        public virtual NestedLevOne GetIndexed(int index)
         {
             return indexed[index];
         }
 
         public class NestedLevOne
         {
-            private EDictionary<String, NestedLevTwo> map = new EHashDictionary<String, NestedLevTwo>();
+            private readonly EDictionary<String, NestedLevTwo> map = new HashDictionary<String, NestedLevTwo>();
 
             public NestedLevOne(String[][] keysAndValues)
             {
@@ -69,12 +65,12 @@ namespace net.esper.support.bean
                 }
             }
 
-            public virtual NestedLevTwo getMapped(String key)
+            public virtual NestedLevTwo GetMapped(String key)
             {
                 return map.Fetch(key, null);
             }
 
-            public EDictionary<String, NestedLevTwo> getMapprop()
+            public EDictionary<String, NestedLevTwo> GetMapProp()
             {
                 return map;
             }
@@ -87,9 +83,14 @@ namespace net.esper.support.bean
                 get { return _value;  }
             }
 
-            virtual public String value
+            public string GetValue()
             {
-                get { return _value; }
+                return _value;
+            }
+
+            public void SetValue(string value)
+            {
+                _value = value;
             }
 
             private String _value;

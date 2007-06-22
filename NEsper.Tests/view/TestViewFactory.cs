@@ -15,7 +15,7 @@ namespace net.esper.view
 {
 
 	[TestFixture]
-    public class TestViewFactory 
+    public class TestViewFactory
     {
         private SupportBeanClassView parentViewable = new SupportBeanClassView(typeof(SupportMarketDataBean));
 
@@ -34,7 +34,7 @@ namespace net.esper.view
             }
 
             Assert.IsTrue(view != null);
-            Assert.IsTrue(view.GetViews().Count == 0);
+            Assert.IsTrue(view.Views.Count == 0);
             Assert.IsTrue(view.EventType.GetPropertyType(ViewFieldEnum.UNIVARIATE_STATISTICS__SUM.Name) != null);
         }
 

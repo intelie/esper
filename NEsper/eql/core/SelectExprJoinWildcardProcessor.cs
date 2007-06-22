@@ -53,7 +53,7 @@ namespace net.esper.eql.core
             this.eventAdapterService = eventAdapterService;
 
             // Create EventType of result join events
-            EDictionary<String, Type> eventTypeMap = new EHashDictionary<String, Type>();
+            EDictionary<String, Type> eventTypeMap = new HashDictionary<String, Type>();
             for (int i = 0; i < streamTypes.Length; i++)
             {
                 eventTypeMap[streamNames[i]] = streamTypes[i].UnderlyingType;
@@ -88,7 +88,7 @@ namespace net.esper.eql.core
         /// </returns>
         public virtual EventBean Process(EventBean[] eventsPerStream, bool isNewData)
         {
-        	EDataDictionary tuple = new EDataDictionary() ;
+        	DataDictionary tuple = new DataDictionary() ;
             for (int i = 0; i < streamNames.Length; i++)
             {
                 if (streamNames[i] == null)

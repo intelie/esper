@@ -35,8 +35,8 @@ namespace net.esper.eql.core
             // apply two rows, all aggregators evaluated their sub-expressions(constants 5 and 2) twice
             service.ApplyEnter(new EventBean[1], null);
             service.ApplyEnter(new EventBean[1], null);
-            Assert.AreEqual(10, service.GetValue(0));
-            Assert.AreEqual(4, service.GetValue(1));
+            Assert.AreEqual(10, service.Value(0));
+            Assert.AreEqual(4, service.Value(1));
         }
 
         [Test]
@@ -46,8 +46,8 @@ namespace net.esper.eql.core
             service.ApplyLeave(new EventBean[1], null);
             service.ApplyLeave(new EventBean[1], null);
             service.ApplyLeave(new EventBean[1], null);
-            Assert.AreEqual(-15, service.GetValue(0));
-            Assert.AreEqual(-6, service.GetValue(1));
+            Assert.AreEqual(-15, service.Value(0));
+            Assert.AreEqual(-6, service.Value(1));
         }
 
         private static EventBean[][] MakeEvents(int countRows)

@@ -40,7 +40,7 @@ namespace net.esper.emit
 		
         protected internal EmitServiceImpl()
 		{
-        	this.channelEmitListeners = new EHashDictionary<String, IList<EmittedListener>>();
+        	this.channelEmitListeners = new HashDictionary<String, IList<EmittedListener>>();
         	this.channelEmitListenersRWLock = new ReaderWriterLock() ;
 		}
 

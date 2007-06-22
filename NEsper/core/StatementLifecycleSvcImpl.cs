@@ -44,9 +44,9 @@ namespace net.esper.core
             // lock for starting and stopping statements
             this.eventProcessingRWLock = services.EventProcessingRWLock;
 
-            this.stmtIdToDescMap = new EHashDictionary<String, EPStatementDesc>();
-            this.stmtNameToStmtMap = new EHashDictionary<String, EPStatement>();
-            this.stmtNameToIdMap = new EHashDictionary<String, String>();
+            this.stmtIdToDescMap = new HashDictionary<String, EPStatementDesc>();
+            this.stmtNameToStmtMap = new HashDictionary<String, EPStatement>();
+            this.stmtNameToIdMap = new HashDictionary<String, String>();
         }
 
         /// <summary>
@@ -583,7 +583,7 @@ namespace net.esper.core
         /// </summary>
         /// <param name="statementId">is the statement id for which listeners were added</param>
         /// <param name="listeners">is the set of listeners after adding the new listener</param>
-        public void UpdatedListeners(string statementId, Set<UpdateListener> listeners)
+        public void UpdatedEventHandlers(string statementId, Set<UpdateEventHandler> eventHandlers)
         {
             log.Debug(".updatedListeners No action for base implementation");
         }

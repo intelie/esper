@@ -39,7 +39,7 @@ namespace net.esper.pattern
             }
 
             this.activeChildNodes = new List<EvalStateNode>();
-            this.eventsPerChild = new EHashDictionary<EvalStateNode, IList<MatchedEventMap>>();
+            this.eventsPerChild = new HashDictionary<EvalStateNode, IList<MatchedEventMap>>();
 
             // In an "and" expression we need to create a state for all child listeners
             foreach (EvalNode node in evalAndNode.ChildNodes)

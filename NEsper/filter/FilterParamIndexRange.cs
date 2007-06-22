@@ -17,7 +17,7 @@ namespace net.esper.filter
 
 	public sealed class FilterParamIndexRange : FilterParamIndexPropBase
 	{
-		private readonly ETreeDictionary<DoubleRange, EventEvaluator> ranges;
+		private readonly TreeDictionary<DoubleRange, EventEvaluator> ranges;
 		private readonly ReaderWriterLock rangesRWLock;
 		private double largestRangeValueDouble = Double.MinValue;
 
@@ -32,7 +32,7 @@ namespace net.esper.filter
 		public FilterParamIndexRange( String attributeName, FilterOperator filterOperator, EventType eventType )
 			: base( attributeName, filterOperator, eventType )
 		{
-			ranges = new ETreeDictionary<DoubleRange, EventEvaluator>( new DoubleRangeComparator() );
+			ranges = new TreeDictionary<DoubleRange, EventEvaluator>( new DoubleRangeComparator() );
 			rangesRWLock = new ReaderWriterLock();
 
 			if ( ! FilterOperatorHelper.IsRangeOperator( filterOperator ) )
@@ -154,7 +154,7 @@ namespace net.esper.filter
 			DoubleRange rangeStart = new DoubleRange( attributeValue - largestRangeValueDouble, attributeValue );
 			DoubleRange rangeEnd = new DoubleRange( attributeValue, Double.MaxValue );
 
-			ETreeDictionary<DoubleRange, EventEvaluator> subMap = ranges.Range( rangeStart, rangeEnd );
+			TreeDictionary<DoubleRange, EventEvaluator> subMap = ranges.Range( rangeStart, rangeEnd );
 
 			// For not including either endpoint
 			// A bit awkward to duplicate the loop code, however better than checking the bool many times over

@@ -28,20 +28,20 @@ namespace net.esper.regression.eql
 
 			String joinStatement =
 				"select * from " +
-				typeof( SupportMarketDataBean ).FullName + ".win:length(3)," +
-				typeof( SupportBean ).FullName + ".win:length(3)" +
+                typeof(SupportMarketDataBean).FullName + ".win:length(3)," +
+                typeof(SupportBean).FullName + ".win:length(3)" +
 				" where symbol=string and volume=longBoxed";
 
 			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 
 			for ( int i = 0 ; i < setOne.Length ; i++ )
 			{
 				setOne[i] = new SupportMarketDataBean( "IBM", 0, (long) i, "" );
 
 				SupportBean _event = new SupportBean();
-                _event.str = "IBM";
-				_event.longBoxed = (long) i ;
+                _event.SetString("IBM");
+                _event.SetLongBoxed((long)i);
 				setTwo[i] = _event;
 			}
 		}

@@ -32,16 +32,16 @@ namespace net.esper.regression.eql
         {
             String stmtText = "select s0.id as idS0, s1.id as idS1 " + "from pattern [every s0=" + typeof(SupportBean_S0).FullName + " or every s1=" + typeof(SupportBean_S1).FullName + "] " + "where (s0.id is not null and s0.id < 100) or (s1.id is not null and s1.id >= 100)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
-            statement.AddListener(updateListener.Update);
+            statement.AddListener(updateListener);
 
             sendEventS0(1);
             assertEventIds(1, null);
 
             sendEventS0(101);
-            Assert.IsFalse(updateListener.Invoked);
+            Assert.IsFalse(updateListener.IsInvoked);
 
             sendEventS1(1);
-            Assert.IsFalse(updateListener.Invoked);
+            Assert.IsFalse(updateListener.IsInvoked);
 
             sendEventS1(100);
             assertEventIds(null, 100);
@@ -52,7 +52,7 @@ namespace net.esper.regression.eql
         {
             String stmtText = "select sum(s0.id) as sumS0, sum(s1.id) as sumS1, sum(s0.id + s1.id) as sumS0S1 " + "from pattern [every s0=" + typeof(SupportBean_S0).FullName + " or every s1=" + typeof(SupportBean_S1).FullName + "]";
             EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
-            statement.AddListener(updateListener.Update);
+            statement.AddListener(updateListener);
 
             sendEventS0(1);
             assertEventSums(1, null, null);
@@ -73,12 +73,12 @@ namespace net.esper.regression.eql
             String stmtText = "select a.id as idA, b.id as idB, " + "a.p00 as p00A, b.p00 as p00B from pattern [every a=" + typeof(SupportBean_S0).FullName + " -> every b=" + typeof(SupportBean_S0).FullName + "(p00=a.p00)].win:time(1)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
 
-            statement.AddListener(updateListener.Update);
+            statement.AddListener(updateListener);
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
 
             SendEvent(1, "e1a");
-            Assert.IsFalse(updateListener.Invoked);
+            Assert.IsFalse(updateListener.IsInvoked);
             SendEvent(2, "e1a");
             assertNewEvent(1, 2, "e1a");
 
@@ -86,7 +86,7 @@ namespace net.esper.regression.eql
             SendEvent(10, "e2a");
             SendEvent(11, "e2b");
             SendEvent(12, "e2c");
-            Assert.IsFalse(updateListener.Invoked);
+            Assert.IsFalse(updateListener.IsInvoked);
             SendEvent(13, "e2b");
             assertNewEvent(11, 13, "e2b");
 
@@ -99,22 +99,22 @@ namespace net.esper.regression.eql
 
         private void assertNewEvent(int idA, int idB, String p00)
         {
-            EventBean eventBean = updateListener.assertOneGetNewAndReset();
-            compareEvent(eventBean, idA, idB, p00);
+            EventBean _eventBean = updateListener.AssertOneGetNewAndReset();
+            compareEvent(_eventBean, idA, idB, p00);
         }
 
         private void assertOldEvent(int idA, int idB, String p00)
         {
-            EventBean eventBean = updateListener.assertOneGetOldAndReset();
-            compareEvent(eventBean, idA, idB, p00);
+            EventBean _eventBean = updateListener.AssertOneGetOldAndReset();
+            compareEvent(_eventBean, idA, idB, p00);
         }
 
-        private void compareEvent(EventBean eventBean, int idA, int idB, String p00)
+        private void compareEvent(EventBean _eventBean, int idA, int idB, String p00)
         {
-            Assert.AreEqual(idA, eventBean["idA"]);
-            Assert.AreEqual(idB, eventBean["idB"]);
-            Assert.AreEqual(p00, eventBean["p00A"]);
-            Assert.AreEqual(p00, eventBean["p00B"]);
+            Assert.AreEqual(idA, _eventBean["idA"]);
+            Assert.AreEqual(idB, _eventBean["idB"]);
+            Assert.AreEqual(p00, _eventBean["p00A"]);
+            Assert.AreEqual(p00, _eventBean["p00B"]);
         }
 
         private void SendEvent(int id, String p00)
@@ -141,10 +141,10 @@ namespace net.esper.regression.eql
             int? idS0,
             int? idS1)
         {
-            EventBean eventBean = updateListener.getAndResetLastNewData()[0];
-            Assert.AreEqual(idS0, eventBean["idS0"]);
-            Assert.AreEqual(idS1, eventBean["idS1"]);
-            updateListener.reset();
+            EventBean _eventBean = updateListener.GetAndResetLastNewData()[0];
+            Assert.AreEqual(idS0, _eventBean["idS0"]);
+            Assert.AreEqual(idS1, _eventBean["idS1"]);
+            updateListener.Reset();
         }
 
         private void assertEventSums(
@@ -152,11 +152,11 @@ namespace net.esper.regression.eql
             int? sumS1,
             int? sumS0S1)
         {
-            EventBean eventBean = updateListener.getAndResetLastNewData()[0];
-            Assert.AreEqual(sumS0, eventBean["sumS0"]);
-            Assert.AreEqual(sumS1, eventBean["sumS1"]);
-            Assert.AreEqual(sumS0S1, eventBean["sumS0S1"]);
-            updateListener.reset();
+            EventBean _eventBean = updateListener.GetAndResetLastNewData()[0];
+            Assert.AreEqual(sumS0, _eventBean["sumS0"]);
+            Assert.AreEqual(sumS1, _eventBean["sumS1"]);
+            Assert.AreEqual(sumS0S1, _eventBean["sumS0S1"]);
+            updateListener.Reset();
         }
     }
 }

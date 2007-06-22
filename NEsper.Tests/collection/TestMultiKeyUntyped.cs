@@ -94,7 +94,7 @@ public class TestMultiKeyUntyped
 			SupportEventBeanFactory.MakeEvents(new String[]{"a", "b"})
 		};
 
-        ISet<MultiKeyUntyped> mapSet = new EHashSet<MultiKeyUntyped>();
+        Set<MultiKeyUntyped> mapSet = new HashSet<MultiKeyUntyped>();
 
         // Test contains
         mapSet.Add(new MultiKeyUntyped(testEvents[0]));

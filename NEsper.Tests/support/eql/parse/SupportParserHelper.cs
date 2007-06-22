@@ -2,7 +2,6 @@ using System;
 using System.IO;
 
 using antlr.collections;
-using antlr.debug;
 
 using net.esper.eql.generated;
 using net.esper.eql.parse;
@@ -38,7 +37,7 @@ namespace net.esper.support.eql.parse
 			}
 		}
 
-		public static void displayAST( AST ast )
+		public static void DisplayAST( AST ast )
 		{
 			log.Debug( ".displayAST list=" + ast.ToStringList() );
 
@@ -49,27 +48,27 @@ namespace net.esper.support.eql.parse
 			}
 		}
 
-		public static AST parsePattern( String text )
+		public static AST ParsePattern( String text )
 		{
 			ParseRuleSelector startRuleSelector = new AnonymousClassParseRuleSelector();
-			return parse( startRuleSelector, text );
+            return Parse(startRuleSelector, text);
 		}
 
-		public static AST parseEQL( String text )
+		public static AST ParseEQL( String text )
 		{
 			ParseRuleSelector startRuleSelector = new AnonymousClassParseRuleSelector1();
-			return parse( startRuleSelector, text );
+            return Parse(startRuleSelector, text);
 		}
 
-		public static AST parseEventProperty( String text )
+		public static AST ParseEventProperty( String text )
 		{
 			ParseRuleSelector startRuleSelector = new AnonymousClassParseRuleSelector2();
-			return parse( startRuleSelector, text );
+            return Parse(startRuleSelector, text);
 		}
 
-		public static AST parse( ParseRuleSelector parseRuleSelector, String text )
+		public static AST Parse( ParseRuleSelector parseRuleSelector, String text )
 		{
-			EQLStatementLexer lexer = new EQLStatementLexer( new System.IO.StringReader( text ) );
+			EQLStatementLexer lexer = new EQLStatementLexer( new StringReader( text ) );
 			EQLStatementParser parser = new EQLStatementParser( lexer );
 			parseRuleSelector.invokeParseRule( parser );
 			return parser.getAST();

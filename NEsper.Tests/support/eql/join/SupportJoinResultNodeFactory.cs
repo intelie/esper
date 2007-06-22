@@ -17,27 +17,27 @@ namespace net.esper.support.eql.join
 
             for (int i = 0; i < numNodes; i++)
             {
-                Node node = makeNode(i, numEventsPerNode);
+                Node node = MakeNode(i, numEventsPerNode);
                 resultsPerStream[fillStream].Add(node);
             }
 
             return resultsPerStream;
         }
 
-        public static Node makeNode(int streamNum, int numEventsPerNode)
+        public static Node MakeNode(int streamNum, int numEventsPerNode)
         {
             Node node = new Node(streamNum);
-            node.Events = makeEventSet(numEventsPerNode);
+            node.Events = MakeEventSet(numEventsPerNode);
             return node;
         }
 
-        public static ISet<EventBean> makeEventSet(int numObjects)
+        public static Set<EventBean> MakeEventSet(int numObjects)
         {
             if (numObjects == 0)
             {
                 return null;
             }
-            ISet<EventBean> set = new EHashSet<EventBean>();
+            Set<EventBean> set = new HashSet<EventBean>();
             for (int i = 0; i < numObjects; i++)
             {
                 set.Add(MakeEvent());
@@ -45,23 +45,23 @@ namespace net.esper.support.eql.join
             return set;
         }
 
-        public static ISet<EventBean>[] makeEventSets(int[] numObjectsPerSet)
+        public static Set<EventBean>[] MakeEventSets(int[] numObjectsPerSet)
         {
-            ISet<EventBean>[] sets = new EHashSet<EventBean>[numObjectsPerSet.Length];
+            Set<EventBean>[] sets = new HashSet<EventBean>[numObjectsPerSet.Length];
             for (int i = 0; i < numObjectsPerSet.Length; i++)
             {
                 if (numObjectsPerSet[i] == 0)
                 {
                     continue;
                 }
-                sets[i] = makeEventSet(numObjectsPerSet[i]);
+                sets[i] = MakeEventSet(numObjectsPerSet[i]);
             }
             return sets;
         }
 
         public static EventBean MakeEvent()
         {
-            EventBean _event = SupportEventBeanFactory.createObject(new Object());
+            EventBean _event = SupportEventBeanFactory.CreateObject(new Object());
             return _event;
         }
 

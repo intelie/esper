@@ -10,29 +10,29 @@ namespace net.esper.compat
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="V"></typeparam>
 
-	public class EHashDictionary<K,V> : EBaseDictionary<K,V>
+	public class HashDictionary<K,V> : EBaseDictionary<K,V>
 	{
         /// <summary>
-        /// Initializes a new instance of the <see cref="EHashDictionary&lt;K, V&gt;"/> class.
+        /// Initializes a new instance of the <see cref="HashDictionary&lt;K, V&gt;"/> class.
         /// </summary>
-		public EHashDictionary()
+		public HashDictionary()
 			: base( new Dictionary<K,V>() )
 		{
 		}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EHashDictionary&lt;K, V&gt;"/> class.
+        /// Initializes a new instance of the <see cref="HashDictionary&lt;K, V&gt;"/> class.
         /// </summary>
-        public EHashDictionary(int initialCapacity)
+        public HashDictionary(int initialCapacity)
             : base(new Dictionary<K, V>(initialCapacity))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EHashDictionary&lt;K, V&gt;"/> class.
+        /// Initializes a new instance of the <see cref="HashDictionary&lt;K, V&gt;"/> class.
         /// </summary>
 		
-		public EHashDictionary(IEqualityComparer<K> eqComparer)
+		public HashDictionary(IEqualityComparer<K> eqComparer)
 			: base( new Dictionary<K,V>( eqComparer ) )
 		{
 		}

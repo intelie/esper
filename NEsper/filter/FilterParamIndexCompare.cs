@@ -19,7 +19,7 @@ namespace net.esper.filter
 
     public sealed class FilterParamIndexCompare : FilterParamIndexPropBase
     {
-        private readonly ETreeDictionary<Object, EventEvaluator> constantsMap;
+        private readonly TreeDictionary<Object, EventEvaluator> constantsMap;
         private readonly ReaderWriterLock constantsMapRWLock;
 
         private double? lowerBounds;
@@ -39,7 +39,7 @@ namespace net.esper.filter
         	EventType eventType)
             : base(propertyName, filterOperator, eventType)
         {
-            constantsMap = new ETreeDictionary<Object, EventEvaluator>(sm_doubleComparer);
+            constantsMap = new TreeDictionary<Object, EventEvaluator>(sm_doubleComparer);
             constantsMapRWLock = new ReaderWriterLock();
 
             if ((filterOperator != FilterOperator.GREATER) && 

@@ -10,7 +10,7 @@ using org.apache.commons.logging;
 namespace net.esper.support.view
 {
     /// <summary>
-    /// Unit test class for view testing that implements the EventStream interface to which views can be attached as child views.
+    /// Unit test class for view testing that : the EventStream interface to which views can be attached as child views.
     /// The schema class is passed in during construction. The stream behaves much like a length window in that it
     /// keeps a reference to the last X inserted events in the past. The update method reflects new events added
     /// and events pushed out of the window. This is useful for view testing of views that use the oldData values
@@ -130,9 +130,9 @@ namespace net.esper.support.view
             return view;
         }
 
-        public IList<View> GetViews()
+        public IList<View> Views
         {
-            return childViews;
+        	get { return childViews; }
         }
 
         public virtual bool RemoveView(View view)

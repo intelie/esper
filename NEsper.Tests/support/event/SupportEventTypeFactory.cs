@@ -13,7 +13,7 @@ namespace net.esper.support.events
             return SupportEventAdapterService.Service.AddBeanType(clazz.FullName, clazz);
         }
 
-        public static EventType createMapType(EDictionary<String, Type> map)
+        public static EventType CreateMapType(EDictionary<String, Type> map)
         {
             return SupportEventAdapterService.Service.CreateAnonymousMapType(map);
         }

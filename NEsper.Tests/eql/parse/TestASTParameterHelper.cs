@@ -30,21 +30,21 @@ namespace net.esper.eql.parse
         public virtual void testArray()
         {
             // Uniform type array
-            AST ast = makeArrayAst(
+            AST ast = MakeArrayAst(
                 new int[] { EqlEvalTokenTypes.LONG_TYPE, EqlEvalTokenTypes.LONG_TYPE },
                 new String[] { "1", "2" });
             long[] longArr = (long[])convert(ast);
             Assert.AreEqual(1L, longArr[0]);
             Assert.AreEqual(2L, longArr[1]);
 
-            ast = makeArrayAst(
+            ast = MakeArrayAst(
                 new int[] { EqlEvalTokenTypes.STRING_TYPE, EqlEvalTokenTypes.STRING_TYPE },
                 new String[] { "'1'", "'2'" });
             String[] strArr = (String[])convert(ast);
             Assert.AreEqual("1", strArr[0]);
             Assert.AreEqual("2", strArr[1]);
 
-            ast = makeArrayAst(
+            ast = MakeArrayAst(
                 new int[] { EqlEvalTokenTypes.BOOL_TYPE, EqlEvalTokenTypes.BOOL_TYPE },
                 new String[] { "True", "False" });
             bool[] boolArr = (bool[])convert(ast);
@@ -52,7 +52,7 @@ namespace net.esper.eql.parse
             Assert.AreEqual(false, boolArr[1]);
 
             // Mixed type array
-            ast = makeArrayAst(
+            ast = MakeArrayAst(
                 new int[] { EqlEvalTokenTypes.STRING_TYPE, EqlEvalTokenTypes.INT_TYPE, EqlEvalTokenTypes.BOOL_TYPE },
                 new String[] { "'A'", "10", "true" });
             Object[] mixedArr = (Object[])convert(ast);
@@ -199,7 +199,7 @@ namespace net.esper.eql.parse
             return ast;
         }
 
-        private AST makeArrayAst(int[] types, String[] values)
+        private AST MakeArrayAst(int[] types, String[] values)
         {
             CommonAST ast = new CommonAST();
             ast.setType(EqlEvalTokenTypes.ARRAY_PARAM_LIST);

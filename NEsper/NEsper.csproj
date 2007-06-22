@@ -46,6 +46,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -76,10 +77,13 @@
     <Compile Include="client\EPStatement.cs" />
     <Compile Include="client\EPStatementException.cs" />
     <Compile Include="client\EPStatementState.cs" />
+    <Compile Include="client\EPSender.cs" />
+    <Compile Include="client\PropertyResolutionStyle.cs" />
     <Compile Include="client\time\CurrentTimeEvent.cs" />
     <Compile Include="client\time\TimerControlEvent.cs" />
     <Compile Include="client\time\TimerEvent.cs" />
     <Compile Include="client\UpdateListener.cs" />
+    <Compile Include="client\UpdateEventHandlerSet.cs" />
     <Compile Include="collection\ArrayBackedCollection.cs" />
     <Compile Include="collection\FlushedEventBuffer.cs" />
     <Compile Include="collection\IndexedDataCollection.cs" />
@@ -109,13 +113,14 @@
     <Compile Include="compat\CollectionHelper.cs" />
     <Compile Include="compat\DateTimeHelper.cs" />
     <Compile Include="compat\EBaseDictionary.cs" />
-    <Compile Include="compat\EDataDictionary.cs" />
+    <Compile Include="compat\DataDictionary.cs" />
     <Compile Include="compat\EDictionary.cs" />
-    <Compile Include="compat\EHashDictionary.cs" />
-    <Compile Include="compat\EHashSet.cs" />
+    <Compile Include="compat\HashDictionary.cs" />
+    <Compile Include="compat\HashSet.cs" />
     <Compile Include="compat\ELinkedList.cs" />
-    <Compile Include="compat\ETreeDictionary.cs" />
-    <Compile Include="compat\ETreeSet.cs" />
+    <Compile Include="compat\SynchronizedSet.cs" />
+    <Compile Include="compat\TreeDictionary.cs" />
+    <Compile Include="compat\TreeSet.cs" />
     <Compile Include="compat\HighResolutionTimer.cs" />
     <Compile Include="compat\HighResolutionTimerFactory.cs" />
     <Compile Include="compat\IDataDictionary.cs" />

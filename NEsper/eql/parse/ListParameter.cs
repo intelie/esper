@@ -66,7 +66,7 @@ namespace net.esper.eql.parse
         /// <returns>set of integer</returns>
 		public Set<Int32> GetValuesInRange( int min, int max )
 		{
-			Set<Int32> result = new EHashSet<Int32>();
+			Set<Int32> result = new HashSet<Int32>();
 
 			foreach ( NumberSetParameter param in parameters )
 			{

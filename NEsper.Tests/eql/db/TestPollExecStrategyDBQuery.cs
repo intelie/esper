@@ -22,14 +22,14 @@ namespace net.esper.eql.db
 		{
 			String sql = "select myvarchar from mytesttable where mynumeric = ? order by mybigint asc";
 
-			DatabaseConnectionFactory databaseConnectionFactory = SupportDatabaseService.makeService().GetConnectionFactory( "mydb" );
+			DatabaseConnectionFactory databaseConnectionFactory = SupportDatabaseService.MakeService().GetConnectionFactory( "mydb" );
 			ConnectionCache connectionCache = new ConnectionNoCacheImpl( databaseConnectionFactory, sql );
 
-			EDictionary<String, Type> resultProperties = new EHashDictionary<String, Type>();
+			EDictionary<String, Type> resultProperties = new HashDictionary<String, Type>();
 			resultProperties.Put( "myvarchar", typeof( String ) );
 			EventType resultEventType = SupportEventAdapterService.Service.CreateAnonymousMapType( resultProperties );
 
-			EDictionary<String, DBOutputTypeDesc> propertiesOut = new EHashDictionary<String, DBOutputTypeDesc>();
+			EDictionary<String, DBOutputTypeDesc> propertiesOut = new HashDictionary<String, DBOutputTypeDesc>();
 			propertiesOut.Put( "myvarchar", new DBOutputTypeDesc( (int) DbType.Time, typeof( string ) ) ) ;
 			
 			dbPollExecStrategy = new PollExecStrategyDBQuery(

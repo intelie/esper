@@ -30,19 +30,19 @@ namespace net.esper.eql.join.plan
 			QueryPlanIndex[] indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
 			
 			String[][] expected = new String[][]{new String[]{"p00"}, new String[]{"p01"}};
-			ArrayAssertionUtil.assertEqualsStringArr(indexes[0].IndexProps, expected);
+			ArrayAssertionUtil.AreEqualStringArr(indexes[0].IndexProps, expected);
 			
 			expected = new String[][]{new String[]{"p10"}};
-            ArrayAssertionUtil.assertEqualsStringArr(indexes[1].IndexProps, expected);
+            ArrayAssertionUtil.AreEqualStringArr(indexes[1].IndexProps, expected);
 			
 			expected = new String[][]{new String[]{"p20"}, new String[]{"p21"}};
-            ArrayAssertionUtil.assertEqualsStringArr(indexes[2].IndexProps, expected);
+            ArrayAssertionUtil.AreEqualStringArr(indexes[2].IndexProps, expected);
 			
 			expected = new String[][]{new String[]{"p30", "p31"}};
-            ArrayAssertionUtil.assertEqualsStringArr(indexes[3].IndexProps, expected);
+            ArrayAssertionUtil.AreEqualStringArr(indexes[3].IndexProps, expected);
 			
 			expected = new String[][]{new String[]{"p42"}, new String[]{"p40", "p41"}};
-            ArrayAssertionUtil.assertEqualsStringArr(indexes[4].IndexProps, expected);
+            ArrayAssertionUtil.AreEqualStringArr(indexes[4].IndexProps, expected);
 			
 			// Test no index, should have a single entry with a zero-length property name array
 			queryGraph = new QueryGraph(3);
@@ -61,7 +61,7 @@ namespace net.esper.eql.join.plan
 			QueryPlanIndex[] indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
 			
 			String[][] expected = new String[][]{new String[]{"p00"}};
-			ArrayAssertionUtil.assertEqualsStringArr(indexes[0].IndexProps, expected);
+			ArrayAssertionUtil.AreEqualStringArr(indexes[0].IndexProps, expected);
 		}
 	}
 }

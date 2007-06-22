@@ -26,7 +26,7 @@ namespace net.esper.filter
         public EventTypeIndexBuilder(EventTypeIndex eventTypeIndex)
         {
             this.eventTypeIndex = eventTypeIndex;
-            this.callbacks = new EHashDictionary<FilterHandle, Pair<EventType, IndexTreePath>>();
+            this.callbacks = new HashDictionary<FilterHandle, Pair<EventType, IndexTreePath>>();
             this.callbacksLock = new Object();
         }
 

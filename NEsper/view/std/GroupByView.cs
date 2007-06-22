@@ -35,9 +35,9 @@ namespace net.esper.view.std
 	    private readonly StatementContext statementContext;
 	    private EventPropertyGetter[] groupFieldGetters;
 
-        private readonly EDictionary<MultiKey<Object>, IList<View>> subViewsPerKey = new EHashDictionary<MultiKey<Object>, IList<View>>();
+        private readonly EDictionary<MultiKey<Object>, IList<View>> subViewsPerKey = new HashDictionary<MultiKey<Object>, IList<View>>();
 
-        private EDictionary<IList<View>, Pair<IList<EventBean>, IList<EventBean>>> groupedEvents = new EHashDictionary<IList<View>, Pair<IList<EventBean>, IList<EventBean>>>();
+        private EDictionary<IList<View>, Pair<IList<EventBean>, IList<EventBean>>> groupedEvents = new HashDictionary<IList<View>, Pair<IList<EventBean>, IList<EventBean>>>();
 
 		/// <summary>Constructor.</summary>
 		/// <param name="groupFieldNames">

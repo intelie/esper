@@ -36,7 +36,7 @@ namespace net.esper.regression.view
             String viewExpr = "select symbol," + "median(all price) as myMedian," + "median(distinct price) as myDistMedian," + "stddev(all price) as myStdev," + "avedev(all price) as myAvedev " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             runAssertion();
         }
@@ -47,7 +47,7 @@ namespace net.esper.regression.view
             String viewExpr = "select symbol," + "median(price) as myMedian," + "median(distinct price) as myDistMedian," + "stddev(price) as myStdev," + "avedev(price) as myAvedev " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.str = two.symbol " + "group by symbol";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -89,14 +89,14 @@ namespace net.esper.regression.view
 
         private void assertEvents(
             String symbol,
-            Double? oldMedian,
-            Double? oldDistMedian,
-            Double? oldStdev,
-            Double? oldAvedev,
-            Double? newMedian,
-            Double? newDistMedian,
-            Double? newStdev,
-            Double? newAvedev)
+            double? oldMedian,
+            double? oldDistMedian,
+            double? oldStdev,
+            double? oldAvedev,
+            double? newMedian,
+            double? newDistMedian,
+            double? newStdev,
+            double? newAvedev)
         {
 
             EventBean[] oldData = testListener.LastOldData;
@@ -110,7 +110,7 @@ namespace net.esper.regression.view
             Assert.AreEqual(oldDistMedian, oldData[0]["myDistMedian"], "oldData.myDistMedian wrong");
             Assert.AreEqual(oldAvedev, oldData[0]["myAvedev"], "oldData.myAvedev wrong");
 
-            Double? oldStdevResult = (Double?)oldData[0]["myStdev"];
+            double? oldStdevResult = (double?)oldData[0]["myStdev"];
             if (! oldStdevResult.HasValue)
             {
                 Assert.IsNull(oldStdev);
@@ -129,7 +129,7 @@ namespace net.esper.regression.view
             Assert.AreEqual(newDistMedian, newData[0]["myDistMedian"], "newData.myDistMedian wrong");
             Assert.AreEqual(newAvedev, newData[0]["myAvedev"], "newData.myAvedev wrong");
 
-            Double? newStdevResult = (Double?)newData[0]["myStdev"];
+            double? newStdevResult = (double?)newData[0]["myStdev"];
             if (!newStdevResult.HasValue)
             {
                 Assert.IsNull(newStdev);
@@ -142,8 +142,8 @@ namespace net.esper.regression.view
                     "newData.myStdev wrong");
             }
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void SendEvent(String symbol, double price)

@@ -201,7 +201,7 @@ namespace net.esper.view.window
         /// We schedule a new callback at this time if there were events in the batch.
         /// </summary>
 
-        public void SendBatch(ExtensionServicesContext extensionServicesContext)
+        public void SendBatch()
         {
             isCallbackScheduled = false;
 
@@ -317,7 +317,14 @@ namespace net.esper.view.window
                     " msecIntervalSize=" + msecIntervalSize);
             }
 
-            ScheduleHandleCallback callback = new ScheduleHandleCallbackImpl(new ScheduleHandleDelegate(SendBatch));
+            ScheduleHandleCallback callback = new ScheduleHandleCallbackImpl(
+                new ScheduleHandleDelegate(
+                    delegate(ExtensionServicesContext extensionServicesContext)
+                        {
+                            SendBatch();
+                        }
+                    ));
+
 			EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.EpStatementHandle, callback);
 			statementContext.SchedulingService.Add(afterMSec, handle, scheduleSlot);
         }

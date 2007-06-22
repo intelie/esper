@@ -9,8 +9,8 @@ namespace net.esper.support.util
 {
 
     /// <summary> Singleton class for testing out multi-threaded code.
-    /// Allows reservation and de-reservation of any Object. Reserved objects are added to a EHashSet and
-    /// removed from the EHashSet upon de-reservation.
+    /// Allows reservation and de-reservation of any Object. Reserved objects are added to a HashSet and
+    /// removed from the HashSet upon de-reservation.
     /// </summary>
     public class ObjectReservationSingleton
     {
@@ -22,7 +22,7 @@ namespace net.esper.support.util
             }
         }
 
-        private EHashSet<Object> reservedObjects = new EHashSet<Object>();
+        private HashSet<Object> reservedObjects = new HashSet<Object>();
         private Object reservedIdsLock = new Object();
 
         private static ObjectReservationSingleton ourInstance = new ObjectReservationSingleton();
@@ -37,7 +37,7 @@ namespace net.esper.support.util
         /// <returns> true if reserved, false to indicate already reserved
         /// </returns>
 
-        public virtual bool reserve(Object _object)
+        public virtual bool Reserve(Object _object)
         {
             lock (reservedIdsLock)
             {
@@ -53,9 +53,9 @@ namespace net.esper.support.util
         }
 
         /// <summary> Unreserve an object. Logs a fatal error if the unreserve failed.</summary>
-        /// <param name="object">object to unreserve
+        /// <param name="_object">object to unreserve
         /// </param>
-        public virtual void unreserve(Object _object)
+        public virtual void Unreserve(Object _object)
         {
             lock (reservedIdsLock)
             {

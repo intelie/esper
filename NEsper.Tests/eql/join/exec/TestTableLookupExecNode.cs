@@ -35,7 +35,7 @@ namespace net.esper.eql.join.exec
 			EventBean[] indexEvents = SupportEventBeanFactory.MakeEvents( new String[] { "a1", "a2" } );
 			index.Add( indexEvents );
 
-			EventBean[] lookupEvents = SupportEventBeanFactory.makeMarketDataEvents( new String[] { "a2", "a3" } );
+			EventBean[] lookupEvents = SupportEventBeanFactory.MakeMarketDataEvents( new String[] { "a2", "a3" } );
 
 			IList<EventBean[]> result = new List<EventBean[]>();
 			EventBean[] prefill = new EventBean[] { lookupEvents[0], null };

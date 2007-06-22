@@ -92,10 +92,10 @@ namespace net.esper.view.std
             // If there are child views, fireStatementStopped update method
             if ((this.HasViews) && (priorSize != size))
             {
-                EDataDictionary postNewData = new EDataDictionary();
+                DataDictionary postNewData = new DataDictionary();
                 postNewData[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = size;
 
-                EDataDictionary postOldData = new EDataDictionary();
+                DataDictionary postOldData = new DataDictionary();
                 postOldData[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = priorSize;
                 UpdateChildren(new EventBean[] { statementContext.EventAdapterService.CreateMapFromValues(postNewData, eventType) }, new EventBean[] { statementContext.EventAdapterService.CreateMapFromValues(postOldData, eventType) });
             }
@@ -109,7 +109,7 @@ namespace net.esper.view.std
         /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            EDataDictionary current = new EDataDictionary();
+            DataDictionary current = new DataDictionary();
             current[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = size;
             yield return statementContext.EventAdapterService.CreateMapFromValues(current, eventType);
         }
@@ -130,7 +130,7 @@ namespace net.esper.view.std
 		/// <returns>event type for view</returns>
 	    public static EventType CreateEventType(StatementContext statementContext)
 	    {
-	        EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
+	        EDictionary<String, Type> schemaMap = new HashDictionary<String, Type>();
 		    schemaMap[ViewFieldEnum.SIZE_VIEW__SIZE.Name] = typeof (long);
 	        return statementContext.EventAdapterService.CreateAnonymousMapType(schemaMap);
 	    }

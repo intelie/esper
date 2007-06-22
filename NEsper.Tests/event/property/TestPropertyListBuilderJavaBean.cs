@@ -39,7 +39,7 @@ namespace net.esper.events.property
             IList<EventPropertyDescriptor> expected = new List<EventPropertyDescriptor>();
             expected.Add(new EventPropertyDescriptor("x", "x", typeof(SupportLegacyBean).GetField("fieldNested"), EventPropertyType.SIMPLE));
             expected.Add(new EventPropertyDescriptor("y", "y", typeof(SupportLegacyBean).GetMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
-            ArrayAssertionUtil.assertEqualsAnyOrder(expected, descList);
+            ArrayAssertionUtil.AreEqualAnyOrder(expected, descList);
         }
 
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

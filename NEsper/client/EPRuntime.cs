@@ -65,6 +65,14 @@ namespace net.esper.client
         void SendEvent(XmlNode node);
 
         /// <summary>
+        /// Gets a delegate that can be used to send mapped events to an alias.
+        /// </summary>
+        /// <param name="eventTypeAlias"></param>
+        /// <returns></returns>
+
+        EPSender GetSender(String eventTypeAlias);
+
+        /// <summary>
         /// Emit an event object to any registered EmittedListener instances listening to the default channel.</summary>
         /// <param name="_object">to be emitted to the default channel
         /// </param>

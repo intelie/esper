@@ -31,38 +31,38 @@ namespace net.esper.regression.view
 
             // Set up a 1 second time window
             weightedAvgView = epService.EPAdministrator.CreateEQL(
-                "select * from " + typeof(SupportMarketDataBean).FullName + 
+                "select * from " + typeof(SupportMarketDataBean).FullName +
                 "(symbol='" + SYMBOL + "').win:time(3.0).stat:weighted_avg('price', 'volume')");
-            weightedAvgView.AddListener(testListener.Update);
+            weightedAvgView.AddListener(testListener);
         }
 
         [Test]
         public virtual void testWindowStats()
         {
-            testListener.reset();
+            testListener.Reset();
 
             // Send 2 events, E1 and E2 at +0sec
-            epService.EPRuntime.SendEvent(makeBean(SYMBOL, 10, 500));
+            epService.EPRuntime.SendEvent(MakeBean(SYMBOL, 10, 500));
             checkValue(10);
 
-            epService.EPRuntime.SendEvent(makeBean(SYMBOL, 11, 500));
+            epService.EPRuntime.SendEvent(MakeBean(SYMBOL, 11, 500));
             checkValue(10.5);
 
             // Sleep for 1.5 seconds
             sleep(1500);
 
             // Send 2 more events, E3 and E4 at +1.5sec
-            epService.EPRuntime.SendEvent(makeBean(SYMBOL, 10, 1000));
+            epService.EPRuntime.SendEvent(MakeBean(SYMBOL, 10, 1000));
             checkValue(10.25);
-            epService.EPRuntime.SendEvent(makeBean(SYMBOL, 10.5, 2000));
+            epService.EPRuntime.SendEvent(MakeBean(SYMBOL, 10.5, 2000));
             checkValue(10.375);
 
             // Sleep for 2 seconds, E1 and E2 should have left the window
             sleep(2000);
             checkValue(10.333333333);
 
-            // Send another event, E5 at +3.5sec
-            epService.EPRuntime.SendEvent(makeBean(SYMBOL, 10.2, 1000));
+            // Send another _event, E5 at +3.5sec
+            epService.EPRuntime.SendEvent(MakeBean(SYMBOL, 10.2, 1000));
             checkValue(10.3);
 
             // Sleep for 2.5 seconds, E3 and E4 should expire
@@ -74,7 +74,7 @@ namespace net.esper.regression.view
             checkValue(Double.NaN);
         }
 
-        private SupportMarketDataBean makeBean(String symbol, double price, long
+        private SupportMarketDataBean MakeBean(String symbol, double price, long
           volume)
         {
             return new SupportMarketDataBean(symbol, price, volume, "");
@@ -91,7 +91,7 @@ namespace net.esper.regression.view
             EventBean listenerValues = testListener.LastNewData[0];
             checkValue(listenerValues, avgE);
 
-            testListener.reset();
+            testListener.Reset();
         }
 
         private void checkValue(EventBean values, double avgE)
@@ -102,7 +102,7 @@ namespace net.esper.regression.view
 
         private double getDoubleValue(ViewFieldEnum field, EventBean _event)
         {
-            return (Double)_event[field.Name];
+            return (double)_event[field.Name];
         }
 
         private void sleep(int msec)

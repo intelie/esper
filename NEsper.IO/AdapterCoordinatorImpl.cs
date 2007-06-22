@@ -13,12 +13,14 @@ namespace net.esper.adapter
 	/// <summary>
 	/// An implementation of AdapterCoordinator.
 	/// </summary>
-	public class AdapterCoordinatorImpl : AbstractCoordinatedAdapter, AdapterCoordinator
+	public class AdapterCoordinatorImpl
+		: AbstractCoordinatedAdapter
+		, AdapterCoordinator
 	{
 		private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-	    private readonly EDictionary<SendableEvent, CoordinatedAdapter> eventsFromAdapters = new EHashDictionary<SendableEvent, CoordinatedAdapter>();
-		private readonly ISet<CoordinatedAdapter> emptyAdapters = new EHashSet<CoordinatedAdapter>();
+	    private readonly EDictionary<SendableEvent, CoordinatedAdapter> eventsFromAdapters = new HashDictionary<SendableEvent, CoordinatedAdapter>();
+		private readonly Set<CoordinatedAdapter> emptyAdapters = new HashSet<CoordinatedAdapter>();
 		private readonly bool usingEngineThread;
 		private readonly ScheduleBucket scheduleBucket;
 		private readonly EPServiceProvider epService;
@@ -35,42 +37,42 @@ namespace net.esper.adapter
 		{
 			if(epService == null)
 			{
-				throw new NullPointerException("epService cannot be null");
+				throw new ArgumentException("epService cannot be null");
 			}
 			if(!(epService is EPServiceProviderSPI))
 			{
-				throw new IllegalArgumentException("Illegal type of EPServiceProvider");
+				throw new ArgumentException("Illegal type of EPServiceProvider");
 			}
 			this.epService = epService;
-			this.scheduleBucket = ((EPServiceProviderSPI)epService).getSchedulingService().allocateBucket();
+			this.scheduleBucket = ((EPServiceProviderSPI)epService).SchedulingService.AllocateBucket();
 			this.usingEngineThread = usingEngineThread;
 		}
 
 		/// <summary>
 		///@see net.esper.adapter.ReadableAdapter#read()
 		/// </summary>
-		public SendableEvent Read()
+		public override SendableEvent Read()
 		{
 			log.Debug(".read");
 			PollEmptyAdapters();
 
-			log.Debug(".read eventsToSend.isEmpty==" + eventsToSend.isEmpty());
-			log.Debug(".read eventsFromAdapters.isEmpty==" + eventsFromAdapters.isEmpty());
-			log.Debug(".read emptyAdapters.isEmpty==" + emptyAdapters.isEmpty());
+			log.Debug(".read eventsToSend.isEmpty==" + eventsToSend.IsEmpty);
+			log.Debug(".read eventsFromAdapters.isEmpty==" + (eventsFromAdapters.Count == 0));
+			log.Debug(".read emptyAdapters.isEmpty==" + emptyAdapters.IsEmpty);
 
-			if(eventsToSend.isEmpty() && eventsFromAdapters.isEmpty() && emptyAdapters.isEmpty())
+			if(eventsToSend.IsEmpty && (eventsFromAdapters.Count == 0) && emptyAdapters.IsEmpty)
 			{
-				stop();
+				Stop();
 			}
 
-			if(stateManager.State == AdapterState.DESTROYED || eventsToSend.isEmpty())
+			if(stateManager.State == AdapterState.DESTROYED || eventsToSend.IsEmpty)
 			{
 				return null;
 			}
 
-			SendableEvent result = eventsToSend.first();
+			SendableEvent result = eventsToSend.First;
 
-			replaceFirstEventToSend();
+			ReplaceFirstEventToSend();
 
 			return result;
 		}
@@ -78,23 +80,23 @@ namespace net.esper.adapter
 		/// <summary>
 		///@see net.esper.adapter.AdapterCoordinator#add(net.esper.adapter.Adapter)
 		/// </summary>
-		public void Coordinate(InputAdapter inputAdapter)
+		public virtual void Coordinate(InputAdapter inputAdapter)
 		{
 			if(inputAdapter == null)
 			{
-				throw new NullPointerException("AdapterSpec cannot be null");
+				throw new ArgumentException("AdapterSpec cannot be null");
 			}
 
 			if(!(inputAdapter is CoordinatedAdapter))
 			{
-				throw new IllegalArgumentException("Cannot coordinate a Adapter of type " + inputAdapter.getClass());
+				throw new ArgumentException("Cannot coordinate a Adapter of type " + inputAdapter.GetType());
 			}
 			CoordinatedAdapter adapter = (CoordinatedAdapter)inputAdapter;
-			if(eventsFromAdapters.values().contains(adapter) || emptyAdapters.contains(adapter))
+			if(eventsFromAdapters.Values.Contains(adapter) || emptyAdapters.Contains(adapter))
 			{
 				return;
 			}
-			adapter.disallowStateTransitions();
+			adapter.DisallowStateTransitions();
 			adapter.EPService = epService;
 			adapter.UsingEngineThread = usingEngineThread;
 			adapter.ScheduleSlot = scheduleBucket.AllocateSlot();
@@ -104,7 +106,7 @@ namespace net.esper.adapter
 		/// <summary>
 		/// Does nothing.
 		/// </summary>
-		protected void Close()
+		protected override void Close()
 		{
 			// Do nothing
 		}
@@ -114,19 +116,19 @@ namespace net.esper.adapter
 		/// event returned by the read() method of the same Adapter that
 		/// provided the first event.
 		/// </summary>
-		protected void ReplaceFirstEventToSend()
+		protected override void ReplaceFirstEventToSend()
 		{
 			log.Debug(".replaceFirstEventToSend");
 			SendableEvent _event = eventsToSend.First;
-			eventsToSend.remove(_event);
-			addNewEvent(eventsFromAdapters.Fetch(_event));
-			pollEmptyAdapters();
+			eventsToSend.Remove(_event);
+			AddNewEvent(eventsFromAdapters.Fetch(_event));
+			PollEmptyAdapters();
 		}
 
 		/// <summary>
 		/// Reset all the changeable state of this ReadableAdapter, as if it were just created.
 		/// </summary>
-		protected void Reset()
+		protected override void Reset()
 		{
 			eventsFromAdapters.Clear();
 			emptyAdapters.Clear();
@@ -135,7 +137,7 @@ namespace net.esper.adapter
 		private void AddNewEvent(CoordinatedAdapter adapter)
 		{
 			log.Debug(".addNewEvent eventsFromAdapters==" + eventsFromAdapters);
-			SendableEvent _event = adapter.read();
+			SendableEvent _event = adapter.Read();
 			if(_event != null)
 			{
 				log.Debug(".addNewEvent event==" + _event);
@@ -146,7 +148,20 @@ namespace net.esper.adapter
 			{
 				if(adapter.State == AdapterState.DESTROYED)
 				{
-					eventsFromAdapters.values().removeAll(Collections.singleton(adapter));
+					LinkedList<SendableEvent> keyList = new LinkedList<SendableEvent>() ;
+					
+					foreach( KeyValuePair<SendableEvent,CoordinatedAdapter> entry in eventsFromAdapters )
+					{
+						if ( entry.Value == adapter )
+						{
+							keyList.AddFirst( entry.Key ) ;
+						}
+					}
+					
+					foreach( SendableEvent keyEvent in keyList )
+					{
+						eventsFromAdapters.Remove( keyEvent ) ;
+					}
 				}
 				else
 				{

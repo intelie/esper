@@ -33,8 +33,8 @@ namespace net.esper.eql.parse
         [Test]
         public virtual void testGetValues()
         {
-            ISet<int> result = listParam.GetValuesInRange(1, 8);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3, 5, 6 }, result);
+            Set<int> result = listParam.GetValuesInRange(1, 8);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3, 5, 6 }, result);
         }
     }
 }

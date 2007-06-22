@@ -31,12 +31,12 @@ namespace net.esper.regression.view
         {
             String caseExpr =
                 "select p00 like p01 as r1, " +
-                " p00 like p01 escape \"!\" as r2," + 
+                " p00 like p01 escape \"!\" as r2," +
                 " p02 regexp p03 as r3 " +
                 " from " + typeof(SupportBean_S0).FullName;
 
             EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
-            selectTestFixture.AddListener(testListener.Update);
+            selectTestFixture.AddListener(testListener);
 
             sendS0Event("a", "b", "c", "d");
             assertReceived(new Object[][]{
@@ -48,41 +48,41 @@ namespace net.esper.regression.view
             sendS0Event(null, "b", null, "d");
             assertReceived(new Object[][] {
                 new Object[] { "r1", null },
-                new Object[] { "r2", null }, 
+                new Object[] { "r2", null },
                 new Object[] { "r3", null }
             });
 
             sendS0Event("a", null, "c", null);
             assertReceived(new Object[][] {
-                new Object[] { "r1", null }, 
-                new Object[] { "r2", null }, 
+                new Object[] { "r1", null },
+                new Object[] { "r2", null },
                 new Object[] { "r3", null }
             });
 
             sendS0Event(null, null, null, null);
-            assertReceived(new Object[][] { 
-                new Object[] { "r1", null }, 
+            assertReceived(new Object[][] {
+                new Object[] { "r1", null },
                 new Object[] { "r2", null },
                 new Object[] { "r3", null }
             });
 
             sendS0Event("abcdef", "%de_", "a", "[a-c]");
-            assertReceived(new Object[][] { 
+            assertReceived(new Object[][] {
                 new Object[] { "r1", true },
                 new Object[] { "r2", true },
                 new Object[] { "r3", true }
             });
 
             sendS0Event("abcdef", "b%de_", "d", "[a-c]");
-            assertReceived(new Object[][] { 
-                new Object[] { "r1", false }, 
-                new Object[] { "r2", false }, 
+            assertReceived(new Object[][] {
+                new Object[] { "r1", false },
+                new Object[] { "r2", false },
                 new Object[] { "r3", false }
             });
 
             sendS0Event("!adex", "!%de_", "", ".");
             assertReceived(new Object[][] {
-                new Object[] { "r1", true }, 
+                new Object[] { "r1", true },
                 new Object[] { "r2", false },
                 new Object[] { "r3", false }
             });
@@ -91,7 +91,7 @@ namespace net.esper.regression.view
             assertReceived(new Object[][] {
                 new Object[] { "r1", false },
                 new Object[] { "r2", true },
-                new Object[] { "r3", true } 
+                new Object[] { "r3", true }
             });
         }
 
@@ -119,7 +119,7 @@ namespace net.esper.regression.view
                 " from " + typeof(SupportBean).FullName;
 
             EPStatement selectTestFixture = epService.EPAdministrator.CreateEQL(caseExpr);
-            selectTestFixture.AddListener(testListener.Update);
+            selectTestFixture.AddListener(testListener);
 
             sendSupportBeanEvent(101, 1.1);
             assertReceived(
@@ -130,8 +130,8 @@ namespace net.esper.regression.view
 
             sendSupportBeanEvent(102, 11d);
             assertReceived(
-                new Object[][] { 
-                    new Object[] { "r1", false }, 
+                new Object[][] {
+                    new Object[] { "r1", false },
                     new Object[] { "r2", true }
                 });
 
@@ -159,7 +159,7 @@ namespace net.esper.regression.view
 
         private void assertReceived(Object[][] objects)
         {
-            EventBean _event = testListener.assertOneGetNewAndReset();
+            EventBean _event = testListener.AssertOneGetNewAndReset();
             for (int i = 0; i < objects.Length; i++)
             {
                 String key = (String)objects[i][0];
@@ -177,8 +177,8 @@ namespace net.esper.regression.view
         private void sendSupportBeanEvent(int? intBoxed, double? doubleBoxed)
         {
             SupportBean bean = new SupportBean();
-            bean.intBoxed = intBoxed;
-            bean.doubleBoxed = doubleBoxed;
+            bean.SetIntBoxed(intBoxed);
+            bean.SetDoubleBoxed(doubleBoxed);
             epService.EPRuntime.SendEvent(bean);
         }
 

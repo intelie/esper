@@ -148,7 +148,7 @@ namespace net.esper.filter
 	        // considering that "a not in (5,6) and a not in (7,8)" is "a not in (5, 6, 7, 8)" therefore
 	        // we need to consolidate until there is no more work to do
 	        EDictionary<Pair<String, FilterOperator>, IList<FilterSpecParam>> mapOfParams =
-	                new EHashDictionary<Pair<String, FilterOperator>, IList<FilterSpecParam>>();
+	                new HashDictionary<Pair<String, FilterOperator>, IList<FilterSpecParam>>();
 
 	        bool haveConsolidated;
 	        do

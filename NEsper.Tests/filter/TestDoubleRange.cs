@@ -1,50 +1,57 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 
-using NUnit.Core;
 using NUnit.Framework;
 
 namespace net.esper.filter
 {
-	
 	[TestFixture]
-	public class TestDoubleRange 
+	public class TestDoubleRange
 	{
-		[Test]
-		public virtual void  testNew()
-		{
-			DoubleRange range = new DoubleRange(10, 20);
-			Assert.AreEqual(20d, range.Max);
-			Assert.AreEqual(10d, range.Min);
-			
-			range = new DoubleRange(20, 10);
-			Assert.AreEqual(20d, range.Max);
-			Assert.AreEqual(10d, range.Min);
-		}
-		
-		[Test]
-		public virtual void  testEquals()
-		{
-			DoubleRange rangeOne = new DoubleRange(10, 20);
-			DoubleRange rangeTwo = new DoubleRange(20, 10);
-			DoubleRange rangeThree = new DoubleRange(20, 11);
-			DoubleRange rangeFour = new DoubleRange(21, 10);
-			
-			Assert.AreEqual(rangeOne, rangeTwo);
-			Assert.AreEqual(rangeTwo, rangeOne);
-			Assert.IsFalse(rangeOne.Equals(rangeThree));
-			Assert.IsFalse(rangeOne.Equals(rangeFour));
-			Assert.IsFalse(rangeThree.Equals(rangeFour));
-		}
-		
-		[Test]
-		public virtual void  testHash()
-		{
-			DoubleRange range = new DoubleRange(10, 20);
-			Double a = 10 ;
-			Double b = 20 ;
-			int hashCode = a.GetHashCode() ^ b.GetHashCode();
-			
-			Assert.AreEqual(hashCode, range.GetHashCode());
-		}
+	    [Test]
+	    public void TestNew()
+	    {
+	        DoubleRange range = new DoubleRange(10d, 20d);
+	        Assert.AreEqual(20d, range.Max);
+	        Assert.AreEqual(10d, range.Min);
+
+	        range = new DoubleRange(20d, 10d);
+	        Assert.AreEqual(20d, range.Max);
+	        Assert.AreEqual(10d, range.Min);
+	    }
+
+	    [Test]
+	    public void TestEquals()
+	    {
+	        DoubleRange rangeOne = new DoubleRange(10d, 20d);
+	        DoubleRange rangeTwo = new DoubleRange(20d, 10d);
+	        DoubleRange rangeThree = new DoubleRange(20d, 11d);
+	        DoubleRange rangeFour = new DoubleRange(21d, 10d);
+
+	        Assert.AreEqual(rangeOne, rangeTwo);
+	        Assert.AreEqual(rangeTwo, rangeOne);
+	        Assert.IsFalse(rangeOne.Equals(rangeThree));
+	        Assert.IsFalse(rangeOne.Equals(rangeFour));
+	        Assert.IsFalse(rangeThree.Equals(rangeFour));
+	    }
+
+	    [Test]
+	    public void TestHash()
+	    {
+	        DoubleRange range = new DoubleRange(10d, 20d);
+	        double valueA = 10.0;
+	        double valueB = 20.0;
+
+	        int hashCode = 7 + valueA.GetHashCode() ^ valueB.GetHashCode();
+
+	        Assert.AreEqual(hashCode, range.GetHashCode());
+	    }
 	}
-}
+} // End of namespace

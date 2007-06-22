@@ -1,6 +1,16 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.Text;
+
+using NUnit.Framework;
 
 using net.esper.client;
 using net.esper.client.time;
@@ -9,385 +19,379 @@ using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.util;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 using org.apache.commons.logging;
 
 namespace net.esper.regression.support
 {
-    /// <summary>
-    /// Test harness for testing expressions and comparing received MatchedEventMap
-    /// instances against against expected results.
-    /// </summary>
+/**
+ * Test harness for testing expressions and comparing received MatchedEventMap instances against against expected results.
+ */
+	public class PatternTestHarness : SupportBeanConstants
+	{
+	    private readonly EventCollection sendEventCollection;
+	    private readonly CaseList caseList;
 
-    public class PatternTestHarness : SupportBeanConstants
-    {
-        private readonly EventCollection sendEventCollection;
-        private readonly CaseList caseList;
+	    // Array of expressions and match listeners for listening to events for each test descriptor
+	    private EPStatement[] expressions;
+	    private SupportUpdateListener[] listeners;
 
-        // Array of expressions and match listeners for listening to events for each test descriptor
-        private EPStatement[] expressions;
-        private SupportUpdateListener[] listeners;
+	    public PatternTestHarness( EventCollection sendEventCollection,
+	                               CaseList caseList)
+	    {
+	        this.sendEventCollection = sendEventCollection;
+	        this.caseList = caseList;
 
-        public PatternTestHarness(EventCollection sendEventCollection, CaseList caseList)
-        {
-            this.sendEventCollection = sendEventCollection;
-            this.caseList = caseList;
+	        // Create a listener for each test descriptor
+	        this.listeners = new SupportUpdateListener[caseList.NumTests];
+	        for (int i = 0; i < listeners.Length; i++)
+	        {
+	            listeners[i] = new SupportUpdateListener();
+	        }
+	        expressions = new EPStatement[listeners.Length];
+	    }
 
-            // Create a listener for each test descriptor
-            this.listeners = new SupportUpdateListener[caseList.NumTests];
-            for (int i = 0; i < listeners.Length; i++)
-            {
-                listeners[i] = new SupportUpdateListener();
-            }
-            expressions = new EPStatement[listeners.Length];
-        }
+	    public void RunTest()
+	    {
+	        RunTest(false);
+	        RunTest(true);
+	    }
 
-        public void runTest()
-        {
-            runTest(false);
-            runTest(true);
-        }
+	    private void RunTest(bool useEQL)
+	    {
+	        EPServiceProvider serviceProvider = EPServiceProviderManager.GetDefaultProvider();
+	        serviceProvider.Initialize();
 
-        private void runTest(bool useEQL)
-        {
-            EPServiceProvider serviceProvider = EPServiceProviderManager.GetDefaultProvider();
-            serviceProvider.Initialize();
+	        EPRuntime runtime = serviceProvider.EPRuntime;
+	        runtime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
-            EPRuntime runtime = serviceProvider.EPRuntime;
-            runtime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
+	        // Send the start time to the runtime
+	        if (sendEventCollection.GetTime(EventCollection.ON_START__event_ID) != null)
+	        {
+	            TimerEvent startTime = new CurrentTimeEvent(sendEventCollection.GetTime(EventCollection.ON_START__event_ID).Value);
+	            runtime.SendEvent(startTime);
+	            log.Debug(".runTest Start time is " + startTime);
+	        }
 
-            // Send the start time to the runtime
-            if (sendEventCollection.GetTime(EventCollection.ON_START_EVENT_ID) != null)
-            {
-                TimerEvent startTime = new CurrentTimeEvent(sendEventCollection.GetTime(EventCollection.ON_START_EVENT_ID).GetValueOrDefault());
-                runtime.SendEvent(startTime);
-                log.Debug(".runTest Start time is " + startTime);
-            }
+	        // Set up expression filters and match listeners
 
-            // Set up expression filters and match listeners
+	        int index = 0;
+	        foreach (EventExpressionCase descriptor in caseList.Results)
+	        {
+	            String expressionText = descriptor.ExpressionText;
 
-            int index = 0;
-            foreach (EventExpressionCase descriptor in caseList.Results)
-            {
-                String expressionText = descriptor.ExpressionText;
+	            EPStatement statement = null;
 
-                EPStatement statement = null;
+	            try
+	            {
+	                if (useEQL)
+	                {
+	                    expressionText = "select * from pattern [" + expressionText + "]";
+	                    statement = serviceProvider.EPAdministrator.CreateEQL(expressionText);
+	                }
+	                else
+	                {
+	                    statement = serviceProvider.EPAdministrator.CreatePattern(expressionText);
+	                }
+	            }
+	            catch (Exception ex)
+	            {
+	                log.Fatal(".runTest Failed to create statement for pattern expression=" + expressionText, ex);
+	                Assert.Fail();
+	            }
 
-                try
-                {
-                    if (useEQL)
-                    {
-                        expressionText = "select * from pattern [" + expressionText + "]";
-                        statement = serviceProvider.EPAdministrator.CreateEQL(expressionText);
-                    }
-                    else
-                    {
-                        statement = serviceProvider.EPAdministrator.CreatePattern(expressionText);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    log.Fatal(".runTest Failed to create statement for pattern expression=" + expressionText, ex);
-                    Assert.Fail();
-                }
+	            // We stop the statement again and start after the first listener was added.
+	            // Thus we can handle patterns that fireStatementStopped on startup.
+	            statement.Stop();
 
-                // We stop the statement again and start after the first listener was added.
-                // Thus we can handle patterns that fire on Startup.
-                statement.Stop();
+	            expressions[index] = statement;
+                expressions[index].AddListener(listeners[index]);
 
-                expressions[index] = statement;
-                expressions[index].AddListener(listeners[index].Update);
+	            // Start the statement again: listeners now got called for on-start events such as for a "not"
+	            statement.Start();
 
-                // Start the statement again: listeners now got called for on-start events such as for a "not"
-                statement.Start();
+	            index++;
+	        }
 
-                index++;
-            }
+	        // Some expressions may fireStatementStopped as soon as they are started, such as a "not b()" expression, for example.
+	        // Check results for any such listeners/expressions.
+	        // NOTE: For EQL statements we do not support calling listeners when a pattern that fires upon start.
+	        // Reason is that this should not be a relevant functionality of a pattern, the start pattern
+	        // event itself cannot carry any information and is thus ignore. Note subsequent events
+	        // generated by the same pattern are fine.
+	        int totalEventsReceived = 0;
+	        if (useEQL)
+	        {
+	            ClearListenerEvents();
+	            totalEventsReceived += CountExpectedEvents(EventCollection.ON_START__event_ID);
+	        }
+	        else    // Patterns do need to handle event publishing upon pattern expression start (patterns that turn true right away)
+	        {
+	            CheckResults(EventCollection.ON_START__event_ID);
+	            totalEventsReceived += CountListenerEvents();
+	            ClearListenerEvents();
+	        }
 
-            // Some expressions may fire as soon as they are started, such as a "not b()" expression, for example.
-            // Check results for any such listeners/expressions.
-            // NOTE: For EQL statements we do not support calling listeners when a pattern that fires upon start.
-            // Reason is that this should not be a relevant functionality of a pattern, the start pattern
-            // event itself cannot carry any information and is thus ignore. Note subsequent events
-            // generated by the same pattern are fine.
-            int totalEventsReceived = 0;
-            if (useEQL)
-            {
-                clearListenerEvents();
-                totalEventsReceived += countExpectedEvents(EventCollection.ON_START_EVENT_ID);
-            }
-            else    // Patterns do need to handle event publishing upon pattern expression Start (patterns that turn true right away)
-            {
-                checkResults(EventCollection.ON_START_EVENT_ID);
-                totalEventsReceived += countListenerEvents();
-                clearListenerEvents();
-            }
+	        // Send actual test events
+	        foreach (KeyValuePair<String, Object> entry in sendEventCollection)
+	        {
+	            String eventId = entry.Key;
 
-            // Send actual test events
+	            // Manipulate the time when this event was send
+	            if (sendEventCollection.GetTime(eventId) != null)
+	            {
+	                TimerEvent currentTimeEvent = new CurrentTimeEvent(sendEventCollection.GetTime(eventId).Value);
+	                runtime.SendEvent(currentTimeEvent);
+	                log.Debug(".runTest Sending event " + entry.Key +
+	                          " = " + entry.Value +
+	                          "  timed " + currentTimeEvent);
+	            }
+
+	            // Send event itself
+	            runtime.SendEvent(entry.Value);
+
+	            // Check expected results for this event
+	            CheckResults(eventId);
+
+	            // Count and clear the list of events that each listener has received
+	            totalEventsReceived += CountListenerEvents();
+	            ClearListenerEvents();
+	        }
+
+	        // Count number of expected matches
+	        int totalExpected = 0;
+	        foreach (EventExpressionCase descriptor in caseList.Results)
+	        {
+	            foreach (IList<EventDescriptor> events in descriptor.ExpectedResults.Values)
+	            {
+	                totalExpected += events.Count;
+	            }
+	        }
+
+	        if (totalExpected != totalEventsReceived)
+	        {
+	            log.Debug(".test Count expected does not match count received, expected=" + totalExpected +
+	                    " received=" + totalEventsReceived);
+	            Assert.IsTrue(false);
+	        }
+
+	        // Kill all expressions
+	        foreach (EPStatement expression in expressions)
+	        {
+	            expression.RemoveAllListeners();
+	        }
+
+	        // Send test events again to also test that all were indeed killed
             foreach (KeyValuePair<String, Object> entry in sendEventCollection)
-            {
-                String eventId = entry.Key;
+	        {
+	            runtime.SendEvent(entry.Value);
+	        }
 
-                // Manipulate the time when this event was send
-                if (sendEventCollection.GetTime(eventId) != null)
-                {
-                    TimerEvent currentTimeEvent = new CurrentTimeEvent(sendEventCollection.GetTime(eventId).GetValueOrDefault());
-                    runtime.SendEvent(currentTimeEvent);
-                    log.Debug(
-                        ".runTest Sending event " + entry.Key +
-                        " = " + entry.Value +
-                        "  timed " + currentTimeEvent);
-                }
+	        // Make sure all listeners are still at zero
+	        foreach (SupportUpdateListener listener in listeners)
+	        {
+	            if (listener.NewDataList.Count > 0)
+	            {
+	                log.Debug(".test A match was received after stopping all expressions");
+	                Assert.IsTrue(false);
+	            }
+	        }
+	    }
 
-                // Send event itself
-                runtime.SendEvent(entry.Value);
+	    private void CheckResults(String eventId)
+	    {
+	        // For each test descriptor, make sure the listener has received exactly the events expected
+	        int index = 0;
+	        log.Debug(".checkResults Checking results for event " + eventId);
 
-                // Check expected results for this event
-                checkResults(eventId);
+	        foreach (EventExpressionCase descriptor in caseList.Results)
+	        {
+	            String expressionText = expressions[index].Text;
 
-                // Count and clear the list of events that each listener has received
-                totalEventsReceived += countListenerEvents();
-                clearListenerEvents();
-            }
+	            LinkedDictionary<String, IList<EventDescriptor>> allExpectedResults = descriptor.ExpectedResults;
+	            EventBean[] receivedResults = listeners[index].LastNewData;
+	            index++;
 
-            // Count number of expected matches
-            int totalExpected = 0;
-            foreach (EventExpressionCase descriptor in caseList.Results)
-            {
-                foreach (List<EventDescriptor> events in descriptor.getExpectedResults().Values)
-                {
-                    totalExpected += events.Count;
-                }
-            }
+	            // If nothing at all was expected for this event, make sure nothing was received
+	            if (!(allExpectedResults.ContainsKey(eventId)))
+	            {
+	                if ((receivedResults != null) && (receivedResults.Length > 0))
+	                {
+	                    log.Debug(".checkResults Incorrect result for expression : " + expressionText);
+	                    log.Debug(".checkResults Expected no results for event " + eventId + ", but received " + receivedResults.Length + " events");
+	                    log.Debug(".checkResults Received, have " + receivedResults.Length + " entries");
+	                    PrintList(receivedResults);
+	                    Assert.IsFalse(true);
+	                }
+	                continue;
+	            }
 
-            if (totalExpected != totalEventsReceived)
-            {
-                log.Debug(".test Count expected does not match count received, expected=" + totalExpected +
-                        " received=" + totalEventsReceived);
-                Assert.IsTrue(false);
-            }
+	            IList<EventDescriptor> expectedResults = allExpectedResults.Fetch(eventId);
 
-            // Kill all expressions
-            foreach (EPStatement expression in expressions)
-            {
-                expression.RemoveAllListeners();
-            }
+	            // Compare the result lists, not caring about the order of the elements
+	            if (!(CompareLists(receivedResults, expectedResults)))
+	            {
+	                log.Debug(".checkResults Incorrect result for expression : " + expressionText);
+	                log.Debug(".checkResults Expected size=" + expectedResults.Count + " received size=" + (receivedResults == null ? 0 : receivedResults.Length));
 
-            // Send test events again to also test that all were indeed killed
-            foreach (KeyValuePair<String, Object> entry in sendEventCollection)
-            {
-                runtime.SendEvent(entry.Value);
-            }
+	                log.Debug(".checkResults Expected, have " + expectedResults.Count + " entries");
+	                PrintList(expectedResults);
+	                log.Debug(".checkResults Received, have " + (receivedResults == null ? 0 : receivedResults.Length) + " entries");
+	                PrintList(receivedResults);
 
-            // Make sure all listeners are still at zero
-            foreach (SupportUpdateListener listener in listeners)
-            {
-                if (listener.NewDataList.Count > 0)
-                {
-                    log.Debug(".test A match was received after Stopping all expressions");
-                    Assert.IsTrue(false);
-                }
-            }
-        }
+	                Assert.IsFalse(true);
+	            }
+	        }
+	    }
 
-        private void checkResults(String eventId)
-        {
-            // For each test descriptor, make sure the listener has received exactly the events expected
-            int index = 0;
-            log.Debug(".checkResults Checking results for event " + eventId);
+	    private static bool CompareLists(EventBean[] receivedResults, IList<EventDescriptor> expectedResults)
+	    {
+	        int receivedSize = (receivedResults == null) ? 0 : receivedResults.Length;
+	        if (expectedResults.Count != receivedSize)
+	        {
+	            return false;
+	        }
 
-            foreach (EventExpressionCase descriptor in caseList.Results)
-            {
-                String expressionText = expressions[index].Text;
+	        // To make sure all received events have been expected
+	        LinkedList<EventDescriptor> expectedResultsClone = new LinkedList<EventDescriptor>(expectedResults);
 
-                LinkedDictionary<String, List<EventDescriptor>> allExpectedResults = descriptor.getExpectedResults();
-                EventBean[] receivedResults = listeners[index].LastNewData;
-                index++;
+	        // Go through the list of expected results and remove from received result list if found
+	        foreach (EventDescriptor desc in expectedResults)
+	        {
+	            EventDescriptor foundMatch = null;
 
-                // If nothing at all was expected for this event, make sure nothing was received
-                if (!(allExpectedResults.ContainsKey(eventId)))
-                {
-                    if ((receivedResults != null) && (receivedResults.Length > 0))
-                    {
-                        log.Debug(".checkResults Incorrect result for expression : " + expressionText);
-                        log.Debug(".checkResults Expected no results for event " + eventId + ", but received " + receivedResults.Length + " events");
-                        log.Debug(".checkResults Received, have " + receivedResults.Length + " entries");
-                        printList(receivedResults);
-                        Assert.IsFalse(true);
-                    }
-                    continue;
-                }
+	            foreach (EventBean received in receivedResults)
+	            {
+	                if (CompareEvents(desc, received))
+	                {
+	                    foundMatch = desc;
+	                    break;
+	                }
+	            }
 
-                List<EventDescriptor> expectedResults = allExpectedResults.Fetch(eventId);
+	            // No match between expected and received
+	            if (foundMatch == null)
+	            {
+	                return false;
+	            }
 
-                // Compare the result lists, not caring about the order of the elements
-                if (!(compareLists(receivedResults, expectedResults)))
-                {
-                    log.Debug(".checkResults Incorrect result for expression : " + expressionText);
-                    log.Debug(".checkResults Expected size=" + expectedResults.Count + " received size=" + (receivedResults == null ? 0 : receivedResults.Length));
+	            expectedResultsClone.Remove(foundMatch);
+	        }
 
-                    log.Debug(".checkResults Expected, have " + expectedResults.Count + " entries");
-                    printList(expectedResults);
-                    log.Debug(".checkResults Received, have " + (receivedResults == null ? 0 : receivedResults.Length) + " entries");
-                    printList(receivedResults);
+	        // Any left over received results also invalidate the test
+	        if (expectedResultsClone.Count > 0)
+	        {
+	            return false;
+	        }
+	        return true;
+	    }
 
-                    Assert.IsFalse(true);
-                }
-            }
-        }
-
-        private bool compareLists(EventBean[] receivedResults,
-                                  List<EventDescriptor> expectedResults)
-        {
-            int receivedSize = (receivedResults == null) ? 0 : receivedResults.Length;
-            if (expectedResults.Count != receivedSize)
-            {
-                return false;
-            }
-
-            // To make sure all received events have been expected
-            List<EventDescriptor> expectedResultsClone = new List<EventDescriptor>(expectedResults);
-
-            // Go through the list of expected results and remove from received result list if found
-            foreach (EventDescriptor desc in expectedResults)
-            {
-                EventDescriptor foundMatch = null;
-
-                foreach (EventBean received in receivedResults)
-                {
-                    if (compareEvents(desc, received))
-                    {
-                        foundMatch = desc;
-                        break;
-                    }
-                }
-
-                // No match between expected and received
-                if (foundMatch == null)
-                {
-                    return false;
-                }
-
-                expectedResultsClone.Remove(foundMatch);
-            }
-
-            // Any left over received results also invalidate the test
-            if (expectedResultsClone.Count > 0)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private static bool compareEvents(EventDescriptor eventDesc, EventBean eventBean)
-        {
+	    private static bool CompareEvents(EventDescriptor eventDesc, EventBean _eventBean)
+	    {
             foreach (KeyValuePair<String, Object> entry in eventDesc.EventProperties)
-            {
-                if (eventBean[entry.Key] != entry.Value)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+	        {
+	            if (!(_eventBean[entry.Key] == (entry.Value)))
+	            {
+	                return false;
+	            }
+	        }
+	        return true;
+	    }
 
-        /**
-         * Clear the event list of all listeners
-         */
-        private void clearListenerEvents()
-        {
-            foreach (SupportUpdateListener listener in listeners)
-            {
-                listener.reset();
-            }
-        }
+	    /**
+	     * Clear the event list of all listeners
+	     */
+	    private void ClearListenerEvents()
+	    {
+	        foreach (SupportUpdateListener listener in listeners)
+	        {
+	            listener.Reset();
+	        }
+	    }
 
-        /**
-         * Clear the event list of all listeners
-         */
-        private int countListenerEvents()
-        {
-            int count = 0;
-            foreach (SupportUpdateListener listener in listeners)
-            {
-                foreach (EventBean[] events in listener.NewDataList)
-                {
-                    count += events.Length;
-                }
-            }
-            return count;
-        }
+	    /**
+	     * Clear the event list of all listeners
+	     */
+	    private int CountListenerEvents()
+	    {
+	        int count = 0;
+	        foreach (SupportUpdateListener listener in listeners)
+	        {
+	            foreach (EventBean[] events in listener.NewDataList)
+	            {
+	                count += events.Length;
+	            }
+	        }
+	        return count;
+	    }
 
-        private void printList(List<EventDescriptor> events)
-        {
-            int index = 0;
-            foreach (EventDescriptor desc in events)
-            {
-                StringBuilder buffer = new StringBuilder();
-                int count = 0;
+        private void PrintList(IEnumerable<EventDescriptor> events)
+	    {
+	        int index = 0;
+	        foreach (EventDescriptor desc in events)
+	        {
+	            StringBuilder buffer = new StringBuilder();
+	            int count = 0;
 
                 foreach (KeyValuePair<String, Object> entry in desc.EventProperties)
-                {
-                    buffer.Append(" (" + (count++) + ") ");
-                    buffer.Append("tag=" + entry.Key);
+	            {
+	                buffer.Append(" (" + (count++) + ") ");
+	                buffer.Append("tag=" + entry.Key);
 
-                    String id = findValue(entry.Value);
-                    buffer.Append("  eventId=" + id);
-                }
+	                String id = FindValue(entry.Value);
+	                buffer.Append("  eventId=" + id);
+	            }
 
-                log.Debug(".printList (" + index + ") : " + buffer.ToString());
-                index++;
-            }
-        }
+	            log.Debug(".printList (" + index + ") : " + buffer.ToString());
+	            index++;
+	        }
+	    }
 
-        private void printList(EventBean[] events)
-        {
-            if (events == null)
-            {
-                log.Debug(".printList : null-value events array");
-                return;
-            }
+	    private static void PrintList(EventBean[] events)
+	    {
+	        if (events == null)
+	        {
+	            log.Debug(".printList : null-value events array");
+	            return;
+	        }
 
-            log.Debug(".printList : " + events.Length + " elements...");
-            for (int i = 0; i < events.Length; i++)
-            {
-                log.Debug("  " + EventBeanUtility.PrintEvent(events[i]));
-            }
-        }
+	        log.Debug(".printList : " + events.Length + " elements...");
+	        for (int i = 0; i < events.Length; i++)
+	        {
+	            log.Debug("  " + EventBeanUtility.PrintEvent(events[i]));
+	        }
+	    }
 
-        /**
-         * Find the value object in the map of object names and values
-         */
-        private String findValue(Object value)
-        {
+	    /**
+	     * Find the value object in the map of object names and values
+	     */
+	    private String FindValue(Object value)
+	    {
             foreach (KeyValuePair<String, Object> entry in sendEventCollection)
-            {
-                if (value == entry.Value)
-                {
-                    return entry.Key;
-                }
-            }
-            return null;
-        }
+	        {
+	            if (value == entry.Value)
+	            {
+	                return entry.Key;
+	            }
+	        }
+	        return null;
+	    }
 
-        private int countExpectedEvents(String eventId)
-        {
-            int result = 0;
-            foreach (EventExpressionCase descriptor in caseList.Results)
-            {
-                LinkedDictionary<String, List<EventDescriptor>> allExpectedResults = descriptor.getExpectedResults();
+	    private int CountExpectedEvents(String eventId)
+	    {
+	        int result = 0;
+	        foreach (EventExpressionCase descriptor in caseList.Results)
+	        {
+	            LinkedDictionary<String, IList<EventDescriptor>> allExpectedResults = descriptor.ExpectedResults;
 
-                // If nothing at all was expected for this event, make sure nothing was received
-                if (allExpectedResults.ContainsKey(eventId))
-                {
-                    result++;
-                }
-            }
-            return result;
-        }
+	            // If nothing at all was expected for this event, make sure nothing was received
+	            if (allExpectedResults.ContainsKey(eventId))
+	            {
+	                result++;
+	            }
+	        }
+	        return result;
+	    }
 
-        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    }
-}
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	}
+} // End of namespace

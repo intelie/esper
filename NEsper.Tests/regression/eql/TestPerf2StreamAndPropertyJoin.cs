@@ -35,15 +35,15 @@ namespace net.esper.regression.eql
             String joinStatement = "select * from " + typeof(SupportMarketDataBean).FullName + ".win:length(1000000)," + typeof(SupportBean).FullName + ".win:length(1000000)" + " where symbol=string and volume=longBoxed";
 
             joinView = epService.EPAdministrator.CreateEQL(joinStatement);
-            joinView.AddListener(updateListener.Update);
+            joinView.AddListener(updateListener);
 
             // Send events for each stream
             log.Info(methodName + " Preloading events");
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++)
             {
-                SendEvent(makeMarketEvent("IBM_" + i, 1));
-                SendEvent(makeSupportEvent("CSCO_" + i, 2));
+                SendEvent(MakeMarketEvent("IBM_" + i, 1));
+                SendEvent(MakeSupportEvent("CSCO_" + i, 2));
             }
             log.Info(methodName + " Done preloading");
 
@@ -62,15 +62,15 @@ namespace net.esper.regression.eql
             String joinStatement = "select * from " + typeof(SupportMarketDataBean).FullName + "().win:length(1000000)," + typeof(SupportBean).FullName + ".win:length(1000000)" + " where symbol=string and volume=longBoxed and doublePrimitive=price";
 
             joinView = epService.EPAdministrator.CreateEQL(joinStatement);
-            joinView.AddListener(updateListener.Update);
+            joinView.AddListener(updateListener);
 
             // Send events for each stream
             log.Info(methodName + " Preloading events");
             long startTime = DateTimeHelper.CurrentTimeMillis;
             for (int i = 0; i < 1000; i++)
             {
-                SendEvent(makeMarketEvent("IBM_" + i, 1));
-                SendEvent(makeSupportEvent("CSCO_" + i, 2));
+                SendEvent(MakeMarketEvent("IBM_" + i, 1));
+                SendEvent(MakeSupportEvent("CSCO_" + i, 2));
             }
             log.Info(methodName + " Done preloading");
 
@@ -86,15 +86,15 @@ namespace net.esper.regression.eql
             epService.EPRuntime.SendEvent(_event);
         }
 
-        private Object makeSupportEvent(String id, long longBoxed)
+        private Object MakeSupportEvent(String id, long longBoxed)
         {
             SupportBean bean = new SupportBean();
-            bean.str = id;
-            bean.longBoxed = longBoxed;
+            bean.SetString(id);
+            bean.SetLongBoxed(longBoxed);
             return bean;
         }
 
-        private Object makeMarketEvent(String id, long volume)
+        private Object MakeMarketEvent(String id, long volume)
         {
             return new SupportMarketDataBean(id, 0, (long)volume, "");
         }

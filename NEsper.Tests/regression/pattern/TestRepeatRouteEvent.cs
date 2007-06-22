@@ -35,7 +35,7 @@ namespace net.esper.regression.pattern
         public virtual void testRouteSingle()
         {
             SingleRouteUpdateListener listener = new SingleRouteUpdateListener(this);
-            patternStmt.AddListener(listener.Update);
+            patternStmt.AddListener(listener);
 
             // Send first event that triggers the loop
             SendEvent(0);
@@ -52,7 +52,7 @@ namespace net.esper.regression.pattern
         public virtual void testRouteCascade()
         {
             CascadeRouteUpdateListener listener = new CascadeRouteUpdateListener(this);
-            patternStmt.AddListener(listener.Update);
+            patternStmt.AddListener(listener);
 
             // Send first event that triggers the loop
             SendEvent(2); // the 2 translates to number of new events routed
@@ -77,11 +77,11 @@ namespace net.esper.regression.pattern
             String viewExpr = "timer:at(*,*,*,*,*,*)";
             EPStatement atPatternStmt = epService.EPAdministrator.CreatePattern(viewExpr);
             SingleRouteUpdateListener timeListener = new SingleRouteUpdateListener(this);
-            atPatternStmt.AddListener(timeListener.Update);
+            atPatternStmt.AddListener(timeListener);
 
             // register regular listener
             SingleRouteUpdateListener eventListener = new SingleRouteUpdateListener(this);
-            patternStmt.AddListener(eventListener.Update);
+            patternStmt.AddListener(eventListener);
 
             Assert.AreEqual(0, timeListener.Count);
             Assert.AreEqual(0, eventListener.Count);
@@ -95,7 +95,7 @@ namespace net.esper.regression.pattern
         private SupportBean SendEvent(int intValue)
         {
             SupportBean _event = new SupportBean();
-            _event.intPrimitive = intValue;
+            _event.SetIntPrimitive(intValue);
             epService.EPRuntime.SendEvent(_event);
             return _event;
         }
@@ -103,12 +103,12 @@ namespace net.esper.regression.pattern
         private SupportBean routeEvent(int intValue)
         {
             SupportBean _event = new SupportBean();
-            _event.intPrimitive = intValue;
+            _event.SetIntPrimitive(intValue);
             epService.EPRuntime.Route(_event);
             return _event;
         }
 
-        internal class SingleRouteUpdateListener
+        internal class SingleRouteUpdateListener : UpdateListener
         {
             public SingleRouteUpdateListener(TestRepeatRouteEvent enclosingInstance)
             {
@@ -138,7 +138,7 @@ namespace net.esper.regression.pattern
             }
         }
 
-        internal class CascadeRouteUpdateListener
+        internal class CascadeRouteUpdateListener : UpdateListener
         {
             public CascadeRouteUpdateListener(TestRepeatRouteEvent enclosingInstance)
             {
@@ -176,7 +176,7 @@ namespace net.esper.regression.pattern
             {
                 countReceived++;
                 SupportBean _event = (SupportBean)(newEvents[0]["tag"]);
-                int numNewEvents = _event.intPrimitive;
+                int numNewEvents = _event.GetIntPrimitive();
 
                 for (int i = 0; i < numNewEvents; i++)
                 {

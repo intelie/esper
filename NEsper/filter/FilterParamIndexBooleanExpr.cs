@@ -30,7 +30,7 @@ namespace net.esper.filter
 	    public FilterParamIndexBooleanExpr(EventType eventType)
 	        : base(FilterOperator.BOOLEAN_EXPRESSION)
 	    {
-	        evaluatorsMap = new EHashDictionary<ExprNodeAdapter, EventEvaluator>();
+	        evaluatorsMap = new HashDictionary<ExprNodeAdapter, EventEvaluator>();
 	        constantsMapRWLock = new ReaderWriterLock();
 	    }
 

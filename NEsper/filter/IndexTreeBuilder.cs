@@ -24,7 +24,7 @@ namespace net.esper.filter
     public sealed class IndexTreeBuilder
     {
         private EventType eventType;
-        private ETreeSet<FilterValueSetParam> remainingParameters;
+        private TreeSet<FilterValueSetParam> remainingParameters;
         private FilterHandle filterHandle;
         private long currentThreadId;
 
@@ -430,9 +430,9 @@ namespace net.esper.filter
         /// <param name="parameters">is a list of filter parameters</param>
         /// <returns>sorted set of filter parameters</returns>
 
-        public static ETreeSet<FilterValueSetParam> CopySortParameters(IList<FilterValueSetParam> parameters)
+        public static TreeSet<FilterValueSetParam> CopySortParameters(IList<FilterValueSetParam> parameters)
         {
-            ETreeSet<FilterValueSetParam> copy = new ETreeSet<FilterValueSetParam>(new FilterValueSetParamComparator());
+            TreeSet<FilterValueSetParam> copy = new TreeSet<FilterValueSetParam>(new FilterValueSetParamComparator());
 
             foreach (FilterValueSetParam parameter in parameters)
             {

@@ -177,7 +177,7 @@ namespace net.esper.eql.core
 
 	        // Determine if we have a having clause with aggregation
 	        IList<ExprAggregateNode> havingAggregateExprNodes = new List<ExprAggregateNode>();
-	        Set<Pair<int, string>> propertiesAggregatedHaving = new EHashSet<Pair<int, string>>();
+	        Set<Pair<int, string>> propertiesAggregatedHaving = new HashSet<Pair<int, string>>();
 	        if (optionalHavingNode != null)
 	        {
 	            ExprAggregateNode.GetAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
@@ -387,7 +387,7 @@ namespace net.esper.eql.core
         private static Set<Pair<Int32, String>> GetNonAggregatedProps(IList<ExprNode> exprNodes)
         {
             // Determine all event properties in the clause
-            Set<Pair<Int32, String>> nonAggProps = new EHashSet<Pair<Int32, String>>();
+            Set<Pair<Int32, String>> nonAggProps = new HashSet<Pair<Int32, String>>();
             foreach (ExprNode node in exprNodes)
             {
                 ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(false);
@@ -402,7 +402,7 @@ namespace net.esper.eql.core
         private static Set<Pair<Int32, String>> GetAggregatedProperties(IList<ExprAggregateNode> aggregateNodes)
         {
             // Get a list of properties being aggregated in the clause.
-            Set<Pair<Int32, String>> propertiesAggregated = new EHashSet<Pair<Int32, String>>();
+            Set<Pair<Int32, String>> propertiesAggregated = new HashSet<Pair<Int32, String>>();
             foreach (ExprNode selectAggExprNode in aggregateNodes)
             {
                 ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);
@@ -417,7 +417,7 @@ namespace net.esper.eql.core
         private static Set<Pair<Int32, String>> GetGroupByProperties(IList<ExprNode> groupByNodes)
         {
             // Get the set of properties refered to by all group-by expression nodes.
-            Set<Pair<Int32, String>> propertiesGroupBy = new EHashSet<Pair<Int32, String>>();
+            Set<Pair<Int32, String>> propertiesGroupBy = new HashSet<Pair<Int32, String>>();
             foreach (ExprNode groupByNode in groupByNodes)
             {
                 ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);

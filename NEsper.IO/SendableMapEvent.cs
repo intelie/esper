@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.schedule;
 
 namespace net.esper.adapter
@@ -12,7 +13,7 @@ namespace net.esper.adapter
 	/// </summary>
 	public class SendableMapEvent : SendableEvent
 	{
-		private readonly IDictionary<String, Object> mapToSend;
+		private readonly IDataDictionary mapToSend;
 		private readonly string eventTypeAlias;
 		private readonly long timestamp;
 		private readonly ScheduleSlot scheduleSlot;
@@ -30,7 +31,8 @@ namespace net.esper.adapter
 			{
 				throw new NullReferenceException("ScheduleSlot cannot be null");
 			}
-			this.mapToSend = new EHashDictionary<String, Object>(mapToSend);
+			this.mapToSend = new DataDictionary() ;
+			this.mapToSend.PutAll(mapToSend);
 			this.eventTypeAlias = eventTypeAlias;
 			this.timestamp = timestamp;
 			this.scheduleSlot = scheduleSlot;
@@ -61,7 +63,7 @@ namespace net.esper.adapter
 			get { return timestamp; }
 		}
 		
-		public String ToString()
+		public override String ToString()
 		{
 			return mapToSend.ToString();
 		}

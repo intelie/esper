@@ -58,7 +58,7 @@ namespace net.esper.eql.join
         public virtual void testJoin()
         {
             // Should return all possible combinations, not matching performed, remember: duplicate pairs have been removed
-		    UniformPair<ISet<MultiKey<EventBean>>> result = joinSetComposerImpl.Join(
+		    UniformPair<Set<MultiKey<EventBean>>> result = joinSetComposerImpl.Join(
                 new EventBean[][] {newEventOne, newEventTwo},                 // new left and right
                 new EventBean[][] {new EventBean[] {indexedEventOne[0]}, new EventBean[] {indexedEventTwo[1]}} // old left and right
                 );
@@ -77,7 +77,7 @@ namespace net.esper.eql.join
             Assert.IsTrue(eventStringText.Contains("s1_2|s2_3"));
         }
 
-        private String toString(ISet<MultiKey<EventBean>> events)
+        private String toString(Set<MultiKey<EventBean>> events)
         {
             String delimiter = "";
             StringBuilder buf = new StringBuilder();
@@ -98,7 +98,7 @@ namespace net.esper.eql.join
             foreach (EventBean _event in events)
             {
                 buf.Append(delimiter);
-                buf.Append(((SupportBean)_event.Underlying).str);
+                buf.Append(((SupportBean)_event.Underlying).GetString());
                 delimiter = "|";
             }
             return buf.ToString();

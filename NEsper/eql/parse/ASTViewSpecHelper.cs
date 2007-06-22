@@ -18,7 +18,7 @@ namespace net.esper.eql.parse
         /// <returns> view spec
         /// </returns>
         /// <throws>  ASTWalkException is thrown to indicate an error in node parsing </throws>
-        public static ViewSpec buildSpec(AST node)
+        public static ViewSpec BuildSpec(AST node)
         {
             String objectNamespace = node.getFirstChild().getText();
             String objectName = node.getFirstChild().getNextSibling().getText();

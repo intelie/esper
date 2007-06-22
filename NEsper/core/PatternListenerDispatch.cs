@@ -14,17 +14,18 @@ namespace net.esper.core
 
 	public class PatternListenerDispatch : Dispatchable
 	{
-		private readonly Set<UpdateListener> listeners;
+		private readonly Set<UpdateEventHandler> eventHandlers;
 		private EventBean singleEvent;
 		private List<EventBean> eventList;
 
-		/// <summary> Constructor.</summary>
-		/// <param name="listeners">is the listeners to dispatch to.
-		/// </param>
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="eventHandlers">The event handlers.</param>
 
-		public PatternListenerDispatch( Set<UpdateListener> listeners )
+        public PatternListenerDispatch(Set<UpdateEventHandler> eventHandlers)
 		{
-			this.listeners = listeners;
+            this.eventHandlers = eventHandlers;
 		}
 
         /// <summary>
@@ -51,6 +52,19 @@ namespace net.esper.core
 		}
 
         /// <summary>
+        /// Fires the update event.
+        /// </summary>
+        /// <param name="newEvents">The new events.</param>
+        /// <param name="oldEvents">The old events.</param>
+        protected void FireUpdateEvent(EventBean[] newEvents, EventBean[] oldEvents)
+        {
+            foreach (UpdateEventHandler eventHandler in eventHandlers)
+            {
+                eventHandler(newEvents, oldEvents);
+            }
+        }
+
+        /// <summary>
         /// Execute any listeners.
         /// </summary>
 		public virtual void Execute()
@@ -69,10 +83,7 @@ namespace net.esper.core
 				singleEvent = null;
 			}
 
-			foreach ( UpdateListener listener in listeners )
-			{
-				listener( eventArray, null );
-			}
+            FireUpdateEvent(eventArray, null);
 		}
 
 		/// <summary> Returns true if at least one event has been added.</summary>

@@ -38,7 +38,7 @@ namespace net.esper.view.ext
 	    private readonly IStreamSortedRandomAccess optionalSortedRandomAccess;
 
 	    private EventPropertyGetter[] sortFieldGetters;
-		private ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
+		private TreeDictionary<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
 	    private int eventCount;
 
         /// <summary> Gets or sets the field names supplying the values to sort by.</summary>
@@ -109,7 +109,7 @@ namespace net.esper.view.ext
 	        this.optionalSortedRandomAccess = optionalSortedRandomAccess;
 
             IComparer<MultiKeyUntyped> comparator = new MultiKeyComparator(isDescendingValues);
-            sortedEvents = new ETreeDictionary<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
+            sortedEvents = new TreeDictionary<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
 	    }
 
         /// <summary>

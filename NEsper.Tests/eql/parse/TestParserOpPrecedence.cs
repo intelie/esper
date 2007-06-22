@@ -11,8 +11,8 @@ using org.apache.commons.logging;
 
 namespace net.esper.eql.parse
 {
-	
-	/// <summary> Test operator precedence and on-expression equivalence.
+	/// <summary>
+	/// Test operator precedence and on-expression equivalence.
 	/// Precendences are similar to Java see <a>http://java.sun.com/docs/books/tutorial/java/nutsandbolts/expressions.html</a>)
 	/// 
 	/// Precedence ordering (highest on top):
@@ -125,7 +125,7 @@ namespace net.esper.eql.parse
 		
 		private AST parse(String expression)
 		{
-			return SupportParserHelper.parsePattern(expression);
+			return SupportParserHelper.ParsePattern(expression);
 		}
 
         private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

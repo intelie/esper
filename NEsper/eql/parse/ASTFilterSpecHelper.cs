@@ -28,7 +28,7 @@ namespace net.esper.eql.parse
 		/// <returns> property name, ie. indexed[1] or mapped('key') or nested.nested or a combination or just 'simple'.
 		/// </returns>
 		
-        public static String getPropertyName(AST propertyNameExprChildNode)
+        public static String GetPropertyName(AST propertyNameExprChildNode)
 		{
 			StringBuilder buffer = new StringBuilder();
 			String delimiter = "";

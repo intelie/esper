@@ -28,23 +28,23 @@ namespace net.esper.regression.view
                 ".win:length(3) where Symbol='CSCO'";
             testView = epService.EPAdministrator.CreateEQL(viewExpr);
             testListener = new SupportUpdateListener();
-            testView.AddListener(testListener.Update);
+            testView.AddListener(testListener);
         }
 
         [Test]
         public virtual void testWhere()
         {
             sendMarketDataEvent("IBM");
-            Assert.IsFalse(testListener.getAndClearIsInvoked());
+            Assert.IsFalse(testListener.GetAndClearIsInvoked());
 
             sendMarketDataEvent("CSCO");
-            Assert.IsTrue(testListener.getAndClearIsInvoked());
+            Assert.IsTrue(testListener.GetAndClearIsInvoked());
 
             sendMarketDataEvent("IBM");
-            Assert.IsFalse(testListener.getAndClearIsInvoked());
+            Assert.IsFalse(testListener.GetAndClearIsInvoked());
 
             sendMarketDataEvent("CSCO");
-            Assert.IsTrue(testListener.getAndClearIsInvoked());
+            Assert.IsTrue(testListener.GetAndClearIsInvoked());
         }
 
         [Test]
@@ -61,13 +61,13 @@ namespace net.esper.regression.view
 
             testView = epService.EPAdministrator.CreateEQL(viewExpr);
             testListener = new SupportUpdateListener();
-            testView.AddListener(testListener.Update);
+            testView.AddListener(testListener);
 
             sendSupportBeanEvent(1, 2, 3, 4);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             sendSupportBeanEvent(2, 2, 2, 2);
-            EventBean _event = testListener.getAndResetLastNewData()[0];
+            EventBean _event = testListener.GetAndResetLastNewData()[0];
             Assert.AreEqual(typeof(long?), _event.EventType.GetPropertyType("p1"));
             Assert.AreEqual(4L, _event["p1"]);
             Assert.AreEqual(typeof(double?), _event.EventType.GetPropertyType("p2"));
@@ -85,10 +85,10 @@ namespace net.esper.regression.view
         private void sendSupportBeanEvent(int intPrimitive, long longPrimitive, float floatPrimitive, double doublePrimitive)
         {
             SupportBean _event = new SupportBean();
-            _event.intPrimitive = intPrimitive;
-            _event.longPrimitive = longPrimitive;
-            _event.floatPrimitive = floatPrimitive;
-            _event.doublePrimitive = doublePrimitive;
+            _event.SetIntPrimitive(intPrimitive);
+            _event.SetLongPrimitive(longPrimitive);
+            _event.SetFloatPrimitive(floatPrimitive);
+            _event.SetDoublePrimitive(doublePrimitive);
             epService.EPRuntime.SendEvent(_event);
         }
     }

@@ -12,9 +12,20 @@ using net.esper.events;
 
 namespace net.esper.client
 {
-	/// <summary>
+    /// <summary>
     /// Defines an interface to notify of new and old events.
     /// </summary>
+
+    public interface UpdateListener
+    {
+        void Update(EventBean[] newEvents, EventBean[] oldEvents);
+    }
+
+    /// <summary>
+    /// Defines a delegate that is notified of new and old events.
+    /// </summary>
+    /// <param name="newEvents"></param>
+    /// <param name="oldEvents"></param>
 	
-    public delegate void UpdateListener(EventBean[] newEvents, EventBean[] oldEvents);
+    public delegate void UpdateEventHandler(EventBean[] newEvents, EventBean[] oldEvents);
 }

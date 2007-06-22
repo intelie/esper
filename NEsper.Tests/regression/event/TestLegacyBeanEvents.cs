@@ -21,7 +21,7 @@ namespace net.esper.regression.events
         [SetUp]
         public virtual void setUp()
         {
-            EDictionary<String, String> mappedProperty = new EHashDictionary<String, String>();
+            EDictionary<String, String> mappedProperty = new HashDictionary<String, String>();
             mappedProperty.Put("key1", "value1");
             mappedProperty.Put("key2", "value2");
             legacyBean = new SupportLegacyBean("leg", new String[] { "a", "b" }, mappedProperty, "nest");
@@ -132,7 +132,7 @@ namespace net.esper.regression.events
 
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener.Update);
+            statement.AddListener(listener);
 
             EventType eventType = statement.EventType;
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("fieldSimple"));
@@ -215,7 +215,7 @@ namespace net.esper.regression.events
 
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener.Update);
+            statement.AddListener(listener);
 
             EventType eventType = statement.EventType;
             Assert.AreEqual(typeof(String), eventType.GetPropertyType("fnested"));
@@ -257,7 +257,7 @@ namespace net.esper.regression.events
 
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener.Update);
+            statement.AddListener(listener);
             EventType eventType = statement.EventType;
 
             SupportLegacyBeanInt _event = new SupportLegacyBeanInt(10);
@@ -292,7 +292,7 @@ namespace net.esper.regression.events
 
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             SupportUpdateListener listener = new SupportUpdateListener();
-            statement.AddListener(listener.Update);
+            statement.AddListener(listener);
 
             SupportBeanFinal _event = new SupportBeanFinal(10);
             epService.EPRuntime.SendEvent(_event);

@@ -39,8 +39,8 @@ namespace net.esper.eql.join.assemble
 			Node nodeOne = resultMultipleEvents[1][0];
 			IEnumerator<EventBean> enumOne = nodeOne.Events.GetEnumerator();
 			Assert.IsTrue( enumOne.MoveNext() );
-			EventBean eventOne = enumOne.Current;
-			optAssemblyNode.Result( childRow, 3, eventOne, nodeOne );
+			EventBean _eventOne = enumOne.Current;
+			optAssemblyNode.Result( childRow, 3, _eventOne, nodeOne );
 
 			// test that the node indeed manufactures event rows for any event not received from a child
 			parentNode.getRowsList().Clear();
@@ -87,7 +87,7 @@ namespace net.esper.eql.join.assemble
 			childRow[3] = SupportJoinResultNodeFactory.MakeEvent();
 
 			EventBean myEvent = SupportJoinResultNodeFactory.MakeEvent();
-			Node myNode = SupportJoinResultNodeFactory.makeNode( 3, 1 );
+			Node myNode = SupportJoinResultNodeFactory.MakeNode( 3, 1 );
 
 			// indicate child result
 			nodeUnderTest.Result( childRow, 3, myEvent, myNode );

@@ -1,4 +1,12 @@
-using System;
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using NUnit.Framework;
 
 using net.esper.compat;
 using net.esper.events;
@@ -6,86 +14,60 @@ using net.esper.pattern;
 using net.esper.support.bean;
 using net.esper.support.events;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.filter
 {
-
 	[TestFixture]
-    public class TestRangeValueEventProp 
-    {
-        private FilterSpecParamRangeValue[] _params = new FilterSpecParamRangeValue[5];
+	public class TestRangeValueEventProp
+	{
+	    private FilterSpecParamRangeValue[] paramList = new FilterSpecParamRangeValue[5];
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            _params[0] = new RangeValueEventProp("a", "b");
-            _params[1] = new RangeValueEventProp("asName", "b");
-            _params[2] = new RangeValueEventProp("asName", "boolBoxed");
-            _params[3] = new RangeValueEventProp("asName", "intPrimitive");
-            _params[4] = new RangeValueEventProp("asName", "intPrimitive");
-        }
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        paramList[0] = new RangeValueEventProp("a", "b");
+	        paramList[1] = new RangeValueEventProp("asName", "b");
+	        paramList[2] = new RangeValueEventProp("asName", "boolPrimitive");
+	        paramList[3] = new RangeValueEventProp("asName", "intPrimitive");
+	        paramList[4] = new RangeValueEventProp("asName", "intPrimitive");
+	    }
 
-        [Test]
-        public virtual void testCheckType()
-        {
-            EDictionary<String, EventType> taggedEventTypes = new EHashDictionary<String, EventType>();
-            taggedEventTypes.Put("asName", SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)));
+	    [Test]
+	    public void TestGetFilterValue()
+	    {
+	        SupportBean _eventBean = new SupportBean();
+	        _eventBean.SetIntPrimitive(1000);
+	        EventBean _event = SupportEventBeanFactory.CreateObject(_eventBean);
+	        MatchedEventMap matchedEvents = new MatchedEventMapImpl();
+	        matchedEvents.Add("asName", _event);
 
-            tryInvalidCheckType(taggedEventTypes, _params[0]);
-            tryInvalidCheckType(taggedEventTypes, _params[1]);
-            tryInvalidCheckType(taggedEventTypes, _params[2]);
-            _params[3].CheckType(taggedEventTypes);
-        }
+	        TryInvalidGetFilterValue(matchedEvents, paramList[0]);
+	        TryInvalidGetFilterValue(matchedEvents, paramList[1]);
+	        Assert.AreEqual(1000.0, paramList[3].GetFilterValue(matchedEvents));
+	    }
 
-        [Test]
-        public virtual void testGetFilterValue()
-        {
-            SupportBean eventBean = new SupportBean();
-            eventBean.intPrimitive = 1000;
-            EventBean _event = SupportEventBeanFactory.createObject(eventBean);
-            MatchedEventMap matchedEvents = new MatchedEventMap();
-            matchedEvents.Add("asName", _event);
+	    [Test]
+	    public void TestEquals()
+	    {
+	        Assert.IsFalse(paramList[0].Equals(paramList[1]));
+	        Assert.IsFalse(paramList[2].Equals(paramList[3]));
+	        Assert.IsTrue(paramList[3].Equals(paramList[4]));
+	    }
 
-            tryInvalidGetFilterValue(matchedEvents, _params[0]);
-            tryInvalidGetFilterValue(matchedEvents, _params[1]);
-            tryInvalidGetFilterValue(matchedEvents, _params[2]);
-            Assert.AreEqual(1000.0, _params[3].GetFilterValue(matchedEvents));
-        }
-
-        [Test]
-        public virtual void testEquals()
-        {
-            Assert.IsFalse(_params[0].Equals(_params[1]));
-            Assert.IsFalse(_params[2].Equals(_params[3]));
-            Assert.IsTrue(_params[3].Equals(_params[4]));
-        }
-
-        private void tryInvalidCheckType(EDictionary<String, EventType> taggedEventTypes, FilterSpecParamRangeValue value)
-        {
-            try
-            {
-                value.CheckType(taggedEventTypes);
-                Assert.Fail();
-            }
-            catch (System.SystemException ex)
-            {
-                // expected
-            }
-        }
-
-        private void tryInvalidGetFilterValue(MatchedEventMap matchedEvents, FilterSpecParamRangeValue value)
-        {
-            try
-            {
-                value.GetFilterValue(matchedEvents);
-                Assert.Fail();
-            }
-            catch (SystemException)
-            {
-                // expected
-            }
-        }
-    }
-}
+	    private void TryInvalidGetFilterValue(MatchedEventMap matchedEvents, FilterSpecParamRangeValue value)
+	    {
+	        try
+	        {
+	            value.GetFilterValue(matchedEvents);
+	            Assert.Fail();
+	        }
+	        catch (IllegalStateException ex)
+	        {
+	            // expected
+	        }
+	        catch (PropertyAccessException ex)
+	        {
+	            // expected
+	        }
+	    }
+	}
+} // End of namespace

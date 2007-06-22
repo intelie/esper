@@ -35,7 +35,7 @@ namespace net.esper.adapter.csv
 		{
 			if(adapterInputSource == null)
 			{
-				throw new NullPointerException("AdapterInputSource cannot be null");
+				throw new ArgumentException("AdapterInputSource cannot be null");
 			}
 			this.source = new CSVSource(adapterInputSource);
 		}
@@ -73,15 +73,15 @@ namespace net.esper.adapter.csv
 				
 				if(atEOF && result == null)
 				{
-					throw new EOFException("In reading CSV file, reached end-of-file and not looping to the beginning");
+					throw new EndOfStreamException("In reading CSV file, reached end-of-file and not looping to the beginning");
 				}
 				
-				log.debug(".GetNextRecord record==" + Arrays.asList(result));
+				log.Debug(".GetNextRecord record==" + CollectionHelper.Render(result));
 				return result; 
 			} 
-			catch (EOFException e)
+			catch (EndOfStreamException)
 			{
-				throw e;
+				throw;
 			}
 			catch(IOException e)
 			{
@@ -114,13 +114,13 @@ namespace net.esper.adapter.csv
 		{
 			try
 			{
-				log.debug(".reset");
-				source.reset();
+				log.Debug(".reset");
+				source.Reset();
 				atEOF = false;
 				if(isUsingTitleRow)
 				{
 					// Ignore the title row
-					getNextRecord();
+					GetNextRecord();
 				}
 				isReset = true;
 			} 
@@ -159,7 +159,7 @@ namespace net.esper.adapter.csv
 			// file and looping, search from the beginning of the file
 			if(result == null && atEOF && looping)
 			{
-				reset();
+				Reset();
 				result = GetNoCommentNoWhitespace();
 			}
 
@@ -200,12 +200,12 @@ namespace net.esper.adapter.csv
 				}
 				else
 				{
-					throw unexpectedCharacterException((char)source.Read());
+					throw UnexpectedCharacterException((char)source.Read());
 				}
 			}
 			
 			// All values empty means that this line was just whitespace
-			return values.isEmpty() ? null : values.toArray(new String[0]);
+			return (values.Count == 0) ? null : values.ToArray() ;
 		}
 		
 		private void AddNonFinalValue(String value)
@@ -225,7 +225,7 @@ namespace net.esper.adapter.csv
 			}
 			else
 			{
-				if(!values.isEmpty())
+				if(values.Count != 0)
 				{
 					values.Add("");
 				}
@@ -277,7 +277,7 @@ namespace net.esper.adapter.csv
 		
 		private bool AtEOF(bool doConsume) 
 		{
-			markReader(1, doConsume);
+			MarkReader(1, doConsume);
 			
 			int value = source.Read();
 			atEOF = (value == -1);
@@ -317,7 +317,7 @@ namespace net.esper.adapter.csv
 				return null;
 			}
 
-			StringBuffer value = new StringBuffer();
+			StringBuilder value = new StringBuilder();
 			while(true)
 			{
 				char currentChar = (char)source.Read();
@@ -328,22 +328,22 @@ namespace net.esper.adapter.csv
 					break;
 				}
 
-				value.append(currentChar);
+				value.Append(currentChar);
 			}
 			
-			return value.toString();
+			return value.ToString();
 		}
 		
 		private String MatchUnquotedValue()
 		{
 			bool doConsume = false;
-			StringBuffer value = new StringBuffer();
+			StringBuilder value = new StringBuilder();
 			int trailingSpaces = 0;
 			
 			while(true)
 			{
 				// Break on newline or comma without consuming
-				if(atNewline(doConsume) || atEOF(doConsume) || AtComma(doConsume))
+				if(AtNewline(doConsume) || AtEOF(doConsume) || AtComma(doConsume))
 				{
 					break;
 				}
@@ -351,39 +351,39 @@ namespace net.esper.adapter.csv
 				// Unquoted values cannot contain quotes
 				if(AtChar('"', doConsume))
 				{
-					log.debug(".matchUnquotedValue matched unexpected double-quote while matching " + value);
-					log.debug(".matchUnquotedValue values==" + values);
+					log.Debug(".matchUnquotedValue matched unexpected double-quote while matching " + value);
+					log.Debug(".matchUnquotedValue values==" + values);
 					throw UnexpectedCharacterException('"');
 				}
 				
 				char currentChar = (char)source.Read();
 				
 				// Update the count of trailing spaces
-				trailingSpaces = (isWhiteSpace(currentChar)) ?
+				trailingSpaces = (IsWhiteSpace(currentChar)) ?
 						trailingSpaces + 1 : 0;
 				
-				value.append(currentChar);
+				value.Append(currentChar);
 			}
 			
 			// Remove the trailing spaces
-			int end = value.Length();
-			value.delete(end - trailingSpaces, end);
+			int end = value.Length;
+			value.Remove(end - trailingSpaces, trailingSpaces);
 			
 			// An empty string means that this value was just whitespace, 
 			// so nothing was matched
-			return value.Length() == 0 ? null : value.toString();
+			return value.Length == 0 ? null : value.ToString();
 		}
 		
 		private void ConsumeWhiteSpace()
 		{
 			while(true)
 			{	
-				source.mark(1);
+				source.Mark(1);
 				char currentChar = (char)source.Read();
 
-				if(!isWhiteSpace(currentChar))
+				if(!IsWhiteSpace(currentChar))
 				{
-					source.resetToMark();
+					source.ResetToMark();
 					break;
 				}
 			}
@@ -406,11 +406,11 @@ namespace net.esper.adapter.csv
 			{
 				if(atEOF && looping)
 				{
-					reset();
+					Reset();
 				}
 				if(AtChar('#', doConsume))
 				{
-					consumeLine();
+					ConsumeLine();
 				}
 				else
 				{
@@ -422,7 +422,7 @@ namespace net.esper.adapter.csv
 		private void ConsumeLine()
 		{
 			bool doConsume = true;
-			while(!atEOF(doConsume) && !atNewline(doConsume))
+			while(!AtEOF(doConsume) && !AtNewline(doConsume))
 			{
 				// Discard input
 				source.Read();

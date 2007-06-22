@@ -146,7 +146,7 @@ namespace net.esper.eql.join
         /// <param name="optCoercionTypes">optional array of coercion types, or null if no coercion is required</param>
         /// <param name="eventType">type of event to expect</param>
         /// <returns>table build</returns>
-	    protected static EventTable BuildIndex(int indexedStreamNum, String[] indexProps, Type[] optCoercionTypes, EventType eventType)
+	    public static EventTable BuildIndex(int indexedStreamNum, String[] indexProps, Type[] optCoercionTypes, EventType eventType)
 		{
 			EventTable table = null;
 			if (indexProps.Length == 0)

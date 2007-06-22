@@ -16,12 +16,17 @@ namespace net.esper.support.core
             routed.Add(_event);
         }
 
-        public IList<EventBean> getRouted()
+        public IList<EventBean> Routed
+        {
+            get { return routed; }
+        }
+
+        public IList<EventBean> GetRouted()
         {
             return routed;
         }
 
-        public virtual void reset()
+        public virtual void Reset()
         {
             routed.Clear();
         }

@@ -29,8 +29,8 @@ namespace net.esper.regression.eql
 			epService.Initialize();
 			updateListener = new SupportUpdateListener();
 
-			String eventA = typeof( SupportBean_A ).FullName;
-			String eventB = typeof( SupportBean_B ).FullName;
+            String eventA = typeof(SupportBean_A).FullName;
+            String eventB = typeof(SupportBean_B).FullName;
 
 			String joinStatement =
 				"select * from " + 
@@ -39,7 +39,7 @@ namespace net.esper.regression.eql
 				" where streamA.id = streamB.id";
 
 			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 
 			for ( int i = 0 ; i < eventsA.Length ; i++ )
 			{
@@ -62,14 +62,14 @@ namespace net.esper.regression.eql
 			Assert.AreSame( eventsA[0], updateListener.LastNewData[0][ "streamA" ] );
 			Assert.AreSame( eventsB[0], updateListener.LastNewData[0][ "streamB" ] );
 			Assert.IsNull( updateListener.LastOldData );
-			updateListener.reset();
+			updateListener.Reset();
 
 			// Test join new A with id 1
 			SendEvent( eventsA[1] );
 			Assert.AreSame( eventsA[1], updateListener.LastNewData[0][ "streamA" ] );
 			Assert.AreSame( eventsB[1], updateListener.LastNewData[0][ "streamB" ] );
 			Assert.IsNull( updateListener.LastOldData );
-			updateListener.reset();
+			updateListener.Reset();
 
 			SendEvent( eventsA[2] );
 			Assert.IsNull( updateListener.LastOldData );
@@ -79,7 +79,7 @@ namespace net.esper.regression.eql
 			Assert.AreSame( eventsA[0], updateListener.LastOldData[0][ "streamA" ] );
 			Assert.AreSame( eventsB[0], updateListener.LastOldData[0][ "streamB" ] );
 			Assert.IsNull( updateListener.LastNewData );
-			updateListener.reset();
+			updateListener.Reset();
 
 			// Test join old B id 1 leaves window
 			SendEvent( eventsB[4] );
@@ -107,11 +107,11 @@ namespace net.esper.regression.eql
 			Assert.IsTrue( eventsA[0] == data[0][ "streamA" ] || eventsA[0] == data[1][ "streamA" ] );
 			Assert.AreSame( eventsB[0], data[1][ "streamB" ] );
 			Assert.IsNull( updateListener.LastOldData );
-			updateListener.reset();
+			updateListener.Reset();
 
 			SendEvent( eventsB[2] );
 			SendEvent( eventsBSetTwo[0] ); // Ignore events generated
-			updateListener.reset();
+			updateListener.Reset();
 
 			SendEvent( eventsA[3] ); // Pushes A id 0 out of window, which joins to B id 0 twice
 			data = updateListener.LastOldData;
@@ -124,7 +124,7 @@ namespace net.esper.regression.eql
                 eventsBSetTwo[0] == data[0][ "streamB" ] || 
                 eventsBSetTwo[0] == data[1][ "streamB" ] );
 			Assert.IsNull( updateListener.LastNewData );
-			updateListener.reset();
+			updateListener.Reset();
 
 			SendEvent( eventsBSetTwo[2] ); // Pushes B id 0 out of window, which joins to A set two id 0
 			Assert.AreSame( eventsASetTwo[0], updateListener.LastOldData[0][ "streamA" ] );

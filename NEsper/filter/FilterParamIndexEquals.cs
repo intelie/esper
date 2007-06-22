@@ -28,7 +28,7 @@ namespace net.esper.filter
         public FilterParamIndexEquals(String propertyName, EventType eventType)
             : base(propertyName, FilterOperator.EQUAL, eventType)
         {
-            constantsMap = new EHashDictionary<Object, EventEvaluator>();
+            constantsMap = new HashDictionary<Object, EventEvaluator>();
             constantsMapRWLock = new ReaderWriterLock();
         }
 

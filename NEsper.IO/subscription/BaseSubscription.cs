@@ -52,7 +52,7 @@ namespace net.esper.adapter.subscription
         public String SubscriptionName
         {
             get { return subscriptionName; }
-            set { this.subscriptionName = subscriptionName; }
+            set { this.subscriptionName = value; }
         }
 
         /// <summary>
@@ -77,20 +77,26 @@ namespace net.esper.adapter.subscription
             set
             {
                 this.adapter = value;
-                EPServiceProvider epService = ((AdapterSPI)adapter).getEPServiceProvider();
+                EPServiceProvider epService = ((AdapterSPI)adapter).EPServiceProvider;
                 if (!(epService is EPServiceProviderSPI))
                 {
-                    throw new IllegalArgumentException("Invalid type of EPServiceProvider");
+                    throw new ArgumentException("Invalid type of EPServiceProvider");
                 }
                 EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;
-                EventType eventType = spi.EventAdapterService.getExistsTypeByAlias(eventTypeAlias);
-                FilterValueSet fvs = new FilterSpecCompiled(eventType, new LinkedList<FilterSpecParam>()).getValueSet(null);
+                EventType eventType = spi.EventAdapterService.GetEventTypeByAlias(eventTypeAlias);
+                FilterValueSet fvs = new FilterSpecCompiled(eventType, new List<FilterSpecParam>()).GetValueSet(null);
 
                 String name = "subscription:" + subscriptionName;
                 EPStatementHandle statementHandle = new EPStatementHandle(name, new ManagedLockImpl(name), name);
                 EPStatementHandleCallback registerHandle = new EPStatementHandleCallback(statementHandle, this);
-                spi.getFilterService().Add(fvs, registerHandle);
+                spi.FilterService.Add(fvs, registerHandle);
             }
         }
+
+        #region FilterHandleCallback Members
+
+        public abstract void MatchFound(EventBean _event);
+
+        #endregion
     }
 }

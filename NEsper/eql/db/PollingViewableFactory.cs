@@ -138,7 +138,7 @@ namespace net.esper.eql.db
 
                                 // Create event type
                                 // Construct an event type from SQL query result metadata
-                                EDictionary<String, Type> eventTypeFields = new EHashDictionary<String, Type>();
+                                EDictionary<String, Type> eventTypeFields = new HashDictionary<String, Type>();
                                 foreach (String name in outputProperties.Keys)
                                 {
                                     DBOutputTypeDesc dbOutputDesc = outputProperties[name];

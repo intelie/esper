@@ -23,7 +23,7 @@ namespace net.esper.core
 	    /// <summary>Ctor.</summary>
 	    public SubSelectStreamCollection()
 	    {
-	        subqueries = new EHashDictionary<ExprSubselectNode, SubSelectHolder>();
+	        subqueries = new HashDictionary<ExprSubselectNode, SubSelectHolder>();
 	    }
 
 	    /// <summary>Add subquery.</summary>

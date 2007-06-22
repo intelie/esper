@@ -1,3 +1,11 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
@@ -6,59 +14,49 @@ using net.esper.filter;
 
 namespace net.esper.support.filter
 {
+	public class SupportEventEvaluator : EventEvaluator
+	{
+	    private int countInvoked;
+	    private EventBean lastEvent;
+	    private IList<FilterHandle> lastMatches;
 
-    public class SupportEventEvaluator : EventEvaluator
-    {
-        virtual public EventBean LastEvent
-        {
-            get
-            {
-                return lastEvent;
-            }
+	    public void MatchEvent(EventBean _event, IList<FilterHandle> matches)
+	    {
+	        countInvoked++;
+	        lastEvent = _event;
+	        lastMatches = matches;
+	    }
 
-            set
-            {
-                this.lastEvent = value;
-            }
+	    public EventBean GetLastEvent()
+	    {
+	        return lastEvent;
+	    }
 
-        }
-        virtual public int CountInvoked
-        {
-            set
-            {
-                this.countInvoked = value;
-            }
+	    public IList<FilterHandle> GetLastMatches()
+	    {
+	        return lastMatches;
+	    }
 
-        }
-        virtual public int AndResetCountInvoked
-        {
-            get
-            {
-                int count = countInvoked;
-                countInvoked = 0;
-                return count;
-            }
+	    public void SetCountInvoked(int countInvoked)
+	    {
+	        this.countInvoked = countInvoked;
+	    }
 
-        }
-        private int countInvoked;
-        private EventBean lastEvent;
-        private IList<FilterCallback> lastMatches;
+	    public void SetLastEvent(EventBean lastEvent)
+	    {
+	        this.lastEvent = lastEvent;
+	    }
 
-        public void MatchEvent(EventBean _event, IList<FilterCallback> matches)
-        {
-            countInvoked++;
-            lastEvent = _event;
-            lastMatches = matches;
-        }
+	    public void SetLastMatches(List<FilterHandle> lastMatches)
+	    {
+	        this.lastMatches = lastMatches;
+	    }
 
-        public IList<FilterCallback> getLastMatches()
-        {
-            return lastMatches;
-        }
-
-        public void setLastMatches(IList<FilterCallback> lastMatches)
-        {
-            this.lastMatches = lastMatches;
-        }
-    }
-}
+	    public int GetAndResetCountInvoked()
+	    {
+	        int count = countInvoked;
+	        countInvoked = 0;
+	        return count;
+	    }
+	}
+} // End of namespace

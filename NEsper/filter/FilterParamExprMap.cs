@@ -26,8 +26,8 @@ namespace net.esper.filter
 	    /// <summary>Ctor.</summary>
 	    public FilterParamExprMap()
 	    {
-	        exprNodes = new EHashDictionary<ExprNode, FilterSpecParam>();
-	        specParams = new EHashDictionary<FilterSpecParam, ExprNode>();
+	        exprNodes = new HashDictionary<ExprNode, FilterSpecParam>();
+	        specParams = new HashDictionary<FilterSpecParam, ExprNode>();
 	    }
 
 	    /// <summary>Add a node and filter param.</summary>

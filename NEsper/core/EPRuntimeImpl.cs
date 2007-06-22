@@ -70,7 +70,7 @@ namespace net.esper.core
 			{
 				if ( matchesPerStmtThreadLocal == null )
 				{
-					matchesPerStmtThreadLocal = new EHashDictionary<EPStatementHandle, Object>(10000);
+					matchesPerStmtThreadLocal = new HashDictionary<EPStatementHandle, Object>(10000);
 				}
 
 			    return matchesPerStmtThreadLocal;
@@ -100,7 +100,7 @@ namespace net.esper.core
 			{
 				if ( schedulePerStmtThreadLocal == null )
 				{
-					schedulePerStmtThreadLocal = new EHashDictionary<EPStatementHandle, Object>(10000);
+					schedulePerStmtThreadLocal = new HashDictionary<EPStatementHandle, Object>(10000);
 				}
 
 			    return schedulePerStmtThreadLocal;
@@ -200,6 +200,27 @@ namespace net.esper.core
             // Process event
             EventBean eventBean = services.EventAdapterService.AdapterForMap(map, eventTypeAlias);
             ProcessEvent(eventBean);
+        }
+
+        /// <summary>
+        /// Creates a delegate that can be used to send mapped events to the runtime.  This method
+        /// eliminates the costs associated with the lookup of an event type or any other form of
+        /// initialization that would normally be incurred.
+        /// </summary>
+        /// <param name="eventTypeAlias"></param>
+        /// <returns></returns>
+
+        public virtual EPSender GetSender(String eventTypeAlias)
+        {
+            EventType eventType = services.EventAdapterService.GetEventTypeByAlias(eventTypeAlias);
+            EPSender eventSender = new EPSender(
+                delegate(IDataDictionary mappedEvent)
+                    {
+                        EventBean eventbean = services.EventAdapterService.CreateMapFromValues(mappedEvent, eventType);
+                        ProcessEvent(eventbean);
+                    });
+
+            return eventSender;
         }
 
         /// <summary>

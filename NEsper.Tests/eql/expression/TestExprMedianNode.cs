@@ -1,66 +1,54 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 
-using NUnit.Core;
 using NUnit.Framework;
 
+using net.esper.eql.agg;
 using net.esper.support.eql;
 
 namespace net.esper.eql.expression
 {
-    [TestFixture]
-    public class TestExprMedianNode : TestExprAggregateNodeAdapter
-    {
-        [SetUp]
-        public virtual void setUp()
-        {
-            base.validatedNodeToTest = makeNode(5, typeof(Int32));
-        }
+	[TestFixture]
+	public class TestExprMedianNode : TestExprAggregateNodeAdapter
+	{
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        base.validatedNodeToTest = MakeNode(5, typeof(int?));
+	    }
 
-        [Test]
-        public virtual void testGetType()
-        {
-            Assert.AreEqual(typeof(double?), validatedNodeToTest.ReturnType);
-        }
+	    [Test]
+	    public void TestGetType()
+	    {
+	        Assert.AreEqual(typeof(double?), validatedNodeToTest.GetType());
+	    }
 
-        [Test]
-        public virtual void testToExpressionString()
-        {
-            Assert.AreEqual("median(5)", validatedNodeToTest.ExpressionString);
-        }
+	    [Test]
+	    public void TestToExpressionString()
+	    {
+	        Assert.AreEqual("median(5)", validatedNodeToTest.ExpressionString);
+	    }
 
-        [Test]
-        public virtual void testEqualsNode()
-        {
-            Assert.IsTrue(validatedNodeToTest.EqualsNode(validatedNodeToTest));
-            Assert.IsFalse(validatedNodeToTest.EqualsNode(new ExprSumNode(false)));
-        }
+	    [Test]
+	    public void TestEqualsNode()
+	    {
+	        Assert.IsTrue(validatedNodeToTest.EqualsNode(validatedNodeToTest));
+	        Assert.IsFalse(validatedNodeToTest.EqualsNode(new ExprSumNode(false)));
+	    }
 
-        [Test]
-        public virtual void testAggregator()
-        {
-            ExprMedianNode.DoubleMedian median = new ExprMedianNode.DoubleMedian();
-            Assert.AreEqual(null, median.Value);
-            median.Enter(10);
-            Assert.AreEqual(10D, median.Value);
-            median.Enter(20);
-            Assert.AreEqual(15D, median.Value);
-            median.Enter(10);
-            Assert.AreEqual(10D, median.Value);
-
-            median.Leave(10);
-            Assert.AreEqual(15D, median.Value);
-            median.Leave(10);
-            Assert.AreEqual(20D, median.Value);
-            median.Leave(20);
-            Assert.AreEqual(null, median.Value);
-        }
-
-        private ExprMedianNode makeNode(Object value, Type type)
-        {
-            ExprMedianNode medianNode = new ExprMedianNode(false);
-            medianNode.AddChildNode(new SupportExprNode(value, type));
-            medianNode.Validate(null, null);
-            return medianNode;
-        }
-    }
-}
+	    private ExprMedianNode MakeNode(Object value, Type type)
+	    {
+	        ExprMedianNode medianNode = new ExprMedianNode(false);
+	        medianNode.AddChildNode(new SupportExprNode(value, type));
+	        SupportExprNodeFactory.Validate(medianNode);
+	        return medianNode;
+	    }
+	}
+} // End of namespace

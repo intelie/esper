@@ -2,15 +2,18 @@ using System;
 using System.IO;
 
 using net.esper.adapter;
+using net.esper.compat;
 
 namespace net.esper.adapter.csv
 {
-	/// <summary>A wrapper for a Reader or an InputStream.</summary>
+	/// <summary>
+	/// A wrapper for a Stream or a TextReader.
+	/// </summary>
 
 	public class CSVSource
 	{
 		private readonly AdapterInputSource source;
-		private Reader reader;
+		private TextReader reader;
 		private Stream stream;
 		
 		/// <summary>Ctor.</summary>
@@ -18,13 +21,10 @@ namespace net.esper.adapter.csv
 
 		public CSVSource(AdapterInputSource source)
 		{
-			if(source.GetAsStream() != null)
+			stream = source.GetAsStream() ;
+			if ( stream == null )
 			{
-				stream = new BufferedInputStream(source.GetAsStream());
-			}
-			else
-			{
-				reader = new BufferedReader(source.GetAsReader());
+				reader = source.GetAsReader() ;
 			}
 			this.source = source;
 		}
@@ -52,7 +52,7 @@ namespace net.esper.adapter.csv
 		{
 			if(stream != null)
 			{
-				return stream.Read();
+				return stream.ReadByte() ;
 			}
 			else
 			{
@@ -73,14 +73,14 @@ namespace net.esper.adapter.csv
 
 		public void ResetToMark()
 		{
-			if(stream != null)
-			{
-				stream.Reset();
-			}
-			else
-			{
-				reader.Reset();
-			}
+//			if(stream != null)
+//			{
+//				stream.Reset();
+//			}
+//			else
+//			{
+//				reader.Reset();
+//			}
 		}
 		
 		/// <summary>Set the mark position.</summary>
@@ -89,31 +89,34 @@ namespace net.esper.adapter.csv
 
 		public void Mark(int readAheadLimit)
 		{
-			if(stream != null)
-			{
-				stream.mark(readAheadLimit);
-			}
-			else
-			{
-				reader.mark(readAheadLimit);
-			}
+			throw new NotSupportedException() ;
+			
+//			if(stream != null)
+//			{
+//				stream.mark(readAheadLimit);
+//			}
+//			else
+//			{
+//				reader.mark(readAheadLimit);
+//			}
 		}
 		
 		/// <summary>Reset to the beginning of the resource.</summary>
 
 		public void Reset()
 		{
-			if(!IsResettable())
+			if(!IsResettable)
 			{
 				throw new UnsupportedOperationException("Reset not supported: underlying source cannot be reset");
 			}
+			
 			if(stream != null)
 			{
-				stream = new BufferedInputStream(source.GetAsStream());
+				stream = source.GetAsStream();
 			}
 			else
 			{
-				reader = new BufferedReader(source.GetAsReader());
+				reader = source.GetAsReader();
 			}
 		}
 	}

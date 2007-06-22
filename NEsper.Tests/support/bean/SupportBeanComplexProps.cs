@@ -25,13 +25,13 @@ namespace net.esper.support.bean
     	    "Nested"
         };
 
-        public static SupportBeanComplexProps makeDefaultBean()
+        public static SupportBeanComplexProps MakeDefaultBean()
         {
-            EDictionary<string, string> properties = new EHashDictionary<string, string>();
+            EDictionary<string, string> properties = new HashDictionary<string, string>();
             properties.Add("keyOne", "valueOne");
             properties.Add("keyTwo", "valueTwo");
 
-            EDictionary<string, string> mapProp = new EHashDictionary<String, String>();
+            EDictionary<string, string> mapProp = new HashDictionary<String, String>();
             mapProp.Add("xOne", "yOne");
             mapProp.Add("xTwo", "yTwo");
 
@@ -65,7 +65,7 @@ namespace net.esper.support.bean
             this._nested = new SupportBeanSpecialGetterNested(nestedValue, nestedNestedValue);
         }
 
-        public String simpleProperty
+        public String SimpleProperty
         {
             get { return _simpleProperty; }
         }
@@ -75,17 +75,12 @@ namespace net.esper.support.bean
             get { return _mapProperty; }
         }
 
-        public EDictionary<String, String> mapProperty
-        {
-            get { return _mapProperty; }
-        }
-
-        public String getMapped(String key)
+        public String GetMapped(String key)
         {
             return (String)_mappedProps.Fetch(key);
         }
 
-        public int getIndexed(int index)
+        public int GetIndexed(int index)
         {
             return _indexedProps[index];
         }
@@ -95,26 +90,17 @@ namespace net.esper.support.bean
             get { return _nested; }
         }
 
-        public SupportBeanSpecialGetterNested nested
-        {
-            get { return _nested; }
-        }
-
         public int[] ArrayProperty
         {
             get { return _arrayProperty; }
         }
 
-        public int[] arrayProperty
+        public int[] GetArrayProperty()
         {
-            get { return _arrayProperty; }
+            return _arrayProperty;
         }
 
-        public int[] getArrayProperty() {
-        	return _arrayProperty;
-        }
-        
-        public void setIndexed(int index, int value)
+        public void SetIndexed(int index, int value)
         {
             _indexedProps[index] = value;
         }
@@ -135,17 +121,7 @@ namespace net.esper.support.bean
                 get { return _nestedValue; }
             }
 
-            public String nestedValue
-            {
-                get { return _nestedValue; }
-            }
-
             public SupportBeanSpecialGetterNestedNested NestedNested
-            {
-                get { return _nestedNested; }
-            }
-
-            public SupportBeanSpecialGetterNestedNested nestedNested
             {
                 get { return _nestedNested; }
             }
@@ -161,11 +137,6 @@ namespace net.esper.support.bean
             }
 
             public String NestedNestedValue
-            {
-                get { return _nestedNestedValue; }
-            }
-
-            public String nestedNestedValue
             {
                 get { return _nestedNestedValue; }
             }

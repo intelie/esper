@@ -296,7 +296,7 @@ namespace net.esper.eql.expression
 	    /// is the string property to be passed as a static method invocation
 	    /// </param>
 	    /// <returns>descriptor object</returns>
-	    protected static MappedPropertyParseResult ParseMappedProperty(String property)
+	    public static MappedPropertyParseResult ParseMappedProperty(String property)
 	    {
 	        // get argument
 	        int indexFirstDoubleQuote = property.IndexOf("\"");
@@ -397,7 +397,7 @@ namespace net.esper.eql.expression
 	    /// <summary>
 	    /// Encapsulates the parse result parsing a mapped property as a type and method name with args.
 	    /// </summary>
-	    protected class MappedPropertyParseResult
+	    public class MappedPropertyParseResult
 	    {
 	        private String typeName;
 	        private String methodName;

@@ -1,63 +1,52 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
 using net.esper.collection;
-using net.esper.eql.core;
+using net.esper.eql.agg;
 using net.esper.events;
 
 namespace net.esper.support.eql
 {
-    public class SupportAggregationService : AggregationService
-    {
-        /// <summary>
-        /// Set the current aggregation state row - for use when evaluation nodes are asked to evaluate.
-        /// </summary>
-        /// <value></value>
-        virtual public MultiKey<Object> CurrentRow
-        {
-            set
-            {
-            }
-        }
+	public class SupportAggregationService : AggregationService
+	{
+	    private IList<Pair<EventBean[], MultiKeyUntyped>> leaveList = new List<Pair<EventBean[], MultiKeyUntyped>>();
+	    private IList<Pair<EventBean[], MultiKeyUntyped>> enterList = new List<Pair<EventBean[], MultiKeyUntyped>>();
 
-        private IList<Pair<EventBean[], MultiKey<Object>>> leaveList = new List<Pair<EventBean[], MultiKey<Object>>>();
-        private IList<Pair<EventBean[], MultiKey<Object>>> enterList = new List<Pair<EventBean[], MultiKey<Object>>>();
+	    public void ApplyLeave(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
+	    {
+	        leaveList.Add(new Pair<EventBean[], MultiKeyUntyped>(eventsPerStream, optionalGroupKeyPerRow));
+	    }
 
-        /// <summary>
-        /// Apply events as leaving a window (old events).
-        /// </summary>
-        /// <param name="eventsPerStream">events for each stream entering window</param>
-        /// <param name="optionalGroupKeyPerRow">can be null if grouping without keys is desired, else the keys
-        /// to use for grouping, each distinct key value results in a new row of aggregation state.</param>
-        public virtual void ApplyLeave(EventBean[] eventsPerStream, MultiKey<Object> optionalGroupKeyPerRow)
-        {
-            leaveList.Add(new Pair<EventBean[], MultiKey<Object>>(eventsPerStream, optionalGroupKeyPerRow));
-        }
+	    public void ApplyEnter(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
+	    {
+	        enterList.Add(new Pair<EventBean[], MultiKeyUntyped>(eventsPerStream, optionalGroupKeyPerRow));
+	    }
 
-        /// <summary>
-        /// Apply events as entering a window (new events).
-        /// </summary>
-        /// <param name="eventsPerStream">events for each stream entering window</param>
-        /// <param name="optionalGroupKeyPerRow">can be null if grouping without keys is desired, else the keys
-        /// to use for grouping, each distinct key value results in a new row of aggregation state.</param>
-        public virtual void ApplyEnter(EventBean[] eventsPerStream, MultiKey<Object> optionalGroupKeyPerRow)
-        {
-            enterList.Add(new Pair<EventBean[], MultiKey<Object>>(eventsPerStream, optionalGroupKeyPerRow));
-        }
+	    public IList<Pair<EventBean[], MultiKeyUntyped>> LeaveList
+	    {
+	        get { return leaveList; }
+	    }
 
-        public IList<Pair<EventBean[], MultiKey<Object>>> LeaveList
-        {
-            get { return leaveList; }
-        }
-
-        public IList<Pair<EventBean[], MultiKey<Object>>> EnterList
-        {
+	    public IList<Pair<EventBean[], MultiKeyUntyped>> EnterList
+	    {
             get { return enterList; }
-        }
+	    }
 
-        public virtual Object GetValue(int column)
-        {
-            return null;
-        }
-    }
-}
+	    public void SetCurrentRow(MultiKeyUntyped groupKey)
+	    {
+	    }
+
+	    public Object GetValue(int column)
+	    {
+	        return null;
+	    }
+	}
+} // End of namespace

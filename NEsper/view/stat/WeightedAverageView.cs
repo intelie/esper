@@ -179,11 +179,11 @@ namespace net.esper.view.stat
             // If there are child view, fireStatementStopped update method
             if (this.HasViews)
             {
-                EDataDictionary newDataMap = new EDataDictionary();
+                DataDictionary newDataMap = new DataDictionary();
                 newDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = currentValue;
                 EventBean newDataEvent = statementContext.EventAdapterService.CreateMapFromValues(newDataMap, eventType);
 
-                EDataDictionary oldDataMap = new EDataDictionary();
+                DataDictionary oldDataMap = new DataDictionary();
                 oldDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = oldValue;
                 EventBean oldDataEvent = statementContext.EventAdapterService.CreateMapFromValues(oldDataMap, eventType);
 
@@ -211,7 +211,7 @@ namespace net.esper.view.stat
         /// </returns>
         public override IEnumerator<EventBean> GetEnumerator()
         {
-        	EDataDictionary newDataMap = new EDataDictionary();
+        	DataDictionary newDataMap = new DataDictionary();
         	newDataMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = currentValue ;
             yield return statementContext.EventAdapterService.CreateMapFromValues(newDataMap, eventType);
         }
@@ -234,7 +234,7 @@ namespace net.esper.view.stat
         /// <returns>event type of view</returns>
         internal static EventType CreateEventType(StatementContext statementContext)
         {
-            EDictionary<String, Type> schemaMap = new EHashDictionary<String, Type>();
+            EDictionary<String, Type> schemaMap = new HashDictionary<String, Type>();
             schemaMap[ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.Name] = typeof (double);
             EventType eventType = statementContext.EventAdapterService.CreateAnonymousMapType(schemaMap);
             return eventType;

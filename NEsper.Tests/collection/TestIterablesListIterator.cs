@@ -40,18 +40,18 @@ namespace net.esper.collection
         {
             IList<IEnumerable<EventBean>> iterables = new List<IEnumerable<EventBean>>();
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a", "b", "c" }));
-            checkResults(iterables, EventFactoryHelper.makeArray(events, new String[] { "a", "b", "c" }));
+            checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c" }));
 
             iterables = new List<IEnumerable<EventBean>>();
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a" }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "b" }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "c" }));
-            checkResults(iterables, EventFactoryHelper.makeArray(events, new String[] { "a", "b", "c" }));
+            checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c" }));
 
             iterables = new List<IEnumerable<EventBean>>();
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a", "b" }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "c" }));
-            checkResults(iterables, EventFactoryHelper.makeArray(events, new String[] { "a", "b", "c" }));
+            checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c" }));
 
             iterables = new List<IEnumerable<EventBean>>();
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
@@ -59,7 +59,7 @@ namespace net.esper.collection
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "c" }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            checkResults(iterables, EventFactoryHelper.makeArray(events, new String[] { "a", "b", "c" }));
+            checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c" }));
 
             iterables = new List<IEnumerable<EventBean>>();
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
@@ -76,14 +76,14 @@ namespace net.esper.collection
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "d" }));
-            checkResults(iterables, EventFactoryHelper.makeArray(events, new String[] { "d" }));
+            checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "d" }));
 
             iterables = new List<IEnumerable<EventBean>>();
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "d" }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            checkResults(iterables, EventFactoryHelper.makeArray(events, new String[] { "d" }));
+            checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "d" }));
 
             iterables = new List<IEnumerable<EventBean>>();
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a", "b", "c" }));
@@ -94,7 +94,7 @@ namespace net.esper.collection
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "h", "i" }));
             iterables.Add(EventFactoryHelper.makeList(events, new String[] { "z" }));
-            checkResults(iterables, EventFactoryHelper.makeArray(events, new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "z" }));
+            checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "z" }));
 
             iterables = new List<IEnumerable<EventBean>>();
             checkResults(iterables, null);
@@ -103,7 +103,7 @@ namespace net.esper.collection
         private void checkResults(IList<IEnumerable<EventBean>> iterables, EventBean[] expectedValues)
         {
             IterablesListIterator iterator = new IterablesListIterator(iterables);
-            ArrayAssertionUtil.assertEqualsExactOrder(iterator, expectedValues);
+            ArrayAssertionUtil.AreEqualExactOrder(iterator, expectedValues);
         }
     }
 }

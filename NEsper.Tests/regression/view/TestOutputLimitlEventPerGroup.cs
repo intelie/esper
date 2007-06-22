@@ -36,7 +36,7 @@ namespace net.esper.regression.view
             String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol " + "output last every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             runAssertionLast();
         }
@@ -47,7 +47,7 @@ namespace net.esper.regression.view
             String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             runAssertionSingle();
         }
@@ -58,7 +58,7 @@ namespace net.esper.regression.view
             String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.str = two.symbol " + "group by symbol";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -78,7 +78,7 @@ namespace net.esper.regression.view
                 "output all every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             runAssertionAll();
         }
@@ -97,7 +97,7 @@ namespace net.esper.regression.view
                 "output last every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -120,7 +120,7 @@ namespace net.esper.regression.view
                 "output all every 2 events";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
             epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
@@ -137,14 +137,14 @@ namespace net.esper.regression.view
             Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myAvg"));
 
             SendEvent(SYMBOL_DELL, 10);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent(SYMBOL_DELL, 20);
             assertEvent(SYMBOL_DELL, null, null, 30d, 15d);
-            testListener.reset();
+            testListener.Reset();
 
             SendEvent(SYMBOL_DELL, 100);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent(SYMBOL_DELL, 50);
             assertEvent(SYMBOL_DELL, 30d, 15d, 170d, 170 / 3d);
@@ -158,11 +158,11 @@ namespace net.esper.regression.view
             Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myAvg"));
 
             SendEvent(SYMBOL_DELL, 10);
-            Assert.IsTrue(testListener.Invoked);
+            Assert.IsTrue(testListener.IsInvoked);
             assertEvent(SYMBOL_DELL, null, null, 10d, 10d);
 
             SendEvent(SYMBOL_IBM, 20);
-            Assert.IsTrue(testListener.Invoked);
+            Assert.IsTrue(testListener.IsInvoked);
             assertEvent(SYMBOL_IBM, null, null, 20d, 20d);
         }
 
@@ -174,16 +174,16 @@ namespace net.esper.regression.view
             Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("myAvg"));
 
             SendEvent(SYMBOL_IBM, 70);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent(SYMBOL_DELL, 10);
             assertEvents(
                 SYMBOL_IBM, null, null, 70d, 70d,
                 SYMBOL_DELL, null, null, 10d, 10d);
-            testListener.reset();
+            testListener.Reset();
 
             SendEvent(SYMBOL_DELL, 20);
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             SendEvent(SYMBOL_DELL, 100);
             assertEvents(
@@ -212,8 +212,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(newSum, newData[0]["mySum"]);
             Assert.AreEqual(newAvg, newData[0]["myAvg"], "newData myAvg wrong");
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void assertEvents(
@@ -251,8 +251,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(oldAvgOne, oldData[indexOne]["myAvg"]);
             Assert.AreEqual(oldAvgTwo, oldData[indexTwo]["myAvg"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void SendEvent(String symbol, double price)

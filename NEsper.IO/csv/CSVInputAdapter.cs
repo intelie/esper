@@ -22,12 +22,12 @@ namespace net.esper.adapter.csv
 
         private Int32? eventsPerSec;
         private CSVReader reader;
-        private IDictionary<String, ConstructorInfo> propertyConstructors;
+        private EDictionary<String, ConstructorInfo> propertyConstructors;
         private String[] propertyOrder;
         private CSVInputAdapterSpec adapterSpec;
         private IDictionary<String, Type> propertyTypes;
         private String eventTypeAlias;
-        private long lastTimestamp = 0;
+        private long? lastTimestamp = 0;
         private long totalDelay;
         internal bool atEOF = false;
         internal String[] firstRow;
@@ -37,7 +37,7 @@ namespace net.esper.adapter.csv
         /// <param name="spec">the parameters for this adapter</param>
 
         public CSVInputAdapter(EPServiceProvider epService, CSVInputAdapterSpec spec)
-            : base(epService, spec.isUsingEngineThread())
+            : base(epService, spec.IsUsingEngineThread)
         {
             adapterSpec = spec;
             eventTypeAlias = adapterSpec.EventTypeAlias;
@@ -45,7 +45,7 @@ namespace net.esper.adapter.csv
 
             if (epService != null)
             {
-                finishInitialization(epService, spec);
+                FinishInitialization(epService, spec);
             }
         }
 
@@ -73,11 +73,11 @@ namespace net.esper.adapter.csv
         /// <param name="eventTypeAlias">the event type alias name that the input adapter generates events for</param>
 
         public CSVInputAdapter(AdapterInputSource adapterInputSource, String eventTypeAlias)
+            : this(null, adapterInputSource, eventTypeAlias)
         {
-            this(null, adapterInputSource, eventTypeAlias);
         }
 
-        public SendableEvent Read()
+        public override SendableEvent Read()
         {
             if (stateManager.State == AdapterState.DESTROYED || atEOF)
             {
@@ -86,7 +86,7 @@ namespace net.esper.adapter.csv
 
             try
             {
-                if (eventsToSend.isEmpty())
+                if (eventsToSend.IsEmpty)
                 {
                     return new SendableMapEvent(NewMapEvent(), eventTypeAlias, totalDelay, scheduleSlot);
                 }
@@ -97,23 +97,23 @@ namespace net.esper.adapter.csv
                     return _event;
                 }
             }
-            catch (EOFException e)
+            catch (EndOfStreamException)
             {
-                log.debug(".read reached end of CSV file");
+                log.Debug(".read reached end of CSV file");
                 atEOF = true;
                 if (stateManager.State == AdapterState.STARTED)
                 {
-                    stop();
+                    Stop();
                 }
                 else
                 {
-                    destroy();
+                    Destroy();
                 }
                 return null;
             }
         }
 
-        public override EPService EPService
+        public override EPServiceProvider EPService
         {
             set
             {
@@ -125,8 +125,8 @@ namespace net.esper.adapter.csv
         /// <summary>
         /// Close the CSVReader.
         /// </summary>
-        
-        protected void Close()
+
+        protected override void Close()
         {
             reader.Close();
         }
@@ -136,7 +136,7 @@ namespace net.esper.adapter.csv
         /// insert the event createdfrom it into eventsToSend.
         /// </summary>
 
-        protected void ReplaceFirstEventToSend()
+        protected override void ReplaceFirstEventToSend()
         {
             eventsToSend.Remove(eventsToSend.First);
             SendableEvent _event = Read();
@@ -150,7 +150,7 @@ namespace net.esper.adapter.csv
         /// Reset all the changeable state of this ReadableAdapter, as if it were just created.
         /// </summary>
 
-        protected void Reset()
+        protected override void Reset()
         {
             lastTimestamp = 0;
             totalDelay = 0;
@@ -163,23 +163,23 @@ namespace net.esper.adapter.csv
 
         private void FinishInitialization(EPServiceProvider epService, CSVInputAdapterSpec spec)
         {
-            assertValidParameters(epService, spec);
+            AssertValidParameters(epService, spec);
 
             EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;
 
-            scheduleSlot = spi.getSchedulingService().allocateBucket().allocateSlot();
+            scheduleSlot = spi.SchedulingService.AllocateBucket().AllocateSlot();
 
-            reader = new CSVReader(spec.getAdapterInputSource());
-            reader.setLooping(spec.isLooping());
+            reader = new CSVReader(spec.AdapterInputSource);
+            reader.Looping = spec.IsLooping;
 
-            String[] firstRow = getFirstRow();
+            String[] firstRow = FirstRow;
 
-            EDictionary<String, Type> givenPropertyTypes = ConstructPropertyTypes(spec.getEventTypeAlias(), spec.getPropertyTypes(), spi.EventAdapterService);
+            EDictionary<String, Type> givenPropertyTypes = ConstructPropertyTypes(spec.EventTypeAlias, EBaseDictionary<string,Type>.AsEDictionary(spec.PropertyTypes), spi.EventAdapterService);
 
             propertyOrder =
-                spec.getPropertyOrder() != null ?
-                spec.getPropertyOrder() :
-                CSVPropertyOrderHelper.resolvePropertyOrder(firstRow, givenPropertyTypes);
+                spec.PropertyOrder != null ?
+                spec.PropertyOrder :
+                CSVPropertyOrderHelper.ResolvePropertyOrder(firstRow, givenPropertyTypes);
 
             reader.IsUsingTitleRow = IsUsingTitleRow(firstRow, propertyOrder);
             if (!IsUsingTitleRow(firstRow, propertyOrder))
@@ -187,13 +187,13 @@ namespace net.esper.adapter.csv
                 this.firstRow = firstRow;
             }
 
-            propertyTypes = resolvePropertyTypes(givenPropertyTypes);
+            propertyTypes = ResolvePropertyTypes(givenPropertyTypes);
             if (givenPropertyTypes == null)
             {
-                spi.EventAdapterService.addMapType(eventTypeAlias, propertyTypes);
+            	spi.EventAdapterService.AddMapType(eventTypeAlias, EBaseDictionary<String,Type>.AsEDictionary(propertyTypes));
             }
 
-            this.propertyConstructors = createPropertyConstructors(propertyTypes);
+            this.propertyConstructors = CreatePropertyConstructors(propertyTypes);
         }
 
         private EDictionary<String, Object> NewMapEvent()
@@ -206,22 +206,26 @@ namespace net.esper.adapter.csv
 
         private EDictionary<String, ConstructorInfo> CreatePropertyConstructors(IDictionary<String, Type> propertyTypes)
         {
-            EDictionary<String, ConstructorInfo> constructors = new EHashDictionary<String, ConstructorInfo>();
-
+            EDictionary<String, ConstructorInfo> constructors = new HashDictionary<String, ConstructorInfo>();
+            
             Type[] parameterTypes = new Type[] { typeof(String) };
-            foreach (String property in propertyTypes.Keys)
+            foreach( KeyValuePair<String,Type> entry in propertyTypes )
             {
-                log.debug(".CreatePropertyConstructors property==" + property + ", type==" + propertyTypes.get(property));
-                FastClass fastClass = FastClass.create(TypeHelper.GetBoxedType(propertyTypes.get(property)));
-                FastConstructor constructor = fastClass.getConstructor(parameterTypes);
-                constructors.put(property, constructor);
+            	String property = entry.Key;
+            	Type propertyType = entry.Value;
+            	Type boxedType = TypeHelper.GetBoxedType(propertyType) ;
+            	
+            	log.Debug(".CreatePropertyConstructors property==" + property + ", type==" + propertyType);
+
+            	ConstructorInfo constructor = boxedType.GetConstructor( parameterTypes );
+                constructors.Put(property, constructor);
             }
             return constructors;
         }
 
         private EDictionary<String, Object> CreateMapFromRow(String[] row)
         {
-            EDictionary<String, Object> map = new EHashDictionary<String, Object>();
+            EDictionary<String, Object> map = new HashDictionary<String, Object>();
 
             int count = 0;
 
@@ -231,58 +235,58 @@ namespace net.esper.adapter.csv
                 {
                     // Skip properties that are in the title row but not
                     // part of the map to send
-                    if (propertyTypes != null && !propertyTypes.containsKey(property))
+                    if (propertyTypes != null && !propertyTypes.ContainsKey(property))
                     {
                         count++;
                         continue;
                     }
                     Object[] parameters = new Object[] { row[count++] };
-                    Object value = propertyConstructors.get(property).newInstance(parameters);
+                    Object value = propertyConstructors.Fetch(property).Invoke(parameters);
                     map[property] = value;
                 }
             }
-            catch (InvocationTargetException e)
+            catch (TargetInvocationException e)
             {
                 throw new EPException(e);
             }
             return map;
         }
 
-        private IDictionary<String, Type> ConstructPropertyTypes(
+        private EDictionary<String, Type> ConstructPropertyTypes(
             String eventTypeAlias,
             EDictionary<String, Type> propertyTypesGiven,
             EventAdapterService eventAdapterService)
         {
-            EDictionary<String, Type> propertyTypes = new EHashDictionary<String, Type>();
-            EventType eventType = eventAdapterService.getExistsTypeByAlias(eventTypeAlias);
+            EDictionary<String, Type> propertyTypes = new HashDictionary<String, Type>();
+            EventType eventType = eventAdapterService.GetEventTypeByAlias(eventTypeAlias);
             if (eventType == null)
             {
                 if (propertyTypesGiven != null)
                 {
-                    eventAdapterService.addMapType(eventTypeAlias, propertyTypesGiven);
+                    eventAdapterService.AddMapType(eventTypeAlias, propertyTypesGiven);
                 }
                 return propertyTypesGiven;
             }
-            if (!eventType.UnderlyingType.Equals(typeof(Map)))
+            if (!eventType.UnderlyingType.Equals(typeof(IDictionary<string,object>)))
             {
                 throw new EPException("Alias " + eventTypeAlias + " does not correspond to a map event");
             }
-            if (propertyTypesGiven != null && eventType.PropertyNames.Length != propertyTypesGiven.Count)
+            if (propertyTypesGiven != null && eventType.PropertyNames.Count != propertyTypesGiven.Count)
             {
                 throw new EPException("Event type " + eventTypeAlias + " has already been declared with a different number of parameters");
             }
             foreach (String property in eventType.PropertyNames)
             {
                 Type type = eventType.GetPropertyType(property);
-                if (propertyTypesGiven != null && propertyTypesGiven.get(property) == null)
+                if (propertyTypesGiven != null && propertyTypesGiven.Fetch(property) == null)
                 {
                     throw new EPException("Event type " + eventTypeAlias + "has already been declared with different parameters");
                 }
-                if (propertyTypesGiven != null && !propertyTypesGiven.get(property).equals(type))
+                if (propertyTypesGiven != null && !Object.Equals(propertyTypesGiven.Fetch(property), type))
                 {
                     throw new EPException("Event type " + eventTypeAlias + "has already been declared with a different type for property " + property);
                 }
-                propertyTypes.put(property, type);
+                propertyTypes.Put(property, type);
             }
             return propertyTypes;
         }
@@ -291,23 +295,23 @@ namespace net.esper.adapter.csv
         {
             if (eventsPerSec != null)
             {
-                int msecPerEvent = 1000 / eventsPerSec;
+                int msecPerEvent = 1000 / eventsPerSec.Value;
                 totalDelay += msecPerEvent;
             }
-            else if (adapterSpec.getTimestampColumn() != null)
+            else if (adapterSpec.TimestampColumn != null)
             {
-                Int64? timestamp = ResolveTimestamp(row);
+                long? timestamp = ResolveTimestamp(row);
                 if (timestamp == null)
                 {
-                    throw new EPException("Couldn't resolve the timestamp for record " + Arrays.asList(row));
+                    throw new EPException("Couldn't resolve the timestamp for record " + CollectionHelper.Render(row));
                 }
                 else if (timestamp < 0)
                 {
-                    throw new EPException("Encountered negative timestamp for CSV record : " + Arrays.asList(row));
+                    throw new EPException("Encountered negative timestamp for CSV record : " + CollectionHelper.Render(row));
                 }
                 else
                 {
-                    long timestampDifference = 0;
+                    long? timestampDifference = 0;
                     if (timestamp < lastTimestamp)
                     {
                         if (!isFirstRow)
@@ -324,7 +328,7 @@ namespace net.esper.adapter.csv
                         timestampDifference = timestamp - lastTimestamp;
                     }
                     lastTimestamp = timestamp;
-                    totalDelay += timestampDifference;
+                    totalDelay += timestampDifference.Value;
                 }
             }
         }
@@ -348,7 +352,7 @@ namespace net.esper.adapter.csv
             {
                 for (int i = 0; i < propertyOrder.Length; i++)
                 {
-                    if (propertyOrder[i].equals(adapterSpec.TimestampColumn))
+                    if (Object.Equals(propertyOrder[i],adapterSpec.TimestampColumn))
                     {
                         return i;
                     }
@@ -364,7 +368,7 @@ namespace net.esper.adapter.csv
                 return propertyTypes;
             }
 
-            IDictionary<String, Type> result = new EHashDictionary<String, Type>();
+            IDictionary<String, Type> result = new HashDictionary<String, Type>();
             foreach (String property in propertyOrder)
             {
                 result[property] = typeof(string);
@@ -378,9 +382,9 @@ namespace net.esper.adapter.csv
             {
                 return false;
             }
-            ISet<String> firstRowSet = new EHashSet<String>(Arrays.asList(firstRow));
-            ISet<String> propertyOrderSet = new EHashSet<String>(Arrays.asList(propertyOrder));
-            return firstRowSet.equals(propertyOrderSet);
+            Set<String> firstRowSet = new HashSet<String>(firstRow);
+            Set<String> propertyOrderSet = new HashSet<String>(propertyOrder);
+            return Object.Equals(firstRowSet, propertyOrderSet);
         }
 
         /// <summary>
@@ -395,9 +399,9 @@ namespace net.esper.adapter.csv
                 String[] firstRow;
                 try
                 {
-                    firstRow = reader.getNextRecord();
+                	firstRow = reader.GetNextRecord();
                 }
-                catch (EOFException e)
+                catch (EndOfStreamException)
                 {
                     atEOF = true;
                     firstRow = null;
@@ -412,7 +416,7 @@ namespace net.esper.adapter.csv
             {
                 if (eventsPerSec < 1 || eventsPerSec > 1000)
                 {
-                    throw new IllegalArgumentException("Illegal value of eventsPerSec:" + eventsPerSec);
+                    throw new ArgumentException("Illegal value of eventsPerSec:" + eventsPerSec);
                 }
             }
         }
@@ -421,20 +425,20 @@ namespace net.esper.adapter.csv
         {
             if (!(epService is EPServiceProviderSPI))
             {
-                throw new IllegalArgumentException("Invalid type of EPServiceProvider");
+                throw new ArgumentException("Invalid type of EPServiceProvider");
             }
 
             if (adapterSpec.EventTypeAlias == null)
             {
-                throw new NullPointerException("eventTypeAlias cannot be null");
+                throw new ArgumentException("eventTypeAlias cannot be null");
             }
 
             if (adapterSpec.AdapterInputSource == null)
             {
-                throw new NullPointerException("adapterInputSource cannot be null");
+                throw new ArgumentException("adapterInputSource cannot be null");
             }
 
-            assertValidEventsPerSec(adapterSpec.EventsPerSec);
+            AssertValidEventsPerSec(adapterSpec.EventsPerSec);
 
             if (adapterSpec.IsLooping && !adapterSpec.AdapterInputSource.IsResettable)
             {

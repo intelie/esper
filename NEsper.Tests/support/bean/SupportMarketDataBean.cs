@@ -1,74 +1,72 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
+using System.IO;
 
 namespace net.esper.support.bean
 {
+    [Serializable]
 	public class SupportMarketDataBean
-    {
-        #region "Properties (lowercase)"
-        virtual public String symbol
-		{
-            get { return _symbol; }
-		}
+	{
+	    private String symbol;
+	    private String id;
+	    private double price;
+	    private long? volume;
+	    private String feed;
 
-		virtual public double price
-		{
-			get { return _price; }
-		}
+	    public SupportMarketDataBean(String symbol, double price, long? volume, String feed)
+	    {
+	        this.symbol = symbol;
+	        this.price = price;
+	        this.volume = volume;
+	        this.feed = feed;
+	    }
 
-		virtual public long? volume
-		{
-            get { return _volume; }
-		}
+	    public SupportMarketDataBean(String symbol, String id, double price)
+	    {
+	        this.symbol = symbol;
+	        this.id = id;
+	        this.price = price;
+	    }
 
-		virtual public String feed
-		{
-            get { return _feed; }
-        }
-        #endregion
+	    public String Symbol
+	    {
+	    	get { return symbol; }
+	    }
 
-        #region "Properties"
-        virtual public String Symbol
-        {
-            get { return _symbol; }
-        }
+	    public double Price
+	    {
+	    	get { return price; }
+	    }
 
-        virtual public double Price
-        {
-            get { return _price; }
-        }
+	    public long? Volume
+	    {
+	    	get { return volume; }
+	    }
 
-        virtual public long? Volume
-        {
-            get { return _volume; }
-        }
+	    public String Feed
+	    {
+	    	get { return feed; }
+	    }
 
-        virtual public String Feed
-        {
-            get { return _feed; }
-        }
-        #endregion
+	    public String Id
+	    {
+	    	get { return id; }
+	    }
 
-        private String _symbol;
-        private double _price;
-        private long? _volume;
-        private String _feed;
-		
-		public SupportMarketDataBean(String symbol, double price, long? volume, String feed)
-		{
-			this._symbol = symbol;
-			this._price = price;
-			this._volume = volume;
-			this._feed = feed;
-		}
-		
-		public override String ToString()
-		{
-			return
-			 "SupportMarketDataBean" +
-			 " symbol=" + symbol + 
-			 " price=" + price +
-			 " volume=" + volume +
-			 " feed=" + feed;
-		}
+	    public override String ToString()
+	    {
+	        return "SupportMarketDataBean " +
+	               "symbol=" + symbol +
+	               " price=" + price +
+	               " volume=" + volume +
+	               " feed=" + feed;
+	    }
 	}
-}
+} // End of namespace

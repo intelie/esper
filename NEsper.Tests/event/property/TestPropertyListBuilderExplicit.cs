@@ -58,7 +58,7 @@ namespace net.esper.events.property
             expected.Add(new EventPropertyDescriptor("m_strMap", "m_strMap", typeof(SupportLegacyBean).GetMethod("readMap"), EventPropertyType.SIMPLE));
             expected.Add(new EventPropertyDescriptor("m_legNested", "m_legNested", typeof(SupportLegacyBean).GetMethod("readLegacyNested"), EventPropertyType.SIMPLE));
 
-            ArrayAssertionUtil.assertEqualsAnyOrder(expected, descList);
+            ArrayAssertionUtil.AreEqualAnyOrder(expected, descList);
         }
 
         [Test]

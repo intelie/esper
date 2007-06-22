@@ -50,7 +50,7 @@ namespace net.esper.events.property
         {
             IList<EventPropertyDescriptor> descList = builder.AssessProperties(typeof(SupportLegacyBean));
 
-            IList<EventPropertyDescriptor> expected = new List<EventPropertyDescriptor>();
+            List<EventPropertyDescriptor> expected = new List<EventPropertyDescriptor>();
             expected.Add(new EventPropertyDescriptor(
                 "fieldLegacyVal",
                 "fieldLegacyVal",
@@ -63,7 +63,7 @@ namespace net.esper.events.property
                 EventPropertyType.SIMPLE));
             expected.Add(new EventPropertyDescriptor(
                 "fieldMapped",
-                "fieldMapped", 
+                "fieldMapped",
                 MakeDescriptor(typeof(SupportLegacyBean).GetField("fieldMapped", bindings)),
                 EventPropertyType.SIMPLE));
             expected.Add(new EventPropertyDescriptor(
@@ -93,8 +93,8 @@ namespace net.esper.events.property
                 typeof(SupportLegacyBean).GetMethod("readMapByKey", new Type[] { typeof(String) }),
                 EventPropertyType.MAPPED));
             expected.Add(new EventPropertyDescriptor(
-                "readMap", 
-                "readMap", 
+                "readMap",
+                "readMap",
                 MakeDescriptor(typeof(SupportLegacyBean).GetMethod("readMap")),
                 EventPropertyType.SIMPLE));
             expected.Add(new EventPropertyDescriptor(
@@ -104,7 +104,7 @@ namespace net.esper.events.property
                 EventPropertyType.SIMPLE));
 
             expected.Add(new EventPropertyDescriptor(
-                "x", 
+                "x",
                 "x",
                 MakeDescriptor(typeof(SupportLegacyBean).GetField("fieldNested", bindings)),
                 EventPropertyType.SIMPLE));
@@ -114,7 +114,7 @@ namespace net.esper.events.property
                 MakeDescriptor(typeof(SupportLegacyBean).GetMethod("readLegacyBeanVal")),
                 EventPropertyType.SIMPLE));
 
-            ArrayAssertionUtil.assertEqualsAnyOrder( expected, descList ) ;
+            ArrayAssertionUtil.AreEqualAnyOrder( expected, descList ) ;
         }
 
         private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

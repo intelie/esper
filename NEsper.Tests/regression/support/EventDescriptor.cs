@@ -10,7 +10,7 @@ namespace net.esper.regression.support
 
         public EventDescriptor()
         {
-            eventProperties = new EHashDictionary<String, Object>();
+            eventProperties = new HashDictionary<String, Object>();
         }
 
         public EDictionary<String, Object> EventProperties

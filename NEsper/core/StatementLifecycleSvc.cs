@@ -90,7 +90,7 @@ namespace net.esper.core
         /// Statements indicate that listeners have been added through this method.
         /// </summary>
         /// <param name="statementId">is the statement id for which listeners were added</param>
-        /// <param name="listeners">is the set of listeners after adding the new listener</param>
-        void UpdatedListeners(String statementId, Set<UpdateListener> listeners);
+        /// <param name="eventHandlers">is the set of listeners after adding the new listener</param>
+        void UpdatedEventHandlers(String statementId, Set<UpdateEventHandler> eventHandlers);
     }
 }

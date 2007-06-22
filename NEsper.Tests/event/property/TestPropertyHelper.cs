@@ -15,7 +15,7 @@ using org.apache.commons.logging;
 namespace net.esper.events.property
 {
     [TestFixture]
-    public class TestPropertyHelper 
+    public class TestPropertyHelper
     {
         [Test]
         public virtual void testAddMappedProperties()
@@ -44,7 +44,7 @@ namespace net.esper.events.property
             PropertyHelper.AddSimpleProperties(typeof(SupportBeanPropertyNames), result);
             Assert.AreEqual(8, result.Count);
             PropertyHelper.AddIndexedProperties(typeof(SupportBeanPropertyNames), result);
-            
+
             foreach (EventPropertyDescriptor desc in result)
             {
                 log.Debug("desc=" + desc.PropertyName);
@@ -88,7 +88,7 @@ namespace net.esper.events.property
         [Test]
         public virtual void testGetGetter()
         {
-            EventBean bean = SupportEventBeanFactory.createObject(new SupportBeanPropertyNames());
+            EventBean bean = SupportEventBeanFactory.CreateObject(new SupportBeanPropertyNames());
             MethodInfo method = typeof(SupportBeanPropertyNames).GetMethod("getA", new Type[]{}) ;
             PropertyDescriptor descriptor = new SimpleAccessorPropertyDescriptor(method.Name, method);
             EventPropertyGetter getter = PropertyHelper.GetGetter(descriptor);

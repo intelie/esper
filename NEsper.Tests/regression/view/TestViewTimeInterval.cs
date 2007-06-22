@@ -44,12 +44,12 @@ namespace net.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:time_batch(10 minutes)");
             testListener = new SupportUpdateListener();
-            view.AddListener(testListener.Update);
+            view.AddListener(testListener);
 
             sendTimer(0);
 
             SendEvent();
-            testListener.reset();
+            testListener.Reset();
 
             sendTimerAssertNotInvoked(10 * 60 * 1000 - 1);
             sendTimerAssertInvoked(10 * 60 * 1000);
@@ -61,12 +61,12 @@ namespace net.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:time_batch(10 minutes, 10L)");
             testListener = new SupportUpdateListener();
-            view.AddListener(testListener.Update);
+            view.AddListener(testListener);
 
             sendTimer(10);
 
             SendEvent();
-            testListener.reset();
+            testListener.Reset();
 
             sendTimerAssertNotInvoked(10 * 60 * 1000 - 1 + 10);
             sendTimerAssertInvoked(10 * 60 * 1000 + 10);
@@ -78,15 +78,15 @@ namespace net.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:ext_timed('longPrimitive', 10 minutes)");
             testListener = new SupportUpdateListener();
-            view.AddListener(testListener.Update);
+            view.AddListener(testListener);
 
             sendExtTimeEvent(0);
 
-            testListener.reset();
+            testListener.Reset();
             sendExtTimeEvent(10 * 60 * 1000 - 1);
             Assert.IsNull(testListener.OldDataList[0]);
 
-            testListener.reset();
+            testListener.Reset();
             sendExtTimeEvent(10 * 60 * 1000 + 1);
             Assert.AreEqual(1, testListener.OldDataList[0].Length);
         }
@@ -96,12 +96,12 @@ namespace net.esper.regression.view
             // Set up a time window with a unique view attached
             EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:time(" + intervalSpec + ")");
             testListener = new SupportUpdateListener();
-            view.AddListener(testListener.Update);
+            view.AddListener(testListener);
 
             sendTimer(0);
 
             SendEvent();
-            testListener.reset();
+            testListener.Reset();
 
             sendTimerAssertNotInvoked(29999 * 1000);
             sendTimerAssertInvoked(30000 * 1000);
@@ -110,15 +110,15 @@ namespace net.esper.regression.view
         private void sendTimerAssertNotInvoked(long timeInMSec)
         {
             sendTimer(timeInMSec);
-            Assert.IsFalse(testListener.Invoked);
-            testListener.reset();
+            Assert.IsFalse(testListener.IsInvoked);
+            testListener.Reset();
         }
 
         private void sendTimerAssertInvoked(long timeInMSec)
         {
             sendTimer(timeInMSec);
-            Assert.IsTrue(testListener.Invoked);
-            testListener.reset();
+            Assert.IsTrue(testListener.IsInvoked);
+            testListener.Reset();
         }
 
         private void sendTimer(long timeInMSec)
@@ -137,7 +137,7 @@ namespace net.esper.regression.view
         private void sendExtTimeEvent(long longPrimitive)
         {
             SupportBean _event = new SupportBean();
-            _event.longPrimitive = longPrimitive;
+            _event.SetLongPrimitive(longPrimitive);
             epService.EPRuntime.SendEvent(_event);
         }
     }

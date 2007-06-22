@@ -13,7 +13,7 @@ namespace net.esper.regression.eql
     [TestFixture]
     public class TestOutputLimitFirst
     {
-        private static readonly String EVENT_NAME;
+        private static readonly String _event_NAME;
         private EPServiceProvider epService;
         private long currentTime;
         private SupportUpdateListener updateListener;
@@ -45,38 +45,38 @@ namespace net.esper.regression.eql
             sendTimeEvent(0);
 
             // Create the eql statement and add a listener
-            String statementText = "select symbol, sum(volume) from " + EVENT_NAME + ".win:length(5) output first every 3 seconds";
+            String statementText = "select symbol, sum(volume) from " + _event_NAME + ".win:length(5) output first every 3 seconds";
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener.Update);
-            updateListener.reset();
+            statement.AddListener(updateListener);
+            updateListener.Reset();
 
             // Send the first event of the batch; should be output
             SendEvent(10L);
             assertEvent(10L);
 
-            // Send another event, not the first, for aggregation
+            // Send another _event, not the first, for aggregation
             // update only, no output
             SendEvent(20L);
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             // Update time
             sendTimeEvent(3000);
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             // Send first event of the next batch, should be output.
-            // The aggregate value is computed over all events 
+            // The aggregate value is computed over all events
             // received: 10 + 20 + 30 = 60
             SendEvent(30L);
             assertEvent(60L);
 
             // Send the next event of the batch, no output
             SendEvent(40L);
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             // Update time
             sendTimeEvent(3000);
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             // Send first event of third batch
             SendEvent(1L);
@@ -84,12 +84,12 @@ namespace net.esper.regression.eql
 
             // Update time
             sendTimeEvent(3000);
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
             // Update time: no first event this batch, so a callback
             // is made at the end of the interval
             sendTimeEvent(3000);
-            Assert.IsTrue(updateListener.getAndClearIsInvoked());
+            Assert.IsTrue(updateListener.GetAndClearIsInvoked());
             Assert.IsNull(updateListener.LastNewData);
             Assert.IsNull(updateListener.LastOldData);
         }
@@ -98,11 +98,11 @@ namespace net.esper.regression.eql
         public virtual void testCount()
         {
             // Create the eql statement and add a listener
-            String statementText = "select symbol, sum(volume) from " + EVENT_NAME + ".win:length(5) output first every 3 events";
+            String statementText = "select symbol, sum(volume) from " + _event_NAME + ".win:length(5) output first every 3 events";
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
             updateListener = new SupportUpdateListener();
-            statement.AddListener(updateListener.Update);
-            updateListener.reset();
+            statement.AddListener(updateListener);
+            updateListener.Reset();
 
             // Send the first event of the batch, should be output
             SendEvent(10L);
@@ -111,21 +111,21 @@ namespace net.esper.regression.eql
             // Send the second event of the batch, not output, used
             // for updating the aggregate value only
             SendEvent(20L);
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
-            // Send the third event of the batch, still not output, 
+            // Send the third event of the batch, still not output,
             // but should reset the batch
             SendEvent(30L);
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
 
-            // First event, next batch, aggregate value should be
+            // First _event, next batch, aggregate value should be
             // 10 + 20 + 30 + 40 = 100
             SendEvent(40L);
             assertEvent(100L);
 
             // Next event again not output
             SendEvent(50L);
-            Assert.IsFalse(updateListener.getAndClearIsInvoked());
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
         }
 
         private void sendTimeEvent(int timeIncrement)
@@ -137,7 +137,7 @@ namespace net.esper.regression.eql
 
         private void assertEvent(long volume)
         {
-            Assert.IsTrue(updateListener.getAndClearIsInvoked());
+            Assert.IsTrue(updateListener.GetAndClearIsInvoked());
             Assert.IsTrue(updateListener.LastNewData != null);
             Assert.AreEqual(1, updateListener.LastNewData.Length);
             Assert.AreEqual(volume, updateListener.LastNewData[0]["sum(volume)"]);
@@ -149,7 +149,7 @@ namespace net.esper.regression.eql
         }
         static TestOutputLimitFirst()
         {
-            EVENT_NAME = typeof(SupportMarketDataBean).FullName;
+            _event_NAME = typeof(SupportMarketDataBean).FullName;
         }
     }
 }

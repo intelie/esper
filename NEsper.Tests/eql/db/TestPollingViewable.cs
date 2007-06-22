@@ -25,11 +25,11 @@ namespace net.esper.eql.db
 
 			DataCache dataCache = new DataCacheLRUImpl( 100 );
 
-			EDictionary<String, Type> resultProperties = new EHashDictionary<String, Type>();
+			EDictionary<String, Type> resultProperties = new HashDictionary<String, Type>();
 			resultProperties.Put( "myvarchar", typeof( String ) );
 			EventType resultEventType = SupportEventAdapterService.Service.CreateAnonymousMapType( resultProperties );
 
-			EDictionary<MultiKey<Object>, IList<EventBean>> pollResults = new EHashDictionary<MultiKey<Object>, IList<EventBean>>();
+			EDictionary<MultiKey<Object>, IList<EventBean>> pollResults = new HashDictionary<MultiKey<Object>, IList<EventBean>>();
 			pollResults.Put( new MultiKey<Object>( new Object[] { -1 } ), new List<EventBean>() );
 			pollResults.Put( new MultiKey<Object>( new Object[] { 500 } ), new List<EventBean>() );
 			SupportPollingStrategy supportPollingStrategy = new SupportPollingStrategy( pollResults );
@@ -61,7 +61,7 @@ namespace net.esper.eql.db
 		private EventBean MakeEvent( int intPrimitive )
 		{
 			SupportBean bean = new SupportBean();
-			bean.intPrimitive = intPrimitive;
+			bean.SetIntPrimitive(intPrimitive);
 			return SupportEventAdapterService.Service.AdapterForBean( bean );
 		}
 	}

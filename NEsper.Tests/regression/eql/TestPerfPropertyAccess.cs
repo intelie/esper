@@ -38,10 +38,10 @@ namespace net.esper.regression.eql
                 " where indexed[0].mapped('a').value = 'dummy'";
 			
 			joinView = epService.EPAdministrator.CreateEQL(joinStatement);
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 			
 			// Send events for each stream
-			SupportBeanCombinedProps _event = SupportBeanCombinedProps.makeDefaultBean();
+			SupportBeanCombinedProps _event = SupportBeanCombinedProps.MakeDefaultBean();
 			log.Info(methodName + " Sending events");
 
             long startTime = DateTimeHelper.CurrentTimeMillis;

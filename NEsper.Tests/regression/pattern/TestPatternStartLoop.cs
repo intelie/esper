@@ -36,12 +36,12 @@ namespace net.esper.regression.pattern
 
             String patternExpr = "not " + typeof(SupportBean).FullName;
             patternStmt = epService.EPAdministrator.CreatePattern(patternExpr);
-            patternStmt.AddListener(listener.Update);
+            patternStmt.AddListener(listener);
             patternStmt.Stop();
             patternStmt.Start();
         }
 
-        internal class PatternUpdateListener
+        internal class PatternUpdateListener : UpdateListener
         {
             public PatternUpdateListener(TestPatternStartLoop enclosingInstance)
             {
@@ -70,7 +70,7 @@ namespace net.esper.regression.pattern
                     count++;
                     String patternExpr = "not " + typeof(SupportBean).FullName;
                     Enclosing_Instance.patternStmt = Enclosing_Instance.epService.EPAdministrator.CreatePattern(patternExpr);
-                    Enclosing_Instance.patternStmt.AddListener(this.Update);
+                    Enclosing_Instance.patternStmt.AddListener(this);
                     Enclosing_Instance.patternStmt.Stop();
                     Enclosing_Instance.patternStmt.Start();
                 }

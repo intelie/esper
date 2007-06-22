@@ -18,16 +18,16 @@ namespace net.esper.events
 	public class BeanEventAdapter
 	{
 		private readonly EDictionary<Type, BeanEventType> typesPerBean;
-		private EDictionary<String, ConfigurationEventTypeLegacy> typeToLegacyConfigs;
+		private readonly EDictionary<String, ConfigurationEventTypeLegacy> typeToLegacyConfigs;
 		private readonly ReaderWriterLock typesPerBeanLock ;
 
 		/// <summary> Ctor.</summary>
 		
 		public BeanEventAdapter()
 		{
-			typesPerBean = new EHashDictionary<Type, BeanEventType>();
+			typesPerBean = new HashDictionary<Type, BeanEventType>();
 			typesPerBeanLock = new ReaderWriterLock();
-			typeToLegacyConfigs = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
+			typeToLegacyConfigs = new HashDictionary<String, ConfigurationEventTypeLegacy>();
 		}
 
 		/// <summary>

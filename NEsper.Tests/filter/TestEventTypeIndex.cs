@@ -1,105 +1,112 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
+using NUnit.Framework;
+
+using net.esper.compat;
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.events;
 using net.esper.support.filter;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.filter
 {
-
 	[TestFixture]
-    public class TestEventTypeIndex 
-    {
-        private EventTypeIndex testIndex;
+	public class TestEventTypeIndex
+	{
+	    private EventTypeIndex testIndex;
 
-        private EventBean testEventBean;
-        private EventType testEventType;
+	    private EventBean testEventBean;
+	    private EventType testEventType;
 
-        private FilterCallbackSetNode callbackSetNode;
-        private FilterCallback filterCallback;
+	    private FilterHandleSetNode handleSetNode;
+	    private FilterHandle filterCallback;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            SupportBean testBean = new SupportBean();
-            testEventBean = SupportEventBeanFactory.createObject(testBean);
-            testEventType = testEventBean.EventType;
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        SupportBean testBean = new SupportBean();
+	        testEventBean = SupportEventBeanFactory.CreateObject(testBean);
+	        testEventType = testEventBean.EventType;
 
-            callbackSetNode = new FilterCallbackSetNode();
-            filterCallback = new SupportFilterCallback();
-            callbackSetNode.Add(filterCallback);
+	        handleSetNode = new FilterHandleSetNode();
+	        filterCallback = new SupportFilterHandle();
+	        handleSetNode.Add(filterCallback);
 
-            testIndex = new EventTypeIndex();
-            testIndex.Add(testEventType, callbackSetNode);
-        }
+	        testIndex = new EventTypeIndex();
+	        testIndex.Add(testEventType, handleSetNode);
+	    }
 
-        [Test]
-        public virtual void testMatch()
-        {
-            IList<FilterCallback> matchesList = new List<FilterCallback>();
+	    [Test]
+	    public void TestMatch()
+	    {
+	        IList<FilterHandle> matchesList = new List<FilterHandle>();
 
-            // Invoke match
-            testIndex.MatchEvent(testEventBean, matchesList);
+	        // Invoke match
+	        testIndex.MatchEvent(testEventBean, matchesList);
 
-            Assert.AreEqual(1, matchesList.Count);
-            Assert.AreEqual(filterCallback, matchesList[0]);
-        }
+	        Assert.AreEqual(1, matchesList.Count);
+	        Assert.AreEqual(filterCallback, matchesList[0]);
+	    }
 
-        [Test]
-        public virtual void testInvalidSecondAdd()
-        {
-            try
-            {
-                testIndex.Add(testEventType, callbackSetNode);
-                Assert.IsTrue(false);
-            }
-            catch (System.SystemException ex)
-            {
-                // Expected
-            }
-        }
+	    [Test]
+	    public void TestInvalidSecondAdd()
+	    {
+	        try
+	        {
+	            testIndex.Add(testEventType, handleSetNode);
+	            Assert.IsTrue(false);
+	        }
+	        catch (IllegalStateException ex)
+	        {
+	            // Expected
+	        }
+	    }
 
-        [Test]
-        public virtual void testGet()
-        {
-            Assert.AreEqual(callbackSetNode, testIndex[testEventType]);
-        }
+	    [Test]
+	    public void TestGet()
+	    {
+	        Assert.AreEqual(handleSetNode, testIndex[testEventType]);
+	    }
 
-        [Test]
-        public virtual void testSuperclassMatch()
-        {
-            testEventBean = SupportEventBeanFactory.createObject(new ISupportAImplSuperGImplPlus());
-            testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportA));
+	    [Test]
+	    public void TestSuperclassMatch()
+	    {
+	        testEventBean = SupportEventBeanFactory.CreateObject(new ISupportAImplSuperGImplPlus());
+	        testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportA));
 
-            testIndex = new EventTypeIndex();
-            testIndex.Add(testEventType, callbackSetNode);
+	        testIndex = new EventTypeIndex();
+	        testIndex.Add(testEventType, handleSetNode);
 
-            IList<FilterCallback> matchesList = new List<FilterCallback>();
-            testIndex.MatchEvent(testEventBean, matchesList);
+	        IList<FilterHandle> matchesList = new List<FilterHandle>();
+	        testIndex.MatchEvent(testEventBean, matchesList);
 
-            Assert.AreEqual(1, matchesList.Count);
-            Assert.AreEqual(filterCallback, matchesList[0]);
-        }
+	        Assert.AreEqual(1, matchesList.Count);
+	        Assert.AreEqual(filterCallback, matchesList[0]);
+	    }
 
-        [Test]
-        public virtual void testInterfaceMatch()
-        {
-            testEventBean = SupportEventBeanFactory.createObject(new ISupportABCImpl("a", "b", "ab", "c"));
-            testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportBaseAB));
+	    [Test]
+	    public void TestInterfaceMatch()
+	    {
+	        testEventBean = SupportEventBeanFactory.CreateObject(new ISupportABCImpl("a", "b", "ab", "c"));
+	        testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportBaseAB));
 
-            testIndex = new EventTypeIndex();
-            testIndex.Add(testEventType, callbackSetNode);
+	        testIndex = new EventTypeIndex();
+	        testIndex.Add(testEventType, handleSetNode);
 
-            IList<FilterCallback> matchesList = new List<FilterCallback>();
-            testIndex.MatchEvent(testEventBean, matchesList);
+	        IList<FilterHandle> matchesList = new List<FilterHandle>();
+	        testIndex.MatchEvent(testEventBean, matchesList);
 
-            Assert.AreEqual(1, matchesList.Count);
-            Assert.AreEqual(filterCallback, matchesList[0]);
-        }
-    }
-}
+	        Assert.AreEqual(1, matchesList.Count);
+	        Assert.AreEqual(filterCallback, matchesList[0]);
+	    }
+	}
+} // End of namespace

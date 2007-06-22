@@ -134,7 +134,7 @@ namespace net.esper.eql.expression
 
 	        if (filterExpr != null)
 	        {
-	            matchedFilteredEvents = new EHashSet<EventBean>();
+	            matchedFilteredEvents = new HashSet<EventBean>();
 	            foreach (EventBean subselectEvent in matchingEvents)
 	            {
 	                // Prepare filter expression event list

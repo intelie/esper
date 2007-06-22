@@ -350,5 +350,19 @@ namespace net.esper.compat
         {
             return m_subDictionary.ToString();
         }
+        
+        /// <summary>
+        /// Creates an EDictionary from the IDictionary.
+        /// </summary>
+        /// <param name="sourceDictionary"></param>
+        /// <returns></returns>
+        
+        public static EDictionary<K,V> AsEDictionary( IDictionary<K,V> sourceDictionary ) {
+        	EDictionary<K,V> result = sourceDictionary as EDictionary<K, V>;
+        	return
+        		result != null
+        		? result
+        		: new EBaseDictionary<K, V>(sourceDictionary) ;
+        }
 	}
 }

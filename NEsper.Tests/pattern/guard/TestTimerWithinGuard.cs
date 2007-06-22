@@ -1,84 +1,96 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 
+using NUnit.Framework;
+
+using net.esper.core;
+using net.esper.compat;
 using net.esper.pattern;
 using net.esper.schedule;
-using net.esper.support.events;
 using net.esper.support.guard;
-
-using NUnit.Core;
-using NUnit.Framework;
+using net.esper.support.schedule;
+using net.esper.support.view;
 
 namespace net.esper.pattern.guard
 {
-	
 	[TestFixture]
-	public class TestTimerWithinGuard 
+	public class TestTimerWithinGuard
 	{
-		private TimerWithinGuard guard;
-		private SchedulingServiceImpl scheduleService;
-		private SupportQuitable quitable;
-		
-		[SetUp]
-		public virtual void  setUp()
-		{
-			scheduleService = new SchedulingServiceImpl();
-			PatternContext context = new PatternContext(null, scheduleService, scheduleService.AllocateBucket(), SupportEventAdapterService.Service);
-			
-			quitable = new SupportQuitable();
-			
-			guard = new TimerWithinGuard(1000, context, quitable);
-		}
-		
-		[Test]
-		public virtual void  testInspect()
-		{
-			Assert.IsTrue(guard.Inspect(null));
-		}
-		
-		/// <summary> Make sure the timer calls guardQuit after the set time period</summary>
-		[Test]
-		public virtual void  testStartAndTrigger()
-		{
-			scheduleService.Time = 0;
-			
-			guard.StartGuard();
-			
-			Assert.AreEqual(0, quitable.GetAndResetQuitCounter());
-			
-			scheduleService.Time = 1000;
-			scheduleService.Evaluate();
+	    private TimerWithinGuard guard;
+	    private SchedulingService scheduleService;
+	    private SupportQuitable quitable;
 
-            Assert.AreEqual(1, quitable.GetAndResetQuitCounter());
-		}
-		
-		[Test]
-		public virtual void  testStartAndStop()
-		{
-			scheduleService.Time = 0;
-			
-			guard.StartGuard();
-			
-			guard.StopGuard();
-			
-			scheduleService.Time = 1001;
-			scheduleService.Evaluate();
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        StatementContext stmtContext = SupportStatementContextFactory.MakeContext(new SchedulingServiceImpl());
+	        PatternContext context = new PatternContext(stmtContext, 1, null);
+	        scheduleService = stmtContext.SchedulingService;
 
-            Assert.AreEqual(0, quitable.GetAndResetQuitCounter());
-		}
-		
-		[Test]
-		public virtual void  testInvalid()
-		{
-			try
-			{
-				guard.StartGuard();
-				guard.StartGuard();
-				Assert.Fail();
-			}
-			catch (System.SystemException ex)
-			{
-				// Expected exception
-			}
-		}
+	        quitable = new SupportQuitable();
+
+	        guard =  new TimerWithinGuard(1000, context, quitable);
+	    }
+
+	    [Test]
+	    public void TestInspect()
+	    {
+	        Assert.IsTrue(guard.Inspect(null));
+	    }
+
+	    /**
+	     * Make sure the timer calls guardQuit after the set time period
+	     */
+	    [Test]
+	    public void TestStartAndTrigger()
+	    {
+	        scheduleService.Time = (0);
+
+	        guard.StartGuard();
+
+	        Assert.AreEqual(0, quitable.GetAndResetQuitCounter());
+
+	        scheduleService.Time = (1000);
+	        SupportSchedulingServiceImpl.EvaluateSchedule(scheduleService);
+
+	        Assert.AreEqual(1, quitable.GetAndResetQuitCounter());
+	    }
+
+	    [Test]
+	    public void TestStartAndStop()
+	    {
+	        scheduleService.Time = (0);
+
+	        guard.StartGuard();
+
+	        guard.StopGuard();
+
+	        scheduleService.Time = (1001);
+	        SupportSchedulingServiceImpl.EvaluateSchedule(scheduleService);
+
+	        Assert.AreEqual(0, quitable.GetAndResetQuitCounter());
+	    }
+
+	    [Test]
+	    public void TestInvalid()
+	    {
+	        try
+	        {
+	            guard.StartGuard();
+	            guard.StartGuard();
+	            Assert.Fail();
+	        }
+	        catch (IllegalStateException ex)
+	        {
+	            // Expected exception
+	        }
+	    }
 	}
-}
+} // End of namespace

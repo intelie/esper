@@ -38,7 +38,7 @@ namespace net.esper.regression.view
             String sumTimeExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30)";
 
             selectTestView = epService.EPAdministrator.CreateEQL(sumTimeExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
@@ -52,7 +52,7 @@ namespace net.esper.regression.view
             String sumTimeUniExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30) group by symbol";
 
             selectTestView = epService.EPAdministrator.CreateEQL(sumTimeUniExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
@@ -66,7 +66,7 @@ namespace net.esper.regression.view
             String sumTimeUniExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + "(symbol = 'IBM').win:time(30)";
 
             selectTestView = epService.EPAdministrator.CreateEQL(sumTimeUniExpr);
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
@@ -172,8 +172,8 @@ namespace net.esper.regression.view
             Assert.AreEqual(volume, newData[0]["volume"]);
             Assert.AreEqual(sum, newData[0]["mySum"]);
 
-            testListener.reset();
-            Assert.IsFalse(testListener.Invoked);
+            testListener.Reset();
+            Assert.IsFalse(testListener.IsInvoked);
         }
 
         private void assertSelectResultType()

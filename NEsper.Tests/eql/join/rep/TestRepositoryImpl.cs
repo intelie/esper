@@ -20,7 +20,7 @@ namespace net.esper.eql.join.rep
 		[SetUp]
 		public virtual void setUp()
 		{
-			s0Event = SupportEventBeanFactory.createObject( new Object() );
+			s0Event = SupportEventBeanFactory.CreateObject( new Object() );
 			repository = new RepositoryImpl( 0, s0Event, 6 );
 		}
 
@@ -52,13 +52,13 @@ namespace net.esper.eql.join.rep
 		[Test]
 		public virtual void testAddResult()
 		{
-			ISet<EventBean> results = SupportJoinResultNodeFactory.makeEventSet( 2 );
+			Set<EventBean> results = SupportJoinResultNodeFactory.MakeEventSet( 2 );
 			repository.AddResult( CollectionHelper.Next( repository.GetCursors( 0 )), results, 1 );
 			Assert.AreEqual( 1, repository.NodesPerStream[1].Count );
 
 			try
 			{
-                repository.AddResult(CollectionHelper.Next(repository.GetCursors(0)), new EHashSet<EventBean>(), 1);
+                repository.AddResult(CollectionHelper.Next(repository.GetCursors(0)), new HashSet<EventBean>(), 1);
 				Assert.Fail();
 			}
 			catch ( ArgumentException ex )
@@ -83,14 +83,14 @@ namespace net.esper.eql.join.rep
 			Cursor[] cursors = read( repository.GetCursors( 0 ) );
 			Assert.AreEqual( 1, cursors.Length );
 
-			ISet<EventBean> resultsS1 = SupportJoinResultNodeFactory.makeEventSet( 2 );
+			Set<EventBean> resultsS1 = SupportJoinResultNodeFactory.MakeEventSet( 2 );
 			repository.AddResult( cursors[0], resultsS1, 1 );
 
 			// Lookup from s1
 			cursors = read( repository.GetCursors( 1 ) );
 			Assert.AreEqual( 2, cursors.Length );
 
-			ISet<EventBean>[] resultsS2 = SupportJoinResultNodeFactory.makeEventSets( new int[] { 2, 3 } );
+			Set<EventBean>[] resultsS2 = SupportJoinResultNodeFactory.MakeEventSets( new int[] { 2, 3 } );
 			repository.AddResult( cursors[0], resultsS2[0], 2 );
 			repository.AddResult( cursors[1], resultsS2[1], 2 );
 
@@ -98,7 +98,7 @@ namespace net.esper.eql.join.rep
 			cursors = read( repository.GetCursors( 2 ) );
 			Assert.AreEqual( 5, cursors.Length ); // 2 + 3 for s2
 
-			ISet<EventBean>[] resultsS3 = SupportJoinResultNodeFactory.makeEventSets( new int[] { 2, 1, 3, 5, 1 } );
+			Set<EventBean>[] resultsS3 = SupportJoinResultNodeFactory.MakeEventSets( new int[] { 2, 1, 3, 5, 1 } );
 			repository.AddResult( cursors[0], resultsS3[0], 3 );
 			repository.AddResult( cursors[1], resultsS3[1], 3 );
 			repository.AddResult( cursors[2], resultsS3[2], 3 );

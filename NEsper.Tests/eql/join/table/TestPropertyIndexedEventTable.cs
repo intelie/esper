@@ -33,7 +33,7 @@ namespace net.esper.eql.join.table
 			testEvents = new EventBean[intValues.Length];
 			for ( int i = 0 ; i < intValues.Length ; i++ )
 			{
-				testEvents[i] = makeBean( intValues[i], stringValues[i] );
+				testEvents[i] = MakeBean( intValues[i], stringValues[i] );
 			}
 			index.Add( testEvents );
 		}
@@ -41,7 +41,7 @@ namespace net.esper.eql.join.table
 		[Test]
 		public virtual void testFind()
 		{
-			ISet<EventBean> result = index.Lookup( new Object[] { 1, "a" } );
+			Set<EventBean> result = index.Lookup( new Object[] { 1, "a" } );
 			Assert.IsNull( result );
 
             result = index.Lookup(new Object[] { 1, "b" });
@@ -62,7 +62,7 @@ namespace net.esper.eql.join.table
 		public virtual void testAdd()
 		{
 			// Add event without these properties should fail
-			EventBean _event = SupportEventBeanFactory.createObject( new SupportBean_A( "d" ) );
+			EventBean _event = SupportEventBeanFactory.CreateObject( new SupportBean_A( "d" ) );
             try
             {
                 index.Add(new EventBean[] { _event });
@@ -88,7 +88,7 @@ namespace net.esper.eql.join.table
 			}
 
 			// Same event added twice fails
-			_event = makeBean( 1, "aa" );
+			_event = MakeBean( 1, "aa" );
 			index.Add( new EventBean[] { _event } );
 			try
 			{
@@ -118,7 +118,7 @@ namespace net.esper.eql.join.table
 			events[1] = testEvents[4];
 			index.Add( events );
 
-            ISet<EventBean> result = index.Lookup(new Object[] { 1, "b" });
+            Set<EventBean> result = index.Lookup(new Object[] { 1, "b" });
 			Assert.AreEqual( 2, result.Count );
 
 			try
@@ -137,7 +137,7 @@ namespace net.esper.eql.join.table
 		{
 			index.Remove( testEvents );
 
-            ISet<EventBean> result = index.Lookup(new Object[] { 1, "b" });
+            Set<EventBean> result = index.Lookup(new Object[] { 1, "b" });
 			Assert.IsNull( result );
 
 			// Remove again - already removed but won't throw an exception
@@ -148,7 +148,7 @@ namespace net.esper.eql.join.table
 		public virtual void testMixed()
 		{
 			index.Remove( new EventBean[] { testEvents[1] } );
-            ISet<EventBean> result = index.Lookup(new Object[] { 1, "b" });
+            Set<EventBean> result = index.Lookup(new Object[] { 1, "b" });
 			Assert.AreEqual( 1, result.Count );
 			Assert.IsTrue( result.Contains( testEvents[4] ) );
 
@@ -162,12 +162,12 @@ namespace net.esper.eql.join.table
 			Assert.IsTrue( result.Contains( testEvents[1] ) );
 		}
 
-		private EventBean makeBean( int intValue, String stringValue )
+		private EventBean MakeBean( int intValue, String stringValue )
 		{
 			SupportBean bean = new SupportBean();
-			bean.intPrimitive = intValue;
-            bean.str = stringValue;
-			return SupportEventBeanFactory.createObject( bean );
+			bean.SetIntPrimitive(intValue);
+            bean.SetString(stringValue);
+			return SupportEventBeanFactory.CreateObject( bean );
 		}
 	}
 }

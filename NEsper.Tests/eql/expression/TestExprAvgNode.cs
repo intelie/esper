@@ -1,68 +1,75 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 
-using NUnit.Core;
 using NUnit.Framework;
 
+using net.esper.eql.agg;
 using net.esper.support.eql;
 
 namespace net.esper.eql.expression
 {
-    [TestFixture]
-    public class TestExprAvgNode : TestExprAggregateNodeAdapter
-    {
-        private ExprAvgNode avgNodeDistinct;
+	[TestFixture]
+	public class TestExprAvgNode : TestExprAggregateNodeAdapter
+	{
+	    private ExprAvgNode avgNodeDistinct;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            base.validatedNodeToTest = makeNode(5, typeof(int?), false);
-            this.avgNodeDistinct = makeNode(6, typeof(int?), true);
-        }
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        base.validatedNodeToTest = MakeNode(5, typeof(int?), false);
+	        this.avgNodeDistinct = MakeNode(6, typeof(int?), true);
+	    }
 
-        [Test]
-        public virtual void testAggregation()
-        {
-            ExprAvgNode.DoubleAvg agg = new ExprAvgNode.DoubleAvg();
-            Assert.AreEqual(typeof(double?), agg.ValueType);
-            Assert.AreEqual(null, agg.Value);
-            Assert.IsTrue(agg.NewAggregator() is ExprAvgNode.DoubleAvg);
+	    [Test]
+	    public void TestAggregation()
+	    {
+	        AvgAggregator agg = new AvgAggregator();
+	        Assert.AreEqual(typeof(double?), agg.ValueType);
+	        Assert.AreEqual(null, agg.Value);
 
-            agg.Enter(5);
-            Assert.AreEqual(5d, agg.Value);
+	        agg.Enter(5);
+	        Assert.AreEqual(5d, agg.Value);
 
-            agg.Enter(10);
-            Assert.AreEqual(7.5d, agg.Value);
+	        agg.Enter(10);
+	        Assert.AreEqual(7.5d, agg.Value);
 
-            agg.Leave(5);
-            Assert.AreEqual(10d, agg.Value);
-        }
+	        agg.Leave(5);
+	        Assert.AreEqual(10d, agg.Value);
+	    }
 
-        [Test]
-        public virtual void testGetType()
-        {
-            Assert.AreEqual(typeof(double?), validatedNodeToTest.ReturnType);
-        }
+	    [Test]
+	    public void TestGetType()
+	    {
+	        Assert.AreEqual(typeof(double?), validatedNodeToTest.GetType());
+	    }
 
-        [Test]
-        public virtual void testToExpressionString()
-        {
-            Assert.AreEqual("avg(5)", validatedNodeToTest.ExpressionString);
-            Assert.AreEqual("avg(distinct 6)", avgNodeDistinct.ExpressionString);
-        }
+	    [Test]
+	    public void TestToExpressionString()
+	    {
+	        Assert.AreEqual("avg(5)", validatedNodeToTest.ExpressionString);
+	        Assert.AreEqual("avg(distinct 6)", avgNodeDistinct.ExpressionString);
+	    }
 
-        [Test]
-        public virtual void testEqualsNode()
-        {
-            Assert.IsTrue(validatedNodeToTest.EqualsNode(validatedNodeToTest));
-            Assert.IsFalse(validatedNodeToTest.EqualsNode(new ExprSumNode(false)));
-        }
+	    [Test]
+	    public void TestEqualsNode()
+	    {
+	        Assert.IsTrue(validatedNodeToTest.EqualsNode(validatedNodeToTest));
+	        Assert.IsFalse(validatedNodeToTest.EqualsNode(new ExprSumNode(false)));
+	    }
 
-        private ExprAvgNode makeNode(Object value, Type type, bool isDistinct)
-        {
-            ExprAvgNode avgNode = new ExprAvgNode(isDistinct);
-            avgNode.AddChildNode(new SupportExprNode(value, type));
-            avgNode.Validate(null, null);
-            return avgNode;
-        }
-    }
-}
+	    private ExprAvgNode MakeNode(Object value, Type type, bool isDistinct)
+	    {
+	        ExprAvgNode avgNode = new ExprAvgNode(isDistinct);
+	        avgNode.AddChildNode(new SupportExprNode(value, type));
+	        SupportExprNodeFactory.Validate(avgNode);
+	        return avgNode;
+	    }
+	}
+} // End of namespace

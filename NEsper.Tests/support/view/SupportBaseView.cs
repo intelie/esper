@@ -1,7 +1,14 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
-using net.esper.compat;
 using net.esper.events;
 using net.esper.view;
 
@@ -9,85 +16,90 @@ using org.apache.commons.logging;
 
 namespace net.esper.support.view
 {
-    public abstract class SupportBaseView : ViewSupport
-    {
-        public override EventType EventType
+	public abstract class SupportBaseView : ViewSupport
+	{
+	    protected EventBean[] lastNewData;
+	    protected EventBean[] lastOldData;
+	    protected EventType eventType;
+
+	    public bool IsInvoked
+	    {
+	        get { return isInvoked; }
+            set { isInvoked = value; }
+	    }
+
+	    protected bool isInvoked;
+
+	    /**
+	     * Default constructor since views are also beans.
+	     */
+	    public SupportBaseView()
+	    {
+	    }
+
+	    public SupportBaseView(EventType eventType)
+	    {
+	        this.eventType = eventType;
+	    }
+
+	    public override EventType EventType
+	    {
+	    	get { return eventType; }
+        }
+
+        public EventType MutableEventType
         {
             get { return eventType; }
             set { eventType = value; }
-        }
+	    }
 
-        virtual public EventBean[] LastNewData
-        {
+	    public void SetEventType(EventType eventType)
+	    {
+	        this.eventType = eventType;
+	    }
+
+	    public override IEnumerator<EventBean> GetEnumerator()
+	    {
+	        log.Info(".iterator Not implemented");
+	        return null;
+	    }
+
+	    public EventBean[] LastNewData
+	    {
             get { return lastNewData; }
             set { this.lastNewData = value; }
-        }
+	    }
 
-        virtual public EventBean[] LastOldData
-        {
-            get { return lastOldData; }
-            set { this.lastOldData = value; }
-        }
+	    public EventBean[] LastOldData
+	    {
+	        get { return lastOldData; }
+            set { lastOldData = value; }
+	    }
 
-        virtual public bool Invoked
-        {
-            set { isInvoked = value; }
-        }
+	    public void ClearLastNewData()
+	    {
+	        lastNewData = null;
+	    }
 
-        protected internal EventBean[] lastNewData;
-        protected internal EventBean[] lastOldData;
-        protected internal EventType eventType;
-        protected internal bool isInvoked;
+	    public void ClearLastOldData()
+	    {
+	        lastOldData = null;
+	    }
 
-        /// <summary>
-        /// Default constructor since views are also beans.
-        /// </summary>
-        
-        public SupportBaseView()
-        {
-        }
+	    public bool GetAndClearIsInvoked()
+	    {
+	        bool invoked = isInvoked;
+	        isInvoked = false;
+	        return invoked;
+	    }
 
-        public SupportBaseView(EventType eventType)
-        {
-            this.eventType = eventType;
-        }
+	    public void Reset()
+	    {
+	        isInvoked = false;
+	        lastNewData = null;
+	        lastOldData = null;
+	    }
 
-		virtual public bool getAndClearIsInvoked()
-		{
-			bool invoked = isInvoked;
-			isInvoked = false;
-			return invoked;
-		}
-
-        public override String AttachesTo(Viewable _object)
-        {
-            log.Info(".AttachesTo Not implemented");
-            return null;
-        }
-
-        public override IEnumerator<EventBean> GetEnumerator()
-        {
-            log.Info(".iterator Not implemented");
-            return null;
-        }
-
-        public virtual void clearLastNewData()
-        {
-            lastNewData = null;
-        }
-
-        public virtual void clearLastOldData()
-        {
-            lastOldData = null;
-        }
-
-        public virtual void reset()
-        {
-            isInvoked = false;
-            lastNewData = null;
-            lastOldData = null;
-        }
-
-        private static readonly Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    }
-}
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	}
+} // End of namespace

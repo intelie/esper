@@ -68,7 +68,7 @@ namespace net.esper.eql.core
             ValidateOrderByAggregates(selectAggNodes, orderAggNodes);
 
             // Create the type of the order-by event
-            EDictionary<String, Type> propertyNamesAndTypes = new EHashDictionary<String, Type>();
+            EDictionary<String, Type> propertyNamesAndTypes = new HashDictionary<String, Type>();
             foreach (ExprNode orderByNode in orderByNodes)
             {
                 propertyNamesAndTypes[orderByNode.ExpressionString] = orderByNode.GetType();

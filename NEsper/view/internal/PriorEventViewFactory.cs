@@ -22,7 +22,7 @@ namespace net.esper.view.internals
 	/// <summary>Factory for making {@link PriorEventView} instances.</summary>
 	public class PriorEventViewFactory : ViewFactory
 	{
-	    private ETreeDictionary<int, List<ViewResourceCallback>> callbacksPerIndex = new ETreeDictionary<int, List<ViewResourceCallback>>();
+	    private TreeDictionary<int, List<ViewResourceCallback>> callbacksPerIndex = new TreeDictionary<int, List<ViewResourceCallback>>();
 	    private EventType eventType;
 	    private readonly bool isUnbound;
 

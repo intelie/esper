@@ -62,12 +62,12 @@ namespace net.esper.filter
         {
             ETreeSet<FilterValueSetParam> sorted = new ETreeSet<FilterValueSetParam>(comparator);
 
-            Array enumArray = Enum.GetValues(typeof(FilterOperator));
+            Array enumArray = Enum.Values(typeof(FilterOperator));
 
             FilterValueSetParam[] spec = new FilterValueSetParam[enumArray.Length];
             for (int i = 0; i < enumArray.Length; i++)
             {
-                FilterOperator op = (FilterOperator)enumArray.GetValue(i);
+                FilterOperator op = (FilterOperator)enumArray.Value(i);
                 spec[i] = new FilterValueSetParamImpl("somename", op, null);
 
                 // Add to sorted collection

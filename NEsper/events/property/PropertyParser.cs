@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 using antlr;
 using antlr.collections;
@@ -27,7 +28,7 @@ namespace net.esper.events.property
         /// </returns>
         public static Property Parse(String propertyName, BeanEventAdapter beanEventAdapter)
         {
-            EQLStatementLexer lexer = new EQLStatementLexer(new System.IO.StringReader(propertyName));
+            EQLStatementLexer lexer = new EQLStatementLexer(new StringReader(propertyName));
             EQLStatementParser parser = new EQLStatementParser(lexer);
 
             try

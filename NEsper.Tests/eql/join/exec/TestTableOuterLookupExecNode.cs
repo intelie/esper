@@ -27,7 +27,7 @@ namespace net.esper.eql.join.exec
 		[Test]
 		public virtual void testFlow()
 		{
-			EventBean[] lookupEvents = SupportEventBeanFactory.makeMarketDataEvents( new String[] { "a2" } );
+			EventBean[] lookupEvents = SupportEventBeanFactory.MakeMarketDataEvents( new String[] { "a2" } );
 			IList<EventBean[]> result = new List<EventBean[]>();
 			EventBean[] prefill = new EventBean[] { lookupEvents[0], null };
 

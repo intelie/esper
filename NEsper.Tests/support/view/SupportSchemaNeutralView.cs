@@ -14,14 +14,10 @@ namespace net.esper.support.view
             set
             {
                 base.Parent = value;
-                if (value != null)
-                {
-                    EventType = value.EventType;
-                }
-                else
-                {
-                    EventType = null;
-                }
+                base.MutableEventType =
+                    (value != null) ?
+                    (value.EventType) :
+                    (null);
             }
         }
 

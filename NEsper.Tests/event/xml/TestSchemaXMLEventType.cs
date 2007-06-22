@@ -16,7 +16,7 @@ namespace net.esper.events.xml
 	[TestFixture]
 	public class TestSchemaXMLEventType
 	{
-		private EventBean eventSchemaOne;
+		private EventBean _eventSchemaOne;
 		
 		[SetUp]
 		public virtual void  setUp()
@@ -35,51 +35,51 @@ namespace net.esper.events.xml
                 noNSDoc.Load( stream ) ;
             }
 			
-			eventSchemaOne = new XMLEventBean(noNSDoc, eventTypeNoNS);
+			_eventSchemaOne = new XMLEventBean(noNSDoc, eventTypeNoNS);
 		}
 		
 		[Test]
 		public virtual void  testSimpleProperies()
 		{
-			Assert.AreEqual("SAMPLE_V6", eventSchemaOne["prop4"]);
+			Assert.AreEqual("SAMPLE_V6", _eventSchemaOne["prop4"]);
 		}
 		
 		[Test]
 		public virtual void  testNestedProperties()
 		{
-			Assert.AreEqual(true, eventSchemaOne["nested1.prop2"]);
-			Assert.AreEqual(typeof(bool), eventSchemaOne["nested1.prop2"].GetType());
+			Assert.AreEqual(true, _eventSchemaOne["nested1.prop2"]);
+			Assert.AreEqual(typeof(bool), _eventSchemaOne["nested1.prop2"].GetType());
 		}
 		
 		[Test]
 		public virtual void  testMappedProperties()
 		{
-			Assert.AreEqual("SAMPLE_V8", eventSchemaOne["nested3.nested4('a').prop5[1]"]);
-			Assert.AreEqual("SAMPLE_V11", eventSchemaOne["nested3.nested4('c').prop5[1]"]);
+			Assert.AreEqual("SAMPLE_V8", _eventSchemaOne["nested3.nested4('a').prop5[1]"]);
+			Assert.AreEqual("SAMPLE_V11", _eventSchemaOne["nested3.nested4('c').prop5[1]"]);
 		}
 		
 		[Test]
 		public virtual void  testIndexedProperties()
 		{
-			Assert.AreEqual(5.0, eventSchemaOne["nested1.nested2.prop3[2]"]);
-			Assert.AreEqual(typeof(Double), eventSchemaOne.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
+			Assert.AreEqual(5.0, _eventSchemaOne["nested1.nested2.prop3[2]"]);
+			Assert.AreEqual(typeof(double?), _eventSchemaOne.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
 		}
 		
 		[Test]
 		public virtual void  testCustomProperty()
 		{
-			Assert.AreEqual(typeof(Double), eventSchemaOne.EventType.GetPropertyType("customProp"));
-			Assert.AreEqual((double) 3, eventSchemaOne["customProp"]);
+			Assert.AreEqual(typeof(double?), _eventSchemaOne.EventType.GetPropertyType("customProp"));
+			Assert.AreEqual((double) 3, _eventSchemaOne["customProp"]);
 		}
 		
 		[Test]
 		public virtual void  testAttrProperty()
 		{
-			Assert.AreEqual(true, eventSchemaOne["prop4.attr2"]);
-			Assert.AreEqual(typeof(bool), eventSchemaOne.EventType.GetPropertyType("prop4.attr2"));
+			Assert.AreEqual(true, _eventSchemaOne["prop4.attr2"]);
+			Assert.AreEqual(typeof(bool), _eventSchemaOne.EventType.GetPropertyType("prop4.attr2"));
 			
-			Assert.AreEqual("c", eventSchemaOne["nested3.nested4[2].id"]);
-			Assert.AreEqual(typeof(String), eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].id"));
+			Assert.AreEqual("c", _eventSchemaOne["nested3.nested4[2].id"]);
+			Assert.AreEqual(typeof(String), _eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].id"));
 		}
 		
 		[Test]
@@ -88,7 +88,7 @@ namespace net.esper.events.xml
 			try
 			{
 				String prop = "nested3.nested4.id";
-				eventSchemaOne.EventType.GetGetter(prop);
+				_eventSchemaOne.EventType.GetGetter(prop);
 				Assert.Fail( "Invalid collection access: " + prop + " acepted" );
 			}
 			catch (System.Exception e)
@@ -98,7 +98,7 @@ namespace net.esper.events.xml
 			try
 			{
 				String prop = "nested3.nested4.nested5";
-				eventSchemaOne.EventType.GetGetter(prop);
+				_eventSchemaOne.EventType.GetGetter(prop);
 				Assert.Fail( "Invalid collection access: " + prop + " acepted" );
 			}
 			catch (System.Exception e)

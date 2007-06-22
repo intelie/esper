@@ -18,7 +18,7 @@ namespace net.esper.eql.spec
 	/// </summary>
 	public class SelectClauseSpec : MetaDefItem
 	{
-		private List<SelectExprElementRawSpec> selectList;
+		private IList<SelectExprElementRawSpec> selectList;
 		private bool isUsingWildcard;
 
 	    /// <summary>Ctor.</summary>
@@ -29,7 +29,7 @@ namespace net.esper.eql.spec
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="selectList">for a populates list of select expressions</param>
-	    public SelectClauseSpec(List<SelectExprElementRawSpec> selectList)
+	    public SelectClauseSpec(IList<SelectExprElementRawSpec> selectList)
 		{
 			this.selectList = selectList;
 		}
@@ -43,7 +43,7 @@ namespace net.esper.eql.spec
 
 	    /// <summary>Returns the list of select expressions.</summary>
 	    /// <returns>list of expressions</returns>
-	    public List<SelectExprElementRawSpec> SelectList
+	    public IList<SelectExprElementRawSpec> SelectList
 		{
             get { return selectList; }
 		}

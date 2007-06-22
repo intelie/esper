@@ -49,11 +49,11 @@ namespace net.esper.events
         /// <summary>Ctor.</summary>
         public EventAdapterServiceBase()
         {
-            typeToIdMap = new EHashDictionary<EventType, String>();
-            aliasToTypeMap = new EHashDictionary<String, EventType>();
-            idToTypeMap = new EHashDictionary<String, EventType>();
-            idToAliasMap = new EHashDictionary<String, String>();
-            xmldomRootElementNames = new EHashDictionary<String, EventType>();
+            typeToIdMap = new HashDictionary<EventType, String>();
+            aliasToTypeMap = new HashDictionary<String, EventType>();
+            idToTypeMap = new HashDictionary<String, EventType>();
+            idToAliasMap = new HashDictionary<String, String>();
+            xmldomRootElementNames = new HashDictionary<String, EventType>();
             beanEventAdapter = new BeanEventAdapter();
         }
 
@@ -397,7 +397,7 @@ namespace net.esper.events
         /// <returns>new event type</returns>
         public EventType CreateAddToEventType(EventType originalType, String[] fieldNames, Type[] fieldTypes)
         {
-            EDictionary<String, Type> types = new EHashDictionary<String, Type>();
+            EDictionary<String, Type> types = new HashDictionary<String, Type>();
 
             // Copy properties of original event, add property value
             foreach (String property in originalType.PropertyNames)
@@ -596,7 +596,7 @@ namespace net.esper.events
         /// <returns>map of property name and type</returns>
         private static EDictionary<String, Type> GetUnderlyingTypes(EDictionary<String, EventType> types)
         {
-            EDictionary<String, Type> classes = new EHashDictionary<String, Type>();
+            EDictionary<String, Type> classes = new HashDictionary<String, Type>();
 
             foreach (KeyValuePair<String, EventType> type in types)
             {

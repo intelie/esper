@@ -44,7 +44,7 @@ namespace net.esper.pattern.observer
 		            throw new ObserverParameterException("Invalid number of parameters for timer:at");
 		        }
 	
-		        EDictionary<ScheduleUnit, ETreeSet<Int32>> unitMap = new EHashDictionary<ScheduleUnit, ETreeSet<Int32>>();
+		        EDictionary<ScheduleUnit, TreeSet<Int32>> unitMap = new HashDictionary<ScheduleUnit, TreeSet<Int32>>();
 		        unitMap[ScheduleUnit.MINUTES] = ComputeValues(value[0], ScheduleUnit.MINUTES);
 		        unitMap[ScheduleUnit.HOURS] = ComputeValues(value[1], ScheduleUnit.HOURS);
 		        unitMap[ScheduleUnit.DAYS_OF_WEEK] = ComputeValues(value[2], ScheduleUnit.DAYS_OF_WEEK);
@@ -64,11 +64,11 @@ namespace net.esper.pattern.observer
         /// <param name="unitParameter">The unit parameter.</param>
         /// <param name="unit">The unit.</param>
         /// <returns></returns>
-        private static ETreeSet<Int32> ComputeValues(Object unitParameter, ScheduleUnit unit)
+        private static TreeSet<Int32> ComputeValues(Object unitParameter, ScheduleUnit unit)
         {
             if (unitParameter is Int32)
             {
-                ETreeSet<Int32> result = new ETreeSet<Int32>();
+                TreeSet<Int32> result = new TreeSet<Int32>();
                 result.Add((Int32)unitParameter);
                 return result;
             }
@@ -80,7 +80,7 @@ namespace net.esper.pattern.observer
             }
 
             Set<Int32> _result = numberSet.GetValuesInRange(unit.Min(), unit.Max());
-            ETreeSet<Int32> resultSorted = new ETreeSet<Int32>();
+            TreeSet<Int32> resultSorted = new TreeSet<Int32>();
             resultSorted.AddAll(_result);
 
             return resultSorted;

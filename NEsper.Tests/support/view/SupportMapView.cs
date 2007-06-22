@@ -7,7 +7,6 @@ using net.esper.support.events;
 
 namespace net.esper.support.view
 {
-
     public class SupportMapView : SupportBaseView
     {
         private static IList<SupportMapView> instances = new List<SupportMapView>();
@@ -19,7 +18,7 @@ namespace net.esper.support.view
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            base.Invoked = true;
+            base.IsInvoked = true;
             this.lastNewData = newData;
             this.lastOldData = oldData;
 
@@ -27,15 +26,15 @@ namespace net.esper.support.view
         }
 
         public SupportMapView(EDictionary<String, Type> eventTypeMap)
-            : base(SupportEventTypeFactory.createMapType(eventTypeMap))
+            : base(SupportEventTypeFactory.CreateMapType(eventTypeMap))
         {
             instances.Add(this);
         }
 
 
-        public static IList<SupportMapView> getInstances()
+        public static IList<SupportMapView> Instances
         {
-            return instances;
+            get { return instances; }
         }
     }
 }

@@ -20,11 +20,11 @@ namespace net.esper.events
         public virtual void setUp()
         {
             SupportBean testEvent = new SupportBean();
-            testEvent.intPrimitive = 10;
-            testEvent.str = "a";
-            testEvent.doubleBoxed = null;
+            testEvent.SetIntPrimitive(10);
+            testEvent.SetString("a");
+            testEvent.SetDoubleBoxed(null);
 
-            unitTestBean = SupportEventBeanFactory.createObject(testEvent);
+            unitTestBean = SupportEventBeanFactory.CreateObject(testEvent);
         }
 
         [Test]
@@ -41,8 +41,8 @@ namespace net.esper.events
 
             try
             {
-                EventBean eventBean = SupportEventBeanFactory.createObject(new Object());
-                Object temp = getter.GetValue(eventBean);
+                EventBean _eventBean = SupportEventBeanFactory.CreateObject(new Object());
+                Object temp = getter.GetValue(_eventBean);
                 Assert.IsTrue(false);
             }
             catch (PropertyAccessException ex)

@@ -19,8 +19,8 @@ namespace net.esper.view.window
 	/// </summary>
 	public class RelativeAccessByEventNIndexGetter : IStreamRelativeAccess.IStreamRelativeAccessUpdateObserver
 	{
-	    private readonly EDictionary<EventBean, IStreamRelativeAccess> accessorByEvent = new EHashDictionary<EventBean, IStreamRelativeAccess>();
-	    private readonly EDictionary<IStreamRelativeAccess, EventBean[]> eventsByAccessor  = new EHashDictionary<IStreamRelativeAccess, EventBean[]>();
+	    private readonly EDictionary<EventBean, IStreamRelativeAccess> accessorByEvent = new HashDictionary<EventBean, IStreamRelativeAccess>();
+	    private readonly EDictionary<IStreamRelativeAccess, EventBean[]> eventsByAccessor  = new HashDictionary<IStreamRelativeAccess, EventBean[]>();
 
         /// <summary>
         /// </summary>

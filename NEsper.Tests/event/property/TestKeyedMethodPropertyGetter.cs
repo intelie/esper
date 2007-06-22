@@ -12,7 +12,7 @@ namespace net.esper.events.property
 {
 
 	[TestFixture]
-    public class TestKeyedMethodPropertyGetter 
+    public class TestKeyedMethodPropertyGetter
     {
         private KeyedPropertyGetter getter;
         private EventBean _event;
@@ -21,8 +21,8 @@ namespace net.esper.events.property
         [SetUp]
         public virtual void setUp()
         {
-            bean = SupportBeanComplexProps.makeDefaultBean();
-            _event = SupportEventBeanFactory.createObject(bean);
+            bean = SupportBeanComplexProps.MakeDefaultBean();
+            _event = SupportEventBeanFactory.CreateObject(bean);
 
             Type type = typeof(SupportBeanComplexProps);
             MethodInfo methodOne = type.GetMethod("getIndexed", new Type[] { typeof(int) });
@@ -33,11 +33,11 @@ namespace net.esper.events.property
         [Test]
         public virtual void testGet()
         {
-            Assert.AreEqual(bean.getIndexed(1), getter.GetValue(_event));
+            Assert.AreEqual(bean.GetIndexed(1), getter.GetValue(_event));
 
             try
             {
-                getter.GetValue(SupportEventBeanFactory.createObject(""));
+                getter.GetValue(SupportEventBeanFactory.CreateObject(""));
                 Assert.Fail();
             }
             catch (PropertyAccessException ex)

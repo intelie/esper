@@ -40,7 +40,7 @@ namespace net.esper.eql.expression
 	    /// Returns the aggregation function name for representation in a generate expression string.
 	    /// </summary>
 	    /// <returns>aggregation function name</returns>
-	    protected abstract String AggregationFunctionName
+	    public abstract String AggregationFunctionName
 		{
 			get ;
 		}
@@ -188,7 +188,7 @@ namespace net.esper.eql.expression
         {
             // Map to hold per level of the node (1 to N depth) of expression node a list of aggregation expr nodes, if any
             // exist at that level
-            ETreeDictionary<int, List<ExprAggregateNode>> aggregateExprPerLevel = new ETreeDictionary<int, List<ExprAggregateNode>>();
+            TreeDictionary<int, List<ExprAggregateNode>> aggregateExprPerLevel = new TreeDictionary<int, List<ExprAggregateNode>>();
 
             // Recursively enter all aggregate functions and their level into map
             RecursiveAggregateEnter(topNode, aggregateExprPerLevel, 1);

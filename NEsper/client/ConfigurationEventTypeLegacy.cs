@@ -21,8 +21,10 @@ namespace net.esper.client
     {
         private AccessorStyleEnum accessorStyle;
         private CodeGenerationEnum codeGeneration;
-        private List<LegacyFieldPropDesc> fieldProperties;
-        private List<LegacyMethodPropDesc> methodProperties;
+        private readonly List<LegacyFieldPropDesc> fieldProperties;
+        private readonly List<LegacyMethodPropDesc> methodProperties;
+
+        private PropertyResolutionStyle propertyResolutionStyle;
 
         /// <summary>
         /// Ctor.
@@ -32,6 +34,8 @@ namespace net.esper.client
         {
             accessorStyle = AccessorStyleEnum.NATIVE;
             codeGeneration = CodeGenerationEnum.ENABLED;
+            propertyResolutionStyle = PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE;
+
             fieldProperties = new List<LegacyFieldPropDesc>();
             methodProperties = new List<LegacyMethodPropDesc>();
         }
@@ -80,6 +84,17 @@ namespace net.esper.client
         {
             get { return this.codeGeneration; }
             set { this.codeGeneration = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the property resolution style.
+        /// </summary>
+        /// <value>The property resolution style.</value>
+
+        public virtual PropertyResolutionStyle PropertyResolutionStyle
+        {
+            get { return propertyResolutionStyle; }
+            set { propertyResolutionStyle = value; }
         }
 
         /// <summary>
@@ -136,8 +151,8 @@ namespace net.esper.client
 
         public class LegacyFieldPropDesc
         {
-            private String name;
-            private String accessorFieldName;
+            private readonly String name;
+            private readonly String accessorFieldName;
 
             /// <summary> Returns the event property name.</summary>
             /// <returns> event property name
@@ -172,8 +187,8 @@ namespace net.esper.client
 
         public class LegacyMethodPropDesc
         {
-            private String name;
-            private String accessorMethodName;
+            private readonly String name;
+            private readonly String accessorMethodName;
 
             /// <summary> Returns the event property name.</summary>
             /// <returns> event property name

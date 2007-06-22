@@ -19,7 +19,7 @@ namespace net.esper.type
         [Test]
         public virtual void testInvalidGetComputer()
         {
-            // Since we only do Double, Float, Integer and Long as results
+            // Since we only do double?, Float, Integer and Long as results
             tryInvalid(typeof(String));
             tryInvalid(typeof(long));
             tryInvalid(typeof(short));

@@ -1,96 +1,79 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
 using net.esper.events;
 using net.esper.view;
 
 namespace net.esper.support.view
 {
+	public class SupportShallowCopyView : ViewSupport
+	{
+	    private String someReadWriteValue;
+	    private String someReadOnlyValue;
+	    private String someWriteOnlyValue;
 
-    public class SupportShallowCopyView : ViewSupport
-    {
-        virtual public bool NullWriteOnlyValue
-        {
-            get
-            {
-                return someWriteOnlyValue == null;
-            }
+	    public SupportShallowCopyView(String someValue)
+	    {
+	        this.someReadWriteValue = someValue;
+	        this.someReadOnlyValue = someValue;
+	        this.someWriteOnlyValue = someValue;
+	    }
 
-        }
-        virtual public String SomeReadWriteValue
-        {
-            get
-            {
-                return someReadWriteValue;
-            }
+	    public SupportShallowCopyView()
+	    {
+	    }
 
-            set
-            {
-                this.someReadWriteValue = value;
-            }
+	    public bool IsNullWriteOnlyValue()
+	    {
+	        return someWriteOnlyValue == null;
+	    }
 
-        }
-        virtual public String SomeReadOnlyValue
-        {
-            get
-            {
-                return someReadOnlyValue;
-            }
+	    public String GetSomeReadWriteValue()
+	    {
+	        return someReadWriteValue;
+	    }
 
-        }
-        virtual public String SomeWriteOnlyValue
-        {
-            set
-            {
-                this.someWriteOnlyValue = value;
-            }
+	    public void SetSomeReadWriteValue(String someReadWriteValue)
+	    {
+	        this.someReadWriteValue = someReadWriteValue;
+	    }
 
-        }
+	    public String GetSomeReadOnlyValue()
+	    {
+	        return someReadOnlyValue;
+	    }
 
-        override public EventType EventType
-        {
-            get
-            {
-                return null;
-            }
-            set { }
-        }
+	    public void SetSomeWriteOnlyValue(String someWriteOnlyValue)
+	    {
+	        this.someWriteOnlyValue = someWriteOnlyValue;
+	    }
 
-        public override Viewable Parent
-        {
-            set
-            {
-                throw new NotSupportedException();
-            }
-        }
+	    public void SetParent()
+	    {
+	        throw new UnsupportedOperationException();
+	    }
 
-        private String someReadWriteValue;
-        private String someReadOnlyValue;
-        private String someWriteOnlyValue;
+	    public override void Update(EventBean[] newData, EventBean[] oldData)
+	    {
+	    }
 
-        public SupportShallowCopyView(String someValue)
-        {
-            this.someReadWriteValue = someValue;
-            this.someReadOnlyValue = someValue;
-            this.someWriteOnlyValue = someValue;
-        }
+	    public override EventType EventType
+	    {
+	    	get { return null; }
+	    }
 
-        public SupportShallowCopyView()
-        {
-        }
-
-        public override String AttachesTo(Viewable parentViewable)
-        {
-            return null;
-        }
-
-        public override void Update(EventBean[] newData, EventBean[] oldData)
-        {
-        }
-
-        public override IEnumerator<EventBean> GetEnumerator()
-        {
-            return null;
-        }
-    }
-}
+	    public override IEnumerator<EventBean> GetEnumerator()
+	    {
+	        return null;
+	    }
+	}
+} // End of namespace

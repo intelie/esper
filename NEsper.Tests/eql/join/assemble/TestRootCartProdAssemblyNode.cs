@@ -47,7 +47,7 @@ namespace net.esper.eql.join.assemble
             Assert.AreEqual(1, parentNode.getRowsList().Count);
 
             EventBean[][] rowArr = SupportJoinResultNodeFactory.convertTo2DimArr(parentNode.getRowsList());
-            ArrayAssertionUtil.assertEqualsAnyOrder(new EventBean[][] { new EventBean[] { null, null, null, null, null } }, rowArr);
+            ArrayAssertionUtil.AreEqualAnyOrder(new EventBean[][] { new EventBean[] { null, null, null, null, null } }, rowArr);
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace net.esper.eql.join.assemble
             Assert.AreEqual(8, parentNode.getRowsList().Count);
 
             EventBean[][] rowArr = SupportJoinResultNodeFactory.convertTo2DimArr(parentNode.getRowsList());
-            ArrayAssertionUtil.assertEqualsAnyOrder(new EventBean[][]{
+            ArrayAssertionUtil.AreEqualAnyOrder(new EventBean[][]{
                 new EventBean[]{null, null, stream2Events[0], stream3Events[0], stream4Events[0]},
                 new EventBean[]{null, null, stream2Events[0], stream3Events[1], stream4Events[0]},
                 new EventBean[]{null, null, stream2Events[1], stream3Events[0], stream4Events[0]},
@@ -109,11 +109,11 @@ namespace net.esper.eql.join.assemble
             Assert.IsNull(RootCartProdAssemblyNode.ComputeCombined(new int[][] { new int[] { 1 }, new int[] { 2 } }));
 
             int[][] result = RootCartProdAssemblyNode.ComputeCombined(new int[][]{
-                new int[]{3, 4}, 
-                new int[]{2, 5}, 
+                new int[]{3, 4},
+                new int[]{2, 5},
                 new int[]{6}});
             Assert.AreEqual(1, result.Length);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3, 4, 2, 5 }, result[0]);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3, 4, 2, 5 }, result[0]);
 
             result = RootCartProdAssemblyNode.ComputeCombined(new int[][]{
                 new int[]{3, 4},
@@ -121,19 +121,19 @@ namespace net.esper.eql.join.assemble
                 new int[]{6},
                 new int[]{0, 8, 9}});
             Assert.AreEqual(2, result.Length);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3, 4, 2, 5 }, result[0]);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3, 4, 2, 5, 6 }, result[1]);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3, 4, 2, 5 }, result[0]);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3, 4, 2, 5, 6 }, result[1]);
 
             result = RootCartProdAssemblyNode.ComputeCombined(new int[][]{
                 new int[]{3, 4},
-                new int[]{2, 5}, 
-                new int[]{6}, 
-                new int[]{0, 8, 9}, 
+                new int[]{2, 5},
+                new int[]{6},
+                new int[]{0, 8, 9},
                 new int[]{1}});
             Assert.AreEqual(3, result.Length);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3, 4, 2, 5 }, result[0]);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3, 4, 2, 5, 6 }, result[1]);
-            ArrayAssertionUtil.assertEqualsAnyOrder(new int[] { 3, 4, 2, 5, 6, 0, 8, 9 }, result[2]);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3, 4, 2, 5 }, result[0]);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3, 4, 2, 5, 6 }, result[1]);
+            ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3, 4, 2, 5, 6, 0, 8, 9 }, result[2]);
         }
     }
 }

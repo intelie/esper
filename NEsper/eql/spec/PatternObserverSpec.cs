@@ -22,7 +22,7 @@ namespace net.esper.eql.spec
 	    /// <param name="objectParameters">
 	    /// is a list of values representing the object parameters
 	    /// </param>
-	    public PatternObserverSpec(String _namespace, String objectName, List<Object> objectParameters)
+	    public PatternObserverSpec(String _namespace, String objectName, IList<Object> objectParameters)
 	        : base(_namespace, objectName, objectParameters)
 	    {
 	    }

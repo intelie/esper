@@ -36,10 +36,10 @@ namespace net.esper.eql.parse
         }
 
 	    // private holding areas for accumulated info
-	    private EDictionary<AST, ExprNode> astExprNodeMap = new EHashDictionary<AST, ExprNode>();
+	    private EDictionary<AST, ExprNode> astExprNodeMap = new HashDictionary<AST, ExprNode>();
 	    private readonly Stack<EDictionary<AST, ExprNode>> astExprNodeMapStack;
 
-	    private readonly EDictionary<AST, EvalNode> astPatternNodeMap = new EHashDictionary<AST, EvalNode>();
+	    private readonly EDictionary<AST, EvalNode> astPatternNodeMap = new HashDictionary<AST, EvalNode>();
 
 	    private FilterSpecRaw filterSpec;
 	    private readonly List<ViewSpec> viewSpecs = new List<ViewSpec>();
@@ -86,7 +86,7 @@ namespace net.esper.eql.parse
 	        astExprNodeMapStack.Push(astExprNodeMap);
 
 	        statementSpec = new StatementSpecRaw();
-	        astExprNodeMap = new EHashDictionary<AST, ExprNode>();
+	        astExprNodeMap = new HashDictionary<AST, ExprNode>();
 	    }
 
         /// <summary> Set to indicate that we are walking a pattern.</summary>
@@ -544,7 +544,7 @@ namespace net.esper.eql.parse
         private void leaveView(AST node)
         {
             log.Debug(".leaveView");
-            ViewSpec spec = ASTViewSpecHelper.buildSpec(node);
+            ViewSpec spec = ASTViewSpecHelper.BuildSpec(node);
             viewSpecs.Add(spec);
         }
 
@@ -618,7 +618,7 @@ namespace net.esper.eql.parse
             // And a non-simple property means that it cannot be a stream name.
             if ((node.getNumberOfChildren() == 1) || (node.getFirstChild().Type != EqlEvalTokenTypes.EVENT_PROP_SIMPLE))
             {
-                String propertyName = ASTFilterSpecHelper.getPropertyName(node.getFirstChild());
+                String propertyName = ASTFilterSpecHelper.GetPropertyName(node.getFirstChild());
                 identNode = new ExprIdentNode(propertyName);
             }
             // --> this is more then one child node, and the first child node is a simple property
@@ -627,7 +627,7 @@ namespace net.esper.eql.parse
             else
             {
                 String streamOrNestedPropertyName = node.getFirstChild().getFirstChild().getText();
-                String propertyName = ASTFilterSpecHelper.getPropertyName(node.getFirstChild().getNextSibling());
+                String propertyName = ASTFilterSpecHelper.GetPropertyName(node.getFirstChild().getNextSibling());
                 identNode = new ExprIdentNode(propertyName, streamOrNestedPropertyName);
             }
 

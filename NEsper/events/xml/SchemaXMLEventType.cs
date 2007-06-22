@@ -38,7 +38,7 @@ namespace net.esper.events.xml
 		public SchemaXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
             : base(configurationEventTypeXMLDOM)
         {
-            propertyGetterCache = new EHashDictionary<String, TypedEventPropertyGetter>();
+            propertyGetterCache = new HashDictionary<String, TypedEventPropertyGetter>();
 
             // Load schema
             String schemaResource = configurationEventTypeXMLDOM.SchemaResource;

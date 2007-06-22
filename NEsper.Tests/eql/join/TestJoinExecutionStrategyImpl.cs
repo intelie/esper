@@ -15,18 +15,18 @@ namespace net.esper.eql.join
     public class TestJoinExecutionStrategyImpl 
     {
         private JoinExecutionStrategyImpl join;
-        private ISet<MultiKey<EventBean>> oldEvents;
-        private ISet<MultiKey<EventBean>> newEvents;
+        private Set<MultiKey<EventBean>> oldEvents;
+        private Set<MultiKey<EventBean>> newEvents;
         private SupportJoinSetProcessor filter;
         private SupportJoinSetProcessor indicator;
 
         [SetUp]
         public virtual void setUp()
         {
-            oldEvents = new EHashSet<MultiKey<EventBean>>();
-            newEvents = new EHashSet<MultiKey<EventBean>>();
+            oldEvents = new HashSet<MultiKey<EventBean>>();
+            newEvents = new HashSet<MultiKey<EventBean>>();
 
-            JoinSetComposer composer = new SupportJoinSetComposer(new UniformPair<ISet<MultiKey<EventBean>>>(newEvents, oldEvents));
+            JoinSetComposer composer = new SupportJoinSetComposer(new UniformPair<Set<MultiKey<EventBean>>>(newEvents, oldEvents));
             filter = new SupportJoinSetProcessor();
             indicator = new SupportJoinSetProcessor();
 

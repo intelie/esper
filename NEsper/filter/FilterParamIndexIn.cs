@@ -38,8 +38,8 @@ namespace net.esper.filter
 	    	: base(propertyName, FilterOperator.IN_LIST_OF_VALUES, eventType)
 	    {
 
-	        constantsMap = new EHashDictionary<Object, IList<EventEvaluator>>();
-	        evaluatorsMap = new EHashDictionary<MultiKeyUntyped, EventEvaluator>();
+	        constantsMap = new HashDictionary<Object, IList<EventEvaluator>>();
+	        evaluatorsMap = new HashDictionary<MultiKeyUntyped, EventEvaluator>();
 	        constantsMapRWLock = new ReaderWriterLock();
 	    }
 

@@ -18,7 +18,7 @@ namespace net.esper.core
 
     public class UpdateDispatchView : ViewSupport, Dispatchable
     {
-        private Set<UpdateListener> updateListeners;
+        private readonly Set<UpdateEventHandler> updateEventHandlers;
         private readonly DispatchService dispatchService;
 		private EventBean lastIterableEvent;
 
@@ -61,23 +61,23 @@ namespace net.esper.core
 		}
 
         /// <summary>
-        /// Gets or sets new update listeners.
+        /// Gets or sets new update event handlers.
         /// </summary>
-        public Set<UpdateListener> UpdateListeners
-        {
-            get { return updateListeners; }
-            set { updateListeners = value; }
-        }
+        //public Set<UpdateEventHandler> UpdateEventHandlers
+        //{
+        //    get { return updateEventHandlers; }
+        //    set { updateEventHandlers = value; }
+        //}
 
         /// <summary> Ctor.</summary>
-        /// <param name="updateListeners">listeners to update
+        /// <param name="updateEventHandlers">listeners to update
         /// </param>
         /// <param name="dispatchService">for performing the dispatch
         /// </param>
 
-        public UpdateDispatchView(Set<UpdateListener> updateListeners, DispatchService dispatchService)
+        public UpdateDispatchView(Set<UpdateEventHandler> updateEventHandlers, DispatchService dispatchService)
         {
-            this.updateListeners = updateListeners;
+            this.updateEventHandlers = updateEventHandlers;
             this.dispatchService = dispatchService;
         }
 
@@ -159,9 +159,9 @@ namespace net.esper.core
                 ViewSupport.DumpUpdateParams(".Execute", newEvents, oldEvents);
             }
 
-            foreach (UpdateListener listener in updateListeners)
+            foreach (UpdateEventHandler eventHandler in updateEventHandlers)
             {
-                listener(newEvents, oldEvents);
+                eventHandler(newEvents, oldEvents);
             }
 
             LastNewEvents.Clear();

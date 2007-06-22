@@ -28,9 +28,9 @@ namespace net.esper.regression.eql
 			epService.Initialize();
 			updateListener = new SupportUpdateListener();
 
-			String eventA = typeof( SupportBean_A ).FullName;
-			String eventB = typeof( SupportBean_B ).FullName;
-			String eventC = typeof( SupportBean_C ).FullName;
+            String eventA = typeof(SupportBean_A).FullName;
+            String eventB = typeof(SupportBean_B).FullName;
+            String eventC = typeof(SupportBean_C).FullName;
 
 			String joinStatement =
 				"select * from " + 
@@ -42,7 +42,7 @@ namespace net.esper.regression.eql
 				"   and streamA.id = streamC.id";
 
 			joinView = epService.EPAdministrator.CreateEQL( joinStatement );
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 
 			for ( int i = 0 ; i < eventsA.Length ; i++ )
 			{
@@ -83,7 +83,7 @@ namespace net.esper.regression.eql
 			Assert.AreSame( event_A, updateListener.LastNewData[0][ "streamA" ] );
 			Assert.AreSame( event_B, updateListener.LastNewData[0][ "streamB" ] );
 			Assert.AreSame( event_C, updateListener.LastNewData[0]["streamC" ] );
-			updateListener.reset();
+			updateListener.Reset();
 		}
 
 		private void SendEvent( Object _event )

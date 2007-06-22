@@ -11,52 +11,52 @@ namespace net.esper.regression.support
     /**
      * Make a A to G data set for testing with external clocking
      */
-    public static EventCollection getEventSetOne(long baseTime, long numMSecBetweenEvents)
+    public static EventCollection GetEventSetOne(long baseTime, long numMSecBetweenEvents)
     {
-        LinkedDictionary<String, Object> testData = makeMixedSet();
-        LinkedDictionary<String, Int64> times = makeExternalClockTimes(testData, baseTime, numMSecBetweenEvents);
+        LinkedDictionary<String, Object> testData = MakeMixedSet();
+        LinkedDictionary<String, Int64> times = MakeExternalClockTimes(testData, baseTime, numMSecBetweenEvents);
         return new EventCollection(testData, times);
     }
 
     /**
      * Make a A only data set for testing with external clocking
      */
-    public static EventCollection getSetTwoExternalClock(long baseTime, long numMSecBetweenEvents)
+    public static EventCollection GetSetTwoExternalClock(long baseTime, long numMSecBetweenEvents)
     {
-        LinkedDictionary<String, Object> testData = makeTestDataUniform();
-        LinkedDictionary<String, Int64> times = makeExternalClockTimes(testData, baseTime, numMSecBetweenEvents);
+        LinkedDictionary<String, Object> testData = MakeTestDataUniform();
+        LinkedDictionary<String, Int64> times = MakeExternalClockTimes(testData, baseTime, numMSecBetweenEvents);
         return new EventCollection(testData, times);
     }
 
-    public static EventCollection getSetThreeExternalClock(long baseTime, long numMSecBetweenEvents)
+    public static EventCollection GetSetThreeExternalClock(long baseTime, long numMSecBetweenEvents)
     {
-        LinkedDictionary<String, Object> testData = makeTestDataNumeric();
-        LinkedDictionary<String, Int64> times = makeExternalClockTimes(testData, baseTime, numMSecBetweenEvents);
+        LinkedDictionary<String, Object> testData = MakeTestDataNumeric();
+        LinkedDictionary<String, Int64> times = MakeExternalClockTimes(testData, baseTime, numMSecBetweenEvents);
         return new EventCollection(testData, times);
     }
 
-    public static EventCollection getSetFourExternalClock(long baseTime, long numMSecBetweenEvents)
+    public static EventCollection GetSetFourExternalClock(long baseTime, long numMSecBetweenEvents)
     {
-        LinkedDictionary<String, Object> testData = makeTestDataS0();
-        LinkedDictionary<String, Int64> times = makeExternalClockTimes(testData, baseTime, numMSecBetweenEvents);
+        LinkedDictionary<String, Object> testData = MakeTestDataS0();
+        LinkedDictionary<String, Int64> times = MakeExternalClockTimes(testData, baseTime, numMSecBetweenEvents);
         return new EventCollection(testData, times);
     }
 
-    public static EventCollection getSetFiveInterfaces()
+    public static EventCollection GetSetFiveInterfaces()
     {
-        LinkedDictionary<String, Object> testData = makeTestDataInterfaces();
-        LinkedDictionary<String, Int64> times = makeExternalClockTimes(testData, 0, 100);
+        LinkedDictionary<String, Object> testData = MakeTestDataInterfaces();
+        LinkedDictionary<String, Int64> times = MakeExternalClockTimes(testData, 0, 100);
         return new EventCollection(testData, times);
     }
 
-    public static EventCollection getSetSixComplexProperties()
+    public static EventCollection GetSetSixComplexProperties()
     {
-        LinkedDictionary<String, Object> testData = makeTestDataComplexProps();
-        LinkedDictionary<String, Int64> times = makeExternalClockTimes(testData, 0, 100);
+        LinkedDictionary<String, Object> testData = MakeTestDataComplexProps();
+        LinkedDictionary<String, Int64> times = MakeExternalClockTimes(testData, 0, 100);
         return new EventCollection(testData, times);
     }
 
-    private static LinkedDictionary<String, Object> makeMixedSet()
+    private static LinkedDictionary<String, Object> MakeMixedSet()
     {
         LinkedDictionary<String, Object> testData = new LinkedDictionary<String, Object>();
 
@@ -77,13 +77,13 @@ namespace net.esper.regression.support
     }
 
     // Make time values sending events exactly every seconds, Starting at time zero, first event after 1 second
-    private static LinkedDictionary<String, long> makeExternalClockTimes(LinkedDictionary<String, Object> testData,
+    private static LinkedDictionary<String, long> MakeExternalClockTimes(LinkedDictionary<String, Object> testData,
                                                                       long baseTime,
                                                                       long numMSecBetweenEvents)
     {
         LinkedDictionary<String, Int64> testDataTimers = new LinkedDictionary<String, Int64>();
 
-        testDataTimers.Put(EventCollection.ON_START_EVENT_ID, baseTime);
+        testDataTimers.Put(EventCollection.ON_START__event_ID, baseTime);
 
         foreach (String id in testData.Keys)
         {
@@ -94,7 +94,7 @@ namespace net.esper.regression.support
         return testDataTimers;
     }
 
-    private static LinkedDictionary<String, Object> makeTestDataUniform()
+    private static LinkedDictionary<String, Object> MakeTestDataUniform()
     {
         LinkedDictionary<String, Object> testData = new LinkedDictionary<String, Object>();
 
@@ -108,7 +108,7 @@ namespace net.esper.regression.support
         return testData;
     }
 
-    private static LinkedDictionary<String, Object> makeTestDataNumeric()
+    private static LinkedDictionary<String, Object> MakeTestDataNumeric()
     {
         LinkedDictionary<String, Object> testData = new LinkedDictionary<String, Object>();
 
@@ -124,7 +124,7 @@ namespace net.esper.regression.support
         return testData;
     }
 
-    private static LinkedDictionary<String, Object> makeTestDataS0()
+    private static LinkedDictionary<String, Object> MakeTestDataS0()
     {
         LinkedDictionary<String, Object> testData = new LinkedDictionary<String, Object>();
 
@@ -156,7 +156,7 @@ namespace net.esper.regression.support
      * @return
      */
 
-    private static LinkedDictionary<String, Object> makeTestDataInterfaces()
+    private static LinkedDictionary<String, Object> MakeTestDataInterfaces()
     {
         LinkedDictionary<String, Object> testData = new LinkedDictionary<String, Object>();
 
@@ -177,12 +177,12 @@ namespace net.esper.regression.support
         return testData;
     }
 
-    private static LinkedDictionary<String, Object> makeTestDataComplexProps()
+    private static LinkedDictionary<String, Object> MakeTestDataComplexProps()
     {
         LinkedDictionary<String, Object> testData = new LinkedDictionary<String, Object>();
 
-        testData.Put("e1", SupportBeanComplexProps.makeDefaultBean());
-        testData.Put("e2", SupportBeanCombinedProps.makeDefaultBean());
+        testData.Put("e1", SupportBeanComplexProps.MakeDefaultBean());
+        testData.Put("e2", SupportBeanCombinedProps.MakeDefaultBean());
 
         return testData;
     }

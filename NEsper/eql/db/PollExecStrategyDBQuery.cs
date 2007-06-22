@@ -137,7 +137,7 @@ namespace net.esper.eql.db
                     {
                         while (dataReader.Read())
                         {
-                            EDataDictionary row = new EDataDictionary();
+                            DataDictionary row = new DataDictionary();
                             foreach (KeyValuePair<String, DBOutputTypeDesc> entry in outputTypes)
                             {
                                 String columnName = entry.Key;

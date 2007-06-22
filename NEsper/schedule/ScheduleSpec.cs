@@ -16,13 +16,13 @@ namespace net.esper.schedule
 	{
 		// Per unit hold the set of valid integer values, or null if wildcarded.
 		// The seconds unit is optional.
-		private readonly EDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues;
+		private readonly EDictionary<ScheduleUnit, TreeSet<Int32>> unitValues;
 
 		/// <summary> Constructor - validates that all mandatory schedule.</summary>
 		/// <param name="unitValues">are the values for each minute, hour, day, month etc.
 		/// </param>
 		/// <throws>  ArgumentException - if validation of value set per unit fails </throws>
-		public ScheduleSpec( EDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues )
+		public ScheduleSpec( EDictionary<ScheduleUnit, TreeSet<Int32>> unitValues )
 		{
 			Validate( unitValues );
 
@@ -38,7 +38,7 @@ namespace net.esper.schedule
 
 		public ScheduleSpec()
 		{
-			unitValues = new EHashDictionary<ScheduleUnit, ETreeSet<Int32>>();
+			unitValues = new HashDictionary<ScheduleUnit, TreeSet<Int32>>();
 			unitValues[ScheduleUnit.MINUTES] = null;
 			unitValues[ScheduleUnit.HOURS] = null;
 			unitValues[ScheduleUnit.DAYS_OF_MONTH] = null;
@@ -50,7 +50,7 @@ namespace net.esper.schedule
 		/// <returns> map of 5 or 6 entries each with a set of integers
 		/// </returns>
 
-		public EDictionary<ScheduleUnit, ETreeSet<Int32>> UnitValues
+		public EDictionary<ScheduleUnit, TreeSet<Int32>> UnitValues
 		{
 			get { return unitValues; }
 		}
@@ -63,10 +63,10 @@ namespace net.esper.schedule
 
 		public void AddValue( ScheduleUnit element, int value )
 		{
-            ETreeSet<Int32> _set = unitValues.Fetch(element, null);
+            TreeSet<Int32> _set = unitValues.Fetch(element, null);
             if ( _set == null )
 			{
-				_set = new ETreeSet<Int32>();
+				_set = new TreeSet<Int32>();
 				unitValues[element] = _set;
 			}
             
@@ -137,7 +137,7 @@ namespace net.esper.schedule
 				return false;
 			}
 
-			foreach ( KeyValuePair<ScheduleUnit, ETreeSet<Int32>> entry in unitValues )
+			foreach ( KeyValuePair<ScheduleUnit, TreeSet<Int32>> entry in unitValues )
 			{
 				Set<Int32> mySet = entry.Value;
 				Set<Int32> otherSet = other.unitValues.Fetch( entry.Key, null ) ;
@@ -181,7 +181,7 @@ namespace net.esper.schedule
 		public override int GetHashCode()
 		{
 			int hashCode = 0;
-			foreach ( KeyValuePair<ScheduleUnit, ETreeSet<Int32>> entry in unitValues )
+			foreach ( KeyValuePair<ScheduleUnit, TreeSet<Int32>> entry in unitValues )
 			{
 				if ( entry.Value != null )
 				{
@@ -197,11 +197,11 @@ namespace net.esper.schedule
 		/// </summary>
 		/// <param name="unitValues">is the set of valid values per unit
 		/// </param>
-		internal static void compress( IDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues )
+		internal static void compress( IDictionary<ScheduleUnit, TreeSet<Int32>> unitValues )
 		{
             List<ScheduleUnit> termList = new List<ScheduleUnit>();
 
-			foreach ( KeyValuePair<ScheduleUnit, ETreeSet<Int32>> entry in unitValues )
+			foreach ( KeyValuePair<ScheduleUnit, TreeSet<Int32>> entry in unitValues )
 			{
 				int elementValueSetSize = entry.Key.Max() - entry.Key.Min() + 1;
 				if ( entry.Value != null )
@@ -222,7 +222,7 @@ namespace net.esper.schedule
 		/// <summary> Validate units and their value sets.</summary>
 		/// <param name="unitValues">is the set of valid values per unit
 		/// </param>
-		internal static void Validate( EDictionary<ScheduleUnit, ETreeSet<Int32>> unitValues )
+		internal static void Validate( EDictionary<ScheduleUnit, TreeSet<Int32>> unitValues )
 		{
 			if ( ( !unitValues.ContainsKey( ScheduleUnit.MONTHS ) ) ||
 				( !unitValues.ContainsKey( ScheduleUnit.DAYS_OF_WEEK ) ) ||
@@ -247,7 +247,7 @@ namespace net.esper.schedule
 					continue;
 				}
 
-				ETreeSet<Int32> values = unitValues.Fetch( unit, null );
+				TreeSet<Int32> values = unitValues.Fetch( unit, null );
                 foreach (Int32 _value in values)
 				{
 					if ( ( _value < unit.Min() ) || ( _value > unit.Max() ) )

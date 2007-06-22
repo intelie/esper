@@ -37,7 +37,7 @@ namespace net.esper.events.property
 		public static IList<EventPropertyDescriptor> GetProperties(Type type)
         {
             // Determine all interfaces implemented and the interface's parent interfaces if any
-            Set<Type> propertyOrigClasses = new EHashSet<Type>();
+            Set<Type> propertyOrigClasses = new HashSet<Type>();
             GetImplementedInterfaceParents(type, propertyOrigClasses);
 
             // Add class itself
@@ -199,7 +199,7 @@ namespace net.esper.events.property
 
         public static void AddIndexedProperties(Type type, IList<EventPropertyDescriptor> result)
 		{
-            EHashSet<String> uniquePropertyNames = new EHashSet<String>();
+            HashSet<String> uniquePropertyNames = new HashSet<String>();
 
             foreach( MethodInfo methodInfo in GetIndexedAccessors(type) )
             {
@@ -226,7 +226,7 @@ namespace net.esper.events.property
 
         public static void AddMappedProperties(Type type, IList<EventPropertyDescriptor> result)
         {
-            EHashSet<String> uniquePropertyNames = new EHashSet<String>();
+            HashSet<String> uniquePropertyNames = new HashSet<String>();
 
             foreach( MethodInfo methodInfo in GetMappedAccessors(type) )
             {

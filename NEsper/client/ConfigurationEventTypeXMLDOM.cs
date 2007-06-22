@@ -90,8 +90,8 @@ namespace net.esper.client
 
         public ConfigurationEventTypeXMLDOM()
         {
-            xPathProperties = new EHashDictionary<String, XPathPropertyDesc>();
-            namespacePrefixes = new EHashDictionary<String, String>();
+            xPathProperties = new HashDictionary<String, XPathPropertyDesc>();
+            namespacePrefixes = new HashDictionary<String, String>();
         }
 
         /// <summary> Returns a map of property name and descriptor for XPath-expression properties.</summary>
@@ -205,12 +205,9 @@ namespace net.esper.client
             }
 
             /// <summary> Ctor.</summary>
-            /// <param name="name">is the event property name
-            /// </param>
-            /// <param name="xpath">is an arbitrary XPath expression
-            /// </param>
-            /// <param name="type">is a javax.xml.xpath.XPathConstants constant
-            /// </param>
+            /// <param name="name">the event property name</param>
+            /// <param name="xpath">an arbitrary XPath expression</param>
+            /// <param name="type">an XPathConstants constant</param>
 
             public XPathPropertyDesc(String name, String xpath, XPathResultType type)
             {

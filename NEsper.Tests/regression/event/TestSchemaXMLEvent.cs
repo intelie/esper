@@ -88,7 +88,7 @@ namespace net.esper.regression.events
                 " from TestXMLSchemaType.win:length(100)";
 			
 			EPStatement joinView = epService.EPAdministrator.CreateEQL(stmt);
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 		}
 		
 		[Test]

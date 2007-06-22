@@ -15,9 +15,9 @@ namespace net.esper.support.eql.join
             this.numResults = numResults;
         }
 
-        public ISet<EventBean> Lookup(EventBean _event)
+        public Set<EventBean> Lookup(EventBean _event)
         {
-            return SupportJoinResultNodeFactory.makeEventSet(numResults);
+            return SupportJoinResultNodeFactory.MakeEventSet(numResults);
         }
     }
 }

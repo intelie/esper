@@ -81,7 +81,7 @@ namespace net.esper.regression.eql
 			// Send S0[0] p01=a
 			eventsS0[0].P01 = "[a]";
 			SendEvent( eventsS0[0] );
-			compareEvent( updateListener.assertOneGetNewAndReset(), eventsS0[0], null );
+			compareEvent( updateListener.AssertOneGetNewAndReset(), eventsS0[0], null );
 
 			// Send events to test the join for multiple rows incl. null value
 			SupportBean_S1 s1_1 = new SupportBean_S1( 1000, "5", "X" );
@@ -98,7 +98,7 @@ namespace net.esper.regression.eql
 				Assert.AreSame( s0, updateListener.LastNewData[i]["s0"] );
 				received[i] = updateListener.LastNewData[i]["s1"];
 			}
-			ArrayAssertionUtil.assertEqualsAnyOrder( new Object[] { s1_1, s1_3, s1_4 }, received );
+			ArrayAssertionUtil.AreEqualAnyOrder( new Object[] { s1_1, s1_3, s1_4 }, received );
 		}
 
 		[Test]
@@ -109,17 +109,17 @@ namespace net.esper.regression.eql
 			// Send S0[0] p01=a
 			eventsS0[0].P01 = "[a]";
 			SendEvent( eventsS0[0] );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Send S1[1] p11=b
 			eventsS1[1].P11 = "[b]";
 			SendEvent( eventsS1[1] );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Send S0[1] p01=c, no match expected
 			eventsS0[1].P01 = "[c]";
 			SendEvent( eventsS0[1] );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			// Send S1[2] p11=d
 			eventsS1[2].P11 = "[d]";
@@ -127,26 +127,26 @@ namespace net.esper.regression.eql
 			// Send S0[2] p01=d
 			eventsS0[2].P01 = "[d]";
 			SendEvent( eventsS0[2] );
-			compareEvent( updateListener.assertOneGetNewAndReset(), eventsS0[2], eventsS1[2] );
+			compareEvent( updateListener.AssertOneGetNewAndReset(), eventsS0[2], eventsS1[2] );
 
-			// Send S1[3] and S0[3] with differing props, no match expected 
+			// Send S1[3] and S0[3] with differing props, no match expected
 			eventsS1[3].P11 = "[e]";
 			SendEvent( eventsS1[3] );
 			eventsS0[3].P01 = "[e1]";
 			SendEvent( eventsS0[3] );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 		}
 
 		public virtual EPStatement setupStatement( String whereClause )
 		{
 			String joinStatement =
 				"select * from " +
-				typeof( SupportBean_S0 ).FullName + ".win:length(5) as s0 " + "left outer join " +
-				typeof( SupportBean_S1 ).FullName + ".win:length(5) as s1" + " on s0.p00 = s1.p10 " +
+                typeof(SupportBean_S0).FullName + ".win:length(5) as s0 " + "left outer join " +
+                typeof(SupportBean_S1).FullName + ".win:length(5) as s1" + " on s0.p00 = s1.p10 " +
 				whereClause;
 
 			EPStatement outerJoinView = epService.EPAdministrator.CreateEQL( joinStatement );
-            outerJoinView.AddListener(updateListener.Update);
+            outerJoinView.AddListener(updateListener);
 			return outerJoinView;
 		}
 
@@ -165,11 +165,11 @@ namespace net.esper.regression.eql
 			SupportBean_S1 s1_2 = new SupportBean_S1( 1001, "5", null );
 			SupportBean_S1 s1_3 = new SupportBean_S1( 1002, "6", null );
 			SendEvent( new Object[] { s1_1, s1_2, s1_3 } );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			SupportBean_S0 s0 = new SupportBean_S0( 1, "5", "X" );
 			SendEvent( s0 );
-			compareEvent( updateListener.assertOneGetNewAndReset(), s0, s1_1 );
+			compareEvent( updateListener.AssertOneGetNewAndReset(), s0, s1_1 );
 		}
 
 		private void tryWhereNull()
@@ -178,11 +178,11 @@ namespace net.esper.regression.eql
 			SupportBean_S1 s1_2 = new SupportBean_S1( 1001, "5", null );
 			SupportBean_S1 s1_3 = new SupportBean_S1( 1002, "6", null );
 			SendEvent( new Object[] { s1_1, s1_2, s1_3 } );
-			Assert.IsFalse( updateListener.Invoked );
+			Assert.IsFalse( updateListener.IsInvoked );
 
 			SupportBean_S0 s0 = new SupportBean_S0( 1, "5", "X" );
 			SendEvent( s0 );
-			compareEvent( updateListener.assertOneGetNewAndReset(), s0, s1_2 );
+			compareEvent( updateListener.AssertOneGetNewAndReset(), s0, s1_2 );
 		}
 
 		private void compareEvent( EventBean receivedEvent, SupportBean_S0 expectedS0, SupportBean_S1 expectedS1 )

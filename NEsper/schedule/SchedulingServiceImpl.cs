@@ -15,10 +15,10 @@ namespace net.esper.schedule
     public sealed class SchedulingServiceImpl : SchedulingService
     {
         // Map of time and handle
-        private readonly ETreeDictionary<long, ETreeDictionary<ScheduleSlot, ScheduleHandle>> timeHandleMap;
+        private readonly TreeDictionary<long, TreeDictionary<ScheduleSlot, ScheduleHandle>> timeHandleMap;
 
         // Map of handle and handle list for faster removal
-        private readonly EDictionary<ScheduleHandle, ETreeDictionary<ScheduleSlot, ScheduleHandle>> handleSetMap;
+        private readonly EDictionary<ScheduleHandle, TreeDictionary<ScheduleSlot, ScheduleHandle>> handleSetMap;
 
         // Current time - used for evaluation as well as for adding new handles
         private long currentTime;
@@ -29,8 +29,8 @@ namespace net.esper.schedule
         /// <summary> Constructor.</summary>
         public SchedulingServiceImpl()
         {
-            this.timeHandleMap = new ETreeDictionary<long, ETreeDictionary<ScheduleSlot, ScheduleHandle>>();
-            this.handleSetMap = new EHashDictionary<ScheduleHandle, ETreeDictionary<ScheduleSlot, ScheduleHandle>>();
+            this.timeHandleMap = new TreeDictionary<long, TreeDictionary<ScheduleSlot, ScheduleHandle>>();
+            this.handleSetMap = new HashDictionary<ScheduleHandle, TreeDictionary<ScheduleSlot, ScheduleHandle>>();
             this.currentTime = DateTimeHelper.TimeInMillis( DateTime.Now );
         }
 
@@ -126,7 +126,7 @@ namespace net.esper.schedule
         {
 			lock( this )
 			{
-	            ETreeDictionary<ScheduleSlot, ScheduleHandle> handleSet = handleSetMap.Fetch( handle ) ;
+	            TreeDictionary<ScheduleSlot, ScheduleHandle> handleSet = handleSetMap.Fetch( handle ) ;
 	            if ( handleSet == null )
 	            {
 	                String message = "Handle cannot be located in collection";
@@ -163,14 +163,14 @@ namespace net.esper.schedule
 			{
 	            // Get the values on or before the current time - to get those that are exactly on the
 	            // current time we just add one to the current time for getting the head map
-	            IEnumerator<KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleHandle>>> headMapEnum ;
+	            IEnumerator<KeyValuePair<Int64, TreeDictionary<ScheduleSlot, ScheduleHandle>>> headMapEnum ;
 
 	            // First determine all triggers to shoot
 	            IList<Int64> removeKeys = new List<Int64>();
 
 	            for( headMapEnum = timeHandleMap.HeadFast(currentTime + 1) ; headMapEnum.MoveNext() ; )
 	            {
-	                KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleHandle>> entry = headMapEnum.Current ;
+	                KeyValuePair<Int64, TreeDictionary<ScheduleSlot, ScheduleHandle>> entry = headMapEnum.Current ;
 
 	                removeKeys.Add(entry.Key);
 	                foreach (ScheduleHandle handle in entry.Value.Values)
@@ -182,7 +182,7 @@ namespace net.esper.schedule
 	            // Next remove all handles
 	            for (headMapEnum = timeHandleMap.HeadFast(currentTime + 1); headMapEnum.MoveNext(); )
 	            {
-	                KeyValuePair<Int64, ETreeDictionary<ScheduleSlot, ScheduleHandle>> entry = headMapEnum.Current;
+	                KeyValuePair<Int64, TreeDictionary<ScheduleSlot, ScheduleHandle>> entry = headMapEnum.Current;
 
 	                foreach (ScheduleHandle handle in entry.Value.Values)
 	                {
@@ -200,10 +200,10 @@ namespace net.esper.schedule
 
         private void AddTrigger(ScheduleSlot slot, ScheduleHandle handle, long triggerTime)
         {
-            ETreeDictionary<ScheduleSlot, ScheduleHandle> handleSet = timeHandleMap.Fetch(triggerTime);
+            TreeDictionary<ScheduleSlot, ScheduleHandle> handleSet = timeHandleMap.Fetch(triggerTime);
             if (handleSet == null)
             {
-                handleSet = new ETreeDictionary<ScheduleSlot, ScheduleHandle>();
+                handleSet = new TreeDictionary<ScheduleSlot, ScheduleHandle>();
                 timeHandleMap[triggerTime] = handleSet;
             }
 

@@ -44,7 +44,7 @@ namespace net.esper.regression.eql
                 "and s3.p30 = s4.p40 ";
 			
 			joinView = epService.EPAdministrator.CreateEQL(statement);
-			joinView.AddListener(updateListener.Update);
+			joinView.AddListener(updateListener);
 			
 			log.Info(".testPerfAllProps Preloading events");
             long startTime = DateTimeHelper.CurrentTimeMillis ;

@@ -12,20 +12,20 @@ namespace net.esper.collection
     public class TestSingleEventIterator
     {
         private SingleEventIterator iterator;
-        private EventBean eventBean;
+        private EventBean _eventBean;
 
         [SetUp]
         public virtual void setUp()
         {
-            eventBean = SupportEventBeanFactory.createObject("a");
-            iterator = new SingleEventIterator(eventBean);
+            _eventBean = SupportEventBeanFactory.CreateObject("a");
+            iterator = new SingleEventIterator(_eventBean);
         }
 
         [Test]
         public virtual void testNext()
         {
             Assert.IsTrue(iterator.MoveNext());
-            Assert.AreEqual(eventBean, iterator.Current);
+            Assert.AreEqual(_eventBean, iterator.Current);
             Assert.IsFalse(iterator.MoveNext());
         }
 

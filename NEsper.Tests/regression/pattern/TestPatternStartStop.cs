@@ -64,26 +64,26 @@ namespace net.esper.regression.pattern
             // Pattern Started when created
 
             // Add listener
-            patternStmt.AddListener(testListener.Update);
+            patternStmt.AddListener(testListener);
             Assert.IsNull(testListener.LastNewData);
             Assert.IsFalse(patternStmt.GetEnumerator().MoveNext());
 
             // Send event
             SupportBean _event = SendEvent();
-            Assert.AreEqual(_event, testListener.getAndResetLastNewData()[0]["tag"]);
+            Assert.AreEqual(_event, testListener.GetAndResetLastNewData()[0]["tag"]);
             Assert.AreSame(_event, CollectionHelper.First<EventBean>(patternStmt)["tag"]);
 
             // Remove listener
-            patternStmt.RemoveListener(testListener.Update);
+            patternStmt.RemoveListener(testListener);
             _event = SendEvent();
             Assert.AreSame(_event, CollectionHelper.First<EventBean>(patternStmt)["tag"]);
             Assert.IsNull(testListener.LastNewData);
 
             // Add listener back
-            patternStmt.AddListener(testListener.Update);
+            patternStmt.AddListener(testListener);
             _event = SendEvent();
             Assert.AreSame(_event, CollectionHelper.First<EventBean>(patternStmt)["tag"]);
-            Assert.AreEqual(_event, testListener.getAndResetLastNewData()[0]["tag"]);
+            Assert.AreEqual(_event, testListener.GetAndResetLastNewData()[0]["tag"]);
         }
 
         private SupportBean SendEvent()

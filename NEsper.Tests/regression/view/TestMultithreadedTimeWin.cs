@@ -86,7 +86,7 @@ namespace net.esper.regression.view
                 String viewExpr = "select symbol, sum(volume) as sumVol " + "from " + typeof(SupportMarketDataBean).FullName + "(symbol='" + symbols[i] + "').win:time(" + timeWindowSize + ")";
                 EPStatement testStmt = epService.EPAdministrator.CreateEQL(viewExpr);
                 listeners[i] = new ResultUpdateListener();
-                testStmt.AddListener(listeners[i].Update);
+                testStmt.AddListener(listeners[i]);
             }
 
             // Create threads to send events
@@ -135,7 +135,7 @@ namespace net.esper.regression.view
             }
         }
 
-        public class ResultUpdateListener
+        public class ResultUpdateListener : UpdateListener
         {
             virtual public int NumReceived
             {

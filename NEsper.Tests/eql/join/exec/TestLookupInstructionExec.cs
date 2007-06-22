@@ -38,7 +38,7 @@ namespace net.esper.eql.join.exec
 
             Assert.IsTrue(result);
             Assert.AreEqual(4, rep.getLookupResultsList().Count);
-            ArrayAssertionUtil.assertEqualsExactOrder(
+            ArrayAssertionUtil.AreEqualExactOrder(
                 (ICollection<int>) new int[] { 1, 2, 3, 4 },
                 (ICollection<int>) rep.getResultStreamList());
         }

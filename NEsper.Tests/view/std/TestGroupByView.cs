@@ -1,197 +1,187 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 
+using NUnit.Framework;
+
 using net.esper.client;
+using net.esper.compat;
+using net.esper.core;
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.events;
 using net.esper.support.view;
 using net.esper.view;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.view.std
 {
-	
 	[TestFixture]
-	public class TestGroupByView 
+	public class TestGroupByView
 	{
-		private GroupByView myGroupByView;
-		private SupportBeanClassView ultimateChildView;
-		private ViewServiceContext viewServiceContext;
-		
-		[SetUp]
-		public virtual void  setUp()
-		{
-			viewServiceContext = SupportViewContextFactory.makeContext();
-			myGroupByView = new GroupByView(new String[]{"symbol"});
-			myGroupByView.ViewServiceContext = viewServiceContext;
-			
-			SupportBeanClassView childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
-			
-			MergeView myMergeView = new MergeView(new String[]{"symbol"});
-			
-			ultimateChildView = new SupportBeanClassView(typeof(SupportMarketDataBean));
-			
-			// This is the view hierarchy
-			myGroupByView.AddView(childView);
-			childView.AddView(myMergeView);
-			myMergeView.AddView(ultimateChildView);
-			
-			SupportBeanClassView.getInstances().Clear();
-		}
-		
-		[Test]
-		public virtual void  testViewPush()
-		{
-			// Reset instance lists of child views
-			SupportBeanClassView.getInstances().Clear();
-			SupportMapView.getInstances().Clear();
-			
-			// Set up a feed for the view under test - it will have a depth of 3 trades
-			SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
-			stream.AddView(myGroupByView);
-			
-			EventBean[] tradeBeans = new EventBean[10];
-			
-			// Send an IBM symbol event
-			tradeBeans[0] = makeTradeBean("IBM", 70);
-			stream.Insert(tradeBeans[0]);
-			
-			// Expect 1 new beanclass view instance and check its data
-			Assert.AreEqual(1, SupportBeanClassView.getInstances().Count);
-			SupportBeanClassView child_1 = SupportBeanClassView.getInstances()[0];
-			SupportViewDataChecker.checkOldData(child_1, null);
-			SupportViewDataChecker.checkNewData(child_1, new EventBean[]{tradeBeans[0]});
-			
-			// Check the data of the ultimate receiver
-			SupportViewDataChecker.checkOldData(ultimateChildView, null);
-			SupportViewDataChecker.checkNewData(ultimateChildView, new EventBean[]{tradeBeans[0]});
-		}
-		
-		[Test]
-		public virtual void  testUpdate()
-		{
-			// Set up a feed for the view under test - it will have a depth of 3 trades
-			SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
-			stream.AddView(myGroupByView);
-			
-			// Send old a new events
-			EventBean[] newEvents = new EventBean[]{makeTradeBean("IBM", 70), makeTradeBean("GE", 10)};
-			EventBean[] oldEvents = new EventBean[]{makeTradeBean("IBM", 65), makeTradeBean("GE", 9)};
-            myGroupByView.Update(newEvents, oldEvents);
-			
-			Assert.AreEqual(2, SupportBeanClassView.getInstances().Count);
-			SupportBeanClassView child_1 = SupportBeanClassView.getInstances()[0];
-			SupportBeanClassView child_2 = SupportBeanClassView.getInstances()[1];
-			SupportViewDataChecker.checkOldData(child_1, new EventBean[]{oldEvents[0]});
-			SupportViewDataChecker.checkNewData(child_1, new EventBean[]{newEvents[0]});
-			SupportViewDataChecker.checkOldData(child_2, new EventBean[]{oldEvents[1]});
-			SupportViewDataChecker.checkNewData(child_2, new EventBean[]{newEvents[1]});
-			
-			newEvents = new EventBean[]{makeTradeBean("IBM", 71), makeTradeBean("GE", 11)};
-			oldEvents = new EventBean[]{makeTradeBean("IBM", 70), makeTradeBean("GE", 10)};
-            myGroupByView.Update(newEvents, oldEvents);
-			
-			SupportViewDataChecker.checkOldData(child_1, new EventBean[]{oldEvents[0]});
-			SupportViewDataChecker.checkNewData(child_1, new EventBean[]{newEvents[0]});
-			SupportViewDataChecker.checkOldData(child_2, new EventBean[]{oldEvents[1]});
-			SupportViewDataChecker.checkNewData(child_2, new EventBean[]{newEvents[1]});
-		}
-		
-		[Test]
-		public virtual void  testViewAttachesTo()
-		{
-			// Should attach to anything as long as the field exists
-			GroupByView view = new GroupByView("dummy");
-			SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
-			Assert.IsTrue(view.AttachesTo(parent) != null);
-			
-			view = new GroupByView("symbol");
-			Assert.IsTrue(view.AttachesTo(parent) == null);
-			
-			parent.AddView(view);
-			Assert.IsTrue(view.EventType == parent.EventType);
-		}
-		
-		[Test]
-		public virtual void  testInvalid()
-		{
-			try
-			{
-				myGroupByView.GetEnumerator();
-				Assert.IsTrue(false);
-			}
-			catch (System.NotSupportedException ex)
-			{
-				// Expected exception
-			}
-		}
-		
-		[Test]
-		public virtual void  testMakeSubviews()
-		{
-			EventStream eventStream = new SupportStreamImpl(typeof(SupportMarketDataBean), 4);
-			GroupByView groupView = new GroupByView("symbol");
-			eventStream.AddView(groupView);
-			
-			Object[] groupByValue = new Object[]{"IBM"};
-			
-			// Invalid for no child nodes
-			try
-			{
-				GroupByView.MakeSubViews(groupView, groupByValue, viewServiceContext);
-				Assert.IsTrue(false);
-			}
-			catch (EPException ex)
-			{
-				// Expected exception
-			}
-			
-			// Invalid for child node is a merge node - doesn't make sense to group and merge only
-			MergeView mergeViewOne = new MergeView(new String[]{"symbol"});
-			groupView.AddView(mergeViewOne);
-			try
-			{
-				GroupByView.MakeSubViews(groupView, groupByValue, viewServiceContext);
-				Assert.IsTrue(false);
-			}
-			catch (EPException ex)
-			{
-				// Expected exception
-			}
-			
-			// Add a size view parent of merge view
-			groupView = new GroupByView("symbol");
-			groupView.ViewServiceContext = SupportViewContextFactory.makeContext();
-			
-			SizeView sizeView_1 = new SizeView();
-			sizeView_1.ViewServiceContext = SupportViewContextFactory.makeContext();
-			
-			groupView.AddView(sizeView_1);
-			mergeViewOne = new MergeView(new String[]{"symbol"});
-			sizeView_1.AddView(mergeViewOne);
-			
-      IList<View> subViews = GroupByView.MakeSubViews(groupView, groupByValue, viewServiceContext);
-			
-			Assert.IsTrue(subViews.Count == 1);
-			Assert.IsTrue(subViews[0] is SizeView);
-			Assert.IsTrue(subViews[0] != sizeView_1);
-			
-			SizeView sv = (SizeView) subViews[0];
-			Assert.AreEqual(1, sv.GetViews().Count);
-			Assert.IsTrue(sv.GetViews()[0] is AddPropertyValueView);
-			
-			AddPropertyValueView md = (AddPropertyValueView) sv.GetViews()[0];
-			Assert.AreEqual(1, md.GetViews().Count);
-			Assert.IsTrue(md.GetViews()[0] == mergeViewOne);
-		}
-		
-		private EventBean makeTradeBean(String symbol, int price)
-		{
-			SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, "");
-			return SupportEventBeanFactory.createObject(bean);
-		}
+	    private GroupByView myGroupByView;
+	    private SupportBeanClassView ultimateChildView;
+	    private StatementContext statementContext;
+
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        statementContext = SupportStatementContextFactory.MakeContext();
+	        myGroupByView = new GroupByView(statementContext, new String[] {"symbol"});
+
+	        SupportBeanClassView childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
+
+	        MergeView myMergeView = new MergeView(statementContext, new String[]{"symbol"}, SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)));
+
+	        ultimateChildView = new SupportBeanClassView(typeof(SupportMarketDataBean));
+
+	        // This is the view hierarchy
+	        myGroupByView.AddView(childView);
+	        childView.AddView(myMergeView);
+	        myMergeView.AddView(ultimateChildView);
+
+	        SupportBeanClassView.Instances.Clear();
+	    }
+
+	    [Test]
+	    public void TestViewPush()
+	    {
+	        // Reset instance lists of child views
+	        SupportBeanClassView.Instances.Clear();
+	        SupportMapView.Instances.Clear();
+
+	        // Set up a feed for the view under test - it will have a depth of 3 trades
+	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
+	        stream.AddView(myGroupByView);
+
+	        EventBean[] tradeBeans = new EventBean[10];
+
+	        // Send an IBM symbol event
+	        tradeBeans[0] = MakeTradeBean("IBM", 70);
+	        stream.Insert(tradeBeans[0]);
+
+	        // Expect 1 new beanclass view instance and check its data
+	        Assert.AreEqual(1, SupportBeanClassView.Instances.Count);
+	        SupportBeanClassView child_1 = SupportBeanClassView.Instances[0];
+	        SupportViewDataChecker.CheckOldData(child_1, null);
+	        SupportViewDataChecker.CheckNewData(child_1, new EventBean[] { tradeBeans[0] });
+
+	        // Check the data of the ultimate receiver
+	        SupportViewDataChecker.CheckOldData(ultimateChildView, null);
+	        SupportViewDataChecker.CheckNewData(ultimateChildView, new EventBean[] {tradeBeans[0]});
+	    }
+
+	    [Test]
+	    public void TestUpdate()
+	    {
+	        // Set up a feed for the view under test - it will have a depth of 3 trades
+	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
+	        stream.AddView(myGroupByView);
+
+	        // Send old a new events
+	        EventBean[] newEvents = new EventBean[] { MakeTradeBean("IBM", 70), MakeTradeBean("GE", 10) };
+	        EventBean[] oldEvents = new EventBean[] { MakeTradeBean("IBM", 65), MakeTradeBean("GE", 9) };
+	        myGroupByView.Update(newEvents, oldEvents);
+
+	        Assert.AreEqual(2, SupportBeanClassView.Instances.Count);
+	        SupportBeanClassView child_1 = SupportBeanClassView.Instances[0];
+	        SupportBeanClassView child_2 = SupportBeanClassView.Instances[1];
+	        SupportViewDataChecker.CheckOldData(child_1, new EventBean[] { oldEvents[0] });
+	        SupportViewDataChecker.CheckNewData(child_1, new EventBean[] { newEvents[0] });
+	        SupportViewDataChecker.CheckOldData(child_2, new EventBean[] { oldEvents[1] });
+	        SupportViewDataChecker.CheckNewData(child_2, new EventBean[] { newEvents[1] });
+
+	        newEvents = new EventBean[] { MakeTradeBean("IBM", 71), MakeTradeBean("GE", 11) };
+	        oldEvents = new EventBean[] { MakeTradeBean("IBM", 70), MakeTradeBean("GE", 10) };
+	        myGroupByView.Update(newEvents, oldEvents);
+
+	        SupportViewDataChecker.CheckOldData(child_1, new EventBean[] { oldEvents[0] });
+	        SupportViewDataChecker.CheckNewData(child_1, new EventBean[] { newEvents[0] });
+	        SupportViewDataChecker.CheckOldData(child_2, new EventBean[] { oldEvents[1] });
+	        SupportViewDataChecker.CheckNewData(child_2, new EventBean[] { newEvents[1] });
+	    }
+
+	    [Test]
+	    public void TestInvalid()
+	    {
+	        try
+	        {
+	            myGroupByView.GetEnumerator();
+	            Assert.IsTrue(false);
+	        }
+	        catch (UnsupportedOperationException ex)
+	        {
+	            // Expected exception
+	        }
+	    }
+
+	    [Test]
+	    public void TestMakeSubviews()
+	    {
+	        EventStream eventStream = new SupportStreamImpl(typeof(SupportMarketDataBean), 4);
+	        GroupByView groupView = new GroupByView(statementContext, new String[] {"symbol"});
+	        eventStream.AddView(groupView);
+
+	        Object[] groupByValue = new Object[] {"IBM"};
+
+	        // Invalid for no child nodes
+	        try
+	        {
+	            GroupByView.MakeSubViews(groupView, groupByValue, statementContext);
+	            Assert.IsTrue(false);
+	        }
+	        catch (EPException ex)
+	        {
+	            // Expected exception
+	        }
+
+	        // Invalid for child node is a merge node - doesn't make sense to group and merge only
+	        MergeView mergeViewOne = new MergeView(statementContext, new String[] {"symbol"}, null);
+	        groupView.AddView(mergeViewOne);
+	        try
+	        {
+	            GroupByView.MakeSubViews(groupView, groupByValue, statementContext);
+	            Assert.IsTrue(false);
+	        }
+	        catch (EPException ex)
+	        {
+	            // Expected exception
+	        }
+
+	        // Add a size view parent of merge view
+	        groupView = new GroupByView(statementContext, new String[] {"symbol"});
+
+	        SizeView sizeView_1 = new SizeView(statementContext);
+
+	        groupView.AddView(sizeView_1);
+	        mergeViewOne = new MergeView(statementContext, new String[] {"symbol"}, null);
+	        sizeView_1.AddView(mergeViewOne);
+
+            IList<View> subViews = GroupByView.MakeSubViews(groupView, groupByValue, statementContext);
+
+	        Assert.IsTrue(subViews.Count == 1);
+	        Assert.IsTrue(subViews[0] is SizeView);
+	        Assert.IsTrue(subViews[0] != sizeView_1);
+
+	        SizeView sv = (SizeView) subViews[0];
+	        Assert.AreEqual(1, sv.Views.Count);
+	        Assert.IsTrue(sv.Views[0] is AddPropertyValueView);
+
+	        AddPropertyValueView md = (AddPropertyValueView) sv.Views[0];
+	        Assert.AreEqual(1, md.Views.Count);
+	        Assert.IsTrue(md.Views[0] == mergeViewOne);
+	    }
+
+	    private EventBean MakeTradeBean(String symbol, int price)
+	    {
+	        SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, "");
+	        return SupportEventBeanFactory.CreateObject(bean);
+	    }
 	}
-}
+} // End of namespace

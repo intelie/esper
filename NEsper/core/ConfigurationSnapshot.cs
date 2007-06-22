@@ -20,12 +20,12 @@ namespace net.esper.core
 	/// </summary>
 	public class ConfigurationSnapshot
 	{
-	    private EDictionary<String, String> typeAliases = new EHashDictionary<String, String>();
-	    private EDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = new EHashDictionary<String, ConfigurationEventTypeXMLDOM>();
-	    private EDictionary<String, ConfigurationEventTypeLegacy> legacyAliases = new EHashDictionary<String, ConfigurationEventTypeLegacy>();
+	    private EDictionary<String, String> typeAliases = new HashDictionary<String, String>();
+	    private EDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = new HashDictionary<String, ConfigurationEventTypeXMLDOM>();
+	    private EDictionary<String, ConfigurationEventTypeLegacy> legacyAliases = new HashDictionary<String, ConfigurationEventTypeLegacy>();
 	    private String[] autoImports;
-	    private EDictionary<String, Properties> mapAliases = new EHashDictionary<String, Properties>();
-	    private EDictionary<String, ConfigurationDBRef> databaseRefs = new EHashDictionary<String, ConfigurationDBRef>();
+	    private EDictionary<String, Properties> mapAliases = new HashDictionary<String, Properties>();
+	    private EDictionary<String, ConfigurationDBRef> databaseRefs = new HashDictionary<String, ConfigurationDBRef>();
 	    private String epServicesContextFactoryClassName;
 	    private List<ConfigurationPlugInView> plugInViews = new List<ConfigurationPlugInView>();
 	    private List<ConfigurationAdapterLoader> adapterLoaders = new List<ConfigurationAdapterLoader>();

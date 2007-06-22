@@ -86,7 +86,7 @@ namespace net.esper.client
         void AddEventTypeAlias(String eventTypeAlias, Type eventType);
 
         /// <summary>
-        /// Add an alias for an event type that represents java.util.Map events.
+        /// Add an alias for an event type that represents DataDictionary events.
         /// <p>
         /// Allows a second alias to be added for the same type.
         /// Does not allow the same alias to be used for different types.
@@ -103,7 +103,7 @@ namespace net.esper.client
         void AddEventTypeAlias(String eventTypeAlias, Properties typeMap);
 
         /// <summary>
-        /// Add an alias for an event type that represents java.util.Map events, taking a Map of
+        /// Add an alias for an event type that represents DataDictionary events, taking a Map of
         /// event property and class name as a parameter.
         /// <p>
         /// This method is provided for convenience and is same in function to method

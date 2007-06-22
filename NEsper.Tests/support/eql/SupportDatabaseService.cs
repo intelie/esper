@@ -29,9 +29,9 @@ namespace net.esper.support.eql
         	dbCommand.ExecuteNonQuery() ;
         }
         
-		public static DatabaseConfigServiceImpl makeService()
+		public static DatabaseConfigServiceImpl MakeService()
 		{
-			EDictionary<String, ConfigurationDBRef> configs = new EHashDictionary<String, ConfigurationDBRef>();
+			EDictionary<String, ConfigurationDBRef> configs = new HashDictionary<String, ConfigurationDBRef>();
 			
             ConnectionStringSettings settings;
 

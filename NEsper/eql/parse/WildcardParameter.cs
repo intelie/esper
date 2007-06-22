@@ -32,7 +32,7 @@ namespace net.esper.eql.parse
         /// <returns>set of integer</returns>
         public Set<int> GetValuesInRange(int min, int max)
         {
-            Set<int> result = new EHashSet<Int32>();
+            Set<int> result = new HashSet<Int32>();
             for (int i = min; i <= max; i++)
             {
                 result.Add(i);

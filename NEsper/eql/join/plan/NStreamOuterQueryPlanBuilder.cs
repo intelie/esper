@@ -94,7 +94,7 @@ namespace net.esper.eql.join.plan
 
 			// Recursive populating the required (outer) and optional (inner) relationships
 			// of this stream and the substream
-			Set<Int32> completedStreams = new EHashSet<Int32>();
+			Set<Int32> completedStreams = new HashSet<Int32>();
 			RecursiveBuild( streamNo, queryGraph, outerInnerGraph, completedStreams, substreamsPerStream, requiredPerStream );
 
 			// verify the substreamsPerStream, all streams must exists and be linked
@@ -251,7 +251,7 @@ namespace net.esper.eql.join.plan
             Set<Int32> toStreams,
             OuterInnerDirectionalGraph outerInnerGraph )
 		{
-			Set<Int32> innerStreams = new EHashSet<Int32>();
+			Set<Int32> innerStreams = new HashSet<Int32>();
 			foreach ( int toStream in toStreams )
 			{
 				if ( outerInnerGraph.IsInner( fromStream, toStream ) )
@@ -265,7 +265,7 @@ namespace net.esper.eql.join.plan
 		// which streams are to this table an outer stream
 		private static Set<Int32> GetOuterStreams( int fromStream, Set<Int32> toStreams, OuterInnerDirectionalGraph outerInnerGraph )
 		{
-			Set<Int32> outerStreams = new EHashSet<Int32>();
+			Set<Int32> outerStreams = new HashSet<Int32>();
 			foreach ( int toStream in toStreams )
 			{
 				if ( outerInnerGraph.IsOuter( toStream, fromStream ) )
@@ -349,7 +349,7 @@ namespace net.esper.eql.join.plan
         /// stream numbers of lookup into to-streams.</param>
 		public static void VerifyJoinedPerStream( int rootStream, IDictionary<Int32, int[]> streamsJoinedPerStream )
 		{
-			Set<Int32> streams = new EHashSet<Int32>();
+			Set<Int32> streams = new HashSet<Int32>();
             streams.Add(rootStream);
 
 			RecursiveAdd( rootStream, streamsJoinedPerStream, streams );

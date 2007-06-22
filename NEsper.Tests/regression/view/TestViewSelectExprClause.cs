@@ -23,26 +23,26 @@ namespace net.esper.regression.view
 		private EPStatement selectTestView;
 
 		[SetUp]
-		public virtual void setUp()
+		public virtual void SetUp()
 		{
 			testListener = new SupportUpdateListener();
 			epService = EPServiceProviderManager.GetDefaultProvider();
 			epService.Initialize();
 			epService.EPRuntime.SendEvent( new TimerControlEvent( TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL ) );
 
-			String viewExpr = "select str, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" + " from " + typeof( SupportBean ).FullName + ".win:length(3) " + " where boolBoxed = true";
+            String viewExpr = "select str, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" + " from " + typeof(SupportBean).FullName + ".win:length(3) " + " where boolBoxed = true";
 			selectTestView = epService.EPAdministrator.CreateEQL( viewExpr );
-            selectTestView.AddListener(testListener.Update);
+            selectTestView.AddListener(testListener);
 		}
 
 		[Test]
-		public virtual void testGetEventType()
+		public virtual void TestEventType()
 		{
 			EventType type = selectTestView.EventType;
             IList<String> testList = new String[]{ "(3*intPrimitive)", "str", "result", "aBool" } ;
 
 			log.Debug( ".testGetEventType properties=" + CollectionHelper.Render( type.PropertyNames ) );
-			ArrayAssertionUtil.assertEqualsAnyOrder( type.PropertyNames, testList ) ;
+			ArrayAssertionUtil.AreEqualAnyOrder( type.PropertyNames, testList ) ;
 			Assert.AreEqual( typeof( String ), type.GetPropertyType( "str" ) );
 			Assert.AreEqual( typeof( bool? ), type.GetPropertyType( "aBool" ) );
 			Assert.AreEqual( typeof( float? ), type.GetPropertyType( "result" ) );
@@ -50,16 +50,16 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public virtual void testWindowStats()
+		public virtual void TestWindowStats()
 		{
-			testListener.reset();
+			testListener.Reset();
 
 			SendEvent( "a", false, 0, 0, 0 );
 			SendEvent( "b", false, 0, 0, 0 );
 			Assert.IsTrue( testListener.LastNewData == null );
 			SendEvent( "c", true, 3, 10, 20 );
 
-			EventBean received = testListener.getAndResetLastNewData()[0];
+			EventBean received = testListener.GetAndResetLastNewData()[0];
 			Assert.AreEqual( "c", received["str"] );
 			Assert.AreEqual( true, received["aBool"] );
 			Assert.AreEqual( 30f, received["result"] );
@@ -68,11 +68,11 @@ namespace net.esper.regression.view
 		private void SendEvent( String s, bool b, int i, float f1, float f2 )
 		{
 			SupportBean bean = new SupportBean();
-			bean.str = s;
-			bean.boolBoxed = b ;
-			bean.intPrimitive = i;
-			bean.floatPrimitive = f1;
-			bean.floatBoxed = f2 ;
+			bean.SetString(s);
+			bean.SetBoolBoxed(b );
+			bean.SetIntPrimitive(i);
+			bean.SetFloatPrimitive(f1);
+			bean.SetFloatBoxed(f2 );
 			epService.EPRuntime.SendEvent( bean );
 		}
 

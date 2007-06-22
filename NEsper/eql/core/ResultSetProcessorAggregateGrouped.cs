@@ -36,12 +36,12 @@ namespace net.esper.eql.core
         private readonly Boolean isSorting;
 
         // For output limiting, keep a representative of each group-by group
-        private readonly EDictionary<MultiKeyUntyped, EventBean> oldEventGroupReps = new EHashDictionary<MultiKeyUntyped, EventBean>();
-        private readonly EDictionary<MultiKeyUntyped, EventBean> newEventGroupReps = new EHashDictionary<MultiKeyUntyped, EventBean>();
+        private readonly EDictionary<MultiKeyUntyped, EventBean> oldEventGroupReps = new HashDictionary<MultiKeyUntyped, EventBean>();
+        private readonly EDictionary<MultiKeyUntyped, EventBean> newEventGroupReps = new HashDictionary<MultiKeyUntyped, EventBean>();
 
         // For sorting, keep the generating events for each outgoing event
-        private readonly EDictionary<MultiKeyUntyped, EventBean[]> newGenerators = new EHashDictionary<MultiKeyUntyped, EventBean[]>();
-        private readonly EDictionary<MultiKeyUntyped, EventBean[]> oldGenerators = new EHashDictionary<MultiKeyUntyped, EventBean[]>();
+        private readonly EDictionary<MultiKeyUntyped, EventBean[]> newGenerators = new HashDictionary<MultiKeyUntyped, EventBean[]>();
+        private readonly EDictionary<MultiKeyUntyped, EventBean[]> oldGenerators = new HashDictionary<MultiKeyUntyped, EventBean[]>();
 
         /// <summary>
         /// Returns the event type of processed results.

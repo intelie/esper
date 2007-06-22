@@ -55,7 +55,7 @@ namespace net.esper.events
         /// <param name="eventType">is the schema information for the event object.</param>
 		/// <param name="eventId">an optional event id for the event.</param>
 		
-        protected internal BeanEventBean(Object _event, EventType eventType, Object eventId)
+        public BeanEventBean(Object _event, EventType eventType, Object eventId)
         {
             this.eventType = eventType;
             this._event = _event;

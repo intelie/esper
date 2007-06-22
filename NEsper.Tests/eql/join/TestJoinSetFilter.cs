@@ -1,5 +1,15 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
+
+using NUnit.Framework;
 
 using net.esper.collection;
 using net.esper.compat;
@@ -9,47 +19,41 @@ using net.esper.support.bean;
 using net.esper.support.eql;
 using net.esper.support.events;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.eql.join
 {
 	[TestFixture]
 	public class TestJoinSetFilter
 	{
-		[Test]
-		public virtual void testFilter()
-		{
-			ExprNode topNode = SupportExprNodeFactory.make2SubNodeAnd();
+	    [Test]
+	    public void TestFilter()
+	    {
+	        ExprNode topNode = SupportExprNodeFactory.Make2SubNodeAnd();
 
-			EventBean[] pairOne = new EventBean[2];
-			pairOne[0] = MakeEvent( 1, 2, "a" );
-			pairOne[1] = MakeEvent( 2, 1, "a" );
+	        EventBean[] pairOne = new EventBean[2];
+	        pairOne[0] = MakeEvent(1, 2, "a");
+	        pairOne[1] = MakeEvent(2, 1, "a");
 
-			EventBean[] pairTwo = new EventBean[2];
-			pairTwo[0] = MakeEvent( 1, 2, "a" );
-			pairTwo[1] = MakeEvent( 2, 999, "a" );
+	        EventBean[] pairTwo = new EventBean[2];
+	        pairTwo[0] = MakeEvent(1, 2, "a");
+	        pairTwo[1] = MakeEvent(2, 999, "a");
 
-			ISet<MultiKey<EventBean>> eventSet = new EHashSet<MultiKey<EventBean>>();
-			eventSet.Add( new MultiKey<EventBean>( pairOne ) );
-			eventSet.Add( new MultiKey<EventBean>( pairTwo ) );
+	        Set<MultiKey<EventBean>> eventSet = new HashSet<MultiKey<EventBean>>();
+	        eventSet.Add(new MultiKey<EventBean>(pairOne));
+	        eventSet.Add(new MultiKey<EventBean>(pairTwo));
 
-			JoinSetFilter.Filter( topNode, eventSet );
+	        JoinSetFilter.Filter(topNode, eventSet, true);
 
-			IEnumerator<MultiKey<EventBean>> _enum = eventSet.GetEnumerator();
+	        Assert.AreEqual(1, eventSet.Count);
+	        Assert.AreSame(pairOne, CollectionHelper.First(eventSet).Array);
+	    }
 
-			Assert.AreEqual( 1, eventSet.Count );
-			Assert.IsTrue( _enum.MoveNext() );
-			Assert.AreSame( pairOne, _enum.Current.Array );
-		}
-
-		private EventBean MakeEvent( int intPrimitive, int intBoxed, String stringValue )
-		{
-			SupportBean _event = new SupportBean();
-			_event.intPrimitive = intPrimitive;
-			_event.intBoxed = intBoxed;
-            _event.str = stringValue;
-			return SupportEventBeanFactory.createObject( _event );
-		}
+	    private EventBean MakeEvent(int intPrimitive, int intBoxed, String _string)
+	    {
+	        SupportBean _event = new SupportBean();
+	        _event.SetIntPrimitive(intPrimitive);
+	        _event.SetIntBoxed(intBoxed);
+	        _event.SetString(_string);
+	        return SupportEventBeanFactory.CreateObject(_event);
+	    }
 	}
-}
+} // End of namespace

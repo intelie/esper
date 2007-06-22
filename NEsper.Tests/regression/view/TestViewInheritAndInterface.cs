@@ -30,21 +30,21 @@ namespace net.esper.regression.view
 
             EPStatement testView = epService.EPAdministrator.CreateEQL(viewExpr);
             testListener = new SupportUpdateListener();
-            testView.AddListener(testListener.Update);
+            testView.AddListener(testListener);
 
             epService.EPRuntime.SendEvent(new SupportOverrideOneA("valA", "valOne", "valBase"));
-            EventBean _event = testListener.getAndResetLastNewData()[0];
+            EventBean _event = testListener.GetAndResetLastNewData()[0];
             Assert.AreEqual("valA", _event["value"]);
 
             epService.EPRuntime.SendEvent(new SupportOverrideBase("x"));
-            Assert.IsFalse(testListener.Invoked);
+            Assert.IsFalse(testListener.IsInvoked);
 
             epService.EPRuntime.SendEvent(new SupportOverrideOneB("valB", "valTwo", "valBase2"));
-            _event = testListener.getAndResetLastNewData()[0];
+            _event = testListener.GetAndResetLastNewData()[0];
             Assert.AreEqual("valB", _event["value"]);
 
             epService.EPRuntime.SendEvent(new SupportOverrideOne("valThree", "valBase3"));
-            _event = testListener.getAndResetLastNewData()[0];
+            _event = testListener.GetAndResetLastNewData()[0];
             Assert.AreEqual("valThree", _event["value"]);
         }
 
@@ -52,20 +52,20 @@ namespace net.esper.regression.view
         public virtual void testImplementationClass()
         {
             String[] viewExpr = new String[] {
-				"select baseAB from " + typeof( ISupportBaseAB ).FullName + ".win:length(10)", 
+				"select baseAB from " + typeof( ISupportBaseAB ).FullName + ".win:length(10)",
 				"select baseAB, a from " + typeof( ISupportA ).FullName + ".win:length(10)",
-				"select baseAB, b from " + typeof( ISupportB ).FullName + ".win:length(10)", 
-				"select c from " + typeof( ISupportC ).FullName + ".win:length(10)", 
-				"select baseAB, a, g from " + typeof( ISupportAImplSuperG ).FullName + ".win:length(10)", 
+				"select baseAB, b from " + typeof( ISupportB ).FullName + ".win:length(10)",
+				"select c from " + typeof( ISupportC ).FullName + ".win:length(10)",
+				"select baseAB, a, g from " + typeof( ISupportAImplSuperG ).FullName + ".win:length(10)",
 				"select baseAB, a, b, g, c from " + typeof( ISupportAImplSuperGImplPlus ).FullName + ".win:length(10)"
 			};
 
             String[][] expected = new String[][] {
-				new String[] { "baseAB" }, 
-				new String[] { "baseAB", "a" }, 
-				new String[] { "baseAB", "b" }, 
-				new String[] { "c" }, 
-				new String[] { "baseAB", "a", "g" }, 
+				new String[] { "baseAB" },
+				new String[] { "baseAB", "a" },
+				new String[] { "baseAB", "b" },
+				new String[] { "c" },
+				new String[] { "baseAB", "a", "g" },
 				new String[] { "baseAB", "a", "b", "g", "c" }
 			};
 
@@ -75,14 +75,14 @@ namespace net.esper.regression.view
             {
                 testViews[i] = epService.EPAdministrator.CreateEQL(viewExpr[i]);
                 listeners[i] = new SupportUpdateListener();
-                testViews[i].AddListener(listeners[i].Update);
+                testViews[i].AddListener(listeners[i]);
             }
 
             epService.EPRuntime.SendEvent(new ISupportAImplSuperGImplPlus("g", "a", "baseAB", "b", "c"));
             for (int i = 0; i < listeners.Length; i++)
             {
-                Assert.IsTrue(listeners[i].Invoked);
-                EventBean _event = listeners[i].getAndResetLastNewData()[0];
+                Assert.IsTrue(listeners[i].IsInvoked);
+                EventBean _event = listeners[i].GetAndResetLastNewData()[0];
 
                 for (int j = 0; j < expected[i].Length; j++)
                 {

@@ -36,7 +36,7 @@ namespace net.esper.regression.view
             String statementText = "select price, min(price) as minPrice " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30)" + "having price >= min(price) * (1.02)";
 
             EPStatement testView = epService.EPAdministrator.CreateEQL(statementText);
-            testView.AddListener(listener.Update);
+            testView.AddListener(listener);
 
             sendClockingInternal();
 
@@ -69,7 +69,7 @@ namespace net.esper.regression.view
                     Thread.Sleep((int) (950 - delta));
                 }
 
-                listener.reset();
+                listener.Reset();
                 loopCount++;
                 if (loopCount > LOOP_COUNT)
                 {
@@ -111,7 +111,7 @@ namespace net.esper.regression.view
             }
 
             sendTimer(endTime);
-            listener.reset();
+            listener.Reset();
         }
 
         private void SendEvent(double price)

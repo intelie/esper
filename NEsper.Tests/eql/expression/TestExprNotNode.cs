@@ -1,101 +1,108 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2007 Esper Team. All rights reserved.                                /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 using System;
+
+using NUnit.Framework;
 
 using net.esper.support.eql;
 using net.esper.type;
 
-using NUnit.Core;
-using NUnit.Framework;
-
 namespace net.esper.eql.expression
 {
-    [TestFixture]
-    public class TestExprNotNode
-    {
-        private ExprNotNode notNode;
+	[TestFixture]
+	public class TestExprNotNode
+	{
+	    private ExprNotNode notNode;
 
-        [SetUp]
-        public virtual void setUp()
-        {
-            notNode = new ExprNotNode();
-        }
+	    [SetUp]
+	    public void SetUp()
+	    {
+	        notNode = new ExprNotNode();
+	    }
 
-        [Test]
-        public virtual void testGetType()
-        {
-            Assert.AreEqual(typeof(bool?), notNode.ReturnType);
-        }
+	    [Test]
+	    public void TestGetType()
+	    {
+	        Assert.AreEqual(typeof(Boolean), notNode.GetType());
+	    }
 
-        [Test]
-        public virtual void testValidate()
-        {
-            // fails with zero expressions
-            try
-            {
-                notNode.Validate(null, null);
-                Assert.Fail();
-            }
-            catch (ExprValidationException ex)
-            {
-                // Expected
-            }
+	    [Test]
+	    public void TestValidate()
+	    {
+	        // fails with zero expressions
+	        try
+	        {
+	            notNode.Validate(null, null, null);
+	            Assert.Fail();
+	        }
+	        catch (ExprValidationException ex)
+	        {
+	            // Expected
+	        }
 
-            // fails with too many sub-expressions
-            notNode.AddChildNode(new SupportExprNode(typeof(bool)));
-            notNode.AddChildNode(new SupportExprNode(typeof(bool)));
-            try
-            {
-                notNode.Validate(null, null);
-                Assert.Fail();
-            }
-            catch (ExprValidationException ex)
-            {
-                // Expected
-            }
+	        // fails with too many sub-expressions
+	        notNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
+	        notNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
+	        try
+	        {
+	            notNode.Validate(null, null, null);
+	            Assert.Fail();
+	        }
+	        catch (ExprValidationException ex)
+	        {
+	            // Expected
+	        }
 
-            // test failure, type mismatch
-            notNode = new ExprNotNode();
-            notNode.AddChildNode(new SupportExprNode(typeof(String)));
-            try
-            {
-                notNode.Validate(null, null);
-                Assert.Fail();
-            }
-            catch (ExprValidationException ex)
-            {
-                // Expected
-            }
+	        // test failure, type mismatch
+	        notNode = new ExprNotNode();
+	        notNode.AddChildNode(new SupportExprNode(typeof(String)));
+	        try
+	        {
+	            notNode.Validate(null, null, null);
+	            Assert.Fail();
+	        }
+	        catch (ExprValidationException ex)
+	        {
+	            // Expected
+	        }
 
-            // validates
-            notNode = new ExprNotNode();
-            notNode.AddChildNode(new SupportExprNode(typeof(bool)));
-            notNode.Validate(null, null);
-        }
+	        // validates
+	        notNode = new ExprNotNode();
+	        notNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
+	        notNode.Validate(null, null, null);
+	    }
 
-        [Test]
-        public virtual void testEvaluate()
-        {
-            notNode.AddChildNode(new SupportBoolExprNode(true));
-            Assert.IsFalse((bool)notNode.Evaluate(null));
+	    [Test]
+	    public void TestEvaluate()
+	    {
+	        notNode.AddChildNode(new SupportBoolExprNode(true));
+	        Assert.IsFalse( (Boolean) notNode.Evaluate(null, false));
 
-            notNode = new ExprNotNode();
-            notNode.AddChildNode(new SupportBoolExprNode(false));
-            Assert.IsTrue((bool)notNode.Evaluate(null));
-        }
+	        notNode = new ExprNotNode();
+	        notNode.AddChildNode(new SupportBoolExprNode(false));
+	        Assert.IsTrue( (Boolean) notNode.Evaluate(null, false));
+	    }
 
-        [Test]
-        public virtual void testToExpressionString()
-        {
-            notNode.AddChildNode(new SupportExprNode(true));
-            Assert.AreEqual("NOT(True)", notNode.ExpressionString);
-        }
+	    [Test]
+	    public void TestToExpressionString()
+	    {
+	        notNode.AddChildNode(new SupportExprNode(true));
+	        Assert.AreEqual("NOT(true)", notNode.ExpressionString);
+	    }
 
-        [Test]
-        public virtual void testEqualsNode()
-        {
-            Assert.IsTrue(notNode.EqualsNode(notNode));
-            Assert.IsFalse(notNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
-            Assert.IsFalse(notNode.EqualsNode(new ExprOrNode()));
-            Assert.IsTrue(notNode.EqualsNode(new ExprNotNode()));
-        }
-    }
-}
+	    [Test]
+	    public void TestEqualsNode()
+	    {
+	        Assert.IsTrue(notNode.EqualsNode(notNode));
+	        Assert.IsFalse(notNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
+	        Assert.IsFalse(notNode.EqualsNode(new ExprOrNode()));
+	        Assert.IsTrue(notNode.EqualsNode(new ExprNotNode()));
+	    }
+	}
+} // End of namespace

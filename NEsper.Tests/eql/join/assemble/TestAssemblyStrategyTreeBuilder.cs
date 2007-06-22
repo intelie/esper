@@ -124,7 +124,7 @@ namespace net.esper.eql.join.assemble
 
         private EDictionary<int, int[]> convert(int[][] array)
         {
-            EDictionary<int, int[]> result = new EHashDictionary<int, int[]>();
+            EDictionary<int, int[]> result = new HashDictionary<int, int[]>();
             for (int i = 0; i < array.Length; i++)
             {
                 result.Put(i, array[i]);

@@ -72,7 +72,7 @@ namespace net.esper.eql.core
 
 		public static void VerifyNameUniqueness( IList<SelectExprElementCompiledSpec> selectionList )
 		{
-			Set<String> names = new EHashSet<String>();
+			Set<String> names = new HashSet<String>();
 			foreach ( SelectExprElementCompiledSpec element in selectionList )
 			{
 				if ( names.Contains( element.AssignedName ) )

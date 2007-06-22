@@ -28,7 +28,7 @@ namespace net.esper.core
 		/// may be listeners added or removed (the listener may remove itself).
 		/// Additionally, events may be dispatched by multiple threads to the same listener.
 		/// </summary>
-		private Set<UpdateListener> listeners = new EHashSet<UpdateListener>();
+		private UpdateEventHandlerSet eventHandlers = new UpdateEventHandlerSet();
 
 		private readonly String statementId;
 		private readonly String statementName;
@@ -68,7 +68,7 @@ namespace net.esper.core
 			this.statementName = statementName;
 			this.expressionText = expressionText;
 			this.statementLifecycleSvc = statementLifecycleSvc;
-			this.dispatchChildView = new UpdateDispatchView(this.Listeners, dispatchService);
+			this.dispatchChildView = new UpdateDispatchView(this.eventHandlers, dispatchService);
 			this.currentState = EPStatementState.STOPPED;
 		}
 
@@ -243,50 +243,42 @@ namespace net.esper.core
 			get { return eventType; }
 		}
 
-		/// <summary>Returns the set of listeners to the statement.</summary>
-		/// <returns>statement listeners</returns>
-		public Set<UpdateListener> Listeners
-		{
-			get { return listeners; }
-			set
-			{
-				this.listeners = value;
-				if (dispatchChildView != null)
-				{
-					dispatchChildView.UpdateListeners = value;
-				}
-			}
-		}
+        /// <summary>
+        /// Occurs when there are events to be observed.
+        /// </summary>
+
+        public event UpdateEventHandler Update
+        {
+            add
+            {
+                eventHandlers.Add(value);
+                statementLifecycleSvc.UpdatedEventHandlers(statementId, eventHandlers);
+            }
+            remove
+            { 
+                eventHandlers.Remove(value);
+            }
+        }
 
 		/// <summary>Add a listener to the statement.</summary>
 		/// <param name="listener">to add</param>
 		public void AddListener(UpdateListener listener)
 		{
-			if (listener == null)
-			{
-				throw new ArgumentException("Null listener reference supplied");
-			}
-
-			listeners.Add(listener);
-			statementLifecycleSvc.UpdatedListeners(statementId, listeners);
-		}
+		    eventHandlers.AddListener(listener);
+            statementLifecycleSvc.UpdatedEventHandlers(statementId, eventHandlers);
+        }
 
 		/// <summary>Remove a listeners to a statement.</summary>
 		/// <param name="listener">to remove</param>
 		public void RemoveListener(UpdateListener listener)
 		{
-			if (listener == null)
-			{
-				throw new ArgumentException("Null listener reference supplied");
-			}
-
-			listeners.Remove(listener);
+            eventHandlers.RemoveListener(listener);
 		}
 
 		/// <summary>Remove all listeners to a statement.</summary>
 		public void RemoveAllListeners()
 		{
-			listeners.Clear();
+            eventHandlers.Clear();
 		}
 	}
 } // End of namespace

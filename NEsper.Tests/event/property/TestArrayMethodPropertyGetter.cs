@@ -12,22 +12,22 @@ using NUnit.Framework;
 namespace net.esper.events.property
 {
 	[TestFixture]
-	public class TestArrayMethodPropertyGetter 
+	public class TestArrayMethodPropertyGetter
 	{
 		private ArrayPropertyGetter getter;
 		private ArrayPropertyGetter getterOutOfBounds;
 		private EventBean _event;
 		private SupportBeanComplexProps bean;
-		
+
 		[SetUp]
 		public virtual void setUp()
 		{
-			bean = SupportBeanComplexProps.makeDefaultBean();
-			_event = SupportEventBeanFactory.createObject(bean);
+			bean = SupportBeanComplexProps.MakeDefaultBean();
+			_event = SupportEventBeanFactory.CreateObject(bean);
 			getter = makeGetter(0);
 			getterOutOfBounds = makeGetter(Int32.MaxValue);
 		}
-		
+
 		[Test]
 		public virtual void testCtor()
 		{
@@ -41,17 +41,17 @@ namespace net.esper.events.property
 				// expected
 			}
 		}
-		
+
 		[Test]
 		public virtual void testGet()
 		{
             Assert.AreEqual(bean.ArrayProperty[0], getter.GetValue(_event));
-			
+
 			Assert.IsNull(getterOutOfBounds.GetValue(_event));
-			
+
 			try
 			{
-				getter.GetValue(SupportEventBeanFactory.createObject(""));
+				getter.GetValue(SupportEventBeanFactory.CreateObject(""));
 				Assert.Fail();
 			}
 			catch (PropertyAccessException ex)

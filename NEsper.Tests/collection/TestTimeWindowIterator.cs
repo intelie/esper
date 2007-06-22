@@ -27,7 +27,7 @@ namespace net.esper.collection
         {
             LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             IEnumerator<EventBean> it = new TimeWindowIterator(testWindow);
-            ArrayAssertionUtil.assertEqualsExactOrder(it, (EventBean[])null);
+            ArrayAssertionUtil.AreEqualExactOrder(it, (EventBean[])null);
         }
 
         [Test]
@@ -39,9 +39,12 @@ namespace net.esper.collection
             addToWindow(testWindow, 10L, list);
 
             IEnumerator<EventBean> it = new TimeWindowIterator(testWindow);
-            ArrayAssertionUtil.assertEqualsExactOrder(
-                Widen(it),
-                new Object[] { events.Fetch("avalue") });
+            ArrayAssertionUtil.AreEqualExactOrder(
+                it,
+                new EventBean[]
+                    {
+                        events.Fetch("avalue")
+                    });
         }
 
         [Test]
@@ -54,8 +57,8 @@ namespace net.esper.collection
             addToWindow(testWindow, 10L, list);
 
             IEnumerator<EventBean> it = new TimeWindowIterator(testWindow);
-            ArrayAssertionUtil.assertEqualsExactOrder(
-                Widen(it),
+            ArrayAssertionUtil.AreEqualExactOrder(
+                it,
                 new EventBean[]
 		        {
 			        events.Fetch("a"),
@@ -76,9 +79,9 @@ namespace net.esper.collection
             addToWindow(testWindow, 10L, list1);
 
             IEnumerator<EventBean> it = new TimeWindowIterator(testWindow);
-            ArrayAssertionUtil.assertEqualsExactOrder(
-                Widen(it),
-                new Object[]
+            ArrayAssertionUtil.AreEqualExactOrder(
+                it,
+                new EventBean[]
 		        {
 			        events.Fetch("b"),
 			        events.Fetch("a")
@@ -101,9 +104,9 @@ namespace net.esper.collection
             addToWindow(testWindow, 15L, list2);
 
             IEnumerator<EventBean> it = new TimeWindowIterator(testWindow);
-            ArrayAssertionUtil.assertEqualsExactOrder(
-                Widen(it),
-                new Object[]
+            ArrayAssertionUtil.AreEqualExactOrder(
+                it,
+                new EventBean[]
 		        {
 			        events.Fetch("a"),
 			        events.Fetch("b"),
@@ -133,9 +136,9 @@ namespace net.esper.collection
             addToWindow(testWindow, 20L, list3);
 
             IEnumerator<EventBean> it = new TimeWindowIterator(testWindow);
-            ArrayAssertionUtil.assertEqualsExactOrder(
-                Widen(it),
-                new Object[]
+            ArrayAssertionUtil.AreEqualExactOrder(
+                it,
+                new EventBean[]
 		        {
                     events.Fetch("a"),
                     events.Fetch("c"),
