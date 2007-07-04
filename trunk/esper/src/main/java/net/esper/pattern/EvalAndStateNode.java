@@ -102,7 +102,19 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
         List<MatchedEventMap> result = generateMatchEvents(matchEvent, fromNode, eventsPerChild);
 
         // Check if this is quitting
-        boolean quitted = (activeChildNodes.isEmpty());
+        boolean quitted = true;
+        if (!activeChildNodes.isEmpty())
+        {
+            for (EvalStateNode stateNode : activeChildNodes)
+            {
+                if (!(stateNode instanceof EvalNotStateNode))
+                {
+                    quitted = false;
+                }
+            }
+        }
+
+        // So we are quitting if all non-not child nodes have quit, since the not-node wait for evaluate false
         if (quitted)
         {
             quit();

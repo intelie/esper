@@ -33,26 +33,26 @@ import net.esper.pattern.PatternObjectResolutionService;
  */
 public final class EPServicesContext
 {
-    private final String engineURI;
-    private final String engineInstanceId;
-    private final FilterService filterService;
-    private final TimerService timerService;
-    private final SchedulingService schedulingService;
-    private final EmitService emitService;
-    private final DispatchService dispatchService;
-    private final ViewService viewService;
-    private final StreamFactoryService streamFactoryService;
-    private final EventAdapterService eventAdapterService;
-    private final EngineImportService engineImportService;
-    private final EngineSettingsService engineSettingsService;
-    private final DatabaseConfigService databaseConfigService;
-    private final ViewResolutionService viewResolutionService;
-    private final StatementLockFactory statementLockFactory;
-    private final ManagedReadWriteLock eventProcessingRWLock;
-    private final ExtensionServicesContext extensionServicesContext;
-    private final EngineEnvContext engineEnvContext;
-    private final StatementContextFactory statementContextFactory;
-    private final PatternObjectResolutionService patternObjectResolutionService;
+    private String engineURI;
+    private String engineInstanceId;
+    private FilterService filterService;
+    private TimerService timerService;
+    private SchedulingService schedulingService;
+    private EmitService emitService;
+    private DispatchService dispatchService;
+    private ViewService viewService;
+    private StreamFactoryService streamFactoryService;
+    private EventAdapterService eventAdapterService;
+    private EngineImportService engineImportService;
+    private EngineSettingsService engineSettingsService;
+    private DatabaseConfigService databaseConfigService;
+    private ViewResolutionService viewResolutionService;
+    private StatementLockFactory statementLockFactory;
+    private ManagedReadWriteLock eventProcessingRWLock;
+    private ExtensionServicesContext extensionServicesContext;
+    private EngineEnvContext engineEnvContext;
+    private StatementContextFactory statementContextFactory;
+    private PatternObjectResolutionService patternObjectResolutionService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -61,7 +61,6 @@ public final class EPServicesContext
     /**
      * Constructor - sets up new set of services.
      * @param engineURI is the engine URI
-     * @param engineInstanceId is the name of the engine instance
      * @param schedulingService service to get time and schedule callbacks
      * @param eventAdapterService service to resolve event types
      * @param databaseConfigService service to resolve a database name to database connection factory and configs
@@ -76,7 +75,6 @@ public final class EPServicesContext
      * @param patternObjectResolutionService resolves plug-in pattern objects 
      */
     public EPServicesContext(String engineURI,
-                             String engineInstanceId,
                              SchedulingService schedulingService,
                              EventAdapterService eventAdapterService,
                              EngineImportService engineImportService,
@@ -292,6 +290,34 @@ public final class EPServicesContext
         {
             extensionServicesContext.destroy();
         }
+    }
+
+    /**
+     * Destroy services.
+     */
+    public void initialize()
+    {
+        this.statementLifecycleSvc = null;
+        this.engineURI = null;
+        this.engineInstanceId = null;
+        this.schedulingService = null;
+        this.eventAdapterService = null;
+        this.engineImportService = null;
+        this.engineSettingsService = null;
+        this.databaseConfigService = null;
+        this.filterService = null;
+        this.timerService = null;
+        this.emitService = null;
+        this.dispatchService = null;
+        this.viewService = null;
+        this.streamFactoryService = null;
+        this.viewResolutionService = null;
+        this.statementLockFactory = null;
+        this.eventProcessingRWLock = null;
+        this.extensionServicesContext = null;
+        this.engineEnvContext = null;
+        this.statementContextFactory = null;
+        this.patternObjectResolutionService = null;
     }
 
     /**

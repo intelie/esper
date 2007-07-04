@@ -55,4 +55,9 @@ public class PriorEventBufferUnbound implements ViewUpdatedCollection, RandomAcc
     {
         return null;
     }
+
+    public void destroy()
+    {
+        // No action required
+    }    
 }

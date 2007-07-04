@@ -2,13 +2,14 @@ package net.esper.view.stat;
 
 import net.esper.view.ViewProcessingException;
 import net.esper.client.EPException;
+import net.esper.util.MetaDefItem;
 
 /**
  * Bean for performing statistical calculations. The bean keeps sums of X and Y datapoints and sums on squares
  * that can be reused by subclasses. The bean calculates standard deviation (sample and population), variance,
  * average and sum.
   */
-public class BaseStatisticsBean implements Cloneable
+public class BaseStatisticsBean implements Cloneable, MetaDefItem
 {
     private double sumX;
     private double sumXSq;

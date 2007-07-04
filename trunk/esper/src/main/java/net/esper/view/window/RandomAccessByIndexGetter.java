@@ -1,11 +1,9 @@
 package net.esper.view.window;
 
-import net.esper.view.ext.IStreamSortedRandomAccess;
-
 /**
  * Getter that provides an index at runtime.
  */
-public class RandomAccessByIndexGetter implements IStreamRandomAccess.IStreamRandomAccessUpdateObserver, IStreamSortedRandomAccess.IStreamRandomAccessUpdateObserver
+public class RandomAccessByIndexGetter implements RandomAccessByIndexObserver
 {
     private RandomAccessByIndex randomAccessByIndex;
 
@@ -18,13 +16,8 @@ public class RandomAccessByIndexGetter implements IStreamRandomAccess.IStreamRan
         return randomAccessByIndex;
     }
 
-    public void updated(IStreamRandomAccess iStreamRandomAccess)
+    public void updated(RandomAccessByIndex randomAccessByIndex)
     {
-        this.randomAccessByIndex = iStreamRandomAccess;
-    }
-
-    public void updated(IStreamSortedRandomAccess iStreamSortedRandomAccess)
-    {
-        this.randomAccessByIndex = iStreamSortedRandomAccess;
+        this.randomAccessByIndex = randomAccessByIndex;
     }
 }

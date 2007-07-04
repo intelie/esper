@@ -55,7 +55,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         StatementContextFactory statementContextFactory = new StatementContextFactoryDefault();
 
         // New services context
-        EPServicesContext services = new EPServicesContext(engineURI, engineURI, schedulingService,
+        EPServicesContext services = new EPServicesContext(engineURI, schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, viewResolutionService,
                 new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 patternObjectResolutionService);

@@ -35,7 +35,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private final Map<String, EPStatement> stmtNameToStmtMap;
     private final RefCountedMap<String, ManagedLock> insertIntoStreams;
 
-    public void init() {}
+    public void init()
+    {
+    }
 
     /**
      * Ctor.
@@ -151,7 +153,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeAlias();
             }
 
-            statementDesc = new EPStatementDesc(statement, startMethod, null, insertIntoStreamName);
+            statementDesc = new EPStatementDesc(statement, startMethod, null, insertIntoStreamName, statementContext.getEpStatementHandle());
             stmtIdToDescMap.put(statementId, statementDesc);
             stmtNameToStmtMap.put(statementName, statement);
             stmtNameToIdMap.put(statementName, statementId);
@@ -558,6 +560,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         private EPStatementStartMethod startMethod;
         private EPStatementStopMethod stopMethod;
         private String optInsertIntoStream;
+        private EPStatementHandle statementHandle;
 
         /**
          * Ctor.
@@ -566,12 +569,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
          * @param stopMethod the stop method
          * @param optInsertIntoStream is the insert-into stream name, or null if not using insert-into
          */
-        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream)
+        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream, EPStatementHandle statementHandle)
         {
             this.epStatement = epStatement;
             this.startMethod = startMethod;
             this.stopMethod = stopMethod;
             this.optInsertIntoStream = optInsertIntoStream;
+            this.statementHandle = statementHandle;
         }
 
         /**
@@ -617,6 +621,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         public void setStopMethod(EPStatementStopMethod stopMethod)
         {
             this.stopMethod = stopMethod;
+        }
+
+        public EPStatementHandle getStatementHandle()
+        {
+            return statementHandle;
         }
     }
 

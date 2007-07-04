@@ -3,9 +3,10 @@ package net.esper.support.schedule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.schedule.ScheduleHandleCallback;
+import net.esper.schedule.ScheduleHandle;
 import net.esper.core.ExtensionServicesContext;
 
-public class SupportScheduleCallback implements ScheduleHandleCallback
+public class SupportScheduleCallback implements ScheduleHandle
 {
     private static int orderAllCallbacks;
 

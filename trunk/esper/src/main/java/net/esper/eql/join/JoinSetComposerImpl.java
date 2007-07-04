@@ -7,15 +7,14 @@
  **************************************************************************************/
 package net.esper.eql.join;
 
-import net.esper.event.EventBean;
 import net.esper.collection.MultiKey;
 import net.esper.collection.UniformPair;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
+import net.esper.event.EventBean;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Implements the function to determine a join result set using tables/indexes and query strategy
@@ -42,6 +41,20 @@ public class JoinSetComposerImpl implements JoinSetComposer
         this.repositories = repositories;
         this.queryStrategies = queryStrategies;
         this.selectStreamSelectorEnum = selectStreamSelectorEnum;
+    }
+
+    public void init(EventBean[][] eventsPerStream)
+    {
+        for (int i = 0; i < eventsPerStream.length; i++)
+        {
+            if (eventsPerStream[i] != null)
+            {
+                for (int j = 0; j < repositories[i].length; j++)
+                {
+                    repositories[i][j].add((eventsPerStream[i]));
+                }
+            }
+        }
     }
 
     public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)

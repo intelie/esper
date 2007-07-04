@@ -114,4 +114,9 @@ public class PriorEventBufferMulti implements ViewUpdatedCollection, RelativeAcc
         }
         return priorEvents[priorToIndex];
     }
+
+    public void destroy()
+    {
+        // No action required
+    }
 }

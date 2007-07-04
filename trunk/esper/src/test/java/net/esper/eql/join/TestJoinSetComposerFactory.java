@@ -34,15 +34,15 @@ public class TestJoinSetComposerFactory extends TestCase
 
     public void testBuildIndex()
     {
-        EventTable table = JoinSetComposerFactory.buildIndex(0, new String[] {"intPrimitive", "boolBoxed"}, null, streamTypes[0]);
+        EventTable table = JoinSetComposerFactoryImpl.buildIndex(0, new String[] {"intPrimitive", "boolBoxed"}, null, streamTypes[0]);
         assertTrue(table instanceof PropertyIndexedEventTable);
 
-        table = JoinSetComposerFactory.buildIndex(0, new String[0], null, streamTypes[0]);
+        table = JoinSetComposerFactoryImpl.buildIndex(0, new String[0], null, streamTypes[0]);
         assertTrue(table instanceof UnindexedEventTable);
 
         try
         {
-            JoinSetComposerFactory.buildIndex(0, null, null, streamTypes[0]);
+            JoinSetComposerFactoryImpl.buildIndex(0, null, null, streamTypes[0]);
             fail();
         }
         catch (NullPointerException ex)
@@ -54,7 +54,7 @@ public class TestJoinSetComposerFactory extends TestCase
     public void testBuildComposer() throws Exception
     {
         List<OuterJoinDesc> outerJoins = new LinkedList<OuterJoinDesc>();
-        JoinSetComposerImpl composer = (JoinSetComposerImpl) JoinSetComposerFactory.makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
+        JoinSetComposerImpl composer = (JoinSetComposerImpl) (new JoinSetComposerFactoryImpl()).makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
 
         // verify default indexes build
         assertEquals(2, composer.getTables().length);

@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class TimeWindowViewFactory implements ViewFactory
 {
-    private long millisecondsBeforeExpiry;
-    private RandomAccessByIndexGetter randomAccessGetterImpl;
+    protected long millisecondsBeforeExpiry;
+    protected RandomAccessByIndexGetter randomAccessGetterImpl;
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException

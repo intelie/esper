@@ -307,7 +307,7 @@ public class SupportExprNodeFactory
             factories.add(new LengthWindowViewFactory());
             factoriesPerStream[i] = new ViewFactoryChain(streamTypeService.getEventTypes()[i], factories);
         }
-        ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream);
+        ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, null);
 
         topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(null), viewResources);
     }

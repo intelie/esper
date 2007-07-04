@@ -18,13 +18,14 @@ import net.esper.schedule.ScheduleUnit;
 import net.esper.schedule.ScheduleSpec;
 import net.esper.eql.parse.NumberSetParameter;
 import net.esper.eql.parse.CronParameter;
+import net.esper.util.MetaDefItem;
 
 /**
  * Factory for 'crontab' observers that indicate truth when a time point was reached.
  */
-public class TimerAtObserverFactory implements ObserverFactory
+public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
 {
-    private ScheduleSpec spec = null;
+    protected ScheduleSpec spec = null;
 
     public void setObserverParameters(List<Object> observerParameters) throws ObserverParameterException
     {

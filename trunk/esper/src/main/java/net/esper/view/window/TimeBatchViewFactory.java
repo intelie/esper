@@ -14,10 +14,10 @@ import java.util.List;
  */
 public class TimeBatchViewFactory implements ViewFactory
 {
-    private long millisecondsBeforeExpiry;
-    private Long optionalReferencePoint;
+    protected long millisecondsBeforeExpiry;
+    protected Long optionalReferencePoint;
     private EventType eventType;
-    private RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
+    protected RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {

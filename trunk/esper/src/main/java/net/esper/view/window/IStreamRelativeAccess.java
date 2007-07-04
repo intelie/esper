@@ -83,4 +83,9 @@ public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewU
          */
         public void updated(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData);
     }
+
+    public void destroy()
+    {
+        // No action required
+    }    
 }

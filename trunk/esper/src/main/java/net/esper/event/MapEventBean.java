@@ -8,10 +8,11 @@ import java.util.HashMap;
  * MapEventBean instances are equal if they have the same {@link EventType} and all property names
  * and values are reference-equal. 
  */
-public class MapEventBean implements EventBean
+public class MapEventBean implements EventBeanSPI
 {
     private EventType eventType;
     private Map<String, Object> properties;
+    private Object eventId;
     private Integer hashCode = null;
 
     /**
@@ -51,6 +52,11 @@ public class MapEventBean implements EventBean
     {
         this.properties = new HashMap<String, Object>();
         this.eventType = eventType;
+    }
+
+    public void setEventId(Object eventId)
+    {
+        this.eventId = eventId;
     }
 
     public EventType getEventType()
@@ -152,5 +158,10 @@ public class MapEventBean implements EventBean
     {
         return "MapEventBean " +
                 "eventType=" + eventType;
+    }
+
+    public Object getEventBeanId()
+    {
+        return eventId;
     }
 }

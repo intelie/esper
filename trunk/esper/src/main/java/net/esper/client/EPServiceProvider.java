@@ -26,8 +26,9 @@ public interface EPServiceProvider
     public EPAdministrator getEPAdministrator();
 
     /**
-     * Frees any resources associated with this runtime instance.
-     * Stops and destroys any event filters, patterns, expressions, views.
+     * Frees any resources associated with this runtime instance, and leaves the engine instance
+     * ready for further use.
+     * <p>Stops and destroys any existing statement resources such as filters, patterns, expressions, views.
      */
     public void initialize();
 

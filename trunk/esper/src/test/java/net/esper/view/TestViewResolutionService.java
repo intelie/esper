@@ -1,17 +1,16 @@
 package net.esper.view;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import junit.framework.TestCase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import net.esper.view.stat.UnivariateStatisticsViewFactory;
-import net.esper.client.ConfigurationPlugInView;
 import net.esper.client.ConfigurationException;
+import net.esper.client.ConfigurationPlugInView;
 import net.esper.support.view.SupportViewFactoryOne;
 import net.esper.support.view.SupportViewFactoryTwo;
-import net.esper.eql.spec.ViewSpec;
+import net.esper.view.stat.UnivariateStatisticsViewFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestViewResolutionService extends TestCase
 {
@@ -27,10 +26,10 @@ public class TestViewResolutionService extends TestCase
         service = createService(new String[] {"a", "b"}, new String[] {"v1", "v2"},
                 new String[] {SupportViewFactoryOne.class.getName(), SupportViewFactoryTwo.class.getName()});
 
-        ViewFactory factory = service.create(new ViewSpec("a", "v1", new LinkedList<Object>()));
+        ViewFactory factory = service.create("a", "v1");
         assertTrue(factory instanceof SupportViewFactoryOne);
 
-        factory = service.create(new ViewSpec("b", "v2", new LinkedList<Object>()));
+        factory = service.create("b", "v2");
         assertTrue(factory instanceof SupportViewFactoryTwo);
 
         tryInvalid("a", "v3");
@@ -51,7 +50,7 @@ public class TestViewResolutionService extends TestCase
     {
         try
         {
-            service.create(new ViewSpec(namespace, name, new LinkedList<Object>()));
+            service.create(namespace, name);
             fail();
         }
         catch (ViewProcessingException ex)
@@ -62,21 +61,15 @@ public class TestViewResolutionService extends TestCase
     
     public void testCreate() throws Exception
     {
-        List<Object> parameters = new LinkedList<Object>();
-        parameters.add("price");
-        ViewSpec spec = new ViewSpec(ViewEnum.UNIVARIATE_STATISTICS.getNamespace(), ViewEnum.UNIVARIATE_STATISTICS.getName(), parameters);
-
-        ViewFactory viewFactory = service.create(spec);
+        ViewFactory viewFactory = service.create(ViewEnum.UNIVARIATE_STATISTICS.getNamespace(), ViewEnum.UNIVARIATE_STATISTICS.getName());
         assertTrue(viewFactory instanceof UnivariateStatisticsViewFactory);
     }
 
     public void testInvalidViewName()
     {
-        ViewSpec spec = new ViewSpec("dummy", "bumblebee", null);
-
         try
         {
-            service.create(spec);
+            service.create("dummy", "bumblebee");
             assertFalse(true);
         }
         catch (ViewProcessingException ex)
@@ -84,7 +77,6 @@ public class TestViewResolutionService extends TestCase
             log.debug(".testInvalidViewName Expected exception caught, msg=" + ex.getMessage());
         }
     }
-
 
     private ViewResolutionService createService(String[] namespaces, String[] names, String[] classNames)
     {

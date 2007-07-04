@@ -57,7 +57,7 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
         }
     }
 
-    public final void update(EventBean[] newData, EventBean[] oldData)
+    public void update(EventBean[] newData, EventBean[] oldData)
     {
         // If we have child views, keep a reference to the old values, so we can fireStatementStopped them as old data event.
         BaseStatisticsBean oldValues = null;

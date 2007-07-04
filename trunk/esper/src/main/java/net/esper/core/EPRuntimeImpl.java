@@ -297,7 +297,6 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         // Evaluation of schedules is protected by an optional scheduling service lock and then the engine lock
         // We want to stay in this order for allowing the engine lock as a second-order lock to the
         // services own lock, if it has one.
-        services.getSchedulingService().evaluateLock();
         services.getEventProcessingRWLock().acquireReadLock();
         try
         {
@@ -310,7 +309,6 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         finally
         {
             services.getEventProcessingRWLock().releaseReadLock();
-            services.getSchedulingService().evaluateUnLock();
         }
 
         services.getEventProcessingRWLock().acquireReadLock();

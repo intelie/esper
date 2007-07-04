@@ -1,10 +1,11 @@
 package net.esper.view.internal;
 
 import junit.framework.TestCase;
-import net.esper.view.ViewCapPriorEventAccess;
-import net.esper.view.internal.PriorEventBufferUnbound;
-import net.esper.view.internal.PriorEventBufferMulti;
 import net.esper.support.eql.SupportViewResourceCallback;
+import net.esper.view.ViewCapPriorEventAccess;
+import net.esper.view.ViewParameterException;
+
+import java.util.Arrays;
 
 public class TestPriorEventViewFactory extends TestCase
 {
@@ -13,10 +14,12 @@ public class TestPriorEventViewFactory extends TestCase
     private SupportViewResourceCallback callbackOne;
     private SupportViewResourceCallback callbackTwo;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
-        factoryOne = new PriorEventViewFactory(false);
-        factoryTwo = new PriorEventViewFactory(true);
+        factoryOne = new PriorEventViewFactory();
+        factoryOne.setViewParameters(null, Arrays.asList((Object)(Boolean)false));
+        factoryTwo = new PriorEventViewFactory();
+        factoryTwo.setViewParameters(null, Arrays.asList((Object)(Boolean)true));
         callbackOne = new SupportViewResourceCallback();
         callbackTwo = new SupportViewResourceCallback();
     }
@@ -39,10 +42,10 @@ public class TestPriorEventViewFactory extends TestCase
     {
         try
         {
-            factoryOne.setViewParameters(null, null);
+            factoryOne.setViewParameters(null, Arrays.asList());
             fail();
         }
-        catch (UnsupportedOperationException ex)
+        catch (ViewParameterException ex)
         {
             // expected
         }

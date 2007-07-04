@@ -1,13 +1,11 @@
 package net.esper.eql.core;
 
-import net.esper.view.ViewFactoryChain;
-import net.esper.view.ViewFactory;
-import net.esper.view.ViewCapability;
-import net.esper.view.ViewCapDataWindowAccess;
+import net.esper.view.*;
 import net.esper.view.std.SizeViewFactory;
 import net.esper.view.window.TimeWindowViewFactory;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.bean.SupportBean;
+import net.esper.core.StatementContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +27,7 @@ public class TestViewFactoryDelegateImpl extends TestCase
         factories[1] = new ViewFactoryChain(SupportEventTypeFactory.createBeanType(SupportBean.class),
                 Arrays.asList(new ViewFactory[] {factory1}));
 
-        delegate = new ViewResourceDelegateImpl(factories);
+        delegate = new ViewResourceDelegateImpl(factories, null);
     }
 
     public void testRequest()
@@ -41,13 +39,13 @@ public class TestViewFactoryDelegateImpl extends TestCase
             }
         };
         assertFalse(delegate.requestCapability(1, new SupportViewCapability(), callback));
-        assertFalse(delegate.requestCapability(0, new ViewCapDataWindowAccess(1), callback));
-        assertTrue(delegate.requestCapability(1, new ViewCapDataWindowAccess(1), callback));
+        assertFalse(delegate.requestCapability(0, new ViewCapDataWindowAccess(), callback));
+        assertTrue(delegate.requestCapability(1, new ViewCapDataWindowAccess(), callback));
     }
 
     private class SupportViewCapability implements ViewCapability
     {
-        public boolean inspect(List<ViewFactory> viewFactories)
+        public boolean inspect(int streamNumber, List<ViewFactory> viewFactories, StatementContext statementContext)
         {
             return true;
         }

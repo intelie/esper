@@ -12,7 +12,7 @@ import net.esper.core.ExtensionServicesContext;
 /**
  * Interface for scheduled callbacks.
  */
-public interface ScheduleHandleCallback extends ScheduleHandle
+public interface ScheduleHandleCallback 
 {
     /**
      * Callback that is invoked as indicated by a schedule added to the scheduling service.

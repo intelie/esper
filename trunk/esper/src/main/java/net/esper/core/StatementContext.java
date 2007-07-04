@@ -1,6 +1,7 @@
 package net.esper.core;
 
 import net.esper.eql.core.MethodResolutionService;
+import net.esper.eql.join.JoinSetComposerFactory;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
 import net.esper.pattern.PatternContextFactory;
@@ -23,12 +24,13 @@ public final class StatementContext
     private final ScheduleBucket scheduleBucket;
     private final EventAdapterService eventAdapterService;
     private final EPStatementHandle epStatementHandle;
-    private final ViewResolutionService viewResultionService;
+    private final ViewResolutionService viewResolutionService;
     private final ExtensionServicesContext extensionServicesContext;
     private final StatementStopService statementStopService;
     private final MethodResolutionService methodResolutionService;
     private final PatternContextFactory patternContextFactory;
     private final FilterService filterService;
+    private final JoinSetComposerFactory joinSetComposerFactory;
 
     /**
      * Constructor.
@@ -62,7 +64,8 @@ public final class StatementContext
                               StatementStopService statementStopService,
                               MethodResolutionService methodResolutionService,
                               PatternContextFactory patternContextFactory,
-                              FilterService filterService)
+                              FilterService filterService,
+                              JoinSetComposerFactory joinSetComposerFactory)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -73,12 +76,13 @@ public final class StatementContext
         this.eventAdapterService = eventAdapterService;
         this.scheduleBucket = scheduleBucket;
         this.epStatementHandle = epStatementHandle;
-        this.viewResultionService = viewResultionService;
+        this.viewResolutionService = viewResultionService;
         this.extensionServicesContext = extensionServicesContext;
         this.statementStopService = statementStopService;
         this.methodResolutionService = methodResolutionService;
         this.patternContextFactory = patternContextFactory;
         this.filterService = filterService;
+        this.joinSetComposerFactory = joinSetComposerFactory;
     }
 
     /**
@@ -139,9 +143,9 @@ public final class StatementContext
      * Returns view resolution svc.
      * @return view resolution
      */
-    public ViewResolutionService getViewResultionService()
+    public ViewResolutionService getViewResolutionService()
     {
-        return viewResultionService;
+        return viewResolutionService;
     }
 
     /**
@@ -216,9 +220,14 @@ public final class StatementContext
         return filterService;
     }
 
+    public JoinSetComposerFactory getJoinSetComposerFactory()
+    {
+        return joinSetComposerFactory;
+    }
+
     public String toString()
     {
-        return  " statementId=" + statementId +
-                " statementName=" + statementName;
+        return  " stmtId=" + statementId +
+                " stmtName=" + statementName;
     }
 }

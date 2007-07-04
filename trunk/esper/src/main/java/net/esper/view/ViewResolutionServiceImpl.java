@@ -1,14 +1,13 @@
 package net.esper.view;
 
+import net.esper.client.ConfigurationException;
+import net.esper.client.ConfigurationPlugInView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.client.ConfigurationPlugInView;
-import net.esper.client.ConfigurationException;
-import net.esper.eql.spec.ViewSpec;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Resolves view namespace and name to view factory class, using configuration. 
@@ -67,31 +66,31 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
         }
     }
 
-    public ViewFactory create(ViewSpec spec) throws ViewProcessingException
+    public ViewFactory create(String nameSpace, String name) throws ViewProcessingException
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".create Creating view factory, spec=" + spec.toString());
+            log.debug(".create Creating view factory, namespace=" + nameSpace + " name=" + name);
         }
 
         Class viewFactoryClass = null;
 
         // Pre-configured views override build-in views
-        Map<String, Class> namespaceMap = nameToFactoryMap.get(spec.getObjectNamespace());
+        Map<String, Class> namespaceMap = nameToFactoryMap.get(nameSpace);
         if (namespaceMap != null)
         {
-            viewFactoryClass = namespaceMap.get(spec.getObjectName());            
+            viewFactoryClass = namespaceMap.get(name);
         }
 
         // if not found in the plugin views, try o resolve as a builtin view
         if (viewFactoryClass == null)
         {
             // Determine view class
-            ViewEnum viewEnum = ViewEnum.forName(spec.getObjectNamespace(), spec.getObjectName());
+            ViewEnum viewEnum = ViewEnum.forName(nameSpace, name);
 
             if (viewEnum == null)
             {
-                String message = "View name '" + spec.getObjectNamespace() + ":" + spec.getObjectName() + "' is not a known view name";
+                String message = "View name '" + nameSpace + ":" + name + "' is not a known view name";
                 throw new ViewProcessingException(message);
             }
 
@@ -110,18 +109,18 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
         }
         catch (ClassCastException e)
         {
-            String message = "Error casting view factory instance to " + ViewFactory.class.getName() + " interface for view '" + spec.getObjectName() + "'";
+            String message = "Error casting view factory instance to " + ViewFactory.class.getName() + " interface for view '" + nameSpace + "'";
             throw new ViewProcessingException(message, e);
         }
         catch (IllegalAccessException e)
         {
-            String message = "Error invoking view factory constructor for view '" + spec.getObjectName();
+            String message = "Error invoking view factory constructor for view '" + name;
             message += "', no invocation access for Class.newInstance";
             throw new ViewProcessingException(message, e);
         }
         catch (InstantiationException e)
         {
-            String message = "Error invoking view factory constructor for view '" + spec.getObjectName();
+            String message = "Error invoking view factory constructor for view '" + name;
             message += "' using Class.newInstance";
             throw new ViewProcessingException(message, e);
         }

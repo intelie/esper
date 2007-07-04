@@ -154,6 +154,9 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
             activeChildNode.quit();
         }
         activeChildNode = null;
+
+        // The guard has quit, the subexpression is permanently false, indicate to parent evaluator
+        this.getParentEvaluator().evaluateFalse(this);
     }
 
     private static final Log log = LogFactory.getLog(EvalGuardStateNode.class);

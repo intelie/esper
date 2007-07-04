@@ -1,10 +1,12 @@
 package net.esper.view.stat.olap;
 
+import net.esper.util.MetaDefItem;
+
 
 /**
  * Serves up Cube dimension member information - the members dimension and its key values.
  */
-public final class DimensionMemberImpl implements DimensionMember
+public final class DimensionMemberImpl implements DimensionMember, MetaDefItem
 {
     private Dimension dimension;
     private final Object[] values;

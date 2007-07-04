@@ -210,6 +210,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         listeners.remove(listener);
+        statementLifecycleSvc.updatedListeners(statementId, listeners);
     }
 
     /**
@@ -218,5 +219,6 @@ public class EPStatementImpl implements EPStatementSPI
     public void removeAllListeners()
     {
         listeners.clear();
+        statementLifecycleSvc.updatedListeners(statementId, listeners);
     }
 }

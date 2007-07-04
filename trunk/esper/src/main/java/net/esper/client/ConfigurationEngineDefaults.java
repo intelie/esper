@@ -32,6 +32,7 @@ public class ConfigurationEngineDefaults
         private boolean isListenerDispatchPreserveOrder;
         private long listenerDispatchTimeout;
         private boolean isInsertIntoDispatchPreserveOrder;
+        private boolean isExternalTimer;
 
         /**
          * Ctor - sets up defaults.
@@ -41,6 +42,7 @@ public class ConfigurationEngineDefaults
             listenerDispatchTimeout = 1000;
             isListenerDispatchPreserveOrder = true;
             isInsertIntoDispatchPreserveOrder = true;
+            isExternalTimer = false;
         }
 
         /**
@@ -104,6 +106,16 @@ public class ConfigurationEngineDefaults
         public boolean isInsertIntoDispatchPreserveOrder()
         {
             return isInsertIntoDispatchPreserveOrder;
+        }
+
+        public boolean isExternalTimer()
+        {
+            return isExternalTimer;
+        }
+
+        public void setExternalTimer(boolean externalTimer)
+        {
+            isExternalTimer = externalTimer;
         }
     }
 }

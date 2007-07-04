@@ -4,6 +4,7 @@ import net.esper.view.std.*;
 import net.esper.view.ext.*;
 import net.esper.view.window.*;
 import net.esper.view.stat.*;
+import net.esper.view.internal.PriorEventViewFactory;
 
 /**
  * Enum for all build-in views.
@@ -88,8 +89,12 @@ public enum ViewEnum
     /**
      * Sorted window.
      */
-    SORT_WINDOW("ext", "sort", SortWindowViewFactory.class, null);
+    SORT_WINDOW("ext", "sort", SortWindowViewFactory.class, null),
 
+    /**
+     * Prior event view.
+     */
+    PRIOR_EVENT_VIEW("int", "prioreventinternal", PriorEventViewFactory.class, null);
 
     private final String namespace;
     private final String name;

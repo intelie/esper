@@ -13,11 +13,11 @@ import java.util.List;
  */
 public class MultiDimStatsViewFactory implements ViewFactory
 {
-    private String[] derivedMeasures;
-    private String measureField;
-    private String columnField;
-    private String rowField;
-    private String pageField;
+    protected String[] derivedMeasures;
+    protected String measureField;
+    protected String columnField;
+    protected String rowField;
+    protected String pageField;
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException

@@ -150,7 +150,7 @@ public class EPStatementStartMethod
 
         // Construct type information per stream
         StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames);
-        ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain);
+        ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
 
         // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
@@ -222,7 +222,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            finalView = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext.getEpStatementHandle());
+            finalView = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext);
         }
 
         // Hook up internal event route for insert-into if required
@@ -250,11 +250,12 @@ public class EPStatementStartMethod
                                 Viewable[] streamViews,
                                 ResultSetProcessor optionalResultSetProcessor,
                                 SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
-                                EPStatementHandle epStatementHandle)
+                                StatementContext statementContext)
             throws ExprValidationException
     {
         // Handle joins
-        JoinSetComposer composer = JoinSetComposerFactory.makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
+        JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
+        
         JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
         OutputProcessView indicatorView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
 
@@ -263,7 +264,7 @@ public class EPStatementStartMethod
 
         // Hook up dispatchable with buffer and execution strategy
         JoinExecStrategyDispatchable joinStatementDispatch = new JoinExecStrategyDispatchable(execution, statementSpec.getStreamSpecs().size());
-        epStatementHandle.setOptionalDispatchable(joinStatementDispatch);
+        statementContext.getEpStatementHandle().setOptionalDispatchable(joinStatementDispatch);
 
         // Create buffer for each view. Point buffer to dispatchable for join.
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
@@ -490,7 +491,7 @@ public class EPStatementStartMethod
                 namesAndTypes.put(outerStreamNames[i], outerEventTypes[i]);
             }
             StreamTypeService subselectTypeService = new StreamTypeServiceImpl(namesAndTypes, true, true);
-            ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain});
+            ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain}, statementContext);
 
             // Validate select expression
             SelectClauseSpec selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
@@ -523,6 +524,18 @@ public class EPStatementStartMethod
                     outerEventTypes, subselectTypeService);
             subselect.setStrategy(indexPair.getSecond());
             final EventTable eventIndex = indexPair.getFirst();
+
+            // Start up event table from the iterator
+            Iterator<EventBean> it = subselectView.iterator();
+            if ((it != null) && (it.hasNext()))
+            {
+                ArrayList<EventBean> preloadEvents = new ArrayList<EventBean>();
+                for (;it.hasNext();)
+                {
+                    preloadEvents.add(it.next());
+                }
+                eventIndex.add(preloadEvents.toArray(new EventBean[0]));
+            }
 
             // hook up subselect viewable and event table
             BufferView bufferView = new BufferView(subselectStreamNumber);

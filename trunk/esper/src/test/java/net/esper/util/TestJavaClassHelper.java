@@ -264,6 +264,24 @@ public class TestJavaClassHelper extends TestCase
         }
     }
 
+    public void testGetClass() throws Exception
+    {
+        Object[][] tests = new Object[][] {
+                {int.class, int.class.getName()},
+                {long.class, long.class.getName()},
+                {short.class, short.class.getName()},
+                {double.class, double.class.getName()},
+                {float.class, float.class.getName()},
+                {boolean.class, boolean.class.getName()},
+                {byte.class, byte.class.getName()},
+                {char.class, char.class.getName()} };
+
+        for (int i = 0; i < tests.length; i++)
+        {
+            assertEquals(tests[i][0], JavaClassHelper.getClassForName((String)tests[i][1]));
+        }
+    }
+
     public void testIsJavaBuiltinDataType()
     {
         Class[] classesDataType = new Class[] {int.class, Long.class, double.class, boolean.class, Boolean.class,

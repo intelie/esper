@@ -1,5 +1,7 @@
 package net.esper.view;
 
+import net.esper.core.StatementContext;
+
 import java.util.List;
 
 /**
@@ -14,5 +16,5 @@ public interface ViewCapability
      * @param viewFactories is a list of view factories that originate the final views
      * @return true to indicate inspection success, or false to indicate inspection failure
      */
-    public boolean inspect(List<ViewFactory> viewFactories);
+    public boolean inspect(int streamNumber, List<ViewFactory> viewFactories, StatementContext statementContext);
 }

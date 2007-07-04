@@ -133,11 +133,13 @@ public final class LengthBatchView extends ViewSupport implements CloneableView,
                 oldData = lastBatch.toArray(new EventBean[0]);
             }
 
-            // Post new data (current batch) and old data (prior batch)
+            // update view buffer to serve expressions require access to events held
             if (viewUpdatedCollection != null)
             {
                 viewUpdatedCollection.update(newData, oldData);
             }
+
+            // Post new data (current batch) and old data (prior batch)
             if ((newData != null) || (oldData != null))
             {
                 updateChildren(newData, oldData);

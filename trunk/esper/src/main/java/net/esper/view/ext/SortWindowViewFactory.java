@@ -15,11 +15,11 @@ import java.util.List;
  */
 public class SortWindowViewFactory implements ViewFactory
 {
-    private String[] sortFieldNames;
-    private Boolean[] isDescendingValues;
-    private int sortWindowSize;
+    protected String[] sortFieldNames;
+    protected Boolean[] isDescendingValues;
+    protected int sortWindowSize;
     private EventType eventType;
-    private RandomAccessByIndexGetter randomAccessGetterImpl;
+    protected RandomAccessByIndexGetter randomAccessGetterImpl;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {

@@ -14,7 +14,7 @@ import java.util.Arrays;
  */
 public class GroupByViewFactory implements ViewFactory
 {
-    private String[] groupFieldNames;
+    protected String[] groupFieldNames;
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException

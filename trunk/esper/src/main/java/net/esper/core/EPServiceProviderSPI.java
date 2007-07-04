@@ -42,4 +42,10 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      * @return engine environment context
      */
     public Context getEnvContext();
+
+    public ExtensionServicesContext getExtensionServicesContext();
+
+    public void destroy();
+
+    public boolean isDestroyed();
 }

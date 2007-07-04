@@ -16,6 +16,10 @@ public class SupportJoinSetComposer implements JoinSetComposer
         this.result = result;
     }
 
+    public void init(EventBean[][] eventsPerStream)
+    {        
+    }
+
     public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
     {
         return result;

@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class WeightedAverageViewFactory implements ViewFactory
 {
-    private String fieldNameX;
-    private String fieldNameWeight;
+    protected String fieldNameX;
+    protected String fieldNameWeight;
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException

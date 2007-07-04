@@ -14,10 +14,10 @@ import java.util.List;
  */
 public class ExternallyTimedWindowViewFactory implements ViewFactory
 {
-    private String timestampFieldName;
-    private long millisecondsBeforeExpiry;
+    protected String timestampFieldName;
+    protected long millisecondsBeforeExpiry;
     private EventType eventType;
-    private RandomAccessByIndexGetter randomAccessGetterImpl;
+    protected RandomAccessByIndexGetter randomAccessGetterImpl;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {

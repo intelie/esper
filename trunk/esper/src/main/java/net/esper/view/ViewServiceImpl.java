@@ -71,7 +71,6 @@ public final class ViewServiceImpl implements ViewService
         Pair<Viewable, List<View>> resultPair = ViewServiceHelper.matchExistingViews(eventStreamViewable, viewFactories);
 
         Viewable parentViewable = resultPair.getFirst();
-        List<View> existingParentViews = resultPair.getSecond();
 
         if (viewFactories.isEmpty())
         {
@@ -86,6 +85,16 @@ public final class ViewServiceImpl implements ViewService
 
         // Instantiate remaining chain of views from the remaining factories which didn't match to existing views.
         List<View> views = ViewServiceHelper.instantiateChain(parentViewable, viewFactories, context);
+
+        // Initialize any views that need initializing after the chain is complete
+        for (View view : views)
+        {
+            if (view instanceof InitializableView)
+            {
+                InitializableView initView = (InitializableView) view;
+                initView.initialize();
+            }
+        }
 
         if (log.isDebugEnabled())
         {
@@ -121,6 +130,6 @@ public final class ViewServiceImpl implements ViewService
             ViewSupport.dumpChildViews("EventStream ", eventStream);
         }
     }
-
+    
     private static final Log log = LogFactory.getLog(ViewServiceImpl.class);
 }

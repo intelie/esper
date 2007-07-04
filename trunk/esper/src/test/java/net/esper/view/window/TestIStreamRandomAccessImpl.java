@@ -2,9 +2,8 @@ package net.esper.view.window;
 
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
-import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.bean.SupportBean;
-import net.esper.view.window.IStreamRandomAccess;
+import net.esper.support.event.SupportEventBeanFactory;
 
 public class TestIStreamRandomAccessImpl extends TestCase
 {
@@ -13,9 +12,9 @@ public class TestIStreamRandomAccessImpl extends TestCase
 
     public void setUp()
     {
-        IStreamRandomAccess.IStreamRandomAccessUpdateObserver updateObserver = new IStreamRandomAccess.IStreamRandomAccessUpdateObserver()
+        RandomAccessByIndexObserver updateObserver = new RandomAccessByIndexObserver()
         {
-            public void updated(IStreamRandomAccess iStreamRandomAccess)
+            public void updated(RandomAccessByIndex randomAccessByIndex)
             {
             }
         };

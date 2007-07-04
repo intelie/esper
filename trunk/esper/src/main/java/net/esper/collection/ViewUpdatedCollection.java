@@ -23,4 +23,6 @@ public interface ViewUpdatedCollection
      * @param oldData is the remove stream events or null if no data
      */
     public void update(EventBean[] newData, EventBean[] oldData);
+
+    public void destroy();
 }

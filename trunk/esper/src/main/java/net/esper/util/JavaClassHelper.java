@@ -566,4 +566,47 @@ public class JavaClassHelper
         }
         return result;
     }
+
+    /**
+     * Returns the class given a fully-qualified class name.
+     * @param className is the fully-qualified class name, java primitive types included.
+     * @return class for name
+     * @throws ClassNotFoundException if the class cannot be found
+     */
+    public static Class getClassForName(String className) throws ClassNotFoundException
+    {
+        if (className.equals(boolean.class.getName()))
+        {
+            return boolean.class;
+        }
+        if (className.equals(char.class.getName()))
+        {
+            return char.class;
+        }
+        if (className.equals(double.class.getName()))
+        {
+            return double.class;
+        }
+        if (className.equals(float.class.getName()))
+        {
+            return float.class;
+        }
+        if (className.equals(byte.class.getName()))
+        {
+            return byte.class;
+        }
+        if (className.equals(short.class.getName()))
+        {
+            return short.class;
+        }
+        if (className.equals(int.class.getName()))
+        {
+            return int.class;
+        }
+        if (className.equals(long.class.getName()))
+        {
+            return long.class;
+        }
+        return Class.forName(className);
+    }
 }

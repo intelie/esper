@@ -18,8 +18,9 @@ public class LengthWindowViewFactory implements ViewFactory
      */
     protected int size;
     
+    protected RandomAccessByIndexGetter randomAccessGetterImpl;
+
     private EventType eventType;
-    private RandomAccessByIndexGetter randomAccessGetterImpl;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {

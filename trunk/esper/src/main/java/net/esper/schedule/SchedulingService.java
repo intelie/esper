@@ -67,16 +67,6 @@ public interface SchedulingService
     public void setTime(long timestamp);
 
     /**
-     * Scheduling service evaluation lock to synchronize evaluation with engine locks.
-     */
-    public void evaluateLock();
-
-    /**
-     * Scheduling service evaluation unlock to synchronize evaluation with engine locks.
-     */
-    public void evaluateUnLock();
-
-    /**
      * Evaluate the current time and add to the collection any handles scheduled for execution.
      * @param handles is a collection of handles populated by the service with any callbacks due
      * for the current time

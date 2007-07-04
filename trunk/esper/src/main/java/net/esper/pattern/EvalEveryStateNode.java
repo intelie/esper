@@ -116,6 +116,28 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
     public final void evaluateFalse(EvalStateNode fromNode)
     {
         log.debug(".evaluateFalse");
+
+        fromNode.quit();
+        spawnedNodes.remove(fromNode);
+
+        // Spawn all nodes below this EVERY node
+        // During the start of a child we need to use the temporary evaluator to catch any event created during a start
+        // Such events can be raised when the "not" operator is used.
+        EvalNode child = getFactoryNode().getChildNodes().get(0);
+        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+        EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
+        spawned.start();
+
+        // If the whole spawned expression already turned true, quit it again
+        if (spawnEvaluator.isEvaluatedTrue())
+        {
+            spawned.quit();
+        }
+        else
+        {
+            spawnedNodes.add(spawned);
+            spawned.setParentEvaluator(this);
+        }
     }
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)

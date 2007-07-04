@@ -78,11 +78,43 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return engine.getServices().getFilterService();
     }
 
+    public ExtensionServicesContext getExtensionServicesContext()
+    {
+        return engine.getServices().getExtensionServicesContext();
+    }
+
     public Context getEnvContext()
     {
         return engine.getServices().getEngineEnvContext();
     }
-    
+
+    public void destroy()
+    {
+        if (engine != null)
+        {
+            engine.getServices().getTimerService().stopInternalClock(false);
+            // Give the timer thread a little moment to catch up
+            try
+            {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException ex)
+            {
+                // No logic required here
+            }
+
+            engine.getServices().destroy();
+            engine.getServices().initialize();
+        }
+
+        engine = null;
+    }
+
+    public boolean isDestroyed()
+    {
+        return engine == null;
+    }
+
     public void initialize()
     {
         if (engine != null)
@@ -159,7 +191,10 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps);
 
         // Start clocking
-        services.getTimerService().startInternalClock();
+        if (!configSnapshot.getEngineDefaults().getThreading().isExternalTimer())
+        {
+            services.getTimerService().startInternalClock();
+        }
 
         // Give the timer thread a little moment to start up
         try

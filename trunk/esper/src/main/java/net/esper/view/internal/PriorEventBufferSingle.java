@@ -88,4 +88,9 @@ public class PriorEventBufferSingle implements ViewUpdatedCollection, RelativeAc
         }
         return priorEvent;
     }
+
+    public void destroy()
+    {
+        // No action required
+    }    
 }

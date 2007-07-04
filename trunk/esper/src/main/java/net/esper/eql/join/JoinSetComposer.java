@@ -18,6 +18,8 @@ import java.util.Set;
  */
 public interface JoinSetComposer
 {
+    public void init(EventBean[][] eventsPerStream);
+
     /**
      * Return join tuple result set from new data and old data for each stream.
      * @param newDataPerStream - for each stream the event array (can be null).

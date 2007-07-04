@@ -2,6 +2,8 @@ package net.esper.core;
 
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.MethodResolutionServiceImpl;
+import net.esper.eql.join.JoinSetComposerImpl;
+import net.esper.eql.join.JoinSetComposerFactoryImpl;
 import net.esper.pattern.PatternContextFactory;
 import net.esper.pattern.PatternContextFactoryDefault;
 import net.esper.schedule.ScheduleBucket;
@@ -32,9 +34,20 @@ public class StatementContextFactoryDefault implements StatementContextFactory
 
         // Create statement context
         return new StatementContext(engineServices.getEngineURI(),
-                engineServices.getEngineInstanceId(), statementId, statementName, expression, engineServices.getSchedulingService(),
-                scheduleBucket, engineServices.getEventAdapterService(), epStatementHandle,
-                engineServices.getViewResolutionService(), engineServices.getExtensionServicesContext(),
-                new StatementStopServiceImpl(), methodResolutionService, patternContextFactory, engineServices.getFilterService());
+                engineServices.getEngineInstanceId(),
+                statementId,
+                statementName,
+                expression,
+                engineServices.getSchedulingService(),
+                scheduleBucket,
+                engineServices.getEventAdapterService(),
+                epStatementHandle,
+                engineServices.getViewResolutionService(),
+                engineServices.getExtensionServicesContext(),
+                new StatementStopServiceImpl(),
+                methodResolutionService,
+                patternContextFactory,
+                engineServices.getFilterService(),
+                new JoinSetComposerFactoryImpl());
     }
 }

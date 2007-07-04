@@ -1,10 +1,12 @@
 package net.esper.view.stat;
 
+import net.esper.util.MetaDefItem;
+
 
 /**
  * Bean for calculating the correlation (same to Microsoft Excel CORREL function).
  */
-public final class CorrelationBean extends BaseStatisticsBean
+public final class CorrelationBean extends BaseStatisticsBean 
 {
     /**
      * Return the correlation value for the two data series (Microsoft Excel function CORREL).

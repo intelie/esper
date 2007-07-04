@@ -1,8 +1,10 @@
 package net.esper.view.stat.olap;
 
 import java.util.*;
+import java.io.Serializable;
 
 import net.esper.collection.MultiKeyUntyped;
+import net.esper.util.MetaDefItem;
 
 /**
  * Implementation for a multidimensional cube that can be configured with the type of cell to store.
@@ -16,7 +18,7 @@ import net.esper.collection.MultiKeyUntyped;
  *   Normal case is that the cell for all dimension members (the particular coordinate) already exists.
  *   This class uses a map of dimension member set (coordinates) to fact array ordinal which gets great performance.
  */
-public final class MultidimCubeImpl<V> implements MultidimCube<V>
+public final class MultidimCubeImpl<V> implements MultidimCube<V>, MetaDefItem
 {
     private final int numDimensions;
 

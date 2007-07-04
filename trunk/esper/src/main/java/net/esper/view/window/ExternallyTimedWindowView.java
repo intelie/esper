@@ -15,7 +15,7 @@ import net.esper.core.StatementContext;
  * supplied within long-type timestamp values in a field of the event beans that the view receives.
  *
  * The view is completely driven by timestamp values that are supplied by the events it receives,
- * and does not use the system time.
+ * and does not use the schedule service time.
  * It requires a field name as parameter for a field that returns ascending long-type timestamp values.
  * It also requires a long-type parameter setting the time length in milliseconds of the time window.
  * Events are expected to provide long-type timestamp values in natural order. The view does

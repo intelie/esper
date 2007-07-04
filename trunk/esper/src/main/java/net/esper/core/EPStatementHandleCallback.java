@@ -13,7 +13,7 @@ import net.esper.util.MetaDefItem;
  * Links the statement handle identifying a statement and containing the statement resource lock,
  * with the actual callback to invoke for a statement together.
  */
-public class EPStatementHandleCallback implements FilterHandle, ScheduleHandle, MetaDefItem
+public class EPStatementHandleCallback implements FilterHandle, ScheduleHandle
 {
     private EPStatementHandle epStatementHandle;
     private FilterHandleCallback filterCallback;

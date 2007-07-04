@@ -1,9 +1,10 @@
 package net.esper.view.internal;
 
-import net.esper.view.ViewSupport;
+import net.esper.collection.ViewUpdatedCollection;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.collection.ViewUpdatedCollection;
+import net.esper.view.ViewSupport;
+import net.esper.view.Viewable;
 
 import java.util.Iterator;
 
@@ -12,6 +13,7 @@ import java.util.Iterator;
  */
 public class PriorEventView extends ViewSupport
 {
+    private Viewable parent;
     private ViewUpdatedCollection buffer;
 
     /**
@@ -27,6 +29,11 @@ public class PriorEventView extends ViewSupport
     {
         buffer.update(newData, oldData);
         this.updateChildren(newData, oldData);
+    }
+
+    public void setParent(Viewable parent)
+    {
+        this.parent = parent;
     }
 
     /**

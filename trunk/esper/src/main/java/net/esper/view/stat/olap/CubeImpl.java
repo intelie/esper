@@ -5,12 +5,13 @@ import java.util.HashMap;
 
 import net.esper.collection.Pair;
 import net.esper.view.stat.BaseStatisticsBean;
+import net.esper.util.MetaDefItem;
 
 /**
  * Cube implementation derives the cells of the cube from a measures list and a {@link MultidimCube} containing
  * {@link BaseStatisticsBean}.
  */
-public final class CubeImpl implements Cube
+public final class CubeImpl implements Cube, MetaDefItem
 {
     private final MultidimCube<BaseStatisticsBean> cube;
     private final String[] measuresToDerive;

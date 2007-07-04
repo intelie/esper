@@ -243,7 +243,7 @@ public class ViewServiceHelper
         for (ViewSpec spec : viewSpecList)
         {
             // Create the new view factory
-            ViewFactory viewFactory = statementContext.getViewResultionService().create(spec);
+            ViewFactory viewFactory = statementContext.getViewResolutionService().create(spec.getObjectNamespace(), spec.getObjectName());
             factoryChain.add(viewFactory);
 
             // Set view factory parameters

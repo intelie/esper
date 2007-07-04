@@ -1,8 +1,11 @@
 package net.esper.view;
 
+import net.esper.client.EPException;
+import net.esper.core.StatementContext;
 import net.esper.view.internal.PriorEventViewFactory;
 
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Describes that we need access to prior events (result events published by views),
@@ -30,24 +33,38 @@ public class ViewCapPriorEventAccess implements ViewCapability
         return indexConstant;
     }
 
-    public boolean inspect(List<ViewFactory> viewFactories)
+    public boolean inspect(int streamNumber, List<ViewFactory> viewFactories, StatementContext statementContext)
     {
         boolean unboundStream = viewFactories.isEmpty();
 
         // Find the prior event view to see if it has already been added
-        PriorEventViewFactory factory = null;
         for (ViewFactory viewFactory : viewFactories)
         {
             if (viewFactory instanceof PriorEventViewFactory)
             {
-                factory = (PriorEventViewFactory) viewFactory;
+                return true;
             }
         }
 
-        if (factory == null)
+        try
         {
-            factory = new PriorEventViewFactory(unboundStream);
+            String namespace = ViewEnum.PRIOR_EVENT_VIEW.getNamespace();
+            String name = ViewEnum.PRIOR_EVENT_VIEW.getName();
+            ViewFactory factory = statementContext.getViewResolutionService().create(namespace, name);
             viewFactories.add(factory);
+            
+            ViewFactoryContext context = new ViewFactoryContext(statementContext, streamNumber, viewFactories.size() + 1, namespace, name);
+            factory.setViewParameters(context, Arrays.asList((Object)(Boolean)unboundStream));
+        }
+        catch (ViewProcessingException ex)
+        {
+            String text = "Exception creating prior event view factory";
+            throw new EPException(text, ex);
+        }
+        catch (ViewParameterException ex)
+        {
+            String text = "Exception creating prior event view factory";
+            throw new EPException(text, ex);
         }
 
         return true;

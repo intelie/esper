@@ -35,7 +35,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         // Determine if the index is a constant value or an expression to evaluate
         if (this.getChildNodes().get(0).isConstantResult())
         {
-            ExprNode constantNode = (ExprNode) this.getChildNodes().get(0);
+            ExprNode constantNode = this.getChildNodes().get(0);
             Object value = constantNode.evaluate(null, false);
             if (!(value instanceof Number))
             {
@@ -63,7 +63,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         }
 
         // Request a callback that provides the required access
-        if (!viewResourceDelegate.requestCapability(streamNumber, new ViewCapDataWindowAccess(constantIndexNumber), this))
+        if (!viewResourceDelegate.requestCapability(streamNumber, new ViewCapDataWindowAccess(), this))
         {
             throw new ExprValidationException("Previous function requires a single data window view onto the stream");
         }

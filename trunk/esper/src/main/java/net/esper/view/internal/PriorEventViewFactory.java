@@ -15,23 +15,26 @@ import java.util.*;
  */
 public class PriorEventViewFactory implements ViewFactory
 {
-    private TreeMap<Integer, List<ViewResourceCallback>> callbacksPerIndex = new TreeMap<Integer, List<ViewResourceCallback>>();
+    protected TreeMap<Integer, List<ViewResourceCallback>> callbacksPerIndex = new TreeMap<Integer, List<ViewResourceCallback>>();
     private EventType eventType;
-    private final boolean isUnbound;
 
     /**
-     * Ctor.
-     * @param unbound to indicate the we are not receiving remove stream events (unbound stream, stream without child
+     * unbound to indicate the we are not receiving remove stream events (unbound stream, stream without child
      * views) therefore must use a different buffer.
      */
-    public PriorEventViewFactory(boolean unbound)
+    protected boolean isUnbound;
+
+    public PriorEventViewFactory()
     {
-        isUnbound = unbound;
     }
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
-        throw new UnsupportedOperationException("View not available through EQL");
+        if (viewParameters.size() != 1)
+        {
+            throw new ViewParameterException("View requires a single parameter indicating unbound or not");
+        }
+        isUnbound = (Boolean) viewParameters.get(0);
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
