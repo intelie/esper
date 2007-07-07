@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportOverrideOneA extends SupportOverrideOne
+import java.io.Serializable;
+
+public class SupportOverrideOneA extends SupportOverrideOne implements Serializable
 {
     private String valOneA;
 

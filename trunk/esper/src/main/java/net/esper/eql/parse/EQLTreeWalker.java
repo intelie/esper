@@ -7,9 +7,8 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
-import antlr.collections.AST;
 import antlr.SemanticException;
-import net.esper.collection.Pair;
+import antlr.collections.AST;
 import net.esper.eql.agg.AggregationSupport;
 import net.esper.eql.core.EngineImportException;
 import net.esper.eql.core.EngineImportService;
@@ -18,10 +17,10 @@ import net.esper.eql.expression.*;
 import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.spec.*;
 import net.esper.pattern.*;
-import net.esper.pattern.observer.ObserverFactory;
-import net.esper.pattern.observer.ObserverParameterException;
 import net.esper.pattern.guard.GuardFactory;
 import net.esper.pattern.guard.GuardParameterException;
+import net.esper.pattern.observer.ObserverFactory;
+import net.esper.pattern.observer.ObserverParameterException;
 import net.esper.type.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1004,7 +1003,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
 
         // Add as order-by element
-        statementSpec.getOrderByList().add(new Pair<ExprNode, Boolean>(exprNode, descending));
+        statementSpec.getOrderByList().add(new OrderByItem(exprNode, descending));
     }
 
     private void leaveConcat(AST node)

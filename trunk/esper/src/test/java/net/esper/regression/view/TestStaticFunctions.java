@@ -17,6 +17,7 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.eql.SupportStaticMethodLib;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 import com.sun.org.apache.bcel.internal.util.ClassLoader;
 
@@ -30,7 +31,7 @@ public class TestStaticFunctions extends TestCase
 	
 	protected void setUp()
 	{
-	    epService = EPServiceProviderManager.getDefaultProvider();
+	    epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
 	    epService.initialize();
 	    stream = " from " + SupportMarketDataBean.class.getName() +".win:length(5) ";
 	}

@@ -7,11 +7,13 @@
  **************************************************************************************/
 package net.esper.eql.spec;
 
+import java.io.Serializable;
+
 /**
  * Spec for building an EventBatch.
  *
  */
-public class OutputLimitSpec
+public class OutputLimitSpec implements Serializable
 {
     /**
      * Enum controlling the type of output limiting.

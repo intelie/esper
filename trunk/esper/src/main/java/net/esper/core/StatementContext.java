@@ -2,6 +2,7 @@ package net.esper.core;
 
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.join.JoinSetComposerFactory;
+import net.esper.eql.view.OutputConditionFactory;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
 import net.esper.pattern.PatternContextFactory;
@@ -31,6 +32,7 @@ public final class StatementContext
     private final PatternContextFactory patternContextFactory;
     private final FilterService filterService;
     private final JoinSetComposerFactory joinSetComposerFactory;
+    private final OutputConditionFactory outputConditionFactory;
 
     /**
      * Constructor.
@@ -65,7 +67,8 @@ public final class StatementContext
                               MethodResolutionService methodResolutionService,
                               PatternContextFactory patternContextFactory,
                               FilterService filterService,
-                              JoinSetComposerFactory joinSetComposerFactory)
+                              JoinSetComposerFactory joinSetComposerFactory,
+                              OutputConditionFactory outputConditionFactory)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -83,6 +86,7 @@ public final class StatementContext
         this.patternContextFactory = patternContextFactory;
         this.filterService = filterService;
         this.joinSetComposerFactory = joinSetComposerFactory;
+        this.outputConditionFactory = outputConditionFactory;
     }
 
     /**
@@ -223,6 +227,11 @@ public final class StatementContext
     public JoinSetComposerFactory getJoinSetComposerFactory()
     {
         return joinSetComposerFactory;
+    }
+
+    public OutputConditionFactory getOutputConditionFactory()
+    {
+        return outputConditionFactory;
     }
 
     public String toString()

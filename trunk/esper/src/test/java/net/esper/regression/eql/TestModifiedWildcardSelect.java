@@ -15,6 +15,7 @@ import net.esper.support.bean.SupportBean_A;
 import net.esper.support.bean.SupportBean_B;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.collection.Pair;
 
 
@@ -27,7 +28,7 @@ public class TestModifiedWildcardSelect extends TestCase
 
 	protected void setUp()
 	{
-		epService = EPServiceProviderManager.getDefaultProvider();
+		epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
 		epService.initialize();
 		listener = new SupportUpdateListener();
 		insertListener = new SupportUpdateListener();

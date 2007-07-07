@@ -7,7 +7,6 @@
  **************************************************************************************/
 package net.esper.event;
 
-import java.util.Set;
 import java.util.Iterator;
 
 /**

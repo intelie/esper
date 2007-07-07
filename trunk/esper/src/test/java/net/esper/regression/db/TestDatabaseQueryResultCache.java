@@ -5,6 +5,7 @@ import net.esper.client.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.eql.SupportDatabaseService;
 import net.esper.support.bean.SupportBean_S0;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 import java.util.Properties;
@@ -55,7 +56,7 @@ public class TestDatabaseQueryResultCache extends TestCase
 
     private void tryCache(ConfigurationDBRef configDB, long assertMaximumTime, int numEvents, boolean useRandomLookupKey)
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
 
         epService = EPServiceProviderManager.getProvider("TestDatabaseQueryResultCache", configuration);

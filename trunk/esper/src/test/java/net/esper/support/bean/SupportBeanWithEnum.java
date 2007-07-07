@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportBeanWithEnum
+import java.io.Serializable;
+
+public class SupportBeanWithEnum implements Serializable
 {
     private String string;
     private SupportEnum supportEnum;

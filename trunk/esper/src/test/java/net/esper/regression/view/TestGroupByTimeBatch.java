@@ -7,6 +7,7 @@ import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 public class TestGroupByTimeBatch extends TestCase
@@ -16,7 +17,7 @@ public class TestGroupByTimeBatch extends TestCase
 
     public void setUp()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("MarketData", SupportMarketDataBean.class);
         config.addEventTypeAlias("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);

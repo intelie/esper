@@ -9,7 +9,10 @@ import net.esper.type.MathArithTypeEnum;
 import net.esper.type.RelationalOpEnum;
 import net.esper.view.ViewFactoryChain;
 import net.esper.view.ViewFactory;
+import net.esper.view.ViewResolutionServiceImpl;
 import net.esper.view.window.LengthWindowViewFactory;
+import net.esper.core.StatementContextFactory;
+import net.esper.support.view.SupportStatementContextFactory;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -307,7 +310,7 @@ public class SupportExprNodeFactory
             factories.add(new LengthWindowViewFactory());
             factoriesPerStream[i] = new ViewFactoryChain(streamTypeService.getEventTypes()[i], factories);
         }
-        ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, null);
+        ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, SupportStatementContextFactory.makeContext());
 
         topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(null), viewResources);
     }

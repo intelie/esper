@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportRFIDEvent
+import java.io.Serializable;
+
+public class SupportRFIDEvent implements Serializable
 {
     private String locationReportId;
     private String mac;

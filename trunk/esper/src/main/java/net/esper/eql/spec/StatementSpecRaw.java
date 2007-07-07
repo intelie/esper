@@ -8,11 +8,10 @@
 package net.esper.eql.spec;
 
 import net.esper.eql.expression.ExprNode;
-import net.esper.collection.Pair;
 import net.esper.util.MetaDefItem;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Specification object representing a complete EQL statement including all EQL constructs.
@@ -28,7 +27,7 @@ public class StatementSpecRaw implements MetaDefItem
     private List<ExprNode> groupByExpressions = new LinkedList<ExprNode>();
     private ExprNode havingExprRootNode;
     private OutputLimitSpec outputLimitSpec;
-    private List<Pair<ExprNode, Boolean>> orderByList = new LinkedList<Pair<ExprNode, Boolean>>();
+    private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
 
     /**
      * Returns the FROM-clause stream definitions.
@@ -106,7 +105,7 @@ public class StatementSpecRaw implements MetaDefItem
      * Returns the list of order-by expression as specified in the ORDER BY clause.
      * @return Returns the orderByList.
      */
-    public List<Pair<ExprNode, Boolean>> getOrderByList() {
+    public List<OrderByItem> getOrderByList() {
         return orderByList;
     }
 

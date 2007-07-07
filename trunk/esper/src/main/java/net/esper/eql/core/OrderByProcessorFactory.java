@@ -7,23 +7,18 @@
  **************************************************************************************/
 package net.esper.eql.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import net.esper.collection.Pair;
-import net.esper.event.EventType;
-import net.esper.event.EventAdapterService;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.eql.agg.AggregationService;
+import net.esper.eql.expression.ExprAggregateNode;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.expression.ExprAggregateNode;
-import net.esper.eql.agg.AggregationService;
-
+import net.esper.eql.spec.OrderByItem;
+import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.event.EventAdapterService;
+import net.esper.event.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * Factory for {@link net.esper.eql.core.OrderByProcessor} processors.
@@ -43,16 +38,16 @@ public class OrderByProcessorFactory {
      */
     public static OrderByProcessor getProcessor(List<SelectExprElementCompiledSpec> selectionList,
 											   List<ExprNode> groupByNodes,
-											   List<Pair<ExprNode, Boolean>> orderByList, 
+											   List<OrderByItem> orderByList,
 											   AggregationService aggregationService,
                                                EventAdapterService eventAdapterService)
 	throws ExprValidationException
 	{
 		// Get the order by expression nodes
 		List<ExprNode> orderByNodes = new ArrayList<ExprNode>();
-		for(Pair<ExprNode, Boolean> element : orderByList)
+		for(OrderByItem element : orderByList)
 		{
-			orderByNodes.add(element.getFirst());
+			orderByNodes.add(element.getExprNode());
 		}
 
 		// No order-by clause

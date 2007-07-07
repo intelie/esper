@@ -14,6 +14,7 @@ import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineSettingsService;
 import net.esper.eql.db.DatabaseConfigService;
+import net.esper.eql.view.OutputConditionFactory;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
 import net.esper.filter.FilterServiceProvider;
@@ -53,6 +54,7 @@ public final class EPServicesContext
     private EngineEnvContext engineEnvContext;
     private StatementContextFactory statementContextFactory;
     private PatternObjectResolutionService patternObjectResolutionService;
+    private OutputConditionFactory outputConditionFactory;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -86,10 +88,10 @@ public final class EPServicesContext
                              ExtensionServicesContext extensionServicesContext,
                              EngineEnvContext engineEnvContext,
                              StatementContextFactory statementContextFactory,
-                             PatternObjectResolutionService patternObjectResolutionService)
+                             PatternObjectResolutionService patternObjectResolutionService,
+                             OutputConditionFactory outputConditionFactory)
     {
         this.engineURI = engineURI;
-        this.engineInstanceId = engineInstanceId;
         this.schedulingService = schedulingService;
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
@@ -108,6 +110,7 @@ public final class EPServicesContext
         this.engineEnvContext = engineEnvContext;
         this.statementContextFactory = statementContextFactory;
         this.patternObjectResolutionService = patternObjectResolutionService;
+        this.outputConditionFactory = outputConditionFactory;
     }
 
     /**
@@ -363,5 +366,10 @@ public final class EPServicesContext
     public EngineSettingsService getEngineSettingsService()
     {
         return engineSettingsService;
+    }
+
+    public OutputConditionFactory getOutputConditionFactory()
+    {
+        return outputConditionFactory;
     }
 }

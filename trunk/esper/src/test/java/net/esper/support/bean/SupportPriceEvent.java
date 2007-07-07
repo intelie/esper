@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportPriceEvent
+import java.io.Serializable;
+
+public class SupportPriceEvent implements Serializable
 {
     int price;
     String sym;

@@ -5,6 +5,7 @@ import java.util.*;
 import junit.framework.TestCase;
 import net.esper.support.bean.SupportBeanConstants;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.TimerEvent;
 import net.esper.client.time.CurrentTimeEvent;
@@ -52,7 +53,7 @@ public class PatternTestHarness implements SupportBeanConstants
 
     private void runTest(boolean useEQL) throws Exception
     {
-        EPServiceProvider serviceProvider = EPServiceProviderManager.getDefaultProvider();
+        EPServiceProvider serviceProvider = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         serviceProvider.initialize();
 
         EPRuntime runtime = serviceProvider.getEPRuntime();

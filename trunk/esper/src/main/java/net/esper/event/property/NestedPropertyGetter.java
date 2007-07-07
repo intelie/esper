@@ -37,7 +37,8 @@ public class NestedPropertyGetter implements EventPropertyGetter
 
             if (i < (getterChain.length - 1))
             {
-                eventBean = beanEventAdapter.adapterForBean(value, null);
+                EventType type = beanEventAdapter.adapterForType(value);
+                eventBean = new BeanEventBean(value, type, null);
             }
         }
         return value;

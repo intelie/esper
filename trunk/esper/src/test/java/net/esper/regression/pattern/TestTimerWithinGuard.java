@@ -4,6 +4,7 @@ import net.esper.regression.support.*;
 import net.esper.support.bean.SupportBeanConstants;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.client.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
@@ -169,7 +170,7 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
 
     public void testInterval()
     {
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         // External clocking

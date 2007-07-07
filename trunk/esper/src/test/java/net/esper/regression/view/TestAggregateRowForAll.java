@@ -8,6 +8,7 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportPriceEvent;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 import org.apache.commons.logging.Log;
@@ -25,7 +26,7 @@ public class TestAggregateRowForAll extends TestCase
     public void setUp()
     {
         listener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }

@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import junit.framework.Assert;
 import net.esper.client.*;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,7 +68,7 @@ public class TestMultithreadedTimeWin extends TestCase {
 
     private void setUp(int numSymbols, int numThreads, int numEvents, double timeWindowSize)
     {
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         // Create a statement for N number of symbols, each it's own listener

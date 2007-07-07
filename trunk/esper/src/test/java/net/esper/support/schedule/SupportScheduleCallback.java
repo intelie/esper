@@ -6,7 +6,7 @@ import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleHandle;
 import net.esper.core.ExtensionServicesContext;
 
-public class SupportScheduleCallback implements ScheduleHandle
+public class SupportScheduleCallback implements ScheduleHandle, ScheduleHandleCallback 
 {
     private static int orderAllCallbacks;
 

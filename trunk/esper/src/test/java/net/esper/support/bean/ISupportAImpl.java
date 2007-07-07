@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class ISupportAImpl implements ISupportA
+import java.io.Serializable;
+
+public class ISupportAImpl implements ISupportA, Serializable
 {
     private String valueA;
     private String valueBaseAB;

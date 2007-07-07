@@ -6,6 +6,7 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportLegacyBeanInt;
 import net.esper.support.bean.SupportBeanFinal;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventType;
 
 import java.util.Map;
@@ -68,7 +69,7 @@ public class TestLegacyBeanEvents extends TestCase
 
     private void tryPublicAccessors(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
 
         ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);

@@ -7,6 +7,7 @@ import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,7 +19,7 @@ public class TestPerf2StreamSimpleJoin extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getProvider("TestPerf2StreamSimpleJoin");
+        epService = EPServiceProviderManager.getProvider("TestPerf2StreamSimpleJoin", SupportConfigFactory.getConfiguration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
 

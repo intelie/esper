@@ -27,7 +27,7 @@ public class StatementSpecCompiled
     private final List<ExprNode> groupByExpressions;
     private final ExprNode havingExprRootNode;
     private final OutputLimitSpec outputLimitSpec;
-    private final List<Pair<ExprNode, Boolean>> orderByList;
+    private final List<OrderByItem> orderByList;
     private final List<ExprSubselectNode> subSelectExpressions;
 
     /**
@@ -44,7 +44,16 @@ public class StatementSpecCompiled
      * @param orderByList order by
      * @param subSelectExpressions list of subqueries
      */
-    public StatementSpecCompiled(InsertIntoDesc insertIntoDesc, SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum, SelectClauseSpec selectClauseSpec, List<StreamSpecCompiled> streamSpecs, List<OuterJoinDesc> outerJoinDescList, ExprNode filterExprRootNode, List<ExprNode> groupByExpressions, ExprNode havingExprRootNode, OutputLimitSpec outputLimitSpec, List<Pair<ExprNode, Boolean>> orderByList,
+    public StatementSpecCompiled(InsertIntoDesc insertIntoDesc,
+                                 SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum,
+                                 SelectClauseSpec selectClauseSpec,
+                                 List<StreamSpecCompiled> streamSpecs,
+                                 List<OuterJoinDesc> outerJoinDescList,
+                                 ExprNode filterExprRootNode,
+                                 List<ExprNode> groupByExpressions,
+                                 ExprNode havingExprRootNode,
+                                 OutputLimitSpec outputLimitSpec,
+                                 List<OrderByItem> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions)
     {
         this.insertIntoDesc = insertIntoDesc;
@@ -136,7 +145,7 @@ public class StatementSpecCompiled
      * Returns the list of order-by expression as specified in the ORDER BY clause.
      * @return Returns the orderByList.
      */
-    public List<Pair<ExprNode, Boolean>> getOrderByList() {
+    public List<OrderByItem> getOrderByList() {
         return orderByList;
     }
 

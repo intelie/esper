@@ -10,7 +10,7 @@ public class TestOrOperator extends TestCase implements SupportBeanConstants
     {
         EventCollection events = EventCollectionFactory.getEventSetOne(0, 1000);
         CaseList testCaseList = new CaseList();
-        EventExpressionCase testCase = null;
+        EventExpressionCase testCase;
 
         testCase = new EventExpressionCase("a=" + EVENT_A_CLASS + " or a=" + EVENT_A_CLASS);
         testCase.add("A1", "a", events.getEvent("A1"));

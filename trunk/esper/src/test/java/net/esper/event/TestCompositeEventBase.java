@@ -29,11 +29,11 @@ public abstract class TestCompositeEventBase extends TestCase
         Map<String, EventBean> wrappedEvents = new HashMap<String, EventBean>();
         wrappedEvents.put("a", SupportEventAdapterService.getService().adapterForBean(event));
         wrappedEvents.put("b", SupportEventAdapterService.getService().adapterForBean(SupportBeanComplexProps.makeDefaultBean()));
-        eventBeanComplete = new CompositeEventBean(wrappedEvents, eventType);
+        eventBeanComplete = new CompositeEventBean(wrappedEvents, eventType, null);
 
         wrappedEvents = new HashMap<String, EventBean>();
         wrappedEvents.put("a", SupportEventAdapterService.getService().adapterForBean(event));
-        eventBeanInComplete = new CompositeEventBean(wrappedEvents, eventType);
+        eventBeanInComplete = new CompositeEventBean(wrappedEvents, eventType, null);
     }
 
 }

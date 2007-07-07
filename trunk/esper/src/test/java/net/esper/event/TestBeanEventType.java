@@ -34,9 +34,9 @@ public class TestBeanEventType extends TestCase
         objComplex = SupportBeanComplexProps.makeDefaultBean();
         objCombined = SupportBeanCombinedProps.makeDefaultBean();
 
-        eventSimple = beanEventAdapter.adapterForBean(objSimple, null);
-        eventComplex = beanEventAdapter.adapterForBean(objComplex, null);
-        eventNested = beanEventAdapter.adapterForBean(objCombined, null);
+        eventSimple = new BeanEventBean(objSimple, eventTypeSimple, null);
+        eventComplex = new BeanEventBean(objComplex, eventTypeComplex, null);
+        eventNested = new BeanEventBean(objCombined, eventTypeNested, null);
     }
 
     public void testGetPropertyNames()
@@ -82,7 +82,8 @@ public class TestBeanEventType extends TestCase
         try
         {
             // test mismatch between bean and object
-            EventBean eventBean = beanEventAdapter.adapterForBean(new Object(), null);
+            EventType type = beanEventAdapter.adapterForType(new Object());
+            EventBean eventBean = new BeanEventBean(new Object(), type, null);
             getter.get(eventBean);
             fail();
         }

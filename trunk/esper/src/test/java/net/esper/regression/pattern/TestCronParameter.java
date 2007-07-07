@@ -16,6 +16,7 @@ import net.esper.regression.support.EventExpressionCase;
 import net.esper.support.bean.SupportBeanConstants;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -184,10 +185,9 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
 
     private void runTestEvent()
     {
-
         int totalEventsReceived = 0;
 
-        EPServiceProvider serviceProvider = EPServiceProviderManager.getDefaultProvider();
+        EPServiceProvider serviceProvider = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         serviceProvider.initialize();
 
         EPRuntime runtime = serviceProvider.getEPRuntime();

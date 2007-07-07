@@ -10,6 +10,7 @@ import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.bean.SupportBean_S1;
 import net.esper.support.bean.SupportBean_S2;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestSubselectExists extends TestCase
 {
@@ -18,7 +19,7 @@ public class TestSubselectExists extends TestCase
 
     public void setUp()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("S0", SupportBean_S0.class);
         config.addEventTypeAlias("S1", SupportBean_S1.class);
         config.addEventTypeAlias("S2", SupportBean_S2.class);

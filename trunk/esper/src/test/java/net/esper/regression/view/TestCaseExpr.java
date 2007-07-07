@@ -11,6 +11,7 @@ import net.esper.event.EventBean;
 
 import net.esper.support.bean.SupportEnum;
 import net.esper.support.bean.SupportBeanWithEnum;
+import net.esper.support.client.SupportConfigFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +24,7 @@ public class TestCaseExpr extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

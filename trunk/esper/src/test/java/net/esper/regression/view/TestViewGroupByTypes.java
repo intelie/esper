@@ -3,6 +3,7 @@ package net.esper.regression.view;
 import junit.framework.TestCase;
 import net.esper.client.*;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestViewGroupByTypes extends TestCase
 {
@@ -10,7 +11,7 @@ public class TestViewGroupByTypes extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

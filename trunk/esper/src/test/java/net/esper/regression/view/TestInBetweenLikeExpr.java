@@ -7,6 +7,7 @@ import net.esper.client.EPStatement;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanSimple;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 public class TestInBetweenLikeExpr extends TestCase
@@ -17,7 +18,7 @@ public class TestInBetweenLikeExpr extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

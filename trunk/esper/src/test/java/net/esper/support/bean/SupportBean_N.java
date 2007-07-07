@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportBean_N
+import java.io.Serializable;
+
+public class SupportBean_N implements Serializable
 {
     private int intPrimitive;
     private Integer intBoxed;

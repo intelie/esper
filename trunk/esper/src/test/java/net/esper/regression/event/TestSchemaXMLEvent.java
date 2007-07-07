@@ -3,6 +3,7 @@ package net.esper.regression.event;
 import junit.framework.TestCase;
 import net.esper.client.*;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 import javax.xml.xpath.XPathConstants;
@@ -107,7 +108,7 @@ public class TestSchemaXMLEvent extends TestCase
 
     private Configuration getConfig()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
         eventTypeMeta.setRootElementName("simpleEvent");
         String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_URI).toString();

@@ -8,6 +8,7 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.bean.SupportBean_B;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestSingleOpJoin extends TestCase
 {
@@ -22,7 +23,7 @@ public class TestSingleOpJoin extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
 

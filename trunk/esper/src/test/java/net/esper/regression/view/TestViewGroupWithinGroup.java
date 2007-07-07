@@ -11,6 +11,7 @@ import net.esper.client.EPStatement;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.util.EventPropertyAssertionUtil;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestViewGroupWithinGroup extends TestCase
 {
@@ -26,7 +27,7 @@ public class TestViewGroupWithinGroup extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         // Listen to all ticks

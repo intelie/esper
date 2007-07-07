@@ -17,11 +17,7 @@ import java.util.Set;
 
 import net.esper.collection.Pair;
 import net.esper.eql.expression.*;
-import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.SelectClauseSpec;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
-import net.esper.eql.spec.SelectExprElementRawSpec;
+import net.esper.eql.spec.*;
 import net.esper.eql.agg.AggregationServiceFactory;
 import net.esper.eql.agg.AggregationService;
 import net.esper.event.EventAdapterService;
@@ -78,7 +74,7 @@ public class ResultSetProcessorFactory
                                                	  List<ExprNode> groupByNodes,
                                                	  ExprNode optionalHavingNode,
                                                	  OutputLimitSpec outputLimitSpec,
-                                               	  List<Pair<ExprNode, Boolean>> orderByList,
+                                               	  List<OrderByItem> orderByList,
                                                   StreamTypeService typeService,
                                                   EventAdapterService eventAdapterService,
                                                   MethodResolutionService methodResolutionService,
@@ -150,7 +146,7 @@ public class ResultSetProcessorFactory
         // Validate order-by expressions, if any (could be empty list for no order-by)
         for (int i = 0; i < orderByList.size(); i++)
         {
-        	ExprNode orderByNode = orderByList.get(i).getFirst();
+        	ExprNode orderByNode = orderByList.get(i).getExprNode();
 
             // Ensure there is no subselects
             ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
@@ -160,9 +156,9 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within order-by clause");
             }
 
-            Boolean isDescending = orderByList.get(i).getSecond();
-        	Pair<ExprNode, Boolean> validatedPair = new Pair<ExprNode, Boolean>(orderByNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate), isDescending);
-        	orderByList.set(i, validatedPair);
+            Boolean isDescending = orderByList.get(i).isDescending();
+        	OrderByItem validatedOrderBy = new OrderByItem(orderByNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate), isDescending);
+        	orderByList.set(i, validatedOrderBy);
         }
 
         // Get the select expression nodes
@@ -174,9 +170,9 @@ public class ResultSetProcessorFactory
 
         // Get the order-by expression nodes
         List<ExprNode> orderByNodes = new ArrayList<ExprNode>();
-        for(Pair<ExprNode, Boolean> element : orderByList)
+        for(OrderByItem element : orderByList)
         {
-        	orderByNodes.add(element.getFirst());
+        	orderByNodes.add(element.getExprNode());
         }
 
         // Determine aggregate functions used in select, if any
@@ -450,7 +446,7 @@ public class ResultSetProcessorFactory
         return propertiesGroupBy;
     }
 
-    private static void expandAliases(List<SelectExprElementRawSpec> selectionList, List<Pair<ExprNode, Boolean>> orderByList)
+    private static void expandAliases(List<SelectExprElementRawSpec> selectionList, List<OrderByItem> orderByList)
     {
     	for(SelectExprElementRawSpec selectElement : selectionList)
     	{
@@ -458,11 +454,11 @@ public class ResultSetProcessorFactory
     		if(alias != null)
     		{
     			ExprNode fullExpr = selectElement.getSelectExpression();
-    			for(ListIterator<Pair<ExprNode, Boolean>> iterator = orderByList.listIterator(); iterator.hasNext(); )
+    			for(ListIterator<OrderByItem> iterator = orderByList.listIterator(); iterator.hasNext(); )
     			{
-    				Pair<ExprNode, Boolean> orderByElement = iterator.next();
-    				ExprNode swapped = AliasNodeSwapper.swap(orderByElement.getFirst(), alias, fullExpr);
-    				Pair<ExprNode, Boolean> newOrderByElement = new Pair<ExprNode, Boolean>(swapped, orderByElement.getSecond());
+    				OrderByItem orderByElement = iterator.next();
+    				ExprNode swapped = AliasNodeSwapper.swap(orderByElement.getExprNode(), alias, fullExpr);
+    				OrderByItem newOrderByElement = new OrderByItem(swapped, orderByElement.isDescending());
     				iterator.set(newOrderByElement);
     			}
     		}

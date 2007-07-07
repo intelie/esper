@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportBeanString
+import java.io.Serializable;
+
+public class SupportBeanString implements Serializable
 {
     private String string;
 

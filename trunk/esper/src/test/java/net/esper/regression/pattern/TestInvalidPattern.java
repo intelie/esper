@@ -8,6 +8,7 @@ import net.esper.client.EPStatementException;
 import net.esper.support.bean.SupportBean_N;
 import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.eql.parse.EPStatementSyntaxException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,7 +22,7 @@ public class TestInvalidPattern extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
     }
 
     public void testSyntaxException()

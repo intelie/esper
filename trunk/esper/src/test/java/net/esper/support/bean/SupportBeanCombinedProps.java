@@ -3,11 +3,12 @@ package net.esper.support.bean;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.io.Serializable;
 
 /**
  * indexed[0].mapped('0ma').value = 0ma0
  */
-public class SupportBeanCombinedProps
+public class SupportBeanCombinedProps implements Serializable
 {
     public static String[] PROPERTIES = { "indexed[]", "array"};
 
@@ -38,7 +39,7 @@ public class SupportBeanCombinedProps
         return indexed;
     }
 
-	public static class NestedLevOne
+	public static class NestedLevOne implements Serializable
 	{
         private Map<String, NestedLevTwo> map = new HashMap<String, NestedLevTwo>();
 
@@ -61,7 +62,7 @@ public class SupportBeanCombinedProps
         }
 	}
 
-    public static class NestedLevTwo
+    public static class NestedLevTwo implements Serializable
     {
         private String value;
 

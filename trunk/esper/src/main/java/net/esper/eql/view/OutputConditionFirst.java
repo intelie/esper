@@ -36,7 +36,7 @@ public class OutputConditionFirst implements OutputCondition
 		this.outputCallback = outputCallback;
 		OutputLimitSpec innerSpec = createInnerSpec(outputLimitSpec);
 		OutputCallback localCallback = createCallbackToLocal();
-		this.innerCondition = OutputConditionFactory.createCondition(innerSpec, statementContext, localCallback);
+		this.innerCondition = statementContext.getOutputConditionFactory().createCondition(innerSpec, statementContext, localCallback);
 		this.witnessedFirst = false;
 	}
 

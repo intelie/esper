@@ -10,6 +10,8 @@ import net.esper.eql.core.EngineImportException;
 import net.esper.eql.core.EngineSettingsService;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.db.DatabaseConfigServiceImpl;
+import net.esper.eql.view.OutputConditionFactory;
+import net.esper.eql.view.OutputConditionFactoryDefault;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceBase;
 import net.esper.event.EventAdapterServiceImpl;
@@ -54,11 +56,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         // Statement context factory
         StatementContextFactory statementContextFactory = new StatementContextFactoryDefault();
 
+        OutputConditionFactory outputConditionFactory = new OutputConditionFactoryDefault();
+
         // New services context
         EPServicesContext services = new EPServicesContext(engineURI, schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, viewResolutionService,
                 new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
-                patternObjectResolutionService);
+                patternObjectResolutionService, outputConditionFactory);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(services);

@@ -18,6 +18,7 @@ import net.esper.event.EventType;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,7 @@ public class TestOrderBySimple extends TestCase {
 
     public void setUp()
 	{
-	    epService = EPServiceProviderManager.getDefaultProvider();
+	    epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
 	    epService.initialize();
 	    symbols = new LinkedList<String>();
 	    prices = new LinkedList<Double>();

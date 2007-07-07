@@ -1,11 +1,12 @@
 package net.esper.support.bean;
 
 import java.util.Map;
+import java.io.Serializable;
 
 /**
  * Legacy Java class for testing non-JavaBean style accessor methods.
  */
-public class SupportLegacyBean
+public class SupportLegacyBean implements Serializable
 {
     private String legacyBeanVal;
     private String[] stringArray;
@@ -70,7 +71,7 @@ public class SupportLegacyBean
         return legacyNested;
     }
 
-    public class LegacyNested
+    public class LegacyNested implements Serializable
     {
         public String fieldNestedValue;
 

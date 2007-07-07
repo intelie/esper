@@ -1,16 +1,15 @@
 package net.esper.eql.core;
 
-import java.util.*;
-
-import net.esper.collection.Pair;
 import net.esper.collection.MultiKeyUntyped;
+import net.esper.eql.agg.AggregationService;
+import net.esper.eql.expression.ExprNode;
+import net.esper.eql.spec.OrderByItem;
 import net.esper.event.EventBean;
 import net.esper.util.MultiKeyComparator;
-import net.esper.eql.expression.ExprNode;
-import net.esper.eql.agg.AggregationService;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * An order-by processor that sorts events according to the expressions
@@ -20,7 +19,7 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 
 	private static final Log log = LogFactory.getLog(OrderByProcessorSimple.class);
 
-	private final List<Pair<ExprNode, Boolean>> orderByList;
+	private final List<OrderByItem> orderByList;
 	private final List<ExprNode> groupByNodes;
 	private final boolean needsGroupByKeys;
 	private final AggregationService aggregationService;
@@ -41,7 +40,7 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 	 *            used to evaluate aggregate functions in the group-by and
 	 *            sort-by clauses
 	 */
-	public OrderByProcessorSimple(final List<Pair<ExprNode, Boolean>> orderByList,
+	public OrderByProcessorSimple(final List<OrderByItem> orderByList,
 								  List<ExprNode> groupByNodes, 
 								  boolean needsGroupByKeys,
 								  AggregationService aggregationService)
@@ -58,9 +57,9 @@ public class OrderByProcessorSimple implements OrderByProcessor {
     {
         Object[] values = new Object[orderByList.size()];
         int count = 0;
-        for (Pair<ExprNode, Boolean> sortPair : orderByList)
+        for (OrderByItem sortPair : orderByList)
         {
-            ExprNode sortNode = sortPair.getFirst();
+            ExprNode sortNode = sortPair.getExprNode();
             values[count++] = sortNode.evaluate(eventsPerStream, isNewData);
         }
 
@@ -83,9 +82,9 @@ public class OrderByProcessorSimple implements OrderByProcessor {
             Object[] values = new Object[orderByList.size()];
             int countTwo = 0;
             evalEventsPerStream[0] = event;
-            for (Pair<ExprNode, Boolean> sortPair : orderByList)
+            for (OrderByItem sortPair : orderByList)
             {
-                ExprNode sortNode = sortPair.getFirst();
+                ExprNode sortNode = sortPair.getExprNode();
                 values[countTwo++] = sortNode.evaluate(evalEventsPerStream, isNewData);
             }
 
@@ -216,9 +215,9 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 
 			Object[] values = new Object[orderByList.size()];
 			int countTwo = 0;
-			for (Pair<ExprNode, Boolean> sortPair : orderByList) 
+			for (OrderByItem sortPair : orderByList)
 			{
-				ExprNode sortNode = sortPair.getFirst();
+				ExprNode sortNode = sortPair.getExprNode();
 				values[countTwo++] = sortNode.evaluate(eventsPerStream, isNewData);
 			}
 
@@ -309,9 +308,9 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 	{
 		Boolean[] isDescendingValues  = new Boolean[orderByList.size()];
 		int count = 0;
-		for(Pair<ExprNode, Boolean> pair : orderByList)
+		for(OrderByItem pair : orderByList)
 		{
-			isDescendingValues[count++] = pair.getSecond();
+			isDescendingValues[count++] = pair.isDescending();
 		}
 		return isDescendingValues;
 	}

@@ -10,6 +10,7 @@ import net.esper.view.ViewFieldEnum;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.util.DoubleValueAssertionUtil;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 public class TestViewLengthWindowStats extends TestCase
@@ -23,7 +24,7 @@ public class TestViewLengthWindowStats extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
     

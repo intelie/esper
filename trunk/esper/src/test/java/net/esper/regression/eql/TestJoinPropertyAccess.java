@@ -7,6 +7,7 @@ import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.bean.SupportBeanCombinedProps;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 public class TestJoinPropertyAccess extends TestCase
@@ -16,7 +17,7 @@ public class TestJoinPropertyAccess extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
     

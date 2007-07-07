@@ -7,6 +7,7 @@ import net.esper.client.EPStatement;
 import net.esper.client.UpdateListener;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,7 +19,7 @@ public class TestPatternStartLoop extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

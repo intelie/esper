@@ -12,12 +12,13 @@ import java.util.Map;
  * The event type of such events is always {@link WrapperEventType}. Additional properties are stored in a
  * Map.
  */
-public class WrapperEventBean implements EventBean {
+public class WrapperEventBean implements EventBeanSPI {
 
 	private final EventBean event;
 	private final Map<String, Object> map;
 	private final EventType eventType;
     private Integer hashCode;
+    private Object objectId;
 
     /**
      * Ctor.
@@ -25,12 +26,13 @@ public class WrapperEventBean implements EventBean {
      * @param properties is zero or more property values that embellish the wrapped event
      * @param eventType is the {@link WrapperEventType}.
      */
-    public WrapperEventBean(EventBean event, Map<String, Object> properties, EventType eventType)
+    public WrapperEventBean(EventBean event, Map<String, Object> properties, EventType eventType, Object objectId)
 	{
 		this.event = event;
 		this.map = properties;		
 		this.eventType = eventType;
-	}
+        this.objectId = objectId;
+    }
 	
 	public Object get(String property) throws PropertyAccessException 
 	{
@@ -158,5 +160,10 @@ public class WrapperEventBean implements EventBean {
             hashCode = hashCodeVal ^ event.hashCode();
         }
         return hashCode;
-    }    
+    }
+
+    public Object getEventBeanId()
+    {
+        return objectId;
+    }
 }

@@ -2,7 +2,6 @@ package net.esper.core;
 
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.MethodResolutionServiceImpl;
-import net.esper.eql.join.JoinSetComposerImpl;
 import net.esper.eql.join.JoinSetComposerFactoryImpl;
 import net.esper.pattern.PatternContextFactory;
 import net.esper.pattern.PatternContextFactoryDefault;
@@ -48,6 +47,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 methodResolutionService,
                 patternContextFactory,
                 engineServices.getFilterService(),
-                new JoinSetComposerFactoryImpl());
+                new JoinSetComposerFactoryImpl(),
+                engineServices.getOutputConditionFactory());
     }
 }

@@ -9,6 +9,7 @@ import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestRepeatRouteEvent extends TestCase
 {
@@ -17,7 +18,7 @@ public class TestRepeatRouteEvent extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         String viewExpr = "every tag=" + SupportBean.class.getName();

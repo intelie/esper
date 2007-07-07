@@ -1,11 +1,9 @@
 package net.esper.event;
 
 import net.esper.client.ConfigurationEventTypeLegacy;
-import net.esper.util.UuidGenerator;
 
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -43,14 +41,12 @@ public class BeanEventAdapter
     /**
      * Returns an adapter for the given Java Bean.
      * @param event is the bean to wrap
-     * @param eventId is an optional id to assigned to the event
      * @return EventBean wrapping Java Bean
      */
-    public EventBean adapterForBean(Object event, Object eventId)
+    public EventType adapterForType(Object event)
     {
         Class eventClass = event.getClass();
-        EventType eventType = createOrGetBeanType(eventClass);
-        return new BeanEventBean(event, eventType, eventId);
+        return createOrGetBeanType(eventClass);
     }
 
     /**

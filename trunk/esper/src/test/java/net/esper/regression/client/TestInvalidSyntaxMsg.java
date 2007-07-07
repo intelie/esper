@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.eql.parse.EPStatementSyntaxException;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestInvalidSyntaxMsg extends TestCase
 {
@@ -11,7 +12,7 @@ public class TestInvalidSyntaxMsg extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

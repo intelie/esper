@@ -9,6 +9,7 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.eql.SupportDatabaseService;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 
@@ -33,7 +34,7 @@ public class TestDatabaseJoin extends TestCase
         configDB.setConnectionTransactionIsolation(1);
         configDB.setConnectionAutoCommit(true);
 
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
 
         epService = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);

@@ -79,7 +79,7 @@ public class TestOutputConditionFirst extends TestCase
 		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3, DisplayLimit.FIRST);
 		StatementContext statementContext = null;
 		
-		OutputCondition condition = OutputConditionFactory.createCondition(outputConditionSpec, statementContext, callback);
+		OutputCondition condition = (new OutputConditionFactoryDefault()).createCondition(outputConditionSpec, statementContext, callback);
 
 		// Send first event of the batch, callback should be made
 		condition.updateOutputCondition(1, 0);

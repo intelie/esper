@@ -8,6 +8,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestSelectClauseJoin extends TestCase
 {
@@ -17,7 +18,7 @@ public class TestSelectClauseJoin extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
 

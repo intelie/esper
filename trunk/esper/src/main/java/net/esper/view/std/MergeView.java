@@ -26,7 +26,6 @@ public final class MergeView extends ViewSupport implements CloneableView
     private final LinkedList<View> parentViews = new LinkedList<View>();
     private final String[] groupFieldNames;
     private final EventType eventType;
-    private final StatementContext statementContext;
 
     /**
      * Constructor.
@@ -38,7 +37,6 @@ public final class MergeView extends ViewSupport implements CloneableView
     {
         this.groupFieldNames = groupFieldNames;
         this.eventType = resultEventType;
-        this.statementContext = statementContext;
     }
 
     public View cloneView(StatementContext statementContext)

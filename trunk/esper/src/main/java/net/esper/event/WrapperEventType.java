@@ -20,13 +20,18 @@ import java.util.Map;
  * Uses a the map event type {@link net.esper.event.MapEventType} to represent the mapped properties. This is because the additional properties
  * can also be beans or complex types and the Map event type handles these nicely.
  */
-public class WrapperEventType implements EventType
+public class WrapperEventType implements EventTypeSPI
 {
 	private final EventType underlyingEventType;
 	private final MapEventType underlyingMapType;
 	private final String[] propertyNames;
     private final int hashCode;
     private final boolean isNoMapProperties;
+
+    public String getEventTypeId()
+    {
+        return "WRAP" + underlyingEventType.getUnderlyingType();     // TODO: ugly
+    }
 
     /**
      * Ctor.

@@ -10,6 +10,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestSubselectFiltered extends TestCase
 {
@@ -18,7 +19,7 @@ public class TestSubselectFiltered extends TestCase
 
     public void setUp()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("MyEvent", SupportBean.class);
         config.addEventTypeAlias("S0", SupportBean_S0.class);
         config.addEventTypeAlias("S1", SupportBean_S1.class);

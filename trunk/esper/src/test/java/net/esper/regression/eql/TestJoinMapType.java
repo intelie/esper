@@ -8,6 +8,7 @@ import net.esper.client.Configuration;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 import java.util.Map;
@@ -24,7 +25,7 @@ public class TestJoinMapType extends TestCase
         typeInfo.put("id", String.class);
         typeInfo.put("p00", int.class);
         
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("MapS0", typeInfo);
         config.addEventTypeAlias("MapS1", typeInfo);
 

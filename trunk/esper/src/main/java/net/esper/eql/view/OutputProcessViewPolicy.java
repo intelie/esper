@@ -54,7 +54,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
     	}
 
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);
-    	this.outputCondition = OutputConditionFactory.createCondition(outputLimitSpec, statementContext, outputCallback);
+    	this.outputCondition = statementContext.getOutputConditionFactory().createCondition(outputLimitSpec, statementContext, outputCallback);
         this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.isDisplayLastOnly());
     }
 

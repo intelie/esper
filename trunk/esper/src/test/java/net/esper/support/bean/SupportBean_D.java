@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportBean_D extends SupportBeanBase
+import java.io.Serializable;
+
+public class SupportBean_D extends SupportBeanBase implements Serializable
 {
     public SupportBean_D(String id)
     {

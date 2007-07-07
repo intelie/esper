@@ -10,6 +10,7 @@ import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestInsertInto extends TestCase
 {
@@ -20,7 +21,7 @@ public class TestInsertInto extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         feedListener = new SupportUpdateListener();
         resultListenerDelta = new SupportUpdateListener();

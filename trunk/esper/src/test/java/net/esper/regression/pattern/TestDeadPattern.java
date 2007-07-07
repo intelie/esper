@@ -6,6 +6,7 @@ import net.esper.client.Configuration;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.bean.SupportBean_B;
 import net.esper.support.bean.SupportBean_C;
+import net.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -16,7 +17,7 @@ public class TestDeadPattern extends TestCase
 
     public void setUp()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("A", SupportBean_A.class.getName());
         config.addEventTypeAlias("B", SupportBean_B.class.getName());
         config.addEventTypeAlias("C", SupportBean_C.class.getName());

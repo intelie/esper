@@ -8,6 +8,7 @@ import net.esper.regression.support.EventExpressionCase;
 import net.esper.regression.support.PatternTestHarness;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
@@ -87,7 +88,7 @@ public class TestComplexPropertyAccess extends TestCase
     public void testIndexedFilterProp() throws Exception
     {
         SupportUpdateListener testListener = new SupportUpdateListener();
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         String type = SupportBeanComplexProps.class.getName();
@@ -112,7 +113,7 @@ public class TestComplexPropertyAccess extends TestCase
     public void testIndexedValueProp() throws Exception
     {
         SupportUpdateListener testListener = new SupportUpdateListener();
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         String type = SupportBeanComplexProps.class.getName();

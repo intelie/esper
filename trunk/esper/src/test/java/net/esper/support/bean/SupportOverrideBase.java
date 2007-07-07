@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportOverrideBase
+import java.io.Serializable;
+
+public class SupportOverrideBase implements Serializable
 {
     private String val;
 

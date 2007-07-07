@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportCallEvent
+import java.io.Serializable;
+
+public class SupportCallEvent implements Serializable
 {
     private long callId;
     private String source;

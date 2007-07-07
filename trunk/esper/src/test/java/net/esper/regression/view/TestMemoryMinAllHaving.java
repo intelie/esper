@@ -1,19 +1,18 @@
 package net.esper.regression.view;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPStatement;
-import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPRuntime;
-import net.esper.client.time.TimerControlEvent;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPStatement;
 import net.esper.client.time.CurrentTimeEvent;
-import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportMarketDataBean;
-
-import java.util.Random;
-
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Random;
 
 public class TestMemoryMinAllHaving extends TestCase
 {
@@ -24,7 +23,7 @@ public class TestMemoryMinAllHaving extends TestCase
     public void setUp()
     {
         listener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 
@@ -77,52 +76,10 @@ public class TestMemoryMinAllHaving extends TestCase
         }
     }
 
-    private void sendClockingExternal()
-    {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-
-        long memoryBefore = Runtime.getRuntime().freeMemory();
-        for (int i = 0; i < 1000; i++)
-        {
-            sendEvents(i);
-
-            //Runtime.getRuntime().gc();
-            long memoryAfter = Runtime.getRuntime().freeMemory();
-
-            log.info("Memory before=" + memoryBefore +
-                        " after=" + memoryAfter +
-                        " delta=" + (memoryAfter - memoryBefore));
-        }
-    }
-
-    private void sendEvents(int loop)
-    {
-        long startTime = loop * 31000;
-        long endTime = loop * 31000 + 30500;
-        log.info("Sending batch " + loop + " startTime=" + startTime + " endTime=" + endTime);
-        sendTimer(startTime);
-
-        for (int i = 0; i < 1000; i++)
-        {
-            double price = 50 + 49 * random.nextInt(20) / 100.0;
-            sendEvent(price);
-        }
-
-        sendTimer(endTime);
-        listener.reset();
-    }
-
     private void sendEvent(double price)
     {
         SupportMarketDataBean bean = new SupportMarketDataBean("DELL", price, -1L, null);
         epService.getEPRuntime().sendEvent(bean);
-    }
-
-    private void sendTimer(long time)
-    {
-        CurrentTimeEvent event = new CurrentTimeEvent(time);
-        EPRuntime runtime = epService.getEPRuntime();
-        runtime.sendEvent(event);
     }
 
     private static Log log = LogFactory.getLog(TestMemoryMinAllHaving.class);

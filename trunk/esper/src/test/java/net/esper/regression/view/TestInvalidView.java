@@ -9,6 +9,7 @@ import net.esper.eql.parse.ASTFilterSpecValidationException;
 import net.esper.eql.parse.EPStatementSyntaxException;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_N;
+import net.esper.support.client.SupportConfigFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +23,7 @@ public class TestInvalidView extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

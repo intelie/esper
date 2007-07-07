@@ -56,7 +56,9 @@ public class BeanEventBean implements EventBeanSPI
         {
             return false;
         }
-        if (!(o.event.equals(event)))
+        // Using reference equality since two events of the same type may be indistinquishable
+        // by means of their properties; not implementing hashcode
+        if (o.event != event)
         {
             return false;
         }

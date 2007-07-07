@@ -109,7 +109,7 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
         }
         catch (ClassCastException e)
         {
-            String message = "Error casting view factory instance to " + ViewFactory.class.getName() + " interface for view '" + nameSpace + "'";
+            String message = "Error casting view factory instance to " + ViewFactory.class.getName() + " interface for view '" + name + "'";
             throw new ViewProcessingException(message, e);
         }
         catch (IllegalAccessException e)

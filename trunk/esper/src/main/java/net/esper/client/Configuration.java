@@ -106,6 +106,11 @@ public class Configuration implements ConfigurationOperations {
     protected List<ConfigurationAdapterLoader> adapterLoaders;
 
     /**
+     * Map of extension configuration objects.
+     */
+    protected Map<String, Object> extensionConfigurations;
+
+    /**
      * Saves engine default configs such as threading settings
      */
     protected ConfigurationEngineDefaults engineDefaults;
@@ -327,6 +332,16 @@ public class Configuration implements ConfigurationOperations {
     public List<ConfigurationPlugInPatternObject> getPlugInPatternObjects()
     {
         return plugInPatternObjects;
+    }
+
+    public void addExtensionConfig(String extensionName, Object configurationObject)
+    {
+        extensionConfigurations.put(extensionName, configurationObject);
+    }
+
+    public Map<String, Object> getExtensionConfigs()
+    {
+        return extensionConfigurations;
     }
 
     /**
@@ -585,7 +600,8 @@ public class Configuration implements ConfigurationOperations {
         adapterLoaders = new ArrayList<ConfigurationAdapterLoader>();
         plugInAggregationFunctions = new ArrayList<ConfigurationPlugInAggregationFunction>();
         plugInPatternObjects = new ArrayList<ConfigurationPlugInPatternObject>();
-        engineDefaults = new ConfigurationEngineDefaults(); 
+        engineDefaults = new ConfigurationEngineDefaults();
+        extensionConfigurations = new HashMap<String, Object>();
     }
 
     /**

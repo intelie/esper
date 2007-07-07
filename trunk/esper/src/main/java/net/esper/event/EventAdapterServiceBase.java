@@ -35,7 +35,7 @@ public abstract class EventAdapterServiceBase implements EventAdapterService
     private final Map<EventType, String> typeToIdMap;
     private final Map<String, EventType> aliasToTypeMap;
 
-    private BeanEventAdapter beanEventAdapter;
+    protected BeanEventAdapter beanEventAdapter;
     private Map<String, EventType> xmldomRootElementNames;
 
     /**
@@ -174,7 +174,8 @@ public abstract class EventAdapterServiceBase implements EventAdapterService
      */
     public EventBean adapterForBean(Object event, Object eventId)
     {
-        return beanEventAdapter.adapterForBean(event, eventId);
+        EventType eventType = beanEventAdapter.adapterForType(event);
+        return new BeanEventBean(event, eventType, eventId);
     }
 
     /**
@@ -337,7 +338,7 @@ public abstract class EventAdapterServiceBase implements EventAdapterService
 
     public EventBean adapterForCompositeEvent(EventType eventType, Map<String, EventBean> taggedEvents)
     {
-        return new CompositeEventBean(taggedEvents, eventType);
+        return new CompositeEventBean(taggedEvents, eventType, null);
     }
 
     /**
@@ -416,7 +417,7 @@ public abstract class EventAdapterServiceBase implements EventAdapterService
 
 	public EventBean createWrapper(EventBean event, Map<String, Object> properties, EventType eventType)
 	{
-		return new WrapperEventBean(event, properties, eventType);
+		return new WrapperEventBean(event, properties, eventType, null);
 	}
 
 	public EventType createAnonymousMapTypeUnd(Map<String, EventType> propertyTypes)

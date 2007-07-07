@@ -3,6 +3,7 @@ package net.esper.regression.client;
 import net.esper.client.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
 public class TestPatternGuardPlugIn extends TestCase
@@ -12,7 +13,7 @@ public class TestPatternGuardPlugIn extends TestCase
 
     public void setUp()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addPlugInPatternGuard("myplugin", "count_to", MyCountToPatternGuardFactory.class.getName());
         configuration.addEventTypeAlias("Bean", SupportBean.class.getName());
         epService = EPServiceProviderManager.getDefaultProvider(configuration);

@@ -5,6 +5,7 @@ import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
 public class TestIStreamRStreamKeywords extends TestCase
@@ -18,7 +19,7 @@ public class TestIStreamRStreamKeywords extends TestCase
         testListener = new SupportUpdateListener();
         testListenerInsertInto = new SupportUpdateListener();
 
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

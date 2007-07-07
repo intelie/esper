@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportBean_S5
+import java.io.Serializable;
+
+public class SupportBean_S5 implements Serializable
 {
     private static int idCounter;
 

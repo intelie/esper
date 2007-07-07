@@ -6,6 +6,7 @@ import net.esper.client.EPStatement;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanComplexProps;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 import junit.framework.TestCase;
 
@@ -16,7 +17,7 @@ public class TestPatternEventProperties extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
     }

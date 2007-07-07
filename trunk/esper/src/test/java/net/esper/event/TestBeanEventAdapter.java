@@ -38,7 +38,8 @@ public class TestBeanEventAdapter extends TestCase
     {
         // Assert implementations have full set of properties
         ISupportDImpl event = new ISupportDImpl("D", "BaseD", "BaseDBase");
-        EventBean bean = beanEventAdapter.adapterForBean(event, null);
+        EventType typeBean = beanEventAdapter.adapterForType(event);
+        EventBean bean = new BeanEventBean(event, typeBean, null);
         assertEquals("D", bean.get("d"));
         assertEquals("BaseD", bean.get("baseD"));
         assertEquals("BaseDBase", bean.get("baseDBase"));

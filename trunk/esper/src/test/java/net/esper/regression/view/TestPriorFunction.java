@@ -4,13 +4,13 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
-import net.esper.client.EPException;
-import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.support.bean.SupportBean;
+import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 
 import java.util.Random;
 
@@ -22,7 +22,7 @@ public class TestPriorFunction extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }

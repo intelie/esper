@@ -5,6 +5,7 @@ import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
 public class TestViewSimpleFilter extends TestCase
@@ -15,7 +16,7 @@ public class TestViewSimpleFilter extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

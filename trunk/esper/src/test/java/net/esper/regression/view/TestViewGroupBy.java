@@ -8,6 +8,7 @@ import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.EventPropertyAssertionUtil;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 import java.util.*;
 
@@ -36,7 +37,7 @@ public class TestViewGroupBy extends TestCase
         volumeLast3StatsListener = new SupportUpdateListener();
         volumeAllStatsListener = new SupportUpdateListener();
 
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 
