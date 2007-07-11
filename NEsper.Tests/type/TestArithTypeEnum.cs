@@ -10,14 +10,14 @@ namespace net.esper.type
     public class TestArithTypeEnum
     {
         [Test]
-        public virtual void testAddDouble()
+        public void testAddDouble()
         {
             MathArithTypeEnum.Computer computer = MathArithTypeEnum.ADD.GetComputer(typeof(double?));
             Assert.AreEqual(12.1d, computer(5.5, 6.6));
         }
 
         [Test]
-        public virtual void testInvalidGetComputer()
+        public void testInvalidGetComputer()
         {
             // Since we only do double?, Float, Integer and Long as results
             tryInvalid(typeof(String));
@@ -27,7 +27,7 @@ namespace net.esper.type
         }
 
         [Test]
-        public virtual void testAllComputers()
+        public void testAllComputers()
         {
             Type[,] testClasses = new Type[,]{
                 { typeof(float), typeof(float?) },

@@ -34,7 +34,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestSetParameters()
+	    public void testSetParameters()
 	    {
 	        TryParameter(new Object[] {"price", true, 100},
 	                     new String[] {"price"}, new Boolean[] {true}, 100);
@@ -50,7 +50,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestAttaches()
+	    public void testAttaches()
 	    {
 	        // Should attach to anything as long as the fields exists
 	        EventType parentType = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
@@ -71,7 +71,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestCanReuse()
+	    public void testCanReuse()
 	    {
 	        StatementContext context = SupportStatementContextFactory.MakeContext();
 

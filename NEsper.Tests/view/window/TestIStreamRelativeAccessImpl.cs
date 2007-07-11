@@ -43,7 +43,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestGet()
+	    public void testGet()
 	    {
 	        access.Update(new EventBean[] {events[0]}, null);
 	        Assert.AreEqual(events[0], access.GetRelativeToEvent(events[0], 0));

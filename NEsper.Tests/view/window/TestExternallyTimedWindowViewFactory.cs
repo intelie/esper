@@ -33,7 +33,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestSetParameters()
+	    public void testSetParameters()
 	    {
 	        TryParameter(new Object[] {"a", new TimePeriodParameter(2d)}, "a", 2000);
 	        TryParameter(new Object[] {"a", 10L}, "a", 10000);
@@ -45,7 +45,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestCanReuse()
+	    public void testCanReuse()
 	    {
 	        factory.SetViewParameters(null, new Object[] {"price", 1000});
 	        Assert.IsFalse(factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeContext())));
@@ -55,7 +55,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestAttach()
+	    public void testAttach()
 	    {
 	        EventType parentType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 

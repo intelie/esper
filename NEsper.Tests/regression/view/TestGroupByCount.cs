@@ -31,7 +31,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCountOneView()
+        public void testCountOneView()
         {
             String viewExpr = "select symbol, " + "count(*) as countAll," + "count(distinct volume) as countDistVol," + "count(all volume) as countVol" + " from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol";
 
@@ -42,9 +42,9 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCountJoin()
+        public void testCountJoin()
         {
-            String viewExpr = "select symbol, " + "count(*) as countAll," + "count(distinct volume) as countDistVol," + "count(volume) as countVol " + " from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "  and one.str = two.symbol " + "group by symbol";
+            String viewExpr = "select symbol, " + "count(*) as countAll," + "count(distinct volume) as countDistVol," + "count(volume) as countVol " + " from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "  and one.string = two.symbol " + "group by symbol";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
             selectTestView.AddListener(testListener);

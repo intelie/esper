@@ -48,7 +48,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestCheckChainReuse()
+	    public void testCheckChainReuse()
 	    {
 	        // Child views of first and second level must be the same
 	        Assert.AreEqual(2, streamOne.Views.Count);
@@ -74,7 +74,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestRemove()
+	    public void testRemove()
 	    {
 	        Assert.AreEqual(2, streamOne.Views.Count);
 	        Assert.AreEqual(1, streamTwo.Views.Count);
@@ -91,7 +91,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestRemoveInvalid()
+	    public void testRemoveInvalid()
 	    {
 	        try
 	        {

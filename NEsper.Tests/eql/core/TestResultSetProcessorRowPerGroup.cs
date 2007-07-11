@@ -42,7 +42,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestProcess()
+	    public void testProcess()
 	    {
 	        EventBean[] newData = new EventBean[] {MakeEvent(1, 2), MakeEvent(3, 4)};
 	        EventBean[] oldData = new EventBean[] {MakeEvent(1, 2), MakeEvent(1, 10)};

@@ -8,9 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-
 using NUnit.Framework;
 
+using net.esper.client;
 using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
@@ -25,11 +25,11 @@ namespace net.esper.events
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        beanEventAdapter = new BeanEventAdapter();
+            beanEventAdapter = new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE);
 	    }
 
 	    [Test]
-	    public void TestCreateBeanType()
+	    public void testCreateBeanType()
 	    {
 	        EventTypeSPI eventType = beanEventAdapter.CreateOrGetBeanType(typeof(SupportBeanSimple));
 
@@ -49,7 +49,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestInterfaceProperty()
+	    public void testInterfaceProperty()
 	    {
 	        // Assert implementations have full set of properties
 	        ISupportDImpl _event = new ISupportDImpl("D", "BaseD", "BaseDBase");
@@ -59,20 +59,20 @@ namespace net.esper.events
 	        Assert.AreEqual("BaseDBase", bean["baseDBase"]);
 	        Assert.AreEqual(3, bean.EventType.PropertyNames.Count);
 	        ArrayAssertionUtil.AreEqualAnyOrder(bean.EventType.PropertyNames,
-	                new String[] {"d", "baseD", "baseDBase"});
+	                new String[] {"D", "BaseD", "BaseDBase"});
 
 	        // Assert intermediate interfaces have full set of fields
 	        EventType interfaceType = beanEventAdapter.CreateOrGetBeanType(typeof(ISupportD));
             ArrayAssertionUtil.AreEqualAnyOrder(interfaceType.PropertyNames,
-	                new String[] {"d", "baseD", "baseDBase"});
+	                new String[] {"D", "BaseD", "BaseDBase"});
 	    }
 
 	    [Test]
-	    public void TestMappedIndexedNestedProperty()
+	    public void testMappedIndexedNestedProperty()
 	    {
 	    	EventType eventType = beanEventAdapter.CreateOrGetBeanType(typeof(SupportBeanComplexProps));
 
-	        Assert.AreEqual(typeof(IDataDictionary), eventType.GetPropertyType("mapProperty"));
+	        Assert.AreEqual(typeof(Properties), eventType.GetPropertyType("mapProperty"));
 	        Assert.AreEqual(typeof(String), eventType.GetPropertyType("mapped('x')"));
 	        Assert.AreEqual(typeof(int), eventType.GetPropertyType("indexed[1]"));
 	        Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), eventType.GetPropertyType("nested"));

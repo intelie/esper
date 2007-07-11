@@ -29,31 +29,7 @@ namespace net.esper.support.bean
             get { return _p63; }
 		}
 
-        virtual public int id
-        {
-            get { return _id; }
-        }
-
-        virtual public String p60
-        {
-            get { return _p60; }
-        }
-
-        virtual public String p61
-        {
-            get { return _p61; }
-        }
-
-        virtual public String p62
-        {
-            get { return _p62; }
-        }
-
-        virtual public String p63
-        {
-            get { return _p63; }
-        }
-		private static int idCounter;
+        private static int idCounter;
 
         private int _id;
         private String _p60;

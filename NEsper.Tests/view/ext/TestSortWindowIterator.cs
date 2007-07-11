@@ -36,14 +36,14 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestEmpty()
+	    public void testEmpty()
 	    {
 	        IEnumerator<EventBean> it = new SortWindowIterator(testMap);
 	        ArrayAssertionUtil.AreEqualExactOrder(it, null);
 	    }
 
 	    [Test]
-	    public void TestOneElement()
+	    public void testOneElement()
 	    {
 	        LinkedList<EventBean> list = new LinkedList<EventBean>();
 	        list.AddLast(events.Fetch("a"));
@@ -55,7 +55,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestTwoInOneEntryElement()
+	    public void testTwoInOneEntryElement()
 	    {
             LinkedList<EventBean> list = new LinkedList<EventBean>();
             list.AddLast(events.Fetch("a"));
@@ -68,7 +68,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestTwoSeparateEntryElement()
+	    public void testTwoSeparateEntryElement()
 	    {
             LinkedList<EventBean> list1 = new LinkedList<EventBean>();
             list1.AddLast(events.Fetch("a"));
@@ -84,7 +84,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestTwoByTwoEntryElement()
+	    public void testTwoByTwoEntryElement()
 	    {
             LinkedList<EventBean> list1 = new LinkedList<EventBean>();
 	        list1.AddLast(events.Fetch("a"));
@@ -102,7 +102,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestMixedEntryElement()
+	    public void testMixedEntryElement()
 	    {
             LinkedList<EventBean> list1 = new LinkedList<EventBean>();
             list1.AddLast(events.Fetch("a"));

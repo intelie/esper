@@ -58,6 +58,8 @@ namespace net.esper.eql.expression
         /// Validates the specified stream type service_.
         /// </summary>
         /// <param name="streamTypeService_">The stream type service_.</param>
+        /// <param name="methodResolutionService">The method resolution service.</param>
+        /// <param name="viewResourceDelegate">The view resource delegate.</param>
         public override void Validate(StreamTypeService streamTypeService_, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             if (isCase2)
@@ -99,6 +101,7 @@ namespace net.esper.eql.expression
         /// Evaluate event tuple and return result.
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
+        /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>

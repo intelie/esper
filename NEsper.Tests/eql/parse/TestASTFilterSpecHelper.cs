@@ -22,7 +22,7 @@ namespace net.esper.eql.parse
 	public class TestASTFilterSpecHelper
 	{
 	    [Test]
-	    public void TestGetPropertyName()
+	    public void testGetPropertyName()
 	    {
 	        String PROPERTY = "a('aa').b[1].c";
 

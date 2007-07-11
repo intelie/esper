@@ -7,6 +7,7 @@ using net.esper.client;
 using net.esper.events;
 using net.esper.filter;
 using net.esper.schedule;
+using net.esper.util;
 
 namespace net.esper.core
 {
@@ -152,7 +153,7 @@ namespace net.esper.core
 	            Type type;
 	            try
 	            {
-	                type = Type.GetType(epServicesContextFactoryClassName);
+                    type = TypeHelper.ResolveType(epServicesContextFactoryClassName);
 	            }
 	            catch (TypeLoadException)
 	            {
@@ -224,7 +225,7 @@ namespace net.esper.core
 	            Type adapterLoaderClass;
 	            try
 	            {
-	                adapterLoaderClass = Type.GetType(typeName);
+	                adapterLoaderClass = TypeHelper.ResolveType(typeName);
 	            }
 	            catch (TypeLoadException ex)
 	            {

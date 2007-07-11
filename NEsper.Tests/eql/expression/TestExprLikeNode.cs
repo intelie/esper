@@ -33,15 +33,15 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(Boolean), likeNodeNormal.GetType());
-	        Assert.AreEqual(typeof(Boolean), likeNodeNot.GetType());
-	        Assert.AreEqual(typeof(Boolean), likeNodeNormalEscaped.GetType());
+	        Assert.AreEqual(typeof(bool?), likeNodeNormal.ReturnType);
+	        Assert.AreEqual(typeof(bool?), likeNodeNot.ReturnType);
+	        Assert.AreEqual(typeof(bool?), likeNodeNormalEscaped.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // No subnodes: Exception is thrown.
 	        TryInvalidValidate(new ExprLikeNode(true));
@@ -70,7 +70,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        // Build :      s0.string like "%abc__"  (with or witout escape)
 	        Assert.IsFalse((Boolean) likeNodeNormal.Evaluate(MakeEvent("abcx"), false));
@@ -80,7 +80,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        ExprLikeNode otherLikeNodeNot = SupportExprNodeFactory.MakeLikeNode(true, "@");
 	        ExprLikeNode otherLikeNodeNot2 = SupportExprNodeFactory.MakeLikeNode(true, "!");
@@ -91,7 +91,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("s0.string like \"%abc__\"", likeNodeNormal.ExpressionString);
 	        Assert.AreEqual("s0.string not like \"%abc__\"", likeNodeNot.ExpressionString);

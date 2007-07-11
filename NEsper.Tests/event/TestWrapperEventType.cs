@@ -30,8 +30,8 @@ namespace net.esper.events
 
 		protected void SetUp()
 		{
-	        underlyingEventTypeOne = new BeanEventType(typeof(SupportBeanSimple), new BeanEventAdapter(), null, "abc");
-	        underlyingEventTypeTwo = new BeanEventType(typeof(SupportBean_A), new BeanEventAdapter(), null, "abc");
+	        underlyingEventTypeOne = new BeanEventType(typeof(SupportBeanSimple), new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE), null, "abc");
+            underlyingEventTypeTwo = new BeanEventType(typeof(SupportBean_A), new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE), null, "abc");
 	        properties = new HashDictionary<String, Type>();
 	        properties.Put("additionalString", typeof(string));
 	        properties.Put("additionalInt", typeof(int?));
@@ -40,7 +40,7 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public void TestInvalidRepeatedNames()
+		public void testInvalidRepeatedNames()
 		{
 			properties.Clear();
 			properties.Put("myString", typeof(string));
@@ -58,14 +58,14 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public void TestPropertyNames()
+		public void testPropertyNames()
 		{
 			String[] expected = new String[] { "myInt", "myString", "additionalInt", "additionalString" };
 			ArrayAssertionUtil.AreEqualAnyOrder(expected, eventType.PropertyNames);
 		}
 
 		[Test]
-		public void TestGetPropertyType()
+		public void testGetPropertyType()
 		{
 			Assert.AreEqual(typeof(int), eventType.GetPropertyType("myInt"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("additionalInt"));
@@ -75,7 +75,7 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public void TestIsProperty()
+		public void testIsProperty()
 		{
 			Assert.IsTrue(eventType.IsProperty("myInt"));
 			Assert.IsTrue(eventType.IsProperty("additionalInt"));
@@ -85,7 +85,7 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public void TestEquals()
+		public void testEquals()
 		{
 		    EDictionary<String, Type> otherProperties = new HashDictionary<String, Type>();
             otherProperties.PutAll(properties);

@@ -29,7 +29,7 @@ namespace net.esper.events.property
 		}
 
 		[Test]
-		public virtual void testCtor()
+		public void testCtor()
 		{
 			try
 			{
@@ -43,7 +43,7 @@ namespace net.esper.events.property
 		}
 
 		[Test]
-		public virtual void testGet()
+		public void testGet()
 		{
             Assert.AreEqual(bean.ArrayProperty[0], getter.GetValue(_event));
 

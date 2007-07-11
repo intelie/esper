@@ -41,7 +41,7 @@ namespace net.esper.regression.events
         }
 
         [Test]
-        public virtual void testNestedObjects()
+        public void testNestedObjects()
         {
             String statementText = "select beanA.simpleProperty as simple," + "beanA.nested.nestedValue as nested," + "beanA.indexed[1] as indexed," + "beanA.nested.nestedNested.nestedNestedValue as nestednested " + "from myMapEvent.win:length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
@@ -56,7 +56,7 @@ namespace net.esper.regression.events
         }
 
         [Test]
-        public virtual void testQueryFields()
+        public void testQueryFields()
         {
             String statementText = "select myInt + 2 as intVal, 'x' || myString || 'x' as stringVal from myMapEvent.win:length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);
@@ -80,7 +80,7 @@ namespace net.esper.regression.events
         }
 
         [Test]
-        public virtual void testPrimitivesTypes()
+        public void testPrimitivesTypes()
         {
             properties = new Properties();
             properties["myInt"] = typeof(int).FullName;
@@ -98,7 +98,7 @@ namespace net.esper.regression.events
         }
 
         [Test]
-        public virtual void testInvalidConfig()
+        public void testInvalidConfig()
         {
             properties = new Properties();
             properties[(String)"astring"] = (String)"XXXX";
@@ -119,7 +119,7 @@ namespace net.esper.regression.events
         }
 
         [Test]
-        public virtual void testInvalidStatement()
+        public void testInvalidStatement()
         {
             tryInvalid("select XXX from myMapEvent.win:length(5)");
             tryInvalid("select myString * 2 from myMapEvent.win:length(5)");
@@ -127,7 +127,7 @@ namespace net.esper.regression.events
         }
 
         [Test]
-        public virtual void testSendMapNative()
+        public void testSendMapNative()
         {
             String statementText = "select * from myMapEvent.win:length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(statementText);

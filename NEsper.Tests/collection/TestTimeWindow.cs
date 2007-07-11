@@ -37,7 +37,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestAdd()
+	    public void testAdd()
 	    {
 	        Assert.IsTrue(window.OldestTimestamp == null);
 	        Assert.IsTrue(window.IsEmpty);
@@ -88,7 +88,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestTimeWindowPerformance()
+	    public void testTimeWindowPerformance()
 	    {
 	        log.Info(".testTimeWindowPerformance Starting");
 
@@ -109,21 +109,21 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestConcurrentIterator()
+	    public void testConcurrentIterator()
 	    {
 	        window.Add(10000, beans[0]);
 	        IEnumerator<EventBean> it = window.GetEnumerator();
 	        window.Add(10000, beans[1]);
 
-            //try
-            //{
+            try
+            {
 	            ArrayAssertionUtil.AreEqualExactOrder(it, new EventBean[] {beans[0], beans[1]});
 	            Assert.Fail();
-            //}
-            //catch (ConcurrentModificationException ex)
-            //{
-            //    // expected
-            //}
+            }
+            catch (InvalidOperationException)
+            {
+                // expected
+            }
 	    }
 
 	    private EventBean CreateBean()

@@ -13,7 +13,7 @@ namespace net.esper.filter
     public class TestDoubleRangeComparator
     {
         [Test]
-        public virtual void testComparator()
+        public void testComparator()
         {
             TreeSet<DoubleRange> sorted = new TreeSet<DoubleRange>(new DoubleRangeComparator());
 

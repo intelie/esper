@@ -55,7 +55,7 @@ namespace net.esper.eql.expression
 	        // Determine stream number
 	        ExprIdentNode identNode = (ExprIdentNode) this.ChildNodes[1];
 	        streamNumber = identNode.StreamId;
-            resultType = this.ChildNodes[1].GetType();
+            resultType = this.ChildNodes[1].ReturnType;
 
 	        if (viewResourceDelegate == null)
 	        {

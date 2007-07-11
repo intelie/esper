@@ -21,6 +21,9 @@ namespace net.esper.events
 		private readonly EDictionary<String, ConfigurationEventTypeLegacy> typeToLegacyConfigs;
 		private readonly ReaderWriterLock typesPerBeanLock ;
 
+        /// <summary>Default property resolution style.</summary>
+        protected PropertyResolutionStyle defaultPropertyResolutionStyle;
+
 		/// <summary> Ctor.</summary>
 		
 		public BeanEventAdapter()
@@ -28,7 +31,31 @@ namespace net.esper.events
 			typesPerBean = new HashDictionary<Type, BeanEventType>();
 			typesPerBeanLock = new ReaderWriterLock();
 			typeToLegacyConfigs = new HashDictionary<String, ConfigurationEventTypeLegacy>();
+            defaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_SENSITIVE;
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BeanEventAdapter"/> class.
+        /// </summary>
+        /// <param name="defaultPropertyResolutionStyle">The default property resolution style.</param>
+        public BeanEventAdapter( PropertyResolutionStyle defaultPropertyResolutionStyle )
+        {
+            this.typesPerBean = new HashDictionary<Type, BeanEventType>();
+            this.typesPerBeanLock = new ReaderWriterLock();
+            this.typeToLegacyConfigs = new HashDictionary<String, ConfigurationEventTypeLegacy>();
+            this.defaultPropertyResolutionStyle = defaultPropertyResolutionStyle;
+        }
+
+        /// <summary>
+        /// Gets or sets the property resolution style.
+        /// </summary>
+        /// <value>The property resolution style.</value>
+
+        public virtual PropertyResolutionStyle DefaultPropertyResolutionStyle
+        {
+            get { return defaultPropertyResolutionStyle; }
+            set { defaultPropertyResolutionStyle = value; }
+        }
 
 		/// <summary>
 		/// Sets the additional mappings for legacy types.
@@ -53,7 +80,7 @@ namespace net.esper.events
 		/// <param name="eventId">The optional event id.</param>
 		/// <returns>EventBean wrapping object</returns>
 
-		public virtual EventBean AdapterForBean(Object _event, Object eventId)
+        public virtual EventBean AdapterForBean(Object _event, Object eventId)
 		{
 			Type eventClass = _event.GetType();
 			EventType eventType = CreateOrGetBeanType(eventClass);

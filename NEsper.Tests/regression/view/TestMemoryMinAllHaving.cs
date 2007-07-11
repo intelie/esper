@@ -31,7 +31,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testMemory()
+        public void testMemory()
         {
             String statementText = "select price, min(price) as minPrice " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30)" + "having price >= min(price) * (1.02)";
 

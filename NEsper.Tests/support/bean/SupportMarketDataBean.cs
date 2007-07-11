@@ -14,11 +14,11 @@ namespace net.esper.support.bean
     [Serializable]
 	public class SupportMarketDataBean
 	{
-	    private String symbol;
-	    private String id;
-	    private double price;
-	    private long? volume;
-	    private String feed;
+        private readonly String symbol;
+        private readonly String id;
+        private readonly double price;
+	    private readonly long? volume;
+        private readonly String feed;
 
 	    public SupportMarketDataBean(String symbol, double price, long? volume, String feed)
 	    {

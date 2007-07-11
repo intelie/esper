@@ -205,7 +205,7 @@ namespace net.esper.filter
 			}
 			else
 			{
-				throw new SystemException( "Invalid filter operator " + this.FilterOperator );
+				throw new IllegalStateException( "Invalid filter operator " + this.FilterOperator );
 			}
 		}
 

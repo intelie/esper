@@ -5,36 +5,24 @@ namespace net.esper.support.bean
 	[Serializable]
 	public class ISupportABCImpl : ISupportA, ISupportB, ISupportC
 	{
-		virtual public String a
+		virtual public String A
 		{
-			get
-			{
-				return valueA;
-			}
+            get { return valueA; }
 		}
 
-		virtual public String baseAB
+		virtual public String BaseAB
 		{
-			get
-			{
-				return valueBaseAB;
-			}
+            get { return valueBaseAB; }
 		}
 
-		virtual public String b
+		virtual public String B
 		{
-			get
-			{
-				return valueB;
-			}
+            get { return valueB; }
 		}
 		
-        virtual public String c
+        virtual public String C
 		{
-			get
-			{
-				return valueC;
-			}
+            get { return valueC; }
 		}
 
 		private String valueA;

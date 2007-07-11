@@ -12,9 +12,17 @@ namespace net.esper.events
 
     public interface EventAdapterService
     {
-		/// <summary>
+        /// <summary>
+        /// Gets or sets the default property resolution style.
+        /// </summary>
+
+        PropertyResolutionStyle DefaultPropertyResolutionStyle { get ; set; }
+
+        /// <summary>
 		/// Returns the event type id given an event type alias. The alias is expected to exist.
-		/// &lt;p&gt; Use getExistsTypeByAlias to check if an alias exists.
+		/// <para>
+		/// Use getExistsTypeByAlias to check if an alias exists.
+		/// </para>
 		/// </summary>
 		/// <param name="eventTypeAlias">is the event name</param>
 		/// <returns>event type id</returns>

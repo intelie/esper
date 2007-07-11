@@ -24,7 +24,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testRegularJoin()
+		public void testRegularJoin()
 		{
 			SupportBeanCombinedProps combined = SupportBeanCombinedProps.MakeDefaultBean();
 			SupportBeanComplexProps complex = SupportBeanComplexProps.MakeDefaultBean();
@@ -51,7 +51,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testOuterJoin()
+		public void testOuterJoin()
 		{
 			String viewExpr =
 				"select * from " +

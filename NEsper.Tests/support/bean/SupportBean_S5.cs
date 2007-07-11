@@ -2,7 +2,6 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportBean_S5
 	{
 		virtual public int Id
@@ -32,33 +31,6 @@ namespace net.esper.support.bean
 			get { return _p53; }
 		}
 
-        virtual public int id
-        {
-            get { return _id; }
-            set { this._id = value; }
-        }
-
-        virtual public String p50
-        {
-            get { return _p50; }
-            set { this._p50 = value; }
-        }
-
-        virtual public String p51
-        {
-            get { return _p51; }
-        }
-
-        virtual public String p52
-        {
-            get { return _p52; }
-        }
-
-        virtual public String p53
-        {
-            get { return _p53; }
-        }
-
         private static int idCounter;
 		
 		private int _id;
@@ -82,19 +54,28 @@ namespace net.esper.support.bean
 		public SupportBean_S5(int id)
 		{
             this._id = id;
+		    this._p50 = null;
+		    this._p51 = null;
+		    this._p52 = null;
+		    this._p53 = null;
 		}
 		
 		public SupportBean_S5(int id, String p50)
 		{
             this._id = id;
             this._p50 = p50;
-		}
+            this._p51 = null;
+            this._p52 = null;
+            this._p53 = null;
+        }
 		
 		public SupportBean_S5(int id, String p50, String p51)
 		{
             this._id = id;
             this._p50 = p50;
             this._p51 = p51;
-		}
+            this._p52 = null;
+            this._p53 = null;
+        }
 	}
 }

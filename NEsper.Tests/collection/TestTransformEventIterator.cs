@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
+using net.esper.client;
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.events;
@@ -21,7 +22,7 @@ namespace net.esper.collection
 	public class TestTransformEventIterator
 	{
 	    [Test]
-	    public void TestEmpty()
+	    public void testEmpty()
 	    {
 	    	using(IEnumerator<EventBean> enumerator = MakeEnumerator(new int[0]))
 	    	{
@@ -30,7 +31,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestOne()
+	    public void testOne()
 	    {
 	    	using(IEnumerator<EventBean> enumerator = MakeEnumerator(new int[] { 10 }))
 	    	{
@@ -41,7 +42,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestTwo()
+	    public void testTwo()
 	    {
 	    	using( IEnumerator<EventBean> enumerator = MakeEnumerator(new int[] { 10, 20 }) )
 	    	{

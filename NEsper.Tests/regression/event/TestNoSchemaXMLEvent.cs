@@ -72,7 +72,7 @@ namespace net.esper.regression.events
 	    }
 
 	    [Test]
-	    public void TestSimpleXML()
+	    public void testSimpleXML()
 	    {
 	        // Generate document with the specified in element1 to confirm we have independent events
 	        SendEvent("EventA");
@@ -83,7 +83,7 @@ namespace net.esper.regression.events
 	    }
 
 	    [Test]
-	    public void TestNestedXML()
+	    public void testNestedXML()
 	    {
 	        Configuration configuration = new Configuration();
 	        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
@@ -116,7 +116,7 @@ namespace net.esper.regression.events
 	    }
 
 	    [Test]
-	    public void TestEventXML()
+	    public void testEventXML()
 	    {
 	        Configuration configuration = new Configuration();
 	        ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();

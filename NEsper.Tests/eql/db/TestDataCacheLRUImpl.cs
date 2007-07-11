@@ -25,7 +25,7 @@ namespace net.esper.eql.db
         }
 
         [Test]
-        public virtual void testGet()
+        public void testGet()
         {
             Assert.IsNull(cache.GetCached(Make("a")));
 

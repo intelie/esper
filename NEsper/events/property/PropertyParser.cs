@@ -83,7 +83,7 @@ namespace net.esper.events.property
                     return new IndexedProperty(child.getFirstChild().getText(), index);
 
                 default:
-                    throw new SystemException("Event property AST node not recognized, type=" + child.Type);
+                    throw new IllegalStateException("Event property AST node not recognized, type=" + child.Type);
 
             }
         }

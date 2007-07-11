@@ -32,7 +32,7 @@ namespace net.esper.eql.agg
                 return;
             }
 
-            double value = (double)item;
+            double value = Convert.ToDouble(item);
 
             numDataPoints++;
             sum += value;
@@ -50,7 +50,7 @@ namespace net.esper.eql.agg
                 return;
             }
 
-            double value = (double)item;
+            double value = Convert.ToDouble(item);
 
             numDataPoints--;
             sum -= value;
@@ -83,7 +83,7 @@ namespace net.esper.eql.agg
         /// <returns>type of values held</returns>
         public Type ValueType
         {
-            get { return typeof(double); }
+            get { return typeof(double?); }
         }
 
         /// <summary>

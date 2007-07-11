@@ -2,33 +2,20 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	[Serializable]
 	public class ISupportBCImpl : ISupportB, ISupportC
 	{
-		virtual public String b
+		virtual public String B
 		{
-			get
-			{
-				return valueB;
-			}
-			
+            get { return valueB; }
 		}
-		virtual public String baseAB
+		virtual public String BaseAB
 		{
-			get
-			{
-				return valueBaseAB;
-			}
-			
+            get { return valueBaseAB; }
 		}
-		virtual public String c
+		virtual public String C
 		{
-			get
-			{
-				return valueC;
-			}
-			
+            get { return valueC; }
 		}
 		private String valueB;
 		private String valueBaseAB;

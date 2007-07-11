@@ -4,7 +4,7 @@ namespace net.esper.support.bean
 {
 	public sealed class SupportBeanFinal
 	{
-		public int intPrimitive
+		public int IntPrimitive
 		{
 			get { return m_intPrimitive; }
 		}

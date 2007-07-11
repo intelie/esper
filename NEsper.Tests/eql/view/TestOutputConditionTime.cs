@@ -39,7 +39,7 @@ namespace net.esper.eql.view
 	    }
 
 	    [Test]
-	    public void TestUpdateCondtion()
+	    public void testUpdateCondtion()
 	    {
 	    	Assert.AreEqual(TEST_INTERVAL_MSEC, condition.MsecIntervalSize);
 
@@ -79,7 +79,7 @@ namespace net.esper.eql.view
 	    }
 
 	    [Test]
-	    public void TestIncorrectUse()
+	    public void testIncorrectUse()
 	    {
 		    try
 		    {

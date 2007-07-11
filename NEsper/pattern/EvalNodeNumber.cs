@@ -16,9 +16,10 @@ namespace net.esper.pattern
 {
 	/// <summary>
 	/// A node number assigned to evaluation nodes in a tree-structure.
-	/// <p>
+	/// <para>
 	/// Represents node numbers as an array of short. Root nodes get an empty array while each level of child
 	/// node adds an element. New child nodes are obtained from a parent and subsequent child nodes from the last sibling node.
+	/// </para>
 	/// </summary>
 	public class EvalNodeNumber : MetaDefItem
 	{

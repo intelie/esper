@@ -32,7 +32,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddBeanTypeClass()
+	    public void testAddBeanTypeClass()
 	    {
 	        Set<EventType> types = new HashSet<EventType>();
 
@@ -59,7 +59,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddMapType()
+	    public void testAddMapType()
 	    {
 	        EDictionary<String, Type> typeOne = new HashDictionary<String, Type>();
 	        typeOne.Put("f1", typeof(int?));
@@ -99,7 +99,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddBeanType()
+	    public void testAddBeanType()
 	    {
 	        EDictionary<String, Type> typeOne = new HashDictionary<String, Type>();
 	        typeOne.Put("f1", typeof(int?));

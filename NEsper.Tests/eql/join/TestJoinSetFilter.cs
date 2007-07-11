@@ -25,7 +25,7 @@ namespace net.esper.eql.join
 	public class TestJoinSetFilter
 	{
 	    [Test]
-	    public void TestFilter()
+	    public void testFilter()
 	    {
 	        ExprNode topNode = SupportExprNodeFactory.Make2SubNodeAnd();
 

@@ -48,7 +48,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGet()
+	    public void testGet()
 	    {
 	        Assert.AreEqual(eventType, _eventBean.EventType);
 	        Assert.AreEqual(testValuesMap, _eventBean.Underlying);
@@ -72,7 +72,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        MapEventBean other = new MapEventBean(testValuesMap, eventType);
 	        Assert.IsTrue(_eventBean.Equals(other));
@@ -108,7 +108,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestCreateUnderlying()
+	    public void testCreateUnderlying()
 	    {
 	        SupportBean beanOne = new SupportBean();
 	        SupportBean_A beanTwo = new SupportBean_A("a");
@@ -132,7 +132,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestHash()
+	    public void testHash()
 	    {
 	        // try out with a null value
 	        testValuesMap.Put("aString", null);

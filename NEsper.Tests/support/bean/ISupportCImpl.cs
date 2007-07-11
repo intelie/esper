@@ -2,17 +2,12 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	[Serializable]
 	public class ISupportCImpl : ISupportC
 	{
-		virtual public String c
+		virtual public String C
 		{
-			get
-			{
-				return valueC;
-			}
-			
+            get { return valueC; }
 		}
 		private String valueC;
 		

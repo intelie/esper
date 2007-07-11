@@ -32,7 +32,7 @@ namespace net.esper.view.internals
 	    }
 
 	    [Test]
-	    public void TestUpdate()
+	    public void testUpdate()
 	    {
 	        // Observer starts with no data
 	        Assert.IsFalse(observer.GetAndResetHasNewData());

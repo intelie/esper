@@ -35,7 +35,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestFlow()
+	    public void testFlow()
 	    {
 	        // test empty buffer
 	        buffer.Add(null);

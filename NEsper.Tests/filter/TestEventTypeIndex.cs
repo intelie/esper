@@ -46,7 +46,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestMatch()
+	    public void testMatch()
 	    {
 	        IList<FilterHandle> matchesList = new List<FilterHandle>();
 
@@ -58,7 +58,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestInvalidSecondAdd()
+	    public void testInvalidSecondAdd()
 	    {
 	        try
 	        {
@@ -72,13 +72,13 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestGet()
+	    public void testGet()
 	    {
 	        Assert.AreEqual(handleSetNode, testIndex[testEventType]);
 	    }
 
 	    [Test]
-	    public void TestSuperclassMatch()
+	    public void testSuperclassMatch()
 	    {
 	        testEventBean = SupportEventBeanFactory.CreateObject(new ISupportAImplSuperGImplPlus());
 	        testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportA));
@@ -94,7 +94,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestInterfaceMatch()
+	    public void testInterfaceMatch()
 	    {
 	        testEventBean = SupportEventBeanFactory.CreateObject(new ISupportABCImpl("a", "b", "ab", "c"));
 	        testEventType = SupportEventTypeFactory.CreateBeanType(typeof(ISupportBaseAB));

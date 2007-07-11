@@ -61,7 +61,7 @@ namespace net.esper.eql.join.plan
         {
             if (childNodes.Count == 0)
             {
-                throw new SystemException("Zero child nodes for nested iteration");
+                throw new IllegalStateException("Zero child nodes for nested iteration");
             }
 
             NestedIterationExecNode execNode = new NestedIterationExecNode(nestingOrder);

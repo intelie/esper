@@ -35,7 +35,7 @@ namespace net.esper.view.internals
 	    }
 
 	    [Test]
-	    public void TestUpdate()
+	    public void testUpdate()
 	    {
 	        // Send some data
 	        EventBean[] newEventsOne = MakeBeans("a", 2);

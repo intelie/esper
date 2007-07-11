@@ -18,7 +18,7 @@ namespace net.esper.eql.agg
 	public class TestMinMaxAggregator
 	{
 	    [Test]
-	    public void TestAggregatorMax()
+	    public void testAggregatorMax()
 	    {
 	        MinMaxAggregator agg = new MinMaxAggregator(MinMaxTypeEnum.MAX, typeof(int));
 	        Assert.AreEqual(null, agg.Value);
@@ -37,7 +37,7 @@ namespace net.esper.eql.agg
 	    }
 
 	    [Test]
-	    public void TestAggregatorMin()
+	    public void testAggregatorMin()
 	    {
 	        MinMaxAggregator agg = new MinMaxAggregator(MinMaxTypeEnum.MIN, typeof(int));
 	        Assert.AreEqual(null, agg.Value);

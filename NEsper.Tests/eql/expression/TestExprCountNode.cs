@@ -29,21 +29,21 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(long?), validatedNodeToTest.GetType());
-	        Assert.AreEqual(typeof(long?), wildcardCount.GetType());
+            Assert.AreEqual(typeof(long?), validatedNodeToTest.ReturnType);
+            Assert.AreEqual(typeof(long?), wildcardCount.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("count(5)", validatedNodeToTest.ExpressionString);
 	        Assert.AreEqual("count(*)", wildcardCount.ExpressionString);
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(validatedNodeToTest.EqualsNode(validatedNodeToTest));
 	        Assert.IsFalse(validatedNodeToTest.EqualsNode(new ExprSumNode(false)));

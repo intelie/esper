@@ -34,7 +34,7 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestSetParameters()
+	    public void testSetParameters()
 	    {
 	        TryParameter(new Object[] {new String[] {"stddev"}, "price", "volume"},
 	                     new String[] {"stddev"}, "price", "volume", null, null);
@@ -53,7 +53,7 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestCanReuse()
+	    public void testCanReuse()
 	    {
 	        factory.SetViewParameters(null, new Object[] {new String[] {"stddev"}, "price", "volume"});
 	        Assert.IsFalse(factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeContext())));
@@ -71,7 +71,7 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestAttaches()
+	    public void testAttaches()
 	    {
 	        // Should attach to anything as long as the fields exists
 	        EventType parentType = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));

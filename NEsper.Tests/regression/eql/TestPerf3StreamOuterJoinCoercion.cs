@@ -35,7 +35,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerfCoercion3waySceneOne()
+	    public void testPerfCoercion3waySceneOne()
 	    {
 	        String stmtText = "select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
 	                typeof(SupportBean).FullName + "(string='A').win:length(1000000) s1 " +
@@ -71,7 +71,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerfCoercion3waySceneTwo()
+	    public void testPerfCoercion3waySceneTwo()
 	    {
 	        String stmtText = "select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
 	                typeof(SupportBean).FullName + "(string='A').win:length(1000000) s1 " +
@@ -108,7 +108,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerfCoercion3waySceneThree()
+	    public void testPerfCoercion3waySceneThree()
 	    {
 	        String stmtText = "select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
 	                typeof(SupportBean).FullName + "(string='A').win:length(1000000) s1 " +

@@ -22,7 +22,7 @@ namespace net.esper.eql.parse
 	public class TestASTViewSpecHelper : EqlEvalTokenTypes
 	{
 	    [Test]
-	    public void TestBuildViewSpec()
+	    public void testBuildViewSpec()
 	    {
 	        AST ast = MakeSingleAst(VIEW_EXPR, null);
             ast.addChild(MakeSingleAst(IDENT, "namespace"));

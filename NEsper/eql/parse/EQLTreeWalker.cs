@@ -606,7 +606,7 @@ namespace net.esper.eql.parse
 
             if (node.getNumberOfChildren() == 0)
             {
-                throw new SystemException("Empty event property expression encountered");
+                throw new IllegalStateException("Empty event property expression encountered");
             }
 
             ExprIdentNode identNode;
@@ -924,7 +924,7 @@ namespace net.esper.eql.parse
 
             if (astExprNodeMap.Count != 1)
             {
-                throw new SystemException("Where clause generated zero or more then one expression nodes");
+                throw new IllegalStateException("Where clause generated zero or more then one expression nodes");
             }
 
             // Just assign the single root ExprNode not consumed yet
@@ -938,7 +938,7 @@ namespace net.esper.eql.parse
 
             if (astExprNodeMap.Count != 1)
             {
-                throw new SystemException("Having clause generated zero or more then one expression nodes");
+                throw new IllegalStateException("Having clause generated zero or more then one expression nodes");
             }
 
             // Just assign the single root ExprNode not consumed yet
@@ -997,7 +997,7 @@ namespace net.esper.eql.parse
             // there must be some expressions under the group by in our map
             if (astExprNodeMap.Count < 1)
             {
-                throw new SystemException("Group-by clause generated no expression nodes");
+                throw new IllegalStateException("Group-by clause generated no expression nodes");
             }
 
             AST child = node.getFirstChild();
@@ -1009,7 +1009,7 @@ namespace net.esper.eql.parse
                 ExprNode exprNode = astExprNodeMap.Fetch(child);
                 if (exprNode == null)
                 {
-                    throw new SystemException("Expression node as a result of group-by child node not found in collection");
+                    throw new IllegalStateException("Expression node as a result of group-by child node not found in collection");
                 }
 
                 statementSpec.GroupByExpressions.Add(exprNode);

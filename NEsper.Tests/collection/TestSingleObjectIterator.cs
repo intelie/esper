@@ -22,22 +22,12 @@ namespace net.esper.collection
         }
 
 	    [Test]
-	    public void TestNext()
+	    public void testNext()
 	    {
 	        IEnumerator<String> it = CreateEnumerator("a");
 	        Assert.IsTrue(it.MoveNext());
 	        Assert.AreEqual("a", it.Current);
 	        Assert.IsFalse(it.MoveNext());
-
-	        try
-	        {
-	            Object voidData = it.Current;
-	            Assert.Fail();
-	        }
-	        catch (ArgumentException ex)
-	        {
-	            // expected
-	        }
 	    }
 	}
 } // End of namespace

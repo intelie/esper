@@ -40,7 +40,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestVariantOne()
+	    public void testVariantOne()
 	    {
 	        String stmtText = "insert into Event_1 (delta, product) " +
 	                      "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
@@ -50,7 +50,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestVariantOneWildcard()
+	    public void testVariantOneWildcard()
 	    {
 	        String stmtText = "insert into Event_1 (delta, product) " +
 	        "select * from " + typeof(SupportBean).FullName + ".win:length(100)";
@@ -66,7 +66,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestVariantOneJoin()
+	    public void testVariantOneJoin()
 	    {
 	        String stmtText = "insert into Event_1 (delta, product) " +
 	                      "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
@@ -78,7 +78,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestVariantOneJoinWildcard()
+	    public void testVariantOneJoinWildcard()
 	    {
 	        String stmtText = "insert into Event_1 (delta, product) " +
 	        "select * " +
@@ -97,7 +97,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestVariantTwo()
+	    public void testVariantTwo()
 	    {
 	        String stmtText = "insert into Event_1 " +
 	                      "select intPrimitive - intBoxed as delta, intPrimitive * intBoxed as product " +
@@ -107,7 +107,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestVariantTwoWildcard()
+	    public void testVariantTwoWildcard()
 	    {
 	        String stmtText = "insert into event1 select * from " + typeof(SupportBean).FullName + ".win:length(100)";
 	        String otherText = "select * from event1.win:length(10)";
@@ -137,7 +137,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestVariantTwoJoin()
+	    public void testVariantTwoJoin()
 	    {
 	        String stmtText = "insert into Event_1 " +
 	                      "select intPrimitive - intBoxed as delta, intPrimitive * intBoxed as product " +
@@ -149,7 +149,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestVariantTwoJoinWildcard()
+	    public void testVariantTwoJoinWildcard()
 	    {
 	        String textOne = "insert into event2 select * " +
 	        		          "from " + typeof(SupportBean).FullName + ".win:length(100) as s0, " +
@@ -188,7 +188,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInvalidStreamUsed()
+	    public void testInvalidStreamUsed()
 	    {
 	        String stmtText = "insert into Event_1 (delta, product) " +
 	                      "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
@@ -211,7 +211,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestWithOutputLimitAndSort()
+	    public void testWithOutputLimitAndSort()
 	    {
 	        // NOTICE: we are inserting the RSTREAM (removed events)
 	        String stmtText = "insert rstream into StockTicks(mySymbol, myPrice) " +
@@ -261,7 +261,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestStaggeredWithWildcard()
+	    public void testStaggeredWithWildcard()
 	    {
 	    	String statementOne = "insert into streamA select * from " + typeof(SupportBeanSimple).FullName + ".win:length(5)";
 	    	String statementTwo = "insert into streamB select *, myInt+myInt as summed, myString||myString as concat from streamA.win:length(5)";
@@ -287,7 +287,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInsertIntoPlusPattern()
+	    public void testInsertIntoPlusPattern()
 	    {
 	        String stmtOneTxt = "insert into InZone " +
 	                      "select 111 as statementId, mac, locationReportId " +
@@ -338,7 +338,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestNullType()
+	    public void testNullType()
 	    {
 	        String stmtOneTxt = "insert into InZone select null as dummy from System.String";
 	        EPStatement stmtOne = epService.EPAdministrator.CreateEQL(stmtOneTxt);

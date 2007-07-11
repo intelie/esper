@@ -34,7 +34,7 @@ namespace net.esper.view
         }
 
         [Test]
-        public virtual void testInsert()
+        public void testInsert()
         {
             testChildView.ClearLastNewData();
             stream.Insert(_eventBean);

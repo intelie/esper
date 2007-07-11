@@ -36,7 +36,7 @@ namespace net.esper.pattern
 	    }
 
 	    [Test]
-	    public void TestGenerate()
+	    public void testGenerate()
 	    {
 	        MatchedEventMap beginState = new MatchedEventMapImpl();
 	        beginState.Add("0", events.Fetch("0"));

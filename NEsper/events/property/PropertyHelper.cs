@@ -107,9 +107,8 @@ namespace net.esper.events.property
             foreach (EventPropertyDescriptor desc in properties)
             {
                 switch( desc.PropertyName ) {
-                    case "GetType":
-                    case "ToString":
-                    case "GetHashCode":
+                    case "type":
+                    case "hashCode":
                         toRemove.Add(desc);
                         break ;
                 }
@@ -355,9 +354,11 @@ namespace net.esper.events.property
         {
         	foreach( MethodInfo methodInfo in type.GetMethods() )
         	{
+        	    string methodName = methodInfo.Name.ToLower();
+
             	if ((methodInfo.IsSpecialName == false) &&
-                    (methodInfo.Name.StartsWith("get")) &&
-            	    (methodInfo.Name != "get"))
+                    (methodName.StartsWith("get")) &&
+            	    (methodName != "get"))
                 {
         			yield return methodInfo ;
         		}

@@ -63,7 +63,8 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
+        /// <param name="viewResourceDelegate">The view resource delegate.</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {

@@ -30,7 +30,7 @@ namespace net.esper.eql.join.assemble
         }
 
         [Test]
-        public virtual void testCompute()
+        public void testCompute()
         {
             // test null
             IList<EventBean[]> rowsA = null;

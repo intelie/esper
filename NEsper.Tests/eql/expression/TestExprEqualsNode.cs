@@ -40,13 +40,13 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(Boolean), equalsNodes[0].GetType());
+            Assert.AreEqual(typeof(bool?), equalsNodes[0].ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Test success
 	        equalsNodes[0].AddChildNode(new SupportExprNode(typeof(String)));
@@ -85,7 +85,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluateEquals()
+	    public void testEvaluateEquals()
 	    {
 	        equalsNodes[0] = MakeNode(true, false, false);
 	        Assert.IsFalse((Boolean)equalsNodes[0].Evaluate(null, false));
@@ -118,7 +118,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluateNotEquals()
+	    public void testEvaluateNotEquals()
 	    {
 	        equalsNodes[0] = MakeNode(true, false, true);
 	        Assert.IsTrue((Boolean)equalsNodes[0].Evaluate(null, false));
@@ -140,11 +140,11 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        equalsNodes[0].AddChildNode(new SupportExprNode(true));
 	        equalsNodes[0].AddChildNode(new SupportExprNode(false));
-	        Assert.AreEqual("true = false", equalsNodes[0].ExpressionString);
+	        Assert.AreEqual("True = False", equalsNodes[0].ExpressionString);
 	    }
 
 	    private static ExprEqualsNode MakeNode(Object valueLeft, Object valueRight, bool isNot)
@@ -164,7 +164,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(equalsNodes[0].EqualsNode(equalsNodes[1]));
 	        Assert.IsFalse(equalsNodes[0].EqualsNode(equalsNodes[2]));

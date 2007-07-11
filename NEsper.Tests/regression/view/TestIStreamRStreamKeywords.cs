@@ -27,7 +27,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testRStreamOnly()
+        public void testRStreamOnly()
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select rstream * from " + typeof(SupportBean).FullName + ".win:length(3)");
@@ -46,11 +46,11 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testRStreamInsertInto()
+        public void testRStreamInsertInto()
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "insert into NextStream " +
-                "select rstream s0.str as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0"
+                "select rstream s0.string as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0"
                 );
             statement.AddListener(testListener);
 
@@ -75,11 +75,11 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testRStreamInsertIntoRStream()
+        public void testRStreamInsertIntoRStream()
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "insert rstream into NextStream " +
-                "select rstream s0.str as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0"
+                "select rstream s0.string as string from " + typeof(SupportBean).FullName + ".win:length(3) as s0"
                 );
             statement.AddListener(testListener);
 
@@ -103,7 +103,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testRStreamJoin()
+        public void testRStreamJoin()
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select rstream s1.intPrimitive as aID, s2.intPrimitive as bID " +
@@ -129,7 +129,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testIStreamOnly()
+        public void testIStreamOnly()
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select istream * from " + typeof(SupportBean).FullName + ".win:length(1)");
@@ -145,11 +145,11 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testIStreamInsertIntoRStream()
+        public void testIStreamInsertIntoRStream()
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "insert rstream into NextStream " +
-                "select istream a.str as string from " + typeof(SupportBean).FullName + ".win:length(1) as a"
+                "select istream a.string as string from " + typeof(SupportBean).FullName + ".win:length(1) as a"
                 );
             statement.AddListener(testListener);
 
@@ -168,7 +168,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testIStreamJoin()
+        public void testIStreamJoin()
         {
             EPStatement statement = epService.EPAdministrator.CreateEQL(
                 "select istream s1.intPrimitive as aID, s2.intPrimitive as bID " +

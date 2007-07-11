@@ -40,7 +40,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testLeftOuterJoin_root_s0()
+		public void testLeftOuterJoin_root_s0()
 		{
 			/**
 			* Query:
@@ -62,7 +62,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testRightOuterJoin_S2_root_s2()
+		public void testRightOuterJoin_S2_root_s2()
 		{
 			/**
 			* Query: right other join is eliminated/translated
@@ -84,7 +84,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testRightOuterJoin_S1_root_s1()
+		public void testRightOuterJoin_S1_root_s1()
 		{
 			/**
 			* Query: right other join is eliminated/translated

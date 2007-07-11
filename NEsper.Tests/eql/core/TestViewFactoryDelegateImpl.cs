@@ -48,7 +48,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestRequest()
+	    public void testRequest()
 	    {
 	        ViewResourceCallback callback = new MyViewResourceCallback();
 

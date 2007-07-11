@@ -39,7 +39,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumOneView()
+	    public void testSumOneView()
 	    {
 	        String viewExpr = "select Sum(longBoxed) as mySum " +
 	                          "from " + typeof(SupportBean).FullName + ".win:time(10 sec)";
@@ -50,7 +50,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumJoin()
+	    public void testSumJoin()
 	    {
 	        String viewExpr = "select Sum(longBoxed) as mySum " +
 	                          "from " + typeof(SupportBeanString).FullName + ".win:time(10) as one, " +
@@ -97,7 +97,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumDivideZero()
+	    public void testSumDivideZero()
 	    {
 	        String eventName = typeof(SupportBean).FullName;
 	        String stmt;
@@ -123,7 +123,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestAvgPerSym()
+	    public void testAvgPerSym()
 	    {
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(
 	                "select Avg(price) as avgp, sym from " + typeof(SupportPriceEvent).FullName + ".std:groupby('sym').win:length(2)"
@@ -161,7 +161,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSelectStarStdGroupBy() {
+	    public void testSelectStarStdGroupBy() {
 	        String stmtText = "select istream * from "+ typeof(SupportMarketDataBean).FullName
 	                +".std:groupby('symbol').win:length(2)";
 	        EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
@@ -174,7 +174,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSelectExprStdGroupBy() {
+	    public void testSelectExprStdGroupBy() {
 	        String stmtText = "select istream price from "+ typeof(SupportMarketDataBean).FullName
 	                +".std:groupby('symbol').win:length(2)";
 	        EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
@@ -186,7 +186,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSelectAvgExprStdGroupBy() {
+	    public void testSelectAvgExprStdGroupBy() {
 	        String stmtText = "select istream Avg(price) as aprice from "+ typeof(SupportMarketDataBean).FullName
 	                +".std:groupby('symbol').win:length(2)";
 	        EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
@@ -201,7 +201,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSelectAvgStdGroupByUni() {
+	    public void testSelectAvgStdGroupByUni() {
 	        String stmtText = "select istream average as aprice from "+ typeof(SupportMarketDataBean).FullName
 	                +".std:groupby('symbol').win:length(2).stat:uni('price')";
 	        EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
@@ -227,7 +227,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSelectAvgExprGroupBy() {
+	    public void testSelectAvgExprGroupBy() {
 	        String stmtText = "select istream Avg(price) as aprice, symbol from "+ typeof(SupportMarketDataBean).FullName
 	                +".win:length(2) group by symbol";
 	        EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);

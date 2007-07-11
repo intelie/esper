@@ -518,7 +518,7 @@ namespace net.esper.core
 	            if (filterExpr != null)
 	            {
 	                filterExpr = filterExpr.GetValidatedSubtree(subselectTypeService, statementContext.MethodResolutionService, viewResourceDelegateSubselect);
-                    if (TypeHelper.GetBoxedType(filterExpr.GetType()) != typeof(bool?))
+                    if (TypeHelper.GetBoxedType(filterExpr.ReturnType) != typeof(bool?))
 	                {
 	                    throw new ExprValidationException("Subselect filter expression must return a bool value");
 	                }

@@ -43,7 +43,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSelfSubselect()
+	    public void testSelfSubselect()
 	    {
 	        String stmtTextOne = "insert into MyCount select Count(*) as cnt from S0";
 	        epService.EPAdministrator.CreateEQL(stmtTextOne);
@@ -60,7 +60,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestStartStopStatement()
+	    public void testStartStopStatement()
 	    {
 	        String stmtText = "select id from S0 where (select true from S1.win:length(1000))";
 
@@ -88,7 +88,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestWhereClauseReturningTrue()
+	    public void testWhereClauseReturningTrue()
 	    {
 	        String stmtText = "select id from S0 where (select true from S1.win:length(1000))";
 
@@ -101,7 +101,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestWhereClauseWithExpression()
+	    public void testWhereClauseWithExpression()
 	    {
 	        String stmtText = "select id from S0 where (select p10='X' from S1.win:length(1000))";
 
@@ -117,7 +117,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestJoinUnfiltered()
+	    public void testJoinUnfiltered()
 	    {
 	        String stmtText = "select (select id from S3.win:length(1000)) as idS3, (select id from S4.win:length(1000)) as idS4 from S0 as s0, S1 as s1 where s0.id = s1.id";
 
@@ -172,7 +172,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInvalidSubselect()
+	    public void testInvalidSubselect()
 	    {
 	        TryInvalid("select (select id from S1) from S0",
 	                   "Error starting view: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select (select id from S1) from S0]");
@@ -218,7 +218,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestUnfilteredStreamPrior()
+	    public void testUnfilteredStreamPrior()
 	    {
 	        String stmtText = "select (select Prior(0, id) from S1.win:length(1000)) as idS1 from S0";
 
@@ -247,7 +247,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestCustomFunction()
+	    public void testCustomFunction()
 	    {
 	        String stmtText = "select (select " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(id) from S1.win:length(1000)) as idS1 from S0";
 
@@ -272,7 +272,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestComputedResult()
+	    public void testComputedResult()
 	    {
 	        String stmtText = "select 100*(select id from S1.win:length(1000)) as idS1 from S0";
 
@@ -297,7 +297,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestFilterInside()
+	    public void testFilterInside()
 	    {
 	        String stmtText = "select (select id from S1(p10='A').win:length(1000)) as idS1 from S0";
 
@@ -314,42 +314,42 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestUnfilteredUnlimitedStream()
+	    public void testUnfilteredUnlimitedStream()
 	    {
 	        String stmtText = "select (select id from S1.win:length(1000)) as idS1 from S0";
 	        RunAssertMultiRowUnfiltered(stmtText, "idS1");
 	    }
 
 	    [Test]
-	    public void TestUnfilteredLengthWindow()
+	    public void testUnfilteredLengthWindow()
 	    {
 	        String stmtText = "select (select id from S1.win:length(2)) as idS1 from S0";
 	        RunAssertMultiRowUnfiltered(stmtText, "idS1");
 	    }
 
 	    [Test]
-	    public void TestUnfilteredAsAfterSubselect()
+	    public void testUnfilteredAsAfterSubselect()
 	    {
 	        String stmtText = "select (select id from S1.std:lastevent()) as idS1 from S0";
 	        RunAssertSingleRowUnfiltered(stmtText, "idS1");
 	    }
 
 	    [Test]
-	    public void TestUnfilteredWithAsWithinSubselect()
+	    public void testUnfilteredWithAsWithinSubselect()
 	    {
 	        String stmtText = "select (select id as myId from S1.std:lastevent()) from S0";
 	        RunAssertSingleRowUnfiltered(stmtText, "myId");
 	    }
 
 	    [Test]
-	    public void TestUnfilteredNoAs()
+	    public void testUnfilteredNoAs()
 	    {
 	        String stmtText = "select (select id from S1.std:lastevent()) from S0";
 	        RunAssertSingleRowUnfiltered(stmtText, "id");
 	    }
 
 	    [Test]
-	    public void TestUnfilteredExpression()
+	    public void testUnfilteredExpression()
 	    {
 	        String stmtText = "select (select p10 || p11 from S1.std:lastevent()) as value from S0";
 
@@ -372,7 +372,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestMultiColumnSelect()
+	    public void testMultiColumnSelect()
 	    {
 	        String stmtText = "select (select id+1 as myId from S1.std:lastevent()) as idS1_0, " +
 	                "(select id+2 as myId from S1.std:lastevent()) as idS1_1 from S0";

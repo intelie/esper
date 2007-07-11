@@ -30,7 +30,7 @@ namespace net.esper.events.property
 		}
 
 		[Test]
-		public virtual void testGet()
+		public void testGet()
 		{
             Assert.AreEqual(bean.GetIndexed(1), getter.GetValue(_event));
 

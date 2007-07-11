@@ -13,7 +13,7 @@ namespace net.esper.view
     public class TestPropertyCheckHelper
     {
         [Test]
-        public virtual void testCheckNumeric()
+        public void testCheckNumeric()
         {
             EventType mySchema = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
 
@@ -35,7 +35,7 @@ namespace net.esper.view
         }
 
         [Test]
-        public virtual void testCheckLong()
+        public void testCheckLong()
         {
             EventType mySchema = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 
@@ -48,7 +48,7 @@ namespace net.esper.view
         }
 
         [Test]
-        public virtual void testFieldExist()
+        public void testFieldExist()
         {
             EventType mySchema = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 
@@ -57,7 +57,7 @@ namespace net.esper.view
         }
 
         [Test]
-        public virtual void test2FieldExist()
+        public void test2FieldExist()
         {
             EventType mySchema = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 

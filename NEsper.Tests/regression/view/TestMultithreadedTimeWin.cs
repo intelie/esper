@@ -34,7 +34,7 @@ namespace net.esper.regression.view
         private ResultUpdateListener[] listeners;
 
         [Test]
-        public virtual void testMultithreaded()
+        public void testMultithreaded()
         {
             int numSymbols = 1;
             int numThreads = 4;

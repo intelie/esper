@@ -47,7 +47,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestViewUpdate()
+	    public void testViewUpdate()
 	    {
             DataDictionary eventData = new DataDictionary();
 
@@ -78,7 +78,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestCopyView()
+	    public void testCopyView()
 	    {
 	        AddPropertyValueView copied = (AddPropertyValueView) myView.CloneView(SupportStatementContextFactory.MakeContext());
 	        Assert.AreEqual(myView.PropertyNames, copied.PropertyNames);
@@ -86,7 +86,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestAddProperty()
+	    public void testAddProperty()
 	    {
 	        DataDictionary eventData = new DataDictionary() ;
 	        eventData.Put("STDDEV", 100);

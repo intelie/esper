@@ -23,7 +23,7 @@ namespace net.esper.filter
 	public class TestFilterSpecParamEventProp
 	{
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        FilterSpecParamEventProp[] _params = new FilterSpecParamEventProp[5];
 	        _params[0] = MakeParam("a", "intBoxed");
@@ -40,7 +40,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestGetFilterValue()
+	    public void testGetFilterValue()
 	    {
 	        FilterSpecParamEventProp _params = MakeParam("asName", "intBoxed");
 

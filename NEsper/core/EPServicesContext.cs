@@ -251,7 +251,7 @@ namespace net.esper.core
        /// <param name="statementContextFactory">
        /// is the factory to use to create statement context objects
        /// </param>
-       /// <param name="engineEnvContext">
+        /// <param name="engineDirectory">
        /// is engine environment/directory information for use with adapters and external env
        /// </param>
        /// <param name="patternObjectResolutionService">resolves plug-in pattern objects</param>

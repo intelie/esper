@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using net.esper.client;
 using net.esper.compat;
 using net.esper.eql.spec;
+using net.esper.util;
 
 using org.apache.commons.logging;
 
@@ -58,7 +59,7 @@ namespace net.esper.view
 	            Type type;
 	            try
 	            {
-	                type = Type.GetType(entry.FactoryClassName);
+                    type = TypeHelper.ResolveType(entry.FactoryClassName);
 	            }
 	            catch (TypeLoadException)
 	            {

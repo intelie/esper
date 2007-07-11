@@ -39,10 +39,10 @@ namespace net.esper.eql.core
 	        serviceRegular = new StreamTypeServiceImpl(eventTypes, streamNames);
 
 	        // Prepare with stream-zero being unambigous
-            LinkedDictionary<String, EventType> streamTypes = new LinkedDictionary<String, EventType>();
+	        List<KeyValuePair<String, EventType>> streamTypes = new List<KeyValuePair<String, EventType>>();
 	        for (int i = 0; i < streamNames.Length; i++)
 	        {
-	            streamTypes.Put(streamNames[i], eventTypes[i]);
+	            streamTypes.Add(new KeyValuePair<string, EventType>(streamNames[i], eventTypes[i]));
 	        }
 	        serviceStreamZeroUnambigous = new StreamTypeServiceImpl(streamTypes, true, false);
 
@@ -51,7 +51,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestResolveByStreamAndPropNameInOne()
+	    public void testResolveByStreamAndPropNameInOne()
 	    {
 	        TryResolveByStreamAndPropNameInOne(serviceRegular);
 	        TryResolveByStreamAndPropNameInOne(serviceStreamZeroUnambigous);
@@ -59,7 +59,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestResolveByPropertyName()
+	    public void testResolveByPropertyName()
 	    {
 	        TryResolveByPropertyName(serviceRegular);
 	        serviceStreamZeroUnambigous.ResolveByPropertyName("boolPrimitive");
@@ -77,7 +77,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestResolveByStreamAndPropNameBoth()
+	    public void testResolveByStreamAndPropNameBoth()
 	    {
 	        TryResolveByStreamAndPropNameBoth(serviceRegular);
 	        TryResolveByStreamAndPropNameBoth(serviceStreamZeroUnambigous);

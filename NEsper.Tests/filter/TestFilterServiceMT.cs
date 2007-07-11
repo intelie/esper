@@ -36,7 +36,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestAddRemoveFilter()
+	    public void testAddRemoveFilter()
 	    {
 	        EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 	        FilterSpecCompiled spec = SupportFilterSpecBuilder.Build(eventType, new Object[] {"string", FilterOperator.EQUAL, "HELLO"});

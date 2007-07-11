@@ -41,7 +41,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorNoProcessorRequired()
+	    public void testGetProcessorNoProcessorRequired()
 	    {
 	        // single stream, empty group-by and wildcard select, no having clause, no need for any output processing
 	        IList<SelectExprElementRawSpec> wildcardSelect = new List<SelectExprElementRawSpec>();
@@ -50,7 +50,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorSimpleSelect()
+	    public void testGetProcessorSimpleSelect()
 	    {
 	        // empty group-by and no event properties aggregated in select clause (wildcard), no having clause
 	        IList<SelectExprElementRawSpec> wildcardSelect = new List<SelectExprElementRawSpec>();
@@ -69,7 +69,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorAggregatingAll()
+	    public void testGetProcessorAggregatingAll()
 	    {
 	        // empty group-by but aggragating event properties in select clause (output per event), no having clause
 	        // and one or more properties in the select clause is not aggregated
@@ -84,7 +84,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorRowForAll()
+	    public void testGetProcessorRowForAll()
 	    {
 	        // empty group-by but aggragating event properties in select clause (output per event), no having clause
 	        // and all properties in the select clause are aggregated
@@ -94,7 +94,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorRowPerGroup()
+	    public void testGetProcessorRowPerGroup()
 	    {
 	        // with group-by and the non-aggregated event properties are all listed in the group by (output per group)
 	        // no having clause
@@ -105,7 +105,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorAggregatingGrouped()
+	    public void testGetProcessorAggregatingGrouped()
 	    {
 	        // with group-by but either
 	        //      wildcard
@@ -120,7 +120,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorInvalid()
+	    public void testGetProcessorInvalid()
 	    {
 	        // invalid select clause
 	        try

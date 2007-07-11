@@ -20,7 +20,7 @@ namespace net.esper.eql.expression
 	    protected ExprAggregateNode validatedNodeToTest;
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[] {10, 20});
 	        validatedNodeToTest.SetAggregationResultFuture(future, 1);

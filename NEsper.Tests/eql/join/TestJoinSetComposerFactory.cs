@@ -39,7 +39,7 @@ namespace net.esper.eql.join
 	    }
 
 	    [Test]
-	    public void TestBuildIndex()
+	    public void testBuildIndex()
 	    {
 	        EventTable table = JoinSetComposerFactory.BuildIndex(0, new String[] {"intPrimitive", "boolBoxed"}, null, streamTypes[0]);
 	        Assert.IsTrue(table is PropertyIndexedEventTable);
@@ -52,14 +52,14 @@ namespace net.esper.eql.join
 	            JoinSetComposerFactory.BuildIndex(0, null, null, streamTypes[0]);
 	            Assert.Fail();
 	        }
-	        catch (ArgumentException ex)
+	        catch (NullReferenceException ex)
 	        {
 	            // Expected
 	        }
 	    }
 
 	    [Test]
-	    public void TestBuildComposer()
+	    public void testBuildComposer()
 	    {
 	        IList<OuterJoinDesc> outerJoins = new List<OuterJoinDesc>();
 	        JoinSetComposerImpl composer = (JoinSetComposerImpl) JoinSetComposerFactory.MakeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);

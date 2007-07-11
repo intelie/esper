@@ -6,32 +6,29 @@ namespace net.esper.support.bean
 {
     public class SupportBeanComplexProps
     {
-        private String _simpleProperty;
-        private EDictionary<string, string> _mappedProps;
-        private int[] _indexedProps;
-        private SupportBeanSpecialGetterNested _nested;
-        private EDictionary<String, String> _mapProperty;
-        private int[] _arrayProperty;
+        private readonly String _simpleProperty;
+        private readonly EDictionary<string, string> _mappedProps;
+        private readonly int[] _indexedProps;
+        private readonly SupportBeanSpecialGetterNested _nested;
+        private readonly Properties _mapProperty;
+        private readonly int[] _arrayProperty;
 
         public static String[] PROPERTIES = {
     	    "simpleProperty",
     	    "mapped()",
     	    "indexed[]",
     	    "mapProperty",
-    	    "MapProperty",
     	    "arrayProperty",
-    	    "ArrayProperty",
-    	    "nested",
-    	    "Nested"
+    	    "nested"
         };
 
         public static SupportBeanComplexProps MakeDefaultBean()
         {
-            EDictionary<string, string> properties = new HashDictionary<string, string>();
+            Properties properties = new Properties();
             properties.Add("keyOne", "valueOne");
             properties.Add("keyTwo", "valueTwo");
 
-            EDictionary<string, string> mapProp = new HashDictionary<String, String>();
+            Properties mapProp = new Properties();
             mapProp.Add("xOne", "yOne");
             mapProp.Add("xTwo", "yTwo");
 
@@ -49,10 +46,10 @@ namespace net.esper.support.bean
         }
 
         public SupportBeanComplexProps(
-            String simpleProperty, 
-            EDictionary<String, String> mappedProps,
+            String simpleProperty,
+            Properties mappedProps,
             int[] indexedProps,
-            EDictionary<String, String> mapProperty,
+            Properties mapProperty,
             int[] arrayProperty,
             String nestedValue,
             String nestedNestedValue)
@@ -70,14 +67,14 @@ namespace net.esper.support.bean
             get { return _simpleProperty; }
         }
 
-        public EDictionary<String, String> MapProperty
+        public Properties MapProperty
         {
             get { return _mapProperty; }
         }
 
         public String GetMapped(String key)
         {
-            return (String)_mappedProps.Fetch(key);
+            return _mappedProps.Fetch(key);
         }
 
         public int GetIndexed(int index)
@@ -93,11 +90,6 @@ namespace net.esper.support.bean
         public int[] ArrayProperty
         {
             get { return _arrayProperty; }
-        }
-
-        public int[] GetArrayProperty()
-        {
-            return _arrayProperty;
         }
 
         public void SetIndexed(int index, int value)

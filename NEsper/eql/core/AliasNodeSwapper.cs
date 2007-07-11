@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-using net.esper.eql;
+using net.esper.compat;
 using net.esper.eql.expression;
 
 namespace net.esper.eql.core
@@ -28,7 +28,7 @@ namespace net.esper.eql.core
         {
             if (fullExpr == null)
             {
-                throw new NullReferenceException();
+                throw new ArgumentException("fullExpr was null", "fullExpr");
             }
 
             if (IsAliasNode(exprTree, alias))
@@ -78,7 +78,7 @@ namespace net.esper.eql.core
             {
             	if (node.ChildNodes.Count != 0)
                 {
-                    throw new SystemException("Ident node has unexpected child nodes");
+                    throw new IllegalStateException("Ident node has unexpected child nodes");
                 }
                 return ((ExprIdentNode)node).UnresolvedPropertyName.Equals(alias);
             }

@@ -27,13 +27,13 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(String), concatNode.GetType());
+            Assert.AreEqual(typeof(String), concatNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        concatNode = new ExprConcatNode();
 	        concatNode.AddChildNode(new SupportExprNode("a"));
@@ -44,7 +44,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Must have 2 or more String subnodes
 	        try
@@ -72,7 +72,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        concatNode.AddChildNode(new SupportExprNode("x"));
 	        concatNode.AddChildNode(new SupportExprNode("y"));
@@ -84,7 +84,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(concatNode.EqualsNode(concatNode));
 	        Assert.IsFalse(concatNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE)));

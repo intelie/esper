@@ -34,7 +34,7 @@ namespace net.esper.eql.join
         }
 
         [Test]
-        public virtual void testJoin()
+        public void testJoin()
         {
             join.Join(null, null);
 

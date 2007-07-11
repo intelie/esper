@@ -21,7 +21,7 @@ namespace net.esper.filter
 	    private FilterSpecParamIn values;
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        values = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A", "B"}));
 	        FilterSpecParamIn values2 = new FilterSpecParamIn("a", FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A"}));

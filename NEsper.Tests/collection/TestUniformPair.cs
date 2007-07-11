@@ -8,18 +8,18 @@ namespace net.esper.collection
 	[TestFixture]
 	public class TestUniformPair
 	{
-		private UniformPair<String> pair1 = new UniformPair<String>( "a", "b" );
-		private UniformPair<String> pair2 = new UniformPair<String>( "a", "b" );
-		private UniformPair<String> pair3 = new UniformPair<String>( "a", null );
-		private UniformPair<String> pair4 = new UniformPair<String>( null, "b" );
-		private UniformPair<String> pair5 = new UniformPair<String>( null, null );
+		private readonly UniformPair<String> pair1 = new UniformPair<String>( "a", "b" );
+		private readonly UniformPair<String> pair2 = new UniformPair<String>( "a", "b" );
+        private readonly UniformPair<String> pair3 = new UniformPair<String>("a", null);
+        private readonly UniformPair<String> pair4 = new UniformPair<String>(null, "b");
+        private readonly UniformPair<String> pair5 = new UniformPair<String>(null, null);
 
 		[Test]
-		public virtual void testHashCode()
+		public void testHashCode()
 		{
 			Assert.IsTrue( pair1.GetHashCode() == ( "a".GetHashCode() ^ "b".GetHashCode() ) );
-			Assert.IsTrue( pair3.GetHashCode() == "a".GetHashCode() );
-			Assert.IsTrue( pair4.GetHashCode() == "b".GetHashCode() );
+			Assert.IsTrue( pair3.GetHashCode() == ( "a".GetHashCode() ) );
+			Assert.IsTrue( pair4.GetHashCode() == ( "b".GetHashCode() ) );
 			Assert.IsTrue( pair5.GetHashCode() == 0 );
 
 			Assert.IsTrue( pair1.GetHashCode() == pair2.GetHashCode() );
@@ -29,7 +29,7 @@ namespace net.esper.collection
 		}
 
 		[Test]
-		public virtual void testEquals()
+		public void testEquals()
 		{
 			Assert.AreEqual( pair2, pair1 );
 			Assert.AreEqual( pair1, pair2 );

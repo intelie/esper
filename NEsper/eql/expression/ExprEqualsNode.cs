@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.util;
@@ -58,14 +59,15 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <param name="methodResolutionService">for resolving class names in library method invocations</param>
+        /// <param name="viewResourceDelegate">The view resource delegate.</param>
         /// <throws>ExprValidationException thrown when validation failed </throws>
         public override void Validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
         {
             // Must have 2 child nodes
             if (this.ChildNodes.Count != 2)
             {
-                throw new SystemException("Equals node does not have exactly 2 child nodes");
+                throw new IllegalStateException("Equals node does not have exactly 2 child nodes");
             }
 
             // Must be the same boxed type returned by expressions under this
@@ -98,7 +100,7 @@ namespace net.esper.eql.expression
             {
                 if (!TypeHelper.IsNumeric(coercionType))
                 {
-                    throw new SystemException("Coercion type " + coercionType + " not numeric");
+                    throw new IllegalStateException("Coercion type " + coercionType + " not numeric");
                 }
                 mustCoerce = true;
             }
@@ -108,6 +110,7 @@ namespace net.esper.eql.expression
         /// Evaluate event tuple and return result.
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
+        /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>

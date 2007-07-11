@@ -37,7 +37,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSameWindowReuse()
+	    public void testSameWindowReuse()
 	    {
 	        String viewExpr = "select * from " + typeof(SupportBean).FullName + ".win:length(3)";
 	        EPStatement stmtOne = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -60,7 +60,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestStartStop()
+	    public void testStartStop()
 	    {
 	        // View created is automatically started
 	        Assert.AreEqual(0l, CollectionHelper.First(sizeView)["size"]);
@@ -88,7 +88,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestAddRemoveListener()
+	    public void testAddRemoveListener()
 	    {
 	        // View is started when created
 

@@ -27,7 +27,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax1Sum()
+        public void testCaseSyntax1Sum()
         {
             // Testing the two forms of the case expression
             // Furthermore the test checks the different when clauses and actions related.
@@ -55,7 +55,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax1WithElse()
+        public void testCaseSyntax1WithElse()
         {
             // Adding to the EQL statement an else expression
             // when a CSCO ticker is sent the property for the else expression is selected
@@ -75,7 +75,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax1Branches3()
+        public void testCaseSyntax1Branches3()
         {
             // Same test but the where clause doesn't match any of the condition of the case expresssion
             String caseExpr = "select case " + " when (symbol='GE') then volume " + " when (symbol='DELL') then volume / 2.0 " + " when (symbol='MSFT') then volume / 3.0 " + " end as p1 from " + typeof(SupportMarketDataBean).FullName;
@@ -98,7 +98,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2()
+        public void testCaseSyntax2()
         {
             String caseExpr = "select case intPrimitive " + " when longPrimitive then (intPrimitive + longPrimitive) " + " when doublePrimitive then intPrimitive * doublePrimitive" + " when floatPrimitive then floatPrimitive / doublePrimitive " + " else (intPrimitive + longPrimitive + floatPrimitive + doublePrimitive) end as p1 " + " from " + typeof(SupportBean).FullName + ".win:length(10)";
 
@@ -129,7 +129,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2StringsNBranches()
+        public void testCaseSyntax2StringsNBranches()
         {
             // Test of the various coercion user cases.
             String caseExpr =
@@ -232,7 +232,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2NoElseWithNull()
+        public void testCaseSyntax2NoElseWithNull()
         {
             String caseExpr = "select case string " + " when null then true " + " when '' then false end as p1" + " from " + typeof(SupportBean).FullName + ".win:length(100)";
 
@@ -254,7 +254,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax1WithNull()
+        public void testCaseSyntax1WithNull()
         {
             String caseExpr = "select case " + " when string = null then true " + " when string = '' then false end as p1" + " from " + typeof(SupportBean).FullName + ".win:length(100)";
 
@@ -276,7 +276,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2WithNull()
+        public void testCaseSyntax2WithNull()
         {
             String caseExpr = "select case intPrimitive " + " when 1 then null " + " when 2 then 1.0" + " when 3 then null " + " else 2 " + " end as p1 from " + typeof(SupportBean).FullName + ".win:length(100)";
 
@@ -295,7 +295,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2WithNullBool()
+        public void testCaseSyntax2WithNullBool()
         {
             String caseExpr =
                 "select case boolBoxed " +
@@ -317,7 +317,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2WithCoercion()
+        public void testCaseSyntax2WithCoercion()
         {
             String caseExpr =
                 "select case intPrimitive " +
@@ -338,7 +338,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2WithinExpression()
+        public void testCaseSyntax2WithinExpression()
         {
             String caseExpr =
                 "select 2 * (case " +
@@ -365,7 +365,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2Sum()
+        public void testCaseSyntax2Sum()
         {
             String caseExpr =
                 "select case intPrimitive when 1 then sum(longPrimitive) " +
@@ -403,7 +403,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2EnumChecks()
+        public void testCaseSyntax2EnumChecks()
         {
             String caseExpr =
                 "select case supportEnum " +
@@ -430,7 +430,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2EnumResult()
+        public void testCaseSyntax2EnumResult()
         {
             String caseExpr =
                 "select case intPrimitive * 2 " +
@@ -458,7 +458,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testCaseSyntax2NoAsName()
+        public void testCaseSyntax2NoAsName()
         {
             String caseSubExpr = "case intPrimitive when 1 then 0 end";
             String caseExpr =

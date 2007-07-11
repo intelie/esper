@@ -19,7 +19,7 @@ namespace net.esper.indicator.pretty
 		/// </summary>
 
 		[Test]
-		public virtual void testRender()
+		public void testRender()
 		{
 			Cube cube = SupportCubeFactory.make1DimCube();
 			IDictionary<String, DataTable> result = CubeTabularDataRenderer.RenderCube( cube );

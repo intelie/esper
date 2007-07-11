@@ -28,7 +28,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestAggregation()
+	    public void testAggregation()
 	    {
 	        AvgAggregator agg = new AvgAggregator();
 	        Assert.AreEqual(typeof(double?), agg.ValueType);
@@ -45,20 +45,20 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(double?), validatedNodeToTest.GetType());
+	        Assert.AreEqual(typeof(double?), validatedNodeToTest.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("avg(5)", validatedNodeToTest.ExpressionString);
 	        Assert.AreEqual("avg(distinct 6)", avgNodeDistinct.ExpressionString);
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(validatedNodeToTest.EqualsNode(validatedNodeToTest));
 	        Assert.IsFalse(validatedNodeToTest.EqualsNode(new ExprSumNode(false)));

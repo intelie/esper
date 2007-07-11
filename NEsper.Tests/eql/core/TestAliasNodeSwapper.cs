@@ -19,13 +19,13 @@ namespace net.esper.eql.core
 		internal ExprNode resultingTree;
 		
 		[SetUp]
-		public virtual void  setUp()
+		public virtual void setUp()
 		{
 			fullExpr = new ExprIdentNode("full expression");
 		}
 		
 		[Test]
-		public virtual void  testWholeReplaced()
+		public virtual void testWholeReplaced()
 		{
 			exprTree = new ExprIdentNode("alias");
 			alias = "alias";
@@ -34,7 +34,7 @@ namespace net.esper.eql.core
 		}
 		
 		[Test]
-		public virtual void  testPartReplaced()
+		public virtual void testPartReplaced()
 		{
 			exprTree = SupportExprNodeFactory.MakeEqualsNode();
 			alias = "intPrimitive";

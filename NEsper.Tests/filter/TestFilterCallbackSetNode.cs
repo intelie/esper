@@ -32,7 +32,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestNodeGetSet()
+	    public void testNodeGetSet()
 	    {
 	        FilterHandle exprOne = new SupportFilterHandle();
 
@@ -68,7 +68,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestNodeMatching()
+	    public void testNodeMatching()
 	    {
 	        SupportBeanSimple eventObject = new SupportBeanSimple("DepositEvent_1", 1);
 	        EventBean _eventBean = SupportEventBeanFactory.CreateObject(eventObject);

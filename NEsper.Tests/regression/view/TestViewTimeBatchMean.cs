@@ -35,7 +35,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testTimeBatchMean()
+        public void testTimeBatchMean()
         {
             testListener.Reset();
             checkMeanIterator(Double.NaN);

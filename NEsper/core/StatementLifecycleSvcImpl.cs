@@ -582,7 +582,7 @@ namespace net.esper.core
         /// Statements indicate that listeners have been added through this method.
         /// </summary>
         /// <param name="statementId">is the statement id for which listeners were added</param>
-        /// <param name="listeners">is the set of listeners after adding the new listener</param>
+        /// <param name="eventHandlers">is the set of event handlers after adding the new handler</param>
         public void UpdatedEventHandlers(string statementId, Set<UpdateEventHandler> eventHandlers)
         {
             log.Debug(".updatedListeners No action for base implementation");

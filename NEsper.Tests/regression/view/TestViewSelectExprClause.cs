@@ -39,11 +39,11 @@ namespace net.esper.regression.view
 		public virtual void TestEventType()
 		{
 			EventType type = selectTestView.EventType;
-            IList<String> testList = new String[]{ "(3*intPrimitive)", "str", "result", "aBool" } ;
+            IList<String> testList = new String[]{ "(3*intPrimitive)", "string", "result", "aBool" } ;
 
 			log.Debug( ".testGetEventType properties=" + CollectionHelper.Render( type.PropertyNames ) );
 			ArrayAssertionUtil.AreEqualAnyOrder( type.PropertyNames, testList ) ;
-			Assert.AreEqual( typeof( String ), type.GetPropertyType( "str" ) );
+			Assert.AreEqual( typeof( String ), type.GetPropertyType( "string" ) );
 			Assert.AreEqual( typeof( bool? ), type.GetPropertyType( "aBool" ) );
 			Assert.AreEqual( typeof( float? ), type.GetPropertyType( "result" ) );
 			Assert.AreEqual( typeof( int? ), type.GetPropertyType( "(3*intPrimitive)" ) );
@@ -60,7 +60,7 @@ namespace net.esper.regression.view
 			SendEvent( "c", true, 3, 10, 20 );
 
 			EventBean received = testListener.GetAndResetLastNewData()[0];
-			Assert.AreEqual( "c", received["str"] );
+			Assert.AreEqual( "c", received["string"] );
 			Assert.AreEqual( true, received["aBool"] );
 			Assert.AreEqual( 30f, received["result"] );
 		}

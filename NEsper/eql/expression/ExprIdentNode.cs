@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 using net.esper.collection;
 using net.esper.compat;
-using net.esper.eql;
 using net.esper.eql.core;
 using net.esper.events;
+using net.esper.util;
 
 namespace net.esper.eql.expression
 {
@@ -92,7 +91,7 @@ namespace net.esper.eql.expression
             Pair<PropertyResolutionDescriptor, String> propertyInfoPair = GetTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
             resolvedStreamName = propertyInfoPair.Second;
             streamNum = propertyInfoPair.First.StreamNum;
-            propertyType = propertyInfoPair.First.PropertyType;
+            propertyType = TypeHelper.GetBoxedType(propertyInfoPair.First.PropertyType);
             resolvedPropertyName = propertyInfoPair.First.PropertyName;
             propertyGetter = propertyInfoPair.First.StreamEventType.GetGetter(resolvedPropertyName);
         }
@@ -263,6 +262,7 @@ namespace net.esper.eql.expression
         /// Evaluate event tuple and return result.
         /// </summary>
         /// <param name="eventsPerStream">event tuple</param>
+        /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <returns>
         /// evaluation result, a bool value for OR/AND-type evalution nodes.
         /// </returns>

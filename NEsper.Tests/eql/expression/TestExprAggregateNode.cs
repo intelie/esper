@@ -12,7 +12,7 @@ namespace net.esper.eql.expression
     public class TestExprAggregateNode
     {
         [Test]
-        public virtual void testGetAggregatesBottomUp()
+        public void testGetAggregatesBottomUp()
         {
             /*
             top (ag)

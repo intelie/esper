@@ -2,7 +2,6 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportBean_S4
 	{
 		virtual public int Id
@@ -35,37 +34,7 @@ namespace net.esper.support.bean
             set { this._p43 = value; }
 		}
 
-        virtual public int id
-        {
-            get { return _id; }
-            set { this._id = value; }
-        }
-
-        virtual public String p40
-        {
-            get { return _p40; }
-            set { this._p40 = value; }
-        }
-
-        virtual public String p41
-        {
-            get { return _p41; }
-            set { this._p41 = value; }
-        }
-
-        virtual public String p42
-        {
-            get { return _p42; }
-            set { this._p42 = value; }
-        }
-
-        virtual public String p43
-        {
-            get { return _p43; }
-            set { this._p43 = value; }
-        }
-
-		private static int idCounter;
+        private static int idCounter;
 		
 		private int _id;
         private String _p40;

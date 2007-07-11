@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using net.esper.core;
+using net.esper.compat;
 using net.esper.client;
 using net.esper.schedule;
 
@@ -134,7 +135,7 @@ namespace net.esper.eql.db
 				return new DataCacheExpiringImpl(expCache.MaxAgeSeconds, expCache.PurgeIntervalSeconds, schedulingService, scheduleBucket.AllocateSlot(), epStatementHandle);
 			}
 			
-			throw new SystemException("Cache implementation class not configured");
+			throw new IllegalStateException("Cache implementation class not configured");
 		}
 	}
 }

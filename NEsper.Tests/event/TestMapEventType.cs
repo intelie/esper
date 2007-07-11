@@ -43,14 +43,14 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestPropertyNames()
+	    public void testPropertyNames()
 	    {
 	        ICollection<string> properties = eventType.PropertyNames;
 	        ArrayAssertionUtil.AreEqualAnyOrder(properties, new String[] {"myInt", "myString", "myNullableString", "mySupportBean", "myComplexBean", "myNullableSupportBean", "myNullType"});
 	    }
 
 	    [Test]
-	    public void TestGetPropertyType()
+	    public void testGetPropertyType()
 	    {
 	        Assert.AreEqual(typeof(int), eventType.GetPropertyType("myInt"));
 	        Assert.AreEqual(typeof(String), eventType.GetPropertyType("myString"));
@@ -69,13 +69,13 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestUnderlyingType()
+	    public void testUnderlyingType()
 	    {
 	        Assert.AreEqual(typeof(IDataDictionary), eventType.UnderlyingType);
 	    }
 
 	    [Test]
-	    public void TestIsValidProperty()
+	    public void testIsValidProperty()
 	    {
 	        Assert.IsTrue(eventType.IsProperty("myInt"));
 	        Assert.IsTrue(eventType.IsProperty("myString"));
@@ -92,7 +92,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetGetter()
+	    public void testGetGetter()
 	    {
 	        SupportBean nestedSupportBean = new SupportBean();
 	        nestedSupportBean.SetIntPrimitive(100);
@@ -144,13 +144,13 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetSuperTypes()
+	    public void testGetSuperTypes()
 	    {
 	        Assert.IsNull(eventType.SuperTypes);
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        EDictionary<String, Type> mapTwo = new LinkedDictionary<String, Type>();
 	        mapTwo.Put("myInt", typeof(int));
@@ -180,7 +180,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetFromMap()
+	    public void testGetFromMap()
 	    {
 	        SupportBean nestedSupportBean = new SupportBean();
 	        nestedSupportBean.SetIntPrimitive(100);

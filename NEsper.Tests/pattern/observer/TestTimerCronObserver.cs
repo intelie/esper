@@ -47,7 +47,7 @@ namespace net.esper.pattern.observer
 	    }
 
 	    [Test]
-	    public void TestStartAndObserve()
+	    public void testStartAndObserve()
 	    {
 	        scheduleService.Time = (0);
 	        observer.StartObserve();
@@ -67,7 +67,7 @@ namespace net.esper.pattern.observer
 	    }
 
 	    [Test]
-	    public void TestStartAndStop()
+	    public void testStartAndStop()
 	    {
 	        // Start then stop
 	        scheduleService.Time = (0);
@@ -92,7 +92,7 @@ namespace net.esper.pattern.observer
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        try
 	        {

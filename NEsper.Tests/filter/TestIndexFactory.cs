@@ -28,7 +28,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestCreateIndex()
+	    public void testCreateIndex()
 	    {
 	        // Create a "greater" index
 	        FilterParamIndexBase index = IndexFactory.CreateIndex(eventType, "intPrimitive", FilterOperator.GREATER);

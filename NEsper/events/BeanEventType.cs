@@ -34,6 +34,8 @@ namespace net.esper.events
         private IList<EventType> superTypes;
         private ICollection<EventType> deepSuperTypes;
 
+        private PropertyResolutionStyle propertyResolutionStyle;
+
         internal class SimplePropertyInfo
         {
             public Type type;
@@ -56,6 +58,10 @@ namespace net.esper.events
             this.beanEventAdapter = beanEventAdapter;
             this.optionalLegacyDef = optionalLegacyDef;
 			this.eventTypeId = eventTypeId;
+            this.propertyResolutionStyle =
+                this.optionalLegacyDef != null
+                    ? this.optionalLegacyDef.PropertyResolutionStyle
+                    : beanEventAdapter.DefaultPropertyResolutionStyle;
 
             Initialize();
         }
@@ -154,7 +160,10 @@ namespace net.esper.events
         public EventPropertyDescriptor GetSimpleProperty(String propertyName)
         {
             SimplePropertyInfo propertyInfo = GetSimplePropertyInfo(propertyName);
-            return propertyInfo.descriptor;
+            return
+                propertyInfo != null
+                    ? propertyInfo.descriptor
+                    : null;
         }
 
         /// <summary>
@@ -165,10 +174,30 @@ namespace net.esper.events
         {
             get
             {
-                return
-                    (optionalLegacyDef != null)
-                        ? optionalLegacyDef.PropertyResolutionStyle
-                        : PropertyResolutionStyle.CASE_SENSITIVE;
+                return propertyResolutionStyle;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the bean type uses a smart resolution style.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if [uses smart resolution style]; otherwise, <c>false</c>.
+        /// </value>
+        private bool UsesSmartResolutionStyle
+        {
+            get
+            {
+                switch (ResolutionStyle)
+                {
+                    case PropertyResolutionStyle.CASE_SENSITIVE:
+                        return false;
+                    case PropertyResolutionStyle.CASE_INSENSITIVE:
+                    case PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE:
+                        return true;
+                    default:
+                        return false;
+                }
             }
         }
 
@@ -300,7 +329,11 @@ namespace net.esper.events
 
             this.propertyNames = new String[properties.Count];
 
-            this.simplePropertyTable = new HashDictionary<String, SimplePropertyInfo>(); 
+            this.simplePropertyTable = new HashDictionary<String, SimplePropertyInfo>();
+            this.smartPropertyTable =
+                UsesSmartResolutionStyle
+                    ? new HashDictionary<string, IList<SimplePropertyInfo>>()
+                    : null;
 
             //this.simplePropertyTypes = new HashDictionary<String, Type>();
             //this.simplePropertyGetters = new HashDictionary<String, EventPropertyGetter>();
@@ -330,7 +363,7 @@ namespace net.esper.events
 
                             // Only map into the smart property table if the resolution style
                             // would require it.  Otherwise its just a waste of time and memory.
-                            if (ResolutionStyle != PropertyResolutionStyle.CASE_INSENSITIVE)
+                            if (UsesSmartResolutionStyle)
                             {
                                 // Find the property in the smart property table
                                 string smartPropertyName = propertyName.ToLowerInvariant();

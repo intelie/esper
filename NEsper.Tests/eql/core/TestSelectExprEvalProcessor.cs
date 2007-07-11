@@ -42,7 +42,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetResultEventType()
+	    public void testGetResultEventType()
 	    {
 	        EventType type = methodOne.ResultEventType;
 	        Assert.IsTrue(CollectionHelper.AreEqual(type.PropertyNames, new String[] {"resultOne", "resultTwo"}));
@@ -56,7 +56,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestProcess()
+	    public void testProcess()
 	    {
 	        EventBean[] events = new EventBean[] {MakeEvent(8.8, 3, 4)};
 

@@ -31,7 +31,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testNoJoinLast()
+        public void testNoJoinLast()
         {
             String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol " + "output last every 2 events";
 
@@ -42,7 +42,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testNoOutputClauseView()
+        public void testNoOutputClauseView()
         {
             String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol";
 
@@ -53,9 +53,9 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testNoOutputClauseJoin()
+        public void testNoOutputClauseJoin()
         {
-            String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.str = two.symbol " + "group by symbol";
+            String viewExpr = "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.string = two.symbol " + "group by symbol";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
             selectTestView.AddListener(testListener);
@@ -68,7 +68,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testNoJoinAll()
+        public void testNoJoinAll()
         {
             String viewExpr =
                 "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " +
@@ -84,7 +84,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testJoinLast()
+        public void testJoinLast()
         {
             String viewExpr =
                 "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + 
@@ -92,7 +92,7 @@ namespace net.esper.regression.view
                 typeof(SupportBeanString).FullName + ".win:length(100) as one, " + 
                 typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + 
                 "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + 
-                "       and one.str = two.symbol " +
+                "       and one.string = two.symbol " +
                 "group by symbol " +
                 "output last every 2 events";
 
@@ -107,7 +107,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testJoinAll()
+        public void testJoinAll()
         {
             String viewExpr =
                 "select symbol," + "sum(price) as mySum," + "avg(price) as myAvg " + 
@@ -115,7 +115,7 @@ namespace net.esper.regression.view
                 typeof(SupportBeanString).FullName + ".win:length(100) as one, " + 
                 typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + 
                 "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + 
-                "       and one.str = two.symbol " +
+                "       and one.string = two.symbol " +
                 "group by symbol " +
                 "output all every 2 events";
 

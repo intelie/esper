@@ -31,7 +31,7 @@ namespace net.esper.eql.join.assemble
         }
 
         [Test]
-        public virtual void testFlowOptional()
+        public void testFlowOptional()
         {
             RootCartProdAssemblyNode rootCartNodeAllOpt = new RootCartProdAssemblyNode(1, 5, true);
             rootCartNodeAllOpt.AddChild(new SupportJoinProcNode(2, 5));
@@ -51,7 +51,7 @@ namespace net.esper.eql.join.assemble
         }
 
         [Test]
-        public virtual void testFlowRequired()
+        public void testFlowRequired()
         {
             rootCartNodeOneReq.Init(null);
 
@@ -103,7 +103,7 @@ namespace net.esper.eql.join.assemble
         }
 
         [Test]
-        public virtual void testComputeCombined()
+        public void testComputeCombined()
         {
             Assert.IsNull(RootCartProdAssemblyNode.ComputeCombined(new int[][] { new int[] { 2 } }));
             Assert.IsNull(RootCartProdAssemblyNode.ComputeCombined(new int[][] { new int[] { 1 }, new int[] { 2 } }));

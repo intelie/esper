@@ -24,7 +24,7 @@ namespace net.esper.eql.parse
 	public class TestEQLParser : EqlTokenTypes
 	{
 	    [Test]
-	    public void TestDisplayAST()
+	    public void testDisplayAST()
 	    {
 	        String className = typeof(SupportBean).FullName;
 	        String expression = "select b in (select * from A) from " + className;
@@ -39,7 +39,7 @@ namespace net.esper.eql.parse
 	    }
 
 	    [Test]
-	    public void TestInvalidCases()
+	    public void testInvalidCases()
 	    {
 	        String className = typeof(SupportBean).FullName;
 
@@ -179,7 +179,7 @@ namespace net.esper.eql.parse
 	    }
 
 	    [Test]
-	    public void TestValidCases()
+	    public void testValidCases()
 	    {
 	        String className = typeof(SupportBean).FullName;
 	        String preFill = "select * from " + className;
@@ -434,7 +434,7 @@ namespace net.esper.eql.parse
 	    }
 
 	    [Test]
-	    public void TestBitWiseCases()
+	    public void testBitWiseCases()
 	    {
 	        String className = typeof(SupportBean).FullName;
 	        String eqlSmt = "select (intPrimitive & intBoxed) from " + className;
@@ -446,7 +446,7 @@ namespace net.esper.eql.parse
 	    }
 
 	    [Test]
-	    public void TestIfThenElseCase()
+	    public void testIfThenElseCase()
 	     {
 	         String className = typeof(SupportBean).FullName;
 	         String eqlSmt = "select case when 1 then (a + 1) when 2 then (a*2) end from " + className;

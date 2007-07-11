@@ -15,7 +15,7 @@ namespace net.esper.collection
         private Pair<String, String> pair5 = new Pair<String, String>(null, null);
 
         [Test]
-        public virtual void testHashCode()
+        public void testHashCode()
         {
             Assert.IsTrue(pair1.GetHashCode() == ("a".GetHashCode() ^ "b".GetHashCode()));
             Assert.IsTrue(pair3.GetHashCode() == "a".GetHashCode());
@@ -29,7 +29,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testEquals()
+        public void testEquals()
         {
             Assert.AreEqual(pair2, pair1);
             Assert.AreEqual(pair1, pair2);

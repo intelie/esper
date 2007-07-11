@@ -40,7 +40,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public void TestSingle()
+		public void testSingle()
 		{
 			String eventName = typeof(SupportBeanSimple).FullName;
 			String text = "select *, myString||myString as concat from " + eventName + ".win:length(5)";
@@ -51,7 +51,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public void TestSingleInsertInto()
+		public void testSingleInsertInto()
 		{
 			String eventName = typeof(SupportBeanSimple).FullName;
 			String text = "insert into someEvent select *, myString||myString as concat from " + eventName + ".win:length(5)";
@@ -67,7 +67,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public void TestJoinInsertInto()
+		public void testJoinInsertInto()
 		{
 			String eventNameOne = typeof(SupportBeanSimple).FullName;
 			String eventNameTwo = typeof(SupportMarketDataBean).FullName;
@@ -87,7 +87,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public void TestJoinNoCommonProperties()
+		public void testJoinNoCommonProperties()
 		{
 			String eventNameOne = typeof(SupportBeanSimple).FullName;
 			String eventNameTwo = typeof(SupportMarketDataBean).FullName;
@@ -115,7 +115,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public void TestJoinCommonProperties()
+		public void testJoinCommonProperties()
 		{
 			String eventNameOne = typeof(SupportBean_A).FullName;
 			String eventNameTwo = typeof(SupportBean_B).FullName;
@@ -143,7 +143,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public void TestCombinedProperties()
+		public void testCombinedProperties()
 		{
 			String eventName = typeof(SupportBeanCombinedProps).FullName;
 			String text = "select *, indexed[0].Mapped('0ma').value||indexed[0].Mapped('0mb').value as concat from " + eventName + ".win:length(5)";
@@ -154,7 +154,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public void TestMapEvents()
+		public void testMapEvents()
 		{
 			Configuration configuration = new Configuration();
 			EDictionary<String, Type> typeMap = new HashDictionary<String, Type>();
@@ -183,7 +183,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public void TestInvalidRepeatedProperties()
+		public void testInvalidRepeatedProperties()
 		{
 			String eventName = typeof(SupportBeanSimple).FullName;
 			String text = "select *, myString||myString as myString from " + eventName + ".win:length(5)";

@@ -37,7 +37,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestRuntimeException()
+		public void testRuntimeException()
 		{
 			String className = typeof(SupportStaticMethodLib).FullName;
 			statementText = "select price, " + className + ".ThrowException() " + stream;
@@ -53,7 +53,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestAutoImports()
+		public void testAutoImports()
 		{
 			Configuration configuration = new Configuration();
 			configuration.AddImport("mull");
@@ -78,7 +78,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestRuntimeAutoImports()
+	    public void testRuntimeAutoImports()
 	    {
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        String text = "select SupportStaticMethodLib.MinusOne(doublePrimitive) from " + typeof(SupportBean).FullName;
@@ -98,7 +98,7 @@ namespace net.esper.regression.view
 	    }
 
 		[Test]
-		public void TestNoParameters()
+		public void testNoParameters()
 		{
 			long startTime = DateTimeHelper.CurrentTimeMillis;
 			statementText = "select DateTimeHelper.CurrentTimeMillis " + stream;
@@ -125,7 +125,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestSingleParameter()
+		public void testSingleParameter()
 		{
             statementText = "select BitWriter.Write(7) " + stream;
 			Object[] result = CreateStatementAndGetProperty(true, "Integer.ToBinaryString(7)");
@@ -141,7 +141,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestTwoParameters()
+		public void testTwoParameters()
 		{
 			statementText = "select Math.Max(2, 3) " + stream;
             Assert.AreEqual(3, CreateStatementAndGetProperty(true, "Math.Max(2, 3)")[0]);
@@ -155,7 +155,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestUserDefined()
+		public void testUserDefined()
 		{
 			String className = typeof(SupportStaticMethodLib).FullName;
 			statementText = "select " + className + ".StaticMethod(2)" + stream;
@@ -163,7 +163,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestComplexParameters()
+		public void testComplexParameters()
 		{
 			statementText = "select Convert.ToString(price) " + stream;
 			Object[] result = CreateStatementAndGetProperty(true, "Convert.ToString(price)");
@@ -183,7 +183,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestMultipleMethodInvocations()
+		public void testMultipleMethodInvocations()
 		{
 			statementText = "select Math.Max(2d, price), Math.Max(volume, 4d)" + stream;
 			Object[] props = CreateStatementAndGetProperty(true, "Math.Max(2.0, price)", "Math.Max(volume, 4.0)");
@@ -192,7 +192,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestOtherClauses()
+		public void testOtherClauses()
 		{
 			// where
 			statementText = "select *" + stream + "where Math.Pow(price, .5) > 2";
@@ -228,7 +228,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestNestedFunction()
+	    public void testNestedFunction()
 	    {
 	        Configuration configuration = new Configuration();
 	        configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
@@ -248,7 +248,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPassthru()
+	    public void testPassthru()
 	    {
 	        Configuration configuration = new Configuration();
 	        configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
@@ -271,7 +271,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPerfConstantParameters()
+	    public void testPerfConstantParameters()
 	    {
 	        Configuration configuration = new Configuration();
 	        configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
@@ -298,7 +298,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPerfConstantParametersNested()
+	    public void testPerfConstantParametersNested()
 	    {
 	        Configuration configuration = new Configuration();
 	        configuration.AddImport(typeof(SupportStaticMethodLib).FullName);

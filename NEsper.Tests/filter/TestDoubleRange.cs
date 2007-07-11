@@ -16,7 +16,7 @@ namespace net.esper.filter
 	public class TestDoubleRange
 	{
 	    [Test]
-	    public void TestNew()
+	    public void testNew()
 	    {
 	        DoubleRange range = new DoubleRange(10d, 20d);
 	        Assert.AreEqual(20d, range.Max);
@@ -28,7 +28,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        DoubleRange rangeOne = new DoubleRange(10d, 20d);
 	        DoubleRange rangeTwo = new DoubleRange(20d, 10d);
@@ -43,7 +43,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestHash()
+	    public void testHash()
 	    {
 	        DoubleRange range = new DoubleRange(10d, 20d);
 	        double valueA = 10.0;

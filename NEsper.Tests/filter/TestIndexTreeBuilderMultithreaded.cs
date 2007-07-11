@@ -94,7 +94,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestVerifyFilterSpecSet()
+	    public void testVerifyFilterSpecSet()
 	    {
 	        // Add all the above filter definitions
 	        foreach (FilterSpecCompiled filterSpec in testFilterSpecs)
@@ -139,7 +139,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestMultithreaded()
+	    public void testMultithreaded()
 	    {
 	        FilterHandleSetNode topNode = new FilterHandleSetNode();
 

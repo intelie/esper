@@ -53,7 +53,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestCopyParameters()
+	    public void testCopyParameters()
 	    {
 	        FilterValueSet spec = MakeFilterValues(
 	                "doublePrimitive", FilterOperator.LESS, 1.1,
@@ -85,7 +85,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestBuildWithMatch()
+	    public void testBuildWithMatch()
 	    {
 	        FilterHandleSetNode topNode = new FilterHandleSetNode();
 
@@ -207,7 +207,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestBuildMatchRemove()
+	    public void testBuildMatchRemove()
 	    {
 	        FilterHandleSetNode top = new FilterHandleSetNode();
 

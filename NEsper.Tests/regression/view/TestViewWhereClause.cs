@@ -32,7 +32,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testWhere()
+        public void testWhere()
         {
             sendMarketDataEvent("IBM");
             Assert.IsFalse(testListener.GetAndClearIsInvoked());
@@ -48,7 +48,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testWhereNumericType()
+        public void testWhereNumericType()
         {
             String viewExpr =
                 "select " +

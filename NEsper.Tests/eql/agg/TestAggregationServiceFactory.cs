@@ -37,7 +37,7 @@ namespace net.esper.eql.agg
 	    }
 
 	    [Test]
-	    public void TestGetService()
+	    public void testGetService()
 	    {
 	        // Test with aggregates but no group by
 	        selectAggregateNodes.Add(SupportExprNodeFactory.MakeSumAggregateNode());
@@ -50,7 +50,7 @@ namespace net.esper.eql.agg
 	    }
 
 	    [Test]
-	    public void TestGetNullService()
+	    public void testGetNullService()
 	    {
 	        // Test no aggregates and no group-by
 	    	AggregationService service = AggregationServiceFactory.GetService(selectAggregateNodes,havingAggregateNodes, orderByAggregateNodes, false, methodResolutionService);

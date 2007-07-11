@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
 using net.esper.eql.spec;
 using net.esper.events;
 using net.esper.view;
@@ -65,7 +66,7 @@ namespace net.esper.eql.view
             }
             else
             {
-                throw new SystemException("Unknown stream selector " + selectStreamDirEnum);
+                throw new IllegalStateException("Unknown stream selector " + selectStreamDirEnum);
             }
         }
 

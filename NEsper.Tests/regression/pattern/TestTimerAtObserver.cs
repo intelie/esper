@@ -21,7 +21,7 @@ namespace net.esper.regression.pattern
 	public class TestTimerAtObserver : SupportBeanConstants
 	{
 	    [Test]
-	    public void TestOp()
+	    public void testOp()
 	    {
             DateTime dateTime = new DateTime(2005, 3, 9, 8, 0, 0, 0);
 

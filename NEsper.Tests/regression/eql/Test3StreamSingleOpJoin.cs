@@ -53,7 +53,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testJoinUniquePerId()
+		public void testJoinUniquePerId()
 		{
 			// Test sending a C event
 			SendEvent( eventsA[0] );

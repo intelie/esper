@@ -32,23 +32,23 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestSelfRefEvent()
+	    public void testSelfRefEvent()
 	    {
 	        EventBean originalBean = adapterService.AdapterForBean(new SupportSelfReferenceEvent());
 	        Assert.AreEqual(null, originalBean["selfRef.selfRef.selfRef.value"]);
 	    }
 
 	    [Test]
-	    public void TestEventTypeId()
+	    public void testEventTypeId()
 	    {
 	        EventBean originalBean = adapterService.AdapterForBean(new SupportSerializableBean("e1"));
 	        EventTypeSPI eventType = (EventTypeSPI) originalBean.EventType;
 	        String id = eventType.EventTypeId;
-	        Assert.AreEqual("CLASS_net.esper.support.bean.SupportSerializableBean", id);
+	        Assert.AreEqual("TYPE_net.esper.support.bean.SupportSerializableBean", id);
 	    }
 
 	    [Test]
-	    public void TestCreateMapType()
+	    public void testCreateMapType()
 	    {
 	        EDictionary<String, Type> testTypesMap;
             testTypesMap = new HashDictionary<String, Type>();
@@ -61,7 +61,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        adapterService.AddBeanType("NAME", typeof(TestEventAdapterServiceImpl).FullName);
 
@@ -75,7 +75,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddInvalid()
+	    public void testAddInvalid()
 	    {
 	        try
 	        {
@@ -89,7 +89,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddMapType()
+	    public void testAddMapType()
 	    {
 	        EDictionary<String, Type> props = new HashDictionary<String, Type>();
 	        props.Put("a", typeof(long?));
@@ -127,7 +127,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddWrapperType()
+	    public void testAddWrapperType()
 	    {
 	        EventType beanEventType = adapterService.AddBeanType("mybean", typeof(SupportMarketDataBean));
             EDictionary<String, Type> props = new HashDictionary<String, Type>();
@@ -163,7 +163,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddClassName()
+	    public void testAddClassName()
 	    {
 	        EventType typeOne = adapterService.AddBeanType("latencyEvent", typeof(SupportBean).FullName);
 	        Assert.AreEqual(typeof(SupportBean), typeOne.UnderlyingType);
@@ -191,7 +191,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddClass()
+	    public void testAddClass()
 	    {
 	        EventType typeOne = adapterService.AddBeanType("latencyEvent", typeof(SupportBean));
 	        Assert.AreEqual(typeof(SupportBean), typeOne.UnderlyingType);
@@ -219,7 +219,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestWrap()
+	    public void testWrap()
 	    {
 	        SupportBean bean = new SupportBean();
 	        EventBean _event = adapterService.AdapterForBean(bean);
@@ -227,7 +227,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestCreateAddToEventType()
+	    public void testCreateAddToEventType()
 	    {
             EDictionary<String, Type> schema = new HashDictionary<String, Type>();
 	        schema.Put("STDDEV", typeof(double?));
@@ -240,7 +240,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAddXMLDOMType()
+	    public void testAddXMLDOMType()
 	    {
 	        adapterService.AddXMLDOMType("XMLDOMTypeOne", GetXMLDOMConfig());
 	        EventType eventType = adapterService.GetEventTypeByAlias("XMLDOMTypeOne");
@@ -266,7 +266,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAdapterForDOM()
+	    public void testAdapterForDOM()
 	    {
 	        adapterService.AddXMLDOMType("XMLDOMTypeOne", GetXMLDOMConfig());
 

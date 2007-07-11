@@ -71,7 +71,7 @@ namespace net.esper.compat
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
 		
-		public new void Add( T item )
+		public void Add( T item )
 		{
 			m_store.Add( item );
 		}
@@ -83,7 +83,7 @@ namespace net.esper.compat
 
 		public void AddAll( IEnumerable<T> source )
 		{
-			m_store.AddAll<T>( source );
+			m_store.AddAll( source );
 		}
 
         /// <summary>

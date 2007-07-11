@@ -28,7 +28,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEnter()
+	    public void testEnter()
 	    {
 	        agg.Enter(1);
 	        agg.Enter(10);
@@ -36,7 +36,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestLeave()
+	    public void testLeave()
 	    {
 	        agg.Enter(1);
 	        agg.Leave(1);
@@ -53,7 +53,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetValue()
+	    public void testGetValue()
 	    {
 	        Assert.AreEqual(0, agg.Value);
 
@@ -77,7 +77,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        Assert.AreEqual(typeof(int?), agg.ValueType);
 	    }

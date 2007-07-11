@@ -66,7 +66,7 @@ namespace net.esper.regression.view
 
 
         [Test]
-        public virtual void testAggregateAll()
+        public void testAggregateAll()
         {
             String statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) " + "output every 6 events " + "order by symbol";
             createAndSendAggregate(statementString);
@@ -118,9 +118,9 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testAggregateAllJoin()
+        public void testAggregateAllJoin()
         {
-            String statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by symbol";
+            String statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by symbol";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySymbolAggregateAll();
@@ -131,7 +131,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, max(sum(price)) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by symbol";
+            statementString = "select symbol, max(sum(price)) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by symbol";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySymbolAggregateAll();
@@ -142,7 +142,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "having sum(price) > 0 " + "output every 6 events " + "order by symbol";
+            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "having sum(price) > 0 " + "output every 6 events " + "order by symbol";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySymbolAggregateAll();
@@ -153,7 +153,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by symbol, sum(price)";
+            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by symbol, sum(price)";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySymbolAggregateAll();
@@ -164,7 +164,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, 21+sum(price)*0 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "output every 6 events " + "order by symbol, 2*sum(price)+1";
+            statementString = "select symbol, 21+sum(price)*0 from " + typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "output every 6 events " + "order by symbol, 2*sum(price)+1";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySymbolAggregateAll();
@@ -184,7 +184,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testRowPerGroup()
+        public void testRowPerGroup()
         {
             String statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) " + "group by symbol " + "output every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
@@ -218,9 +218,9 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testRowPerGroupJoin()
+        public void testRowPerGroupJoin()
         {
-            String statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "group by symbol " + "output every 6 events " + "order by sum(price)";
+            String statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "group by symbol " + "output every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySumPriceGroup();
@@ -237,7 +237,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "group by symbol " + "having sum(price) > 0 " + "output every 6 events " + "order by sum(price)";
+            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "group by symbol " + "having sum(price) > 0 " + "output every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySumPriceGroup();
@@ -254,7 +254,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testAliases()
+        public void testAliases()
         {
             String statementString = "select symbol, volume, sum(price) as mySum from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) " + "group by symbol " + "output every 6 events " + "order by mySum";
             createAndSendAggregate(statementString);
@@ -282,7 +282,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testGroupBySwitch()
+        public void testGroupBySwitch()
         {
             // Instead of the row-per-group behavior, these should
             // get row-per-event behavior since there are properties 
@@ -295,7 +295,7 @@ namespace net.esper.regression.view
             assertOnlyProperties(new String[] { "symbol", "sum(price)" });
             clearValues();
 
-            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "group by symbol " + "output every 6 events " + "order by sum(price), volume";
+            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "group by symbol " + "output every 6 events " + "order by sum(price), volume";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySumPriceEvent();
@@ -306,7 +306,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testLast()
+        public void testLast()
         {
             String statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) " + "group by symbol " + "output last every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
@@ -325,7 +325,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "group by symbol " + "output last every 6 events " + "order by sum(price)";
+            statementString = "select symbol, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "group by symbol " + "output last every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySumPriceGroup();
@@ -362,7 +362,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, volume, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "group by symbol " + "output last every 6 events " + "order by sum(price)";
+            statementString = "select symbol, volume, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "group by symbol " + "output last every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySumPriceEvent();
@@ -384,7 +384,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testAggregateGrouped()
+        public void testAggregateGrouped()
         {
             String statementString = "select symbol, volume, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) " + "group by symbol " + "output every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
@@ -424,9 +424,9 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testAggregateGroupedJoin()
+        public void testAggregateGroupedJoin()
         {
-            String statementString = "select symbol, volume, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "group by symbol " + "output every 6 events " + "order by sum(price)";
+            String statementString = "select symbol, volume, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "group by symbol " + "output every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySumPriceEvent();
@@ -446,7 +446,7 @@ namespace net.esper.regression.view
 
             epService.Initialize();
 
-            statementString = "select symbol, volume, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.str " + "group by symbol " + "having sum(price) > 0 " + "output every 6 events " + "order by sum(price)";
+            statementString = "select symbol, volume, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) as one, " + typeof(SupportBeanString).FullName + ".win:length(100) as two " + "where one.symbol = two.string " + "group by symbol " + "having sum(price) > 0 " + "output every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);
             sendJoinEvents();
             orderValuesBySumPriceEvent();

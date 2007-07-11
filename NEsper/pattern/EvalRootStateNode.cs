@@ -1,5 +1,7 @@
 using System;
 
+using net.esper.compat;
+
 using org.apache.commons.logging;
 
 namespace net.esper.pattern
@@ -67,7 +69,7 @@ namespace net.esper.pattern
 
             if (topStateNode == null)
             {
-                throw new SystemException("root state node is inactive");
+                throw new IllegalStateException("root state node is inactive");
             }
 
             topStateNode.Start();

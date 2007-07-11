@@ -30,13 +30,13 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(double), prevNode.GetType());
+	        Assert.AreEqual(typeof(double?), prevNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        prevNode = new ExprPreviousNode();
 
@@ -49,7 +49,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        RandomAccessByIndexGetter getter = new RandomAccessByIndexGetter();
 	        IStreamRandomAccess buffer = new IStreamRandomAccess(getter);
@@ -63,14 +63,14 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        ExprPreviousNode node1 = new ExprPreviousNode();
 	        Assert.IsTrue(node1.EqualsNode(prevNode));
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("prev(s1.intPrimitive,s1.doublePrimitive)", prevNode.ExpressionString);
 	    }

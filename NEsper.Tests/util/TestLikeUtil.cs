@@ -9,7 +9,7 @@ namespace net.esper.util
     public class TestLikeUtil
     {
         [Test]
-        public virtual void testLike()
+        public void testLike()
         {
             tryMatches(
                 "%aa%", '\\',

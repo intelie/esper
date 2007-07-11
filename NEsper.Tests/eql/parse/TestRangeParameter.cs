@@ -13,7 +13,7 @@ namespace net.esper.eql.parse
 	public class TestRangeParameter
 	{
 		[Test]
-		public virtual void testIsWildcard()
+		public void testIsWildcard()
 		{
 			RangeParameter rangeParameter = new RangeParameter( 10, 20 );
 			Assert.IsTrue( rangeParameter.IsWildcard( 10, 20 ) );
@@ -23,7 +23,7 @@ namespace net.esper.eql.parse
 		}
 
 		[Test]
-		public virtual void testGetValues()
+		public void testGetValues()
 		{
 			RangeParameter rangeParameter = new RangeParameter( 0, 5 );
 			Set<int> values = rangeParameter.GetValuesInRange( 1, 3 );

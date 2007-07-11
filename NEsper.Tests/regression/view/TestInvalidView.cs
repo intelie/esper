@@ -34,14 +34,14 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSyntaxException()
+	    public void testSyntaxException()
 	    {
 	        String exceptionText = GetSyntaxExceptionView("select * * from " + _event_NUM);
 	        Assert.AreEqual("expecting \"from\", found '*' near line 1, column 10 [select * * from net.esper.support.bean.SupportBean_N]", exceptionText);
 	    }
 
 	    [Test]
-	    public void TestStatementException()
+	    public void testStatementException()
 	    {
 	        String exceptionText = null;
 

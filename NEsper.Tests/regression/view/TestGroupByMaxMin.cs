@@ -38,7 +38,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestMinMaxView()
+	    public void testMinMaxView()
 	    {
 	        String viewExpr = "select symbol, " +
 	                                  "min(all volume) as minVol," +
@@ -56,7 +56,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestMinMaxJoin()
+	    public void testMinMaxJoin()
 	    {
 	        String viewExpr = "select symbol, " +
 	                                  "min(volume) as minVol," +
@@ -79,7 +79,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestMinNoGroupHaving()
+	    public void testMinNoGroupHaving()
 	    {
 	        String stmtText = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:time(5 sec) " +
 	                          "having volume > Min(volume) * 1.3";
@@ -103,7 +103,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestMinNoGroupSelectHaving()
+	    public void testMinNoGroupSelectHaving()
 	    {
 	        String stmtText = "select symbol, Min(volume) as mymin from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
 	                          "having volume > Min(volume) * 1.3";

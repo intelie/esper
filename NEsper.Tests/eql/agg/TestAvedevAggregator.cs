@@ -16,7 +16,7 @@ namespace net.esper.eql.agg
 	public class TestAvedevAggregator
 	{
 	    [Test]
-	    public void TestAggregateFunction()
+	    public void testAggregateFunction()
 	    {
 	        AvedevAggregator agg = new AvedevAggregator();
 	        Assert.AreEqual(typeof(double?), agg.ValueType);

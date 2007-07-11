@@ -29,7 +29,7 @@ namespace net.esper.eql.expression
 		}
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Must have exactly 2 subnodes
 	        try
@@ -58,7 +58,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	    	log.Debug(".testGetType");
 	    	_bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
@@ -77,11 +77,11 @@ namespace net.esper.eql.expression
 	        _bitWiseNode.AddChildNode(new SupportExprNode(typeof(long?)));
 	        _bitWiseNode.AddChildNode(new SupportExprNode(typeof(long?)));
 	    	_bitWiseNode.GetValidatedSubtree(null, null, null);
-	        Assert.AreEqual(typeof(long?), _bitWiseNode.GetType());
+	        Assert.AreEqual(typeof(long?), _bitWiseNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	    	log.Debug(".testEvaluate");
 	    	_bitWiseNode.AddChildNode(new SupportExprNode(10));
@@ -91,7 +91,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	    	log.Debug(".testEqualsNode");
 	    	_bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
@@ -100,7 +100,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	    	log.Debug(".testToExpressionString");
 	    	_bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);

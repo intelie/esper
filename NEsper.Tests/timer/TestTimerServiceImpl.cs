@@ -32,7 +32,7 @@ namespace net.esper.timer
         }
 
         [Test]
-        public virtual void testClocking()
+        public void testClocking()
         {
             int RESOLUTION = TimerService_Fields.INTERNAL_CLOCK_RESOLUTION_MSEC;
             int tempCount;

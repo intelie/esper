@@ -21,7 +21,7 @@ namespace net.esper.view
 	public class TestViewSpec
 	{
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        Type[] c_0 = new Type[] { typeof(String)} ;
 	        String[] s_0_0 = new String[] { "\"symbol\"" };

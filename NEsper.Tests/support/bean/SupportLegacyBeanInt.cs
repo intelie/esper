@@ -4,10 +4,9 @@ namespace net.esper.support.bean
 {
 	public class SupportLegacyBeanInt
 	{
-		virtual public int intPrimitive
+		virtual public int IntPrimitive
 		{
 			get { return fieldIntPrimitive; }
-			
 		}
 
 		public int fieldIntPrimitive;

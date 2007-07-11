@@ -14,7 +14,7 @@ namespace net.esper.eql.parse
     public class TestASTParameterHelper
     {
         [Test]
-        public virtual void testSingleConstant()
+        public void testSingleConstant()
         {
             AST ast = makeSingleAst(EqlEvalTokenTypes.LONG_TYPE, "1");
             Assert.AreEqual(1L, convert(ast));
@@ -27,7 +27,7 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testArray()
+        public void testArray()
         {
             // Uniform type array
             AST ast = MakeArrayAst(
@@ -62,14 +62,14 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testFrequencyParameter()
+        public void testFrequencyParameter()
         {
             FrequencyParameter result = (FrequencyParameter)convert(makeFrequencyAst());
             Assert.AreEqual(9, result.Frequency);
         }
 
         [Test]
-        public virtual void testRangeParameter()
+        public void testRangeParameter()
         {
             RangeParameter result = (RangeParameter)convert(makeRangeAst());
             Assert.AreEqual(9, result.Low);
@@ -77,14 +77,14 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testWildcardParameter()
+        public void testWildcardParameter()
         {
             AST ast = makeSingleAst(EqlEvalTokenTypes.STAR, "");
             convert(ast);
         }
 
         [Test]
-        public virtual void testListParameter()
+        public void testListParameter()
         {
             AST ast = makeSingleAst(EqlEvalTokenTypes.NUMERIC_PARAM_LIST, "");
             ast.addChild(makeSingleAst(EqlEvalTokenTypes.INT_TYPE, "99"));
@@ -109,7 +109,7 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testTimePeriod()
+        public void testTimePeriod()
         {
             AST ast = makeInternal(
                 new int[] { EqlEvalTokenTypes.SECOND_PART },

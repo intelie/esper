@@ -2,7 +2,6 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class SupportBeanBase
 	{
 		virtual public String Id
@@ -10,11 +9,6 @@ namespace net.esper.support.bean
             get { return _id; }
             set { this._id = value; }
 		}
-
-        virtual public String id
-        {
-            get { return _id; }
-        }
 
 		private String _id;
 		

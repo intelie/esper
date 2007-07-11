@@ -35,7 +35,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPriorTimeWindow()
+	    public void testPriorTimeWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prior(2, symbol) as priorSymbol, " +
@@ -119,7 +119,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPriorExtTimedWindow()
+	    public void testPriorExtTimedWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prior(2, symbol) as priorSymbol, " +
@@ -178,7 +178,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPriorTimeBatchWindow()
+	    public void testPriorTimeBatchWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prior(3, symbol) as priorSymbol, " +
@@ -231,7 +231,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPriorUnbound()
+	    public void testPriorUnbound()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prior(3, symbol) as priorSymbol, " +
@@ -262,7 +262,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLongRunningSingle()
+	    public void testLongRunningSingle()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prior(3, symbol) as prior0Symbol " +
@@ -290,7 +290,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLongRunningUnbound()
+	    public void testLongRunningUnbound()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prior(3, symbol) as prior0Symbol " +
@@ -318,7 +318,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLongRunningMultiple()
+	    public void testLongRunningMultiple()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prior(3, symbol) as prior0Symbol, " +
@@ -353,7 +353,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPriorLengthWindow()
+	    public void testPriorLengthWindow()
 	    {
 	        String viewExpr =   "select symbol as currSymbol, " +
 	                            "prior(0, symbol) as prior0Symbol, " +
@@ -410,7 +410,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPriorLengthWindowWhere()
+	    public void testPriorLengthWindowWhere()
 	    {
 	        String viewExpr =   "select Prior(2, symbol) as currSymbol " +
 	                            "from " + typeof(SupportMarketDataBean).FullName + ".win:length(1) " +
@@ -428,7 +428,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPriorSortWindow()
+	    public void testPriorSortWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prior(0, symbol) as prior0Symbol, " +
@@ -456,7 +456,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousTimeBatchWindowJoin()
+	    public void testPreviousTimeBatchWindowJoin()
 	    {
 	        String viewExpr = "select string as currSymbol, " +
 	                          "prior(2, symbol) as priorSymbol, " +

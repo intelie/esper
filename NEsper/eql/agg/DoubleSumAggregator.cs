@@ -25,7 +25,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints++;
-            sum += (double)item;
+            sum += Convert.ToDouble(item);
         }
 
         public void Leave(Object item)
@@ -35,7 +35,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints--;
-            sum -= (double)item;
+            sum -= Convert.ToDouble(item);
         }
 
         public Object Value
@@ -52,7 +52,7 @@ namespace net.esper.eql.agg
 
         public Type ValueType
         {
-            get { return typeof(double); }
+            get { return typeof(double?); }
         }
 
         public AggregationMethod NewAggregator(MethodResolutionService methodResolutionService)

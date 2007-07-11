@@ -39,7 +39,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInSelect()
+	    public void testInSelect()
 	    {
 	        String stmtText = "select id in (select id from S1.win:length(1000)) as value from S0";
 
@@ -65,7 +65,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInSelectWhere()
+	    public void testInSelectWhere()
 	    {
 	        String stmtText = "select id in (select id from S1.win:length(1000) where id > 0) as value from S0";
 
@@ -91,7 +91,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInSelectWhereExpressions()
+	    public void testInSelectWhereExpressions()
 	    {
 	        String stmtText = "select 3*id in (select 2*id from S1.win:length(1000)) as value from S0";
 
@@ -114,7 +114,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInNullable()
+	    public void testInNullable()
 	    {
 	        String stmtText = "select id from S0 as s0 where p00 in (select p10 from S1.win:length(1000))";
 
@@ -140,7 +140,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInNullableCoercion()
+	    public void testInNullableCoercion()
 	    {
 	        String stmtText = "select longBoxed from " + typeof(SupportBean).FullName + "(string='A') as s0 " +
 	                          "where longBoxed in " +
@@ -174,7 +174,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestInNullRow()
+	    public void testInNullRow()
 	    {
 	        String stmtText = "select intBoxed from " + typeof(SupportBean).FullName + "(string='A') as s0 " +
 	                          "where intBoxed in " +
@@ -201,7 +201,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestNotInNullRow()
+	    public void testNotInNullRow()
 	    {
 	        String stmtText = "select intBoxed from " + typeof(SupportBean).FullName + "(string='A') as s0 " +
 	                          "where intBoxed not in " +
@@ -228,7 +228,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestNotInSelect()
+	    public void testNotInSelect()
 	    {
 	        String stmtText = "select not id in (select id from S1.win:length(1000)) as value from S0";
 
@@ -254,7 +254,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestNotInNullableCoercion()
+	    public void testNotInNullableCoercion()
 	    {
 	        String stmtText = "select longBoxed from " + typeof(SupportBean).FullName + "(string='A') as s0 " +
 	                          "where longBoxed not in " +

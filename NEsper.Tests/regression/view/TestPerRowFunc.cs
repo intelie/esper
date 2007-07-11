@@ -37,7 +37,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestCoalesceBeans()
+	    public void testCoalesceBeans()
 	    {
 	        TryCoalesceBeans("select Coalesce(a.string, b.string) as myString, Coalesce(a, b) as myBean" +
 	                          " from pattern [every (a=" + typeof(SupportBean).FullName + "(string='s0') or b=" + typeof(SupportBean).FullName + "(string='s1'))]");
@@ -64,7 +64,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestCoalesceLong()
+	    public void testCoalesceLong()
 	    {
 	        SetupCoalesce("coalesce(longBoxed, intBoxed, shortBoxed)");
 	        Assert.AreEqual(typeof(long?), selectTestView.EventType.GetPropertyType("result"));
@@ -83,7 +83,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestCoalesceDouble()
+	    public void testCoalesceDouble()
 	    {
 	        SetupCoalesce("coalesce(null, byteBoxed, shortBoxed, intBoxed, longBoxed, floatBoxed, doubleBoxed)");
 	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("result"));
@@ -120,7 +120,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestCoalesceInvalid()
+	    public void testCoalesceInvalid()
 	    {
 	        String viewExpr = "select Coalesce(null, null) as result" +
 	                          " from " + typeof(SupportBean).FullName + ".win:length(3) ";
@@ -153,7 +153,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestMinMaxEventType()
+	    public void testMinMaxEventType()
 	    {
 	        SetUpMinMax();
 	        EventType type = selectTestView.EventType;
@@ -165,7 +165,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestMinMaxWindowStats()
+	    public void testMinMaxWindowStats()
 	    {
 	        SetUpMinMax();
 	        testListener.Reset();
@@ -186,7 +186,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestOperators()
+	    public void testOperators()
 	    {
 	        String viewExpr = "select longBoxed % intBoxed as myMod " +
 	                          " from " + typeof(SupportBean).FullName + ".win:length(3) where Not(longBoxed > intBoxed)";
@@ -206,7 +206,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestConcat()
+	    public void testConcat()
 	    {
 	        String viewExpr = "select p00 || p01 as c1, p00 || p01 || p02 as c2, p00 || '|' || p01 as c3" +
 	                          " from " + typeof(SupportBean_S0).FullName + ".win:length(10)";

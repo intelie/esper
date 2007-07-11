@@ -16,7 +16,7 @@ namespace net.esper.filter
 	public class TestFilterOperator
 	{
 	    [Test]
-	    public void TestOperatorsFromString()
+	    public void testOperatorsFromString()
 	    {
             Assert.IsTrue(FilterOperatorHelper.ParseComparisonOperator("!=") == FilterOperator.NOT_EQUAL);
             Assert.IsTrue(FilterOperatorHelper.ParseComparisonOperator(">") == FilterOperator.GREATER);
@@ -29,7 +29,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestRanges()
+	    public void testRanges()
 	    {
 	        Assert.IsTrue(FilterOperatorHelper.ParseRangeOperator(false, false, false) == FilterOperator.RANGE_OPEN);
             Assert.IsTrue(FilterOperatorHelper.ParseRangeOperator(true, true, false) == FilterOperator.RANGE_CLOSED);
@@ -42,7 +42,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestIsComparison()
+	    public void testIsComparison()
 	    {
             Assert.IsTrue(FilterOperatorHelper.IsComparisonOperator(FilterOperator.GREATER));
 	        Assert.IsTrue(FilterOperatorHelper.IsComparisonOperator(FilterOperator.GREATER_OR_EQUAL));
@@ -54,7 +54,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestIsRange()
+	    public void testIsRange()
 	    {
             Assert.IsTrue(FilterOperatorHelper.IsRangeOperator(FilterOperator.RANGE_OPEN));
             Assert.IsTrue(FilterOperatorHelper.IsRangeOperator(FilterOperator.RANGE_CLOSED));
@@ -70,7 +70,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestIsInvertedRange()
+	    public void testIsInvertedRange()
 	    {
             Assert.IsFalse(FilterOperatorHelper.IsInvertedRangeOperator(FilterOperator.RANGE_OPEN));
             Assert.IsFalse(FilterOperatorHelper.IsInvertedRangeOperator(FilterOperator.RANGE_CLOSED));

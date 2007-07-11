@@ -16,7 +16,7 @@ namespace net.esper.client
 	public class TestEPServiceProviderManager
 	{
 	    [Test]
-	    public void TestGetInstance()
+	    public void testGetInstance()
 	    {
 	        Configuration configuration = new Configuration();
 
@@ -44,7 +44,7 @@ namespace net.esper.client
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        Configuration configuration = new Configuration();
 	        configuration.AddEventTypeAlias("x", "xxx.noclass");

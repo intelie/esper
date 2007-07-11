@@ -21,7 +21,7 @@ namespace net.esper.view.stat.olap
         }
 
         [Test]
-        public virtual void testValidOrdinalsAndMembers()
+        public void testValidOrdinalsAndMembers()
         {
             IList<Dimension> dimensions = testCube.Dimensions;
             IList<Cell> measures = testCube.Measures;
@@ -67,7 +67,7 @@ namespace net.esper.view.stat.olap
         }
 
         [Test]
-        public virtual void testInvalidGetMembers()
+        public void testInvalidGetMembers()
         {
             try
             {
@@ -91,7 +91,7 @@ namespace net.esper.view.stat.olap
         }
 
         [Test]
-        public virtual void testInvalidGetOrdinal()
+        public void testInvalidGetOrdinal()
         {
             try
             {

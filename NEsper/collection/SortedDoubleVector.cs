@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
+
 namespace net.esper.collection
 {
     /// <summary>
@@ -73,7 +75,7 @@ namespace net.esper.collection
             int index = FindInsertIndex(val);
             if ((index == -1) || (values[index] != val))
             {
-                throw new SystemException("Value not found in collection");
+                throw new IllegalStateException("Value not found in collection");
             }
             values.RemoveAt(index) ;
             return;

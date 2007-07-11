@@ -40,7 +40,7 @@ namespace net.esper.eql.join
 	    }
 
 	    [Test]
-	    public void TestFlow()
+	    public void testFlow()
 	    {
 	        EventBean[] oldDataOne = SupportEventBeanFactory.MakeEvents(new String[] {"a"});
 	        EventBean[] newDataOne = SupportEventBeanFactory.MakeEvents(new String[] {"b"});

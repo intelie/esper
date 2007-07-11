@@ -60,7 +60,7 @@ namespace net.esper.eql.parse
 						break;
 					
 					default: 
-						throw new SystemException("Event property AST node not recognized, type=" + child.Type);
+						throw new IllegalStateException("Event property AST node not recognized, type=" + child.Type);
 					
 				}
 				

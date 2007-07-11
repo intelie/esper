@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
+using net.esper.client;
 using net.esper.events;
 
 using org.apache.commons.logging;
@@ -25,11 +26,11 @@ namespace net.esper.events.property
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        beanEventAdapter = new BeanEventAdapter();
+            beanEventAdapter = new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE);
 	    }
 
 	    [Test]
-	    public void TestParse()
+	    public void testParse()
 	    {
 	        Property property = PropertyParser.Parse("i[1]", beanEventAdapter);
 	        Assert.AreEqual("i", ((IndexedProperty)property).PropertyName);
@@ -53,7 +54,7 @@ namespace net.esper.events.property
 	    }
 
 	    [Test]
-	    public void TestParseMapKey()
+	    public void testParseMapKey()
 	    {
 	        Assert.AreEqual("a", TryKey("a"));
 	    }

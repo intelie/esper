@@ -22,7 +22,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testNext()
+        public void testNext()
         {
             Assert.IsTrue(iterator.MoveNext());
             Assert.AreEqual(_eventBean, iterator.Current);
@@ -30,7 +30,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testHasNext()
+        public void testHasNext()
         {
             Assert.IsTrue(iterator.MoveNext());
             Assert.IsFalse(iterator.MoveNext());

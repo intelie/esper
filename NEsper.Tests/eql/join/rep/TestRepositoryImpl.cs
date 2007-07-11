@@ -25,7 +25,7 @@ namespace net.esper.eql.join.rep
 		}
 
 		[Test]
-		public virtual void testGetCursors()
+		public void testGetCursors()
 		{
 			// get cursor for root stream lookup
 			IEnumerator<Cursor> it = repository.GetCursors( 0 );
@@ -50,7 +50,7 @@ namespace net.esper.eql.join.rep
 		}
 
 		[Test]
-		public virtual void testAddResult()
+		public void testAddResult()
 		{
 			Set<EventBean> results = SupportJoinResultNodeFactory.MakeEventSet( 2 );
 			repository.AddResult( CollectionHelper.Next( repository.GetCursors( 0 )), results, 1 );
@@ -77,7 +77,7 @@ namespace net.esper.eql.join.rep
 		}
 
 		[Test]
-		public virtual void testFlow()
+		public void testFlow()
 		{
 			// Lookup from s0
 			Cursor[] cursors = read( repository.GetCursors( 0 ) );

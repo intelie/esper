@@ -22,7 +22,7 @@ namespace net.esper.regression.pattern
 	public class TestTimerIntervalObserver : SupportBeanConstants
 	{
 	    [Test]
-	    public void TestOp()
+	    public void testOp()
 	    {
 	        EventCollection events = EventCollectionFactory.GetEventSetOne(0, 1000);
 	        CaseList testCaseList = new CaseList();
@@ -175,7 +175,7 @@ namespace net.esper.regression.pattern
 	     */
 
 	    [Test]
-	    public void TestIntervalSpec()
+	    public void testIntervalSpec()
 	    {
 	        EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();

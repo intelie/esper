@@ -39,42 +39,42 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testWhereNotNullIs()
+		public void testWhereNotNullIs()
 		{
 			setupStatement( "where s1.p11 is not null" );
 			tryWhereNotNull();
 		}
 
 		[Test]
-		public virtual void testWhereNotNullNE()
+		public void testWhereNotNullNE()
 		{
 			setupStatement( "where s1.p11 != null" );
 			tryWhereNotNull();
 		}
 
 		[Test]
-		public virtual void testWhereNotNullSQLNE()
+		public void testWhereNotNullSQLNE()
 		{
 			setupStatement( "where s1.p11 <> null" );
 			tryWhereNotNull();
 		}
 
 		[Test]
-		public virtual void testWhereNullIs()
+		public void testWhereNullIs()
 		{
 			setupStatement( "where s1.p11 is null" );
 			tryWhereNull();
 		}
 
 		[Test]
-		public virtual void testWhereNullEq()
+		public void testWhereNullEq()
 		{
 			setupStatement( "where s1.p11 = null" );
 			tryWhereNull();
 		}
 
 		[Test]
-		public virtual void testWhereJoinOrNull()
+		public void testWhereJoinOrNull()
 		{
 			setupStatement( "where s0.p01 = s1.p11 or s1.p11 is null" );
 
@@ -102,7 +102,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testWhereJoin()
+		public void testWhereJoin()
 		{
 			setupStatement( "where s0.p01 = s1.p11" );
 
@@ -151,7 +151,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testEventType()
+		public void testEventType()
 		{
 			EPStatement outerJoinView = setupStatement( "" );
 			EventType type = outerJoinView.EventType;

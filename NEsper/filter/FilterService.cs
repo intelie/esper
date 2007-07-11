@@ -7,7 +7,7 @@ namespace net.esper.filter
 {
 	/// <summary> Interface for filtering events by event type and event property values. Allows adding and removing filters.
 	/// <para>
-	/// Filters are defined by a <seealso cref="FilterSpecCompiled"/> and are associated with a <seealso cref="FilterCallback"/>
+	/// Filters are defined by a <seealso cref="FilterSpecCompiled"/> and are associated with a <seealso cref="FilterHandleCallback"/>
 	/// callback. Implementations may decide if the same filter callback can be registered twice for different
     /// or some filter specifications.
     /// </para>

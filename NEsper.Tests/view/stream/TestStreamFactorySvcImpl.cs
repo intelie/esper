@@ -43,7 +43,7 @@ namespace net.esper.view.stream
 	    }
 
 	    [Test]
-	    public void TestInvalidJoin()
+	    public void testInvalidJoin()
 	    {
 	        streams = new EventStream[3];
 	        streams[0] = streamFactoryService.CreateStream(filterSpecs[0], supportFilterService, null, true);
@@ -61,7 +61,7 @@ namespace net.esper.view.stream
 	    }
 
 	    [Test]
-	    public void TestCreateJoin()
+	    public void testCreateJoin()
 	    {
 	        streams = new EventStream[3];
 	        streams[0] = streamFactoryService.CreateStream(filterSpecs[0], supportFilterService, null, true);
@@ -81,7 +81,7 @@ namespace net.esper.view.stream
 	    }
 
 	    [Test]
-	    public void TestDropJoin()
+	    public void testDropJoin()
 	    {
 	        streams = new EventStream[3];
 	        streams[0] = streamFactoryService.CreateStream(filterSpecs[0], supportFilterService, null, true);
@@ -109,7 +109,7 @@ namespace net.esper.view.stream
 	    }
 
 	    [Test]
-	    public void TestCreateNoJoin()
+	    public void testCreateNoJoin()
 	    {
 	        streams = new EventStream[4];
 	        streams[0] = streamFactoryService.CreateStream(filterSpecs[0], supportFilterService, null, false);
@@ -130,7 +130,7 @@ namespace net.esper.view.stream
 	    }
 
 	    [Test]
-	    public void TestDropNoJoin()
+	    public void testDropNoJoin()
 	    {
 	        streams = new EventStream[4];
 	        streams[0] = streamFactoryService.CreateStream(filterSpecs[0], supportFilterService, null, false);

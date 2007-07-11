@@ -7,6 +7,7 @@ using System.Xml.XPath;
 using antlr;
 using antlr.collections;
 
+using net.esper.compat;
 using net.esper.eql.generated;
 using net.esper.events;
 using net.esper.type;
@@ -75,7 +76,7 @@ namespace net.esper.events.xml
 					return "/" + child.getFirstChild().getText() + "[position() = " + index + "]";
 				
 				default: 
-					throw new SystemException("Event property AST node not recognized, type=" + child.Type);
+					throw new IllegalStateException("Event property AST node not recognized, type=" + child.Type);
 				
 			}
 		}

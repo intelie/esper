@@ -34,7 +34,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testAliasesSimple()
+        public void testAliasesSimple()
         {
             String statementString = "select symbol as mySymbol from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " + "output every 6 events " + "order by mySymbol";
             createAndSend(statementString);
@@ -67,7 +67,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testAliasesAggregation()
+        public void testAliasesAggregation()
         {
             String statementString = "select symbol, volume, sum(price) from " + typeof(SupportMarketDataBean).FullName + ".win:length(20) " + "group by symbol " + "output every 6 events " + "order by sum(price)";
             createAndSendAggregate(statementString);

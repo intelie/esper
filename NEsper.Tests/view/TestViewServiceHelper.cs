@@ -60,7 +60,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestInstantiateChain()
+	    public void testInstantiateChain()
 	    {
 	        SupportBeanClassView topView = new SupportBeanClassView(TEST_CLASS);
 	        IList<ViewFactory> viewFactories = SupportViewSpecFactory.MakeFactoryListOne(topView.EventType);
@@ -81,7 +81,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestMatch()
+	    public void testMatch()
 	    {
 	        SupportStreamImpl stream = new SupportStreamImpl(TEST_CLASS, 10);
             IList<ViewFactory> viewFactories = SupportViewSpecFactory.MakeFactoryListOne(stream.EventType);
@@ -150,7 +150,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestAddMergeViews()
+	    public void testAddMergeViews()
 	    {
             IList<ViewSpec> specOne = SupportViewSpecFactory.MakeSpecListOne();
 
@@ -165,7 +165,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestRemoveChainLeafView()
+	    public void testRemoveChainLeafView()
 	    {
 	        // Remove a non-leaf, expect no removals
 	        IList<View> removedViews = ViewServiceHelper.RemoveChainLeafView(top, child_2_2);

@@ -37,7 +37,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumOneView()
+	    public void testSumOneView()
 	    {
 	        String viewExpr = "select symbol, price, Avg(price) as avgPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
@@ -50,7 +50,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumJoin()
+	    public void testSumJoin()
 	    {
 	        String viewExpr = "select symbol, price, Avg(price) as avgPrice " +
 	                          "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
@@ -67,7 +67,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumHavingNoAggregatedProp()
+	    public void testSumHavingNoAggregatedProp()
 	    {
 	        String viewExpr = "select symbol, price, Avg(price) as avgPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " +
@@ -78,13 +78,13 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestNoAggregationJoinHaving()
+	    public void testNoAggregationJoinHaving()
 	    {
 	        RunNoAggregationJoin("having");
 	    }
 
 	    [Test]
-	    public void TestNoAggregationJoinWhere()
+	    public void testNoAggregationJoinWhere()
 	    {
 	        RunNoAggregationJoin("where");
 	    }
@@ -214,7 +214,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestHavingSum()
+	    public void testHavingSum()
 	    {
 	        String stmt = "select Sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=" + typeof(SupportBean).FullName +
 	                "] having Sum(myEvent.intPrimitive) = 2";
@@ -232,7 +232,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestHavingSumIStream()
+	    public void testHavingSumIStream()
 	    {
 	        String stmt = "select istream Sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=" + typeof(SupportBean).FullName +
 	                "] having Sum(myEvent.intPrimitive) = 2";

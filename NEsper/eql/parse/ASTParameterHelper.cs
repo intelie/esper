@@ -98,7 +98,7 @@ namespace net.esper.eql.parse
                         break;
 
                     default:
-                        throw new SystemException("Illegal part of interval encountered, type=" + child.Type + " text=" + child.getText());
+                        throw new IllegalStateException("Illegal part of interval encountered, type=" + child.Type + " text=" + child.getText());
 
                 }
 
@@ -226,7 +226,7 @@ namespace net.esper.eql.parse
                 case EqlEvalTokenTypes.STRING_TYPE: return StringValue.ParseString(nodeValues);
 
                 default:
-                    throw new SystemException("Unexpected constant of type " + nodeType + " encountered");
+                    throw new IllegalStateException("Unexpected constant of type " + nodeType + " encountered");
 
             }
         }

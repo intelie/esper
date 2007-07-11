@@ -41,7 +41,7 @@ namespace net.esper.eql.db
 		}
 
 		[Test]
-		public virtual void testPoll()
+		public void testPoll()
 		{
 			dbPollExecStrategy.Start();
 

@@ -27,30 +27,30 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
 	        minMaxNode.AddChildNode(new SupportExprNode(typeof(int?)));
 	        minMaxNode.Validate(null, null, null);
-	        Assert.AreEqual(typeof(double?), minMaxNode.GetType());
+	        Assert.AreEqual(typeof(double?), minMaxNode.ReturnType);
 
 	        minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
 	        minMaxNode.Validate(null, null, null);
-	        Assert.AreEqual(typeof(double?), minMaxNode.GetType());
+	        Assert.AreEqual(typeof(double?), minMaxNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        minMaxNode.AddChildNode(new SupportExprNode(9d));
 	        minMaxNode.AddChildNode(new SupportExprNode(6));
-	        Assert.AreEqual("max(9.0,6)", minMaxNode.ExpressionString);
+	        Assert.AreEqual("max(9,6)", minMaxNode.ExpressionString);
 	        minMaxNode.AddChildNode(new SupportExprNode(0.5d));
-	        Assert.AreEqual("max(9.0,6,0.5)", minMaxNode.ExpressionString);
+	        Assert.AreEqual("max(9,6,0.5)", minMaxNode.ExpressionString);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Must have 2 or more subnodes
 	        try
@@ -78,7 +78,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
 	        SetupNode(minMaxNode, 10, 1.5, null);
@@ -111,7 +111,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(minMaxNode.EqualsNode(minMaxNode));
 	        Assert.IsFalse(minMaxNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));

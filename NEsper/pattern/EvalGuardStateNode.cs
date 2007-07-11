@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.compat;
 using net.esper.pattern.guard;
 
 using org.apache.commons.logging;
@@ -59,7 +60,7 @@ namespace net.esper.pattern
 
             if (activeChildNode == null)
             {
-                throw new SystemException("Invalid state, child state node is inactive");
+                throw new IllegalStateException("Invalid state, child state node is inactive");
             }
 
             // Start the single child state

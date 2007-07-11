@@ -41,7 +41,7 @@ namespace net.esper.eql.view
 		{
 			if (outputCallback == null)
 			{
-				throw new System.NullReferenceException("Output condition by count requires a non-null callback");
+				throw new ArgumentException("Output condition by count requires a non-null callback");
 			}
 			if (secIntervalSize < 0.1)
 			{
@@ -50,10 +50,10 @@ namespace net.esper.eql.view
 			if (context == null)
 			{
 				String message = "OutputConditionTime requires a non-null view context";
-				throw new System.NullReferenceException(message);
+				throw new ArgumentException(message);
 			}
 			
-			this.msecIntervalSize = (long) System.Math.Round(1000 * secIntervalSize);
+			this.msecIntervalSize = (long) Math.Round(1000 * secIntervalSize);
 			this.context = context;
 			this.outputCallback = outputCallback;
 			this.scheduleSlot = context.ScheduleBucket.AllocateSlot();

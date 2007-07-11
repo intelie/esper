@@ -9,9 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using NUnit.Framework;
 
+using net.esper.client;
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.events;
@@ -30,7 +30,7 @@ namespace net.esper.events.property
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        beanEventAdapter = new BeanEventAdapter();
+            beanEventAdapter = new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE);
 	        bean = SupportBeanCombinedProps.MakeDefaultBean();
 	        _event = SupportEventBeanFactory.CreateObject(bean);
 
@@ -46,7 +46,7 @@ namespace net.esper.events.property
 	    }
 
 	    [Test]
-	    public void TestGet()
+	    public void testGet()
 	    {
 	        Assert.AreEqual(bean.GetIndexed(0).GetMapped("0ma"), getter.GetValue(_event));
 

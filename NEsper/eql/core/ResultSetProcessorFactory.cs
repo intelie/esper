@@ -274,7 +274,7 @@ namespace net.esper.eql.core
             // Handle group-by cases
             if (groupByNodes.Count == 0)
             {
-                throw new SystemException("Unexpected empty group-by expression list");
+                throw new IllegalStateException("Unexpected empty group-by expression list");
             }
 
             // Figure out if all non-aggregated event properties in the select clause are listed in the group by

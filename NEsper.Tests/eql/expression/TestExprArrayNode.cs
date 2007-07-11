@@ -47,32 +47,32 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	    	Assert.AreEqual(typeof(object[]), arrayNodes[0].GetType());
-	    	Assert.AreEqual(typeof(int[]), arrayNodes[1].GetType());
-	    	Assert.AreEqual(typeof(double[]), arrayNodes[2].GetType());
-	    	Assert.AreEqual(typeof(object[]), arrayNodes[3].GetType());
+            Assert.AreEqual(typeof(object[]), arrayNodes[0].ReturnType);
+            Assert.AreEqual(typeof(int?[]), arrayNodes[1].ReturnType);
+	    	Assert.AreEqual(typeof(double?[]), arrayNodes[2].ReturnType);
+            Assert.AreEqual(typeof(object[]), arrayNodes[3].ReturnType);
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        Object result = arrayNodes[0].Evaluate(null, true);
 	        Assert.AreEqual(typeof(object[]), result.GetType());
 	        Assert.AreEqual(0, ((Object[]) result).Length);
 
 	        result = arrayNodes[1].Evaluate(null, true);
-	        Assert.AreEqual(typeof(int?), result.GetType());
-	        Assert.AreEqual(2, ((int[]) result).Length);
-	        Assert.AreEqual(2, (int) ((int[]) result)[0]);
-	        Assert.AreEqual(3, (int) ((int[]) result)[1]);
+	        Assert.AreEqual(typeof(int?[]), result.GetType());
+	        Assert.AreEqual(2, ((int?[]) result).Length);
+	        Assert.AreEqual(2, ((int?[]) result)[0].Value);
+	        Assert.AreEqual(3, ((int?[]) result)[1].Value);
 
 	        result = arrayNodes[2].Evaluate(null, true);
-	        Assert.AreEqual(typeof(double[]), result.GetType());
-	        Assert.AreEqual(2, ((double[]) result).Length);
-	        Assert.AreEqual(1.5, (double) ((double?[]) result)[0]);
-	        Assert.AreEqual(1.0, (double) ((double?[]) result)[1]);
+	        Assert.AreEqual(typeof(double?[]), result.GetType());
+	        Assert.AreEqual(2, ((double?[]) result).Length);
+	        Assert.AreEqual(1.5, ((double?[]) result)[0].Value);
+	        Assert.AreEqual(1.0, ((double?[]) result)[1].Value);
 
 	        result = arrayNodes[3].Evaluate(null, true);
 	        Assert.AreEqual(typeof(object[]), result.GetType());
@@ -82,7 +82,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("{}", arrayNodes[0].ExpressionString);
 	        Assert.AreEqual("{2,3}", arrayNodes[1].ExpressionString);
@@ -91,7 +91,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(arrayNodes[0].EqualsNode(arrayNodes[1]));
 	        Assert.IsFalse(arrayNodes[0].EqualsNode(new SupportExprNode(null)));

@@ -34,7 +34,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestIncorrectUse()
+	    public void testIncorrectUse()
 	    {
 	        try
 	        {
@@ -47,7 +47,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestViewPush()
+	    public void testViewPush()
 	    {
 	        // Set up a feed for the view under test - it will have a depth of 3 trades
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportBeanTimestamp), 3);

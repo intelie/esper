@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using net.esper.compat;
 using net.esper.events;
@@ -64,19 +65,20 @@ namespace net.esper.eql.core
 	    /// <param name="requireStreamNames">
 	    /// is true to indicate that stream names are required for any non-zero streams (for subqueries)
 	    /// </param>
-	    public StreamTypeServiceImpl(LinkedDictionary<string, EventType> namesAndTypes, bool isStreamZeroUnambigous, bool requireStreamNames)
+	    public StreamTypeServiceImpl(ICollection<KeyValuePair<string, EventType>> namesAndTypes, bool isStreamZeroUnambigous, bool requireStreamNames)
 	    {
 	        this.isStreamZeroUnambigous = isStreamZeroUnambigous;
 	        this.requireStreamNames = requireStreamNames;
 	        eventTypes = new EventType[namesAndTypes.Count] ;
 	        streamNames = new String[namesAndTypes.Count] ;
 	        int count = 0;
-	        foreach (String streamName in namesAndTypes.Keys)
-	        {
-	            streamNames[count] = streamName;
-	            eventTypes[count] = namesAndTypes.Fetch(streamName);
-	            count++;
-	        }
+
+            foreach( KeyValuePair<string, EventType> keyValuePair in namesAndTypes )
+            {
+                streamNames[count] = keyValuePair.Key;
+                eventTypes[count] = keyValuePair.Value;
+                count++;
+            }
 	    }
 
         /// <summary>

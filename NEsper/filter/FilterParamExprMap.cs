@@ -51,7 +51,7 @@ namespace net.esper.filter
 		        List<ExprNode> unassigned = new List<ExprNode>();
 		        foreach (ExprNode exprNode in exprNodes.Keys)
 		        {
-		            if (!exprNodes.ContainsKey(exprNode))
+                    if (exprNodes.Fetch(exprNode) == null)
 		            {
 		                unassigned.Add(exprNode);
 		            }

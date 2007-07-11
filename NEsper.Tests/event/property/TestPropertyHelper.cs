@@ -18,7 +18,7 @@ namespace net.esper.events.property
     public class TestPropertyHelper
     {
         [Test]
-        public virtual void testAddMappedProperties()
+        public void testAddMappedProperties()
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             PropertyHelper.AddMappedProperties(typeof(SupportBeanPropertyNames), result);
@@ -38,7 +38,7 @@ namespace net.esper.events.property
         }
 
         [Test]
-        public virtual void testAddIntrospectProperties()
+        public void testAddIntrospectProperties()
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             PropertyHelper.AddSimpleProperties(typeof(SupportBeanPropertyNames), result);
@@ -56,7 +56,7 @@ namespace net.esper.events.property
         }
 
         [Test]
-        public virtual void testRemoveDuplicateProperties()
+        public void testRemoveDuplicateProperties()
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             result.Add(new EventPropertyDescriptor("x", "x", (PropertyDescriptor) null, EventPropertyType.SIMPLE));
@@ -71,7 +71,7 @@ namespace net.esper.events.property
         }
 
         [Test]
-        public virtual void testRemoveClrProperties()
+        public void testRemoveClrProperties()
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             result.Add(new EventPropertyDescriptor("x", "x", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
@@ -86,7 +86,7 @@ namespace net.esper.events.property
         }
 
         [Test]
-        public virtual void testGetGetter()
+        public void testGetGetter()
         {
             EventBean bean = SupportEventBeanFactory.CreateObject(new SupportBeanPropertyNames());
             MethodInfo method = typeof(SupportBeanPropertyNames).GetMethod("getA", new Type[]{}) ;

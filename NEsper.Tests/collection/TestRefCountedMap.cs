@@ -18,7 +18,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testPut()
+        public void testPut()
         {
             try
             {
@@ -42,7 +42,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testGet()
+        public void testGet()
         {
             int? val = refMap["b"];
             Assert.IsNull(val);
@@ -52,7 +52,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testReference()
+        public void testReference()
         {
             refMap.Reference("a");
 
@@ -68,7 +68,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testDereference()
+        public void testDereference()
         {
             bool isLast = refMap.Dereference("a");
             Assert.IsTrue(isLast);
@@ -90,7 +90,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testFlow()
+        public void testFlow()
         {
             refMap["b"] = -1;
             refMap.Reference("b");

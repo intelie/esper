@@ -30,7 +30,7 @@ namespace net.esper.collection
 		private InterchangeablePair<String, String> pair4b = new InterchangeablePair<String, String>( null, null );
 
 		[Test]
-		public virtual void testEquals()
+		public void testEquals()
 		{
 			Assert.IsTrue( pair1a.Equals( pair1d ) && pair1d.Equals( pair1a ) );
 			Assert.IsTrue( pair1a.Equals( pair1e ) && pair1e.Equals( pair1a ) );
@@ -61,7 +61,7 @@ namespace net.esper.collection
 		}
 
 		[Test]
-		public virtual void testHashCode()
+		public void testHashCode()
 		{
 			Assert.IsTrue( pair1a.GetHashCode() == ( "a".GetHashCode() ^ "b".GetHashCode() ) );
 			Assert.IsTrue( pair2a.GetHashCode() == "a".GetHashCode() );
@@ -81,7 +81,7 @@ namespace net.esper.collection
 		}
 
 		[Test]
-		public virtual void testSetBehavior()
+		public void testSetBehavior()
 		{
 			Set<InterchangeablePair<EventBean, EventBean>> eventPairs = new HashSet<InterchangeablePair<EventBean, EventBean>>();
 

@@ -40,7 +40,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testFullJoin_2sides()
+		public void testFullJoin_2sides()
 		{
 			/**
 			* Query:

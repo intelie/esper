@@ -57,7 +57,7 @@ namespace net.esper.eql.db
         }
 
         [Test]
-        public virtual void testGetConnection()
+        public void testGetConnection()
         {
             DbConnection connection = databaseDMConnFactoryOne.Connection;
             tryAndCloseConnection(connection);

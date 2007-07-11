@@ -29,7 +29,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestCompareOneByOne()
+	    public void testCompareOneByOne()
 	    {
 	        FilterValueSetParamImpl param1 = new FilterValueSetParamImpl("a", FilterOperator.EQUAL, null);
 	        FilterValueSetParamImpl param2 = new FilterValueSetParamImpl("b", FilterOperator.EQUAL, null);
@@ -81,7 +81,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestCompareAll()
+	    public void testCompareAll()
 	    {
 	        TreeSet<FilterValueSetParam> sorted = new TreeSet<FilterValueSetParam>(comparator);
 

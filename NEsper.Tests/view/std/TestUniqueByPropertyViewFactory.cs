@@ -28,14 +28,14 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestSetParameters()
+	    public void testSetParameters()
 	    {
 	        TryParameter("price", "price");
 	        TryInvalidParameter(1.1d);
 	    }
 
 	    [Test]
-	    public void TestCanReuse()
+	    public void testCanReuse()
 	    {
 	        factory.SetViewParameters(null, new Object[] {"a"});
 	        Assert.IsFalse(factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeContext())));

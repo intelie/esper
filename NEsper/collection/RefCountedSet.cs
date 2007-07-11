@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
+
 namespace net.esper.collection
 {
 	/// <summary> reference-counting set based on a HashMap implementation that stores keys and a reference counter for
@@ -113,7 +115,7 @@ namespace net.esper.collection
 			int value;
 			if ( !refSet.TryGetValue( key, out value ) )
 			{
-				throw new SystemException( "Attempting to remove key from map that wasn't added" );
+				throw new IllegalStateException( "Attempting to remove key from map that wasn't added" );
 			}
 
 			if ( value == 1 )

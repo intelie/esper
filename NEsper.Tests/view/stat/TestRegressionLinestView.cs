@@ -38,7 +38,7 @@ namespace net.esper.view.stat
 
 	    // Check values against Microsoft Excel computed values
 	    [Test]
-	    public void TestViewComputedValues()
+	    public void testViewComputedValues()
 	    {
 	        // Set up feed for sum view
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
@@ -70,14 +70,14 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestGetSchema()
+	    public void testGetSchema()
 	    {
             Assert.IsTrue(myView.EventType.GetPropertyType(ViewFieldEnum.REGRESSION__SLOPE.Name) == typeof(double));
             Assert.IsTrue(myView.EventType.GetPropertyType(ViewFieldEnum.REGRESSION__YINTERCEPT.Name) == typeof(double));
 	    }
 
 	    [Test]
-	    public void TestCopyView()
+	    public void testCopyView()
 	    {
 	        RegressionLinestView copied = (RegressionLinestView) myView.CloneView(SupportStatementContextFactory.MakeContext());
 	        Assert.IsTrue(myView.FieldNameX.Equals(copied.FieldNameX));

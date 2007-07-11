@@ -15,7 +15,7 @@ namespace net.esper.collection
     public class TestPermutationEnumeration
     {
         [Test]
-        public virtual void testInvalid()
+        public void testInvalid()
         {
             try
             {
@@ -29,7 +29,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testNext()
+        public void testNext()
         {
             int[][] expectedValues4 = new int[][] {
                 new int[] { 0, 1, 2, 3 },     // 0

@@ -26,7 +26,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestAddAggregation()
+	    public void testAddAggregation()
 	    {
 	        engineImportService.AddAggregation("abc", "abcdef.G");
 	        engineImportService.AddAggregation("abcDefGhk", "ab");
@@ -38,14 +38,14 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestResolveAggregationMethod()
+	    public void testResolveAggregationMethod()
 	    {
 	    	engineImportService.AddAggregation("abc", typeof(SupportPluginAggregationMethodOne).FullName);
 	        Assert.IsTrue(engineImportService.ResolveAggregation("abc") is SupportPluginAggregationMethodOne);
 	    }
 
 	    [Test]
-	    public void TestInvalidResolveAggregation(String funcName)
+	    public void testInvalidResolveAggregation(String funcName)
 	    {
 	        try
 	        {
@@ -68,7 +68,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestResolveClass()
+	    public void testResolveClass()
 	    {
 	        String className = "System.Math";
 	        Type expected = typeof(Math);
@@ -81,7 +81,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestResolveClassInvalid()
+	    public void testResolveClassInvalid()
 	    {
 	        String className = "Math";
 	        try
@@ -96,7 +96,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestAddImport()
+	    public void testAddImport()
 	    {
 	        engineImportService.AddImport("System.Math");
 	        Assert.AreEqual(1, engineImportService.Imports.Length);
@@ -109,7 +109,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestAddImportInvalid()
+	    public void testAddImportInvalid()
 	    {
 	        try
 	        {

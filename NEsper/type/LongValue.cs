@@ -1,5 +1,7 @@
 using System;
 
+using net.esper.compat;
+
 namespace net.esper.type
 {
     /// <summary>
@@ -96,7 +98,7 @@ namespace net.esper.type
         {
             if (longValue == null)
             {
-                throw new SystemException();
+                throw new IllegalStateException();
             }
             return longValue.Value;
         }

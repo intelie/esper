@@ -2,24 +2,15 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class ISupportBImpl : ISupportB
 	{
-		virtual public String b
+		virtual public String B
 		{
-			get
-			{
-				return valueB;
-			}
-			
+            get { return valueB; }
 		}
-		virtual public String baseAB
+		virtual public String BaseAB
 		{
-			get
-			{
-				return valueBaseAB;
-			}
-			
+            get { return valueBaseAB; }
 		}
 		private String valueB;
 		private String valueBaseAB;

@@ -27,16 +27,16 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        arithNode.AddChildNode(new SupportExprNode(typeof(double?)));
 	        arithNode.AddChildNode(new SupportExprNode(typeof(int?)));
 	        arithNode.Validate(null, null, null);
-	        Assert.AreEqual(typeof(double?), arithNode.GetType());
+	        Assert.AreEqual(typeof(double?), arithNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        // Build (5*(4-2)), not the same as 5*4-2
 	        ExprMathNode arithNodeChild = new ExprMathNode(MathArithTypeEnum.SUBTRACT);
@@ -51,7 +51,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Must have exactly 2 subnodes
 	        try
@@ -79,7 +79,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        arithNode.AddChildNode(new SupportExprNode(10));
 	        arithNode.AddChildNode(new SupportExprNode(1.5));
@@ -97,7 +97,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(arithNode.EqualsNode(arithNode));
 	        Assert.IsFalse(arithNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE)));

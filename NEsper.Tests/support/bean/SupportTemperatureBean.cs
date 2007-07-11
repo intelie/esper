@@ -12,16 +12,16 @@ namespace net.esper.support.bean
 {
 	public class SupportTemperatureBean
 	{
+	    public string Geom
+	    {
+	        get { return geom; }
+	    }
+
 	    private String geom;
 
 	    public SupportTemperatureBean(String geom)
 	    {
 	        this.geom = geom;
-	    }
-
-	    public String GetGeom()
-	    {
-	        return geom;
 	    }
 	}
 } // End of namespace

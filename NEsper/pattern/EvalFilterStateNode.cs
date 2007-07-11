@@ -2,6 +2,7 @@ using System;
 using System.Text;
 
 using net.esper.core;
+using net.esper.compat;
 using net.esper.events;
 using net.esper.filter;
 
@@ -61,7 +62,7 @@ namespace net.esper.pattern
 
             if (isStarted)
             {
-                throw new SystemException("Filter state node already active");
+                throw new IllegalStateException("Filter state node already active");
             }
 
             // Start the filter

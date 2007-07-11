@@ -47,7 +47,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testJoinUniquePerId()
+		public void testJoinUniquePerId()
 		{
 			SendEvent( setOne[0] );
 			SendEvent( setTwo[0] );

@@ -6,7 +6,6 @@ using net.esper.events;
 using net.esper.support.events;
 using net.esper.support.util;
 
-using NUnit.Core;
 using NUnit.Framework;
 
 namespace net.esper.core
@@ -25,12 +24,12 @@ namespace net.esper.core
 		public virtual void setUp()
 		{
             Set<UpdateEventHandler> listeners = new HashSet<UpdateEventHandler>();
-            listeners.Add(listener.Update);
+		    listeners.Add(listener.Update);
 			dispatch = new PatternListenerDispatch( listeners );
 		}
 
 		[Test]
-		public virtual void testSingle()
+		public void testSingle()
 		{
 			listener.Reset();
 
@@ -46,7 +45,7 @@ namespace net.esper.core
 		}
 
         [Test]
-        public virtual void testTwo()
+        public void testTwo()
         {
             listener.Reset();
             Assert.IsFalse(dispatch.HasData);

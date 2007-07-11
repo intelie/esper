@@ -41,7 +41,7 @@ namespace net.esper.events.property
         public const BindingFlags bindings = BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static;
 
         [Test]
-        public virtual void testBuildPropList()
+        public void testBuildPropList()
         {
             IList<EventPropertyDescriptor> descList = builder.AssessProperties(typeof(SupportLegacyBean));
 
@@ -62,7 +62,7 @@ namespace net.esper.events.property
         }
 
         [Test]
-        public virtual void testInvalid()
+        public void testInvalid()
         {
             tryInvalidField("x", typeof(SupportBean));
             tryInvalidField("intPrimitive", typeof(SupportBean));

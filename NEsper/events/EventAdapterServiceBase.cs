@@ -13,6 +13,7 @@ using System.Xml;
 using net.esper.client;
 using net.esper.compat;
 using net.esper.events.xml;
+using net.esper.util;
 
 using org.apache.commons.logging;
 
@@ -43,8 +44,8 @@ namespace net.esper.events
         private readonly EDictionary<EventType, String> typeToIdMap;
         private readonly EDictionary<String, EventType> aliasToTypeMap;
 
-        private BeanEventAdapter beanEventAdapter;
-        private EDictionary<String, EventType> xmldomRootElementNames;
+        private readonly BeanEventAdapter beanEventAdapter;
+        private readonly EDictionary<String, EventType> xmldomRootElementNames;
 
         /// <summary>Ctor.</summary>
         public EventAdapterServiceBase()
@@ -55,6 +56,16 @@ namespace net.esper.events
             idToAliasMap = new HashDictionary<String, String>();
             xmldomRootElementNames = new HashDictionary<String, EventType>();
             beanEventAdapter = new BeanEventAdapter();
+        }
+
+        /// <summary>
+        /// Gets or sets the default property resolution style.
+        /// </summary>
+
+        public PropertyResolutionStyle DefaultPropertyResolutionStyle
+        {
+            get { return beanEventAdapter.DefaultPropertyResolutionStyle; }
+            set { beanEventAdapter.DefaultPropertyResolutionStyle = value; }
         }
 
         /// <summary>
@@ -257,7 +268,7 @@ namespace net.esper.events
                 Type type;
                 try
                 {
-                    type = Type.GetType(fullyQualClassName);
+                    type = TypeHelper.ResolveType(fullyQualClassName);
                 }
                 catch (TypeLoadException ex)
                 {

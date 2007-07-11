@@ -21,6 +21,7 @@ namespace net.esper.support.events
 	    static SupportEventAdapterService()
 	    {
 	        eventAdapterService = new EventAdapterServiceImpl();
+	        eventAdapterService.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	    }
 
         public static EventAdapterService Service

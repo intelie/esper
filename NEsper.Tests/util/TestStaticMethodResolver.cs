@@ -20,10 +20,10 @@ namespace net.esper.util
 	public class TestStaticMethodResolver
 	{
 		[Test]
-		public void TestResolveMethod()
+		public void testResolveMethod()
 		{
 	        Type declClass = typeof(Math);
-			String methodName = "max";
+			String methodName = "Max";
 			Type[] args = new Type[] { typeof(int), typeof(int) };
 			MethodInfo expected = typeof(Math).GetMethod(methodName, args);
 			Assert.AreEqual(expected, StaticMethodResolver.ResolveMethod(declClass, methodName, args));
@@ -56,7 +56,7 @@ namespace net.esper.util
 		}
 
 		[Test]
-		public void TestResolveMethodNotFound()
+		public void testResolveMethodNotFound()
 		{
 	        Type declClass = typeof(String);
 			String methodName = "trim";

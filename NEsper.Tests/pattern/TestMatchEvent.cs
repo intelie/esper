@@ -34,7 +34,7 @@ namespace net.esper.pattern
 	    }
 
 	    [Test]
-	    public void TestPutAndGet()
+	    public void testPutAndGet()
 	    {
 	        MatchedEventMap _event = new MatchedEventMapImpl();
 	        _event.Add("tag", events.Fetch("a"));
@@ -45,7 +45,7 @@ namespace net.esper.pattern
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        MatchedEventMap eventOne = new MatchedEventMapImpl();
 	        MatchedEventMap eventTwo = new MatchedEventMapImpl();
@@ -73,7 +73,7 @@ namespace net.esper.pattern
 	    }
 
 	    [Test]
-	    public void TestClone()
+	    public void testClone()
 	    {
 	        MatchedEventMap _event = new MatchedEventMapImpl();
 
@@ -105,7 +105,7 @@ namespace net.esper.pattern
 	    }
 
 	    [Test]
-	    public void TestMerge()
+	    public void testMerge()
 	    {
 	        MatchedEventMap eventOne = new MatchedEventMapImpl();
 	        MatchedEventMap eventTwo = new MatchedEventMapImpl();

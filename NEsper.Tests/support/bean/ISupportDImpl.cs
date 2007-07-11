@@ -2,32 +2,19 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
 	public class ISupportDImpl : ISupportD
 	{
-		virtual public String d
+		virtual public String D
 		{
-			get
-			{
-				return valueD;
-			}
-			
+            get { return valueD; }
 		}
-		virtual public String baseD
+		virtual public String BaseD
 		{
-			get
-			{
-				return valueBaseD;
-			}
-			
+            get { return valueBaseD; }
 		}
-		virtual public String baseDBase
+		virtual public String BaseDBase
 		{
-			get
-			{
-				return valueBaseDBase;
-			}
-			
+            get { return valueBaseDBase; }
 		}
 		private String valueD;
 		private String valueBaseD;

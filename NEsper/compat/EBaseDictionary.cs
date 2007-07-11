@@ -100,7 +100,7 @@ namespace net.esper.compat
 
 		public virtual void Put( K key, V value )
 		{
-			this[key] = value ;
+            this[key] = value;
 		}
 
 		/// <summary>
@@ -138,7 +138,7 @@ namespace net.esper.compat
 		public V this[K key]
 		{
 			get { return m_subDictionary[key] ; }
-			set { m_subDictionary[key] = value ; }
+            set { m_subDictionary[key] = value; }
 		}
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace net.esper.compat
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
 		public bool ContainsKey(K key)
 		{
-			return m_subDictionary.ContainsKey( key ) ;
+            return m_subDictionary.ContainsKey(key);
 		}
 
         /// <summary>
@@ -198,10 +198,10 @@ namespace net.esper.compat
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"></see> is read-only.</exception>
         /// <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</exception>
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
-		public void Add(K key, V value)
-		{
-			m_subDictionary.Add( key, value ) ;
-		}
+        public void Add(K key, V value)
+        {
+            m_subDictionary.Add(key, value);
+        }
 
         /// <summary>
         /// Removes the element with the specified key from the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.

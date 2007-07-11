@@ -38,7 +38,7 @@ namespace net.esper.view.stat
 
 	    // Check values against Microsoft Excel computed values
 	    [Test]
-	    public void TestViewComputedValues()
+	    public void testViewComputedValues()
 	    {
 	        // Set up feed for sum view
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
@@ -73,7 +73,7 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestGetSchema()
+	    public void testGetSchema()
 	    {
 	        Assert.IsTrue(myView.EventType.GetPropertyType(ViewFieldEnum.UNIVARIATE_STATISTICS__COUNT.Name) == typeof(long));
             Assert.IsTrue(myView.EventType.GetPropertyType(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.Name) == typeof(double));
@@ -84,7 +84,7 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestCopyView()
+	    public void testCopyView()
 	    {
 	        UnivariateStatisticsView copied = (UnivariateStatisticsView) myView.CloneView(SupportStatementContextFactory.MakeContext());
 	        Assert.IsTrue(myView.FieldName.Equals(copied.FieldName));

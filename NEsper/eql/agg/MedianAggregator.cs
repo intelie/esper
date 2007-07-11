@@ -30,7 +30,7 @@ namespace net.esper.eql.agg
 	        {
 	            return;
 	        }
-	        double value = (double) item;
+	        double value = Convert.ToDouble(item);
 	        vector.Add(value);
 	    }
 
@@ -40,7 +40,7 @@ namespace net.esper.eql.agg
 	        {
 	            return;
 	        }
-	        double value = (double) item;
+	        double value = Convert.ToDouble(item);
 	        vector.Remove(value);
 	    }
 
@@ -71,7 +71,7 @@ namespace net.esper.eql.agg
 
 	    public Type ValueType
 	    {
-	        get { return typeof(double); }
+	        get { return typeof(double?); }
 	    }
 
 	    public AggregationMethod NewAggregator(MethodResolutionService methodResolutionService)

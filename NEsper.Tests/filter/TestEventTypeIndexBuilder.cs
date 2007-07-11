@@ -50,7 +50,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestAddRemove()
+	    public void testAddRemove()
 	    {
 	        Assert.IsNull(eventTypeIndex[typeOne]);
 	        Assert.IsNull(eventTypeIndex[typeTwo]);

@@ -32,7 +32,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPatternFunc3Stream()
+	    public void testPatternFunc3Stream()
 	    {
 	        String text;
 
@@ -119,7 +119,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPatternFunc()
+	    public void testPatternFunc()
 	    {
 	        String text;
 
@@ -293,7 +293,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestIn3ValuesAndNull()
+	    public void testIn3ValuesAndNull()
 	    {
 	        String text;
 
@@ -324,7 +324,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestFilterStaticFunc()
+	    public void testFilterStaticFunc()
 	    {
 	        String text;
 
@@ -358,7 +358,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestFilterRelationalOpRange()
+	    public void testFilterRelationalOpRange()
 	    {
 	        String text;
 
@@ -468,7 +468,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestFilterBooleanExpr()
+	    public void testFilterBooleanExpr()
 	    {
 	        String text = "select * from " + typeof(SupportBean).FullName + "(2*intBoxed=doubleBoxed)";
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(text);
@@ -491,7 +491,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestFilterWithEqualsSameCompare()
+	    public void testFilterWithEqualsSameCompare()
 	    {
 	        String text;
 
@@ -534,7 +534,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        TryInvalid("select * from pattern [every a=" + typeof(SupportBean).FullName + " -> " +
 	                "b=" + typeof(SupportMarketDataBean).FullName + "(sum(a.longBoxed) = 2)]",
@@ -574,7 +574,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPatternWithExpr()
+	    public void testPatternWithExpr()
 	    {
 	        String text = "select * from pattern [every a=" + typeof(SupportBean).FullName + " -> " +
 	                "b=" + typeof(SupportMarketDataBean).FullName + "(a.longBoxed=volume*2)]";
@@ -611,7 +611,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestMathExpression()
+	    public void testMathExpression()
 	    {
 	        String text;
 
@@ -646,7 +646,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestExpressionReversed()
+	    public void testExpressionReversed()
 	    {
 	        String expr = "select * from " + typeof(SupportBean).FullName + "(5 = intBoxed)";
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(expr);

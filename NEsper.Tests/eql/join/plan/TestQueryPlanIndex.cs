@@ -32,7 +32,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestInvalidUse()
+	    public void testInvalidUse()
 	    {
 	        try
 	        {
@@ -46,7 +46,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestGetIndexNum()
+	    public void testGetIndexNum()
 	    {
 	        Assert.AreEqual(0, indexSpec.GetIndexNum(new String[] { "p01", "p02"}));
 	        Assert.AreEqual(1, indexSpec.GetIndexNum(new String[] {"p21"}));
@@ -56,7 +56,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestAddIndex()
+	    public void testAddIndex()
 	    {
 	        int indexNum = indexSpec.AddIndex(new String[] {"a", "b"}, null);
 	        Assert.AreEqual(3, indexNum);

@@ -72,8 +72,8 @@ namespace net.esper.eql.expression
 	        }
 
 	        // Must be the same boxed type returned by expressions under this
-	        Type typeOne = TypeHelper.GetBoxedType(this.ChildNodes[0].GetType());
-	        Type typeTwo = selectClause.GetType();
+	        Type typeOne = TypeHelper.GetBoxedType(this.ChildNodes[0].ReturnType);
+	        Type typeTwo = selectClause.ReturnType;
 
 	        // Null constants can be compared for any type
 	        if ((typeOne == null) || (typeTwo == null))

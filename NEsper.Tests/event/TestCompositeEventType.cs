@@ -17,7 +17,7 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public virtual void testGetPropertyType()
+		public void testGetPropertyType()
 		{
 			Assert.AreEqual( typeof( SupportBean ), eventType.GetPropertyType( "a" ) );
 			Assert.AreEqual( typeof( int ), eventType.GetPropertyType( "a.intPrimitive" ) );
@@ -30,7 +30,7 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public virtual void testGetGetter()
+		public void testGetGetter()
 		{
             Assert.AreEqual(_event, eventType.GetGetter("a").GetValue(_eventBeanComplete));
             Assert.AreEqual(1, eventType.GetGetter("a.intPrimitive").GetValue(_eventBeanComplete));

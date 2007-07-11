@@ -33,7 +33,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestProcess()
+	    public void testProcess()
 	    {
 	        EventBean[] testEvents = SupportStreamTypeSvc3Stream.SampleEvents;
 
@@ -49,7 +49,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestType()
+	    public void testType()
 	    {
 	        Assert.AreEqual(typeof(SupportBean), processor.ResultEventType.GetPropertyType("s0"));
 	        Assert.AreEqual(typeof(SupportBean), processor.ResultEventType.GetPropertyType("s1"));

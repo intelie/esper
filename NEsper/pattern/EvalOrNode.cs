@@ -1,5 +1,7 @@
 using System;
 
+using net.esper.compat;
+
 using LogFactory = org.apache.commons.logging.LogFactory;
 using Log = org.apache.commons.logging.Log;
 
@@ -34,7 +36,7 @@ namespace net.esper.pattern
 			
 			if (ChildNodes.Count <= 1)
 			{
-				throw new SystemException("Expected number of child nodes incorrect, expected >=2 child node, found " + ChildNodes.Count);
+				throw new IllegalStateException("Expected number of child nodes incorrect, expected >=2 child node, found " + ChildNodes.Count);
 			}
 			
 			return context.PatternStateFactory.MakeOrState(parentNode, this, beginState, context, stateNodeId);

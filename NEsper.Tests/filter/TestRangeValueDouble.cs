@@ -26,13 +26,13 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestGetFilterValue()
+	    public void testGetFilterValue()
 	    {
 	        Assert.AreEqual(5.5, _params[0].GetFilterValue(null));
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        Assert.AreNotEqual(_params[0],_params[1]);
 	        Assert.AreNotEqual(_params[1],_params[2]);

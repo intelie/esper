@@ -43,7 +43,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestAcrossJoin()
+	    public void testAcrossJoin()
 		{
 	    	String statementString = "select symbol, string from " +
 	    	typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " +
@@ -74,7 +74,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestDescending()
+	    public void testDescending()
 		{
 			String statementString = "select symbol from " +
 			typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
@@ -139,7 +139,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestExpressions()
+	    public void testExpressions()
 		{
 			String statementString = "select symbol from " +
 		 	typeof(SupportMarketDataBean).FullName + ".win:length(10) " +
@@ -201,7 +201,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestExpressionsJoin()
+	    public void testExpressionsJoin()
 	    {
 	    	String statementString = "select symbol from " +
 	    	typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " +
@@ -278,7 +278,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 		{
 			String statementString = "select symbol from " +
 			typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
@@ -324,7 +324,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestInvalidJoin()
+	    public void testInvalidJoin()
 	    {
 	    	String statementString = "select symbol from " +
 	    	typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " +
@@ -376,7 +376,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestMultipleKeys()
+	    public void testMultipleKeys()
 		{
 			String statementString = "select symbol from " +
 			typeof(SupportMarketDataBean).FullName + ".win:length(10) " +
@@ -410,7 +410,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestAliases()
+		public void testAliases()
 		{
 			String statementString = "select symbol as mySymbol from " +
 			typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
@@ -467,7 +467,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestMultipleKeysJoin()
+	    public void testMultipleKeysJoin()
 	    {
 	    	String statementString = "select symbol from " +
 	    	typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " +
@@ -510,7 +510,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSimple()
+	    public void testSimple()
 		{
 			String statementString = "select symbol from " +
 			typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
@@ -578,7 +578,7 @@ namespace net.esper.regression.view
 		}
 
 	    [Test]
-	    public void TestSimpleJoin()
+	    public void testSimpleJoin()
 	    {
 	    	String statementString = "select symbol from " +
 	    	typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " +
@@ -664,7 +664,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestWildcard()
+	    public void testWildcard()
 		{
 			String statementString = "select * from " +
 			typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
@@ -693,7 +693,7 @@ namespace net.esper.regression.view
 
 
 	    [Test]
-	    public void TestWildcardJoin()
+	    public void testWildcardJoin()
 	    {
 	    	String statementString = "select * from " +
 	    	typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " +
@@ -723,7 +723,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestNoOutputClauseView()
+	    public void testNoOutputClauseView()
 	    {
 			String statementString = "select symbol from " +
 			typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
@@ -757,7 +757,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestNoOutputClauseJoin()
+	    public void testNoOutputClauseJoin()
 	    {
 	    	String statementString = "select symbol from " +
 	    	typeof(SupportMarketDataBean).FullName + ".win:length(10) as one, " +

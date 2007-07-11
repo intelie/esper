@@ -24,7 +24,7 @@ namespace net.esper.eql.parse
 	public class TestEventPatternParser : EqlTokenTypes
 	{
 	    [Test]
-	    public void TestDisplayAST()
+	    public void testDisplayAST()
 	    {
 	        String expression = "B(a('aa').b.c[1].d.e(\"ee\")=2)";
 
@@ -34,7 +34,7 @@ namespace net.esper.eql.parse
 	    }
 
 	    [Test]
-	    public void TestInvalidCases()
+	    public void testInvalidCases()
 	    {
 	        // Base vocabulary
 	        AssertIsInvalid("");
@@ -193,7 +193,7 @@ namespace net.esper.eql.parse
 	    }
 
 	    [Test]
-	    public void TestValidCases()
+	    public void testValidCases()
 	    {
 	        String className = typeof(SupportBean).FullName;
 
@@ -381,7 +381,7 @@ namespace net.esper.eql.parse
 	    }
 
 	    [Test]
-	    public void TestParserNodeGeneration()
+	    public void testParserNodeGeneration()
 	    {
 	        String expression = "a(m=1) -> not b() or every c() and d() where a:b (5) and timer:interval(10)";
 

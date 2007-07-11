@@ -103,7 +103,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestEvalEvents()
+	    public void testEvalEvents()
 	    {
 	        for (int i = 0; i < events.Count; i++)
 	        {
@@ -132,7 +132,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestInvalidType()
+	    public void testInvalidType()
 	    {
 	        try
 	        {
@@ -148,7 +148,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestReusedCallback()
+	    public void testReusedCallback()
 	    {
 	        try
 	        {
@@ -162,7 +162,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestCallbackNoFound()
+	    public void testCallbackNoFound()
 	    {
 	        try
 	        {
@@ -182,7 +182,7 @@ namespace net.esper.filter
 	     * thus needs to be removed from the tree AND the current dispatch list.
 	     */
 	    [Test]
-	    public void TestActiveCallbackRemove()
+	    public void testActiveCallbackRemove()
 	    {
 	        FilterValueSet spec = SupportFilterSpecBuilder.Build(eventTypeOne, new Object[0]).GetValueSet(null);
 	        SupportFilterHandle callbackTwo = new SupportFilterHandle();

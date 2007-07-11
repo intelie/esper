@@ -44,7 +44,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestWhereConstant()
+	    public void testWhereConstant()
 	    {
 	        String stmtText = "select (select id from S1.win:length(1000) where p10='X') as ids1 from S0";
 
@@ -73,7 +73,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestWherePrevious()
+	    public void testWherePrevious()
 	    {
 	        String stmtText = "select (select Prev(1, id) from S1.win:length(1000) where id=s0.id) as value from S0 as s0";
 
@@ -94,7 +94,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSelectWithWhereJoined()
+	    public void testSelectWithWhereJoined()
 	    {
 	        String stmtText = "select (select id from S1.win:length(1000) where p10=s0.p00) as ids1 from S0 as s0";
 
@@ -122,7 +122,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSelectWhereJoined2Streams()
+	    public void testSelectWhereJoined2Streams()
 	    {
 	        String stmtText = "select (select id from S0.win:length(1000) where p00=s1.p10 and p00=s2.p20) as ids0 from S1 as s1, S2 as s2 where s1.id = s2.id";
 
@@ -140,7 +140,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSelectWhereJoined3Streams()
+	    public void testSelectWhereJoined3Streams()
 	    {
 	        String stmtText = "select (select id from S0.win:length(1000) where p00=s1.p10 and p00=s3.p30) as ids0 " +
 	                            "from S1 as s1, S2 as s2, S3 as s3 where s1.id = s2.id and s2.id = s3.id";
@@ -177,7 +177,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSelectWhereJoined3SceneTwo()
+	    public void testSelectWhereJoined3SceneTwo()
 	    {
 	        String stmtText = "select (select id from S0.win:length(1000) where p00=s1.p10 and p00=s3.p30 and p00=s2.p20) as ids0 " +
 	                            "from S1 as s1, S2 as s2, S3 as s3 where s1.id = s2.id and s2.id = s3.id";
@@ -214,7 +214,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSelectWhereJoined4Coercion()
+	    public void testSelectWhereJoined4Coercion()
 	    {
 	        String stmtText = "select " +
 	          "(select intPrimitive from MyEvent(string='S').win:length(1000) " +
@@ -254,7 +254,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSelectWhereJoined4BackCoercion()
+	    public void testSelectWhereJoined4BackCoercion()
 	    {
 	        String stmtText = "select " +
 	          "(select intPrimitive from MyEvent(string='S').win:length(1000) " +
@@ -356,7 +356,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSelectWithWhere2Subqery()
+	    public void testSelectWithWhere2Subqery()
 	    {
 	        String stmtText = "select id from S0 as s0 where " +
 	                        " id = (select id from S1.win:length(1000) where s0.id = id) or id = (select id from S2.win:length(1000) where s0.id = id)";
@@ -384,7 +384,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestJoinFilteredOne()
+	    public void testJoinFilteredOne()
 	    {
 	        String stmtText = "select s0.id as s0id, s1.id as s1id, " +
 	                          "(select p20 from S2.win:length(1000) where id=s0.id) as s2p20, " +
@@ -396,7 +396,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestJoinFilteredTwo()
+	    public void testJoinFilteredTwo()
 	    {
 	        String stmtText = "select s0.id as s0id, s1.id as s1id, " +
 	                          "(select p20 from S2.win:length(1000) where id=s0.id) as s2p20, " +

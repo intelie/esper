@@ -40,7 +40,7 @@ namespace net.esper.eql.db
 		}
 
 		[Test]
-		public virtual void testPoll()
+		public void testPoll()
 		{
 			EventBean[][] tmpArray = new EventBean[2][];
 			for ( int i = 0 ; i < 2 ; i++ )

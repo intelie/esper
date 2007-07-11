@@ -23,7 +23,7 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testIsWildcard()
+        public void testIsWildcard()
         {
             // Wildcard is expected to make only a best-guess effort, not be perfect
             Assert.IsTrue(listParam.IsWildcard(5, 5));
@@ -31,7 +31,7 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testGetValues()
+        public void testGetValues()
         {
             Set<int> result = listParam.GetValuesInRange(1, 8);
             ArrayAssertionUtil.AreEqualAnyOrder(new int[] { 3, 5, 6 }, result);

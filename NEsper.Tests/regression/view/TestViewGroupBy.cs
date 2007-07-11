@@ -50,7 +50,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestStats()
+	    public void testStats()
 	    {
 	        EPAdministrator epAdmin = epService.EPAdministrator;
 	        String filter = "select * from " + typeof(SupportMarketDataBean).FullName;
@@ -131,7 +131,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLengthWindowGrouped()
+	    public void testLengthWindowGrouped()
 	    {
 	        String stmtText = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:length(2)";
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(stmtText);

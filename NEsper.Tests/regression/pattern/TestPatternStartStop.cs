@@ -31,7 +31,7 @@ namespace net.esper.regression.pattern
         }
 
         [Test]
-        public virtual void testStartStop()
+        public void testStartStop()
         {
             // Pattern Started when created
             Assert.IsFalse(patternStmt.GetEnumerator().MoveNext());
@@ -59,7 +59,7 @@ namespace net.esper.regression.pattern
         }
 
         [Test]
-        public virtual void testAddRemoveListener()
+        public void testAddRemoveListener()
         {
             // Pattern Started when created
 

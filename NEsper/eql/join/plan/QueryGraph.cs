@@ -206,7 +206,7 @@ namespace net.esper.eql.join.plan
 			}
 			if ( keyProps.Length != indexProps.Length )
 			{
-				throw new SystemException( "Unexpected key and index property number mismatch" );
+				throw new IllegalStateException( "Unexpected key and index property number mismatch" );
 			}
 
 			for ( int i = 0 ; i < keyProps.Length ; i++ )

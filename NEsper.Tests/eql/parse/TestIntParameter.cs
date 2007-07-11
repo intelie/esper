@@ -13,7 +13,7 @@ namespace net.esper.eql.parse
     public class TestIntParameter
     {
         [Test]
-        public virtual void testIsWildcard()
+        public void testIsWildcard()
         {
             IntParameter intParam = new IntParameter(5);
             Assert.IsTrue(intParam.IsWildcard(5, 5));
@@ -23,7 +23,7 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testGetValues()
+        public void testGetValues()
         {
             IntParameter intParam = new IntParameter(3);
             Set<int> result = intParam.GetValuesInRange(1, 8);

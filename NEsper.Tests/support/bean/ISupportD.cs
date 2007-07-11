@@ -2,13 +2,8 @@ using System;
 
 namespace net.esper.support.bean
 {
-	
-	public interface ISupportD:ISupportBaseD
-	{
-		String d
-		{
-			get;
-			
-		}
-	}
+    public interface ISupportD : ISupportBaseD
+    {
+        String D { get; }
+    }
 }

@@ -36,7 +36,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestViewPush()
+	    public void testViewPush()
 	    {
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 2);
 	        stream.AddView(myView);
@@ -60,7 +60,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestCopyView()
+	    public void testCopyView()
 	    {
 	        SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
 	        myView.Parent = parent;

@@ -15,7 +15,7 @@ namespace net.esper.view.stat.olap
 	public class TestCubeDerivedValueHelper
 	{
 		[Test]
-		public virtual void testDerive()
+		public void testDerive()
 		{
 			// Test on a 2-dimensional cube
 			MultidimCube<BaseStatisticsBean> testCube = SupportCubeFactory.make2DimSchema();

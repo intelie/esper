@@ -90,7 +90,7 @@ namespace net.esper.pattern
 
             if (spawnedNodes.Count != 1)
             {
-                throw new SystemException("EVERY state node is expected to have single child state node");
+                throw new IllegalStateException("EVERY state node is expected to have single child state node");
             }
 
             // During the Start of the child we need to use the temporary evaluator to catch any event created during a Start.

@@ -49,22 +49,22 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        for (int i = 0; i < coalesceNodes.Length; i++)
 	        {
 	            coalesceNodes[i].Validate(null, null, null);
 	        }
 
-	        Assert.AreEqual(typeof(long?), coalesceNodes[0].GetType());
-	        Assert.AreEqual(typeof(string), coalesceNodes[1].GetType());
-	        Assert.AreEqual(typeof(bool?), coalesceNodes[2].GetType());
-	        Assert.AreEqual(typeof(char?), coalesceNodes[3].GetType());
-	        Assert.AreEqual(typeof(double?), coalesceNodes[4].GetType());
+	        Assert.AreEqual(typeof(long?), coalesceNodes[0].ReturnType);
+            Assert.AreEqual(typeof(string), coalesceNodes[1].ReturnType);
+            Assert.AreEqual(typeof(bool?), coalesceNodes[2].ReturnType);
+            Assert.AreEqual(typeof(char?), coalesceNodes[3].ReturnType);
+            Assert.AreEqual(typeof(double?), coalesceNodes[4].ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        ExprCoalesceNode coalesceNode = new ExprCoalesceNode();
 	        coalesceNode.AddChildNode(new SupportExprNode(1));
@@ -94,7 +94,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        for (int i = 0; i < coalesceNodes.Length; i++)
 	        {
@@ -109,14 +109,14 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        Assert.IsFalse(coalesceNodes[0].EqualsNode(new ExprEqualsNode(true)));
 	        Assert.IsTrue(coalesceNodes[0].EqualsNode(coalesceNodes[1]));
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        //assertEquals("coalesce(null, null, ", coalesceNodes[0].ExpressionString);
 	    }

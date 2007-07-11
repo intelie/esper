@@ -24,7 +24,7 @@ namespace net.esper.collection
 		MultiKey<String> keys10 = new MultiKey<String>( new String[] { "a", "b", "c", "d" } );
 
 		[Test]
-		public virtual void testHashCode()
+		public void testHashCode()
 		{
 			Assert.IsTrue( keys1.GetHashCode() == ( "a".GetHashCode() ^ "b".GetHashCode() ) );
 			Assert.IsTrue( keys10.GetHashCode() == ( "a".GetHashCode() ^ "b".GetHashCode() ^ "c".GetHashCode() ^ "d".GetHashCode() ) );
@@ -43,7 +43,7 @@ namespace net.esper.collection
 		}
 
 		[Test]
-		public virtual void testEquals()
+		public void testEquals()
 		{
 			Assert.AreEqual( keys2, keys1 );
 			Assert.AreEqual( keys1, keys2 );
@@ -69,7 +69,7 @@ namespace net.esper.collection
 		}
 
 		[Test]
-		public virtual void testGet()
+		public void testGet()
 		{
 			Assert.AreEqual( 1, keys6.Count );
 			Assert.AreEqual( 2, keys1.Count );
@@ -83,7 +83,7 @@ namespace net.esper.collection
 		}
 
 		[Test]
-		public virtual void testWithSet()
+		public void testWithSet()
 		{
 			EventBean[][] testEvents = new EventBean[][] {
 				SupportEventBeanFactory.MakeEvents( new String[] { "a", "b" } ), 

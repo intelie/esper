@@ -31,7 +31,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testSumOneView()
+        public void testSumOneView()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String viewExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol " + "having sum(price) >= 100";
@@ -43,10 +43,10 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testSumJoin()
+        public void testSumJoin()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
-            String viewExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "  and one.str = two.symbol " + "group by symbol " + "having sum(price) >= 100";
+            String viewExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "  and one.string = two.symbol " + "group by symbol " + "having sum(price) >= 100";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
             selectTestView.AddListener(testListener);

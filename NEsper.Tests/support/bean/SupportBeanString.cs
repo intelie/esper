@@ -4,17 +4,11 @@ namespace net.esper.support.bean
 {
 	public class SupportBeanString
 	{
-		virtual public String Str
+		virtual public String String
 		{
 			get { return stringValue; }
 			set { this.stringValue = value; }
 		}
-
-        virtual public String str
-        {
-            get { return stringValue; }
-            set { this.stringValue = value; }
-        }
 
 		private String stringValue;
 		

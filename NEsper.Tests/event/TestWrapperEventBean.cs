@@ -51,7 +51,7 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public void TestGetSimple()
+		public void testGetSimple()
 		{
             Assert.AreEqual("eventString", _eventBeanSimple["myString"]);
             Assert.AreEqual(0, _eventBeanSimple["myInt"]);
@@ -59,7 +59,7 @@ namespace net.esper.events
 		}
 
 		[Test]
-		public void TestGetCombined()
+		public void testGetCombined()
 		{
 	        Assert.AreEqual("0ma0", _eventBeanCombined["indexed[0].Mapped('0ma').value"]);
 	        Assert.AreEqual("0ma1", _eventBeanCombined["indexed[0].Mapped('0mb').value"]);

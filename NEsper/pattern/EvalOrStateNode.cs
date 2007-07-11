@@ -59,7 +59,7 @@ namespace net.esper.pattern
 
             if (childNodes.Count != FactoryNode.ChildNodes.Count)
             {
-                throw new SystemException("OR state node does not have the required child state nodes");
+                throw new IllegalStateException("OR state node does not have the required child state nodes");
             }
 
             // In an "or" expression we Start all child listeners

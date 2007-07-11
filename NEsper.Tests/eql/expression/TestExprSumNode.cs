@@ -30,25 +30,25 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        sumNode.AddChildNode(new SupportExprNode(typeof(int?)));
 	        SupportExprNodeFactory.Validate(sumNode);
-	        Assert.AreEqual(typeof(int?), sumNode.GetType());
+	        Assert.AreEqual(typeof(int?), sumNode.ReturnType);
 
 	        sumNode = new ExprSumNode(false);
 	        sumNode.AddChildNode(new SupportExprNode(typeof(float?)));
 	        SupportExprNodeFactory.Validate(sumNode);
-	        Assert.AreEqual(typeof(float?), sumNode.GetType());
+	        Assert.AreEqual(typeof(float?), sumNode.ReturnType);
 
 	        sumNode = new ExprSumNode(false);
 	        sumNode.AddChildNode(new SupportExprNode(typeof(short?)));
 	        SupportExprNodeFactory.Validate(sumNode);
-	        Assert.AreEqual(typeof(int?), sumNode.GetType());
+	        Assert.AreEqual(typeof(int?), sumNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        // Build Sum(4-2)
 	        ExprMathNode arithNodeChild = new ExprMathNode(MathArithTypeEnum.SUBTRACT);
@@ -62,7 +62,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Must have exactly 1 subnodes
 	        try
@@ -90,7 +90,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestMakeAggregator()
+	    public void testMakeAggregator()
 	    {
             Assert.IsTrue(MakeNode(5, typeof(int?)).PrototypeAggregator is IntegerSumAggregator);
 	        Assert.IsTrue(MakeNode(5, typeof(float?)).PrototypeAggregator is FloatSumAggregator);
@@ -100,7 +100,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(sumNode.EqualsNode(sumNode));
 	        Assert.IsFalse(sumNode.EqualsNode(new ExprOrNode()));

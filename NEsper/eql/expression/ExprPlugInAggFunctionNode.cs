@@ -39,7 +39,7 @@ namespace net.esper.eql.expression
 	        }
 	        if (this.ChildNodes.Count == 1)
 	        {
-	        	childType = this.ChildNodes[0].GetType();
+	        	childType = this.ChildNodes[0].ReturnType;
 	        }
 
 	        try

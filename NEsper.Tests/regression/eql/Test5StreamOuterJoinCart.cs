@@ -42,7 +42,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testRoot_s0()
+		public void testRoot_s0()
 		{
 			/**
 			* Query:

@@ -32,7 +32,7 @@ namespace net.esper.events.property
         }
 
         [Test]
-        public virtual void testBuildPropList()
+        public void testBuildPropList()
         {
             IList<EventPropertyDescriptor> descList = builder.AssessProperties(typeof(SupportLegacyBean));
 

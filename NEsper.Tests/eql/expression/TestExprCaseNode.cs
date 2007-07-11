@@ -23,21 +23,21 @@ namespace net.esper.eql.expression
 	public class TestExprCaseNode
 	{
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        // Template expression is:
 	        // case when (so.floatPrimitive>s1.shortBoxed) then Count(5) when (so.LongPrimitive>s1.intPrimitive) then (25 + 130.5) else (3*3) end
 	        ExprCaseNode caseNode = SupportExprNodeFactory.MakeCaseSyntax1Node();
-	        Assert.AreEqual(typeof(String), caseNode.GetType());
+	        Assert.AreEqual(typeof(String), caseNode.ReturnType);
 
 	        // case when (2.5>2) then Count(5) when (1>3) then (25 + 130.5) else (3*3) end
 	        // First when node is true, case node type is the first when node type.
 	        caseNode = SupportExprNodeFactory.MakeCaseSyntax2Node();
-	        Assert.AreEqual(typeof(String), caseNode.GetType());
+	        Assert.AreEqual(typeof(String), caseNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        ExprCaseNode caseNode = SupportExprNodeFactory.MakeCaseSyntax1Node();
 	        caseNode.Validate(null, null, null);
@@ -67,7 +67,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        ExprCaseNode caseNode = SupportExprNodeFactory.MakeCaseSyntax1Node();
 	        caseNode.Validate(null, null, null);
@@ -85,7 +85,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        ExprCaseNode caseNode = SupportExprNodeFactory.MakeCaseSyntax1Node();
 	        ExprCaseNode otherCaseNode = SupportExprNodeFactory.MakeCaseSyntax1Node();
@@ -100,7 +100,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        ExprCaseNode _caseNode = SupportExprNodeFactory.MakeCaseSyntax1Node();
 	        Assert.AreEqual("case when s0.intPrimitive = 1 then \"a\" when s0.intPrimitive = 2 then \"b\" else \"c\" end", _caseNode.ExpressionString);

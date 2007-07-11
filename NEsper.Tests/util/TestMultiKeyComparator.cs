@@ -23,7 +23,7 @@ namespace net.esper.util
 		private MultiKeyUntyped secondValues;
 
 		[Test]
-		public void TestCompareSingleProperty()
+		public void testCompareSingleProperty()
 		{
 			comparator = new MultiKeyComparator(new Boolean[] {false});
 
@@ -38,7 +38,7 @@ namespace net.esper.util
 		}
 
 		[Test]
-		public void TestCompareTwoProperties()
+		public void testCompareTwoProperties()
 		{
 			comparator = new MultiKeyComparator(new bool[] {false, false});
 
@@ -53,7 +53,7 @@ namespace net.esper.util
 		}
 
 		[Test]
-		public void TestInvalid()
+		public void testInvalid()
 		{
 			comparator = new MultiKeyComparator(new bool[] {false, false});
 

@@ -28,7 +28,7 @@ namespace net.esper.eql.spec
 	public class TestPatternStreamSpecRaw
 	{
 	    [Test]
-	    public void TestPatternEquals()
+	    public void testPatternEquals()
 	    {
 	        String text = "select * from pattern [" +
 	                "s=" + typeof(SupportBean).FullName + "(intPrimitive=5) -> " +
@@ -44,7 +44,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        String text = "select * from pattern [" +
 	                "s=" + typeof(SupportBean).FullName + " -> " +
@@ -74,7 +74,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestPatternExpressions()
+	    public void testPatternExpressions()
 	    {
 	        String text = "select * from pattern [" +
 	                "s=" + typeof(SupportBean).FullName + "(intPrimitive in (s.intBoxed + 1, 0), intBoxed+1=intPrimitive-1)" +
@@ -96,7 +96,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestPatternInSetOfVal()
+	    public void testPatternInSetOfVal()
 	    {
 	        String text = "select * from pattern [" +
 	                "s=" + typeof(SupportBean).FullName + " -> " +
@@ -136,7 +136,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestRange()
+	    public void testRange()
 	    {
 	        String text = "select * from pattern [" +
 	                "s=" + typeof(SupportBean).FullName + " -> " +

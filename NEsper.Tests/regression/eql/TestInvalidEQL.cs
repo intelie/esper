@@ -33,14 +33,14 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestSyntaxException()
+	    public void testSyntaxException()
 	    {
 	        String exceptionText = GetSyntaxExceptionEQL("select * from *");
 	        Assert.AreEqual("unexpected token: * near line 1, column 15 [select * from *]", exceptionText);
 	    }
 
 	    [Test]
-	    public void TestLongTypeConstant()
+	    public void testLongTypeConstant()
 	    {
 	        String stmtText = "select 2512570244 as value from " + typeof(SupportBean).FullName;
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(stmtText);
@@ -51,7 +51,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestDifferentJoins()
+	    public void testDifferentJoins()
 	    {
 	        String streamDef = "select * from " +
 	                typeof(SupportBean).FullName + ".win:length(3) as sa," +

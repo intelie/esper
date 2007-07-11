@@ -30,7 +30,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestMaxMinValue()
+	    public void testMaxMinValue()
 	    {
 	        refSet.Add("a");
 	        refSet.Add("b");
@@ -74,7 +74,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestAdd()
+	    public void testAdd()
 	    {
 	        refSet.Add("a");
 	        refSet.Add("b");
@@ -87,7 +87,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestRemove()
+	    public void testRemove()
 	    {
 	        refSet.Add("a");
 	        refSet.Remove("a");

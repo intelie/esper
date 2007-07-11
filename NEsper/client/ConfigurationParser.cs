@@ -8,9 +8,7 @@
 
 using System;
 using System.Data;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Xml;
@@ -38,7 +36,7 @@ namespace net.esper.client
 
         public static void DoConfigure(Configuration configuration, Stream stream, String resourceName)
         {
-            XmlDocument document = null;
+            XmlDocument document;
 
             try
             {
@@ -61,7 +59,7 @@ namespace net.esper.client
                 }
                 catch (IOException ioe)
                 {
-                    ConfigurationParser.log.Warn("could not close input stream for: " + resourceName, ioe);
+                    log.Warn("could not close input stream for: " + resourceName, ioe);
                 }
             }
 
@@ -76,7 +74,7 @@ namespace net.esper.client
         /// <throws>  net.esper.client.EPException </throws>
 		public static void DoConfigure( Configuration configuration, XmlDocument doc )
         {
-            XmlElement root = (XmlElement)doc.DocumentElement;
+            XmlElement root = doc.DocumentElement;
 
             HandleEventTypes(configuration, root);
             HandleAutoImports(configuration, root);
@@ -90,10 +88,10 @@ namespace net.esper.client
         private static void HandleEventTypes(Configuration configuration, XmlElement parentElement)
         {
             XmlNodeList nodes = parentElement.GetElementsByTagName("event-type");
-            for (int i = 0; i < nodes.Count; i++)
+            foreach( XmlNode node in nodes )
             {
-                String name = ((XmlAttributeCollection)nodes.Item(i).Attributes).GetNamedItem("alias").InnerText;
-                XmlNode classNode = ((XmlAttributeCollection)nodes.Item(i).Attributes).GetNamedItem("class");
+                String name = node.Attributes.GetNamedItem("alias").InnerText;
+                XmlNode classNode = node.Attributes.GetNamedItem("class");
 
                 String optionalClassName = null;
                 if (classNode != null)
@@ -101,7 +99,7 @@ namespace net.esper.client
                     optionalClassName = classNode.InnerText;
                     configuration.AddEventTypeAlias(name, optionalClassName);
                 }
-                HandleSubElement(name, optionalClassName, configuration, nodes.Item(i));
+                HandleSubElement(name, optionalClassName, configuration, node);
             }
         }
 
@@ -170,7 +168,7 @@ namespace net.esper.client
                     String xPath = propertyElement.Attributes.GetNamedItem("xpath").InnerText;
                     String propertyType = propertyElement.Attributes.GetNamedItem("type").InnerText;
 
-                    XPathResultType xpathConstantType = XPathResultType.Any;
+                    XPathResultType xpathConstantType;
                     if (propertyType.Equals("NUMBER", StringComparison.InvariantCultureIgnoreCase))
                     {
                         xpathConstantType = XPathResultType.Number;
@@ -203,12 +201,20 @@ namespace net.esper.client
 
             String accessorStyle = xmldomElement.Attributes.GetNamedItem("accessor-style").InnerText;
             String codeGeneration = xmldomElement.Attributes.GetNamedItem("code-generation").InnerText;
-            String propertyResolutionStyle = xmldomElement.Attributes.GetNamedItem("property-resolution-style").InnerText;
+
+            PropertyResolutionStyle propertyResolutionStyle = configuration.DefaultPropertyResolutionStyle;
+            XmlNode propertyResolutionStyleAttrib = xmldomElement.Attributes.GetNamedItem("property-resolution-style");
+            if ( propertyResolutionStyleAttrib != null )
+            {
+                propertyResolutionStyle =
+                    (PropertyResolutionStyle)
+                    Enum.Parse(typeof (PropertyResolutionStyle), propertyResolutionStyleAttrib.InnerText);
+            }
 
             ConfigurationEventTypeLegacy legacyDesc = new ConfigurationEventTypeLegacy();
             legacyDesc.AccessorStyle = (ConfigurationEventTypeLegacy.AccessorStyleEnum) Enum.Parse( typeof( ConfigurationEventTypeLegacy.AccessorStyleEnum ), accessorStyle, true ) ;
             legacyDesc.CodeGeneration = (ConfigurationEventTypeLegacy.CodeGenerationEnum) Enum.Parse( typeof( ConfigurationEventTypeLegacy.CodeGenerationEnum ), codeGeneration, true ) ;
-            legacyDesc.PropertyResolutionStyle = (PropertyResolutionStyle) Enum.Parse(typeof(PropertyResolutionStyle), propertyResolutionStyle, true);
+            legacyDesc.PropertyResolutionStyle = propertyResolutionStyle;
             configuration.AddEventTypeAlias(aliasName, className, legacyDesc);
 
             IEnumerator<XmlElement> propertyNodeEnumerator = CreateElementEnumerator(xmldomElement.ChildNodes);
@@ -261,47 +267,47 @@ namespace net.esper.client
                     {
                         ConnectionStringSettings settings = new ConnectionStringSettings() ;
                         settings.Name = subElement.Attributes.GetNamedItem("provider").InnerText;
-                        settings.ProviderName = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("provider").InnerText;
-                        settings.ConnectionString = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("connection-string").InnerText;
+                        settings.ProviderName = subElement.Attributes.GetNamedItem("provider").InnerText;
+                        settings.ConnectionString = subElement.Attributes.GetNamedItem("connection-string").InnerText;
                         configDBRef.SetDatabaseProviderConnection(settings);
                     }
                     else if (subElement.Name.Equals("connection-lifecycle"))
                     {
-                        String value = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("value").InnerText;
+                        String value = subElement.Attributes.GetNamedItem("value").InnerText;
                         configDBRef.ConnectionLifecycle = (ConnectionLifecycleEnum) Enum.Parse( typeof( ConnectionLifecycleEnum ), value, true );
                     }
                     else if (subElement.Name.Equals("connection-settings"))
                     {
-                        if (((XmlAttributeCollection)subElement.Attributes).GetNamedItem("auto-commit") != null)
+                        if (subElement.Attributes.GetNamedItem("auto-commit") != null)
                         {
-                            String autoCommit = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("auto-commit").InnerText;
+                            String autoCommit = subElement.Attributes.GetNamedItem("auto-commit").InnerText;
                             configDBRef.ConnectionAutoCommit = Boolean.Parse(autoCommit);
                         }
-                        if (((XmlAttributeCollection)subElement.Attributes).GetNamedItem("transaction-isolation") != null)
+                        if (subElement.Attributes.GetNamedItem("transaction-isolation") != null)
                         {
-                            String transactionIsolation = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("transaction-isolation").InnerText;
+                            String transactionIsolation = subElement.Attributes.GetNamedItem("transaction-isolation").InnerText;
                             configDBRef.ConnectionTransactionIsolation = (IsolationLevel) Enum.Parse(typeof(IsolationLevel), transactionIsolation);
                         }
-                        if (((XmlAttributeCollection)subElement.Attributes).GetNamedItem("catalog") != null)
+                        if (subElement.Attributes.GetNamedItem("catalog") != null)
                         {
-                            String catalog = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("catalog").InnerText;
+                            String catalog = subElement.Attributes.GetNamedItem("catalog").InnerText;
                             configDBRef.ConnectionCatalog = catalog;
                         }
-                        if (((XmlAttributeCollection)subElement.Attributes).GetNamedItem("read-only") != null)
+                        if (subElement.Attributes.GetNamedItem("read-only") != null)
                         {
-                            String readOnly = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("read-only").InnerText;
+                            String readOnly = subElement.Attributes.GetNamedItem("read-only").InnerText;
                             configDBRef.ConnectionReadOnly = Boolean.Parse(readOnly);
                         }
                     }
                     else if (subElement.Name.Equals("expiry-time-cache"))
                     {
-                        String maxAge = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("max-age-seconds").InnerText;
-                        String purgeInterval = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("purge-interval-seconds").InnerText;
+                        String maxAge = subElement.Attributes.GetNamedItem("max-age-seconds").InnerText;
+                        String purgeInterval = subElement.Attributes.GetNamedItem("purge-interval-seconds").InnerText;
                         configDBRef.SetExpiryTimeCache(Double.Parse(maxAge), Double.Parse(purgeInterval));
                     }
                     else if (subElement.Name.Equals("lru-cache"))
                     {
-                        String size = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("size").InnerText;
+                        String size = subElement.Attributes.GetNamedItem("size").InnerText;
                         configDBRef.LRUCache = Int32.Parse(size);
                     }
                 }
@@ -375,18 +381,18 @@ namespace net.esper.client
 	        }
 	    }
 
-        private static NameValueCollection HandleProperties(XmlElement element, String propElementName)
+        private static Properties HandleProperties(XmlElement element, String propElementName)
         {
-            NameValueCollection properties = new NameValueCollection();
+            Properties properties = new Properties();
             IEnumerator<XmlElement> nodeEnumerator = CreateElementEnumerator(element.ChildNodes);
             while (nodeEnumerator.MoveNext())
             {
                 XmlElement subElement = nodeEnumerator.Current;
                 if (subElement.Name.Equals(propElementName))
                 {
-                    String name = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("name").InnerText;
-                    String value = ((XmlAttributeCollection)subElement.Attributes).GetNamedItem("value").InnerText;
-                    properties[(String)name] = (String)value;
+                    String name = subElement.Attributes.GetNamedItem("name").InnerText;
+                    String value = subElement.Attributes.GetNamedItem("value").InnerText;
+                    properties[name] = value;
                 }
             }
             return properties;
@@ -416,7 +422,7 @@ namespace net.esper.client
 
         private static String GetOptionalAttribute(XmlNode node, String key)
         {
-            XmlNode valueNode = ((XmlAttributeCollection)node.Attributes).GetNamedItem(key);
+            XmlNode valueNode = node.Attributes.GetNamedItem(key);
             if (valueNode != null)
             {
                 return valueNode.InnerText;

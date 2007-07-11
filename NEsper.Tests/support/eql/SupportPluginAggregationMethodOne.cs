@@ -37,7 +37,7 @@ namespace net.esper.support.eql
 
 	    public override Type ValueType
 	    {
-	    	get { return typeof(int); }
+	    	get { return typeof(int?); }
 	    }
 	}
 } // End of namespace

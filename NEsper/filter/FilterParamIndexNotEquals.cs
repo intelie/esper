@@ -153,10 +153,11 @@ namespace net.esper.filter
         {
 	        if (filterConstant != null)
 	        {
-	            if (this.PropertyBoxedType != filterConstant.GetType())
+                Type filterConstantType = TypeHelper.GetBoxedType(filterConstant.GetType());
+	            if (this.PropertyBoxedType != filterConstantType)
 	            {
 	                throw new ArgumentException("Invalid type of filter constant of " +
-	                        filterConstant.GetType().FullName + " for property " + this.PropertyName);
+	                        filterConstantType.FullName + " for property " + this.PropertyName);
 	            }
 	        }
         }

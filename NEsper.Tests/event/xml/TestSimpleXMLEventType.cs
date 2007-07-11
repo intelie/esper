@@ -57,33 +57,33 @@ namespace net.esper.events.xml
         }
 
         [Test]
-        public virtual void testSimpleProperies()
+        public void testSimpleProperies()
         {
             Assert.AreEqual("SAMPLE_V6", _event["prop4"]);
         }
 
         [Test]
-        public virtual void testNestedProperties()
+        public void testNestedProperties()
         {
             Assert.AreEqual("true", _event["nested1.prop2"]);
         }
 
         [Test]
-        public virtual void testMappedProperties()
+        public void testMappedProperties()
         {
             Assert.AreEqual("SAMPLE_V7", _event["nested3.nested4('a').prop5[1]"]);
             Assert.AreEqual("SAMPLE_V11", _event["nested3.nested4('c').prop5[2]"]);
         }
 
         [Test]
-        public virtual void testIndexedProperties()
+        public void testIndexedProperties()
         {
             Assert.AreEqual("4", _event["nested1.nested2.prop3[2]"]);
             Assert.AreEqual(typeof(String), _event.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
         }
 
         [Test]
-        public virtual void testCustomProperty()
+        public void testCustomProperty()
         {
             Assert.AreEqual(typeof(double), _event.EventType.GetPropertyType("customProp"));
             Assert.AreEqual((double)3, _event["customProp"]);

@@ -28,15 +28,15 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        opNode.AddChildNode(new SupportExprNode(typeof(long?)));
-	        opNode.AddChildNode(new SupportExprNode(typeof(int)));
-	        Assert.AreEqual(typeof(Boolean), opNode.GetType());
+	        opNode.AddChildNode(new SupportExprNode(typeof(int?)));
+	        Assert.AreEqual(typeof(bool?), opNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Test success
 	        opNode.AddChildNode(new SupportExprNode(typeof(String)));
@@ -71,8 +71,8 @@ namespace net.esper.eql.expression
 
 	        // Test type cannot be compared
 	        opNode.ChildNodes.Clear();
-	        opNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
-	        opNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
+	        opNode.AddChildNode(new SupportExprNode(typeof(bool?)));
+	        opNode.AddChildNode(new SupportExprNode(typeof(bool?)));
 
 	        try
 	        {
@@ -86,7 +86,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        SupportExprNode childOne = new SupportExprNode("d");
 	        SupportExprNode childTwo = new SupportExprNode("c");
@@ -111,7 +111,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        opNode.AddChildNode(new SupportExprNode(10));
 	        opNode.AddChildNode(new SupportExprNode(5));
@@ -127,7 +127,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(opNode.EqualsNode(opNode));
 	        Assert.IsFalse(opNode.EqualsNode(new ExprRelationalOpNode(RelationalOpEnum.LE)));

@@ -30,7 +30,7 @@ namespace net.esper.client
 	    }
 
 	    [Test]
-	    public void TestConfigureFromStream()
+	    public void testConfigureFromStream()
 	    {
             Uri url = ResourceManager.ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
 	        WebRequest request = WebRequest.Create(url);
@@ -59,7 +59,7 @@ namespace net.esper.client
             ConfigurationEventTypeXMLDOM noSchemaDesc = config.EventTypesXMLDOM.Fetch("MyNoSchemaXMLEventAlias");
 	        Assert.AreEqual("MyNoSchemaEvent", noSchemaDesc.RootElementName);
             Assert.AreEqual("/myevent/element1", noSchemaDesc.XPathProperties.Fetch("element1").XPath);
-            Assert.AreEqual(XPathResultType.Number, noSchemaDesc.XPathProperties.Fetch("element1").GetType());
+	        Assert.AreEqual(XPathResultType.Number, noSchemaDesc.XPathProperties.Fetch("element1").ResultType);
 
 	        // assert XML DOM - with schema
             ConfigurationEventTypeXMLDOM schemaDesc = config.EventTypesXMLDOM.Fetch("MySchemaXMLEventAlias");
@@ -68,14 +68,14 @@ namespace net.esper.client
 	        Assert.AreEqual("samples:schemas:simpleSchema", schemaDesc.RootElementNamespace);
 	        Assert.AreEqual("default-name-space", schemaDesc.DefaultNamespace);
 	        Assert.AreEqual("/myevent/element1", schemaDesc.XPathProperties.Fetch("element1").XPath);
-            Assert.AreEqual(XPathResultType.Number, schemaDesc.XPathProperties.Fetch("element1").GetType());
+            Assert.AreEqual(XPathResultType.Number, schemaDesc.XPathProperties.Fetch("element1").ResultType);
 	        Assert.AreEqual(1, schemaDesc.NamespacePrefixes.Count);
 	        Assert.AreEqual("samples:schemas:simpleSchema", schemaDesc.NamespacePrefixes.Fetch("ss"));
 
 	        // assert mapped events
 	        Assert.AreEqual(1, config.EventTypesMapEvents.Count);
 	        Assert.IsTrue(config.EventTypesMapEvents.ContainsKey("MyMapEvent"));
-	        EDictionary<String, String> expectedProps = new HashDictionary<String, String>();
+	        Properties expectedProps = new Properties();
 	        expectedProps.Put("myInt", "int");
 	        expectedProps.Put("myString", "string");
             Assert.AreEqual(expectedProps, config.EventTypesMapEvents.Fetch("MyMapEvent"));

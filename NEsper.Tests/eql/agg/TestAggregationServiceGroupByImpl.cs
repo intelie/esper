@@ -45,7 +45,7 @@ namespace net.esper.eql.agg
 	    }
 
 	    [Test]
-	    public void TestGetValue()
+	    public void testGetValue()
 	    {
 	        // apply 3 rows to group key 1, all aggregators evaluated their sub-expressions(constants 5 and 2)
 	        service.ApplyEnter(new EventBean[1], groupOneKey);

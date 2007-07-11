@@ -19,13 +19,13 @@ namespace net.esper.eql.parse
 		}
 
 		[Test]
-		public virtual void testIsWildcard()
+		public void testIsWildcard()
 		{
 			Assert.IsTrue( wildcard.IsWildcard( 1, 10 ) );
 		}
 
 		[Test]
-		public virtual void testGetValuesInRange()
+		public void testGetValuesInRange()
 		{
 			Set<int> result = wildcard.GetValuesInRange( 1, 10 );
 			for ( int i = 1 ; i <= 10 ; i++ )

@@ -13,7 +13,7 @@ namespace net.esper.collection
     public class TestNumberSetPermutationEnumeration
     {
         [Test]
-        public virtual void testInvalid()
+        public void testInvalid()
         {
             try
             {
@@ -27,7 +27,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testNext()
+        public void testNext()
         {
             int[] numberSet = new int[] { 10, 11, 12 };
             int[][] expectedValues = new int[][]

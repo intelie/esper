@@ -44,13 +44,13 @@ namespace net.esper.eql.view
 	    }
 
 	    [Test]
-	    public void TestEventType()
+	    public void testEventType()
 	    {
 	        Assert.AreSame(resultSetProcessor.ResultEventType, outputProcessViewUpdate.EventType);
 	    }
 
 	    [Test]
-	    public void TestUpdate()
+	    public void testUpdate()
 	    {
 	        EventBean[] oldData = new EventBean[1];
 	        EventBean[] newData = new EventBean[1];
@@ -64,7 +64,7 @@ namespace net.esper.eql.view
 	    }
 
 	    [Test]
-	    public void TestProcess()
+	    public void testProcess()
 	    {
 	        EventBean[] oldData = new EventBean[1];
 	        EventBean[] newData = new EventBean[1];

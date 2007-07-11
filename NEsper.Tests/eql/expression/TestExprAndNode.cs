@@ -26,13 +26,13 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(Boolean), andNode.GetType());
+	        Assert.AreEqual(typeof(bool?), andNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // test success
 	        andNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
@@ -66,7 +66,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        andNode.AddChildNode(new SupportBoolExprNode(true));
 	        andNode.AddChildNode(new SupportBoolExprNode(true));
@@ -79,16 +79,16 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        andNode.AddChildNode(new SupportExprNode(true));
 	        andNode.AddChildNode(new SupportExprNode(false));
 
-	        Assert.AreEqual("(true AND false)", andNode.ExpressionString);
+	        Assert.AreEqual("(True AND False)", andNode.ExpressionString);
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(andNode.EqualsNode(new ExprAndNode()));
 	        Assert.IsFalse(andNode.EqualsNode(new ExprOrNode()));

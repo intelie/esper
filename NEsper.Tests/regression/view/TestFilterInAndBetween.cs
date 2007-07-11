@@ -31,7 +31,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInDynamic()
+	    public void testInDynamic()
 	    {
 	        String expr = "select * from pattern [a=" + typeof(SupportBeanNumeric).FullName + " -> every b=" + typeof(SupportBean).FullName
 	                + "(intPrimitive in (a.intOne, a.intTwo))]";
@@ -66,7 +66,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSimpleInt()
+	    public void testSimpleInt()
 	    {
 	        String expr = "select * from " + typeof(SupportBean).FullName + "(intPrimitive in (1, 10))";
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(expr);
@@ -81,7 +81,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        // we do not coerce
 	        TryInvalid("select * from " + typeof(SupportBean).FullName + "(intPrimitive in (1L, 10L))");
@@ -94,7 +94,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInExpr()
+	    public void testInExpr()
 	    {
 	        TryExpr("(string in ('a', 'b'))", "string", new String[] {"a", "x", "b", "y"}, new bool [] {true, false, true, false});
 	        TryExpr("(boolPrimitive in (false))", "boolPrimitive", new Object[] {true, false}, new bool [] {false, true});
@@ -114,7 +114,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestNotInExpr()
+	    public void testNotInExpr()
 	    {
 	        TryExpr("(string not in ('a', 'b'))", "string", new String[] {"a", "x", "b", "y"}, new bool [] {false, true, false, true});
 	        TryExpr("(boolPrimitive not in (false))", "boolPrimitive", new Object[] {true, false}, new bool [] {true, false});
@@ -133,7 +133,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestReuse()
+	    public void testReuse()
 	    {
 	        String expr = "select * from " + typeof(SupportBean).FullName + "(intBoxed in [2:4])";
 	        TryReuse(new String[] {expr, expr});
@@ -171,7 +171,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestReuseNot()
+	    public void testReuseNot()
 	    {
 	        String expr = "select * from " + typeof(SupportBean).FullName + "(intBoxed not in [1:2])";
 	        TryReuse(new String[] {expr, expr});

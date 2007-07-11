@@ -12,27 +12,19 @@ namespace net.esper.support.bean
 {
 	public class SupportSelfReferenceEvent
 	{
+	    public SupportSelfReferenceEvent SelfRef
+	    {
+	        get { return selfRef; }
+	        set { selfRef = value; }
+	    }
+
+	    public string Value
+	    {
+	        get { return value; }
+	        set { this.value = value; }
+	    }
+
 	    private SupportSelfReferenceEvent selfRef;
 
-	    private String value;
-
-	    public SupportSelfReferenceEvent()
-	    {
-	    }
-
-	    public SupportSelfReferenceEvent GetSelfRef()
-	    {
-	        return selfRef;
-	    }
-
-	    public String GetValue()
-	    {
-	        return value;
-	    }
-
-	    public void SetSelfRef(SupportSelfReferenceEvent selfRef)
-	    {
-	        this.selfRef = selfRef;
-	    }
-	}
+	    private String value;	}
 } // End of namespace

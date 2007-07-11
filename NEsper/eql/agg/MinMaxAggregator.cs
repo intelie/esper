@@ -21,7 +21,7 @@ namespace net.esper.eql.agg
 	    private readonly MinMaxTypeEnum minMaxTypeEnum;
 	    private readonly Type returnType;
 
-	    private SortedRefCountedSet<Object> refSet;
+	    private readonly SortedRefCountedSet<Object> refSet;
 
 	    /// <summary>Ctor.</summary>
 	    /// <param name="minMaxTypeEnum">

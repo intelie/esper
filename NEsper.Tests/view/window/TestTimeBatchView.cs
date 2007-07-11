@@ -43,7 +43,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestViewPushNoRefPoint()
+	    public void testViewPushNoRefPoint()
 	    {
 	        long startTime = 1000000;
 	        schedulingServiceStub.Time = (startTime);
@@ -154,7 +154,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestViewPushWithRefPoint()
+	    public void testViewPushWithRefPoint()
 	    {
 	        long startTime = 50000;
 	        schedulingServiceStub.Time = (startTime);
@@ -186,7 +186,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestComputeWaitMSec()
+	    public void testComputeWaitMSec()
 	    {
 	        // With current=2300, ref=1000, and interval=500, expect 2500 as next interval and 200 as solution
 	        long result = TimeBatchView.ComputeWaitMSec(2300, 1000, 500);

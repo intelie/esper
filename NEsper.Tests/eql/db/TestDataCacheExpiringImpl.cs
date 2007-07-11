@@ -34,7 +34,7 @@ namespace net.esper.eql.db
 	    }
 
 	    [Test]
-	    public void TestPurgeInterval()
+	    public void testPurgeInterval()
 	    {
 	        SchedulingServiceImpl scheduler = new SchedulingServiceImpl();
 	        cache = new DataCacheExpiringImpl(10, 20, scheduler, null, null);   // age 10 sec, purge 1000 seconds
@@ -70,7 +70,7 @@ namespace net.esper.eql.db
 	    }
 
 	    [Test]
-	    public void TestGet()
+	    public void testGet()
 	    {
 	        scheduler = new SupportSchedulingServiceImpl();
 	        cache = new DataCacheExpiringImpl(10, 1000, scheduler, null, null);   // age 10 sec, purge 1000 seconds

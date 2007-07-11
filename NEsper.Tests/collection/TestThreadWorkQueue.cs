@@ -17,7 +17,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testFlow()
+        public void testFlow()
         {
             ThreadWorkQueue.Add("a");
             ThreadWorkQueue.Add("b");

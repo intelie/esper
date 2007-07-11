@@ -39,7 +39,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerformanceCoercionForward()
+	    public void testPerformanceCoercionForward()
 	    {
 	        String stmt = "select A.longBoxed as value from " +
 	                typeof(SupportBean).FullName + "(string='A').win:length(1000000) as A," +
@@ -69,7 +69,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerformanceCoercionBack()
+	    public void testPerformanceCoercionBack()
 	    {
 	        String stmt = "select A.intPrimitive as value from " +
 	                typeof(SupportBean).FullName + "(string='A').win:length(1000000) as A," +

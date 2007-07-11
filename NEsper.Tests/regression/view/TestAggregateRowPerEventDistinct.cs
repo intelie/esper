@@ -31,7 +31,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testSumOneView()
+        public void testSumOneView()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String viewExpr = "select symbol, sum(distinct volume) as volSum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) ";

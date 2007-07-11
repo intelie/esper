@@ -248,7 +248,7 @@ namespace net.esper.eql.expression
 	            {
 	                result.Validate(streamTypeService, methodResolutionService, null);
 	            }
-	            catch(ExprValidationException e)
+	            catch(ExprValidationException)
 	            {
 	                throw new ExprValidationException("Failed to resolve " + mappedProperty + " as either an event property or as a static method invocation");
 	            }
@@ -352,11 +352,11 @@ namespace net.esper.eql.expression
 	        {
 	            endArg = indexLastDoubleQuote;
 	        }
-	        String argument = property.Substring(startArg + 1, endArg);
+	        String argument = property.Substring(startArg + 1, endArg - startArg - 1);
 
 	        // get method
 	        //String[] splitDots = property.ToString().Split("[\\.]");
-            String[] splitDots = property.ToString().Split('.');
+            String[] splitDots = property.Split('.');
 	        if (splitDots.Length == 0)
 	        {
 	            return null;

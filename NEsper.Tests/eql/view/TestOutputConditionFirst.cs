@@ -27,6 +27,7 @@ namespace net.esper.eql.view
 		private bool? callbackDoesOutput;
 		private bool? callbackForcesUpdate;
 
+        [SetUp]
 		protected void SetUp()
 		{
 		    callback = new OutputCallback(
@@ -41,7 +42,7 @@ namespace net.esper.eql.view
 		}
 
 		[Test]
-		public void TestUpdateTime()
+		public void testUpdateTime()
 		{
 			OutputLimitSpec outputConditionSpec = new OutputLimitSpec(TEST_INTERVAL_MSEC/1000d, OutputLimitSpec.DisplayLimit.FIRST);
 			SupportSchedulingServiceImpl schedulingServiceStub = new SupportSchedulingServiceImpl();
@@ -84,7 +85,7 @@ namespace net.esper.eql.view
 		}
 
 		[Test]
-		public void TestUpdateCount()
+		public void testUpdateCount()
 		{
 			// 'output first every 3 events'
 			OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3, OutputLimitSpec.DisplayLimit.FIRST);

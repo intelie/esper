@@ -41,7 +41,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        try
 	        {
@@ -65,7 +65,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestLongBothEndpointsIncluded()
+	    public void testLongBothEndpointsIncluded()
 	    {
 	        FilterParamIndexRange index = this.GetLongDataset(FilterOperator.RANGE_CLOSED);
 	        VerifyLongPrimitive(index, -1, 0);
@@ -101,7 +101,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestLongLowEndpointIncluded()
+	    public void testLongLowEndpointIncluded()
 	    {
 	        FilterParamIndexRange index = this.GetLongDataset(FilterOperator.RANGE_HALF_OPEN);
 	        VerifyLongPrimitive(index, -1, 0);
@@ -120,7 +120,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestLongHighEndpointIncluded()
+	    public void testLongHighEndpointIncluded()
 	    {
 	        FilterParamIndexRange index = this.GetLongDataset(FilterOperator.RANGE_HALF_CLOSED);
 	        VerifyLongPrimitive(index, -1, 0);
@@ -139,7 +139,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestLongNeitherEndpointIncluded()
+	    public void testLongNeitherEndpointIncluded()
 	    {
 	        FilterParamIndexRange index = this.GetLongDataset(FilterOperator.RANGE_OPEN);
 	        VerifyLongPrimitive(index, -1, 0);
@@ -158,7 +158,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestDoubleBothEndpointsIncluded()
+	    public void testDoubleBothEndpointsIncluded()
 	    {
 	        FilterParamIndexRange index = this.GetDoubleDataset(FilterOperator.RANGE_CLOSED);
 	        VerifyDoublePrimitive(index, 1.49, 0);
@@ -178,7 +178,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestDoubleFixedRangeSize()
+	    public void testDoubleFixedRangeSize()
 	    {
 	        FilterParamIndexRange index = new FilterParamIndexRange("doublePrimitive", FilterOperator.RANGE_OPEN, testEventType);
 
@@ -194,7 +194,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestDoubleVariableRangeSize()
+	    public void testDoubleVariableRangeSize()
 	    {
 	        FilterParamIndexRange index = new FilterParamIndexRange("doublePrimitive", FilterOperator.RANGE_CLOSED, testEventType);
 

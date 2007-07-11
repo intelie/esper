@@ -40,7 +40,7 @@ namespace net.esper.eql.subquery
 	    }
 
 	    [Test]
-	    public void TestFlow()
+	    public void testFlow()
 	    {
 	        Assert.IsNull(strategy.Lookup(MakeLookupEventBeans(0, 0, 0)));
 

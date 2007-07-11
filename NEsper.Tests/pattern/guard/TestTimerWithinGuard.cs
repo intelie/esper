@@ -40,7 +40,7 @@ namespace net.esper.pattern.guard
 	    }
 
 	    [Test]
-	    public void TestInspect()
+	    public void testInspect()
 	    {
 	        Assert.IsTrue(guard.Inspect(null));
 	    }
@@ -49,7 +49,7 @@ namespace net.esper.pattern.guard
 	     * Make sure the timer calls guardQuit after the set time period
 	     */
 	    [Test]
-	    public void TestStartAndTrigger()
+	    public void testStartAndTrigger()
 	    {
 	        scheduleService.Time = (0);
 
@@ -64,7 +64,7 @@ namespace net.esper.pattern.guard
 	    }
 
 	    [Test]
-	    public void TestStartAndStop()
+	    public void testStartAndStop()
 	    {
 	        scheduleService.Time = (0);
 
@@ -79,7 +79,7 @@ namespace net.esper.pattern.guard
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        try
 	        {

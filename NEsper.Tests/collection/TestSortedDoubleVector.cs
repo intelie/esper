@@ -26,7 +26,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestAdd()
+	    public void testAdd()
 	    {
 	        Assert.AreEqual(0, vector.Count);
 
@@ -50,7 +50,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestRemove()
+	    public void testRemove()
 	    {
 	        vector.Add(5);
 	        vector.Add(1);
@@ -89,7 +89,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestFindInsertIndex()
+	    public void testFindInsertIndex()
 	    {
 	        Assert.AreEqual(-1, vector.FindInsertIndex(1));
 

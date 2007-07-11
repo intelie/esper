@@ -14,7 +14,7 @@ namespace net.esper.eql.join.assemble
     public class TestAssemblyStrategyTreeBuilder 
     {
         [Test]
-        public virtual void testInvalidBuild()
+        public void testInvalidBuild()
         {
             // root stream out of bounds
             tryInvalidBuild(3, convert(new int[][] { new int[] { 1, 2 }, new int[] { }, new int[] { } }), new bool[] { true, true, true });
@@ -38,7 +38,7 @@ namespace net.esper.eql.join.assemble
         }
 
         [Test]
-        public virtual void testValidBuildSimpleReqOpt()
+        public void testValidBuildSimpleReqOpt()
         {
             BaseAssemblyNode node = AssemblyStrategyTreeBuilder.Build(2, convert(new int[][] { new int[] { }, new int[] { 0 }, new int[] { 1 } }), new bool[] { false, true, true });
 
@@ -59,7 +59,7 @@ namespace net.esper.eql.join.assemble
         }
 
         [Test]
-        public virtual void testValidBuildSimpleOptReq()
+        public void testValidBuildSimpleOptReq()
         {
             BaseAssemblyNode node = AssemblyStrategyTreeBuilder.Build(2, convert(
 				new int[][] {
@@ -85,7 +85,7 @@ namespace net.esper.eql.join.assemble
         }
 
         [Test]
-        public virtual void testValidBuildCartesian()
+        public void testValidBuildCartesian()
         {
             BaseAssemblyNode node = AssemblyStrategyTreeBuilder.Build(1, convert(
 				new int[][] {

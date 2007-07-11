@@ -38,7 +38,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        try
 	        {
@@ -62,7 +62,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestMatchDoubleAndGreater()
+	    public void testMatchDoubleAndGreater()
 	    {
 	        FilterParamIndexCompare index = new FilterParamIndexCompare("doublePrimitive", FilterOperator.GREATER, testEventType);
 
@@ -95,7 +95,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestMatchLongAndGreaterEquals()
+	    public void testMatchLongAndGreaterEquals()
 	    {
 	        FilterParamIndexCompare index = new FilterParamIndexCompare("longBoxed", FilterOperator.GREATER_OR_EQUAL, testEventType);
 
@@ -127,7 +127,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestMatchLongAndLessThan()
+	    public void testMatchLongAndLessThan()
 	    {
 	        FilterParamIndexCompare index = new FilterParamIndexCompare("longPrimitive", FilterOperator.LESS, testEventType);
 
@@ -147,7 +147,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestMatchDoubleAndLessOrEqualThan()
+	    public void testMatchDoubleAndLessOrEqualThan()
 	    {
 	        FilterParamIndexCompare index = new FilterParamIndexCompare("doubleBoxed", FilterOperator.LESS_OR_EQUAL, testEventType);
 

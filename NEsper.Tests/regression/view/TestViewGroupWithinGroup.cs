@@ -43,7 +43,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testPullDateAndPushData()
+        public void testPullDateAndPushData()
         {
             List<EDictionary<String, Object>> mapList = new List<EDictionary<String, Object>>();
 

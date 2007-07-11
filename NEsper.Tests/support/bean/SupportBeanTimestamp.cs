@@ -14,16 +14,6 @@ namespace net.esper.support.bean
             get { return _timestamp; }
 		}
 
-        virtual public String id
-        {
-            get { return _id; }
-        }
-
-        virtual public long timestamp
-        {
-            get { return _timestamp; }
-        }
-
 		private String _id;
 		private long _timestamp;
 		

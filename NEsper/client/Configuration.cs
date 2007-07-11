@@ -10,7 +10,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Xml;
 
 using net.esper.compat;
@@ -82,6 +81,9 @@ namespace net.esper.client
 
 		/// <summary>List of adapter loaders.</summary>
 		protected IList<ConfigurationAdapterLoader> adapterLoaders;
+
+        /// <summary>Default property resolution style.</summary>
+        protected PropertyResolutionStyle defaultPropertyResolutionStyle;
 
         /// <summary>
         /// Constructs an empty configuration. The auto import values
@@ -310,6 +312,17 @@ namespace net.esper.client
 	        get { return plugInPatternObjects; }
 	    }
 
+        /// <summary>
+        /// Gets or sets the property resolution style.
+        /// </summary>
+        /// <value>The property resolution style.</value>
+
+        public virtual PropertyResolutionStyle DefaultPropertyResolutionStyle
+        {
+            get { return defaultPropertyResolutionStyle; }
+            set { defaultPropertyResolutionStyle = value; }
+        }
+
 		/// <summary>Add an input/output adapter loader.</summary>
 		/// <param name="loaderName">is the name of the loader</param>
 		/// <param name="typeName">is the fully-qualified classname of the loader class</param>
@@ -528,6 +541,7 @@ namespace net.esper.client
         /// <summary> Reset to an empty configuration.</summary>
         internal void Reset()
         {
+            defaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_SENSITIVE;
             eventClasses = new HashDictionary<String, String>();
             mapAliases = new HashDictionary<String, Properties>();
             eventTypesXMLDOM = new HashDictionary<String, ConfigurationEventTypeXMLDOM>();

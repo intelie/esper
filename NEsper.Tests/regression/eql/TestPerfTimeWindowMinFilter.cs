@@ -38,7 +38,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerf()
+	    public void testPerf()
 	    {
 	        EPStatement[] statements = new EPStatement[100];
 	        SupportUpdateListener[] listeners = new SupportUpdateListener[statements.Length];

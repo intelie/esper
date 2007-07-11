@@ -19,7 +19,7 @@ namespace net.esper.regression.pattern
 	public class TestAndOperator : SupportBeanConstants
 	{
 	    [Test]
-	    public void TestOp()
+	    public void testOp()
 	    {
 	        EventCollection events = EventCollectionFactory.GetEventSetOne(0, 1000);
 	        CaseList testCaseList = new CaseList();

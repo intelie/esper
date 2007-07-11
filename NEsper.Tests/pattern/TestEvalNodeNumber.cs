@@ -18,7 +18,7 @@ namespace net.esper.pattern
 	public class TestEvalNodeNumber
 	{
 	    [Test]
-	    public void TestFlow()
+	    public void testFlow()
 	    {
 	        EvalNodeNumber parent = new EvalNodeNumber();
 
@@ -40,7 +40,7 @@ namespace net.esper.pattern
 	    }
 
 	    [Test]
-	    public void TestHashCode()
+	    public void testHashCode()
 	    {
 
 	    }

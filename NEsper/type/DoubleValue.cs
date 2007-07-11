@@ -1,5 +1,7 @@
 using System;
 
+using net.esper.compat;
+
 namespace net.esper.type
 {
     /// <summary>
@@ -103,7 +105,7 @@ namespace net.esper.type
         {
             if (doubleValue == null)
             {
-                throw new SystemException();
+                throw new IllegalStateException();
             }
             return doubleValue.Value;
         }

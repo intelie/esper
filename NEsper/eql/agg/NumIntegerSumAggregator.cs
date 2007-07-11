@@ -54,7 +54,7 @@ namespace net.esper.eql.agg
 
 	    public Type ValueType
 	    {
-            get { return typeof(int); }
+            get { return typeof(int?); }
 	    }
 
 	    public AggregationMethod NewAggregator(MethodResolutionService methodResolutionService)

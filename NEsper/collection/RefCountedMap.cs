@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
+
 namespace net.esper.collection
 {
     /// <summary>
@@ -49,7 +51,7 @@ namespace net.esper.collection
                 }
                 if (refMap.ContainsKey(key))
                 {
-                    throw new SystemException("Key value already in collection");
+                    throw new IllegalStateException("Key value already in collection");
                 }
 
                 Pair<V, Int32> refValue = new Pair<V, Int32>(value, 1);
@@ -70,7 +72,7 @@ namespace net.esper.collection
             Pair<V, Int32> refValue = refMap[key];
             if (refValue == null)
             {
-                throw new SystemException("Key value not found in collection");
+                throw new IllegalStateException("Key value not found in collection");
             }
             refValue.Second = refValue.Second + 1;
         }
@@ -89,13 +91,13 @@ namespace net.esper.collection
             Pair<V, Int32> refValue = refMap[key];
             if (refValue == null)
             {
-                throw new SystemException("Key value not found in collection");
+                throw new IllegalStateException("Key value not found in collection");
             }
 
             int refCounter = refValue.Second;
             if (refCounter < 1)
             {
-                throw new SystemException("Unexpected reference counter value " + refValue.Second + " encountered for key " + key);
+                throw new IllegalStateException("Unexpected reference counter value " + refValue.Second + " encountered for key " + key);
             }
 
             // Remove key on dereference of last reference

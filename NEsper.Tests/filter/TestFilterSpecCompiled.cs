@@ -35,7 +35,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestHashCode()
+	    public void testHashCode()
 	    {
 	        FilterSpecCompiled spec = SupportFilterSpecBuilder.Build(eventType, new Object[] { "intPrimitive", FilterOperator.EQUAL, 2,
 	                                                                 "intBoxed", FilterOperator.EQUAL, 3 });
@@ -45,7 +45,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        Object[][] paramList = new Object[][] {
 	            new object[]{ "intPrimitive", FilterOperator.EQUAL, 2, "intBoxed", FilterOperator.EQUAL, 3 },
@@ -75,7 +75,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestGetValueSet()
+	    public void testGetValueSet()
 	    {
 	        List<FilterSpecParam> _params = SupportFilterSpecBuilder.BuildList(new Object[]
 	                                    { "intPrimitive", FilterOperator.EQUAL, 2 });

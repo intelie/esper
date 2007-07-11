@@ -45,7 +45,7 @@ namespace net.esper.eql.expression
 	            throw new ExprValidationException("Prior function requires an integer index parameter");
 	        }
 	        ExprNode constantNode = this.ChildNodes[0];
-            if (constantNode.GetType() != typeof(int))
+            if (constantNode.ReturnType != typeof(int))
 	        {
 	            throw new ExprValidationException("Prior function requires an integer index parameter");
 	        }
@@ -56,7 +56,7 @@ namespace net.esper.eql.expression
 	        // Determine stream number
 	        ExprIdentNode identNode = (ExprIdentNode) this.ChildNodes[1];
 	        streamNumber = identNode.StreamId;
-            resultType = this.ChildNodes[1].GetType();
+            resultType = this.ChildNodes[1].ReturnType;
 
 	        if (viewResourceDelegate == null)
 	        {

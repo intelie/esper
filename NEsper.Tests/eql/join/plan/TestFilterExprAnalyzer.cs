@@ -20,7 +20,7 @@ namespace net.esper.eql.join.plan
 	public class TestFilterExprAnalyzer
 	{
 	    [Test]
-	    public void TestAnalyzeEquals()
+	    public void testAnalyzeEquals()
 	    {
 	        ExprEqualsNode equalsNode = SupportExprNodeFactory.MakeEqualsNode();
 	        equalsNode.DumpDebug("node...");
@@ -36,7 +36,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestAnalyzeAnd()
+	    public void testAnalyzeAnd()
 	    {
 	        ExprAndNode andNode = SupportExprNodeFactory.Make2SubNodeAnd();
 	        andNode.DumpDebug("node...");

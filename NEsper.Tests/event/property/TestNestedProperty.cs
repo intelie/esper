@@ -8,9 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-
 using NUnit.Framework;
 
+using net.esper.client;
 using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.events;
@@ -27,7 +27,7 @@ namespace net.esper.events.property
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        beanEventAdapter = new BeanEventAdapter();
+	        beanEventAdapter = new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE);
 
 	        nested = new NestedProperty[2];
 	        nested[0] = MakeProperty(new String[] {"nested", "nestedValue"});
@@ -37,7 +37,7 @@ namespace net.esper.events.property
 	    }
 
 	    [Test]
-	    public void TestGetGetter()
+	    public void testGetGetter()
 	    {
 	        EventPropertyGetter getter = nested[0].GetGetter((BeanEventType)_event.EventType);
 	        Assert.AreEqual("nestedValue", getter.GetValue(_event));
@@ -47,7 +47,7 @@ namespace net.esper.events.property
 	    }
 
 	    [Test]
-	    public void TestGetPropertyType()
+	    public void testGetPropertyType()
 	    {
 	        Assert.AreEqual(typeof(String), nested[0].GetPropertyType((BeanEventType)_event.EventType));
 	        Assert.AreEqual(typeof(String), nested[1].GetPropertyType((BeanEventType)_event.EventType));

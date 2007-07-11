@@ -39,7 +39,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestExistsInSelect()
+	    public void testExistsInSelect()
 	    {
 	        String stmtText = "select exists (select * from S1.win:length(1000)) as value from S0";
 
@@ -55,7 +55,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestExists()
+	    public void testExists()
 	    {
 	        String stmtText = "select id from S0 where exists (select * from S1.win:length(1000))";
 
@@ -75,7 +75,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestExistsFiltered()
+	    public void testExistsFiltered()
 	    {
 	        String stmtText = "select id from S0 as s0 where exists (select * from S1.win:length(1000) as s1 where s1.id=s0.id)";
 
@@ -101,7 +101,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestTwoExistsFiltered()
+	    public void testTwoExistsFiltered()
 	    {
 	        String stmtText = "select id from S0 as s0 where " +
 	                "exists (select * from S1.win:length(1000) as s1 where s1.id=s0.id) " +
@@ -135,7 +135,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestNotExists()
+	    public void testNotExists()
 	    {
 	        String stmtText = "select id from S0 where not exists (select * from S1.win:length(1000))";
 

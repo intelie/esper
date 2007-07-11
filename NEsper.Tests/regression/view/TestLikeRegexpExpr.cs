@@ -27,7 +27,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testLikeRegexStringAndNull()
+        public void testLikeRegexStringAndNull()
         {
             String caseExpr =
                 "select p00 like p01 as r1, " +
@@ -96,7 +96,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testInvalidLikeRegEx()
+        public void testInvalidLikeRegEx()
         {
             tryInvalid("intPrimitive like 'a' escape null");
             tryInvalid("intPrimitive like boolPrimitive");
@@ -110,7 +110,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testLikeRegexNumericAndNull()
+        public void testLikeRegexNumericAndNull()
         {
             String caseExpr =
                 "select " +

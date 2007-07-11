@@ -28,7 +28,7 @@ namespace net.esper.eql.spec
 	public class TestFilterStreamSpecRaw
 	{
 	    [Test]
-	    public void TestNoExpr()
+	    public void testNoExpr()
 	    {
 	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName);
 	        FilterSpecCompiled spec = Compile(raw);
@@ -37,10 +37,11 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestMultipleExpr()
+	    public void testMultipleExpr()
 	    {
-	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName +
-	                "(intPrimitive-1>2 and intBoxed-5>3)");
+	        FilterStreamSpecRaw raw = MakeSpec(
+                "select * from " + typeof(SupportBean).FullName +
+                "(intPrimitive-1>2 and intBoxed-5>3)");
 	        FilterSpecCompiled spec = Compile(raw);
 	        Assert.AreEqual(typeof(SupportBean), spec.EventType.UnderlyingType);
 	        Assert.AreEqual(1, spec.Parameters.Count);
@@ -53,7 +54,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        TryInvalid("select * from " + typeof(SupportBean).FullName + "(intPrimitive=5L)");
 	        TryInvalid("select * from " + typeof(SupportBean).FullName + "(5d = byteBoxed)");
@@ -76,7 +77,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName + "(intPrimitive=5)");
 	        FilterSpecCompiled spec = Compile(raw);
@@ -87,7 +88,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestEqualsAndLess()
+	    public void testEqualsAndLess()
 	    {
 	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName + "(string='a' and intPrimitive<9)");
 	        FilterSpecCompiled spec = Compile(raw);
@@ -112,10 +113,11 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestCommaAndCompar()
+	    public void testCommaAndCompar()
 	    {
-	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName +
-	                "(doubleBoxed>1.11, doublePrimitive>=9.11 and intPrimitive<=9, string || 'a' = 'sa')");
+	        FilterStreamSpecRaw raw = MakeSpec(
+                "select * from " + typeof(SupportBean).FullName +
+	            "(doubleBoxed>1.11, doublePrimitive>=9.11 and intPrimitive<=9, string || 'a' = 'sa')");
 	        FilterSpecCompiled spec = Compile(raw);
 	        Assert.AreEqual(4, spec.Parameters.Count);
 	        EDictionary<String, FilterSpecParam> paramList = MapParameters(spec.Parameters);
@@ -134,7 +136,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestNestedAnd()
+	    public void testNestedAnd()
 	    {
 	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName +
 	                "((doubleBoxed=1 and doublePrimitive=2) and (intPrimitive=3 and (string like '%_a' and string = 'a')))");
@@ -159,7 +161,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestIn()
+	    public void testIn()
 	    {
 	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName + "(doubleBoxed in (1, 2, 3))");
 	        FilterSpecCompiled spec = Compile(raw);
@@ -175,7 +177,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestNotIn()
+	    public void testNotIn()
 	    {
 	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName + "(string not in (\"a\"))");
 	        FilterSpecCompiled spec = Compile(raw);
@@ -189,7 +191,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestRanges()
+	    public void testRanges()
 	    {
 	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName +
 	                "(intBoxed in [1:5] and doubleBoxed in (2:6) and floatBoxed in (3:7] and byteBoxed in [0:1))");
@@ -219,7 +221,7 @@ namespace net.esper.eql.spec
 	    }
 
 	    [Test]
-	    public void TestRangesNot()
+	    public void testRangesNot()
 	    {
 	        FilterStreamSpecRaw raw = MakeSpec("select * from " + typeof(SupportBean).FullName +
 	                "(intBoxed not in [1:5] and doubleBoxed not in (2:6) and floatBoxed not in (3:7] and byteBoxed not in [0:1))");

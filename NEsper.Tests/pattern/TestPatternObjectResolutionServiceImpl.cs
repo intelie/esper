@@ -34,7 +34,7 @@ namespace net.esper.pattern
 	    }
 
 	    [Test]
-	    public void TestMake()
+	    public void testMake()
 	    {
 	        Assert.IsTrue(service.Create(new PatternGuardSpec("g", "h", new Object[] {100})) is SupportGuardFactory);
 	        Assert.IsTrue(service.Create(new PatternObserverSpec("a", "b", new Object[] {100})) is SupportObserverFactory);
@@ -43,7 +43,7 @@ namespace net.esper.pattern
 	    }
 
 	    [Test]
-	    public void TestInvalidConfig()
+	    public void testInvalidConfig()
 	    {
 	        List<ConfigurationPlugInPatternObject> init = new List<ConfigurationPlugInPatternObject>();
 	        init.Add(MakeGuardSpec("x", "y", "a"));

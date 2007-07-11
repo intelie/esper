@@ -55,7 +55,7 @@ namespace net.esper.eql.expression
 	        List<Type> comparedTypes = new List<Type>();
 	        for (int i = 0; i < length; i++)
 	        {
-	        	comparedTypes.Add(this.ChildNodes[i].GetType());
+	        	comparedTypes.Add(this.ChildNodes[i].ReturnType);
 	        }
 
 	        // Determine common denominator type

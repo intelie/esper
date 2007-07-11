@@ -34,36 +34,6 @@ namespace net.esper.support.bean
             set { this._p13 = value; }
 		}
 
-        virtual public int id
-        {
-            get { return _id; }
-            set { this._id = value; }
-        }
-
-        virtual public String p10
-        {
-            get { return _p10; }
-            set { this._p10 = value; }
-        }
-
-        virtual public String p11
-        {
-            get { return _p11; }
-            set { this._p11 = value; }
-        }
-
-        virtual public String p12
-        {
-            get { return _p12; }
-            set { this._p12 = value; }
-        }
-
-        virtual public String p13
-        {
-            get { return _p13; }
-            set { this._p13 = value; }
-        }
-
 		private static int idCounter;
 
         private int _id;

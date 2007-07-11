@@ -36,7 +36,8 @@ namespace net.esper.eql.expression
         /// Validate node.
         /// </summary>
         /// <param name="streamTypeService">serves stream event type info</param>
-        /// <param name="autoImportService">for resolving class names in library method invocations</param>
+        /// <param name="methodResolutionService">used for resolving method and function names</param>
+        /// <returns>aggregation function use</returns>
         /// <throws>ExprValidationException thrown when validation failed </throws>
 
 	    protected override AggregationMethod ValidateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)

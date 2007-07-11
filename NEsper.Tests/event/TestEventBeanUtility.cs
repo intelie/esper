@@ -22,7 +22,7 @@ namespace net.esper.events
 	public class TestEventBeanUtility
 	{
 	    [Test]
-	    public void TestFlatten()
+	    public void testFlatten()
 	    {
 	        // test many arrays
 	        EventBean[] testEvents = MakeEventArray(new String[] {"a1", "a2", "b1", "b2", "b3", "c1", "c2"});
@@ -52,7 +52,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestAppend()
+	    public void testAppend()
 	    {
 	        EventBean[] setOne = MakeEventArray(new String[] {"a1", "a2"});
 	        EventBean[] setTwo = MakeEventArray(new String[] {"b1", "b2", "b3"});
@@ -73,7 +73,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestToArray()
+	    public void testToArray()
 	    {
 	        // Test list with 2 elements
 	        List<EventBean> eventList = MakeEventList(new String[] {"a1", "a2"});
@@ -99,7 +99,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetPropertyArray()
+	    public void testGetPropertyArray()
 	    {
 	        // try 2 properties
 	        EventPropertyGetter[] getters = MakeGetters();
@@ -115,7 +115,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestMultiKey()
+	    public void testMultiKey()
 	    {
 	        // try 2 properties
 	        EventPropertyGetter[] getters = MakeGetters();

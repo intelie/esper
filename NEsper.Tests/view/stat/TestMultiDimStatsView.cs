@@ -36,7 +36,7 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestOneDim()
+	    public void testOneDim()
 	    {
 	        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.MakeContext(), derivedFields, "intPrimitive", "enumValue", null, null);
 	        parentStream.AddView(olapView);
@@ -63,7 +63,7 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestTwoDim()
+	    public void testTwoDim()
 	    {
 	        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.MakeContext(), derivedFields, "intPrimitive", "string", "enumValue", null);
 	        parentStream.AddView(olapView);
@@ -88,7 +88,7 @@ namespace net.esper.view.stat
 	    }
 
 	    [Test]
-	    public void TestThreeDim()
+	    public void testThreeDim()
 	    {
 	        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.MakeContext(), derivedFields, "intPrimitive", "boolBoxed", "string", "enumValue");
 	        parentStream.AddView(olapView);

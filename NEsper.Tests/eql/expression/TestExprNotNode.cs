@@ -27,13 +27,13 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(Boolean), notNode.GetType());
+	        Assert.AreEqual(typeof(bool?), notNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // fails with zero expressions
 	        try
@@ -79,7 +79,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        notNode.AddChildNode(new SupportBoolExprNode(true));
 	        Assert.IsFalse( (Boolean) notNode.Evaluate(null, false));
@@ -90,14 +90,14 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        notNode.AddChildNode(new SupportExprNode(true));
-	        Assert.AreEqual("NOT(true)", notNode.ExpressionString);
+	        Assert.AreEqual("NOT(True)", notNode.ExpressionString);
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(notNode.EqualsNode(notNode));
 	        Assert.IsFalse(notNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));

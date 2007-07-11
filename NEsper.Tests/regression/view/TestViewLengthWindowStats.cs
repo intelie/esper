@@ -37,7 +37,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestIterator()
+	    public void testIterator()
 	    {
 	        String viewExpr = "select symbol, price from " + typeof(SupportMarketDataBean).FullName + ".win:length(2)";
 	        statement = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -75,7 +75,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestWindowStats()
+	    public void testWindowStats()
 	    {
 	        String viewExpr = "select * from " + typeof(SupportMarketDataBean).FullName +
 	                "(symbol='" + SYMBOL + "').win:length(3).stat:uni('price')";

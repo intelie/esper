@@ -48,7 +48,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestGet()
+	    public void testGet()
 	    {
 	        access.Refresh(sortedEvents, 0, 10);
 	        Assert.IsNull(access.GetNewData(0));

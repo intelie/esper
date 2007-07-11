@@ -24,7 +24,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testPatternFilterJoin()
+        public void testPatternFilterJoin()
         {
             String stmtText = "select es0a.id as es0aId, " + "es0a.p00 as es0ap00, " + "es0b.id as es0bId, " + "es0b.p00 as es0bp00, " + "s1.id as s1Id, " + "s1.p10 as s1p10 " + " from " + " pattern [every (es0a=" + typeof(SupportBean_S0).FullName + "(p00='a') " + "or es0b=" + typeof(SupportBean_S0).FullName + "(p00='b'))].win:length(5) as s0," + typeof(SupportBean_S1).FullName + ".win:length(5) as s1" + " where (es0a.id = s1.id) or (es0b.id = s1.id)";
             EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
@@ -88,7 +88,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void test2PatternJoinSelect()
+        public void test2PatternJoinSelect()
         {
             String stmtText =
                 "select s0.es0.id as s0es0Id," +
@@ -165,7 +165,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void test2PatternJoinWildcard()
+        public void test2PatternJoinWildcard()
         {
             String stmtText =
                 "select * " +

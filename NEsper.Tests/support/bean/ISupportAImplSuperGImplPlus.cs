@@ -5,45 +5,25 @@ namespace net.esper.support.bean
 	[Serializable]
 	public class ISupportAImplSuperGImplPlus : ISupportAImplSuperG, ISupportB, ISupportC
 	{
-		override public String g
+		override public String G
 		{
-			get
-			{
-				return valueG;
-			}
-			
+            get { return valueG; }
 		}
-		override public String a
+		override public String A
 		{
-			get
-			{
-				return valueA;
-			}
-			
+            get { return valueA; }
 		}
-		override public String baseAB
+		override public String BaseAB
 		{
-			get
-			{
-				return valueBaseAB;
-			}
-			
+            get { return valueBaseAB; }
 		}
-		virtual public String b
+		virtual public String B
 		{
-			get
-			{
-				return valueB;
-			}
-			
+            get { return valueB; }
 		}
-		virtual public String c
+		virtual public String C
 		{
-			get
-			{
-				return valueC;
-			}
-			
+            get { return valueC; }
 		}
 		internal String valueG;
 		internal String valueA;

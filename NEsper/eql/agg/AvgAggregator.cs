@@ -31,7 +31,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints++;
-            sum += (double)item;
+            sum += Convert.ToDouble(item);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints--;
-            sum -= (double) item;
+            sum -= Convert.ToDouble(item);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace net.esper.eql.agg
         {
             get
             {
-                return typeof(double);
+                return typeof(double?);
             }
         }
 

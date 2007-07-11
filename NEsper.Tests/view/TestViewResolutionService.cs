@@ -32,7 +32,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestInitializeFromConfig()
+	    public void testInitializeFromConfig()
 	    {
 	        service = CreateService(new String[] {"a", "b"}, new String[] {"v1", "v2"},
 	                new String[] {typeof(SupportViewFactoryOne).FullName, typeof(SupportViewFactoryTwo).FullName});
@@ -71,7 +71,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestCreate()
+	    public void testCreate()
 	    {
 	        IList<Object> parameters = new List<Object>();
 	        parameters.Add("price");
@@ -82,7 +82,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestInvalidViewName()
+	    public void testInvalidViewName()
 	    {
 	        ViewSpec spec = new ViewSpec("dummy", "bumblebee", null);
 

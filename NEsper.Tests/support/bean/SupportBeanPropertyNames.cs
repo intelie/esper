@@ -4,26 +4,26 @@ namespace net.esper.support.bean
 {
 	public class SupportBeanPropertyNames
 	{
-    	public String getA(String key) { return ""; }
-    	public String getAB(String key) { return ""; }
-    	public String getABC(String key) { return ""; }
-    	public String geta(String key) { return ""; }
-    	public String getab(String key) { return ""; }
-    	public String getabc(String key) { return ""; }
-    	public String getFooBah(String key) { return ""; }
-        public String get(String key) { return ""; }
+    	public String GetA(String key) { return ""; }
+    	public String GetAB(String key) { return ""; }
+    	public String GetABC(String key) { return ""; }
+    	public String Geta(String key) { return ""; }
+    	public String Getab(String key) { return ""; }
+    	public String Getabc(String key) { return ""; }
+    	public String GetFooBah(String key) { return ""; }
+        public String Get(String key) { return ""; }
 
-    	public String getA() { return ""; }
-    	public String getAB() { return ""; }
-    	public String getABC() { return ""; }
-    	public String geta() { return ""; }
-    	public String getab() { return ""; }
-    	public String getabc() { return ""; }
-    	public String getFooBah() { return ""; }
+    	public String GetA() { return ""; }
+    	public String GetAB() { return ""; }
+    	public String GetABC() { return ""; }
+    	public String Geta() { return ""; }
+    	public String Getab() { return ""; }
+    	public String Getabc() { return ""; }
+    	public String GetFooBah() { return ""; }
 
-        public String getIndexed(int i) { return ""; }
-        public int[] getArray() { return new int[0]; }
+        public String GetIndexed(int i) { return ""; }
+        public int[] GetArray() { return new int[0]; }
 
-        public String get() { return ""; }    
+        public String Get() { return ""; }    
 	}
 }

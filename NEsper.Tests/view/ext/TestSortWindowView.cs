@@ -34,7 +34,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestViewOneProperty()
+	    public void testViewOneProperty()
 	    {
 	        // Set up a feed for the view under test - the depth is 10 events so bean[10] will cause bean[0] to go old
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 10);
@@ -86,7 +86,7 @@ namespace net.esper.view.ext
 	    }
 
 	    [Test]
-	    public void TestViewTwoProperties()
+	    public void testViewTwoProperties()
 	    {
 	    	// Set up a sort windows that sorts on two properties
 	    	myView = new SortWindowView(null, new String[]{"volume", "price"}, new Boolean[] {false, true}, 5, null);

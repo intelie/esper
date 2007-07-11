@@ -71,7 +71,7 @@ namespace net.esper.eql.core
             EDictionary<String, Type> propertyNamesAndTypes = new HashDictionary<String, Type>();
             foreach (ExprNode orderByNode in orderByNodes)
             {
-                propertyNamesAndTypes[orderByNode.ExpressionString] = orderByNode.GetType();
+                propertyNamesAndTypes[orderByNode.ExpressionString] = orderByNode.ReturnType;
             }
             EventType orderType = eventAdapterService.CreateAnonymousMapType(propertyNamesAndTypes);
 

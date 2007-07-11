@@ -15,6 +15,8 @@ using net.esper.compat;
 using net.esper.eql.spec;
 using net.esper.pattern.guard;
 using net.esper.pattern.observer;
+using net.esper.util;
+
 using org.apache.commons.logging;
 
 namespace net.esper.pattern
@@ -65,7 +67,7 @@ namespace net.esper.pattern
 	            Type type;
 	            try
 	            {
-	                type = Type.GetType(entry.FactoryClassName);
+                    type = TypeHelper.ResolveType(entry.FactoryClassName);
 	            }
 	            catch (TypeLoadException)
 	            {

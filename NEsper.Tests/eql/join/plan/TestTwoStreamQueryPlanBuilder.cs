@@ -34,7 +34,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestBuildNoOuter()
+	    public void testBuildNoOuter()
 	    {
 	        QueryGraph graph = MakeQueryGraph();
 	        QueryPlan spec = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, null);
@@ -45,7 +45,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestBuildOuter()
+	    public void testBuildOuter()
 	    {
 	        QueryGraph graph = MakeQueryGraph();
 	        QueryPlan spec = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, OuterJoinType.LEFT);

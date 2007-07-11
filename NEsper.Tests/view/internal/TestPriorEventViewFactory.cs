@@ -35,7 +35,7 @@ namespace net.esper.view.internals
 	    }
 
 	    [Test]
-	    public void TestMakeView()
+	    public void testMakeView()
 	    {
 	        factoryOne.SetProvideCapability(new ViewCapPriorEventAccess(1), callbackOne);
 	        factoryOne.SetProvideCapability(new ViewCapPriorEventAccess(2), callbackOne);
@@ -50,7 +50,7 @@ namespace net.esper.view.internals
 	    }
 
 	    [Test]
-	    public void TestSetParameters()
+	    public void testSetParameters()
 	    {
 	        try
 	        {
@@ -64,7 +64,7 @@ namespace net.esper.view.internals
 	    }
 
 	    [Test]
-	    public void TestCanReuse()
+	    public void testCanReuse()
 	    {
 	        Assert.IsFalse(factoryOne.CanReuse(null));
 	    }

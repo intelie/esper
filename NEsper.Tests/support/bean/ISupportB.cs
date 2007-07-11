@@ -4,9 +4,6 @@ namespace net.esper.support.bean
 {
     public interface ISupportB : ISupportBaseAB
     {
-        String b
-        {
-            get;
-        }
+        String B { get; }
     }
 }

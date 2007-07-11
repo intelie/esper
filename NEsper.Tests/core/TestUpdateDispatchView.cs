@@ -35,7 +35,7 @@ namespace net.esper.core
         }
 
         [Test]
-        public virtual void testUpdateOnceAndDispatch()
+        public void testUpdateOnceAndDispatch()
         {
             EventBean[] oldData = MakeEvents("old");
             EventBean[] newData = MakeEvents("new");
@@ -49,7 +49,7 @@ namespace net.esper.core
         }
 
         [Test]
-        public virtual void testUpdateTwiceAndDispatch()
+        public void testUpdateTwiceAndDispatch()
         {
             EventBean[] oldDataOne = MakeEvents("old1");
             EventBean[] newDataOne = MakeEvents("new1");

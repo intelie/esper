@@ -38,7 +38,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestLong()
+	    public void testLong()
 	    {
 	        FilterParamIndexEquals index = new FilterParamIndexEquals("shortBoxed", testEventType);
 
@@ -68,7 +68,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestBoolean()
+	    public void testBoolean()
 	    {
 	        FilterParamIndexEquals index = new FilterParamIndexEquals("boolPrimitive", testEventType);
 
@@ -79,7 +79,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestString()
+	    public void testString()
 	    {
 	        FilterParamIndexEquals index = new FilterParamIndexEquals("string", testEventType);
 
@@ -103,7 +103,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestFloatPrimitive()
+	    public void testFloatPrimitive()
 	    {
 	        FilterParamIndexEquals index = new FilterParamIndexEquals("floatPrimitive", testEventType);
 

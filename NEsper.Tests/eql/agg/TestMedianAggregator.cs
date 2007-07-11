@@ -16,7 +16,7 @@ namespace net.esper.eql.agg
 	public class TestMedianAggregator
 	{
 	    [Test]
-	    public void TestAggregator()
+	    public void testAggregator()
 	    {
 	        MedianAggregator median = new MedianAggregator();
 	        Assert.AreEqual(null, median.Value);

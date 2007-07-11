@@ -37,7 +37,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testWindowStats()
+        public void testWindowStats()
         {
             testListener.Reset();
 

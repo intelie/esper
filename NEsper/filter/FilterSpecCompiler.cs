@@ -109,7 +109,7 @@ namespace net.esper.filter
 	            ExprNode validated = node.GetValidatedSubtree(streamTypeService, methodResolutionService, null);
 	            validatedNodes.Add(validated);
 
-                if ((validated.GetType() != typeof(bool?)) && (validated.GetType() != typeof(bool)))
+                if ((validated.ReturnType != typeof(bool?)) && (validated.ReturnType != typeof(bool)))
 	            {
 	                throw new ExprValidationException("Filter expression not returning a bool value: '" + validated.ExpressionString + "'");
 	            }
@@ -386,14 +386,14 @@ namespace net.esper.filter
 	                    }
 
 	                    bool isMustCoerce = false;
-	                    Type numericCoercionType = identNodeInSet.GetType();
-	                    if (identNodeInner.GetType() != identNodeInSet.GetType())
+	                    Type numericCoercionType = identNodeInSet.ReturnType;
+	                    if (identNodeInner.ReturnType != identNodeInSet.ReturnType)
 	                    {
-	                        if (TypeHelper.IsNumeric(identNodeInSet.GetType()))
+                            if (TypeHelper.IsNumeric(identNodeInSet.ReturnType))
 	                        {
-	                            if (!TypeHelper.CanCoerce(identNodeInner.GetType(), identNodeInSet.GetType()))
+                                if (!TypeHelper.CanCoerce(identNodeInner.ReturnType, identNodeInSet.ReturnType))
 	                            {
-	                                ThrowConversionError(identNodeInner.GetType(), identNodeInSet.GetType(), identNodeInSet.ResolvedPropertyName);
+                                    ThrowConversionError(identNodeInner.ReturnType, identNodeInSet.ReturnType, identNodeInSet.ResolvedPropertyName);
 	                            }
 	                            isMustCoerce = true;
 	                        }
@@ -493,14 +493,14 @@ namespace net.esper.filter
 	        String propertyName = identNodeLeft.ResolvedPropertyName;
 
 	        bool isMustCoerce = false;
-	        Type numericCoercionType = identNodeLeft.GetType();
-	        if (identNodeRight.GetType() != identNodeLeft.GetType())
+            Type numericCoercionType = identNodeLeft.ReturnType;
+            if (identNodeRight.ReturnType != identNodeLeft.ReturnType)
 	        {
-	            if (TypeHelper.IsNumeric(identNodeRight.GetType()))
+                if (TypeHelper.IsNumeric(identNodeRight.ReturnType))
 	            {
-	                if (!TypeHelper.CanCoerce(identNodeRight.GetType(), identNodeLeft.GetType()))
+                    if (!TypeHelper.CanCoerce(identNodeRight.ReturnType, identNodeLeft.ReturnType))
 	                {
-	                    ThrowConversionError(identNodeRight.GetType(), identNodeLeft.GetType(), identNodeLeft.ResolvedPropertyName);
+                        ThrowConversionError(identNodeRight.ReturnType, identNodeLeft.ReturnType, identNodeLeft.ResolvedPropertyName);
 	                }
 	                isMustCoerce = true;
 	            }
@@ -526,7 +526,7 @@ namespace net.esper.filter
 	    // filters require the same type
 	    private static Object HandleConstantsCoercion(ExprIdentNode identNode, Object constant)
 	    {
-	    	Type identNodeType = identNode.GetType();
+            Type identNodeType = identNode.ReturnType;
 	        if (!TypeHelper.IsNumeric(identNodeType))
 	        {
 	            return constant;    // no coercion required, other type checking performed by expression this comes from

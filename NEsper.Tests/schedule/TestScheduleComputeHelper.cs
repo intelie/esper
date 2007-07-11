@@ -15,7 +15,7 @@ namespace net.esper.schedule
         private static readonly String timeFormat = @"yyyy-MM-dd HH:mm:ss";
 
         [Test]
-        public virtual void testCompute()
+        public void testCompute()
         {
             ScheduleSpec spec = null;
 

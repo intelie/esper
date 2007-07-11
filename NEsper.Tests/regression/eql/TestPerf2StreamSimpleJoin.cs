@@ -48,7 +48,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerformanceJoinNoResults()
+	    public void testPerformanceJoinNoResults()
 	    {
 	        String methodName = ".testPerformanceJoinNoResults";
 
@@ -70,7 +70,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestJoinPerformanceStreamA()
+	    public void testJoinPerformanceStreamA()
 	    {
 	        String methodName = ".testJoinPerformanceStreamA";
 
@@ -93,7 +93,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestJoinPerformanceStreamB()
+	    public void testJoinPerformanceStreamB()
 	    {
 	        String methodName = ".testJoinPerformanceStreamB";
 

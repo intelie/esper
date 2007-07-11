@@ -32,24 +32,24 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        maxNode.AddChildNode(new SupportExprNode(typeof(int?)));
 	        SupportExprNodeFactory.Validate(maxNode);
-	        Assert.AreEqual(typeof(int?), maxNode.GetType());
+	        Assert.AreEqual(typeof(int?), maxNode.ReturnType);
 
 	        minNode.AddChildNode(new SupportExprNode(typeof(float?)));
 	        SupportExprNodeFactory.Validate(minNode);
-            Assert.AreEqual(typeof(float?), minNode.GetType());
+            Assert.AreEqual(typeof(float?), minNode.ReturnType);
 
 	        maxNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MAX);
 	        maxNode.AddChildNode(new SupportExprNode(typeof(short?)));
 	        SupportExprNodeFactory.Validate(maxNode);
-	        Assert.AreEqual(typeof(short?), maxNode.GetType());
+	        Assert.AreEqual(typeof(short?), maxNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        // Build Sum(4-2)
 	        ExprMathNode arithNodeChild = new ExprMathNode(MathArithTypeEnum.SUBTRACT);
@@ -63,7 +63,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Must have exactly 1 subnodes
 	        try
@@ -91,14 +91,14 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestMakeAggregator()
+	    public void testMakeAggregator()
 	    {
 	        MinMaxTypeEnum type = MinMaxTypeEnum.MAX;
 	        Assert.IsTrue(MakeNode(type, 5, typeof(int?)).PrototypeAggregator is MinMaxAggregator);
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(minNode.EqualsNode(minNode));
 	        Assert.IsFalse(maxNode.EqualsNode(minNode));

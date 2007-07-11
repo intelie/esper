@@ -19,11 +19,11 @@ using net.esper.view;
 
 namespace net.esper.eql.db
 {
-	[TestFixture]
+	//[TestFixture]
 	public class TestPollingViewableFactory
 	{
-	    [Test]
-	    public void TestDBStatementViewFactory()
+        [Test]
+	    public void testDBStatementViewFactory()
 	    {
 	        DBStatementStreamSpec spec = new DBStatementStreamSpec("s0", new List<ViewSpec>(),
 	                "mydb_part", "select * from mytesttable where mybigint=${idnum}");

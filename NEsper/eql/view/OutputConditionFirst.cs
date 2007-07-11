@@ -25,7 +25,7 @@ namespace net.esper.eql.view
         {
             if (outputCallback == null)
             {
-                throw new System.NullReferenceException("Output condition by count requires a non-null callback");
+                throw new ArgumentException("Output condition by count requires a non-null callback", "outputCallback");
             }
             this.outputCallback = outputCallback;
             OutputLimitSpec innerSpec = CreateInnerSpec(outputLimitSpec);

@@ -28,7 +28,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testPerf2Properties()
+        public void testPerf2Properties()
         {
             String methodName = ".testPerformanceJoinNoResults";
 
@@ -55,7 +55,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testPerf3Properties()
+        public void testPerf3Properties()
         {
             String methodName = ".testPerformanceJoinNoResults";
 

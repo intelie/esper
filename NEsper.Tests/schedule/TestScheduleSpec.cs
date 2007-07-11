@@ -21,7 +21,7 @@ namespace net.esper.schedule
 	public class TestScheduleSpec
 	{
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // Test all units missing
 	        EDictionary<ScheduleUnit, TreeSet<int>> unitValues = new HashDictionary<ScheduleUnit, TreeSet<int>>();
@@ -51,7 +51,7 @@ namespace net.esper.schedule
 	    }
 
 	    [Test]
-	    public void TestCompress()
+	    public void testCompress()
 	    {
 	        EDictionary<ScheduleUnit, TreeSet<int>> unitValues = new HashDictionary<ScheduleUnit, TreeSet<int>>();
 	        unitValues = (new ScheduleSpec()).UnitValues;

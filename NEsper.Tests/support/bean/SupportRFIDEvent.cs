@@ -12,6 +12,21 @@ namespace net.esper.support.bean
 {
 	public class SupportRFIDEvent
 	{
+	    public string LocationReportId
+	    {
+	        get { return locationReportId; }
+	    }
+
+	    public string Mac
+	    {
+	        get { return mac; }
+	    }
+
+	    public string ZoneID
+	    {
+	        get { return zoneID; }
+	    }
+
 	    private String locationReportId;
 	    private String mac;
 	    private String zoneID;
@@ -26,21 +41,6 @@ namespace net.esper.support.bean
 	        this.locationReportId = locationReportId;
 	        this.mac = mac;
 	        this.zoneID = zoneID;
-	    }
-
-	    public String GetLocationReportId()
-	    {
-	        return locationReportId;
-	    }
-
-	    public String GetMac()
-	    {
-	        return mac;
-	    }
-
-	    public String GetZoneID()
-	    {
-	        return zoneID;
 	    }
 	}
 } // End of namespace

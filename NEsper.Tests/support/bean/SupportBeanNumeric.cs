@@ -21,14 +21,14 @@ namespace net.esper.support.bean
 	        this.intTwo = intTwo;
 	    }
 
-	    public int GetIntOne()
+	    public int IntOne
 	    {
-	        return intOne;
+            get { return intOne; }
 	    }
 
-	    public int GetIntTwo()
+	    public int IntTwo
 	    {
-	        return intTwo;
+            get { return intTwo; }
 	    }
 	}
 } // End of namespace

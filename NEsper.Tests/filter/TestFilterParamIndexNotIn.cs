@@ -44,7 +44,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestIndex()
+	    public void testIndex()
 	    {
 	        FilterParamIndexNotIn index = new FilterParamIndexNotIn("longBoxed", testEventType);
 	        Assert.AreEqual(FilterOperator.NOT_IN_LIST_OF_VALUES, index.FilterOperator);

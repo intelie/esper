@@ -38,7 +38,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumOneView()
+	    public void testSumOneView()
 	    {
 	        String viewExpr = "select Sum(longBoxed) as mySum " +
 	                          "from " + typeof(SupportBean).FullName + ".win:time(10 seconds) " +
@@ -50,7 +50,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumJoin()
+	    public void testSumJoin()
 	    {
 	        String viewExpr = "select Sum(longBoxed) as mySum " +
 	                          "from " + typeof(SupportBeanString).FullName + ".win:time(10 seconds) as one, " +

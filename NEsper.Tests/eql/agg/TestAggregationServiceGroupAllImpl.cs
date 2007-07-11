@@ -37,7 +37,7 @@ namespace net.esper.eql.agg
 	    }
 
 	    [Test]
-	    public void TestApplyEnter()
+	    public void testApplyEnter()
 	    {
 	        // apply two rows, all aggregators evaluated their sub-expressions(constants 5 and 2) twice
 	        service.ApplyEnter(new EventBean[1], null);
@@ -47,7 +47,7 @@ namespace net.esper.eql.agg
 	    }
 
 	    [Test]
-	    public void TestApplyLeave()
+	    public void testApplyLeave()
 	    {
 	        // apply 3 rows, all aggregators evaluated their sub-expressions(constants 5 and 2)
 	        service.ApplyLeave(new EventBean[1], null);

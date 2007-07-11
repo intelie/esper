@@ -34,7 +34,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPrevCountStarWithStaticMethod()
+	    public void testPrevCountStarWithStaticMethod()
 	    {
 	        String text = "select Count(*) as total, " +
 	                      "prev(" + typeof(TestPreviousFunction).FullName + ".IntToLong(count(*)) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + ".win:time(60)";
@@ -45,7 +45,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPrevCountStar()
+	    public void testPrevCountStar()
 	    {
 	        String text = "select Count(*) as total, " +
 	                      "prev(count(*) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + ".win:time(60)";
@@ -116,7 +116,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSortWindowPerGroup()
+	    public void testSortWindowPerGroup()
 	    {
 	        // descending sort
 	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
@@ -156,7 +156,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestTimeBatchPerGroup()
+	    public void testTimeBatchPerGroup()
 	    {
 	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:time_batch(1 sec) ";
@@ -216,7 +216,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLengthBatchPerGroup()
+	    public void testLengthBatchPerGroup()
 	    {
 	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:length_batch(3) ";
@@ -281,7 +281,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestTimeWindowPerGroup()
+	    public void testTimeWindowPerGroup()
 	    {
 	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:time(20 sec) ";
@@ -289,7 +289,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestExtTimeWindowPerGroup()
+	    public void testExtTimeWindowPerGroup()
 	    {
 	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:ext_timed('volume', 20 sec) ";
@@ -297,7 +297,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLengthWindowPerGroup()
+	    public void testLengthWindowPerGroup()
 	    {
 	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:length(10) ";
@@ -305,7 +305,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousTimeWindow()
+	    public void testPreviousTimeWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prev(2, symbol) as prevSymbol, " +
@@ -372,7 +372,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousExtTimedWindow()
+	    public void testPreviousExtTimedWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prev(2, symbol) as prevSymbol, " +
@@ -416,7 +416,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousTimeBatchWindow()
+	    public void testPreviousTimeBatchWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prev(2, symbol) as prevSymbol, " +
@@ -469,7 +469,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousTimeBatchWindowJoin()
+	    public void testPreviousTimeBatchWindowJoin()
 	    {
 	        String viewExpr = "select string as currSymbol, " +
 	                          " Prev(2, symbol) as prevSymbol, " +
@@ -512,7 +512,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousLengthWindow()
+	    public void testPreviousLengthWindow()
 	    {
 	        String viewExpr =   "select symbol as currSymbol, " +
 	                            "prev(0, symbol) as prev0Symbol, " +
@@ -544,7 +544,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousLengthBatch()
+	    public void testPreviousLengthBatch()
 	    {
 	        String viewExpr =   "select symbol as currSymbol, " +
 	                            "prev(0, symbol) as prev0Symbol, " +
@@ -592,7 +592,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousLengthWindowWhere()
+	    public void testPreviousLengthWindowWhere()
 	    {
 	        String viewExpr =   "select Prev(2, symbol) as currSymbol " +
 	                            "from " + typeof(SupportMarketDataBean).FullName + ".win:length(100) " +
@@ -610,7 +610,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousLengthWindowDynamic()
+	    public void testPreviousLengthWindowDynamic()
 	    {
 	        String viewExpr =   "select Prev(intPrimitive, string) as sPrev " +
 	                            "from " + typeof(SupportBean).FullName + ".win:length(100)";
@@ -640,7 +640,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestPreviousSortWindow()
+	    public void testPreviousSortWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
 	                          " Prev(0, symbol) as prev0Symbol, " +
@@ -680,7 +680,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        TryInvalid("select Prev(0, average) " +
 	                "from " + typeof(SupportMarketDataBean).FullName + ".win:length(100).stat:uni('price')",

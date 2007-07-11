@@ -8,10 +8,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 using NUnit.Framework;
 
+using net.esper.client;
 using net.esper.compat;
 using net.esper.support.bean;
 using net.esper.support.util;
@@ -37,7 +37,7 @@ namespace net.esper.events
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        beanEventAdapter = new BeanEventAdapter();
+            beanEventAdapter = new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE);
 
 	        eventTypeSimple = new BeanEventType(typeof(SupportBeanSimple), beanEventAdapter, null, "1");
 	        eventTypeComplex = new BeanEventType(typeof(SupportBeanComplexProps), beanEventAdapter, null, "2");
@@ -53,12 +53,12 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestPropertyNames()
+	    public void testPropertyNames()
 	    {
 	        List<string> properties = new List<string>(eventTypeSimple.PropertyNames);
 	        Assert.IsTrue(properties.Count == 2);
-	        Assert.IsTrue(properties[0].Equals("myInt"));
-	        Assert.IsTrue(properties[1].Equals("myString"));
+	        Assert.IsTrue(properties[0].Equals("MyInt"));
+	        Assert.IsTrue(properties[1].Equals("MyString"));
 
 	        properties = new List<string>(eventTypeComplex.PropertyNames);
 	        ArrayAssertionUtil.AreEqualAnyOrder(SupportBeanComplexProps.PROPERTIES, properties);
@@ -68,27 +68,27 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestUnderlyingType()
+	    public void testUnderlyingType()
 	    {
 	        Assert.AreEqual(typeof(SupportBeanSimple), eventTypeSimple.UnderlyingType);
 	    }
 
 	    [Test]
-	    public void TestGetPropertyType()
+	    public void testGetPropertyType()
 	    {
 	        Assert.AreEqual(typeof(String), eventTypeSimple.GetPropertyType("myString"));
 	        Assert.IsNull(eventTypeSimple.GetPropertyType("dummy"));
 	    }
 
 	    [Test]
-	    public void TestIsValidProperty()
+	    public void testIsValidProperty()
 	    {
 	        Assert.IsTrue(eventTypeSimple.IsProperty("myString"));
 	        Assert.IsFalse(eventTypeSimple.IsProperty("dummy"));
 	    }
 
 	    [Test]
-	    public void TestGetGetter()
+	    public void testGetGetter()
 	    {
 	        Assert.AreEqual(null, eventTypeSimple.GetGetter("dummy"));
 
@@ -111,7 +111,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestProperties()
+	    public void testProperties()
 	    {
 	        Type nestedOne = typeof (SupportBeanCombinedProps.NestedLevOne);
 	        Type nestedOneArr = typeof (SupportBeanCombinedProps.NestedLevOne[]);
@@ -183,7 +183,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetDeepSuperTypes()
+	    public void testGetDeepSuperTypes()
 	    {
 	        BeanEventType type = new BeanEventType(typeof(ISupportAImplSuperGImplPlus), beanEventAdapter, null, "1");
 
@@ -203,7 +203,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetSuper()
+	    public void testGetSuper()
 	    {
             LinkedHashSet<Type> classes = new LinkedHashSet<Type>();
 	        BeanEventType.GetSuper(typeof(ISupportAImplSuperGImplPlus), classes);
@@ -228,7 +228,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetSuperTypes()
+	    public void testGetSuperTypes()
 	    {
 	        eventTypeSimple = new BeanEventType(typeof(ISupportAImplSuperGImplPlus), beanEventAdapter, null, "1");
 
@@ -246,7 +246,7 @@ namespace net.esper.events
             Assert.AreEqual(3, type.PropertyNames.Count);
 	        ArrayAssertionUtil.AreEqualAnyOrder(
 	                type.PropertyNames,
-	                new String[] {"d", "baseD", "baseDBase"});
+	                new String[] {"D", "BaseD", "BaseDBase"});
 	    }
 
 	    private static void TryInvalidGetPropertyType(BeanEventType type, String property)

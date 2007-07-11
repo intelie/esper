@@ -33,14 +33,14 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestSyntaxException()
+	    public void testSyntaxException()
 	    {
 	        String exceptionText = GetSyntaxExceptionPattern(_event_NUM + "(doublePrimitive='ss'");
 	        Assert.AreEqual("end of input when expecting a closing parenthesis ')' near line 1, column 58 [net.esper.support.bean.SupportBean_N(doublePrimitive='ss']", exceptionText);
 	    }
 
 	    [Test]
-	    public void TestStatementException()
+	    public void testStatementException()
 	    {
 	        String exceptionText = null;
 
@@ -102,7 +102,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestUseResult()
+	    public void testUseResult()
 	    {
 	        String _event = typeof(SupportBean_N).FullName;
 

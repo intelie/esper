@@ -17,11 +17,11 @@ namespace net.esper.eql.join.plan
     public class TestNStreamOuterQueryPlanBuilder
     {
         [Test]
-        public virtual void testGraphOuterJoins()
+        public void testGraphOuterJoins()
         {
             IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
             descList.Add(SupportOuterJoinDescFactory.MakeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.RIGHT));
-            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.FULL));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "string", "s1", OuterJoinType.FULL));
 
             OuterInnerDirectionalGraph graph = NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 
@@ -31,7 +31,7 @@ namespace net.esper.eql.join.plan
 
             descList.Clear();
             descList.Add(SupportOuterJoinDescFactory.MakeDesc("intPrimitive", "s1", "intBoxed", "s0", OuterJoinType.LEFT));
-            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.RIGHT));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "string", "s1", OuterJoinType.RIGHT));
 
             graph = NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, descList);
 
@@ -52,7 +52,7 @@ namespace net.esper.eql.join.plan
         }
 
         [Test]
-        public virtual void testRecursiveBuild()
+        public void testRecursiveBuild()
         {
             int streamNum = 2;
             QueryGraph queryGraph = new QueryGraph(6);
@@ -91,7 +91,7 @@ namespace net.esper.eql.join.plan
         }
 
         [Test]
-        public virtual void testVerifyJoinedPerStream()
+        public void testVerifyJoinedPerStream()
         {
             // stream relationships not filled
             tryVerifyJoinedPerStream(convert(new int[][] { new int[] { 1, 2 } }));

@@ -32,7 +32,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testWinTimeSum()
+        public void testWinTimeSum()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String sumTimeExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30)";
@@ -46,7 +46,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testWinTimeSumGroupBy()
+        public void testWinTimeSumGroupBy()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String sumTimeUniExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + ".win:time(30) group by symbol";
@@ -60,7 +60,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testWinTimeSumSingle()
+        public void testWinTimeSumSingle()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String sumTimeUniExpr = "select symbol, volume, sum(price) as mySum " + "from " + typeof(SupportMarketDataBean).FullName + "(symbol = 'IBM').win:time(30)";

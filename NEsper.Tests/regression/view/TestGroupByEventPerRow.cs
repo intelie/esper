@@ -38,7 +38,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumOneView()
+	    public void testSumOneView()
 	    {
 	        // Every event generates a new row, this time we sum the price by symbol and output volume
 	        String viewExpr = "select symbol, volume, Sum(price) as mySum " +
@@ -53,7 +53,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumJoin()
+	    public void testSumJoin()
 	    {
 	        // Every event generates a new row, this time we sum the price by symbol and output volume
 	        String viewExpr = "select symbol, volume, Sum(price) as mySum " +
@@ -73,7 +73,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInsertInto()
+	    public void testInsertInto()
 	    {
 	        SupportUpdateListener listenerOne = new SupportUpdateListener();
 	        String eventType = typeof(SupportMarketDataBean).FullName;

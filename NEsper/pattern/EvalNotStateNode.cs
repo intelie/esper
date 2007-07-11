@@ -1,5 +1,7 @@
 using System;
 
+using net.esper.compat;
+
 using org.apache.commons.logging;
 
 namespace net.esper.pattern
@@ -54,7 +56,7 @@ namespace net.esper.pattern
 
             if (childNode == null)
             {
-                throw new SystemException("'Not' state node is inactive");
+                throw new IllegalStateException("'Not' state node is inactive");
             }
 
             childNode.Start();

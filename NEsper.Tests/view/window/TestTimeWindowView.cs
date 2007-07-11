@@ -43,7 +43,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestViewPushAndExpire()
+	    public void testViewPushAndExpire()
 	    {
 	        long startTime = 1000000;
 	        schedulingServiceStub.Time = (startTime);

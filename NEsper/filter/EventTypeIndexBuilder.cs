@@ -62,7 +62,7 @@ namespace net.esper.filter
             if (callbacks.ContainsKey(filterCallback))
             {
                 Monitor.Exit( callbacksLock );
-                throw new SystemException("Callback for filter specification already exists in collection");
+                throw new IllegalStateException("Callback for filter specification already exists in collection");
             }
             Monitor.Exit( callbacksLock );
 

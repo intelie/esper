@@ -31,7 +31,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints++;
-            sum += ((long?)item).Value;
+            sum += Convert.ToInt64(item);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints--;
-            sum -= ((long?)item).Value;
+            sum -= Convert.ToInt64(item);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace net.esper.eql.agg
         /// <returns>type of values held</returns>
         public Type ValueType
         {
-            get { return typeof(long); }
+            get { return typeof(long?); }
         }
 
         /// <summary>

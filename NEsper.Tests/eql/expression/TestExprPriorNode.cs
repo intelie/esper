@@ -30,13 +30,13 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(double), priorNode.GetType());
+	        Assert.AreEqual(typeof(double?), priorNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        priorNode = new ExprPriorNode();
 
@@ -49,7 +49,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        PriorEventBufferUnbound buffer = new PriorEventBufferUnbound(10);
 	        priorNode.ViewResource = buffer;
@@ -60,14 +60,14 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        ExprPriorNode node1 = new ExprPriorNode();
 	        Assert.IsTrue(node1.EqualsNode(priorNode));
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("prior(1,s1.doublePrimitive)", priorNode.ExpressionString);
 	    }

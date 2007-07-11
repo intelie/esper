@@ -40,7 +40,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestValidateInvalid()
+	    public void testValidateInvalid()
 	    {
 	        try
 	        {
@@ -54,7 +54,7 @@ namespace net.esper.eql.expression
 
 	        try
 	        {
-	            identNodes[0].GetType();
+	            Type voidType = identNodes[0].ReturnType;
 	            Assert.Fail();
 	        }
 	        catch (IllegalStateException ex)
@@ -84,26 +84,26 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        identNodes[0].Validate(streamTypeService, null, null);
 	        Assert.AreEqual(2, identNodes[0].StreamId);
-	        Assert.AreEqual(typeof(String), identNodes[0].GetType());
+	        Assert.AreEqual(typeof(String), identNodes[0].ReturnType);
 	        Assert.AreEqual("mapped('a')", identNodes[0].ResolvedPropertyName);
 
 	        identNodes[1].Validate(streamTypeService, null, null);
 	        Assert.AreEqual(2, identNodes[1].StreamId);
-	        Assert.AreEqual(typeof(String), identNodes[1].GetType());
+	        Assert.AreEqual(typeof(String), identNodes[1].ReturnType);
 	        Assert.AreEqual("nested.nestedValue", identNodes[1].ResolvedPropertyName);
 
 	        identNodes[2].Validate(streamTypeService, null, null);
 	        Assert.AreEqual(2, identNodes[2].StreamId);
-	        Assert.AreEqual(typeof(int), identNodes[2].GetType());
+	        Assert.AreEqual(typeof(int?), identNodes[2].ReturnType);
 	        Assert.AreEqual("indexed[1]", identNodes[2].ResolvedPropertyName);
 
 	        identNodes[3].Validate(streamTypeService, null, null);
 	        Assert.AreEqual(0, identNodes[3].StreamId);
-	        Assert.AreEqual(typeof(int), identNodes[3].GetType());
+	        Assert.AreEqual(typeof(int?), identNodes[3].ReturnType);
 	        Assert.AreEqual("intPrimitive", identNodes[3].ResolvedPropertyName);
 
 	        TryInvalidValidate(new ExprIdentNode(""));
@@ -115,15 +115,15 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        // test success
 	        identNodes[0].Validate(streamTypeService, null, null);
-	        Assert.AreEqual(typeof(String), identNodes[0].GetType());
+	        Assert.AreEqual(typeof(String), identNodes[0].ReturnType);
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        EventBean[] events = new EventBean[] {MakeEvent(10)};
 
@@ -133,7 +133,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluatePerformance()
+	    public void testEvaluatePerformance()
 	    {
 	        // test performance of evaluate for indexed events
 	        // fails if the getter is not in place
@@ -153,7 +153,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        for (int i = 0; i < identNodes.Length; i++)
 	        {
@@ -166,7 +166,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        identNodes[0].Validate(streamTypeService, null, null);
 	        identNodes[2].Validate(streamTypeService, null, null);

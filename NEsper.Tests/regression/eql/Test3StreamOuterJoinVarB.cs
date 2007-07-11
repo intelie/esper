@@ -41,7 +41,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testOuterInnerJoin_root_s0()
+		public void testOuterInnerJoin_root_s0()
 		{
 			/**
 			* Query:
@@ -61,7 +61,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testOuterInnerJoin_root_s1()
+		public void testOuterInnerJoin_root_s1()
 		{
 			/**
 			* Query:
@@ -81,7 +81,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testOuterInnerJoin_root_s2()
+		public void testOuterInnerJoin_root_s2()
 		{
 			/**
 			* Query:

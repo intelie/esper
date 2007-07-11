@@ -11,7 +11,7 @@ namespace net.esper.type
     public class TestLongValue
     {
         [Test]
-        public virtual void testLong()
+        public void testLong()
         {
             LongValue lvp = new LongValue();
 
@@ -65,7 +65,7 @@ namespace net.esper.type
         }
 
         [Test]
-        public virtual void testParseLong()
+        public void testParseLong()
         {
             tryValid("0", 0);
             tryValid("11", 11);

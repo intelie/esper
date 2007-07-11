@@ -28,7 +28,7 @@ namespace net.esper.events
         }
 
         [Test]
-        public virtual void testGetter()
+        public void testGetter()
         {
             ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getIntPrimitive");
             Assert.AreEqual(10, getter.GetValue(unitTestBean));
@@ -53,7 +53,7 @@ namespace net.esper.events
         }
 
         [Test]
-        public virtual void testPerformance()
+        public void testPerformance()
         {
             ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getIntPrimitive");
 

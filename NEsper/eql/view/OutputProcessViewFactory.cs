@@ -7,20 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
-using net.esper.collection;
 using net.esper.core;
 using net.esper.eql.core;
-using net.esper.eql.join;
 using net.esper.eql.spec;
-using net.esper.events;
-using net.esper.view;
-using org.apache.commons.logging;
 
 namespace net.esper.eql.view
 {
-	/// <summary>Factory for output processing views.<p></summary>
+	/// <summary>
+	/// Factory for output processing views.
+	/// </summary>
 	public class OutputProcessViewFactory
 	{
 	    /// <summary>

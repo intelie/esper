@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
-using net.esper.compat;
 using net.esper.events;
 
 namespace net.esper.collection
@@ -18,8 +18,9 @@ namespace net.esper.collection
 
     public sealed class TimeWindow : IEnumerable<EventBean>
     {
-        private readonly LinkedList<Pair<long, List<EventBean>>> window;
+        private readonly System.Collections.Generic.LinkedList<Pair<long, List<EventBean>>> window;
         private long? oldestTimestamp;
+        private long generation;
 
         /// <summary> Returns the oldest timestamp in the collection if there is at least one entry,
         /// else it returns null if the window is empty.
@@ -56,8 +57,9 @@ namespace net.esper.collection
 
         public TimeWindow()
         {
-            this.window = new LinkedList<Pair<Int64, List<EventBean>>>();
+            this.window = new System.Collections.Generic.LinkedList<Pair<Int64, List<EventBean>>>();
             this.oldestTimestamp = null;
+            this.generation = 0;
         }
 
         /// <summary> Adds event to the time window for the specified timestamp.</summary>
@@ -68,6 +70,8 @@ namespace net.esper.collection
 
         public void Add(long timestamp, EventBean bean)
         {
+            Interlocked.Increment(ref generation);
+
             // On add to an empty window, set the oldest event's timestamp
             if (oldestTimestamp == null)
             {
@@ -160,13 +164,23 @@ namespace net.esper.collection
         
         public IEnumerator<EventBean> GetEnumerator()
         {
-			foreach( Pair<Int64, List<EventBean>> pair in window )
-			{
-				foreach( EventBean eventBean in pair.Second )
-				{
-					yield return eventBean ;
-				}
-			}
+            return GetEnumerator(Interlocked.Read(ref generation));
+        }
+
+        private IEnumerator<EventBean> GetEnumerator(long myGeneration)
+        {
+            foreach( Pair<Int64, List<EventBean>> pair in window )
+            {
+                foreach( EventBean eventBean in pair.Second )
+                {
+                    if (Interlocked.Read(ref generation) > myGeneration)
+                    {
+                        throw new InvalidOperationException();
+                    }
+
+                    yield return eventBean ;
+                }
+            }
         }
 
         #region IEnumerable Members

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using net.esper.compat;
@@ -33,7 +32,7 @@ namespace net.esper.eql.core
 
 	    public void AddImport(String importName)
 	    {
-	        if(!IsTypeName(importName) && !IsNamespace(importName))
+	        if(!IsTypeNameOrNamespace(importName))
 	        {
 	            throw new EngineImportException("Invalid import name '" + importName + "'");
 	        }
@@ -52,7 +51,7 @@ namespace net.esper.eql.core
 	        {
 	            throw new EngineImportException("Invalid aggregation function name '" + functionName + "'");
 	        }
-	        if(!IsTypeName(aggregationClass))
+	        if(!IsTypeNameOrNamespace(aggregationClass))
 	        {
 	            throw new EngineImportException("Invalid class name for aggregation '" + aggregationClass + "'");
 	        }
@@ -72,16 +71,17 @@ namespace net.esper.eql.core
 	        }
 
 	        Type type;
+
 	        try
 	        {
-	            type = Type.GetType(className);
+	            type = TypeHelper.ResolveType(className);
 	        }
 	        catch (TypeLoadException ex)
 	        {
 	            throw new EngineImportException("Could not load aggregation class by name '" + className + "'", ex);
 	        }
 
-	        Object obj = null;
+	        Object obj;
             try
             {
                 obj = Activator.CreateInstance(type);
@@ -108,7 +108,7 @@ namespace net.esper.eql.core
 
 	    public MethodInfo ResolveMethod(String classNameAlias, String methodName, Type[] paramTypes)
 	    {
-	        Type type = null;
+	        Type type;
 	        try
 	        {
 	            type = ResolveType(classNameAlias);
@@ -139,32 +139,35 @@ namespace net.esper.eql.core
 			// Attempt to retrieve the class with the name as-is
 			try
 			{
-				return Type.GetType(className);
+			    return TypeHelper.ResolveType(className);
 			}
-			catch(TypeLoadException e){}
+			catch(TypeLoadException){}
 
 			// Try all the imports
 			foreach (String importName in imports)
 			{
-				bool isClassName = IsTypeName(importName);
-
-				// Import is a class name
-				if(isClassName)
+				// Test as a class name
+				if(importName.EndsWith(className))
 				{
-					if(importName.EndsWith(className))
-					{
-						return Type.GetType(importName);
-					}
+					Type type = TypeHelper.ResolveType(importName);
+                    if ( type != null )
+                    {
+                        return type;
+                    }
 				}
 				else
 				{
-					// Import is a package name
-					String prefixedClassName = GetPackageName(importName) + '.' + className;
+					// Import is a namespace
+					String prefixedClassName = importName + '.' + className;
 					try
 					{
-						return Type.GetType(prefixedClassName);
+                        Type type = TypeHelper.ResolveType(prefixedClassName);
+                        if ( type != null )
+                        {
+                            return type;
+                        }
 					}
-					catch(TypeLoadException e){}
+					catch(TypeLoadException){}
 				}
 			}
 
@@ -179,28 +182,18 @@ namespace net.esper.eql.core
 	    	get { return imports.ToArray(); }
 		}
 
-	    private static bool IsFunctionName(String functionName)
+        private static readonly Regex functionRegEx = new Regex(@"^\w+$", RegexOptions.None);
+        
+        private static bool IsFunctionName(String functionName)
 	    {
-	        String methodRegEx = "\\w+";
-            return Regex.IsMatch(functionName, methodRegEx);
+            return functionRegEx.IsMatch(functionName);
 	    }
 
-		private static bool IsTypeName(String importName)
-		{
-			String methodRegEx = "(\\w+\\.)*\\w+";
-			return Regex.IsMatch(importName, methodRegEx);
-		}
+        private static readonly Regex typeNameRegEx = new Regex(@"^(\w+\.)*\w+$", RegexOptions.None);
 
-		private static bool IsNamespace(String importName)
+		private static bool IsTypeNameOrNamespace(String importName)
 		{
-			String methodRegEx = "(\\w+\\.)+\\*";
-		    return Regex.IsMatch(importName, methodRegEx);
-		}
-
-		// Strip off the trailing ".*"
-		private static String GetPackageName(String importName)
-		{
-			return importName.Substring(0, importName.Length - 2);
+            return typeNameRegEx.IsMatch(importName);
 		}
 	}
 } // End of namespace

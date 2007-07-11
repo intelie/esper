@@ -15,7 +15,7 @@ namespace net.esper.events
 		}
     	
         [Test]
-        public virtual void testGet()
+        public void testGet()
         {
             Assert.AreEqual(_event, _eventBeanComplete["a"]);
             Assert.AreEqual(1, _eventBeanComplete["a.intPrimitive"]);

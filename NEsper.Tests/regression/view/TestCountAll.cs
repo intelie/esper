@@ -33,7 +33,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSize()
+	    public void testSize()
 	    {
 	        String statementText = "select size from " + typeof(SupportMarketDataBean).FullName + ".std:size()";
 	        selectTestView = epService.EPAdministrator.CreateEQL(statementText);
@@ -47,7 +47,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestCount()
+	    public void testCount()
 	    {
 	    	String statementText = "select Count(*) as cnt from " + typeof(SupportMarketDataBean).FullName + ".win:time(1)";
 	        selectTestView = epService.EPAdministrator.CreateEQL(statementText);
@@ -70,7 +70,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestCountHaving()
+	    public void testCountHaving()
 	    {
 	        String _event = typeof(SupportBean).FullName;
 	        String statementText = "select Sum(intPrimitive) as mysum from " + _event + " having Sum(intPrimitive) = 2";
@@ -86,7 +86,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSumHaving()
+	    public void testSumHaving()
 	    {
 	        String _event = typeof(SupportBean).FullName;
 	        String statementText = "select Count(*) as mysum from " + _event + " having Count(*) = 2";

@@ -39,7 +39,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLengthBatchSize2()
+	    public void testLengthBatchSize2()
 	    {
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(
 	                "select * from " + typeof(SupportBean).FullName + ".win:length_batch(2)");
@@ -71,7 +71,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLengthBatchSize1()
+	    public void testLengthBatchSize1()
 	    {
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(
 	                "select * from " + typeof(SupportBean).FullName + ".win:length_batch(1)");
@@ -91,7 +91,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLengthBatchSize3()
+	    public void testLengthBatchSize3()
 	    {
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(
 	                "select * from " + typeof(SupportBean).FullName + ".win:length_batch(3)");
@@ -123,7 +123,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestLengthBatchSize3And2Staggered()
+	    public void testLengthBatchSize3And2Staggered()
 	    {
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(
 	                "select * from " + typeof(SupportBean).FullName + ".win:length_batch(3).win:length_batch(2)");
@@ -155,7 +155,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        try
 	        {

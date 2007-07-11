@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace net.esper.compat
@@ -12,6 +11,7 @@ namespace net.esper.compat
     public class WriterLock : IDisposable
     {
         private ReaderWriterLock m_lockObj;
+        private bool m_lockAcquired;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WriterLock"/> class.
@@ -19,8 +19,10 @@ namespace net.esper.compat
         /// <param name="lockObj">The lock obj.</param>
         public WriterLock(ReaderWriterLock lockObj)
         {
+            this.m_lockAcquired = false;
             this.m_lockObj = lockObj;
             this.m_lockObj.AcquireWriterLock(LockConstants.WriterTimeout);
+            this.m_lockAcquired = true;
         }
 
         /// <summary>
@@ -39,10 +41,11 @@ namespace net.esper.compat
         {
             lock (this)
             {
-                if (this.m_lockObj != null)
+                if (this.m_lockAcquired && (this.m_lockObj != null) && (this.m_lockObj.IsWriterLockHeld))
                 {
                     this.m_lockObj.ReleaseWriterLock();
                     this.m_lockObj = null;
+                    this.m_lockAcquired = false;
                 }
             }
         }

@@ -50,7 +50,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestViewPush()
+	    public void testViewPush()
 	    {
 	        // Reset instance lists of child views
 	        SupportBeanClassView.Instances.Clear();
@@ -78,7 +78,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestUpdate()
+	    public void testUpdate()
 	    {
 	        // Set up a feed for the view under test - it will have a depth of 3 trades
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
@@ -108,7 +108,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        try
 	        {
@@ -122,7 +122,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestMakeSubviews()
+	    public void testMakeSubviews()
 	    {
 	        EventStream eventStream = new SupportStreamImpl(typeof(SupportMarketDataBean), 4);
 	        GroupByView groupView = new GroupByView(statementContext, new String[] {"symbol"});

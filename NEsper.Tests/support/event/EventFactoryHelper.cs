@@ -60,7 +60,7 @@ namespace net.esper.support.events
             return eventArr;
         }
 
-        public static IList<EventBean> makeList(EDictionary<String, EventBean> events, String[] ids)
+        public static IList<EventBean> MakeList(EDictionary<String, EventBean> events, String[] ids)
         {
             IList<EventBean> eventList = new List<EventBean>();
             for (int i = 0; i < ids.Length; i++)

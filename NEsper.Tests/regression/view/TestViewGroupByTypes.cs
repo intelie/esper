@@ -21,7 +21,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testType()
+        public void testType()
         {
             String viewStmt = "select * from " + typeof(SupportBean).FullName + ".std:groupby('intPrimitive').win:length(4).std:groupby('longBoxed').std:size()";
             EPStatement stmt = epService.EPAdministrator.CreateEQL(viewStmt);

@@ -35,49 +35,49 @@ namespace net.esper.regression.events
         }
 
         [Test]
-        public virtual void testPublicAccessors()
+        public void testPublicAccessors()
         {
             tryPublicAccessors(ConfigurationEventTypeLegacy.CodeGenerationEnum.ENABLED);
         }
 
         [Test]
-        public virtual void testPublicAccessorsNoCodeGen()
+        public void testPublicAccessorsNoCodeGen()
         {
             tryPublicAccessors(ConfigurationEventTypeLegacy.CodeGenerationEnum.DISABLED);
         }
 
         [Test]
-        public virtual void testExplicitOnly()
+        public void testExplicitOnly()
         {
             tryExplicitOnlyAccessors(ConfigurationEventTypeLegacy.CodeGenerationEnum.ENABLED);
         }
 
         [Test]
-        public virtual void testExplicitOnlyNoCodeGen()
+        public void testExplicitOnlyNoCodeGen()
         {
             tryExplicitOnlyAccessors(ConfigurationEventTypeLegacy.CodeGenerationEnum.DISABLED);
         }
 
         [Test]
-        public virtual void testJavaBeanAccessor()
+        public void testJavaBeanAccessor()
         {
             tryJavaBeanAccessor(ConfigurationEventTypeLegacy.CodeGenerationEnum.ENABLED);
         }
 
         [Test]
-        public virtual void testJavaBeanAccessorNoCodeGen()
+        public void testJavaBeanAccessorNoCodeGen()
         {
             tryJavaBeanAccessor(ConfigurationEventTypeLegacy.CodeGenerationEnum.DISABLED);
         }
 
         [Test]
-        public virtual void testFinalClass()
+        public void testFinalClass()
         {
             tryFinalClass(ConfigurationEventTypeLegacy.CodeGenerationEnum.ENABLED);
         }
 
         [Test]
-        public virtual void testFinalClassNoCodeGen()
+        public void testFinalClassNoCodeGen()
         {
             tryFinalClass(ConfigurationEventTypeLegacy.CodeGenerationEnum.DISABLED);
         }

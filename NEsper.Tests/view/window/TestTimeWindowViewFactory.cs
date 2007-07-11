@@ -30,7 +30,7 @@ namespace net.esper.view.window
 	    }
 
         [Test]
-        public void TestSetParameters()
+        public void testSetParameters()
         {
             TryParameter(new TimePeriodParameter(2d), 2000);
             TryParameter(4, 4000);
@@ -42,7 +42,7 @@ namespace net.esper.view.window
         }
 
 	    [Test]
-	    public void TestCanReuse()
+	    public void testCanReuse()
 	    {
 	        factory.SetViewParameters(null, new Object[] {1000});
 	        Assert.IsFalse(factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeContext())));

@@ -25,19 +25,19 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(double?), validatedNodeToTest.GetType());
+	        Assert.AreEqual(typeof(double?), validatedNodeToTest.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("median(5)", validatedNodeToTest.ExpressionString);
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(validatedNodeToTest.EqualsNode(validatedNodeToTest));
 	        Assert.IsFalse(validatedNodeToTest.EqualsNode(new ExprSumNode(false)));

@@ -1,6 +1,7 @@
 using System;
 
 using net.esper.core;
+using net.esper.compat;
 using net.esper.pattern;
 using net.esper.schedule;
 
@@ -58,7 +59,7 @@ namespace net.esper.pattern.observer
         {
             if (isTimerActive == true)
             {
-                throw new SystemException("Timer already active");
+                throw new IllegalStateException("Timer already active");
             }
 
             if (msec <= 0)

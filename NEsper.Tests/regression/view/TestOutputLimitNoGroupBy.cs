@@ -32,7 +32,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSimpleNoJoinAll()
+	    public void testSimpleNoJoinAll()
 		{
 		    String viewExpr = "select longBoxed " +
 		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
@@ -53,7 +53,7 @@ namespace net.esper.regression.view
             RunAssertAll(CreateStmtAndListenerNoJoin(viewExpr));
 		}
 		[Test]
-		public void TestAggregateAllNoJoinAll()
+		public void testAggregateAllNoJoinAll()
 		{
 		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
 		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
@@ -70,7 +70,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestAggregateAllNoJoinLast()
+		public void testAggregateAllNoJoinLast()
 		{
 		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
 		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
@@ -87,7 +87,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestSimpleNoJoinLast()
+		public void testSimpleNoJoinLast()
 	    {
 	        String viewExpr = "select longBoxed " +
 	        "from " + typeof(SupportBean).FullName + ".win:length(3) " +
@@ -103,7 +103,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestSimpleJoinAll()
+	    public void testSimpleJoinAll()
 		{
 		    String viewExpr = "select longBoxed  " +
 		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
@@ -123,7 +123,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestAggregateAllJoinAll()
+		public void testAggregateAllJoinAll()
 		{
 		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
 		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
@@ -142,7 +142,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestAggregateAllJoinLast()
+		public void testAggregateAllJoinLast()
 	    {
 	        String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
 	        "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
@@ -235,7 +235,7 @@ namespace net.esper.regression.view
 		}
 
 		[Test]
-		public void TestSimpleJoinLast()
+		public void testSimpleJoinLast()
 		{
 		    String viewExpr = "select longBoxed " +
 		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +

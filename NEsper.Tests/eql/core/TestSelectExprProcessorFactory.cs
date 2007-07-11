@@ -22,7 +22,7 @@ namespace net.esper.eql.core
 	public class TestSelectExprProcessorFactory
 	{
 	    [Test]
-	    public void TestGetProcessorInvalid()
+	    public void testGetProcessorInvalid()
 	    {
 	        IList<SelectExprElementCompiledSpec> selectionList = new List<SelectExprElementCompiledSpec>();
 	        ExprNode identNode = SupportExprNodeFactory.MakeIdentNode("doubleBoxed", "s0");
@@ -43,7 +43,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorWildcard()
+	    public void testGetProcessorWildcard()
 	    {
 	        IList<SelectExprElementCompiledSpec> selectionList = new List<SelectExprElementCompiledSpec>();
 	        SelectExprProcessor processor = SelectExprProcessorFactory.GetProcessor(selectionList, false, null,
@@ -52,7 +52,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestGetProcessorValid()
+	    public void testGetProcessorValid()
 	    {
 	        IList<SelectExprElementCompiledSpec> selectionList = new List<SelectExprElementCompiledSpec>();
 	        ExprNode identNode = SupportExprNodeFactory.MakeIdentNode("doubleBoxed", "s0");
@@ -63,7 +63,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestVerifyNameUniqueness()
+	    public void testVerifyNameUniqueness()
 	    {
 	        // try valid case
 	        IList<SelectExprElementCompiledSpec> elements = new List<SelectExprElementCompiledSpec>();

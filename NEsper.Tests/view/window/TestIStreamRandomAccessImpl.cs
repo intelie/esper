@@ -42,7 +42,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestFlow()
+	    public void testFlow()
 	    {
 	        Assert.IsNull(access.GetNewData(0));
 	        Assert.IsNull(access.GetOldData(0));

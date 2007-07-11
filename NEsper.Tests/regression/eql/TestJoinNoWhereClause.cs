@@ -37,7 +37,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testJoinNoWhereClause()
+		public void testJoinNoWhereClause()
 		{
 			String joinStatement =
 				"select * from " +

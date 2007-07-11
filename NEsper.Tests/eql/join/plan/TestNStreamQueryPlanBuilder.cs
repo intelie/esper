@@ -46,7 +46,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestBuild()
+	    public void testBuild()
 	    {
 	        QueryPlan plan = NStreamQueryPlanBuilder.Build(queryGraph, typesPerStream);
 
@@ -54,7 +54,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestCreateStreamPlan()
+	    public void testCreateStreamPlan()
 	    {
 	        QueryPlanIndex[] indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph);
 	        for (int i = 0; i < indexes.Length; i++)
@@ -85,7 +85,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestComputeBestPath()
+	    public void testComputeBestPath()
 	    {
 	        NStreamQueryPlanBuilder.BestChainResult bestChain = NStreamQueryPlanBuilder.ComputeBestPath(0, queryGraph);
 	        Assert.AreEqual(3, bestChain.Depth);
@@ -104,7 +104,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestComputeNavigableDepth()
+	    public void testComputeNavigableDepth()
 	    {
 	        queryGraph.Add(3, "p30", 2, "p20");
 	        queryGraph.Add(2, "p30", 1, "p20");
@@ -123,7 +123,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestBuildDefaultNestingOrder()
+	    public void testBuildDefaultNestingOrder()
 	    {
 	        int[] result = NStreamQueryPlanBuilder.BuildDefaultNestingOrder(4, 0);
 	        Assert.IsTrue(CollectionHelper.AreEqual(result, new int[] {1, 2, 3}));

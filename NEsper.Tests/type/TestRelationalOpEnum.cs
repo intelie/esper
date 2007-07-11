@@ -16,7 +16,7 @@ namespace net.esper.type
         };
 
         [Test]
-        public virtual void testStringComputers()
+        public void testStringComputers()
         {
             String[][] _params = new String[][]{
                 new String[]{"a", "b"}, 
@@ -41,7 +41,7 @@ namespace net.esper.type
         }
 
         [Test]
-        public virtual void testLongComputers()
+        public void testLongComputers()
         {
             long[][] _params = new long[][]{
                 new long[]{1, 2},
@@ -66,7 +66,7 @@ namespace net.esper.type
         }
 
         [Test]
-        public virtual void testDoubleComputers()
+        public void testDoubleComputers()
         {
             double[][] _params = new double[][]{
                 new double[]{1, 2},
@@ -91,7 +91,7 @@ namespace net.esper.type
         }
 
         [Test]
-        public virtual void testInvalidGetComputer()
+        public void testInvalidGetComputer()
         {
             // Since we only do double?, Long and String compares
             tryInvalid(typeof(bool));

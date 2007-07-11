@@ -48,7 +48,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestUpdateAll()
+	    public void testUpdateAll()
 	    {
 	        Assert.IsNull(ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true));
 
@@ -80,7 +80,7 @@ namespace net.esper.eql.core
 	    }
 
 	    [Test]
-	    public void TestProcessAll()
+	    public void testProcessAll()
 	    {
 	        Assert.IsNull(ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true));
 
@@ -130,7 +130,7 @@ namespace net.esper.eql.core
 	    }
 
 		[Test]
-		public void TestProcessLast()
+		public void testProcessLast()
 		{
 	        Assert.IsNull(ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true));
 
@@ -158,7 +158,7 @@ namespace net.esper.eql.core
 		}
 
 		[Test]
-		public void TestUpdateLast()
+		public void testUpdateLast()
 		{
 		       Assert.IsNull(ResultSetProcessorSimple.GetSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true));
 

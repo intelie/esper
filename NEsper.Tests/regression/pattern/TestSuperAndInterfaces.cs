@@ -26,7 +26,7 @@ namespace net.esper.regression.pattern
         private static String OVERRIDE_ONEB;
 
         [Test]
-        public virtual void testInterfacedEvents()
+        public void testInterfacedEvents()
         {
             EventCollection events = EventCollectionFactory.GetSetFiveInterfaces();
             CaseList testCaseList = new CaseList();

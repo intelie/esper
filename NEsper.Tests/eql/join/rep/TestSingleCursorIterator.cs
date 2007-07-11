@@ -47,7 +47,7 @@ namespace net.esper.eql.join.rep
         }
 
         [Test]
-        public virtual void testNext()
+        public void testNext()
         {
             filledIterator.MoveNext();
             Assert.AreSame(cursor, filledIterator.Current);
@@ -75,7 +75,7 @@ namespace net.esper.eql.join.rep
         }
 
         [Test]
-        public virtual void testHasNext()
+        public void testHasNext()
         {
             Assert.IsTrue(filledIterator.MoveNext());
             Object temp = filledIterator.Current;

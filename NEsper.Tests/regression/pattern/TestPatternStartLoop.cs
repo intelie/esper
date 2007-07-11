@@ -30,7 +30,7 @@ namespace net.esper.regression.pattern
         /// causing a loop. This listener limits to 10 - this is a smoke test.
         /// </summary>
         [Test]
-        public virtual void testStartFireLoop()
+        public void testStartFireLoop()
         {
             PatternUpdateListener listener = new PatternUpdateListener(this);
 

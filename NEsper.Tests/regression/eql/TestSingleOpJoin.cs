@@ -51,7 +51,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testJoinUniquePerId()
+		public void testJoinUniquePerId()
 		{
 			SendEvent( eventsA[0] );
 			SendEvent( eventsB[1] );
@@ -91,7 +91,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testJoinNonUniquePerId()
+		public void testJoinNonUniquePerId()
 		{
 			SendEvent( eventsA[0] );
 			SendEvent( eventsA[1] );
@@ -133,7 +133,7 @@ namespace net.esper.regression.eql
 		}
 
 		[Test]
-		public virtual void testEventType()
+		public void testEventType()
 		{
 			Assert.AreEqual( typeof( SupportBean_A ), joinView.EventType.GetPropertyType( "streamA" ) );
 			Assert.AreEqual( typeof( SupportBean_B ), joinView.EventType.GetPropertyType( "streamB" ) );

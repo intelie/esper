@@ -20,17 +20,18 @@ namespace net.esper.core
 	/// </summary>
 	public class ConfigurationSnapshot
 	{
-	    private EDictionary<String, String> typeAliases = new HashDictionary<String, String>();
-	    private EDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = new HashDictionary<String, ConfigurationEventTypeXMLDOM>();
-	    private EDictionary<String, ConfigurationEventTypeLegacy> legacyAliases = new HashDictionary<String, ConfigurationEventTypeLegacy>();
-	    private String[] autoImports;
-	    private EDictionary<String, Properties> mapAliases = new HashDictionary<String, Properties>();
-	    private EDictionary<String, ConfigurationDBRef> databaseRefs = new HashDictionary<String, ConfigurationDBRef>();
-	    private String epServicesContextFactoryClassName;
-	    private List<ConfigurationPlugInView> plugInViews = new List<ConfigurationPlugInView>();
-	    private List<ConfigurationAdapterLoader> adapterLoaders = new List<ConfigurationAdapterLoader>();
-	    private List<ConfigurationPlugInAggregationFunction> plugInAggregation = new List<ConfigurationPlugInAggregationFunction>();
-	    private List<ConfigurationPlugInPatternObject> plugInPatternObjects = new List<ConfigurationPlugInPatternObject>();
+	    private readonly EDictionary<String, String> typeAliases = new HashDictionary<String, String>();
+        private readonly EDictionary<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = new HashDictionary<String, ConfigurationEventTypeXMLDOM>();
+        private readonly EDictionary<String, ConfigurationEventTypeLegacy> legacyAliases = new HashDictionary<String, ConfigurationEventTypeLegacy>();
+        private readonly String[] autoImports;
+        private readonly EDictionary<String, Properties> mapAliases = new HashDictionary<String, Properties>();
+        private readonly EDictionary<String, ConfigurationDBRef> databaseRefs = new HashDictionary<String, ConfigurationDBRef>();
+        private readonly String epServicesContextFactoryClassName;
+        private readonly List<ConfigurationPlugInView> plugInViews = new List<ConfigurationPlugInView>();
+        private readonly List<ConfigurationAdapterLoader> adapterLoaders = new List<ConfigurationAdapterLoader>();
+        private readonly List<ConfigurationPlugInAggregationFunction> plugInAggregation = new List<ConfigurationPlugInAggregationFunction>();
+        private readonly List<ConfigurationPlugInPatternObject> plugInPatternObjects = new List<ConfigurationPlugInPatternObject>();
+	    private readonly PropertyResolutionStyle defaultPropertyResolutionStyle;
 
 	    /// <summary>
 	    /// Ctor.
@@ -53,7 +54,18 @@ namespace net.esper.core
             adapterLoaders.AddRange(configuration.AdapterLoaders);
             plugInAggregation.AddRange(configuration.PlugInAggregationFunctions);
             plugInPatternObjects.AddRange(configuration.PlugInPatternObjects);
+	        defaultPropertyResolutionStyle = configuration.DefaultPropertyResolutionStyle;
 	    }
+
+        /// <summary>
+        /// Gets or sets the property resolution style.
+        /// </summary>
+        /// <value>The property resolution style.</value>
+
+        public PropertyResolutionStyle DefaultPropertyResolutionStyle
+        {
+            get { return defaultPropertyResolutionStyle; }
+        }
 
 	    /// <summary>Gets event type alias to type name mapping.</summary>
 	    public IDictionary<String, String> TypeAliases

@@ -22,7 +22,7 @@ namespace net.esper.eql.join.table
 		[SetUp]
 		public virtual void setUp()
 		{
-            propertyNames = new String[] { "intPrimitive", "str" };
+            propertyNames = new String[] { "intPrimitive", "string" };
 			eventType = SupportEventTypeFactory.CreateBeanType( typeof( SupportBean ) );
 			index = new PropertyIndexedEventTable( 1, eventType, propertyNames );
 
@@ -39,7 +39,7 @@ namespace net.esper.eql.join.table
 		}
 
 		[Test]
-		public virtual void testFind()
+		public void testFind()
 		{
 			Set<EventBean> result = index.Lookup( new Object[] { 1, "a" } );
 			Assert.IsNull( result );
@@ -59,7 +59,7 @@ namespace net.esper.eql.join.table
 		}
 
 		[Test]
-		public virtual void testAdd()
+		public void testAdd()
 		{
 			// Add event without these properties should fail
 			EventBean _event = SupportEventBeanFactory.CreateObject( new SupportBean_A( "d" ) );
@@ -102,13 +102,13 @@ namespace net.esper.eql.join.table
 		}
 
 		[Test]
-		public virtual void testRemove()
+		public void testRemove()
 		{
 			index.Remove( testEvents );
 		}
 
 		[Test]
-		public virtual void testAddArray()
+		public void testAddArray()
 		{
 			index = new PropertyIndexedEventTable( 1, eventType, propertyNames );
 
@@ -133,7 +133,7 @@ namespace net.esper.eql.join.table
 		}
 
 		[Test]
-		public virtual void testRemoveArray()
+		public void testRemoveArray()
 		{
 			index.Remove( testEvents );
 
@@ -145,7 +145,7 @@ namespace net.esper.eql.join.table
 		}
 
 		[Test]
-		public virtual void testMixed()
+		public void testMixed()
 		{
 			index.Remove( new EventBean[] { testEvents[1] } );
             Set<EventBean> result = index.Lookup(new Object[] { 1, "b" });

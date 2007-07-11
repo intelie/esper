@@ -19,7 +19,7 @@ namespace net.esper.eql.expression
 	public class TestExprNode
 	{
 	    [Test]
-	    public void TestGetValidatedSubtree()
+	    public void testGetValidatedSubtree()
 	    {
 	        SupportExprNode.SetValidateCount(0);
 
@@ -55,7 +55,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestIdentToStaticMethod()
+	    public void testIdentToStaticMethod()
 	    {
 	        StreamTypeService typeService = new SupportStreamTypeSvc1Stream();
 	        EngineImportService engineImportService = new EngineImportServiceImpl();
@@ -96,7 +96,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestDeepEquals()
+	    public void testDeepEquals()
 	    {
 	        Assert.IsFalse(ExprNode.DeepEquals(SupportExprNodeFactory.Make2SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd()));
 	        Assert.IsFalse(ExprNode.DeepEquals(SupportExprNodeFactory.MakeEqualsNode(), SupportExprNodeFactory.MakeMathNode()));
@@ -106,7 +106,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestParseMappedProp()
+	    public void testParseMappedProp()
 	    {
 	        ExprNode.MappedPropertyParseResult result = ExprNode.ParseMappedProperty("a.b('c')");
 	        Assert.AreEqual("a", result.TypeName);

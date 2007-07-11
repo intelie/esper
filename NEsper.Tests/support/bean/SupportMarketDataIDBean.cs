@@ -14,9 +14,9 @@ namespace net.esper.support.bean
 	[Serializable]
 	public class SupportMarketDataIDBean
 	{
-	    private String symbol;
-	    private String id;
-	    private double price;
+        private readonly String symbol;
+        private readonly String id;
+        private readonly double price;
 
 	    public SupportMarketDataIDBean(String symbol, String id, double price)
 	    {
@@ -25,19 +25,19 @@ namespace net.esper.support.bean
 	        this.price = price;
 	    }
 
-	    public String GetSymbol()
+	    public string Symbol
 	    {
-	        return symbol;
+	        get { return symbol; }
 	    }
 
-	    public double GetPrice()
+	    public double Price
 	    {
-	        return price;
+	        get { return price; }
 	    }
 
-	    public String GetId()
+	    public string Id
 	    {
-	        return id;
+	        get { return id; }
 	    }
 	}
 } // End of namespace

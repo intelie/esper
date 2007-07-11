@@ -27,7 +27,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testTimeWindow()
+        public void testTimeWindow()
         {
             tryTimeWindow("30000");
             tryTimeWindow("30E6 milliseconds");
@@ -39,7 +39,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testTimeBatchNoRefPoint()
+        public void testTimeBatchNoRefPoint()
         {
             // Set up a time window with a unique view attached
             EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:time_batch(10 minutes)");
@@ -56,7 +56,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testTimeBatchRefPoint()
+        public void testTimeBatchRefPoint()
         {
             // Set up a time window with a unique view attached
             EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:time_batch(10 minutes, 10L)");
@@ -73,7 +73,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testExternallyTimed()
+        public void testExternallyTimed()
         {
             // Set up a time window with a unique view attached
             EPStatement view = epService.EPAdministrator.CreateEQL("select * from " + typeof(SupportBean).FullName + ".win:ext_timed('longPrimitive', 10 minutes)");

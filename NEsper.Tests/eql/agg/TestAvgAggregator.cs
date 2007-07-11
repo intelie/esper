@@ -16,7 +16,7 @@ namespace net.esper.eql.agg
 	public class TestAvgAggregator
 	{
 	    [Test]
-	    public void TestResult()
+	    public void testResult()
 	    {
 	        AvgAggregator agg = new AvgAggregator();
 	        agg.Enter(100);

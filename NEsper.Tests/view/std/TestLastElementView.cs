@@ -37,7 +37,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestViewPush()
+	    public void testViewPush()
 	    {
 	        // Set up a feed for the view under test - it will have a depth of 3 trades
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportBean_A), 3);

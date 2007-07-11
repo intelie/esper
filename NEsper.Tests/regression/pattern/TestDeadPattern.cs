@@ -29,7 +29,7 @@ namespace net.esper.regression.pattern
         }
 
         [Test]
-        public virtual void testDeadPattern()
+        public void testDeadPattern()
         {
             String pattern = "(A() -> B()) and not C()";
             // Adjust to 20000 to better test the limit

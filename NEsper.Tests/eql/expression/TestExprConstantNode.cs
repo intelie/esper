@@ -24,28 +24,28 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(String), constantNode.GetType());
+            Assert.AreEqual(typeof(String), constantNode.ReturnType);
 
 	        constantNode = new ExprConstantNode(null);
-	        Assert.IsNull(constantNode.GetType());
+	        Assert.IsNull(constantNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        constantNode.Validate(null, null, null);
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        Assert.AreEqual("5", constantNode.Evaluate(null, false));
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        constantNode = new ExprConstantNode("5");
 	        Assert.AreEqual("\"5\"", constantNode.ExpressionString);
@@ -55,7 +55,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        Assert.IsTrue(constantNode.EqualsNode(new ExprConstantNode("5")));
 	        Assert.IsFalse(constantNode.EqualsNode(new ExprOrNode()));

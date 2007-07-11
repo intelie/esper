@@ -30,7 +30,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints++;
-            sum += (int)item;
+            sum += Convert.ToInt32(item);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints--;
-            sum -= (int)item;
+            sum -= Convert.ToInt32(item);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace net.esper.eql.agg
         /// <returns>type of values held</returns>
         public Type ValueType
         {
-            get { return typeof(int); }
+            get { return typeof(int?); }
         }
 
         /// <summary>

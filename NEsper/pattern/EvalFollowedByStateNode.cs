@@ -56,7 +56,7 @@ namespace net.esper.pattern
 
 			if ( nodes.Count == 0 )
 			{
-				throw new SystemException( "Followed by state node is inactive" );
+				throw new IllegalStateException( "Followed by state node is inactive" );
 			}
 
             List<EvalStateNode> temp = new List<EvalStateNode>(nodes.Keys);

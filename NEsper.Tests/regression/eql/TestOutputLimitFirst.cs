@@ -32,7 +32,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testTime()
+        public void testTime()
         {
             // Clear any old events
             epService.Initialize();
@@ -95,7 +95,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testCount()
+        public void testCount()
         {
             // Create the eql statement and add a listener
             String statementText = "select symbol, sum(volume) from " + _event_NAME + ".win:length(5) output first every 3 events";

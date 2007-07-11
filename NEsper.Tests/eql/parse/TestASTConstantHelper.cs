@@ -21,7 +21,7 @@ namespace net.esper.eql.parse
 	public class TestASTConstantHelper : EqlEvalTokenTypes
 	{
 	    [Test]
-	    public void TestParse()
+	    public void testParse()
 	    {
             Assert.AreEqual(5, ASTConstantHelper.Parse(MakeAST(NUM_INT, "5")));
             Assert.AreEqual(-1, ASTConstantHelper.Parse(MakeAST(INT_TYPE, "-1")));

@@ -25,7 +25,7 @@ namespace net.esper.eql.join.assemble
 		}
 
 		[Test]
-		public virtual void testProcess()
+		public void testProcess()
 		{
 			IList<Node>[] result = SupportJoinResultNodeFactory.makeOneStreamResult( 4, 1, 2, 2 );
 
@@ -38,7 +38,7 @@ namespace net.esper.eql.join.assemble
 		}
 
 		[Test]
-		public virtual void testChildResult()
+		public void testChildResult()
 		{
 			try
 			{

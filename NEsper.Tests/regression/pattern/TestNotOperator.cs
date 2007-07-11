@@ -19,7 +19,7 @@ namespace net.esper.regression.pattern
 	public class TestNotOperator : SupportBeanConstants
 	{
 	    [Test]
-	    public void TestOp()
+	    public void testOp()
 	    {
 	        EventCollection events = EventCollectionFactory.GetEventSetOne(0, 1000);
 	        CaseList testCaseList = new CaseList();
@@ -99,7 +99,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestUniformEvents()
+	    public void testUniformEvents()
 	    {
 	        EventCollection events = EventCollectionFactory.GetSetTwoExternalClock(0, 1000);
 	        CaseList results = new CaseList();

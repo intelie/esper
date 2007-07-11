@@ -44,7 +44,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestFindIndex()
+	    public void testFindIndex()
 	    {
 	        IList<FilterParamIndexBase> indexes = new List<FilterParamIndexBase>();
 
@@ -82,7 +82,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestFindParameter()
+	    public void testFindParameter()
 	    {
 	        FilterParamIndexBase indexOne = IndexFactory.CreateIndex(eventType, "boolPrimitive", FilterOperator.EQUAL);
 	        Assert.IsNull(IndexHelper.FindParameter(parameters, indexOne));

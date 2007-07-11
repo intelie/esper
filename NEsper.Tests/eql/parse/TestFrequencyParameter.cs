@@ -13,7 +13,7 @@ namespace net.esper.eql.parse
     public class TestFrequencyParameter
     {
         [Test]
-        public virtual void testInvalid()
+        public void testInvalid()
         {
             try
             {
@@ -27,7 +27,7 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testIsWildcard()
+        public void testIsWildcard()
         {
             FrequencyParameter freq = new FrequencyParameter(1);
             Assert.IsTrue(freq.IsWildcard(1, 10));
@@ -37,7 +37,7 @@ namespace net.esper.eql.parse
         }
 
         [Test]
-        public virtual void testGetValues()
+        public void testGetValues()
         {
             FrequencyParameter freq = new FrequencyParameter(3);
             Set<int> result = freq.GetValuesInRange(1, 8);

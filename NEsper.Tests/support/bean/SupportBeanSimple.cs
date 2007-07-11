@@ -15,18 +15,6 @@ namespace net.esper.support.bean
             get { return _myInt; }
             set { this._myInt = value; }
 		}
-
-        virtual public String myString
-        {
-            get { return _myString; }
-            set { this._myString = value; }
-        }
-
-        virtual public int myInt
-        {
-            get { return _myInt; }
-            set { this._myInt = value; }
-        }
         
         private String _myString;
         private int _myInt;

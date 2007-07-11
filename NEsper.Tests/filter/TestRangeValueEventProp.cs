@@ -32,7 +32,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestGetFilterValue()
+	    public void testGetFilterValue()
 	    {
 	        SupportBean _eventBean = new SupportBean();
 	        _eventBean.SetIntPrimitive(1000);
@@ -46,7 +46,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        Assert.IsFalse(paramList[0].Equals(paramList[1]));
 	        Assert.IsFalse(paramList[2].Equals(paramList[3]));

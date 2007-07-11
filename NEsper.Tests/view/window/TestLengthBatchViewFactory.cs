@@ -29,7 +29,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestSetParameters()
+	    public void testSetParameters()
 	    {
 	        TryParameter(new Object[] {Int16.Parse("10")}, 10);
 	        TryParameter(new Object[] {100}, 100);
@@ -42,7 +42,7 @@ namespace net.esper.view.window
 	    }
 
 	    [Test]
-	    public void TestCanReuse()
+	    public void testCanReuse()
 	    {
 	        factory.SetViewParameters(null, new Object[] {1000});
 	        Assert.IsFalse(factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeContext())));

@@ -23,7 +23,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testEmpty()
+        public void testEmpty()
         {
             LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             IEnumerator<EventBean> it = new TimeWindowIterator(testWindow);
@@ -31,7 +31,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testOneElement()
+        public void testOneElement()
         {
             LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             List<EventBean> list = new List<EventBean>();
@@ -48,7 +48,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testTwoInOneEntryElement()
+        public void testTwoInOneEntryElement()
         {
             LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             List<EventBean> list = new List<EventBean>();
@@ -67,7 +67,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testTwoSeparateEntryElement()
+        public void testTwoSeparateEntryElement()
         {
             LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
             List<EventBean> list2 = new List<EventBean>();
@@ -89,7 +89,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testTwoByTwoEntryElement()
+        public void testTwoByTwoEntryElement()
         {
             LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
 
@@ -116,7 +116,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testMixedEntryElement()
+        public void testMixedEntryElement()
         {
             LinkedList<Pair<Int64, List<EventBean>>> testWindow = new LinkedList<Pair<Int64, List<EventBean>>>();
 

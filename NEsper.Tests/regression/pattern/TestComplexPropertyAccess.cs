@@ -25,7 +25,7 @@ namespace net.esper.regression.pattern
 	    private static String _event_NESTED = typeof(SupportBeanCombinedProps).FullName;
 
 	    [Test]
-	    public void TestComplexProperties()
+	    public void testComplexProperties()
 	    {
 	        EventCollection events = EventCollectionFactory.GetSetSixComplexProperties();
 	        CaseList testCaseList = new CaseList();
@@ -92,7 +92,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestIndexedFilterProp()
+	    public void testIndexedFilterProp()
 	    {
 	        SupportUpdateListener testListener = new SupportUpdateListener();
 	        EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider();
@@ -118,7 +118,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestIndexedValueProp()
+	    public void testIndexedValueProp()
 	    {
 	        SupportUpdateListener testListener = new SupportUpdateListener();
 	        EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider();

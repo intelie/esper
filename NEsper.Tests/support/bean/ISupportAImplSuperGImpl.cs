@@ -4,29 +4,17 @@ namespace net.esper.support.bean
 {
     public class ISupportAImplSuperGImpl : ISupportAImplSuperG
     {
-        override public String g
+        override public String G
         {
-            get
-            {
-                return valueG;
-            }
-
+            get { return valueG; }
         }
-        override public String a
+        override public String A
         {
-            get
-            {
-                return valueA;
-            }
-
+            get { return valueA; }
         }
-        override public String baseAB
+        override public String BaseAB
         {
-            get
-            {
-                return valueBaseAB;
-            }
-
+            get { return valueBaseAB; }
         }
         private String valueG;
         private String valueA;

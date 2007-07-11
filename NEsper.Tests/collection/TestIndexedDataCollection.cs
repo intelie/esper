@@ -13,7 +13,7 @@ namespace net.esper.collection
     public class TestIndexedDataCollection
     {
         [Test]
-        public virtual void testAddRemoveGet()
+        public void testAddRemoveGet()
         {
             IndexedDataCollection index = new IndexedDataCollection();
 

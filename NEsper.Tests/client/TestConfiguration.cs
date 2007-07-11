@@ -22,14 +22,14 @@ namespace net.esper.client
         }
 
 		[Test]
-		public virtual void testString()
+		public void testString()
 		{
 			config.Configure( ESPER_TEST_CONFIG );
 			TestConfigurationParser.AssertFileConfig( config );
 		}
 
 		[Test]
-		public virtual void testURL()
+		public void testURL()
 		{
             Uri url = ResourceManager.ResolveResourceURL(ESPER_TEST_CONFIG);
             Assert.IsNotNull(url);
@@ -39,7 +39,7 @@ namespace net.esper.client
 		}
 
 		[Test]
-		public virtual void testFile()
+		public void testFile()
 		{
             FileInfo file = ResourceManager.ResolveResourceFile(ESPER_TEST_CONFIG);
 			config.Configure( file );
@@ -47,7 +47,7 @@ namespace net.esper.client
 		}
 
 		[Test]
-		public virtual void testAddEventTypeAlias()
+		public void testAddEventTypeAlias()
 		{
 			config.AddEventTypeAlias( "AEventType", "BClassName" );
 

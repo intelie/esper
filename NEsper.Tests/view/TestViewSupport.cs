@@ -54,7 +54,7 @@ namespace net.esper.view
 	    }
 
 	    [Test]
-	    public void TestFindDescendent()
+	    public void testFindDescendent()
 	    {
 	        // Test a deep find
             IList<View> descendents = ViewSupport.FindDescendent(top, child_2_2_1);

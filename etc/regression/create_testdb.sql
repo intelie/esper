@@ -1,4 +1,6 @@
-﻿use test;
+// Cut & paste the below into the MySQL command prompt, after performing "use test"
+
+use test
 
 drop table mytesttable;
 

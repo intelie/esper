@@ -86,6 +86,7 @@ namespace net.esper.core
 	            }
 	        }
 	        eventAdapterService.TypeLegacyConfigs = classLegacyInfo;
+	        eventAdapterService.DefaultPropertyResolutionStyle = configSnapshot.DefaultPropertyResolutionStyle;
 
 	        // Add from the configuration the event class aliases
 	        IDictionary<String, String> typeAliases = configSnapshot.TypeAliases;
@@ -202,7 +203,7 @@ namespace net.esper.core
 	            Type type = null;
 	            try
 	            {
-	            	type = Type.GetType(boxedTypeName);
+	                type = Type.GetType(boxedTypeName, true);
 	            }
                 catch (TypeLoadException ex)
 	            {

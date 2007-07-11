@@ -37,7 +37,7 @@ namespace net.esper.view.std
 
 	    // Check values against Microsoft Excel computed values
 	    [Test]
-	    public void TestViewPush()
+	    public void testViewPush()
 	    {
 	        // Set up a feed for the view under test - it will have a depth of 5 trades
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportBean_A), 5);
@@ -79,7 +79,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestUpdate()
+	    public void testUpdate()
 	    {
 	        // View should not post events if data didn't change
 	        myView.Update(MakeBeans("f", 1), null);
@@ -96,7 +96,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestSchema()
+	    public void testSchema()
 	    {
 	        SizeView view = new SizeView(SupportStatementContextFactory.MakeContext());
 
@@ -105,7 +105,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestCopyView()
+	    public void testCopyView()
 	    {
 	        Assert.IsTrue(myView.CloneView(SupportStatementContextFactory.MakeContext()) is SizeView);
 	    }

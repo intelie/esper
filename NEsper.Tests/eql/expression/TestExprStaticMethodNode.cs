@@ -50,7 +50,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestMaxIntInt()
+	    public void testMaxIntInt()
 	    {
 	        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max");
 	        root.AddChildNode(intThree);
@@ -63,7 +63,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestIntegerInt()
+	    public void testIntegerInt()
 	    {
             MethodInfo staticMethod = this.GetType().GetMethod("staticIntMethod", new Type[] { typeof(int?) });
 	        ExprStaticMethodNode parent = new ExprStaticMethodNode(this.GetType().FullName, "staticIntMethod");
@@ -79,7 +79,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestMaxIntShort()
+	    public void testMaxIntShort()
 	    {
 	        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max");
 	        root.AddChildNode(intThree);
@@ -93,7 +93,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestMaxDoubleInt()
+	    public void testMaxDoubleInt()
 	    {
 	        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max");
 	        root.AddChildNode(doubleEight);
@@ -106,7 +106,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestMaxDoubleDouble()
+	    public void testMaxDoubleDouble()
 	    {
 	        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max");
 	        root.AddChildNode(doubleEight);
@@ -119,7 +119,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestPowdoubleDouble()
+	    public void testPowdoubleDouble()
 	    {
 	        MethodInfo pow = typeof (Math).GetMethod("pow", new Type[] {typeof (double), typeof (double)});
 	        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "pow");
@@ -133,7 +133,7 @@ namespace net.esper.eql.expression
 	    }
 
         //[Test]
-        //public void TestValueOfInt()
+        //public void testValueOfInt()
         //{
         //    MethodInfo valueOf = typeof(int?).GetMethod("valueOf", typeof(String));
         //    ExprStaticMethodNode root = new ExprStaticMethodNode("Integer", "valueOf");

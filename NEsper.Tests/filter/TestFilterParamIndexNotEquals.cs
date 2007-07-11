@@ -38,7 +38,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestBoolean()
+	    public void testBoolean()
 	    {
 	        FilterParamIndexNotEquals index = new FilterParamIndexNotEquals("boolPrimitive", testEventType);
 	        Assert.AreEqual(FilterOperator.NOT_EQUAL, index.FilterOperator);
@@ -51,7 +51,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestString()
+	    public void testString()
 	    {
 	        FilterParamIndexNotEquals index = new FilterParamIndexNotEquals("string", testEventType);
 

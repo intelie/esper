@@ -22,7 +22,7 @@ namespace net.esper.eql.join.exec
 		public virtual void setUp()
 		{
 			EventType eventTypeIndex = SupportEventTypeFactory.CreateBeanType( typeof( SupportBean ) );
-            index = new PropertyIndexedEventTable(0, eventTypeIndex, new String[] { "str" });
+            index = new PropertyIndexedEventTable(0, eventTypeIndex, new String[] { "string" });
 
 			EventType eventTypeKeyGen = SupportEventTypeFactory.CreateBeanType( typeof( SupportMarketDataBean ) );
 
@@ -30,7 +30,7 @@ namespace net.esper.eql.join.exec
 		}
 
 		[Test]
-		public virtual void testFlow()
+		public void testFlow()
 		{
 			EventBean[] indexEvents = SupportEventBeanFactory.MakeEvents( new String[] { "a1", "a2" } );
 			index.Add( indexEvents );

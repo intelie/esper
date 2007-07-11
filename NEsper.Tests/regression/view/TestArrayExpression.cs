@@ -34,7 +34,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestArrayExpressions()
+	    public void testArrayExpressions()
 	    {
 	        String stmtText = "select {'a', 'b'} as stringArray," +
 	                              "{} as emptyArray," +
@@ -89,7 +89,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestComplexTypes()
+	    public void testComplexTypes()
 	    {
 	        String stmtText = "select {arrayProperty, nested} as field" +
 	                              " from " + typeof(SupportBeanComplexProps).FullName;

@@ -37,7 +37,7 @@ namespace net.esper.view.internals
 	    }
 
 	    [Test]
-	    public void TestFlow()
+	    public void testFlow()
 	    {
 	        buffer.Update(new EventBean[] {events[0], events[1]}, null);
 	        Assert.AreEqual(events[1], buffer.GetNewData(0));
@@ -46,7 +46,7 @@ namespace net.esper.view.internals
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        try
 	        {

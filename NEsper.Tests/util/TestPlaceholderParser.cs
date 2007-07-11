@@ -10,7 +10,7 @@ namespace net.esper.util
     public class TestPlaceholderParser
     {
         [Test]
-        public virtual void testParseValid()
+        public void testParseValid()
         {
             Object[][] testdata = new Object[][]
             {
@@ -38,7 +38,7 @@ namespace net.esper.util
             }
         }
 
-        public virtual void testParseValid(Object[] inputAndResults)
+        public void testParseValid(Object[] inputAndResults)
         {
             String ParseString = (String)inputAndResults[0];
             Object[] expected = (Object[])inputAndResults[1];
@@ -56,7 +56,7 @@ namespace net.esper.util
         }
 
         [Test]
-        public virtual void testParseInvalid()
+        public void testParseInvalid()
         {
             tryParseInvalid("${lib");
             tryParseInvalid("${lib} ${aa");

@@ -32,7 +32,7 @@ namespace net.esper.regression.pattern
         /// that it routes back into the runtime, up to X number of times.
         /// </summary>
         [Test]
-        public virtual void testRouteSingle()
+        public void testRouteSingle()
         {
             SingleRouteUpdateListener listener = new SingleRouteUpdateListener(this);
             patternStmt.AddListener(listener);
@@ -49,7 +49,7 @@ namespace net.esper.regression.pattern
         /// that it routes back into the runtime, up to X number of times.
         /// </summary>
         [Test]
-        public virtual void testRouteCascade()
+        public void testRouteCascade()
         {
             CascadeRouteUpdateListener listener = new CascadeRouteUpdateListener(this);
             patternStmt.AddListener(listener);
@@ -68,7 +68,7 @@ namespace net.esper.regression.pattern
         }
 
         [Test]
-        public virtual void testRouteTimer()
+        public void testRouteTimer()
         {
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));

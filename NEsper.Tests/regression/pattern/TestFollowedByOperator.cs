@@ -29,7 +29,7 @@ namespace net.esper.regression.pattern
 	public class TestFollowedByOperator : SupportBeanConstants
 	{
 	    [Test]
-	    public void TestOp()
+	    public void testOp()
 	    {
 	        EventCollection events = EventCollectionFactory.GetEventSetOne(0, 1000);
 	        CaseList testCaseList = new CaseList();
@@ -106,7 +106,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestFollowedByWithNot()
+	    public void testFollowedByWithNot()
 	    {
 	        Configuration config = new Configuration();
 	        config.AddEventTypeAlias("A", typeof(SupportBean_A).FullName);
@@ -164,7 +164,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestFollowedByTimer()
+	    public void testFollowedByTimer()
 	    {
 	        Configuration config = new Configuration();
 	        config.AddEventTypeAlias("CallEvent", typeof(SupportCallEvent).FullName);
@@ -197,7 +197,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestMemoryRFIDEvent()
+	    public void testMemoryRFIDEvent()
 	    {
 	        Configuration config = new Configuration();
 	        config.AddEventTypeAlias("LR", typeof(SupportRFIDEvent).FullName);
@@ -233,7 +233,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestRFIDZoneExit()
+	    public void testRFIDZoneExit()
 	    {
 	        Configuration config = new Configuration();
 	        config.AddEventTypeAlias("LR", typeof(SupportRFIDEvent).FullName);
@@ -279,7 +279,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestRFIDZoneEnter()
+	    public void testRFIDZoneEnter()
 	    {
 	        Configuration config = new Configuration();
 	        config.AddEventTypeAlias("LR", typeof(SupportRFIDEvent).FullName);
@@ -325,7 +325,7 @@ namespace net.esper.regression.pattern
 	    }
 
 	    [Test]
-	    public void TestFollowedNotEvery()
+	    public void testFollowedNotEvery()
 	    {
 	        String expression = "select * from pattern [every A=" + typeof(SupportBean).FullName +
 	                " -> (timer:interval(1 seconds) and not " + typeof(SupportBean_A).FullName + ")]";

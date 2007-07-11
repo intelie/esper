@@ -165,7 +165,7 @@ namespace net.esper.eql.join.assemble
 			// Done if none found
 			if ( nodesPerLevel.Count == 0 )
 			{
-				throw new SystemException( "Empty collection for nodes per level" );
+				throw new IllegalStateException( "Empty collection for nodes per level" );
 			}
 
 			// From the deepest (highest) level to the lowest, add aggregates to list

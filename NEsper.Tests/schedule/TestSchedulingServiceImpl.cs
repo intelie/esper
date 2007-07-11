@@ -51,7 +51,7 @@ namespace net.esper.schedule
 	    }
 
 	    [Test]
-	    public void TestAddTwice()
+	    public void testAddTwice()
 	    {
 	        service.Add(100, callbacks[0], slots[0,0]);
 	        try
@@ -77,7 +77,7 @@ namespace net.esper.schedule
 	    }
 
 	    [Test]
-	    public void TestTrigger()
+	    public void testTrigger()
 	    {
 	        long startTime = 0;
 
@@ -149,7 +149,7 @@ namespace net.esper.schedule
 	    }
 
 	    [Test]
-	    public void TestWaitAndSpecTogether()
+	    public void testWaitAndSpecTogether()
 	    {
 	        DateTime calendar = new DateTime(2004, 11, 9, 15, 27, 10, 500);
 
@@ -215,7 +215,7 @@ namespace net.esper.schedule
 	    }
 
 	    [Test]
-	    public void TestIncorrectRemove()
+	    public void testIncorrectRemove()
 	    {
 	        SchedulingServiceImpl evaluator = new SchedulingServiceImpl();
 	        SupportScheduleCallback callback = new SupportScheduleCallback();

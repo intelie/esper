@@ -31,7 +31,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testSumOneView()
+        public void testSumOneView()
         {
             String viewExpr = "select symbol," + "median(all price) as myMedian," + "median(distinct price) as myDistMedian," + "stddev(all price) as myStdev," + "avedev(all price) as myAvedev " + "from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " + "where symbol='DELL' or symbol='IBM' or symbol='GE' " + "group by symbol";
 
@@ -42,9 +42,9 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testSumJoin()
+        public void testSumJoin()
         {
-            String viewExpr = "select symbol," + "median(price) as myMedian," + "median(distinct price) as myDistMedian," + "stddev(price) as myStdev," + "avedev(price) as myAvedev " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.str = two.symbol " + "group by symbol";
+            String viewExpr = "select symbol," + "median(price) as myMedian," + "median(distinct price) as myDistMedian," + "stddev(price) as myStdev," + "avedev(price) as myAvedev " + "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " + typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " + "where (symbol='DELL' or symbol='IBM' or symbol='GE') " + "       and one.string = two.symbol " + "group by symbol";
 
             selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
             selectTestView.AddListener(testListener);

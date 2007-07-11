@@ -35,7 +35,7 @@ namespace net.esper.eql.join.plan
 	    }
 
 	    [Test]
-	    public void TestGetPlan()
+	    public void testGetPlan()
 	    {
 	        IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
 	        OuterJoinDesc joinDesc = SupportOuterJoinDescFactory.MakeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT);

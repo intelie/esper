@@ -30,7 +30,7 @@ namespace net.esper.eql.join.assemble
 		}
 
 		[Test]
-		public virtual void testProcessMultipleEvents()
+		public void testProcessMultipleEvents()
 		{
 			optAssemblyNode.Init( resultMultipleEvents );
 
@@ -57,7 +57,7 @@ namespace net.esper.eql.join.assemble
 		}
 
 		[Test]
-		public virtual void testProcessSingleEvent()
+		public void testProcessSingleEvent()
 		{
 			optAssemblyNode.Init( resultSingleEvent );
 
@@ -75,7 +75,7 @@ namespace net.esper.eql.join.assemble
 		}
 
 		[Test]
-		public virtual void testChildResult()
+		public void testChildResult()
 		{
 			optAssemblyNode.Init( resultMultipleEvents );
 			testChildResult( optAssemblyNode, parentNode );

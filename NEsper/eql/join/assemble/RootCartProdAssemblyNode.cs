@@ -58,7 +58,7 @@ namespace net.esper.eql.join.assemble
             {
                 if (childNodes.Count < 2)
                 {
-                    throw new SystemException("Expecting at least 2 child nodes");
+                    throw new IllegalStateException("Expecting at least 2 child nodes");
                 }
                 subStreamsNumsPerChild = new int[childNodes.Count][];
                 for (int i = 0; i < childNodes.Count; i++)

@@ -1,5 +1,7 @@
 using System;
 
+using net.esper.compat;
+
 using org.apache.commons.logging;
 
 namespace net.esper.pattern
@@ -33,7 +35,7 @@ namespace net.esper.pattern
 			
 			if (ChildNodes.Count != 1)
 			{
-				throw new SystemException("Expected number of child nodes incorrect, expected 1 node, found " + ChildNodes.Count);
+				throw new IllegalStateException("Expected number of child nodes incorrect, expected 1 node, found " + ChildNodes.Count);
 			}
 			
 			return context.PatternStateFactory.MakeEveryStateNode(parentNode, this, beginState, context, stateNodeId);

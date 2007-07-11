@@ -16,7 +16,7 @@ namespace net.esper.indicator.pretty
 	public class TestCubeCellStringRenderer
 	{
 		[Test]
-		public virtual void testRender()
+		public void testRender()
 		{
 			Cube testCube = SupportCubeFactory.make2DimCube();
 

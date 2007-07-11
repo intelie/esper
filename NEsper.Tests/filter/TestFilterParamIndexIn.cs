@@ -39,7 +39,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestIndex()
+	    public void testIndex()
 	    {
 	        FilterParamIndexIn index = new FilterParamIndexIn("longBoxed", testEventType);
 	        Assert.AreEqual(FilterOperator.IN_LIST_OF_VALUES, index.FilterOperator);

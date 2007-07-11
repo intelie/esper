@@ -32,7 +32,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInStringExpr()
+	    public void testInStringExpr()
 	    {
 	        TryString("string in ('a', 'b', 'c')",
 	                    new String[] {"0", "a", "b", "c", "d", null},
@@ -64,7 +64,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestBetweenStringExpr()
+	    public void testBetweenStringExpr()
 	    {
 	        String[] input = null;
 	        bool[] result = null;
@@ -93,7 +93,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInNumericExpr()
+	    public void testInNumericExpr()
 	    {
 	        double?[] input = new double?[] {1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d};
 	        bool[] result = new bool[] {false, false, true, false, false, true, true};
@@ -113,7 +113,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestBetweenNumericExpr()
+	    public void testBetweenNumericExpr()
 	    {
 	        double?[] input = new double?[] {1d, null, 1.1d, 2d, 1.0999999999, 2d, 4d, 15d, 15.00001d};
 	        bool[] result = new bool[] {false, false, true, true, false, true, true, true, false};
@@ -143,7 +143,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInBoolExpr()
+	    public void testInBoolExpr()
 	    {
 	        TryInBoolean("boolBoxed in (true, true)",
 	                    new Boolean[] {true, false},
@@ -159,7 +159,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInNumericCoercionLong()
+	    public void testInNumericCoercionLong()
 	    {
 	        String caseExpr = "select intPrimitive in (shortBoxed, intBoxed, longBoxed) as result from " + typeof(SupportBean).FullName;
 
@@ -179,7 +179,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestInNumericCoercionDouble()
+	    public void testInNumericCoercionDouble()
 	    {
 	        String caseExpr = "select intBoxed in (floatBoxed, doublePrimitive, longBoxed) as result from " + typeof(SupportBean).FullName;
 
@@ -199,7 +199,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestBetweenNumericCoercionLong()
+	    public void testBetweenNumericCoercionLong()
 	    {
 	        String caseExpr = "select intPrimitive between shortBoxed and longBoxed as result from " + typeof(SupportBean).FullName;
 
@@ -220,7 +220,7 @@ namespace net.esper.regression.view
 	    }
 
 	    [Test]
-	    public void TestBetweenNumericCoercionDouble()
+	    public void testBetweenNumericCoercionDouble()
 	    {
 	        String caseExpr = "select intBoxed between floatBoxed and doublePrimitive as result from " + typeof(SupportBean).FullName;
 

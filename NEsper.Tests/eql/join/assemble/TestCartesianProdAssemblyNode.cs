@@ -36,7 +36,7 @@ namespace net.esper.eql.join.assemble
 		}
 
 		[Test]
-		public virtual void testFlow()
+		public void testFlow()
 		{
 			optCartNode.Init( resultMultipleEvents );
 
@@ -87,7 +87,7 @@ namespace net.esper.eql.join.assemble
 		}
 
 		[Test]
-		public virtual void testProcessSingleEvent()
+		public void testProcessSingleEvent()
 		{
             optCartNode.Init(resultSingleEvent);
 

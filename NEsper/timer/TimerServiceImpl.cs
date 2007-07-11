@@ -75,7 +75,7 @@ namespace net.esper.timer
 
             if (timerCallback == null)
             {
-                throw new SystemException("Timer callback not set");
+                throw new IllegalStateException("Timer callback not set");
             }
 
             timerTaskCancelled = false;

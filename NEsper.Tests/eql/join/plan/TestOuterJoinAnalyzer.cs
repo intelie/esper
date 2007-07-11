@@ -16,11 +16,11 @@ namespace net.esper.eql.join.plan
     public class TestOuterJoinAnalyzer 
     {
         [Test]
-        public virtual void testAnalyze()
+        public void testAnalyze()
         {
             IList<OuterJoinDesc> descList = new List<OuterJoinDesc>();
             descList.Add(SupportOuterJoinDescFactory.MakeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT));
-            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "str", "s1", OuterJoinType.LEFT));
+            descList.Add(SupportOuterJoinDescFactory.MakeDesc("simpleProperty", "s2", "string", "s1", OuterJoinType.LEFT));
             // simpleProperty in s2
 
             QueryGraph graph = new QueryGraph(3);
@@ -34,7 +34,7 @@ namespace net.esper.eql.join.plan
             Assert.AreEqual("intBoxed", graph.GetKeyProperties(1, 0)[0]);
 
             Assert.IsTrue(graph.IsNavigable(1, 2));
-            Assert.AreEqual("str", graph.GetKeyProperties(1, 2)[0]);
+            Assert.AreEqual("string", graph.GetKeyProperties(1, 2)[0]);
             Assert.AreEqual("simpleProperty", graph.GetKeyProperties(2, 1)[0]);
         }
     }

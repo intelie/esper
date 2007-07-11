@@ -31,14 +31,14 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(Boolean), regexpNodeNormal.GetType());
-	        Assert.AreEqual(typeof(Boolean), regexpNodeNot.GetType());
+	        Assert.AreEqual(typeof(bool?), regexpNodeNormal.ReturnType);
+	        Assert.AreEqual(typeof(bool?), regexpNodeNot.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // No subnodes: Exception is thrown.
 	        TryInvalidValidate(new ExprRegexpNode(true));
@@ -61,7 +61,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        Assert.IsFalse((Boolean) regexpNodeNormal.Evaluate(MakeEvent("bcd"), false));
 	        Assert.IsTrue((Boolean) regexpNodeNormal.Evaluate(MakeEvent("ab"), false));
@@ -70,7 +70,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        ExprRegexpNode otherRegexpNodeNot = SupportExprNodeFactory.MakeRegexpNode(true);
 
@@ -79,7 +79,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("s0.string regexp \"[a-z][a-z]\"", regexpNodeNormal.ExpressionString);
 	        Assert.AreEqual("s0.string not regexp \"[a-z][a-z]\"", regexpNodeNot.ExpressionString);

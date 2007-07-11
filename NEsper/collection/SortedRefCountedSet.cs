@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using net.esper.compat;
+
 namespace net.esper.collection
 {
 	/// <summary>
@@ -57,7 +59,7 @@ namespace net.esper.collection
             
             if (!refSet.Find(ref key, out value))
             {
-                throw new SystemException("Attempting to remove key from map that wasn't added");
+                throw new IllegalStateException("Attempting to remove key from map that wasn't added");
             }
 			
 			if (value == 1)

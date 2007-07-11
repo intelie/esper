@@ -27,14 +27,14 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
 	        plugInNode.Validate(null, null, null);
-	        Assert.AreEqual(typeof(int), plugInNode.GetType());
+	        Assert.AreEqual(typeof(int?), plugInNode.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        // fails with too many sub-expressions
 	        plugInNode.AddChildNode(new SupportExprNode(typeof(bool?)));
@@ -51,7 +51,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEqualsNode()
+	    public void testEqualsNode()
 	    {
 	        ExprPlugInAggFunctionNode otherOne = new ExprPlugInAggFunctionNode(false, new SupportPluginAggregationMethodOne(), "matrix");
 	        ExprPlugInAggFunctionNode otherTwo = new ExprPlugInAggFunctionNode(false, new SupportPluginAggregationMethodOne(), "matrix2");

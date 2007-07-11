@@ -43,7 +43,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestClosedRange()
+	    public void testClosedRange()
 	    {
 	        FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_CLOSED, testEventType);
 	        Assert.AreEqual(FilterOperator.NOT_RANGE_CLOSED, index.FilterOperator);
@@ -63,7 +63,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestOpenRange()
+	    public void testOpenRange()
 	    {
 	        FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_OPEN, testEventType);
 
@@ -82,7 +82,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestHalfOpenRange()
+	    public void testHalfOpenRange()
 	    {
 	        FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_HALF_OPEN, testEventType);
 
@@ -101,7 +101,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestHalfClosedRange()
+	    public void testHalfClosedRange()
 	    {
 	        FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_HALF_CLOSED, testEventType);
 
@@ -130,7 +130,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestInvalid()
+	    public void testInvalid()
 	    {
 	        try
 	        {

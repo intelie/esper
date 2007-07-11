@@ -17,7 +17,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testAdd()
+        public void testAdd()
         {
             Assert.IsTrue(refSet.Add("a"));
             Assert.AreEqual(1, refSet.Count);
@@ -30,7 +30,7 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testRemove()
+        public void testRemove()
         {
             refSet.Add("a");
             refSet.Add("a");

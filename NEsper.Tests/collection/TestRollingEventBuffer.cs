@@ -33,7 +33,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestFlowSizeOne()
+	    public void testFlowSizeOne()
 	    {
 	        bufferOne.Add((EventBean[])null);
 	        Assert.IsNull(bufferOne.Get(0));
@@ -50,7 +50,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestFlowSizeTwo()
+	    public void testFlowSizeTwo()
 	    {
 	        EventBean[] set1 = Make(2);
 	        bufferTwo.Add(set1);
@@ -84,7 +84,7 @@ namespace net.esper.collection
 	    }
 
 	    [Test]
-	    public void TestFlowSizeTen()
+	    public void testFlowSizeTen()
 	    {
 	        EventBean[] set1 = Make(3);
 	        bufferFive.Add(set1);

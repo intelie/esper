@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.compat;
 using net.esper.eql.core;
 using net.esper.events;
 using net.esper.type;
@@ -22,7 +23,7 @@ namespace net.esper.eql.expression
         /// <throws>ExprValidationException thrown when validation failed </throws>
         public override Type ReturnType
         {
-            get { return typeof(bool); }
+            get { return typeof(bool?); }
         }
 
 	    public override bool IsConstantResult
@@ -60,7 +61,7 @@ namespace net.esper.eql.expression
             // Must have 2 child nodes
             if (this.ChildNodes.Count != 2)
             {
-                throw new SystemException("Relational op node does not have exactly 2 child nodes");
+                throw new IllegalStateException("Relational op node does not have exactly 2 child nodes");
             }
 
             // Must be either numeric or string

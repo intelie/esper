@@ -53,7 +53,7 @@ namespace net.esper.eql.expression
         /// <throws>ExprValidationException thrown when validation failed </throws>
 	    public override Type ReturnType
 	    {
-            get { return selectClause.GetType(); }
+            get { return selectClause.ReturnType; }
 	    }
 
         /// <summary>

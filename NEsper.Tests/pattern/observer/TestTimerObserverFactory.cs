@@ -30,7 +30,7 @@ namespace net.esper.pattern.observer
 	    }
 
 	    [Test]
-	    public void TestIntervalWait()
+	    public void testIntervalWait()
 	    {
 	        TimerIntervalObserverFactory factory = new TimerIntervalObserverFactory();
 	        factory.ObserverParameters = new Object[] {1};

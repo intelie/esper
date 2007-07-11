@@ -11,7 +11,7 @@ namespace net.esper.util
     public class TestConstructorHelper
     {
         [Test]
-        public virtual void testValidInvokeConstructor()
+        public void testValidInvokeConstructor()
         {
             Object[] _params = new Object[] { "test", 1 };
             SupportCtorObjectArray objOne = (SupportCtorObjectArray)ConstructorHelper.InvokeConstructor(typeof(SupportCtorObjectArray), _params);
@@ -29,7 +29,7 @@ namespace net.esper.util
         }
 
         [Test]
-        public virtual void testInvalidInvokeConstructor()
+        public void testInvalidInvokeConstructor()
         {
             // No Ctor
             try

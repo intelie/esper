@@ -27,7 +27,7 @@ namespace net.esper.dispatch
 	    }
 
 	    [Test]
-	    public void TestAddAndDispatch()
+	    public void testAddAndDispatch()
 	    {
 	        // Dispatch without work to do, should complete
 	        service.Dispatch();
@@ -52,7 +52,7 @@ namespace net.esper.dispatch
 	    }
 
 	    [Test]
-	    public void TestAddDispatchTwice()
+	    public void testAddDispatchTwice()
 	    {
 	        SupportDispatchable disOne = new SupportDispatchable();
 	        service.AddExternal(disOne);
@@ -65,7 +65,7 @@ namespace net.esper.dispatch
 	    }
 
 	    [Test]
-	    public void TestAdd()
+	    public void testAdd()
 	    {
 	    	SupportDispatchable[] dispatchables = new SupportDispatchable[2];
 	        for (int i = 0; i < dispatchables.Length; i++)

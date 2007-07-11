@@ -9,12 +9,7 @@ namespace net.esper.support.bean
 			get { return _val; }
 		}
 
-        virtual public String val
-        {
-        	get { return this.Val; }
-        }
-
-		private String _val;
+        private String _val;
 		
 		public SupportOverrideBase(String val)
 		{

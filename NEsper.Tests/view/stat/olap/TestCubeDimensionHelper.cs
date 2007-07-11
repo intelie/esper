@@ -12,7 +12,7 @@ namespace net.esper.view.stat.olap
     public class TestCubeDimensionHelper
     {
         [Test]
-        public virtual void testGetDimensionSizes()
+        public void testGetDimensionSizes()
         {
             Cube testCube = SupportCubeFactory.make2DimCube();
             int[] dimensionSizes = CubeDimensionHelper.GetDimensionSizes(CollectionHelper.ToArray(testCube.Dimensions));
@@ -24,7 +24,7 @@ namespace net.esper.view.stat.olap
         }
 
         [Test]
-        public virtual void testNextIndize()
+        public void testNextIndize()
         {
             int[] indizes = new int[3];
 
@@ -49,7 +49,7 @@ namespace net.esper.view.stat.olap
         }
 
         [Test]
-        public virtual void testCalculateTotalSize()
+        public void testCalculateTotalSize()
         {
             Assert.AreEqual(3, CubeDimensionHelper.GetTotalCells(new int[] { 3 }));
             Assert.AreEqual(6, CubeDimensionHelper.GetTotalCells(new int[] { 3, 2 }));
@@ -60,7 +60,7 @@ namespace net.esper.view.stat.olap
         }
 
         [Test]
-        public virtual void testCalculateOrdinal()
+        public void testCalculateOrdinal()
         {
             // 1-dimensional
             Assert.AreEqual(0, CubeDimensionHelper.GetOrdinal(new int[] { 0 }, new int[] { 3 }));

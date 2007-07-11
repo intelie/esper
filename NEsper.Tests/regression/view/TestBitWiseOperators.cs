@@ -48,7 +48,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testBitWiseOperators()
+        public void testBitWiseOperators()
         {
             SetUpBitWiseStmt();
             _testListener.Reset();

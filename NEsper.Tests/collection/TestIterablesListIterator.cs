@@ -36,64 +36,64 @@ namespace net.esper.collection
         }
 
         [Test]
-        public virtual void testIterator()
+        public void testIterator()
         {
             IList<IEnumerable<EventBean>> iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a", "b", "c" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "a", "b", "c" }));
             checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c" }));
 
             iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "b" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "c" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "a" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "b" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "c" }));
             checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c" }));
 
             iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a", "b" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "c" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "a", "b" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "c" }));
             checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c" }));
 
             iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a", "b" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "c" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "a", "b" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "c" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
             checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c" }));
 
             iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
             checkResults(iterables, null);
 
             iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
             checkResults(iterables, null);
 
             iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "d" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "d" }));
             checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "d" }));
 
             iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "d" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "d" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
             checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "d" }));
 
             iterables = new List<IEnumerable<EventBean>>();
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "a", "b", "c" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "d" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "e", "f" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "g" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "h", "i" }));
-            iterables.Add(EventFactoryHelper.makeList(events, new String[] { "z" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "a", "b", "c" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "d" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "e", "f" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "g" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "h", "i" }));
+            iterables.Add(EventFactoryHelper.MakeList(events, new String[] { "z" }));
             checkResults(iterables, EventFactoryHelper.MakeArray(events, new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "z" }));
 
             iterables = new List<IEnumerable<EventBean>>();

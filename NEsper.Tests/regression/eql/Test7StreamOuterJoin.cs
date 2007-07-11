@@ -43,7 +43,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testKeyPerStream()
+        public void testKeyPerStream()
         {
             /**
             * Query:
@@ -430,7 +430,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testRoot_s0()
+        public void testRoot_s0()
         {
             /**
             * Query:
@@ -458,7 +458,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testRoot_s1()
+        public void testRoot_s1()
         {
             /**
             * Query:
@@ -486,7 +486,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testRoot_s2()
+        public void testRoot_s2()
         {
             /**
             * Query:
@@ -514,7 +514,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testRoot_s3()
+        public void testRoot_s3()
         {
             /**
             * Query:
@@ -542,7 +542,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testRoot_s4()
+        public void testRoot_s4()
         {
             /**
             * Query:
@@ -570,7 +570,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testRoot_s5()
+        public void testRoot_s5()
         {
             /**
             * Query:
@@ -598,7 +598,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testRoot_s6()
+        public void testRoot_s6()
         {
             /**
             * Query:

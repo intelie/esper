@@ -11,7 +11,7 @@ namespace net.esper.util
     {
         private const String TEST_RESOURCE = "regression/esper.test.readconfig.cfg.xml";
 
-        //public virtual void testResolveResourceAsURL()
+        //public void testResolveResourceAsURL()
         //{
         //    Uri url = ResourceLoader.getClasspathResourceAsURL("somefile", TEST_RESOURCE);
         //    Assert.IsNotNull(url);
@@ -27,7 +27,7 @@ namespace net.esper.util
         //    }
         //}
 
-        //public virtual void testClasspathOrURL()
+        //public void testClasspathOrURL()
         //{
         //    Uri url = this.GetType().ClassLoader.getResource(TEST_RESOURCE);
         //    Uri urlAfterResolve = ResourceLoader.ResolveClassPathOrURLResource("a", url.ToString());

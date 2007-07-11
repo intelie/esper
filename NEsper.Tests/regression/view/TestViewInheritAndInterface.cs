@@ -24,7 +24,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testOverridingSubclass()
+        public void testOverridingSubclass()
         {
             String viewExpr = "select val as value from " + typeof(SupportOverrideOne).FullName + ".win:length(10)";
 
@@ -49,7 +49,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testImplementationClass()
+        public void testImplementationClass()
         {
             String[] viewExpr = new String[] {
 				"select baseAB from " + typeof( ISupportBaseAB ).FullName + ".win:length(10)",

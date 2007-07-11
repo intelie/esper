@@ -231,7 +231,7 @@ namespace net.esper.core
 	            Type type = null;
 	            try
 	            {
-	                type = Type.GetType(boxedTypeName);
+	                type = Type.GetType(boxedTypeName, true);
 	            }
 	            catch (TypeLoadException ex)
 	            {

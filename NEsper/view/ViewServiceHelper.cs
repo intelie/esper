@@ -133,7 +133,7 @@ namespace net.esper.view
 				{
 					String message = "Failed to remove immediate child view " + viewToRemove;
 					log.Fatal( ".remove " + message );
-					throw new SystemException( message );
+					throw new IllegalStateException( message );
 				}
 
 				removedViews.Add( (View) viewToRemove );
@@ -154,7 +154,7 @@ namespace net.esper.view
 				{
 					String message = "Failed to remove view " + currentView;
 					log.Fatal( ".remove " + message );
-					throw new SystemException( message );
+					throw new IllegalStateException( message );
 				}
 
 				// If the parent views has more child views, we are done

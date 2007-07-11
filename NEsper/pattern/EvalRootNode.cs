@@ -1,9 +1,9 @@
 using System;
 
+using net.esper.compat;
+
 using Log = org.apache.commons.logging.Log;
 using LogFactory = org.apache.commons.logging.LogFactory;
-
-using net.esper.util;
 
 namespace net.esper.pattern
 {
@@ -56,7 +56,7 @@ namespace net.esper.pattern
 			
 			if (ChildNodes.Count != 1)
 			{
-				throw new SystemException("Expected number of child nodes incorrect, expected 1 child node, found " + ChildNodes.Count);
+				throw new IllegalStateException("Expected number of child nodes incorrect, expected 1 child node, found " + ChildNodes.Count);
 			}
 			
 			return context.PatternStateFactory.MakeRootNode(this.ChildNodes[0], beginState);

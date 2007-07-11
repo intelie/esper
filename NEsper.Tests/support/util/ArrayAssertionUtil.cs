@@ -93,6 +93,18 @@ namespace net.esper.support.util
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator that returns nothing.
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerator<Object> NullEnumerator()
+        {
+            if ( false )
+            {
+                yield return null;
+            }
+        }
+
         /// <summary> Compare the data in the two object arrays.</summary>
         /// <param name="data">is the data to Assert.AreEqualExactOrder against
         /// </param>
@@ -111,25 +123,16 @@ namespace net.esper.support.util
         public static void AreEqualExactOrder(IEnumerator<EventBean> values, EventBean[] expectedValues)
         {
             IList<EventBean> eventBeanList = expectedValues;
+            IEnumerator<Object> eventBeanEnum =
+                eventBeanList != null
+                    ? WidenEnumerator(eventBeanList.GetEnumerator())
+                    : NullEnumerator();
 
             AreEqualExactOrder(
                 WidenEnumerator(values),
-                WidenEnumerator(eventBeanList.GetEnumerator()));
+                eventBeanEnum ) ;
         }
       
-        /// <summary>
-        /// Checks two enumerations to determin if they the equal in value
-        /// and exact order.
-        /// </summary>
-        /// <param name="values">The values.</param>
-        /// <param name="expected">The expected.</param>
-        //public static void AreEqualExactOrder<T>(IEnumerable<Object> values, IEnumerable<T> expected)
-        //{
-        //    AreEqualExactOrder(
-        //        values.GetEnumerator(),
-        //        WidenEnumerator(expected.GetEnumerator()));
-        //}
-
         /// <summary>
         /// Checks two enumerations to determin if they the equal in value
         /// and exact order.
@@ -206,7 +209,7 @@ namespace net.esper.support.util
             list2.Sort();
 
             Assert.AreEqual( list1.Count, list2.Count, "length mismatch");
-            Assert.AreEqual( list1, list2 );
+            AreEqualExactOrder(list1, list2);
         }
 
 	    public static void AreEqualAnyOrder<T>(T[] expected, T[] result)

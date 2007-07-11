@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
-
 using net.esper.core;
+using net.esper.compat;
 using net.esper.pattern;
 using net.esper.schedule;
 
@@ -45,7 +43,7 @@ namespace net.esper.pattern.guard
         {
             if (isTimerActive == true)
             {
-                throw new SystemException("Timer already active");
+                throw new IllegalStateException("Timer already active");
             }
 
             // Start the stopwatch timer

@@ -34,7 +34,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestViewPush()
+	    public void testViewPush()
 	    {
 	        // Set up a feed for the view under test - it will have a depth of 3 trades
 	        SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
@@ -81,7 +81,7 @@ namespace net.esper.view.std
 	    }
 
 	    [Test]
-	    public void TestCopyView()
+	    public void testCopyView()
 	    {
 	        SupportBeanClassView parent = new SupportBeanClassView(typeof(SupportMarketDataBean));
 	        myView.Parent = parent;

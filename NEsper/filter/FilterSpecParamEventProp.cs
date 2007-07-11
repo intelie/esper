@@ -1,5 +1,6 @@
 using System;
 
+using net.esper.compat;
 using net.esper.events;
 using net.esper.pattern;
 using net.esper.util;
@@ -90,7 +91,7 @@ namespace net.esper.filter
             EventBean _event = matchedEvents.GetMatchingEvent(resultEventAsName);
             if (_event == null)
             {
-                throw new SystemException("Event named '" + "'" + resultEventAsName + "' not found in event pattern result set");
+                throw new IllegalStateException("Event named '" + "'" + resultEventAsName + "' not found in event pattern result set");
             }
 
             Object value = _event[resultEventProperty];

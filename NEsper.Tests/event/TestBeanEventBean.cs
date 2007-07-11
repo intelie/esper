@@ -30,7 +30,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGet()
+	    public void testGet()
 	    {
 	        EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 	        BeanEventBean _eventBean = new BeanEventBean(testEvent, eventType, 0);
@@ -68,7 +68,7 @@ namespace net.esper.events
 	    }
 
 	    [Test]
-	    public void TestGetComplexProperty()
+	    public void testGetComplexProperty()
 	    {
 	        SupportBeanCombinedProps _event = SupportBeanCombinedProps.MakeDefaultBean();
 	        EventBean _eventBean = SupportEventBeanFactory.CreateObject(_event);

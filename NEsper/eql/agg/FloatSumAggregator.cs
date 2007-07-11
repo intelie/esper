@@ -29,7 +29,7 @@ namespace net.esper.eql.agg
 	            return;
 	        }
 	        numDataPoints++;
-	        sum += (float) item;
+            sum += Convert.ToSingle(item);
 	    }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace net.esper.eql.agg
                 return;
             }
             numDataPoints--;
-            sum -= (float)item;
+            sum -= Convert.ToSingle(item);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace net.esper.eql.agg
         /// <returns>type of values held</returns>
         public Type ValueType
         {
-            get { return typeof(float); }
+            get { return typeof(float?); }
         }
 
         /// <summary>

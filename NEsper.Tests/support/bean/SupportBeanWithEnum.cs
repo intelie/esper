@@ -5,7 +5,7 @@ namespace net.esper.support.bean
 	
 	public class SupportBeanWithEnum
 	{
-		virtual public String Str
+		virtual public String String
 		{
             get { return _stringValue; }
 		}
@@ -14,16 +14,6 @@ namespace net.esper.support.bean
 		{
             get { return _supportEnum; }
 		}
-
-        virtual public String str
-        {
-            get { return _stringValue; }
-        }
-
-        virtual public SupportEnum supportEnum
-        {
-            get { return _supportEnum; }
-        }
 
 		private String _stringValue;
 		private SupportEnum _supportEnum;

@@ -16,7 +16,7 @@ namespace net.esper.filter
 	public class TestFilterSpecParamRange
 	{
 	    [Test]
-	    public void TestConstruct()
+	    public void testConstruct()
 	    {
 	        DoubleRange range = new DoubleRange(3d,3d);
 
@@ -34,7 +34,7 @@ namespace net.esper.filter
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        FilterSpecParam c1 = MakeParam("a", FilterOperator.RANGE_CLOSED, new DoubleRange(5d, 6d));
 	        FilterSpecParam c2 = MakeParam("b", FilterOperator.RANGE_CLOSED, new DoubleRange(5d, 6d));

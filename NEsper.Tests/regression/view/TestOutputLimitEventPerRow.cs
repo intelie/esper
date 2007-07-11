@@ -31,7 +31,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testNoJoinLast()
+        public void testNoJoinLast()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String viewExpr =
@@ -77,7 +77,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testNoOutputClauseView()
+        public void testNoOutputClauseView()
         {
             String viewExpr =
                 "select symbol, volume, sum(price) as mySum " +
@@ -92,7 +92,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testNoJoinAll()
+        public void testNoJoinAll()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String viewExpr =
@@ -109,7 +109,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testJoinAll()
+        public void testJoinAll()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String viewExpr =
@@ -118,7 +118,7 @@ namespace net.esper.regression.view
                 typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
                 typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " +
                 "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                "  and one.str = two.symbol " +
+                "  and one.string = two.symbol " +
                 "group by symbol " +
                 "output all every 2 events";
 
@@ -132,7 +132,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testJoinLast()
+        public void testJoinLast()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String viewExpr =
@@ -141,7 +141,7 @@ namespace net.esper.regression.view
                 typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
                 typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " +
                 "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                "  and one.str = two.symbol " +
+                "  and one.string = two.symbol " +
                 "group by symbol " +
                 "output last every 2 events";
 
@@ -155,7 +155,7 @@ namespace net.esper.regression.view
         }
 
         [Test]
-        public virtual void testNoOutputClauseJoin()
+        public void testNoOutputClauseJoin()
         {
             // Every event generates a new row, this time we sum the price by symbol and output volume
             String viewExpr =
@@ -164,7 +164,7 @@ namespace net.esper.regression.view
                 typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
                 typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " +
                 "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                "  and one.str = two.symbol " +
+                "  and one.string = two.symbol " +
                 "group by symbol " +
                 "output last every 2 events";
 

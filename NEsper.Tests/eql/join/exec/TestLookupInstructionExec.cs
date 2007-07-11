@@ -32,7 +32,7 @@ namespace net.esper.eql.join.exec
         }
 
         [Test]
-        public virtual void testProcessAllResults()
+        public void testProcessAllResults()
         {
             bool result = exec.Process(rep);
 
@@ -44,7 +44,7 @@ namespace net.esper.eql.join.exec
         }
 
         [Test]
-        public virtual void testProcessNoRequiredResults()
+        public void testProcessNoRequiredResults()
         {
             lookupStrategies[1] = new SupportTableLookupStrategy(0);
 
@@ -55,7 +55,7 @@ namespace net.esper.eql.join.exec
         }
 
         [Test]
-        public virtual void testProcessPartialOptionalResults()
+        public void testProcessPartialOptionalResults()
         {
             lookupStrategies[3] = new SupportTableLookupStrategy(0);
 

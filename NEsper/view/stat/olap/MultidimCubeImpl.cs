@@ -306,7 +306,7 @@ namespace net.esper.view.stat.olap
 
 			if ( !allMembersFound )
 			{
-				throw new SystemException( "Internal error - member for dimension could not be added" );
+				throw new IllegalStateException( "Internal error - member for dimension could not be added" );
 			}
 
 			// Determine ordinal

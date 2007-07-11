@@ -11,7 +11,7 @@ namespace net.esper.emit
     public class TestEventEmitServiceImpl
     {
         [Test]
-        public virtual void testEmitFlow()
+        public void testEmitFlow()
         {
             EmitServiceImpl service = new MyEmitServiceImpl();
 

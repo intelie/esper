@@ -30,7 +30,7 @@ namespace net.esper.regression.eql
         }
 
         [Test]
-        public virtual void testStartStop()
+        public void testStartStop()
         {
             for (int i = 0; i < 100; i++)
             {

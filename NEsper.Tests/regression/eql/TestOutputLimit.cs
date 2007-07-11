@@ -88,7 +88,7 @@ namespace net.esper.regression.eql
 				"select * from " +
 				eventName1 + ".win:length(5) as event1," +
 				eventName2 + ".win:length(5) as event2" +
-				" where event1.str = event2.id";
+				" where event1.string = event2.id";
 			String outputStmt1 = joinStatement + " output every 1 events";
 			String outputStmt3 = joinStatement + " output every 3 events";
 

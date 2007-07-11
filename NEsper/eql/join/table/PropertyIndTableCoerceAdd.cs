@@ -17,13 +17,16 @@ using org.apache.commons.logging;
 namespace net.esper.eql.join.table
 {
 	/// <summary>
-	/// Index that organizes events by the event property values into hash buckets. Based on a HashMap
-	/// with {@link net.esper.collection.MultiKeyUntyped} keys that store the property values.
-	/// <p>
+	/// Index that organizes events by the event property values into hash buckets. Based on a
+	/// HashDictionary with <seealso cref="MultiKeyUntyped"/> keys that store the property values.
+	/// <para>
 	/// Performs coercion of the index keys before storing the keys.
-	/// <p>
-	/// Takes a list of property names as parameter. Doesn't care which event type the events have as long as the properties
-	/// exist. If the same event is added twice, the class throws an exception on add.
+	/// </para>
+	/// <para>
+	/// Takes a list of property names as parameter. Doesn't care which event type the events have as
+	/// long as the properties exist. If the same event is added twice, the class throws an exception on
+	/// add.
+	/// </para>
 	/// </summary>
 	public class PropertyIndTableCoerceAdd : PropertyIndexedEventTable
 	{

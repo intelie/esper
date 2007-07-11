@@ -31,14 +31,14 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestGetType()
+	    public void testGetType()
 	    {
-	        Assert.AreEqual(typeof(Boolean), inNodeNormal.GetType());
-	        Assert.AreEqual(typeof(Boolean), inNodeNotIn.GetType());
+	        Assert.AreEqual(typeof(bool?), inNodeNormal.ReturnType);
+	        Assert.AreEqual(typeof(bool?), inNodeNotIn.ReturnType);
 	    }
 
 	    [Test]
-	    public void TestValidate()
+	    public void testValidate()
 	    {
 	        inNodeNormal = SupportExprNodeFactory.MakeInSetNode(true);
 	        inNodeNormal.Validate(null, null, null);
@@ -59,7 +59,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEvaluate()
+	    public void testEvaluate()
 	    {
 	        Assert.IsFalse((Boolean) inNodeNormal.Evaluate(MakeEvent(0), false));
 	        Assert.IsTrue((Boolean) inNodeNormal.Evaluate(MakeEvent(1), false));
@@ -73,7 +73,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestEquals()
+	    public void testEquals()
 	    {
 	        ExprInNode otherInNodeNormal = SupportExprNodeFactory.MakeInSetNode(false);
 	        ExprInNode otherInNodeNotIn = SupportExprNodeFactory.MakeInSetNode(true);
@@ -88,7 +88,7 @@ namespace net.esper.eql.expression
 	    }
 
 	    [Test]
-	    public void TestToExpressionString()
+	    public void testToExpressionString()
 	    {
 	        Assert.AreEqual("s0.intPrimitive in (1,2)", inNodeNormal.ExpressionString);
 	        Assert.AreEqual("s0.intPrimitive not in (1,2)", inNodeNotIn.ExpressionString);

@@ -42,7 +42,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerformanceWhereClauseCoercion()
+	    public void testPerformanceWhereClauseCoercion()
 	    {
 	        String stmtText = "select intPrimitive from MyEvent(string='A') as s0 where intPrimitive in (" +
 	                            "select longBoxed from MyEvent(string='B').win:length(10000) where s0.intPrimitive = longBoxed)";
@@ -76,7 +76,7 @@ namespace net.esper.regression.eql
 	    }
 
 	    [Test]
-	    public void TestPerformanceWhereClause()
+	    public void testPerformanceWhereClause()
 	    {
 	        String stmtText = "select id from S0 as s0 where p00 in (" +
 	                            "select p10 from S1.win:length(10000) where s0.p00 = p10)";
