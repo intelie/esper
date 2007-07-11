@@ -1,20 +1,12 @@
 package net.esper.pattern;
 
-import net.esper.client.ConfigurationException;
-import net.esper.client.ConfigurationPlugInPatternObject;
 import net.esper.collection.Pair;
-import net.esper.eql.spec.ObjectSpec;
-import net.esper.eql.spec.PatternGuardSpec;
-import net.esper.eql.spec.PatternObserverSpec;
-import net.esper.pattern.guard.GuardEnum;
+import net.esper.eql.spec.*;
 import net.esper.pattern.guard.GuardFactory;
-import net.esper.pattern.observer.ObserverEnum;
 import net.esper.pattern.observer.ObserverFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,78 +16,20 @@ public class PatternObjectResolutionServiceImpl implements PatternObjectResoluti
 {
     private static final Log log = LogFactory.getLog(PatternObjectResolutionServiceImpl.class);
 
-    // Map of namespace, name, factory class and boolean (true=guard, false=observer)
-    private final Map<String, Map<String, Pair<Class, TypeEnum>>> nameToFactoryMap;
+    private final PluggableObjectDesc patternObjects;
 
     /**
      * Ctor.
-     * @param configEntries is the pattern plug-in objects configured
-     * @throws ConfigurationException if the configs are invalid
+     * @param patternObjects is the pattern plug-in objects configured
      */
-    public PatternObjectResolutionServiceImpl(List<ConfigurationPlugInPatternObject> configEntries) throws ConfigurationException
+    public PatternObjectResolutionServiceImpl(PluggableObjectDesc patternObjects)
     {
-        nameToFactoryMap = new HashMap<String, Map<String, Pair<Class, TypeEnum>>>();
-
-        if (configEntries == null)
-        {
-            return;
-        }
-
-        for (ConfigurationPlugInPatternObject entry : configEntries)
-        {
-            if (entry.getFactoryClassName() == null)
-            {
-                throw new ConfigurationException("Factory class name has not been supplied for object '" + entry.getName() + "'");
-            }
-            if (entry.getNamespace() == null)
-            {
-                throw new ConfigurationException("Namespace name has not been supplied for object '" + entry.getName() + "'");
-            }
-            if (entry.getName() == null)
-            {
-                throw new ConfigurationException("Name has not been supplied for object in namespace '" + entry.getNamespace() + "'");
-            }
-            if (entry.getPatternObjectType() == null)
-            {
-                throw new ConfigurationException("Pattern object type has not been supplied for object '" + entry.getName() + "'");
-            }
-
-            Class clazz;
-            try
-            {
-                clazz = Class.forName(entry.getFactoryClassName());
-            }
-            catch (ClassNotFoundException ex)
-            {
-                throw new ConfigurationException("Pattern object factory class " + entry.getFactoryClassName() + " could not be loaded");
-            }
-
-            Map<String, Pair<Class, TypeEnum>> namespaceMap = nameToFactoryMap.get(entry.getNamespace());
-            if (namespaceMap == null)
-            {
-                namespaceMap = new HashMap<String, Pair<Class, TypeEnum>>();
-                nameToFactoryMap.put(entry.getNamespace(), namespaceMap);
-            }
-            TypeEnum typeEnum;
-            if (entry.getPatternObjectType() == ConfigurationPlugInPatternObject.PatternObjectType.GUARD)
-            {
-                typeEnum =  TypeEnum.GUARD;
-            }
-            else if (entry.getPatternObjectType() == ConfigurationPlugInPatternObject.PatternObjectType.OBSERVER)
-            {
-                typeEnum =  TypeEnum.OBSERVER;
-            }
-            else
-            {
-                throw new IllegalArgumentException("Pattern object type '" + entry.getPatternObjectType() + "' not known");
-            }
-            namespaceMap.put(entry.getName(), new Pair<Class, TypeEnum>(clazz, typeEnum));
-        }
+        this.patternObjects = patternObjects;
     }
 
     public ObserverFactory create(PatternObserverSpec spec) throws PatternObjectException
     {
-        Object result = createFactory(spec, TypeEnum.OBSERVER);
+        Object result = createFactory(spec, PluggableObjectType.PATTERN_OBSERVER);
         ObserverFactory factory;
         try
         {
@@ -116,7 +50,7 @@ public class PatternObjectResolutionServiceImpl implements PatternObjectResoluti
 
     public GuardFactory create(PatternGuardSpec spec) throws PatternObjectException
     {
-        Object result = createFactory(spec, TypeEnum.GUARD);
+        Object result = createFactory(spec, PluggableObjectType.PATTERN_GUARD);
         GuardFactory factory;
         try
         {
@@ -135,20 +69,20 @@ public class PatternObjectResolutionServiceImpl implements PatternObjectResoluti
         return factory;
     }
 
-    private Object createFactory(ObjectSpec spec, TypeEnum type) throws PatternObjectException
+    private Object createFactory(ObjectSpec spec, PluggableObjectType type) throws PatternObjectException
     {
         if (log.isDebugEnabled())
         {
-            log.debug(".create Creating observer factory, spec=" + spec.toString());
+            log.debug(".create Creating factory, spec=" + spec.toString());
         }
 
+        // Find the factory class for this pattern object
         Class factoryClass = null;
 
-        // Pre-configured objects override build-in
-        Map<String, Pair<Class, TypeEnum>> namespaceMap = nameToFactoryMap.get(spec.getObjectNamespace());
+        Map<String, Pair<Class, PluggableObjectType>> namespaceMap = patternObjects.getPluggables().get(spec.getObjectNamespace());
         if (namespaceMap != null)
         {
-            Pair<Class, TypeEnum> pair = namespaceMap.get(spec.getObjectName());
+            Pair<Class, PluggableObjectType> pair = namespaceMap.get(spec.getObjectName());
             if (pair != null)
             {
                 if (pair.getSecond() == type)
@@ -158,64 +92,37 @@ public class PatternObjectResolutionServiceImpl implements PatternObjectResoluti
                 else
                 {
                     // invalid type: expecting observer, got guard
-                    if (type == TypeEnum.GUARD)
+                    if (type == PluggableObjectType.PATTERN_GUARD)
                     {
-                        throw new PatternObjectException("Pattern observer function '" + spec.getObjectName() + "' cannot be used as a guard");
+                        throw new PatternObjectException("Pattern observer function '" + spec.getObjectName() + "' cannot be used as a pattern guard");
                     }
                     else
                     {
-                        throw new PatternObjectException("Pattern guard function '" + spec.getObjectName() + "' cannot be used as an observer");
+                        throw new PatternObjectException("Pattern guard function '" + spec.getObjectName() + "' cannot be used as a pattern observer");
                     }
                 }
             }
         }
 
-        // if not found in the plugins, try o resolve as a builtin
         if (factoryClass == null)
         {
-            if (type == TypeEnum.GUARD)
+            if (type == PluggableObjectType.PATTERN_GUARD)
             {
-                GuardEnum guardEnum = GuardEnum.forName(spec.getObjectNamespace(), spec.getObjectName());
-
-                if (guardEnum == null)
-                {
-                    if (ObserverEnum.forName(spec.getObjectNamespace(), spec.getObjectName()) != null)
-                    {
-                        String message = "Invalid use for pattern observer named '" + spec.getObjectName() + "'";
-                        throw new PatternObjectException(message);
-                    }
-
-                    String message = "Pattern guard name '" + spec.getObjectName() + "' is not a known pattern object name";
-                    throw new PatternObjectException(message);
-                }
-
-                factoryClass = guardEnum.getClazz();
+                String message = "Pattern guard name '" + spec.getObjectName() + "' is not a known pattern object name";
+                throw new PatternObjectException(message);
             }
-            else if (type == TypeEnum.OBSERVER)
+            else if (type == PluggableObjectType.PATTERN_OBSERVER)
             {
-                ObserverEnum observerEnum = ObserverEnum.forName(spec.getObjectNamespace(), spec.getObjectName());
-
-                if (observerEnum == null)
-                {
-                    if (GuardEnum.forName(spec.getObjectNamespace(), spec.getObjectName()) != null)
-                    {
-                        String message = "Invalid use for pattern guard named '" + spec.getObjectName() + "' outside of where-clause";
-                        throw new PatternObjectException(message);
-                    }
-
-                    String message = "Pattern observer name '" + spec.getObjectName() + "' is not a known pattern object name";
-                    throw new PatternObjectException(message);
-                }
-
-                factoryClass = observerEnum.getClazz();
+                String message = "Pattern observer name '" + spec.getObjectName() + "' is not a known pattern object name";
+                throw new PatternObjectException(message);
             }
             else
             {
-                throw new IllegalStateException("Pattern object type '" + type + "' not known");
+                throw new PatternObjectException("Pattern object type '" + type + "' not known");
             }
         }
 
-        Object result = null;
+        Object result;
         try
         {
             result = factoryClass.newInstance();
@@ -233,12 +140,6 @@ public class PatternObjectResolutionServiceImpl implements PatternObjectResoluti
             throw new PatternObjectException(message, e);
         }
 
-        return result;
-    }
-
-    private enum TypeEnum
-    {
-        GUARD,
-        OBSERVER
+        return result;        
     }
 }

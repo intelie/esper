@@ -14,6 +14,7 @@ import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineSettingsService;
 import net.esper.eql.db.DatabaseConfigService;
+import net.esper.eql.spec.PluggableObjectDesc;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
@@ -22,12 +23,10 @@ import net.esper.schedule.SchedulingService;
 import net.esper.timer.TimerService;
 import net.esper.timer.TimerServiceProvider;
 import net.esper.util.ManagedReadWriteLock;
-import net.esper.view.ViewResolutionService;
 import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
 import net.esper.view.stream.StreamFactoryService;
 import net.esper.view.stream.StreamFactoryServiceProvider;
-import net.esper.pattern.PatternObjectResolutionService;
 
 /**
  * Convenience class to hold implementations for all services.
@@ -47,13 +46,13 @@ public final class EPServicesContext
     private EngineImportService engineImportService;
     private EngineSettingsService engineSettingsService;
     private DatabaseConfigService databaseConfigService;
-    private ViewResolutionService viewResolutionService;
+    private PluggableObjectDesc plugInViews;
     private StatementLockFactory statementLockFactory;
     private ManagedReadWriteLock eventProcessingRWLock;
     private ExtensionServicesContext extensionServicesContext;
     private EngineEnvContext engineEnvContext;
     private StatementContextFactory statementContextFactory;
-    private PatternObjectResolutionService patternObjectResolutionService;
+    private PluggableObjectDesc plugInPatternObjects;
     private OutputConditionFactory outputConditionFactory;
 
     // Supplied after construction to avoid circular dependency
@@ -66,7 +65,7 @@ public final class EPServicesContext
      * @param schedulingService service to get time and schedule callbacks
      * @param eventAdapterService service to resolve event types
      * @param databaseConfigService service to resolve a database name to database connection factory and configs
-     * @param viewResolutionService resolves view namespace and name to view factory class
+     * @param plugInViews resolves view namespace and name to view factory class
      * @param statementLockFactory creates statement-level locks
      * @param eventProcessingRWLock is the engine lock for statement management
      * @param extensionServicesContext marker interface allows adding additional services
@@ -74,7 +73,7 @@ public final class EPServicesContext
      * @param engineSettingsService provides engine settings
      * @param statementContextFactory is the factory to use to create statement context objects
      * @param engineEnvContext is engine environment/directory information for use with adapters and external env
-     * @param patternObjectResolutionService resolves plug-in pattern objects 
+     * @param plugInPatternObjects resolves plug-in pattern objects
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -82,13 +81,13 @@ public final class EPServicesContext
                              EngineImportService engineImportService,
                              EngineSettingsService engineSettingsService,
                              DatabaseConfigService databaseConfigService,
-                             ViewResolutionService viewResolutionService,
+                             PluggableObjectDesc plugInViews,
                              StatementLockFactory statementLockFactory,
                              ManagedReadWriteLock eventProcessingRWLock,
                              ExtensionServicesContext extensionServicesContext,
                              EngineEnvContext engineEnvContext,
                              StatementContextFactory statementContextFactory,
-                             PatternObjectResolutionService patternObjectResolutionService,
+                             PluggableObjectDesc plugInPatternObjects,
                              OutputConditionFactory outputConditionFactory)
     {
         this.engineURI = engineURI;
@@ -103,13 +102,13 @@ public final class EPServicesContext
         this.dispatchService = DispatchServiceProvider.newService();
         this.viewService = ViewServiceProvider.newService();
         this.streamFactoryService = StreamFactoryServiceProvider.newService(eventAdapterService);
-        this.viewResolutionService = viewResolutionService;
+        this.plugInViews = plugInViews;
         this.statementLockFactory = statementLockFactory;
         this.eventProcessingRWLock = eventProcessingRWLock;
         this.extensionServicesContext = extensionServicesContext;
         this.engineEnvContext = engineEnvContext;
         this.statementContextFactory = statementContextFactory;
-        this.patternObjectResolutionService = patternObjectResolutionService;
+        this.plugInPatternObjects = plugInPatternObjects;
         this.outputConditionFactory = outputConditionFactory;
     }
 
@@ -231,12 +230,21 @@ public final class EPServicesContext
     }
 
     /**
-     * Service for resolving view namespace and name.
-     * @return view resolution svc
+     * Information to resolve plug-in view namespace and name.
+     * @return plug-in view information
      */
-    public ViewResolutionService getViewResolutionService()
+    public PluggableObjectDesc getPlugInViews()
     {
-        return viewResolutionService;
+        return plugInViews;
+    }
+
+    /**
+     * Information to resolve plug-in pattern object namespace and name.
+     * @return plug-in pattern object information
+     */
+    public PluggableObjectDesc getPlugInPatternObjects()
+    {
+        return plugInPatternObjects;
     }
 
     /**
@@ -314,13 +322,13 @@ public final class EPServicesContext
         this.dispatchService = null;
         this.viewService = null;
         this.streamFactoryService = null;
-        this.viewResolutionService = null;
+        this.plugInViews = null;
         this.statementLockFactory = null;
         this.eventProcessingRWLock = null;
         this.extensionServicesContext = null;
         this.engineEnvContext = null;
         this.statementContextFactory = null;
-        this.patternObjectResolutionService = null;
+        this.plugInPatternObjects = null;
     }
 
     /**
@@ -348,15 +356,6 @@ public final class EPServicesContext
     public String getEngineInstanceId()
     {
         return engineInstanceId;
-    }
-
-    /**
-     * Returns the pattern object resolver.
-     * @return resolver for plug-in pattern objects.
-     */
-    public PatternObjectResolutionService getPatternObjectResolutionService()
-    {
-        return patternObjectResolutionService;
     }
 
     /**

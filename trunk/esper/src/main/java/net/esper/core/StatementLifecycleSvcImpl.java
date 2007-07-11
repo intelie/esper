@@ -16,6 +16,7 @@ import net.esper.view.Viewable;
 import net.esper.event.EventType;
 import net.esper.pattern.EvalFilterNode;
 import net.esper.pattern.EvalNode;
+import net.esper.pattern.EvalNodeAnalysisResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -194,7 +195,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
             else if (streamSpec instanceof PatternStreamSpecCompiled)
             {
-                List<EvalFilterNode> filterNodes = EvalNode.recusiveFilterChildNodes(((PatternStreamSpecCompiled)streamSpec).getEvalNode());
+                EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(((PatternStreamSpecCompiled)streamSpec).getEvalNode());
+                List<EvalFilterNode> filterNodes = evalNodeAnalysisResult.getFilterNodes();
                 for (EvalFilterNode filterNode : filterNodes)
                 {
                     filteredTypes.add(filterNode.getFilterSpec().getEventType());
@@ -638,7 +640,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             compiledStreams = new ArrayList<StreamSpecCompiled>();
             for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
             {
-                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService());
+                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService());
                 compiledStreams.add(compiled);
             }
         }

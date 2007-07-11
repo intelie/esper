@@ -8,6 +8,7 @@
 package net.esper.pattern;
 
 import net.esper.pattern.guard.GuardFactory;
+import net.esper.eql.spec.PatternGuardSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -16,13 +17,24 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class EvalGuardNode extends EvalNode
 {
+    private PatternGuardSpec patternGuardSpec;
     private GuardFactory guardFactory;
 
     /**
      * Constructor.
-     * @param guardFactory - fcatory for guard construction
+     * @param patternGuardSpec - factory for guard construction
      */
-    public EvalGuardNode(GuardFactory guardFactory)
+    public EvalGuardNode(PatternGuardSpec patternGuardSpec)
+    {
+        this.patternGuardSpec = patternGuardSpec;
+    }
+
+    public PatternGuardSpec getPatternGuardSpec()
+    {
+        return patternGuardSpec;
+    }
+
+    public void setGuardFactory(GuardFactory guardFactory)
     {
         this.guardFactory = guardFactory;
     }

@@ -1,12 +1,11 @@
 package net.esper.view;
 
-import net.esper.client.ConfigurationException;
-import net.esper.client.ConfigurationPlugInView;
+import net.esper.collection.Pair;
+import net.esper.eql.spec.PluggableObjectDesc;
+import net.esper.eql.spec.PluggableObjectType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,55 +14,12 @@ import java.util.Map;
 public class ViewResolutionServiceImpl implements ViewResolutionService
 {
     private static final Log log = LogFactory.getLog(ViewResolutionServiceImpl.class);
-    private final Map<String, Map<String, Class>> nameToFactoryMap;
 
-    /**
-     * Ctor.
-     * @param configurationPlugInViews is the configured plug-in views
-     * @throws ConfigurationException when plug-in views cannot be solved
-     */
-    public ViewResolutionServiceImpl(List<ConfigurationPlugInView> configurationPlugInViews) throws ConfigurationException
+    private final PluggableObjectDesc viewObjects;
+
+    public ViewResolutionServiceImpl(PluggableObjectDesc viewObjects)
     {
-        nameToFactoryMap = new HashMap<String, Map<String, Class>>();
-
-        if (configurationPlugInViews == null)
-        {
-            return;
-        }
-
-        for (ConfigurationPlugInView entry : configurationPlugInViews)
-        {
-            if (entry.getFactoryClassName() == null)
-            {
-                throw new ConfigurationException("Factory class name has not been supplied for object '" + entry.getName() + "'");
-            }
-            if (entry.getNamespace() == null)
-            {
-                throw new ConfigurationException("Namespace name has not been supplied for object '" + entry.getName() + "'");
-            }
-            if (entry.getName() == null)
-            {
-                throw new ConfigurationException("Name has not been supplied for object in namespace '" + entry.getNamespace() + "'");
-            }
-
-            Class clazz;
-            try
-            {
-                clazz = Class.forName(entry.getFactoryClassName());
-            }
-            catch (ClassNotFoundException ex)
-            {
-                throw new ConfigurationException("View factory class " + entry.getFactoryClassName() + " could not be loaded");
-            }
-
-            Map<String, Class> namespaceMap = nameToFactoryMap.get(entry.getNamespace());
-            if (namespaceMap == null)
-            {
-                namespaceMap = new HashMap<String, Class>();
-                nameToFactoryMap.put(entry.getNamespace(), namespaceMap);
-            }
-            namespaceMap.put(entry.getName(), clazz);
-        }
+        this.viewObjects = viewObjects;
     }
 
     public ViewFactory create(String nameSpace, String name) throws ViewProcessingException
@@ -75,29 +31,30 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
 
         Class viewFactoryClass = null;
 
-        // Pre-configured views override build-in views
-        Map<String, Class> namespaceMap = nameToFactoryMap.get(nameSpace);
+        Map<String, Pair<Class, PluggableObjectType>> namespaceMap = viewObjects.getPluggables().get(nameSpace);
         if (namespaceMap != null)
         {
-            viewFactoryClass = namespaceMap.get(name);
+            Pair<Class, PluggableObjectType> pair = namespaceMap.get(name);
+            if (pair != null)
+            {
+                if (pair.getSecond() == PluggableObjectType.VIEW)
+                {
+                    viewFactoryClass = pair.getFirst();
+                }
+                else
+                {
+                    throw new ViewProcessingException("Invalid object type '" + pair.getSecond() + "' for view '" + name + "'");
+                }
+            }
         }
 
-        // if not found in the plugin views, try o resolve as a builtin view
         if (viewFactoryClass == null)
         {
-            // Determine view class
-            ViewEnum viewEnum = ViewEnum.forName(nameSpace, name);
-
-            if (viewEnum == null)
-            {
-                String message = "View name '" + nameSpace + ":" + name + "' is not a known view name";
-                throw new ViewProcessingException(message);
-            }
-
-            viewFactoryClass = viewEnum.getFactoryClass();
+            String message = "View name '" + nameSpace + ":" + name + "' is not a known view name";
+            throw new ViewProcessingException(message);
         }
 
-        ViewFactory viewFactory = null;
+        ViewFactory viewFactory;
         try
         {
             viewFactory = (ViewFactory) viewFactoryClass.newInstance();

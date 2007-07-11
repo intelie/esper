@@ -7,12 +7,14 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
+import net.esper.util.MetaDefItem;
+
 import java.util.Set;
 
 /**
  * Interface to generate a set of integers from parameters that include ranges, lists and frequencies.
  */
-public interface NumberSetParameter
+public interface NumberSetParameter extends MetaDefItem
 {
     /**
      * Returns true if all values between and including min and max are supplied by the parameter.

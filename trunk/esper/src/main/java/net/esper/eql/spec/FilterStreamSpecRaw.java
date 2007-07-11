@@ -18,6 +18,7 @@ import net.esper.filter.FilterSpecCompiled;
 import net.esper.filter.FilterSpecCompiler;
 import net.esper.eql.spec.ViewSpec;
 import net.esper.util.MetaDefItem;
+import net.esper.pattern.PatternObjectResolutionService;
 
 import java.util.List;
 
@@ -58,7 +59,8 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
     }
 
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
-                                      MethodResolutionService methodResolutionService)
+                                      MethodResolutionService methodResolutionService,
+                                      PatternObjectResolutionService patternObjectResolutionService)
             throws ExprValidationException
     {
         // Determine the event type

@@ -17,10 +17,6 @@ import net.esper.eql.expression.*;
 import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.spec.*;
 import net.esper.pattern.*;
-import net.esper.pattern.guard.GuardFactory;
-import net.esper.pattern.guard.GuardParameterException;
-import net.esper.pattern.observer.ObserverFactory;
-import net.esper.pattern.observer.ObserverParameterException;
 import net.esper.type.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,18 +46,14 @@ public class EQLTreeWalker extends EQLBaseWalker
     private final Stack<StatementSpecRaw> statementSpecStack;
 
     private final EngineImportService engineImportService;
-    private final PatternObjectResolutionService patternObjectResolutionService;
 
     /**
      * Ctor.
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
-     * @param  patternObjectResolutionService resolves plug-in pattern object names (guards and observers)
      */
-    public EQLTreeWalker(EngineImportService engineImportService,
-                         PatternObjectResolutionService patternObjectResolutionService)
+    public EQLTreeWalker(EngineImportService engineImportService)
     {
         this.engineImportService = engineImportService;
-        this.patternObjectResolutionService = patternObjectResolutionService;
         statementSpec = new StatementSpecRaw();
         statementSpecStack = new Stack<StatementSpecRaw>();
         astExprNodeMapStack = new Stack<Map<AST, ExprNode>>();
@@ -1179,24 +1171,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
 
         PatternGuardSpec guardSpec = new PatternGuardSpec(objectNamespace, objectName, objectParams);
-
-        // try out the specification at compile time since the node may not get used till later
-        GuardFactory factory;
-        try
-        {
-            factory = patternObjectResolutionService.create(guardSpec);
-            factory.setGuardParameters(objectParams);
-        }
-        catch (PatternObjectException e)
-        {
-            throw new ASTWalkException(e.getMessage(), e);
-        }
-        catch (GuardParameterException e)
-        {
-            throw new ASTWalkException(e.getMessage(), e);
-        }
-
-        EvalGuardNode guardNode = new EvalGuardNode(factory);
+        EvalGuardNode guardNode = new EvalGuardNode(guardSpec);
         astPatternNodeMap.put(node, guardNode);
     }
 
@@ -1239,24 +1214,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
 
         PatternObserverSpec observerSpec = new PatternObserverSpec(objectNamespace, objectName, objectParams);
-
-        // try out the specification at compile time since the node may not get used till later
-        ObserverFactory factory;
-        try
-        {
-            factory = patternObjectResolutionService.create(observerSpec);
-            factory.setObserverParameters(objectParams);
-        }
-        catch (PatternObjectException e)
-        {
-            throw new ASTWalkException(e.getMessage(), e);
-        }
-        catch (ObserverParameterException e)
-        {
-            throw new ASTWalkException(e.getMessage(), e);
-        }
-
-        EvalObserverNode observerNode = new EvalObserverNode(factory);
+        EvalObserverNode observerNode = new EvalObserverNode(observerSpec);
         astPatternNodeMap.put(node, observerNode);
     }
 

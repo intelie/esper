@@ -6,6 +6,7 @@ import net.esper.client.ConfigurationPlugInView;
 import net.esper.support.view.SupportViewFactoryOne;
 import net.esper.support.view.SupportViewFactoryTwo;
 import net.esper.view.stat.UnivariateStatisticsViewFactory;
+import net.esper.eql.spec.PluggableObjectDesc;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,7 +19,7 @@ public class TestViewResolutionService extends TestCase
 
     public void setUp()
     {
-        service = new ViewResolutionServiceImpl(null);
+        service = new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews());
     }
 
     public void testInitializeFromConfig() throws Exception
@@ -89,8 +90,10 @@ public class TestViewResolutionService extends TestCase
             config.setFactoryClassName(classNames[i]);
             configs.add(config);
         }
-        
-        return new ViewResolutionServiceImpl(configs);
+
+        PluggableObjectDesc desc = new PluggableObjectDesc();
+        desc.addViews(configs);
+        return new ViewResolutionServiceImpl(desc);
     }
 
     private static final Log log = LogFactory.getLog(TestViewResolutionService.class);

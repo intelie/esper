@@ -20,4 +20,9 @@ public class ExprValidationException extends Exception
     {
         super(message);
     }
+
+    public ExprValidationException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }

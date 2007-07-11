@@ -6,6 +6,7 @@ import net.esper.eql.view.OutputConditionFactory;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
 import net.esper.pattern.PatternContextFactory;
+import net.esper.pattern.PatternObjectResolutionService;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 import net.esper.view.StatementStopService;
@@ -26,6 +27,7 @@ public final class StatementContext
     private final EventAdapterService eventAdapterService;
     private final EPStatementHandle epStatementHandle;
     private final ViewResolutionService viewResolutionService;
+    private final PatternObjectResolutionService patternResolutionService;
     private final ExtensionServicesContext extensionServicesContext;
     private final StatementStopService statementStopService;
     private final MethodResolutionService methodResolutionService;
@@ -62,6 +64,7 @@ public final class StatementContext
                               EventAdapterService eventAdapterService,
                               EPStatementHandle epStatementHandle,
                               ViewResolutionService viewResultionService,
+                              PatternObjectResolutionService patternResolutionService,
                               ExtensionServicesContext extensionServicesContext,
                               StatementStopService statementStopService,
                               MethodResolutionService methodResolutionService,
@@ -80,6 +83,7 @@ public final class StatementContext
         this.scheduleBucket = scheduleBucket;
         this.epStatementHandle = epStatementHandle;
         this.viewResolutionService = viewResultionService;
+        this.patternResolutionService = patternResolutionService;
         this.extensionServicesContext = extensionServicesContext;
         this.statementStopService = statementStopService;
         this.methodResolutionService = methodResolutionService;
@@ -232,6 +236,11 @@ public final class StatementContext
     public OutputConditionFactory getOutputConditionFactory()
     {
         return outputConditionFactory;
+    }
+
+    public PatternObjectResolutionService getPatternResolutionService()
+    {
+        return patternResolutionService;
     }
 
     public String toString()

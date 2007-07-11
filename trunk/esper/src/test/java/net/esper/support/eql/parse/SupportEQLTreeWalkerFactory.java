@@ -9,7 +9,7 @@ public class SupportEQLTreeWalkerFactory
 {
     public static EQLTreeWalker makeWalker(EngineImportService engineImportService)
     {
-        return new EQLTreeWalker(engineImportService, new PatternObjectResolutionServiceImpl(null));
+        return new EQLTreeWalker(engineImportService);
     }
 
     public static EQLTreeWalker makeWalker()

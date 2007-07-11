@@ -3,7 +3,6 @@ package net.esper.eql.agg;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventBean;
 import net.esper.eql.expression.ExprEvaluator;
-import net.esper.eql.agg.AggregationMethod;
 import net.esper.eql.core.MethodResolutionService;
 
 import java.util.Map;

@@ -1,22 +1,21 @@
 package net.esper.eql.core;
 
-import net.esper.support.eql.SupportSelectExprFactory;
-import net.esper.support.eql.SupportStreamTypeSvc3Stream;
-import net.esper.support.eql.SupportStreamTypeSvc1Stream;
-import net.esper.support.eql.SupportExprNodeFactory;
-import net.esper.event.EventAdapterService;
-import net.esper.event.EventAdapterServiceImpl;
-import net.esper.collection.Pair;
-import net.esper.eql.spec.SelectClauseSpec;
-import net.esper.eql.spec.SelectExprElementRawSpec;
+import junit.framework.TestCase;
+import net.esper.eql.expression.ExprIdentNode;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.expression.ExprIdentNode;
+import net.esper.eql.spec.OrderByItem;
+import net.esper.eql.spec.SelectClauseSpec;
+import net.esper.eql.spec.SelectExprElementRawSpec;
+import net.esper.event.EventAdapterService;
+import net.esper.event.EventAdapterServiceImpl;
+import net.esper.support.eql.SupportExprNodeFactory;
+import net.esper.support.eql.SupportSelectExprFactory;
+import net.esper.support.eql.SupportStreamTypeSvc1Stream;
+import net.esper.support.eql.SupportStreamTypeSvc3Stream;
 
-import junit.framework.TestCase;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 public class TestResultSetProcessorFactory extends TestCase
 {
@@ -24,7 +23,7 @@ public class TestResultSetProcessorFactory extends TestCase
     private StreamTypeService typeService3Stream;
     private List<ExprNode> groupByList;
     private EventAdapterService eventAdapterService;
-    private List<Pair<ExprNode, Boolean>> orderByList;
+    private List<OrderByItem> orderByList;
     private MethodResolutionService methodResolutionService;
 
     public void setUp()
@@ -33,7 +32,7 @@ public class TestResultSetProcessorFactory extends TestCase
         typeService3Stream = new SupportStreamTypeSvc3Stream();
         groupByList = new LinkedList<ExprNode>();
         eventAdapterService = new EventAdapterServiceImpl();
-        orderByList = new LinkedList<Pair<ExprNode, Boolean>>();
+        orderByList = new LinkedList<OrderByItem>();
         methodResolutionService = new MethodResolutionServiceImpl(new EngineImportServiceImpl());
     }
 

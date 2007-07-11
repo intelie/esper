@@ -16,12 +16,13 @@ import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
 import net.esper.filter.FilterSpecCompiled;
 import net.esper.filter.FilterSpecCompiler;
-import net.esper.pattern.EvalFilterNode;
-import net.esper.pattern.EvalNode;
+import net.esper.pattern.*;
+import net.esper.pattern.observer.ObserverFactory;
+import net.esper.pattern.observer.ObserverParameterException;
+import net.esper.pattern.guard.GuardFactory;
+import net.esper.pattern.guard.GuardParameterException;
 import net.esper.util.UuidGenerator;
-import net.esper.eql.spec.ViewSpec;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -54,15 +55,45 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
     }
 
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
-                                      MethodResolutionService methodResolutionService)
+                                      MethodResolutionService methodResolutionService,
+                                      PatternObjectResolutionService patternObjectResolutionService)
             throws ExprValidationException
     {
-        // Determine al the filter nodes used in the pattern
-        List<EvalFilterNode> filterNodes = EvalNode.recusiveFilterChildNodes(evalNode);
+        // Determine all the filter nodes used in the pattern
+        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(evalNode);
+
+        // Resolve guard and observers factories 
+        try
+        {
+            for (EvalGuardNode guardNode : evalNodeAnalysisResult.getGuardNodes())
+            {
+                GuardFactory guardFactory = patternObjectResolutionService.create(guardNode.getPatternGuardSpec());
+                guardFactory.setGuardParameters(guardNode.getPatternGuardSpec().getObjectParameters());
+                guardNode.setGuardFactory(guardFactory);
+            }
+            for (EvalObserverNode observerNode : evalNodeAnalysisResult.getObserverNodes())
+            {
+                ObserverFactory observerFactory = patternObjectResolutionService.create(observerNode.getPatternObserverSpec());
+                observerFactory.setObserverParameters(observerNode.getPatternObserverSpec().getObjectParameters());
+                observerNode.setObserverFactory(observerFactory);
+            }
+        }
+        catch (ObserverParameterException e)
+        {
+            throw new ExprValidationException("Invalid parameter for pattern observer: " + e.getMessage(), e); 
+        }
+        catch (GuardParameterException e)
+        {
+            throw new ExprValidationException("Invalid parameter for pattern guard: " + e.getMessage(), e);
+        }
+        catch (PatternObjectException e)
+        {
+            throw new ExprValidationException("Failed to resolve pattern object: " + e.getMessage(), e); 
+        }
 
         // Resolve all event types; some filters are tagged and we keep the order in which they are specified
         LinkedHashMap<String, EventType> taggedEventTypes = new LinkedHashMap<String, EventType>();
-        for (EvalFilterNode filterNode : filterNodes)
+        for (EvalFilterNode filterNode : evalNodeAnalysisResult.getFilterNodes())
         {
             String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
             EventType eventType = FilterStreamSpecRaw.resolveType(eventName, eventAdapterService);

@@ -53,6 +53,23 @@ public class RefCountedSet<K>
     }
 
     /**
+     * Add a key to the set with the given number of references.
+     * @param key to add
+     * @param numReferences initial number of references
+     */
+    public void add(K key, int numReferences)
+    {
+        Integer value = refSet.get(key);
+        if (value == null)
+        {
+            refSet.put(key, numReferences);
+            numValues+=numReferences;
+            return;
+        }
+        throw new IllegalArgumentException("Key '" + key + "' already in collection");
+    }
+
+    /**
      * Removed a key to the set. Removes the key if the reference count is one.
      * Decreases the reference count by one if the reference count is more then one.
      * Return true if the reference count was one and the key thus removed, or false if key is stays in set.

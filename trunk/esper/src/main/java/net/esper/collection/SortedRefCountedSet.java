@@ -46,6 +46,22 @@ public class SortedRefCountedSet<K>
     }
 
     /**
+     * Add a key to the set with the given number of references.
+     * @param key to add
+     * @param numReferences initial number of references
+     */
+    public void add(K key, int numReferences)
+    {
+        Integer value = refSet.get(key);
+        if (value == null)
+        {
+            refSet.put(key, numReferences);
+            return;
+        }
+        throw new IllegalArgumentException("Key '" + key + "' already in collection");
+    }
+
+    /**
      * Remove a key from the set. Removes the key if the reference count is one.
      * Decreases the reference count by one if the reference count is more then one.
      * @param key to add

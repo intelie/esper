@@ -7,6 +7,8 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
+import net.esper.util.MetaDefItem;
+
 import java.util.Set;
 import java.util.HashSet;
 

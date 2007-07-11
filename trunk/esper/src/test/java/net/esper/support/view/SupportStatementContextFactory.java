@@ -5,6 +5,8 @@ import net.esper.schedule.SchedulingService;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.view.ViewResolutionServiceImpl;
+import net.esper.view.ViewEnumHelper;
+import net.esper.pattern.PatternObjectResolutionServiceImpl;
 
 public class SupportStatementContextFactory
 {
@@ -25,7 +27,8 @@ public class SupportStatementContextFactory
                 stub.allocateBucket(),
                 SupportEventAdapterService.getService(),
                 null,
-                new ViewResolutionServiceImpl(null),
+                new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews()),
+                new PatternObjectResolutionServiceImpl(null),
                 null,
                 null,
                 null,

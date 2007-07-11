@@ -13,8 +13,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Superclass of all nodes in an evaluation tree representing an event pattern expression.
@@ -105,22 +103,30 @@ public abstract class EvalNode implements MetaDefItem
      * @param currentNode is the root node
      * @return list of filter nodes
      */
-    public static List<EvalFilterNode> recusiveFilterChildNodes(EvalNode currentNode)
+    public static EvalNodeAnalysisResult recursiveAnalyzeChildNodes(EvalNode currentNode)
     {
-        List<EvalFilterNode> nodeList = new ArrayList<EvalFilterNode>();
-        recusiveFilterChildNodes(nodeList, currentNode);
-        return nodeList;
+        EvalNodeAnalysisResult evalNodeAnalysisResult = new EvalNodeAnalysisResult();
+        recursiveAnalyzeChildNodes(evalNodeAnalysisResult, currentNode);
+        return evalNodeAnalysisResult;
     }
 
-    private static void recusiveFilterChildNodes(List<EvalFilterNode> nodeList, EvalNode currentNode)
+    private static void recursiveAnalyzeChildNodes(EvalNodeAnalysisResult evalNodeAnalysisResult, EvalNode currentNode)
     {
         if (currentNode instanceof EvalFilterNode)
         {
-            nodeList.add((EvalFilterNode) currentNode);
+            evalNodeAnalysisResult.add((EvalFilterNode) currentNode);
+        }
+        if (currentNode instanceof EvalGuardNode)
+        {
+            evalNodeAnalysisResult.add((EvalGuardNode) currentNode);
+        }
+        if (currentNode instanceof EvalObserverNode)
+        {
+            evalNodeAnalysisResult.add((EvalObserverNode) currentNode);
         }
         for (EvalNode node : currentNode.getChildNodes())
         {
-            recusiveFilterChildNodes(nodeList, node);
+            recursiveAnalyzeChildNodes(evalNodeAnalysisResult, node);
         }
     }
 

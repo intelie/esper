@@ -54,9 +54,7 @@ public class TestPatternGuardPlugIn extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error casting guard factory instance to net.esper.pattern.guard.GuardFactory interface for guard 'name' [select * from pattern [every net.esper.support.bean.SupportBean where namespace:name(10)]]", ex.getMessage());
+            assertEquals("Failed to resolve pattern object: Error casting guard factory instance to net.esper.pattern.guard.GuardFactory interface for guard 'name' [select * from pattern [every net.esper.support.bean.SupportBean where namespace:name(10)]]", ex.getMessage());
         }
     }
-
-
 }

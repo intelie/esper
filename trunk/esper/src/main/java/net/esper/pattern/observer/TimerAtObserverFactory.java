@@ -42,7 +42,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
         spec = computeValues(observerParameters.toArray());
     }
 
-    private static SortedSet<Integer> computeValues(Object unitParameter, ScheduleUnit unit)
+    private static SortedSet<Integer> computeValues(Object unitParameter, ScheduleUnit unit) throws ObserverParameterException
     {
         if (unitParameter instanceof Integer)
         {
@@ -64,7 +64,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
         return resultSorted;
     }
 
-    private static ScheduleSpec computeValues(Object[] args)
+    private static ScheduleSpec computeValues(Object[] args) throws ObserverParameterException
     {
         EnumMap<ScheduleUnit, SortedSet<Integer>> unitMap = new EnumMap<ScheduleUnit, SortedSet<Integer>>(ScheduleUnit.class);
         Object minutes = args[0];
@@ -78,7 +78,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
         if (daysOfWeek instanceof CronParameter && daysOfMonth instanceof CronParameter)
         {
             throw
-                    new IllegalArgumentException("Invalid combination between days of week and days of month fields for timer:at");
+                    new ObserverParameterException("Invalid combination between days of week and days of month fields for timer:at");
         }
         if (resultMonths != null && resultMonths.size() == 1 && (resultMonths.first() instanceof Integer))
         {
@@ -110,7 +110,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
                 if (resultDaysOfMonth != null)
                 {
                     throw
-                            new IllegalArgumentException("Invalid combination between days of week and days of month fields for timer:at");
+                            new ObserverParameterException("Invalid combination between days of week and days of month fields for timer:at");
                 }
                 resultDaysOfMonth = resultDaysOfWeek;
                 resultDaysOfWeek = null;
@@ -121,7 +121,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
             if (resultDaysOfWeek != null)
             {
                 throw
-                        new IllegalArgumentException("Invalid combination between days of week and days of month fields for timer:at");
+                        new ObserverParameterException("Invalid combination between days of week and days of month fields for timer:at");
             }
         }
         unitMap.put(ScheduleUnit.DAYS_OF_WEEK, resultDaysOfWeek);
