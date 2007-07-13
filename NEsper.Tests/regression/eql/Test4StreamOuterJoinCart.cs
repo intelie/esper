@@ -6,12 +6,10 @@ using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.util;
 
-using NUnit.Core;
 using NUnit.Framework;
 
 namespace net.esper.regression.eql
 {
-
 	[TestFixture]
 	public class Test4StreamOuterJoinCart
 	{
@@ -27,6 +25,8 @@ namespace net.esper.regression.eql
 		[SetUp]
 		public virtual void setUp()
 		{
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            
 			epService = EPServiceProviderManager.GetDefaultProvider();
             epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 			epService.Initialize();

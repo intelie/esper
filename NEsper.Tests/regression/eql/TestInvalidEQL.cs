@@ -28,6 +28,8 @@ namespace net.esper.regression.eql
 	    [SetUp]
 	    public void SetUp()
 	    {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        listener = new SupportUpdateListener();
 	    }

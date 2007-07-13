@@ -26,7 +26,9 @@ namespace net.esper.regression.eql
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        Configuration config = new Configuration();
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+
+            Configuration config = new Configuration();
 	        config.AddEventTypeAlias("MD", typeof(SupportMarketDataIDBean));
 	        epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        epService.Initialize();

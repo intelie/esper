@@ -1,7 +1,8 @@
 using System;
 
-using NUnit.Core;
 using NUnit.Framework;
+
+using net.esper.compat;
 
 namespace net.esper.collection
 {
@@ -25,7 +26,7 @@ namespace net.esper.collection
                 refMap["a"] = 10;
                 Assert.Fail();
             }
-            catch (System.SystemException ex)
+            catch (IllegalStateException ex)
             {
                 // Expected exception
             }
@@ -61,7 +62,7 @@ namespace net.esper.collection
                 refMap.Reference("b");
                 Assert.Fail();
             }
-            catch (System.SystemException ex)
+            catch (IllegalStateException ex)
             {
                 // Expected exception
             }
@@ -83,7 +84,7 @@ namespace net.esper.collection
                 refMap.Dereference("b");
                 Assert.Fail();
             }
-            catch (System.SystemException ex)
+            catch (IllegalStateException)
             {
                 // Expected exception
             }

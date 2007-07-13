@@ -1,7 +1,8 @@
 using System;
 
-using NUnit.Core;
 using NUnit.Framework;
+
+using net.esper.compat;
 
 namespace net.esper.collection
 {
@@ -56,7 +57,7 @@ namespace net.esper.collection
                 refSet.Remove("c");
                 Assert.Fail();
             }
-            catch (System.SystemException)
+            catch (IllegalStateException)
             {
                 // expected
             }
@@ -68,7 +69,7 @@ namespace net.esper.collection
                 refSet.Remove("a");
                 Assert.Fail();
             }
-            catch (System.SystemException)
+            catch (IllegalStateException)
             {
                 // expected
             }

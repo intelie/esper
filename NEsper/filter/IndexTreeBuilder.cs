@@ -118,7 +118,7 @@ namespace net.esper.filter
 
             Pair<FilterValueSetParam, FilterParamIndexBase> pair = null;
 
-            try
+            using (new ReaderLock(currentNode.NodeRWLock))
             {
                 // Need to find an existing index that matches one of the filter parameters
                 currentNode.NodeRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
@@ -136,12 +136,8 @@ namespace net.esper.filter
                     return;
                 }
             }
-            finally
-            {
-                currentNode.NodeRWLock.ReleaseReaderLock();
-            }
 
-            using (WriterLock writerLock = new WriterLock(currentNode.NodeRWLock))
+            using (new WriterLock(currentNode.NodeRWLock))
             {
                 // An index for any of the filter parameters was not found, create one
                 pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);

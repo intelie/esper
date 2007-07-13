@@ -27,4 +27,26 @@ namespace net.esper.client
         
         DISTINCT_CASE_INSENSITIVE
     }
+
+    /// <summary>
+    /// A class that helps with the use of the PropertyResolutionStyle.  Among other
+    /// things it allows developers to get or set the property resolution style that 
+    /// should be used when one is not specified.
+    /// </summary>
+
+    public class PropertyResolutionStyleHelper
+    {
+        private static PropertyResolutionStyle? defaultPropertyResolutionStyle;
+        
+        /// <summary>
+        /// Gets or sets the property resolution style that should be used whe
+        /// one is not specified.
+        /// </summary>
+
+        public static PropertyResolutionStyle DefaultPropertyResolutionStyle
+        {
+            get { return defaultPropertyResolutionStyle.GetValueOrDefault(PropertyResolutionStyle.CASE_SENSITIVE); }
+            set { defaultPropertyResolutionStyle = value; }
+        }
+    }
 }

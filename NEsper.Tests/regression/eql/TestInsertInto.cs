@@ -29,6 +29,8 @@ namespace net.esper.regression.eql
 	    [SetUp]
 	    public void SetUp()
 	    {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();
 	        feedListener = new SupportUpdateListener();
@@ -387,13 +389,13 @@ namespace net.esper.regression.eql
 	        epService.EPRuntime.SendEvent(new SupportBean_A("myId"));
 
 	        // Attach delta statement to statement and add listener
-	        stmtText = "select Min(delta) as minD, Max(delta) as maxD " +
+	        stmtText = "select min(delta) as minD, max(delta) as maxD " +
 	                   "from Event_1.win:time(60)";
 	        stmt = epService.EPAdministrator.CreateEQL(stmtText);
             stmt.AddListener(resultListenerDelta);
 
 	        // Attach prodict statement to statement and add listener
-	        stmtText = "select Min(product) as minP, Max(product) as maxP " +
+	        stmtText = "select min(product) as minP, max(product) as maxP " +
 	                   "from Event_1.win:time(60)";
 	        stmt = epService.EPAdministrator.CreateEQL(stmtText);
             stmt.AddListener(resultListenerProduct);

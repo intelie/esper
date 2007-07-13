@@ -12,6 +12,9 @@ namespace net.esper.view
 
     public class ViewEnum
     {
+        /// <summary>Length window.</summary>
+        public static readonly ViewEnum LENGTH = new ViewEnum("win", "length", typeof(LengthWindowViewFactory), null);
+
         /// <summary>Length batch window.</summary>
         public static readonly ViewEnum LENGTH_BATCH = new ViewEnum("win", "length_batch", typeof(LengthBatchViewFactory), null);
 
@@ -62,6 +65,7 @@ namespace net.esper.view
         /// </summary>
         public static readonly ViewEnum[] Values = new ViewEnum[]
             {
+                LENGTH,
                 LENGTH_BATCH,
                 TIME_WINDOW,
                 TIME_BATCH,

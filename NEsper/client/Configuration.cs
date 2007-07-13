@@ -541,7 +541,7 @@ namespace net.esper.client
         /// <summary> Reset to an empty configuration.</summary>
         internal void Reset()
         {
-            defaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_SENSITIVE;
+            defaultPropertyResolutionStyle = PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle;
             eventClasses = new HashDictionary<String, String>();
             mapAliases = new HashDictionary<String, Properties>();
             eventTypesXMLDOM = new HashDictionary<String, ConfigurationEventTypeXMLDOM>();

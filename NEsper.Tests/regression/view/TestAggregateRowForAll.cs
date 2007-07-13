@@ -32,6 +32,7 @@ namespace net.esper.regression.view
 	    [SetUp]
 	    public void SetUp()
 	    {
+	        PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        listener = new SupportUpdateListener();
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();
@@ -52,7 +53,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testSumJoin()
 	    {
-	        String viewExpr = "select Sum(longBoxed) as mySum " +
+	        String viewExpr = "select sum(longBoxed) as mySum " +
 	                          "from " + typeof(SupportBeanString).FullName + ".win:time(10) as one, " +
 	                                    typeof(SupportBean).FullName + ".win:time(10 sec) as two " +
 	                          "where one.string = two.string";
@@ -187,7 +188,7 @@ namespace net.esper.regression.view
 
 	    [Test]
 	    public void testSelectAvgExprStdGroupBy() {
-	        String stmtText = "select istream Avg(price) as aprice from "+ typeof(SupportMarketDataBean).FullName
+	        String stmtText = "select istream avg(price) as aprice from "+ typeof(SupportMarketDataBean).FullName
 	                +".std:groupby('symbol').win:length(2)";
 	        EPStatement statement = epService.EPAdministrator.CreateEQL(stmtText);
 	        statement.AddListener(listener);

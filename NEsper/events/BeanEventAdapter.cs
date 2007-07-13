@@ -31,7 +31,7 @@ namespace net.esper.events
 			typesPerBean = new HashDictionary<Type, BeanEventType>();
 			typesPerBeanLock = new ReaderWriterLock();
 			typeToLegacyConfigs = new HashDictionary<String, ConfigurationEventTypeLegacy>();
-            defaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_SENSITIVE;
+            defaultPropertyResolutionStyle = PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle;
 		}
 
         /// <summary>

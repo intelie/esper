@@ -30,9 +30,12 @@ namespace net.esper.regression.eql
 		private SupportUpdateListener insertListener;
 		private EDictionary<String, Object> properties;
 
+        [SetUp]
 		protected void SetUp()
 		{
-			epService = EPServiceProviderManager.GetDefaultProvider();
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+
+            epService = EPServiceProviderManager.GetDefaultProvider();
 			epService.Initialize();
 			listener = new SupportUpdateListener();
 			insertListener = new SupportUpdateListener();

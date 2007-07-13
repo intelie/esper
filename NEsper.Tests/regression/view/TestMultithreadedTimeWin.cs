@@ -172,11 +172,11 @@ namespace net.esper.regression.view
                         lastSymbol = symbol;
                     }
                 }
-                catch (System.SystemException ex)
+                catch (IllegalStateException ex)
                 {
-                    net.esper.regression.view.TestMultithreadedTimeWin.log.Error("Unexpected exception querying results", ex);
+                    log.Error("Unexpected exception querying results", ex);
                     isCaughtRuntimeException = true;
-                    throw ex;
+                    throw;
                 }
             }
         }

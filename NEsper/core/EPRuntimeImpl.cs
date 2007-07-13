@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using System.Threading;
 
 using net.esper.client;
 using net.esper.client.time;
@@ -48,14 +47,14 @@ namespace net.esper.core
         }
 
 		[ThreadStatic]
-		private ArrayBackedCollection<FilterHandle> matchesArrayThreadLocal;
-		private ArrayBackedCollection<FilterHandle> MatchesArray
+		private List<FilterHandle> matchesArrayThreadLocal;
+		private List<FilterHandle> MatchesArray
 		{
 			get
 			{
 				if ( matchesArrayThreadLocal == null )
 				{
-					matchesArrayThreadLocal = new ArrayBackedCollection<FilterHandle>(100);
+                    matchesArrayThreadLocal = new List<FilterHandle>(100);
 				}
 
 			    return matchesArrayThreadLocal;
@@ -541,8 +540,8 @@ namespace net.esper.core
 	    private void ProcessMatches(EventBean _event)
 	    {
 	        // get matching filters
-	        ArrayBackedCollection<FilterHandle> matches = MatchesArray;
-	        services.FilterService.Evaluate(_event, matches.Array);
+	        List<FilterHandle> matches = MatchesArray;
+	        services.FilterService.Evaluate(_event, matches);
 
 	        if (ThreadLogUtil.ENABLED_TRACE)
 	        {
@@ -555,12 +554,11 @@ namespace net.esper.core
 	        }
 
 	        EDictionary<EPStatementHandle, Object> stmtCallbacks = MatchesPerStmt;
-	        Object[] matchArray = matches.Array;
 	        int entryCount = matches.Count;
 
 	        for (int i = 0; i < entryCount; i++)
 	        {
-	            EPStatementHandleCallback handleCallback = (EPStatementHandleCallback) matchArray[i];
+	            EPStatementHandleCallback handleCallback = (EPStatementHandleCallback) matches[i];
 	            EPStatementHandle handle = handleCallback.EpStatementHandle;
 
 	            // Self-joins require that the internal dispatch happens after all streams are evaluated

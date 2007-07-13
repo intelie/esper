@@ -27,6 +27,8 @@ namespace net.esper.regression.eql
 	    [SetUp]
 	    public void SetUp()
 	    {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            
 	        Configuration config = new Configuration();
 	        config.AddEventTypeAlias("S0", typeof(SupportBean_S0));
 	        config.AddEventTypeAlias("S1", typeof(SupportBean_S1));

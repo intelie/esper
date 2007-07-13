@@ -69,8 +69,8 @@ namespace net.esper.collection
 
         public virtual void Reference(K key)
         {
-            Pair<V, Int32> refValue = refMap[key];
-            if (refValue == null)
+            Pair<V, Int32> refValue ;
+            if (!refMap.TryGetValue(key, out refValue)) 
             {
                 throw new IllegalStateException("Key value not found in collection");
             }
@@ -88,8 +88,8 @@ namespace net.esper.collection
 
         public virtual bool Dereference(K key)
         {
-            Pair<V, Int32> refValue = refMap[key];
-            if (refValue == null)
+            Pair<V, Int32> refValue ;
+            if (!refMap.TryGetValue(key, out refValue))
             {
                 throw new IllegalStateException("Key value not found in collection");
             }

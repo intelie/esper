@@ -11,7 +11,7 @@ namespace net.esper.compat
         /// <summary>
         /// Number of milliseconds until read locks timeout
         /// </summary>
-		public const int ReaderTimeout = 5000 ;
+		public const int ReaderTimeout = 50000 ;
         /// <summary>
         /// Number of milliseconds until write locks timeout
         /// </summary>

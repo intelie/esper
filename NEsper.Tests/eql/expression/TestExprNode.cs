@@ -120,12 +120,12 @@ namespace net.esper.eql.expression
 
 	        result = ExprNode.ParseMappedProperty("c.d.Doit(\"kf\"kf'kf\")");
             Assert.AreEqual("c.d", result.TypeName);
-	        Assert.AreEqual("doit", result.MethodName);
+	        Assert.AreEqual("Doit", result.MethodName);
 	        Assert.AreEqual("kf\"kf'kf", result.ArgString);
 
 	        result = ExprNode.ParseMappedProperty("c.d.Doit('kf\"kf'kf\"')");
             Assert.AreEqual("c.d", result.TypeName);
-	        Assert.AreEqual("doit", result.MethodName);
+	        Assert.AreEqual("Doit", result.MethodName);
 	        Assert.AreEqual("kf\"kf'kf\"", result.ArgString);
 
 	        result = ExprNode.ParseMappedProperty("f('a')");
