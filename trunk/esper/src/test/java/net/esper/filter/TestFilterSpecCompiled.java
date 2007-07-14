@@ -16,14 +16,12 @@ import java.util.Vector;
 public class TestFilterSpecCompiled extends TestCase
 {
     private EventType eventType;
-    private String eventTypeId;
     private String eventTypeAlias;
 
     public void setUp()
     {
         eventTypeAlias = SupportBean.class.getName();
         eventType = SupportEventAdapterService.getService().addBeanType(eventTypeAlias, SupportBean.class);
-        eventTypeId = SupportEventAdapterService.getService().getIdByAlias(eventTypeAlias);
     }
 
     public void testHashCode()

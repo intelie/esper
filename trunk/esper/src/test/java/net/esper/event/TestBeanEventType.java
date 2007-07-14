@@ -5,11 +5,12 @@ import net.esper.support.bean.*;
 import net.esper.support.util.ArrayAssertionUtil;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.io.Serializable;
 
 public class TestBeanEventType extends TestCase
 {
-    private BeanEventAdapter beanEventAdapter;
+    private BeanEventTypeFactory beanEventTypeFactory;
     private BeanEventType eventTypeSimple;
     private BeanEventType eventTypeComplex;
     private BeanEventType eventTypeNested;
@@ -24,19 +25,19 @@ public class TestBeanEventType extends TestCase
 
     public void setUp()
     {
-        beanEventAdapter = new BeanEventAdapter();
+        beanEventTypeFactory = new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>());
 
-        eventTypeSimple = new BeanEventType(SupportBeanSimple.class, beanEventAdapter, null, "1");
-        eventTypeComplex = new BeanEventType(SupportBeanComplexProps.class, beanEventAdapter, null, "2");
-        eventTypeNested = new BeanEventType(SupportBeanCombinedProps.class, beanEventAdapter, null, "3");
+        eventTypeSimple = new BeanEventType(SupportBeanSimple.class, beanEventTypeFactory, null, "1");
+        eventTypeComplex = new BeanEventType(SupportBeanComplexProps.class, beanEventTypeFactory, null, "2");
+        eventTypeNested = new BeanEventType(SupportBeanCombinedProps.class, beanEventTypeFactory, null, "3");
 
         objSimple = new SupportBeanSimple("a", 20);
         objComplex = SupportBeanComplexProps.makeDefaultBean();
         objCombined = SupportBeanCombinedProps.makeDefaultBean();
 
-        eventSimple = new BeanEventBean(objSimple, eventTypeSimple, null);
-        eventComplex = new BeanEventBean(objComplex, eventTypeComplex, null);
-        eventNested = new BeanEventBean(objCombined, eventTypeNested, null);
+        eventSimple = new BeanEventBean(objSimple, eventTypeSimple);
+        eventComplex = new BeanEventBean(objComplex, eventTypeComplex);
+        eventNested = new BeanEventBean(objCombined, eventTypeNested);
     }
 
     public void testGetPropertyNames()
@@ -82,8 +83,8 @@ public class TestBeanEventType extends TestCase
         try
         {
             // test mismatch between bean and object
-            EventType type = beanEventAdapter.adapterForType(new Object());
-            EventBean eventBean = new BeanEventBean(new Object(), type, null);
+            EventType type = beanEventTypeFactory.createBeanType(Object.class.getName(), Object.class);
+            EventBean eventBean = new BeanEventBean(new Object(), type);
             getter.get(eventBean);
             fail();
         }
@@ -166,7 +167,7 @@ public class TestBeanEventType extends TestCase
 
     public void testGetDeepSuperTypes()
     {
-        BeanEventType type = new BeanEventType(ISupportAImplSuperGImplPlus.class, beanEventAdapter, null, "1");
+        BeanEventType type = new BeanEventType(ISupportAImplSuperGImplPlus.class, beanEventTypeFactory, null, "1");
 
         List<EventType> deepSuperTypes = new LinkedList<EventType>();
         for (Iterator<EventType> it = type.getDeepSuperTypes(); it.hasNext();)
@@ -179,11 +180,11 @@ public class TestBeanEventType extends TestCase
         ArrayAssertionUtil.assertEqualsAnyOrder(
                 deepSuperTypes.toArray(),
                 new EventType[] {
-                    beanEventAdapter.createOrGetBeanType(ISupportAImplSuperG.class),
-                    beanEventAdapter.createOrGetBeanType(ISupportBaseAB.class),
-                    beanEventAdapter.createOrGetBeanType(ISupportA.class),
-                    beanEventAdapter.createOrGetBeanType(ISupportB.class),
-                    beanEventAdapter.createOrGetBeanType(ISupportC.class)
+                    beanEventTypeFactory.createBeanType("e1", ISupportAImplSuperG.class),
+                    beanEventTypeFactory.createBeanType("e2", ISupportBaseAB.class),
+                    beanEventTypeFactory.createBeanType("e3", ISupportA.class),
+                    beanEventTypeFactory.createBeanType("e4", ISupportB.class),
+                    beanEventTypeFactory.createBeanType("e5", ISupportC.class)
                 });
     }
 
@@ -209,7 +210,7 @@ public class TestBeanEventType extends TestCase
 
     public void testGetSuperTypes()
     {
-        eventTypeSimple = new BeanEventType(ISupportAImplSuperGImplPlus.class, beanEventAdapter, null, "1");
+        eventTypeSimple = new BeanEventType(ISupportAImplSuperGImplPlus.class, beanEventTypeFactory, null, "1");
 
         EventType[] superTypes = eventTypeSimple.getSuperTypes();
         assertEquals(3, superTypes.length);
@@ -217,11 +218,11 @@ public class TestBeanEventType extends TestCase
         assertEquals(ISupportB.class, superTypes[1].getUnderlyingType());
         assertEquals(ISupportC.class, superTypes[2].getUnderlyingType());
 
-        eventTypeSimple = new BeanEventType(Object.class, beanEventAdapter, null, "2");
+        eventTypeSimple = new BeanEventType(Object.class, beanEventTypeFactory, null, "2");
         superTypes = eventTypeSimple.getSuperTypes();
         assertEquals(0, superTypes.length);
 
-        BeanEventType type = new BeanEventType(ISupportD.class, beanEventAdapter, null, "3");
+        BeanEventType type = new BeanEventType(ISupportD.class, beanEventTypeFactory, null, "3");
         assertEquals(3, type.getPropertyNames().length);
         ArrayAssertionUtil.assertEqualsAnyOrder(
                 type.getPropertyNames(),

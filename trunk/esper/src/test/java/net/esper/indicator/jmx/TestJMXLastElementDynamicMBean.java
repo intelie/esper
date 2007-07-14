@@ -7,7 +7,6 @@ import java.lang.management.ManagementFactory;
 
 import junit.framework.TestCase;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.event.SupportEventBeanFactory;

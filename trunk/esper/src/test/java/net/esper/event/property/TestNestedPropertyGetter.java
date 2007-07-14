@@ -5,13 +5,11 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import net.esper.support.bean.SupportBeanCombinedProps;
 import net.esper.support.event.SupportEventBeanFactory;
-import net.esper.event.EventBean;
-import net.esper.event.PropertyAccessException;
-import net.esper.event.EventPropertyGetter;
-import net.esper.event.BeanEventAdapter;
+import net.esper.event.*;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TestNestedPropertyGetter extends TestCase
 {
@@ -19,23 +17,23 @@ public class TestNestedPropertyGetter extends TestCase
     private NestedPropertyGetter getterNull;
     private EventBean event;
     private SupportBeanCombinedProps bean;
-    private BeanEventAdapter beanEventAdapter;
+    private BeanEventTypeFactory beanEventTypeFactory;
 
     public void setUp() throws Exception
     {
-        beanEventAdapter = new BeanEventAdapter();
+        beanEventTypeFactory = new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>());
         bean = SupportBeanCombinedProps.makeDefaultBean();
         event = SupportEventBeanFactory.createObject(bean);
 
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
         getters.add(makeGetterOne(0));
         getters.add(makeGetterTwo("0ma"));
-        getter = new NestedPropertyGetter(getters, beanEventAdapter);
+        getter = new NestedPropertyGetter(getters, beanEventTypeFactory);
 
         getters = new LinkedList<EventPropertyGetter>();
         getters.add(makeGetterOne(2));
         getters.add(makeGetterTwo("0ma"));
-        getterNull = new NestedPropertyGetter(getters, beanEventAdapter);
+        getterNull = new NestedPropertyGetter(getters, beanEventTypeFactory);
     }
 
     public void testGet()

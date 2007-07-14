@@ -1,14 +1,12 @@
 package net.esper.event.property;
 
-import net.esper.event.EventBean;
-import net.esper.event.EventPropertyGetter;
-import net.esper.event.BeanEventType;
-import net.esper.event.BeanEventAdapter;
+import net.esper.event.*;
 import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.event.SupportEventBeanFactory;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.TestCase;
 
@@ -16,11 +14,11 @@ public class TestNestedProperty extends TestCase
 {
     private NestedProperty[] nested;
     private EventBean event;
-    private BeanEventAdapter beanEventAdapter;
+    private BeanEventTypeFactory beanEventTypeFactory;
 
     public void setUp()
     {
-        beanEventAdapter = new BeanEventAdapter();
+        beanEventTypeFactory = new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>());
 
         nested = new NestedProperty[2];
         nested[0] = makeProperty(new String[] {"nested", "nestedValue"});
@@ -51,6 +49,6 @@ public class TestNestedProperty extends TestCase
         {
             properties.add(new SimpleProperty(prop));
         }
-        return new NestedProperty(properties, beanEventAdapter);
+        return new NestedProperty(properties, beanEventTypeFactory);
     }
 }

@@ -11,12 +11,12 @@ import java.util.*;
 /**
  * Implementation of the EventType interface for handling JavaBean-type classes.
  */
-public class BeanEventType implements EventTypeSPI
+public class BeanEventType implements EventType
 {
     private final Class clazz;
-    private final BeanEventAdapter beanEventAdapter;
+    private final BeanEventTypeFactory beanEventTypeFactory;
     private final ConfigurationEventTypeLegacy optionalLegacyDef;
-    private final String eventTypeId;
+    private final String alias;
 
     private String[] propertyNames;
     private Map<String, Class> simplePropertyTypes;
@@ -31,26 +31,20 @@ public class BeanEventType implements EventTypeSPI
     /**
      * Constructor takes a java bean class as an argument.
      * @param clazz is the class of a java bean or other POJO
-     * @param beanEventAdapter is the chache and factory for event bean types and event wrappers
+     * @param beanEventTypeFactory is the chache and factory for event bean types and event wrappers
      * @param optionalLegacyDef optional configuration supplying legacy event type information
-     * @param eventTypeId is the event type id
      */
     public BeanEventType(Class clazz,
-                         BeanEventAdapter beanEventAdapter,
+                         BeanEventTypeFactory beanEventTypeFactory,
                          ConfigurationEventTypeLegacy optionalLegacyDef,
-                         String eventTypeId)
+                         String alias)
     {
         this.clazz = clazz;
-        this.beanEventAdapter = beanEventAdapter;
+        this.beanEventTypeFactory = beanEventTypeFactory;
         this.optionalLegacyDef = optionalLegacyDef;
-        this.eventTypeId = eventTypeId;
+        this.alias = alias;
 
         initialize();
-    }
-
-    public String getEventTypeId()
-    {
-        return eventTypeId;
     }
 
     public final Class getPropertyType(String propertyName)
@@ -61,7 +55,7 @@ public class BeanEventType implements EventTypeSPI
             return propertyType;
         }
 
-        Property prop = PropertyParser.parse(propertyName, beanEventAdapter);
+        Property prop = PropertyParser.parse(propertyName, beanEventTypeFactory);
         if (prop instanceof SimpleProperty)
         {
             // there is no such property since it wasn't in simplePropertyTypes
@@ -92,7 +86,7 @@ public class BeanEventType implements EventTypeSPI
             return getter;
         }
 
-        Property prop = PropertyParser.parse(propertyName, beanEventAdapter);
+        Property prop = PropertyParser.parse(propertyName, beanEventTypeFactory);
         if (prop instanceof SimpleProperty)
         {
             // there is no such property since it wasn't in simplePropertyGetters
@@ -144,6 +138,11 @@ public class BeanEventType implements EventTypeSPI
     public Iterator<EventType> getDeepSuperTypes()
     {
         return deepSuperTypes.iterator();
+    }
+
+    public String getAlias()
+    {
+        return alias;
     }
 
     /**
@@ -224,7 +223,7 @@ public class BeanEventType implements EventTypeSPI
         }
 
         // Determine event type super types
-        superTypes = getSuperTypes(clazz, beanEventAdapter);
+        superTypes = getSuperTypes(clazz, beanEventTypeFactory);
 
         // Determine deep supertypes
         // Get Java super types (superclasses and interfaces), deep get of all in the tree
@@ -236,12 +235,12 @@ public class BeanEventType implements EventTypeSPI
         deepSuperTypes = new HashSet<EventType>();
         for (Class superClass : supers)
         {
-            EventType superType = beanEventAdapter.createOrGetBeanType(superClass);
+            EventType superType = beanEventTypeFactory.createBeanType(superClass.getName(), superClass);
             deepSuperTypes.add(superType);
         }
     }
 
-    private static EventType[] getSuperTypes(Class clazz, BeanEventAdapter beanEventAdapter)
+    private static EventType[] getSuperTypes(Class clazz, BeanEventTypeFactory beanEventTypeFactory)
     {
         List<Class> superclasses = new LinkedList<Class>();
 
@@ -265,7 +264,7 @@ public class BeanEventType implements EventTypeSPI
         {
             if (!superclass.getName().startsWith("java"))
             {
-                EventType superType = beanEventAdapter.createOrGetBeanType(superclass);
+                EventType superType = beanEventTypeFactory.createBeanType(superclass.getName(), superclass);
                 superTypes.add(superType);
             }
         }

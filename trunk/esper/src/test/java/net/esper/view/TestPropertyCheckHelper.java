@@ -2,7 +2,6 @@ package net.esper.view;
 
 import junit.framework.*;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventTypeFactory;

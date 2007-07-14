@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Implementation of the {@link EventType} interface for handling plain Maps containing name value pairs.
  */
-public class MapEventType implements EventTypeSPI
+public class MapEventType implements EventType
 {
     private final String typeName;
     private final String[] propertyNames;       // Cache an array of property names so not to construct one frequently
@@ -308,5 +308,15 @@ public class MapEventType implements EventTypeSPI
     public String getEventTypeId()
     {
         return "MAP_" + typeName;
+    }
+
+    public String getAlias()
+    {
+        return typeName;
+    }
+
+    public Map<String, Class> getTypes()
+    {
+        return types;
     }
 }

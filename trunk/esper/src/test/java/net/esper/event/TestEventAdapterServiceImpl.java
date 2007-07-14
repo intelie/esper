@@ -13,6 +13,8 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.espertech.esperstore.event.EventTypeOID;
+
 public class TestEventAdapterServiceImpl extends TestCase
 {
     private EventAdapterServiceImpl adapterService;
@@ -31,7 +33,7 @@ public class TestEventAdapterServiceImpl extends TestCase
     public void testEventTypeId()
     {
         EventBean originalBean = adapterService.adapterForBean(new SupportSerializableBean("e1"));
-        EventTypeSPI eventType = (EventTypeSPI) originalBean.getEventType();
+        EventTypeOID eventType = (EventTypeOID) originalBean.getEventType();
         String id = eventType.getEventTypeId();
         assertEquals("CLASS_net.esper.support.bean.SupportSerializableBean", id);
     }
@@ -86,12 +88,6 @@ public class TestEventAdapterServiceImpl extends TestCase
         assertEquals(String.class, typeOne.getPropertyType("b"));
         assertEquals(2, typeOne.getPropertyNames().length);
 
-        String id = adapterService.getIdByAlias("latencyEvent");
-        assertNotNull(id);
-        EventType typeById = adapterService.getTypeById(id);
-        assertSame(typeById, typeOne);
-        assertEquals("latencyEvent", adapterService.getAliasById(id));
-        assertEquals(id, adapterService.getIdByType(typeOne));
         assertSame(typeOne, adapterService.getExistsTypeByAlias("latencyEvent"));
 
         // add the same type with the same name, should succeed and return the same reference
@@ -124,12 +120,6 @@ public class TestEventAdapterServiceImpl extends TestCase
         assertEquals(String.class, typeOne.getPropertyType("b"));
         assertEquals(7, typeOne.getPropertyNames().length);
 
-        String id = adapterService.getIdByAlias("latencyEvent");
-        assertNotNull(id);
-        EventType typeById = adapterService.getTypeById(id);
-        assertSame(typeById, typeOne);
-        assertEquals("latencyEvent", adapterService.getAliasById(id));
-        assertEquals(id, adapterService.getIdByType(typeOne));
         assertSame(typeOne, adapterService.getExistsTypeByAlias("latencyEvent"));
 
         // add the same name with a different type, should fail
@@ -151,12 +141,6 @@ public class TestEventAdapterServiceImpl extends TestCase
         EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class.getName());
         assertEquals(SupportBean.class, typeOne.getUnderlyingType());
 
-        String id = adapterService.getIdByAlias("latencyEvent");
-        assertNotNull(id);
-        EventType typeById = adapterService.getTypeById(id);
-        assertSame(typeById, typeOne);
-        assertEquals("latencyEvent", adapterService.getAliasById(id));
-        assertEquals(id, adapterService.getIdByType(typeOne));
         assertSame(typeOne, adapterService.getExistsTypeByAlias("latencyEvent"));
 
         EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class.getName());
@@ -178,12 +162,6 @@ public class TestEventAdapterServiceImpl extends TestCase
         EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class);
         assertEquals(SupportBean.class, typeOne.getUnderlyingType());
 
-        String id = adapterService.getIdByAlias("latencyEvent");
-        assertNotNull(id);
-        EventType typeById = adapterService.getTypeById(id);
-        assertSame(typeById, typeOne);
-        assertEquals("latencyEvent", adapterService.getAliasById(id));
-        assertEquals(id, adapterService.getIdByType(typeOne));
         assertSame(typeOne, adapterService.getExistsTypeByAlias("latencyEvent"));
 
         EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class);
@@ -225,12 +203,6 @@ public class TestEventAdapterServiceImpl extends TestCase
         EventType eventType = adapterService.getExistsTypeByAlias("XMLDOMTypeOne");
         assertEquals(Node.class, eventType.getUnderlyingType());
 
-        String id = adapterService.getIdByAlias("XMLDOMTypeOne");
-        assertNotNull(id);
-        EventType typeById = adapterService.getTypeById(id);
-        assertSame(typeById, eventType);
-        assertEquals("XMLDOMTypeOne", adapterService.getAliasById(id));
-        assertEquals(id, adapterService.getIdByType(eventType));
         assertSame(eventType, adapterService.getExistsTypeByAlias("XMLDOMTypeOne"));
         
         try

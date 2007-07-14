@@ -2,6 +2,7 @@ package net.esper.event;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.TestCase;
 import net.esper.client.EPException;
@@ -20,8 +21,8 @@ public class TestWrapperEventType extends TestCase
 	
 	protected void setUp()
 	{
-        underlyingEventTypeOne = new BeanEventType(SupportBeanSimple.class, new BeanEventAdapter(), null, "abc");
-        underlyingEventTypeTwo = new BeanEventType(SupportBean_A.class, new BeanEventAdapter(), null, "abc");
+        underlyingEventTypeOne = new BeanEventType(SupportBeanSimple.class, new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>()), null, "abc");
+        underlyingEventTypeTwo = new BeanEventType(SupportBean_A.class, new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>()), null, "abc");
         properties = new HashMap<String, Class>();
         properties.put("additionalString", String.class);
         properties.put("additionalInt", Integer.class);

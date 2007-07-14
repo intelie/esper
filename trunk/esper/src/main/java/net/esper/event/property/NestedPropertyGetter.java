@@ -9,17 +9,17 @@ import java.util.List;
 public class NestedPropertyGetter implements EventPropertyGetter
 {
     private final EventPropertyGetter[] getterChain;
-    private final BeanEventAdapter beanEventAdapter;
+    private final BeanEventTypeFactory beanEventTypeFactory;
 
     /**
      * Ctor.
      * @param getterChain is the chain of getters to retrieve each nested property
-     * @param beanEventAdapter is the chache and factory for event bean types and event wrappers
+     * @param beanEventTypeFactory is the chache and factory for event bean types and event wrappers
      */
-    public NestedPropertyGetter(List<EventPropertyGetter> getterChain, BeanEventAdapter beanEventAdapter)
+    public NestedPropertyGetter(List<EventPropertyGetter> getterChain, BeanEventTypeFactory beanEventTypeFactory)
     {
         this.getterChain = getterChain.toArray(new EventPropertyGetter[0]);
-        this.beanEventAdapter = beanEventAdapter;
+        this.beanEventTypeFactory = beanEventTypeFactory;
     }
 
     public Object get(EventBean eventBean) throws PropertyAccessException
@@ -37,8 +37,8 @@ public class NestedPropertyGetter implements EventPropertyGetter
 
             if (i < (getterChain.length - 1))
             {
-                EventType type = beanEventAdapter.adapterForType(value);
-                eventBean = new BeanEventBean(value, type, null);
+                EventType type = beanEventTypeFactory.createBeanType(value.getClass().getName(), value.getClass());
+                eventBean = new BeanEventBean(value, type);
             }
         }
         return value;

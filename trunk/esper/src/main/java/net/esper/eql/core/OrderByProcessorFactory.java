@@ -14,7 +14,6 @@ import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.OrderByItem;
 import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.event.EventAdapterService;
-import net.esper.event.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -79,7 +78,6 @@ public class OrderByProcessorFactory {
 		{
 			propertyNamesAndTypes.put(orderByNode.toExpressionString(), orderByNode.getType());
 		}
-		EventType orderType = eventAdapterService.createAnonymousMapType(propertyNamesAndTypes);
 		
         // Tell the order-by processor whether to compute group-by
         // keys if they are not present

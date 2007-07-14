@@ -61,41 +61,6 @@ public class TestMapEventBean extends TestCase
         }
     }
 
-    public void testEquals()
-    {
-        MapEventBean other = new MapEventBean(testValuesMap, eventType);
-        assertTrue(eventBean.equals(other));
-
-        testValuesMap.put("aString", "xxx");
-        other = new MapEventBean(testValuesMap, eventType);
-        assertFalse(eventBean.equals(other));
-        assertFalse(other.equals(eventBean));
-
-        testValuesMap.put("aString", "test");
-        other = new MapEventBean(testValuesMap, eventType);
-        assertTrue(eventBean.equals(other));
-
-        // try another event type
-        EventType otherEventType = SupportEventAdapterService.getService().createAnonymousMapType(testTypesMap);
-        other = new MapEventBean(testValuesMap, otherEventType);
-        assertFalse(other.equals(eventBean));
-        assertFalse(eventBean.equals(other));
-
-        // Try same event type but differint object references
-        testValuesMap.put("anInt", new Integer(10));
-        other = new MapEventBean(testValuesMap, eventType);
-        assertTrue(eventBean.equals(other));
-
-        // try null values
-        MapEventBean beanOne = new MapEventBean(testValuesMap, eventType);
-        HashMap<String, Object> beanTwoValues = new HashMap<String, Object>();
-        beanTwoValues.put("aString", null);
-        beanTwoValues.put("anInt", null);
-        MapEventBean beanTwo = new MapEventBean(beanTwoValues, eventType);
-        assertFalse(beanOne.equals(beanTwo));
-        assertFalse(beanTwo.equals(beanOne));
-    }
-
     public void testCreateUnderlying()
     {
         SupportBean beanOne = new SupportBean();
@@ -117,17 +82,6 @@ public class TestMapEventBean extends TestCase
         MapEventBean event = new MapEventBean(eventType, events);
         assertTrue(event.get("a") == beanOne);
         assertTrue(event.get("b") == beanTwo);
-    }
-
-    public void testHash()
-    {
-        // try out with a null value
-        testValuesMap.put("aString", null);
-        testValuesMap.put("myComplexBean", null);
-        eventBean = new MapEventBean(testValuesMap, eventType);
-
-        assertEquals((new Integer(10)).hashCode() ^
-                    "anInt".hashCode(), eventBean.hashCode());
     }
 
     private static final Log log = LogFactory.getLog(TestMapEventBean.class);

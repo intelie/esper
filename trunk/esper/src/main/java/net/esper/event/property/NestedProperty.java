@@ -21,17 +21,17 @@ import java.util.Map;
 public class NestedProperty implements Property
 {
     private List<Property> properties;
-    private BeanEventAdapter beanEventAdapter;
+    private BeanEventTypeFactory beanEventTypeFactory;
 
     /**
      * Ctor.
      * @param properties is the list of Property instances representing each nesting level
-     * @param beanEventAdapter is the chache and factory for event bean types and event wrappers
+     * @param beanEventTypeFactory is the chache and factory for event bean types and event wrappers
      */
-    public NestedProperty(List<Property> properties, BeanEventAdapter beanEventAdapter)
+    public NestedProperty(List<Property> properties, BeanEventTypeFactory beanEventTypeFactory)
     {
         this.properties = properties;
-        this.beanEventAdapter = beanEventAdapter;
+        this.beanEventTypeFactory = beanEventTypeFactory;
     }
 
     /**
@@ -73,12 +73,12 @@ public class NestedProperty implements Property
                 {
                     return null;
                 }
-                eventType = (BeanEventType) beanEventAdapter.createOrGetBeanType(clazz);
+                eventType = (BeanEventType) beanEventTypeFactory.createBeanType(clazz.getName(), clazz);
             }
             getters.add(getter);
         }
 
-        return new NestedPropertyGetter(getters, beanEventAdapter);
+        return new NestedPropertyGetter(getters, beanEventTypeFactory);
     }
 
     public Class getPropertyType(BeanEventType eventType)
@@ -109,7 +109,7 @@ public class NestedProperty implements Property
                     return null;
                 }
 
-                eventType = beanEventAdapter.createOrGetBeanType(result);
+                eventType = beanEventTypeFactory.createBeanType(result.getName(), result);
             }
         }
 

@@ -8,7 +8,6 @@ import net.esper.eql.join.exec.TableLookupStrategy;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.table.PropertyIndexedEventTable;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventTypeFactory;
 

@@ -1,6 +1,5 @@
 package net.esper.eql.join.exec;
 
-import net.esper.event.BeanEventAdapter;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.esper.event.EventBean;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.event.SupportEventTypeFactory;
 
 public class SupportMapView extends SupportBaseView

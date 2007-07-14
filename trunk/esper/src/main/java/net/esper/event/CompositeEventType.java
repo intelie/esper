@@ -10,31 +10,24 @@ import java.util.Map;
  * composite event indicates that the whole patterns matched, and indicates the
  * individual events that caused the pattern as event properties to the event.
  */
-public class CompositeEventType implements EventTypeSPI
+public class CompositeEventType implements EventType
 {
-    private final String eventTypeId;
     private final Map<String, EventType> taggedEventTypes;
-
-    public String getEventTypeId()
-    {
-        return eventTypeId;
-    }
+    private String alias;
 
     /**
      * Ctor.
      * @param taggedEventTypes is a map of name tags and event type per tag 
      */
-    public CompositeEventType(Map<String, EventType> taggedEventTypes)
+    public CompositeEventType(String alias, Map<String, EventType> taggedEventTypes)
     {
         this.taggedEventTypes = taggedEventTypes;
-        if (taggedEventTypes.size() == 0)
-        {
-            eventTypeId = "COMPOSITE"; // TODO
-        }
-        else
-        {
-            eventTypeId = "COMPOSITE_" + ((EventTypeSPI)taggedEventTypes.values().iterator().next()).getEventTypeId(); // TODO
-        }
+        this.alias = alias;
+    }
+
+    public String getAlias()
+    {
+        return alias;
     }
 
     public Class getPropertyType(String propertyName)

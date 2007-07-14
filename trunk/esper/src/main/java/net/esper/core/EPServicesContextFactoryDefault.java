@@ -14,8 +14,8 @@ import net.esper.eql.spec.PluggableObjectDesc;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.eql.view.OutputConditionFactoryDefault;
 import net.esper.event.EventAdapterException;
-import net.esper.event.EventAdapterServiceBase;
 import net.esper.event.EventAdapterServiceImpl;
+import net.esper.event.EventAdapterService;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
@@ -76,7 +76,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      * @param eventAdapterService is events adapter
      * @param configSnapshot is the config snapshot
      */
-    protected static void init(EventAdapterServiceBase eventAdapterService, ConfigurationSnapshot configSnapshot)
+    protected static void init(EventAdapterService eventAdapterService, ConfigurationSnapshot configSnapshot)
     {
         // Extract legacy event type definitions for each event type alias, if supplied.
         //

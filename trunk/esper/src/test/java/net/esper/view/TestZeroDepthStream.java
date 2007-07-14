@@ -3,7 +3,6 @@ package net.esper.view;
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.event.BeanEventAdapter;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.view.SupportSchemaNeutralView;
 import net.esper.support.event.SupportEventTypeFactory;

@@ -8,12 +8,10 @@ import java.util.HashMap;
  * MapEventBean instances are equal if they have the same {@link EventType} and all property names
  * and values are reference-equal. 
  */
-public class MapEventBean implements EventBeanSPI
+public class MapEventBean implements EventBean
 {
     private EventType eventType;
     private Map<String, Object> properties;
-    private Object eventId;
-    private Integer hashCode = null;
 
     /**
      * Constructor for initialization with existing values.
@@ -34,7 +32,7 @@ public class MapEventBean implements EventBeanSPI
      * @param eventType is the type of the event, i.e. describes the map entries
      * @param events are the event property constisting of events
      */
-    protected MapEventBean(EventType eventType, Map<String, EventBean> events)
+    public MapEventBean(EventType eventType, Map<String, EventBean> events)
     {
         this.properties = new HashMap<String, Object>();
         for (Map.Entry<String, EventBean> entry : events.entrySet())
@@ -52,11 +50,6 @@ public class MapEventBean implements EventBeanSPI
     {
         this.properties = new HashMap<String, Object>();
         this.eventType = eventType;
-    }
-
-    public void setEventId(Object eventId)
-    {
-        this.eventId = eventId;
     }
 
     public EventType getEventType()
@@ -79,89 +72,9 @@ public class MapEventBean implements EventBeanSPI
         return properties;
     }
 
-    public boolean equals(final Object otherObject)
-    {
-        if (otherObject == this)
-        {
-            return true;
-        }
-
-        if (otherObject == null)
-        {
-            return false;
-        }
-
-        if (getClass() != otherObject.getClass())
-        {
-            return false;
-        }
-
-        final MapEventBean other = (MapEventBean) otherObject;
-
-        if (other.eventType != eventType)
-        {
-            return false;
-        }
-
-        if (properties.size() != other.properties.size())
-        {
-            return false;
-        }
-
-        // Compare entry by entry
-        for (Map.Entry<String, Object> entry : properties.entrySet())
-        {
-            final String name = entry.getKey();
-            final Object value = entry.getValue();
-            final Object otherValue = other.get(name);
-
-            if ((otherValue == null) && (value == null))
-            {
-                continue;
-            }
-
-            if ((otherValue == null) && (value != null))
-            {
-                return false;
-            }
-
-            if (!otherValue.equals(value))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public int hashCode()
-    {
-        if (hashCode == null)
-        {
-            int hashCodeVal = 0;
-            for (Map.Entry<String, Object> entry : properties.entrySet())
-            {
-                final String name = entry.getKey();
-                final Object value = entry.getValue();
-
-                if (value != null)
-                {
-                    hashCodeVal = hashCodeVal ^ name.hashCode() ^ value.hashCode();
-                }
-            }
-            hashCode = hashCodeVal;
-        }
-        return hashCode; 
-    }
-
     public String toString()
     {
         return "MapEventBean " +
                 "eventType=" + eventType;
-    }
-
-    public Object getEventBeanId()
-    {
-        return eventId;
     }
 }
