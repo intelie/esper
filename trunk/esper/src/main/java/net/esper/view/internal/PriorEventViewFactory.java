@@ -15,7 +15,11 @@ import java.util.*;
  */
 public class PriorEventViewFactory implements ViewFactory
 {
+    /**
+     * Map of prior-index and callback to expressions.
+     */
     protected TreeMap<Integer, List<ViewResourceCallback>> callbacksPerIndex = new TreeMap<Integer, List<ViewResourceCallback>>();
+    
     private EventType eventType;
 
     /**
@@ -23,11 +27,7 @@ public class PriorEventViewFactory implements ViewFactory
      * views) therefore must use a different buffer.
      */
     protected boolean isUnbound;
-
-    public PriorEventViewFactory()
-    {
-    }
-
+   
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
         if (viewParameters.size() != 1)

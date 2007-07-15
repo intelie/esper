@@ -1,18 +1,10 @@
 package net.esper.core;
 
-import net.esper.view.ViewSupport;
-import net.esper.dispatch.Dispatchable;
 import net.esper.dispatch.DispatchService;
-import net.esper.client.UpdateListener;
 import net.esper.event.EventBean;
-import net.esper.event.EventType;
-import net.esper.event.EventBeanUtility;
-import net.esper.collection.SingleEventIterator;
-
-import java.util.Set;
-import java.util.LinkedList;
-import java.util.Iterator;
-
+import net.esper.view.ViewSupport;
+import net.esper.client.EPStatement;
+import net.esper.client.EPServiceProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,12 +16,14 @@ public class UpdateDispatchViewNonBlocking extends UpdateDispatchViewBase
 {
     /**
      * Ctor.
+     * @param epServiceProvider - engine instance to supply to statement-aware listeners
+     * @param statement - the statement instance to supply to statement-aware listeners
      * @param updateListeners - listeners to update
      * @param dispatchService - for performing the dispatch
      */
-    public UpdateDispatchViewNonBlocking(Set<UpdateListener> updateListeners, DispatchService dispatchService)
+    public UpdateDispatchViewNonBlocking(EPServiceProvider epServiceProvider, EPStatement statement, EPStatementListenerSet updateListeners, DispatchService dispatchService)
     {
-        super(updateListeners, dispatchService);
+        super(epServiceProvider, statement, updateListeners, dispatchService);
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)

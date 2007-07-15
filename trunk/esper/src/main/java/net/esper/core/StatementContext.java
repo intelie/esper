@@ -53,6 +53,9 @@ public final class StatementContext
      * @param methodResolutionService is a service for resolving static methods and aggregation functions
      * @param patternContextFactory is the pattern-level services and context information factory
      * @param filterService is the filtering service
+     * @param patternResolutionService is the service that resolves pattern objects for the statement
+     * @param joinSetComposerFactory is the factory for creating service objects that compose join results
+     * @param outputConditionFactory is the factory for output condition objects
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -228,16 +231,28 @@ public final class StatementContext
         return filterService;
     }
 
+    /**
+     * Returns the statement's factory for join set processors.
+     * @return factory for processing join sets
+     */
     public JoinSetComposerFactory getJoinSetComposerFactory()
     {
         return joinSetComposerFactory;
     }
 
+    /**
+     * Returns the statement's factory for output conditions.
+     * @return factory for output conditions
+     */
     public OutputConditionFactory getOutputConditionFactory()
     {
         return outputConditionFactory;
     }
 
+    /**
+     * Returns the statement's resolution service for pattern objects.
+     * @return service for resolving pattern objects
+     */
     public PatternObjectResolutionService getPatternResolutionService()
     {
         return patternResolutionService;

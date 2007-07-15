@@ -3,24 +3,27 @@ package net.esper.core;
 import net.esper.client.*;
 import net.esper.collection.Pair;
 import net.esper.collection.RefCountedMap;
-import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.*;
-import net.esper.util.ManagedLock;
 import net.esper.eql.expression.ExprNodeSubselectVisitor;
 import net.esper.eql.expression.ExprSubselectNode;
-import net.esper.util.ManagedReadWriteLock;
-import net.esper.util.UuidGenerator;
-import net.esper.util.ManagedLockImpl;
-import net.esper.view.ViewProcessingException;
-import net.esper.view.Viewable;
+import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.spec.*;
 import net.esper.event.EventType;
 import net.esper.pattern.EvalFilterNode;
 import net.esper.pattern.EvalNode;
 import net.esper.pattern.EvalNodeAnalysisResult;
+import net.esper.util.ManagedLock;
+import net.esper.util.ManagedLockImpl;
+import net.esper.util.ManagedReadWriteLock;
+import net.esper.util.UuidGenerator;
+import net.esper.view.ViewProcessingException;
+import net.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides statement lifecycle services.
@@ -28,6 +31,8 @@ import java.util.*;
 public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 {
     private static Log log = LogFactory.getLog(StatementLifecycleSvcImpl.class);
+
+    private final EPServiceProvider epServiceProvider;
     private final EPServicesContext services;
     private final ManagedReadWriteLock eventProcessingRWLock;
 
@@ -42,11 +47,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
     /**
      * Ctor.
+     * @param epServiceProvider is the engine instance to hand to statement-aware listeners
      * @param services is engine services
      */
-    public StatementLifecycleSvcImpl(EPServicesContext services)
+    public StatementLifecycleSvcImpl(EPServiceProvider epServiceProvider, EPServicesContext services)
     {
         this.services = services;
+        this.epServiceProvider = epServiceProvider;
 
         // lock for starting and stopping statements
         this.eventProcessingRWLock = services.getEventProcessingRWLock();
@@ -140,7 +147,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             // create statement - may fail for parser and simple validation errors
             boolean preserveDispatchOrder = services.getEngineSettingsService().getEngineSettings().getThreading().isListenerDispatchPreserveOrder();
             long blockingTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getListenerDispatchTimeout();
-            EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern,
+            EPStatementSPI statement = new EPStatementImpl(epServiceProvider, statementId, statementName, expression, isPattern,
                     services.getDispatchService(), this, preserveDispatchOrder, blockingTimeout);
 
             // create start method
@@ -548,7 +555,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return finalStatementName;
     }
 
-    public void updatedListeners(String statementId, Set<UpdateListener> listeners)
+    public void updatedListeners(String statementId, EPStatementListenerSet listeners)
     {
         log.debug(".updatedListeners No action for base implementation");
     }
@@ -570,6 +577,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
          * @param startMethod the start method
          * @param stopMethod the stop method
          * @param optInsertIntoStream is the insert-into stream name, or null if not using insert-into
+         * @param statementHandle is the locking handle for the statement
          */
         public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream, EPStatementHandle statementHandle)
         {
@@ -625,6 +633,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             this.stopMethod = stopMethod;
         }
 
+        /**
+         * Returns the statements handle.
+         * @return statement handle
+         */
         public EPStatementHandle getStatementHandle()
         {
             return statementHandle;

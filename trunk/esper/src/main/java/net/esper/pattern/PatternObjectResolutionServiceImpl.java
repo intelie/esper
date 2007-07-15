@@ -16,13 +16,13 @@ public class PatternObjectResolutionServiceImpl implements PatternObjectResoluti
 {
     private static final Log log = LogFactory.getLog(PatternObjectResolutionServiceImpl.class);
 
-    private final PluggableObjectDesc patternObjects;
+    private final PluggableObjectCollection patternObjects;
 
     /**
      * Ctor.
      * @param patternObjects is the pattern plug-in objects configured
      */
-    public PatternObjectResolutionServiceImpl(PluggableObjectDesc patternObjects)
+    public PatternObjectResolutionServiceImpl(PluggableObjectCollection patternObjects)
     {
         this.patternObjects = patternObjects;
     }

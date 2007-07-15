@@ -63,11 +63,10 @@ public class WrapperEventType implements EventType
 		return null;
 	}
 
-    public String getEventTypeId()
-    {
-        return "WRAP" + underlyingEventType.getUnderlyingType();     // TODO: ugly
-    }
-
+    /**
+     * Returns the event type alias.
+     * @return event type alias
+     */
     public String getAlias()
     {
         return typeName;

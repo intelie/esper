@@ -2,6 +2,11 @@ package net.esper.client;
 
 import net.esper.event.EventBean;
 
+/**
+ * Defines an interface to notify of new and old events.
+ * <p>
+ * Also see {@link UpdateListener} for update listeners that only require event delivery. 
+ */
 public interface StatementAwareUpdateListener
 {
     /**
@@ -18,6 +23,8 @@ public interface StatementAwareUpdateListener
      *
      * @param newEvents is any new events. This will be null or empty if the update is for old events only.
      * @param oldEvents is any old events. This will be null or empty if the update is for new events only.
+     * @param statement is the statement producing the result
+     * @param epServiceProvider is the engine instance that provided the administrative API that created the statement which produces the result 
      */
-    public void update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider serviceProvider);
+    public void update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider epServiceProvider);
 }

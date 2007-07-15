@@ -35,7 +35,12 @@ public class EventAdapterServiceImpl implements EventAdapterService
     private final ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean;
     private final Map<String, EventType> aliasToTypeMap;
 
-    protected BeanEventAdapter beanEventAdapter;
+    /**
+     *
+     */
+    private BeanEventAdapter beanEventAdapter;
+
+
     private Map<String, EventType> xmldomRootElementNames;
 
     /**

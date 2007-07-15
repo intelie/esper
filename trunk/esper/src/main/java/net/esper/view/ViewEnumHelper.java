@@ -1,6 +1,6 @@
 package net.esper.view;
 
-import net.esper.eql.spec.PluggableObjectDesc;
+import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.spec.PluggableObjectType;
 
 /**
@@ -8,18 +8,22 @@ import net.esper.eql.spec.PluggableObjectType;
  */
 public class ViewEnumHelper
 {
-    private final static PluggableObjectDesc builtinViews;
+    private final static PluggableObjectCollection builtinViews;
 
     static
     {
-        builtinViews = new PluggableObjectDesc();
+        builtinViews = new PluggableObjectCollection();
         for (ViewEnum viewEnum : ViewEnum.values())
         {
             builtinViews.addObject(viewEnum.getNamespace(), viewEnum.getName(), viewEnum.getFactoryClass(), PluggableObjectType.VIEW);    
         }
     }
 
-    public static PluggableObjectDesc getBuiltinViews()
+    /**
+     * Returns a collection of plug-in views.
+     * @return built-in view definitions
+     */
+    public static PluggableObjectCollection getBuiltinViews()
     {
         return builtinViews;
     }

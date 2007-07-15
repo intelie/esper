@@ -14,7 +14,7 @@ import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineSettingsService;
 import net.esper.eql.db.DatabaseConfigService;
-import net.esper.eql.spec.PluggableObjectDesc;
+import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
@@ -46,13 +46,13 @@ public final class EPServicesContext
     private EngineImportService engineImportService;
     private EngineSettingsService engineSettingsService;
     private DatabaseConfigService databaseConfigService;
-    private PluggableObjectDesc plugInViews;
+    private PluggableObjectCollection plugInViews;
     private StatementLockFactory statementLockFactory;
     private ManagedReadWriteLock eventProcessingRWLock;
     private ExtensionServicesContext extensionServicesContext;
     private EngineEnvContext engineEnvContext;
     private StatementContextFactory statementContextFactory;
-    private PluggableObjectDesc plugInPatternObjects;
+    private PluggableObjectCollection plugInPatternObjects;
     private OutputConditionFactory outputConditionFactory;
 
     // Supplied after construction to avoid circular dependency
@@ -74,6 +74,7 @@ public final class EPServicesContext
      * @param statementContextFactory is the factory to use to create statement context objects
      * @param engineEnvContext is engine environment/directory information for use with adapters and external env
      * @param plugInPatternObjects resolves plug-in pattern objects
+     * @param outputConditionFactory factory for output condition objects
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -81,13 +82,13 @@ public final class EPServicesContext
                              EngineImportService engineImportService,
                              EngineSettingsService engineSettingsService,
                              DatabaseConfigService databaseConfigService,
-                             PluggableObjectDesc plugInViews,
+                             PluggableObjectCollection plugInViews,
                              StatementLockFactory statementLockFactory,
                              ManagedReadWriteLock eventProcessingRWLock,
                              ExtensionServicesContext extensionServicesContext,
                              EngineEnvContext engineEnvContext,
                              StatementContextFactory statementContextFactory,
-                             PluggableObjectDesc plugInPatternObjects,
+                             PluggableObjectCollection plugInPatternObjects,
                              OutputConditionFactory outputConditionFactory)
     {
         this.engineURI = engineURI;
@@ -233,7 +234,7 @@ public final class EPServicesContext
      * Information to resolve plug-in view namespace and name.
      * @return plug-in view information
      */
-    public PluggableObjectDesc getPlugInViews()
+    public PluggableObjectCollection getPlugInViews()
     {
         return plugInViews;
     }
@@ -242,7 +243,7 @@ public final class EPServicesContext
      * Information to resolve plug-in pattern object namespace and name.
      * @return plug-in pattern object information
      */
-    public PluggableObjectDesc getPlugInPatternObjects()
+    public PluggableObjectCollection getPlugInPatternObjects()
     {
         return plugInPatternObjects;
     }
@@ -367,6 +368,10 @@ public final class EPServicesContext
         return engineSettingsService;
     }
 
+    /**
+     * Returns the output condition factory
+     * @return factory for output condition
+     */
     public OutputConditionFactory getOutputConditionFactory()
     {
         return outputConditionFactory;

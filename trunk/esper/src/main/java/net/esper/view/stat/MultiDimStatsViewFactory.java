@@ -13,10 +13,29 @@ import java.util.List;
  */
 public class MultiDimStatsViewFactory implements ViewFactory
 {
+    /**
+     * Derived fields.
+     */
     protected String[] derivedMeasures;
+
+    /**
+     * Property name supplying measures.
+     */
     protected String measureField;
+
+    /**
+     * Property name supplying columns.
+     */
     protected String columnField;
+
+    /**
+     * Property name supplying rows.
+     */
     protected String rowField;
+
+    /**
+     * Property name supplying pages.
+     */
     protected String pageField;
     private EventType eventType;
 

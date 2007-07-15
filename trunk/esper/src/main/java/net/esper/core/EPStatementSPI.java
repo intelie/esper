@@ -26,7 +26,7 @@ public interface EPStatementSPI extends EPStatement
      * Returns the current set of listeners for read-only operations.
      * @return listener set
      */
-    public Set<UpdateListener> getListeners();
+    public EPStatementListenerSet getListenerSet();
 
     /**
      * Sets the statement listeners.
@@ -35,7 +35,7 @@ public interface EPStatementSPI extends EPStatement
      * listeners of a statement can yield problems.
      * @param listeners set
      */
-    public void setListeners(Set<UpdateListener> listeners);
+    public void setListeners(EPStatementListenerSet listeners);
 
     /**
      * Set statement state.

@@ -18,6 +18,10 @@ import java.util.Set;
  */
 public interface JoinSetComposer
 {
+    /**
+     * Provides initialization events per stream to composer to populate join indexes, if required
+     * @param eventsPerStream is an array of events for each stream, with null elements to indicate no events for a stream
+     */
     public void init(EventBean[][] eventsPerStream);
 
     /**

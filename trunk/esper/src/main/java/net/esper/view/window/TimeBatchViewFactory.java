@@ -14,9 +14,21 @@ import java.util.List;
  */
 public class TimeBatchViewFactory implements ViewFactory
 {
-    protected long millisecondsBeforeExpiry;
-    protected Long optionalReferencePoint;
     private EventType eventType;
+
+    /**
+     * Number of msec before expiry.
+     */
+    protected long millisecondsBeforeExpiry;
+
+    /**
+     * The reference point, or null if none supplied.
+     */
+    protected Long optionalReferencePoint;
+
+    /**
+     * The access into the data window.
+     */
     protected RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException

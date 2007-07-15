@@ -193,5 +193,9 @@ public interface EventAdapterService
      */
     public EventType addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM);
 
+    /**
+     * Sets the configured legacy Java class information.
+     * @param classLegacyInfo is configured legacy 
+     */
     public void setClassLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classLegacyInfo);
 }

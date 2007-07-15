@@ -163,6 +163,10 @@ public class ConfigurationSnapshot
         return engineDefaults;
     }
 
+    /**
+     * Returns the extension module configuration objects per extension.
+     * @return map of module name and config object
+     */
     public Map<String, Object> getExtensionConfigurations()
     {
         return extensionConfigurations;

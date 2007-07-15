@@ -108,11 +108,22 @@ public class ConfigurationEngineDefaults
             return isInsertIntoDispatchPreserveOrder;
         }
 
+        /**
+         * Returns true if external timer is enabled, or false for internal timer.
+         * @return true for external timer, false for internal timer
+         */
         public boolean isExternalTimer()
         {
             return isExternalTimer;
         }
 
+        /**
+         * Sets the use of external timer.
+         * <p>
+         * By setting external timer to true the engine does not start the internal timer thread
+         * and relies on external timer events to supply the time.
+         * @param externalTimer is true for external time events to be sent by the application, false for internal timer
+         */
         public void setExternalTimer(boolean externalTimer)
         {
             isExternalTimer = externalTimer;

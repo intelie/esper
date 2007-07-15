@@ -18,6 +18,7 @@ public class ViewResourceDelegateImpl implements ViewResourceDelegate
     /**
      * Ctor.
      * @param viewFactories array of view factory chains, one for each stream
+     * @param statementContext is statement-level services
      */
     public ViewResourceDelegateImpl(ViewFactoryChain[] viewFactories, StatementContext statementContext)
     {

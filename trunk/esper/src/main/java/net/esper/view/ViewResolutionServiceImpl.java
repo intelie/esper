@@ -1,7 +1,7 @@
 package net.esper.view;
 
 import net.esper.collection.Pair;
-import net.esper.eql.spec.PluggableObjectDesc;
+import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.spec.PluggableObjectType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,9 +15,13 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
 {
     private static final Log log = LogFactory.getLog(ViewResolutionServiceImpl.class);
 
-    private final PluggableObjectDesc viewObjects;
+    private final PluggableObjectCollection viewObjects;
 
-    public ViewResolutionServiceImpl(PluggableObjectDesc viewObjects)
+    /**
+     * Ctor.
+     * @param viewObjects is the view objects to use for resolving views, can be both built-in and plug-in views.
+     */
+    public ViewResolutionServiceImpl(PluggableObjectCollection viewObjects)
     {
         this.viewObjects = viewObjects;
     }

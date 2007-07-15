@@ -33,6 +33,7 @@ public class BeanEventType implements EventType
      * @param clazz is the class of a java bean or other POJO
      * @param beanEventTypeFactory is the chache and factory for event bean types and event wrappers
      * @param optionalLegacyDef optional configuration supplying legacy event type information
+     * @param alias is the event type alias for the class
      */
     public BeanEventType(Class clazz,
                          BeanEventTypeFactory beanEventTypeFactory,
@@ -140,6 +141,12 @@ public class BeanEventType implements EventType
         return deepSuperTypes.iterator();
     }
 
+    /**
+     * Returns the event type alias.
+     * <p>
+     * For classes for which no alias has been defined, the alias is the fully-qualified class name.
+     * @return event type alias 
+     */
     public String getAlias()
     {
         return alias;

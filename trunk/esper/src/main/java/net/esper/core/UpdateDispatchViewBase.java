@@ -1,20 +1,21 @@
 package net.esper.core;
 
-import net.esper.view.ViewSupport;
-import net.esper.dispatch.Dispatchable;
-import net.esper.dispatch.DispatchService;
+import net.esper.client.StatementAwareUpdateListener;
 import net.esper.client.UpdateListener;
-import net.esper.event.EventBean;
-import net.esper.event.EventType;
-import net.esper.event.EventBeanUtility;
+import net.esper.client.EPStatement;
+import net.esper.client.EPServiceProvider;
 import net.esper.collection.SingleEventIterator;
-
-import java.util.Set;
-import java.util.LinkedList;
-import java.util.Iterator;
-
+import net.esper.dispatch.DispatchService;
+import net.esper.dispatch.Dispatchable;
+import net.esper.event.EventBean;
+import net.esper.event.EventBeanUtility;
+import net.esper.event.EventType;
+import net.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Convenience view for dispatching view updates received from a parent view to update listeners
@@ -22,7 +23,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class UpdateDispatchViewBase extends ViewSupport implements Dispatchable
 {
-    private Set<UpdateListener> updateListeners;
+    private final EPServiceProvider epServiceProvider;
+    private final EPStatement statement;
+    private EPStatementListenerSet statementListenerSet;
 
     /**
      * Dispatches events to listeners.
@@ -39,7 +42,7 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
      */
     protected ThreadLocal<Boolean> isDispatchWaiting = new ThreadLocal<Boolean>() {
         protected synchronized Boolean initialValue() {
-            return new Boolean(false);
+            return Boolean.FALSE;
         }
     };
 
@@ -62,12 +65,16 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
 
     /**
      * Ctor.
+     * @param epServiceProvider - the engine instance to provided to statement-aware listener
      * @param updateListeners - listeners to update
      * @param dispatchService - for performing the dispatch
+     * @param statement is the statement to supply to statement-aware listener
      */
-    public UpdateDispatchViewBase(Set<UpdateListener> updateListeners, DispatchService dispatchService)
+    public UpdateDispatchViewBase(EPServiceProvider epServiceProvider, EPStatement statement, EPStatementListenerSet updateListeners, DispatchService dispatchService)
     {
-        this.updateListeners = updateListeners;
+        this.epServiceProvider = epServiceProvider;
+        this.statement = statement;
+        this.statementListenerSet = updateListeners;
         this.dispatchService = dispatchService;
     }
 
@@ -75,9 +82,9 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
      * Set new update listeners.
      * @param updateListeners to set
      */
-    public void setUpdateListeners(Set<UpdateListener> updateListeners)
+    public void setUpdateListeners(EPStatementListenerSet updateListeners)
     {
-        this.updateListeners = updateListeners;
+        this.statementListenerSet = updateListeners;
     }
 
     public EventType getEventType()
@@ -103,9 +110,16 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
             ViewSupport.dumpUpdateParams(".execute", newEvents, oldEvents);
         }
 
-        for (UpdateListener listener : updateListeners)
+        for (UpdateListener listener : statementListenerSet.listeners)
         {
             listener.update(newEvents, oldEvents);
+        }
+        if (!(statementListenerSet.stmtAwareListeners.isEmpty()))
+        {
+            for (StatementAwareUpdateListener listener : statementListenerSet.getStmtAwareListeners())
+            {
+                listener.update(newEvents, oldEvents, statement, epServiceProvider);
+            }
         }
 
         lastNewEvents.get().clear();

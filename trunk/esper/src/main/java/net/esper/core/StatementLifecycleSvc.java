@@ -1,12 +1,8 @@
 package net.esper.core;
 
-import net.esper.client.EPStatement;
 import net.esper.client.EPException;
-import net.esper.client.UpdateListener;
+import net.esper.client.EPStatement;
 import net.esper.eql.spec.StatementSpecRaw;
-import net.esper.eql.spec.StatementSpecCompiled;
-
-import java.util.Set;
 
 /**
  * Handles statement management.
@@ -85,5 +81,5 @@ public interface StatementLifecycleSvc
      * @param statementId is the statement id for which listeners were added
      * @param listeners is the set of listeners after adding the new listener
      */
-    public void updatedListeners(String statementId, Set<UpdateListener> listeners);
+    public void updatedListeners(String statementId, EPStatementListenerSet listeners);
 }

@@ -174,7 +174,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             epServicesContextFactory = (EPServicesContextFactory) obj;
         }
 
-        EPServicesContext services = epServicesContextFactory.createServicesContext(engineURI, configSnapshot);
+        EPServicesContext services = epServicesContextFactory.createServicesContext(this, configSnapshot);
 
         // New runtime
         EPRuntimeImpl runtime = new EPRuntimeImpl(services);

@@ -1,6 +1,6 @@
 package net.esper.pattern;
 
-import net.esper.eql.spec.PluggableObjectDesc;
+import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.spec.PluggableObjectType;
 import net.esper.pattern.guard.GuardEnum;
 import net.esper.pattern.observer.ObserverEnum;
@@ -10,11 +10,11 @@ import net.esper.pattern.observer.ObserverEnum;
  */
 public class PatternObjectHelper
 {
-    private final static PluggableObjectDesc builtinPatternObjects;
+    private final static PluggableObjectCollection builtinPatternObjects;
 
     static
     {
-        builtinPatternObjects = new PluggableObjectDesc();
+        builtinPatternObjects = new PluggableObjectCollection();
         for (GuardEnum guardEnum : GuardEnum.values())
         {
             builtinPatternObjects.addObject(guardEnum.getNamespace(), guardEnum.getName(), guardEnum.getClazz(), PluggableObjectType.PATTERN_GUARD);
@@ -25,7 +25,11 @@ public class PatternObjectHelper
         }
     }
 
-    public static PluggableObjectDesc getBuiltinPatternObjects()
+    /**
+     * Returns the built-in pattern objects.
+     * @return collection of built-in pattern objects.
+     */
+    public static PluggableObjectCollection getBuiltinPatternObjects()
     {
         return builtinPatternObjects;
     }

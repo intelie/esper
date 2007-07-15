@@ -14,9 +14,21 @@ import java.util.List;
  */
 public class ExternallyTimedWindowViewFactory implements ViewFactory
 {
-    protected String timestampFieldName;
-    protected long millisecondsBeforeExpiry;
     private EventType eventType;
+
+    /**
+     * The timestamp property name.
+     */
+    protected String timestampFieldName;
+
+    /**
+     * The number of msec to expire.
+     */
+    protected long millisecondsBeforeExpiry;
+
+    /**
+     * The getter for direct access into the window. 
+     */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException

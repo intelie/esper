@@ -22,6 +22,7 @@ public interface StreamSpecRaw extends StreamSpec
      * to an validated, optimized form for use with filter service
      * @param eventAdapterService supplies type information
      * @param methodResolutionService for resolving imports
+     * @param patternObjectResolutionService for resolving pattern objects
      * @return compiled stream
      * @throws ExprValidationException to indicate validation errors
      */

@@ -17,7 +17,10 @@ public class LengthWindowViewFactory implements ViewFactory
      * Size of length window.
      */
     protected int size;
-    
+
+    /**
+     * The access into the data window.
+     */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
 
     private EventType eventType;

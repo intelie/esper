@@ -15,6 +15,9 @@ import java.util.List;
  */
 public class UnivariateStatisticsViewFactory implements ViewFactory
 {
+    /**
+     * Property name of data field.
+     */
     protected String fieldName;
     private EventType eventType;
 

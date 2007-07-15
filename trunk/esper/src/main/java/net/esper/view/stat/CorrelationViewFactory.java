@@ -14,7 +14,14 @@ import java.util.List;
  */
 public class CorrelationViewFactory implements ViewFactory
 {
+    /**
+     * Property name of X field.
+     */
     protected String fieldNameX;
+
+    /**
+     * Property name of Y field.
+     */
     protected String fieldNameY;
     private EventType eventType;
 

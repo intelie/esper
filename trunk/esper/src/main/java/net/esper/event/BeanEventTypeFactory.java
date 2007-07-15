@@ -13,5 +13,11 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public interface BeanEventTypeFactory
 {
+    /**
+     * Returns the bean event type for a given class assigning the given alias.
+     * @param alias is the alias
+     * @param clazz is the class for which to generate an event type
+     * @return is the event type for the class
+     */
     public BeanEventType createBeanType(String alias, Class clazz);
 }

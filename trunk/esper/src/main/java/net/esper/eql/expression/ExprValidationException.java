@@ -21,6 +21,11 @@ public class ExprValidationException extends Exception
         super(message);
     }
 
+    /**
+     * Ctor.
+     * @param message is the error message
+     * @param cause is the inner exception
+     */
     public ExprValidationException(String message, Throwable cause)
     {
         super(message, cause);

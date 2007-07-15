@@ -29,11 +29,19 @@ public final class EvalGuardNode extends EvalNode
         this.patternGuardSpec = patternGuardSpec;
     }
 
+    /**
+     * Returns the guard object specification to use for instantiating the guard factory and guard.
+     * @return guard specification
+     */
     public PatternGuardSpec getPatternGuardSpec()
     {
         return patternGuardSpec;
     }
 
+    /**
+     * Supplies the guard factory to the node.
+     * @param guardFactory is the guard factory
+     */
     public void setGuardFactory(GuardFactory guardFactory)
     {
         this.guardFactory = guardFactory;

@@ -17,6 +17,7 @@ public class CompositeEventType implements EventType
 
     /**
      * Ctor.
+     * @param alias is the event type alias
      * @param taggedEventTypes is a map of name tags and event type per tag 
      */
     public CompositeEventType(String alias, Map<String, EventType> taggedEventTypes)
@@ -25,6 +26,10 @@ public class CompositeEventType implements EventType
         this.alias = alias;
     }
 
+    /**
+     * Returns the event type alias.
+     * @return event type alias 
+     */
     public String getAlias()
     {
         return alias;

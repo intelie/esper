@@ -109,17 +109,6 @@ public final class SchedulingServiceImpl implements SchedulingService
         handleSetMap.remove(handle);
     }
 
-
-    public void evaluateLock()
-    {
-        // no additional locking before evaluation required
-    }
-
-    public void evaluateUnLock()
-    {
-        // no additional locking before evaluation required
-    }
-
     public synchronized final void evaluate(Collection<ScheduleHandle> handles)
     {
         // Get the values on or before the current time - to get those that are exactly on the

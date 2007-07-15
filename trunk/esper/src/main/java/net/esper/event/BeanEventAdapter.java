@@ -8,6 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * A fcatory for {@link BeanEventType} instances based on Java class information and using configured
+ * settings for 
+ */
 public class BeanEventAdapter implements BeanEventTypeFactory
 {
     private final ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean;
@@ -16,6 +20,8 @@ public class BeanEventAdapter implements BeanEventTypeFactory
 
     /**
      * Ctor.
+     * @param typesPerJavaBean shareable collection that this adapter writes to
+     * for caching bean types per class
      */
     public BeanEventAdapter(ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean)
     {

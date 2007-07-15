@@ -11,6 +11,9 @@ import net.esper.event.EventBean;
 
 /**
  * Defines an interface to notify of new and old events.
+ * <p>
+ * Also see {@link StatementAwareUpdateListener} for update listeners that require
+ * the statement and service provider instance to be passed to the listener in addition to events. 
  */
 public interface UpdateListener
 {

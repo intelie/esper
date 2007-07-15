@@ -30,11 +30,19 @@ public final class EvalObserverNode extends EvalNode
         this.patternObserverSpec = patternObserverSpec;
     }
 
+    /**
+     * Returns the observer object specification to use for instantiating the observer factory and observer.
+     * @return observer specification
+     */
     public PatternObserverSpec getPatternObserverSpec()
     {
         return patternObserverSpec;
     }
 
+    /**
+     * Supplies the observer factory to the node.
+     * @param observerFactory is the observer factory
+     */
     public void setObserverFactory(ObserverFactory observerFactory)
     {
         this.observerFactory = observerFactory;

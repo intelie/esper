@@ -171,6 +171,12 @@ public class MapEventType implements EventType
         return getter;
     }
 
+    /**
+     * Returns the value of the given property, allowing nested property names.
+     * @param propertyName is the name of the property
+     * @param values is the map to get the value from
+     * @return property value
+     */
     public Object getValue(String propertyName, Map values)
     {
         // if a known type, return value
@@ -305,16 +311,19 @@ public class MapEventType implements EventType
         return hashCode;
     }
 
-    public String getEventTypeId()
-    {
-        return "MAP_" + typeName;
-    }
-
+    /**
+     * Returns the event type alias.
+     * @return event type alias
+     */
     public String getAlias()
     {
         return typeName;
     }
 
+    /**
+     * Returns the name-type map of map properties.
+     * @return is the property name and types
+     */
     public Map<String, Class> getTypes()
     {
         return types;

@@ -334,11 +334,21 @@ public class Configuration implements ConfigurationOperations {
         return plugInPatternObjects;
     }
 
+    /**
+     * Adds a configuration object for a named extension.
+     * @param extensionName is the name of the extension module.
+     * @param configurationObject is the extension configuration.
+     */
     public void addExtensionConfig(String extensionName, Object configurationObject)
     {
         extensionConfigurations.put(extensionName, configurationObject);
     }
 
+    /**
+     * Returns extension configuration objects as a map of extension module name and
+     * configuration object.
+     * @return extension configuration objects
+     */
     public Map<String, Object> getExtensionConfigs()
     {
         return extensionConfigurations;

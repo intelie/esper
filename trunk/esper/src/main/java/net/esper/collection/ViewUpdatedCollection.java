@@ -24,5 +24,8 @@ public interface ViewUpdatedCollection
      */
     public void update(EventBean[] newData, EventBean[] oldData);
 
+    /**
+     * De-allocate resources held by the collection.
+     */
     public void destroy();
 }

@@ -6,7 +6,7 @@ import net.esper.client.ConfigurationPlugInView;
 import net.esper.support.view.SupportViewFactoryOne;
 import net.esper.support.view.SupportViewFactoryTwo;
 import net.esper.view.stat.UnivariateStatisticsViewFactory;
-import net.esper.eql.spec.PluggableObjectDesc;
+import net.esper.eql.spec.PluggableObjectCollection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -91,7 +91,7 @@ public class TestViewResolutionService extends TestCase
             configs.add(config);
         }
 
-        PluggableObjectDesc desc = new PluggableObjectDesc();
+        PluggableObjectCollection desc = new PluggableObjectCollection();
         desc.addViews(configs);
         return new ViewResolutionServiceImpl(desc);
     }

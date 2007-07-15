@@ -3,7 +3,7 @@ package net.esper.core;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.MethodResolutionServiceImpl;
 import net.esper.eql.join.JoinSetComposerFactoryImpl;
-import net.esper.eql.spec.PluggableObjectDesc;
+import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.pattern.*;
 import net.esper.pattern.PatternObjectHelper;
 import net.esper.schedule.ScheduleBucket;
@@ -18,16 +18,21 @@ import net.esper.view.ViewResolutionServiceImpl;
  */
 public class StatementContextFactoryDefault implements StatementContextFactory
 {
-    private PluggableObjectDesc viewClasses;
-    private PluggableObjectDesc patternObjectClasses;
+    private PluggableObjectCollection viewClasses;
+    private PluggableObjectCollection patternObjectClasses;
 
-    public StatementContextFactoryDefault(PluggableObjectDesc viewPlugIns, PluggableObjectDesc plugInPatternObj)
+    /**
+     * Ctor.
+     * @param viewPlugIns is the view plug-in object descriptions
+     * @param plugInPatternObj is the pattern plug-in object descriptions
+     */
+    public StatementContextFactoryDefault(PluggableObjectCollection viewPlugIns, PluggableObjectCollection plugInPatternObj)
     {
-        viewClasses = new PluggableObjectDesc();
+        viewClasses = new PluggableObjectCollection();
         viewClasses.addObjects(viewPlugIns);
         viewClasses.addObjects(ViewEnumHelper.getBuiltinViews());
 
-        patternObjectClasses = new PluggableObjectDesc();
+        patternObjectClasses = new PluggableObjectCollection();
         patternObjectClasses.addObjects(plugInPatternObj);
         patternObjectClasses.addObjects(PatternObjectHelper.getBuiltinPatternObjects());
     }

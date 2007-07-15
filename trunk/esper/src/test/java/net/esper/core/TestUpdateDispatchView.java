@@ -1,15 +1,11 @@
 package net.esper.core;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import junit.framework.TestCase;
-import net.esper.client.UpdateListener;
 import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.DispatchServiceImpl;
 import net.esper.event.EventBean;
-import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.event.SupportEventBeanFactory;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestUpdateDispatchView extends TestCase
 {
@@ -23,12 +19,12 @@ public class TestUpdateDispatchView extends TestCase
         listenerOne = new SupportUpdateListener();
         listenerTwo = new SupportUpdateListener();
 
-        Set<UpdateListener> listeners = new HashSet<UpdateListener>();
-        listeners.add(listenerOne);
-        listeners.add(listenerTwo);
+        EPStatementListenerSet listenerSet = new EPStatementListenerSet();
+        listenerSet.addListener(listenerOne);
+        listenerSet.addListener(listenerTwo);
 
         dispatchService = new DispatchServiceImpl();
-        updateDispatchView = new UpdateDispatchViewBlocking(listeners, dispatchService, 1000);
+        updateDispatchView = new UpdateDispatchViewBlocking(null, null, listenerSet, dispatchService, 1000);
     }
 
     public void testUpdateOnceAndDispatch()

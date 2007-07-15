@@ -1,29 +1,22 @@
 package net.esper.core;
 
 import net.esper.client.EPStatementState;
+import net.esper.client.StatementAwareUpdateListener;
 import net.esper.client.UpdateListener;
+import net.esper.client.EPServiceProvider;
 import net.esper.dispatch.DispatchService;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.Viewable;
 
 import java.util.Iterator;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Statement implementation for EQL statements.
  */
 public class EPStatementImpl implements EPStatementSPI
 {
-    /**
-     * Using a copy-on-write set here:
-     * When the engine dispatches events to a set of listeners, then while iterating through the set there
-     * may be listeners added or removed (the listener may remove itself).
-     * Additionally, events may be dispatched by multiple threads to the same listener.
-     */
-    private Set<UpdateListener> listeners = new CopyOnWriteArraySet<UpdateListener>();
-
+    private final EPStatementListenerSet statementListenerSet;
     private final String statementId;
     private final String statementName;
     private final String expressionText;
@@ -44,9 +37,11 @@ public class EPStatementImpl implements EPStatementSPI
      * @param dispatchService for dispatching events to listeners to the statement
      * @param statementLifecycleSvc handles lifecycle transitions for the statement
      * @param isBlockingDispatch is true if the dispatch to listeners should block to preserve event generation order
-     * @param msecBlockingTimeout is the max number of milliseconds of block time 
+     * @param msecBlockingTimeout is the max number of milliseconds of block time
+     * @param epServiceProvider is the engine instance to provide to statement-aware update listeners
      */
-    public EPStatementImpl(String statementId,
+    public EPStatementImpl(EPServiceProvider epServiceProvider,
+                           String statementId,
                               String statementName,
                               String expressionText,
                               boolean isPattern,
@@ -60,13 +55,14 @@ public class EPStatementImpl implements EPStatementSPI
         this.statementName = statementName;
         this.expressionText = expressionText;
         this.statementLifecycleSvc = statementLifecycleSvc;
+        statementListenerSet = new EPStatementListenerSet();
         if (isBlockingDispatch)
         {
-            this.dispatchChildView = new UpdateDispatchViewBlocking(this.getListeners(), dispatchService, msecBlockingTimeout);
+            this.dispatchChildView = new UpdateDispatchViewBlocking(epServiceProvider, this, statementListenerSet, dispatchService, msecBlockingTimeout);
         }
         else
         {
-            this.dispatchChildView = new UpdateDispatchViewNonBlocking(this.getListeners(), dispatchService);
+            this.dispatchChildView = new UpdateDispatchViewNonBlocking(epServiceProvider, this, statementListenerSet, dispatchService);
         }
         this.currentState = EPStatementState.STOPPED;
     }
@@ -169,17 +165,17 @@ public class EPStatementImpl implements EPStatementSPI
      * Returns the set of listeners to the statement.
      * @return statement listeners
      */
-    public Set<UpdateListener> getListeners()
+    public EPStatementListenerSet getListenerSet()
     {
-        return listeners;
+        return statementListenerSet;
     }
 
-    public void setListeners(Set<UpdateListener> listeners)
+    public void setListeners(EPStatementListenerSet listenerSet)
     {
-        this.listeners = listeners;
+        statementListenerSet.setListeners(listenerSet);
         if (dispatchChildView != null)
         {
-            dispatchChildView.setUpdateListeners(listeners);
+            dispatchChildView.setUpdateListeners(listenerSet);
         }
     }
 
@@ -194,8 +190,8 @@ public class EPStatementImpl implements EPStatementSPI
             throw new IllegalArgumentException("Null listener reference supplied");
         }
 
-        listeners.add(listener);
-        statementLifecycleSvc.updatedListeners(statementId, listeners);
+        statementListenerSet.addListener(listener);
+        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
     }
 
     /**
@@ -209,8 +205,8 @@ public class EPStatementImpl implements EPStatementSPI
             throw new IllegalArgumentException("Null listener reference supplied");
         }
 
-        listeners.remove(listener);
-        statementLifecycleSvc.updatedListeners(statementId, listeners);
+        statementListenerSet.removeListener(listener);
+        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
     }
 
     /**
@@ -218,7 +214,39 @@ public class EPStatementImpl implements EPStatementSPI
      */
     public void removeAllListeners()
     {
-        listeners.clear();
-        statementLifecycleSvc.updatedListeners(statementId, listeners);
+        statementListenerSet.removeAllListeners();
+        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
+    }
+
+    public void addListener(StatementAwareUpdateListener listener)
+    {
+        if (listener == null)
+        {
+            throw new IllegalArgumentException("Null listener reference supplied");
+        }
+
+        statementListenerSet.addListener(listener);
+        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
+    }
+
+    public void removeListener(StatementAwareUpdateListener listener)
+    {
+        if (listener == null)
+        {
+            throw new IllegalArgumentException("Null listener reference supplied");
+        }
+
+        statementListenerSet.removeListener(listener);
+        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
+    }
+
+    public Iterator<StatementAwareUpdateListener> getStatementAwareListeners()
+    {
+        return statementListenerSet.getStmtAwareListeners().iterator();
+    }
+
+    public Iterator<UpdateListener> getUpdateListeners()
+    {
+        return statementListenerSet.getListeners().iterator();
     }
 }

@@ -25,6 +25,9 @@ import net.esper.util.MetaDefItem;
  */
 public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
 {
+    /**
+     * The schedule specification for the timer-at.
+     */
     protected ScheduleSpec spec = null;
 
     public void setObserverParameters(List<Object> observerParameters) throws ObserverParameterException

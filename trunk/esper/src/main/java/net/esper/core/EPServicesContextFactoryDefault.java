@@ -1,16 +1,13 @@
 package net.esper.core;
 
-import net.esper.client.ConfigurationEventTypeLegacy;
-import net.esper.client.ConfigurationEventTypeXMLDOM;
-import net.esper.client.ConfigurationException;
-import net.esper.client.ConfigurationPlugInAggregationFunction;
+import net.esper.client.*;
 import net.esper.eql.core.EngineImportException;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineImportServiceImpl;
 import net.esper.eql.core.EngineSettingsService;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.db.DatabaseConfigServiceImpl;
-import net.esper.eql.spec.PluggableObjectDesc;
+import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.eql.view.OutputConditionFactoryDefault;
 import net.esper.event.EventAdapterException;
@@ -31,7 +28,7 @@ import java.util.Properties;
  */
 public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 {
-    public EPServicesContext createServicesContext(String engineURI, ConfigurationSnapshot configSnapshot)
+    public EPServicesContext createServicesContext(EPServiceProvider epServiceProvider, ConfigurationSnapshot configSnapshot)
     {
         // Make services that depend on snapshot config entries
         EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl();
@@ -45,9 +42,9 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults());
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
 
-        PluggableObjectDesc plugInViews = new PluggableObjectDesc();
+        PluggableObjectCollection plugInViews = new PluggableObjectCollection();
         plugInViews.addViews(configSnapshot.getPlugInViews());
-        PluggableObjectDesc plugInPatternObj = new PluggableObjectDesc();
+        PluggableObjectCollection plugInPatternObj = new PluggableObjectCollection();
         plugInPatternObj.addPatternObjects(configSnapshot.getPlugInPatternObjects());
 
         // JNDI context for binding resources
@@ -59,13 +56,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         OutputConditionFactory outputConditionFactory = new OutputConditionFactoryDefault();
 
         // New services context
-        EPServicesContext services = new EPServicesContext(engineURI, schedulingService,
+        EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory);
 
         // Circular dependency
-        StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(services);
+        StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
         services.setStatementLifecycleSvc(statementLifecycleSvc);
 
         return services;

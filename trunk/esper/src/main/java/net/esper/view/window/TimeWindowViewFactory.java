@@ -14,8 +14,16 @@ import java.util.List;
  */
 public class TimeWindowViewFactory implements ViewFactory
 {
+    /**
+     * Number of msec before expiry.
+     */
     protected long millisecondsBeforeExpiry;
+
+    /**
+     * Access into the data window.
+     */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
+    
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
