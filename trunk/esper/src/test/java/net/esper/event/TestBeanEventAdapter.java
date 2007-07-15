@@ -1,6 +1,5 @@
 package net.esper.event;
 
-import com.espertech.esperstore.event.BeanEventTypeOID;
 import junit.framework.TestCase;
 import net.esper.support.bean.ISupportD;
 import net.esper.support.bean.ISupportDImpl;
@@ -22,21 +21,18 @@ public class TestBeanEventAdapter extends TestCase
 
     public void testCreateBeanType()
     {
-        BeanEventTypeOID eventType = (BeanEventTypeOID) beanEventTypeFactory.createBeanType("a", SupportBeanSimple.class);
+        BeanEventType eventType = beanEventTypeFactory.createBeanType("a", SupportBeanSimple.class);
 
         assertEquals(SupportBeanSimple.class, eventType.getUnderlyingType());
         assertEquals(2, eventType.getPropertyNames().length);
-        assertEquals("Cnet.esper.support.bean.SupportBeanSimple", eventType.getEventTypeId());
 
         // Second call to create the event type, should be the same instance as the first
         EventType eventTypeTwo = beanEventTypeFactory.createBeanType("b", SupportBeanSimple.class);
         assertTrue(eventTypeTwo == eventType);
-        assertEquals("Cnet.esper.support.bean.SupportBeanSimple", eventType.getEventTypeId());
 
         // Third call to create the event type, getting a given event type id
         EventType eventTypeThree = beanEventTypeFactory.createBeanType("c", SupportBeanSimple.class);
         assertTrue(eventTypeThree == eventType);
-        assertEquals("Cnet.esper.support.bean.SupportBeanSimple", eventType.getEventTypeId());
     }
 
     public void testInterfaceProperty()

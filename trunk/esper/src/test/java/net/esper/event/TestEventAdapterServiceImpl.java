@@ -13,8 +13,6 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.espertech.esperstore.event.EventTypeOID;
-
 public class TestEventAdapterServiceImpl extends TestCase
 {
     private EventAdapterServiceImpl adapterService;
@@ -28,14 +26,6 @@ public class TestEventAdapterServiceImpl extends TestCase
     {
         EventBean originalBean = adapterService.adapterForBean(new SupportSelfReferenceEvent());
         assertEquals(null, originalBean.get("selfRef.selfRef.selfRef.value"));
-    }
-
-    public void testEventTypeId()
-    {
-        EventBean originalBean = adapterService.adapterForBean(new SupportSerializableBean("e1"));
-        EventTypeOID eventType = (EventTypeOID) originalBean.getEventType();
-        String id = eventType.getEventTypeId();
-        assertEquals("CLASS_net.esper.support.bean.SupportSerializableBean", id);
     }
 
     public void testCreateMapType()
