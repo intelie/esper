@@ -12,7 +12,6 @@ import net.esper.eql.view.OutputConditionFactory;
 import net.esper.eql.view.OutputConditionFactoryDefault;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
-import net.esper.event.EventAdapterService;
 import net.esper.schedule.ScheduleBucket;
 import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
@@ -73,7 +72,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      * @param eventAdapterService is events adapter
      * @param configSnapshot is the config snapshot
      */
-    protected static void init(EventAdapterService eventAdapterService, ConfigurationSnapshot configSnapshot)
+    protected static void init(EventAdapterServiceImpl eventAdapterService, ConfigurationSnapshot configSnapshot)
     {
         // Extract legacy event type definitions for each event type alias, if supplied.
         //
@@ -92,6 +91,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             }
         }
         eventAdapterService.setClassLegacyConfigs(classLegacyInfo);
+        eventAdapterService.setDefaultPropertyResolutionStyle(configSnapshot.getEngineDefaults().getEventMeta().getPropertyResolutionStyle());
 
         // Add from the configuration the Java event class aliases
         Map<String, String> javaClassAliases = configSnapshot.getJavaClassAliases();

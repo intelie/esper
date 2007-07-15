@@ -16,9 +16,9 @@ import org.apache.commons.logging.LogFactory;
 
 public class TestMapEvent extends TestCase
 {
-    Properties properties;
-    Map<String, Object> map;
-    EPServiceProvider epService;
+    private Properties properties;
+    private Map<String, Object> map;
+    private EPServiceProvider epService;
 
     protected void setUp()
     {

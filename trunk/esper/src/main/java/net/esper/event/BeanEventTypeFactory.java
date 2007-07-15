@@ -1,6 +1,7 @@
 package net.esper.event;
 
 import net.esper.client.ConfigurationEventTypeLegacy;
+import net.esper.client.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,4 +21,6 @@ public interface BeanEventTypeFactory
      * @return is the event type for the class
      */
     public BeanEventType createBeanType(String alias, Class clazz);
+
+    public Configuration.PropertyResolutionStyle getDefaultPropertyResolutionStyle();
 }

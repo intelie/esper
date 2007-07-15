@@ -2,6 +2,7 @@ package net.esper.event;
 
 import net.esper.client.ConfigurationEventTypeLegacy;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
+import net.esper.client.Configuration;
 import net.esper.event.xml.SchemaXMLEventType;
 import net.esper.event.xml.SimpleXMLEventType;
 import net.esper.event.xml.XMLEventBean;
@@ -34,13 +35,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     private final ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean;
     private final Map<String, EventType> aliasToTypeMap;
-
-    /**
-     *
-     */
     private BeanEventAdapter beanEventAdapter;
-
-
     private Map<String, EventType> xmldomRootElementNames;
 
     /**
@@ -63,6 +58,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public void setClassLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
     {
         beanEventAdapter.setClassToLegacyConfigs(classToLegacyConfigs);
+    }
+
+    public void setDefaultPropertyResolutionStyle(Configuration.PropertyResolutionStyle defaultPropertyResolutionStyle)
+    {
+        beanEventAdapter.setDefaultPropertyResolutionStyle(defaultPropertyResolutionStyle);
     }
 
     public EventType getExistsTypeByAlias(String eventTypeAlias)

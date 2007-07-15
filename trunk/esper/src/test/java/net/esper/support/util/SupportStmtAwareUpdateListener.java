@@ -45,6 +45,8 @@ public class SupportStmtAwareUpdateListener implements StatementAwareUpdateListe
 
     public void reset()
     {
+        statementList.clear();
+        svcProviderList.clear();
         this.oldDataList.clear();
         this.newDataList.clear();
         this.lastNewData = null;

@@ -6,6 +6,10 @@ package net.esper.client;
 public class ConfigurationEngineDefaults
 {
     private Threading threading;
+    private ViewResources viewResources;
+    private EventMeta eventMeta;
+
+    // TODO: javadoc for this statement, check IDE analyze settings; expose in XML
 
     /**
      * Ctor.
@@ -13,6 +17,8 @@ public class ConfigurationEngineDefaults
     protected ConfigurationEngineDefaults()
     {
         threading = new Threading();
+        viewResources = new ViewResources();
+        eventMeta = new EventMeta(); 
     }
 
     /**
@@ -24,10 +30,20 @@ public class ConfigurationEngineDefaults
         return threading;
     }
 
+    public ViewResources getViewResources()
+    {
+        return viewResources;
+    }
+
+    public EventMeta getEventMeta()
+    {
+        return eventMeta;
+    }
+
     /**
      * Holds threading settings.
      */
-    public class Threading
+    public static class Threading
     {
         private boolean isListenerDispatchPreserveOrder;
         private long listenerDispatchTimeout;
@@ -127,6 +143,55 @@ public class ConfigurationEngineDefaults
         public void setExternalTimer(boolean externalTimer)
         {
             isExternalTimer = externalTimer;
+        }
+    }
+
+    /**
+     * Holds view resources settings.
+     */
+    public static class ViewResources
+    {
+        private boolean isReuseViews;
+
+        /**
+         * Ctor - sets up defaults.
+         */
+        protected ViewResources()
+        {
+            isReuseViews = true;
+        }
+
+        public boolean isReuseViews()
+        {
+            return isReuseViews;
+        }
+
+        public void setReuseViews(boolean reuseViews)
+        {
+            isReuseViews = reuseViews;
+        }
+    }
+
+    /**
+     * Event representation metadata.
+     */
+    public static class EventMeta
+    {
+        private Configuration.PropertyResolutionStyle propertyResolutionStyle;
+
+        public EventMeta()
+        {
+            this.propertyResolutionStyle = Configuration.PropertyResolutionStyle.getDefault();
+        }
+
+        public Configuration.PropertyResolutionStyle getPropertyResolutionStyle()
+        {
+            return propertyResolutionStyle;
+        }
+
+        public void setPropertyResolutionStyle(Configuration.PropertyResolutionStyle propertyResolutionStyle)
+        {
+            this.propertyResolutionStyle = propertyResolutionStyle;
         }
     }
 }

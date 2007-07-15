@@ -1,6 +1,7 @@
 package net.esper.event;
 
 import net.esper.client.ConfigurationEventTypeLegacy;
+import net.esper.client.Configuration;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -15,8 +16,10 @@ import java.util.HashMap;
 public class BeanEventAdapter implements BeanEventTypeFactory
 {
     private final ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean;
-    private Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
     private final Lock typesPerJavaBeanLock;
+
+    private Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
+    private Configuration.PropertyResolutionStyle defaultPropertyResolutionStyle;
 
     /**
      * Ctor.
@@ -28,6 +31,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
         this.typesPerJavaBean = typesPerJavaBean;
         typesPerJavaBeanLock = new ReentrantLock();
         classToLegacyConfigs = new HashMap<String, ConfigurationEventTypeLegacy>();
+        this.defaultPropertyResolutionStyle = Configuration.PropertyResolutionStyle.getDefault();
     }
 
     /**
@@ -37,6 +41,16 @@ public class BeanEventAdapter implements BeanEventTypeFactory
     public void setClassToLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs)
     {
         this.classToLegacyConfigs.putAll(classToLegacyConfigs);
+    }
+
+    public void setDefaultPropertyResolutionStyle(Configuration.PropertyResolutionStyle defaultPropertyResolutionStyle)
+    {
+        this.defaultPropertyResolutionStyle = defaultPropertyResolutionStyle;
+    }
+
+    public Configuration.PropertyResolutionStyle getDefaultPropertyResolutionStyle()
+    {
+        return defaultPropertyResolutionStyle;
     }
 
     /**

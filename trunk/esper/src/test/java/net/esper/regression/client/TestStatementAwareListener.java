@@ -7,12 +7,11 @@ import net.esper.support.bean.SupportBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.SupportStmtAwareUpdateListener;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 public class TestStatementAwareListener extends TestCase
 {
@@ -153,6 +152,8 @@ public class TestStatementAwareListener extends TestCase
         assertEquals(2, awareListener.getNewDataList().size());
         assertEquals("C", awareListener.getNewDataList().get(0)[0].get("string"));
         assertEquals("C", awareListener.getNewDataList().get(1)[0].get("string"));
+        EPStatement stmts[] = awareListener.getStatementList().toArray(new EPStatement[0]);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmts, new Object[] {statementOne, statementTwo});
     }
 
     public void testOrderOfInvocation()

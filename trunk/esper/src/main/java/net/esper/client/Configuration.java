@@ -624,5 +624,35 @@ public class Configuration implements ConfigurationOperations {
     	imports.add("java.text.*");
     	imports.add("java.util.*");
     }
+
+    public static enum PropertyResolutionStyle
+    {
+        /**
+         * Properties are only matched if the names are identical in name
+         * and case to the original property name.
+         */
+        CASE_SENSITIVE,
+
+        /**
+         * Properties are matched if the names are identical.  A case insensitive
+         * search is used and will choose the first property that matches
+         * the name exactly or the first property that matches case insensitively
+         * should no match be found.
+         */
+        CASE_INSENSITIVE,
+
+        /**
+         * Properties are matched if the names are identical.  A case insensitive
+         * search is used and will choose the first property that matches
+         * the name exactly case insensitively.  If more than one 'name' can be
+         * mapped to the property an exception is thrown.
+         */
+        DISTINCT_CASE_INSENSITIVE;
+
+        public static PropertyResolutionStyle getDefault()
+        {
+            return CASE_SENSITIVE; 
+        }
+    }
 }
 
